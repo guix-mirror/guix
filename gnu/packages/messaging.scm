@@ -217,7 +217,8 @@ identi.ca and status.net).")
                               '("intltool.m4" "libtool.m4" "lt~obsolete.m4"
                                 "ltoptions.m4" "ltsugar.m4" "ltversion.m4")))
                   (delete-file-recursively "build-aux")
-                  (delete-file "po/Makefile.in.in")))))
+                  (delete-file "po/Makefile.in.in")
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("autoconf-archive" ,autoconf-archive)
@@ -1060,7 +1061,9 @@ into existing applications.")
          "1lw6807qrbmvzbrjn1rna1dhir2k70xpcjvyjn45y35hav333a42"))
        ;; psycmp3 currently depends on MP3::List and rxaudio (shareware),
        ;; we can add it back when this is no longer the case.
-       (snippet '(delete-file "contrib/psycmp3"))))
+       (snippet '(begin
+                   (delete-file "contrib/psycmp3")
+                   #t))))
     (build-system perl-build-system)
     (inputs
      `(("perl-curses" ,perl-curses)

@@ -188,11 +188,13 @@ settings to tweak as well.")
               (modules '((guix build utils)))
               (snippet
                ;; Import cmath header for the std::pow function.
-               '(for-each (lambda (file)
-                            (substitute* file
-                              (("#include <math.h>")
-                               "#include <cmath>")))
-                          (find-files "src")))))
+               '(begin
+                  (for-each (lambda (file)
+                              (substitute* file
+                                (("#include <math.h>")
+                                 "#include <cmath>")))
+                            (find-files "src"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
@@ -682,9 +684,11 @@ watch your CPU playing while enjoying a cup of tea!")
               "151v6nign86m1a2vqz27krsccpc9m4d1jax4y43v2fa82wfj9qp0"))
             (modules '((guix build utils)))
             (snippet
-             '(substitute* "src/version.c"
-                           (("__DATE__") "")
-                           (("__TIME__") "")))))
+             '(begin
+                (substitute* "src/version.c"
+                  (("__DATE__") "")
+                  (("__TIME__") ""))
+                #t))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--disable-cpu-opt")
@@ -896,7 +900,9 @@ can be explored and changed freely.")
        (modules '((guix build utils)))
        (snippet
         ;; Unbundle fonts.
-        '(delete-file-recursively "fonts"))))
+        '(begin
+           (delete-file-recursively "fonts")
+           #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("CC=gcc")
@@ -952,15 +958,15 @@ that beneath its ruins lay buried an ancient evil.")
         ;; In the future, if someone tries to make a graphical variant of
         ;; this package, they can deal with that mess themselves. :)
         '(begin
-           (for-each
-            (lambda (subdir)
-              (let ((lib-subdir (string-append "lib/" subdir)))
-                (delete-file-recursively lib-subdir)))
-            '("fonts" "icons" "sounds" "tiles"))
+           (for-each (lambda (subdir)
+                       (let ((lib-subdir (string-append "lib/" subdir)))
+                         (delete-file-recursively lib-subdir)))
+                     '("fonts" "icons" "sounds" "tiles"))
            (substitute* "lib/Makefile"
              ;; And don't try to invoke makefiles in the directories we removed
              (("gamedata customize help screens fonts tiles sounds icons user")
-              "gamedata customize help screens user"))))))
+              "gamedata customize help screens user"))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                 ;no check target
@@ -1281,11 +1287,13 @@ destroy, the better your score.  The person with the highest score wins.")
                ;; We do not provide `ncurses.h' within an `ncursesw'
                ;; sub-directory, so patch the source accordingly.  See
                ;; <http://bugs.gnu.org/19018>.
-               '(for-each (lambda (file)
-                            (substitute* file
-                              (("ncursesw/ncurses.h")
-                               "ncurses.h")))
-                          (find-files "." "configure$|\\.c$")))))
+               '(begin
+                  (for-each (lambda (file)
+                              (substitute* file
+                                (("ncursesw/ncurses.h")
+                                 "ncurses.h")))
+                            (find-files "." "configure$|\\.c$"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)))
@@ -1989,7 +1997,9 @@ world}, @uref{http://evolonline.org, Evol Online} and
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
-              '(delete-file-recursively "os/dos"))))
+              '(begin
+                 (delete-file-recursively "os/dos")
+                 #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f              ; no "check" target
@@ -2839,7 +2849,8 @@ safety of the Chromium vessel.")
            (substitute* "Makefile"
              ;; Do not rely on $(GPERF) being an absolute file name
              (("\\[ -x \\$\\(GPERF\\) \\]")
-              "$(GPERF) --version >/dev/null 2>&1"))))
+              "$(GPERF) --version >/dev/null 2>&1"))
+           #t))
        (patches (search-patches "tuxpaint-stamps-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4050,14 +4061,13 @@ fight against their plot and save his fellow rabbits from slavery.")
        (modules '((guix build utils)))
        (snippet
         #~(begin
-            (for-each
-             (lambda (name)
-               (let* ((dir (string-append "binaries/data/mods/" name))
-                      (file (string-append dir "/" name ".zip"))
-                      (unzip #$(file-append unzip "/bin/unzip")))
-                 (system* unzip "-d" dir file)
-                 (delete-file file)))
-             '("mod" "public"))
+            (for-each (lambda (name)
+                        (let* ((dir (string-append "binaries/data/mods/" name))
+                               (file (string-append dir "/" name ".zip"))
+                               (unzip #$(file-append unzip "/bin/unzip")))
+                          (system* unzip "-d" dir file)
+                          (delete-file file)))
+                      '("mod" "public"))
             #t))))
     (build-system trivial-build-system)
     (native-inputs `(("tar" ,tar)
@@ -4292,10 +4302,12 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
          "0v2qgdfpvdzd1bcbp9v8pfahj1bgczsq2d4xfhh5wg11jgjcwz03"))
        (modules '((guix build utils)))
        (snippet
-        '(substitute* '("src/music.h" "src/tSDL.h")
-           (("#elif defined(__FreeBSD__)" line)
-            (string-append
-             line " || defined(__GNUC__)"))))))
+        '(begin
+           (substitute* '("src/music.h" "src/tSDL.h")
+             (("#elif defined(__FreeBSD__)" line)
+              (string-append
+               line " || defined(__GNUC__)")))
+           #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -4777,7 +4789,8 @@ You can save humanity and get programming skills!")
                   (delete-file-recursively "bzip2")
                   (delete-file-recursively "game-music-emu")
                   (delete-file-recursively "jpeg-6b")
-                  (delete-file-recursively "zlib")))))
+                  (delete-file-recursively "zlib")
+                  #t))))
     (arguments
      '(#:tests? #f
        #:configure-flags

@@ -846,9 +846,11 @@ exceptions, macros, and a dynamic programming environment.")
                 (patches (search-patches "guile-rsvg-pkgconfig.patch"))
                 (modules '((guix build utils)))
                 (snippet
-                 '(substitute* (find-files "." "Makefile\\.am")
-                    (("/share/guile/site")
-                     "/share/guile/site/@GUILE_EFFECTIVE_VERSION@")))
+                 '(begin
+                    (substitute* (find-files "." "Makefile\\.am")
+                      (("/share/guile/site")
+                       "/share/guile/site/@GUILE_EFFECTIVE_VERSION@"))
+                    #t))
                 (file-name (string-append name "-" version ".tar.gz"))))
       (build-system gnu-build-system)
       (native-inputs `(("pkg-config" ,pkg-config)
@@ -881,9 +883,11 @@ images onto Cairo surfaces.")
               (patches (search-patches "guile-present-coding.patch"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile.in"
-                  (("godir = .*$")
-                   "godir = $(moddir)\n")))))
+               '(begin
+                  (substitute* "Makefile.in"
+                    (("godir = .*$")
+                     "godir = $(moddir)\n"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

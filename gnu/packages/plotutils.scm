@@ -60,9 +60,11 @@
               ;; that, libplot.la ends up containing just "-lXaw" (without
               ;; "-L/path/to/Xaw"), due to the fact that there is no
               ;; libXaw.la, which forces us to propagate libXaw.
-              '(substitute* "configure"
-                 (("-lXaw")
-                  "-lXaw7")))))
+              '(begin
+                 (substitute* "configure"
+                   (("-lXaw")
+                    "-lXaw7"))
+                 #t))))
     (build-system gnu-build-system)
     (inputs `(("libpng" ,libpng)
               ("libx11" ,libx11)
@@ -97,7 +99,8 @@ scientific data.")
                   ;; Use the standard location for modules.
                   (substitute* "Makefile.in"
                     (("godir = .*$")
-                     "godir = $(moddir)\n"))))))
+                     "godir = $(moddir)\n"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.2)))
@@ -123,9 +126,11 @@ using the Cairo drawing library.")
               (modules '((guix build utils)))
               (snippet
                ;; Install binaries in the right place.
-               '(substitute* "src/Makefile"
-                  (("INSTALLBIN =.*$")
-                   (string-append "INSTALLBIN = $(out)/bin"))))))
+               '(begin
+                  (substitute* "src/Makefile"
+                    (("INSTALLBIN =.*$")
+                     (string-append "INSTALLBIN = $(out)/bin")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f

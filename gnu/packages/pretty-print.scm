@@ -56,9 +56,11 @@
               (modules '((guix build utils)))
               (snippet
                ;; Remove timestamp from the installed 'README' file.
-               '(substitute* "etc/README.in"
-                  (("@date@")
-                   "1st of some month, sometime after 1970")))
+               '(begin
+                  (substitute* "etc/README.in"
+                    (("@date@")
+                     "1st of some month, sometime after 1970"))
+                  #t))
               (patches (search-patches
                         "a2ps-CVE-2001-1593.patch"
                         "a2ps-CVE-2014-0466.patch"))))

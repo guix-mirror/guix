@@ -45,9 +45,11 @@
              (snippet
               ;; Generated HTML files and udev rules normally embed a
               ;; timestamp.  Work around that to build things reproducibly.
-              '(substitute* "tools/sane-desc.c"
-                 (("asctime \\(localtime \\(&current_time\\)\\)")
-                  "\"1970-01-01\"")))))
+              '(begin
+                 (substitute* "tools/sane-desc.c"
+                   (("asctime \\(localtime \\(&current_time\\)\\)")
+                    "\"1970-01-01\""))
+                 #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

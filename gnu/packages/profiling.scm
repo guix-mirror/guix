@@ -350,8 +350,10 @@ different kinds of performance behavior.")
               (modules '((guix build utils)))
               (snippet
                ;; Remove bundled software.
-               '(for-each delete-file-recursively
-                          '("vendor/opari2" "vendor/cube")))))
+               '(begin
+                  (for-each delete-file-recursively
+                            '("vendor/opari2" "vendor/cube"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("mpi" ,mpi)

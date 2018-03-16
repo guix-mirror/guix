@@ -181,7 +181,8 @@ OpenBSD tool of the same name.")
            (substitute* "src/crypto.cpp"
              (("argon2/argon2.h") "argon2.h"))
            (substitute* "configure.ac"
-             (("src/argon2/Makefile") ""))))
+             (("src/argon2/Makefile") ""))
+           #t))
        (sha256
         (base32
          "09yvkmbqbym3b5md4n96qc1s9sf2n8ji404hagih45rmsj49599x"))))
@@ -226,9 +227,11 @@ communication.")
          "1906254dg5hwljh0h4gyrw09ms3b57dlhjfzhfzffv50yzpkl837"))
        (modules '((guix build utils)))
        ;; Remove bundled dependencies in favour of proper inputs.
-       (snippet '(for-each delete-file-recursively
-                           (find-files "internal" "^tinyxml2-[0-9]"
-                                       #:directories? #t)))))
+       (snippet '(begin
+                   (for-each delete-file-recursively
+                             (find-files "internal" "^tinyxml2-[0-9]"
+                                         #:directories? #t))
+                   #t))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -270,8 +273,10 @@ the wrong hands.")
          "1dmgjcf7mnwc6h72xkvpaqpzxw8vmlnsmzz0s27pg0giwzm3sp0i"))
        (modules '((guix build utils)))
        ;; Create relative symbolic links instead of absolute ones to /lib/*
-       (snippet '(substitute* "Makefile" (("\\$\\(LNS\\) \\$\\(LIBDIR\\)/")
-                                          "$(LNS) ")))))
+       (snippet '(begin
+                   (substitute* "Makefile" (("\\$\\(LNS\\) \\$\\(LIBDIR\\)/")
+                                            "$(LNS) "))
+                   #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

@@ -90,11 +90,13 @@
                 "1i3f1agixxbfy4kxikb2b241p7c2lg73cl9wqfvlwz3q6zf5faxv"))
               (modules '((guix build utils)))
               (snippet
-               ;; Do not record a timestamp and file name in gzipped man
-               ;; pages (this is equivalent to 'gzip --no-name'.)
-               '(substitute* "setup.py"
-                  (("gzip\\.open\\(gzfile, 'w', 9\\)")
-                   "gzip.GzipFile('', 'wb', 9, open(gzfile, 'wb'), 0.)")))))
+               '(begin
+                  ;; Do not record a timestamp and file name in gzipped man
+                  ;; pages (this is equivalent to 'gzip --no-name'.)
+                  (substitute* "setup.py"
+                    (("gzip\\.open\\(gzfile, 'w', 9\\)")
+                     "gzip.GzipFile('', 'wb', 9, open(gzfile, 'wb'), 0.)"))
+                  #t))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2     ;incompatible with python 3
@@ -1274,7 +1276,9 @@ program for X11.  It was designed to be fast, tiny and scriptable in any languag
               (modules '((guix build utils)))
               (snippet
                ;; Drop bundled m4.
-               '(delete-file-recursively "m4"))))
+               '(begin
+                  (delete-file-recursively "m4")
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -240,8 +240,10 @@ without requiring the source code to be rewritten.")
               ;; Remove the pre-built object files.  Instead, build everything
               ;; from source, at the expense of significantly longer build
               ;; times (almost 3 hours on a 4-core Intel i5).
-              (snippet '(for-each delete-file
-                                  (find-files "prebuilt" "\\.go$")))))
+              (snippet '(begin
+                          (for-each delete-file
+                                    (find-files "prebuilt" "\\.go$"))
+                          #t))))
     (properties '((timeout . 72000)               ;20 hours
                   (max-silent-time . 36000)))     ;10 hours (needed on ARM
                                                   ;  when heavily loaded)
@@ -525,7 +527,8 @@ program can be installed in one go.")
                                       post)))
                     (substitute* "artanis/artanis.scm"
                       (("[[:punct:][:space:]]+->json-string[[:punct:][:space:]]+")
-                       ""))))))
+                       ""))
+                    #t))))
       (build-system gnu-build-system)
       ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
       (inputs `(("guile" ,guile-2.2)
@@ -852,7 +855,8 @@ for Guile\".")
                      "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
                   (substitute* '("Makefile.in" "json/Makefile.in")
                     (("moddir =.*/share/guile/site" all)
-                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
+                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs `(("guile" ,guile-2.2)))
     (home-page "https://savannah.nongnu.org/projects/guile-json/")
@@ -1225,9 +1229,11 @@ Guile's foreign function interface.")
                 (modules '((guix build utils)))
                 (snippet
                  ;; Upgrade 'Makefile.am' to the current way of doing things.
-                 '(substitute* "Makefile.am"
-                    (("TESTS_ENVIRONMENT")
-                     "TEST_LOG_COMPILER")))))
+                 '(begin
+                    (substitute* "Makefile.am"
+                      (("TESTS_ENVIRONMENT")
+                       "TEST_LOG_COMPILER"))
+                    #t))))
 
       (build-system gnu-build-system)
       (native-inputs
@@ -1362,7 +1368,8 @@ above command-line parameters.")
                                  "redis/Makefile.in"
                                  "redis/commands/Makefile.in")
                     (("moddir =.*/share/guile/site" all)
-                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
+                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.0)))
@@ -1475,7 +1482,8 @@ users and in some situations.")
                     (("godir = .*$")
                      (string-append
                       "godir = "
-                      "$(prefix)/lib/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")))))))
+                      "$(prefix)/lib/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1729,7 +1737,8 @@ you send to a FIFO file.")
                      "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
                   (substitute* "Makefile.in"
                     (("/site/2.0")
-                     "/site/@GUILE_EFFECTIVE_VERSION@"))))))
+                     "/site/@GUILE_EFFECTIVE_VERSION@"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.2)))

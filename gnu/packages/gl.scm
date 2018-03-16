@@ -478,9 +478,11 @@ glxgears, glxheads, and glxinfo.")
                 "0r37fg2s1f0jrvwh6c8cz5x6v4wqmhq42qm15cs9qs349q5c6wn5"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "config/Makefile.linux"
-                  (("= cc") "= gcc")
-                  (("/lib64") "/lib")))))
+               '(begin
+                  (substitute* "config/Makefile.linux"
+                    (("= cc") "= gcc")
+                    (("/lib64") "/lib"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))

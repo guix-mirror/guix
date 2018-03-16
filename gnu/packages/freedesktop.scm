@@ -233,7 +233,8 @@ the freedesktop.org XDG Base Directory specification.")
                   (substitute* "Makefile.am"
                     ;; Avoid validation against DTD because the DTDs for
                     ;; both doctype 4.2 and 4.5 are needed.
-                    (("XSLTPROC_FLAGS = ") "XSLTPROC_FLAGS = --novalid"))))))
+                    (("XSLTPROC_FLAGS = ") "XSLTPROC_FLAGS = --novalid"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;FIXME: "make check" in the "po" directory fails.

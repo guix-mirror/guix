@@ -77,8 +77,10 @@
              (modules '((guix build utils)))
              (snippet
               ;; Fix incompatibility with Perl 5.22+.
-              '(substitute* '("js/src/config/milestone.pl")
-                 (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
+              '(begin
+                 (substitute* '("js/src/config/milestone.pl")
+                   (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE"))
+                 #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -136,8 +138,10 @@ in C/C++.")
               (patches (search-patches "mozjs24-aarch64-support.patch"))
               (snippet
                ;; Fix incompatibility with Perl 5.22+.
-               '(substitute* '("js/src/config/milestone.pl")
-                  (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
+               '(begin
+                  (substitute* '("js/src/config/milestone.pl")
+                    (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE"))
+                  #t))))
     (arguments
       (substitute-keyword-arguments (package-arguments mozjs)
         ((#:phases phases)

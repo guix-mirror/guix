@@ -579,7 +579,7 @@ extracting content or merging files.")
          (base32
           "0b9j0gqbc3jhmx87r6idcsh8lnb30840c3hyx6dk2gdjqqh3hysp"))
         (modules '((guix build utils)))
-        (snippet '(delete-file-recursively "thirdparty"))))
+        (snippet '(begin (delete-file-recursively "thirdparty") #t))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
@@ -631,12 +631,14 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
             (snippet
              ;; Replace shebang with the bi-lingual shell/Perl trick to remove
              ;; dependency on Perl.
-             '(substitute* "qpdf/fix-qdf"
-                (("#!/usr/bin/env perl")
-                 "\
+             '(begin
+                (substitute* "qpdf/fix-qdf"
+                  (("#!/usr/bin/env perl")
+                   "\
 eval '(exit $?0)' && eval 'exec perl -wS \"$0\" ${1+\"$@\"}'
   & eval 'exec perl -wS \"$0\" $argv:q'
-    if 0;\n")))))
+    if 0;\n"))
+                #t))))
    (build-system gnu-build-system)
    (arguments
     `(#:disallowed-references (,perl)

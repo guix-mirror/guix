@@ -212,8 +212,10 @@ features an integrated Emacs-like editor and a large runtime library.")
              ;; Remove bundled libraries.
              (modules '((guix build utils)))
              (snippet
-              '(for-each delete-file-recursively
-                         '("gc" "gmp" "libuv")))))
+              '(begin
+                 (for-each delete-file-recursively
+                           '("gc" "gmp" "libuv"))
+                 #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -609,9 +611,10 @@ threads.")
        (origin
          (method url-fetch/tarbomb)
          (modules '((guix build utils)))
-         (snippet
-          ;; Remove binary code
-          '(delete-file-recursively "scmutils/mit-scheme"))
+         (snippet '(begin
+                     ;; Remove binary code
+                     (delete-file-recursively "scmutils/mit-scheme")
+                     #t))
          (uri (string-append "http://groups.csail.mit.edu/mac/users/gjs/6946"
                              "/scmutils-tarballs/" name "-" version
                              "-x86-64-gnu-linux.tar.gz"))

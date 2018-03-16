@@ -1687,16 +1687,19 @@ UnionFS-FUSE additionally supports copy-on-write.")
     (source (origin (inherit (package-source fuse))
               (modules '((guix build utils)))
               (snippet
-               ;; Normally libfuse invokes mount(8) so that /etc/mtab is
-               ;; updated.  Change calls to 'mtab_needs_update' to 0 so that
-               ;; it doesn't do that, allowing us to remove the dependency on
-               ;; util-linux (something that is useful in initrds.)
-               '(substitute* '("lib/mount_util.c"
-                               "util/mount_util.c")
-                  (("mtab_needs_update[[:blank:]]*\\([a-z_]+\\)")
-                   "0")
-                  (("/bin/")
-                   "")))))))
+               '(begin
+                  ;; Normally libfuse invokes mount(8) so that /etc/mtab is
+                  ;; updated.  Change calls to 'mtab_needs_update' to 0 so
+                  ;; that it doesn't do that, allowing us to remove the
+                  ;; dependency on util-linux (something that is useful in
+                  ;; initrds.)
+                  (substitute* '("lib/mount_util.c"
+                                 "util/mount_util.c")
+                    (("mtab_needs_update[[:blank:]]*\\([a-z_]+\\)")
+                     "0")
+                    (("/bin/")
+                     ""))
+                  #t))))))
 
 (define-public unionfs-fuse/static
   (package (inherit unionfs-fuse)
@@ -1705,11 +1708,13 @@ UnionFS-FUSE additionally supports copy-on-write.")
     (source (origin (inherit (package-source unionfs-fuse))
               (modules '((guix build utils)))
               (snippet
-               ;; Add -ldl to the libraries, because libfuse.a needs that.
-               '(substitute* "src/CMakeLists.txt"
-                  (("target_link_libraries(.*)\\)" _ libs)
-                   (string-append "target_link_libraries"
-                                  libs " dl)"))))))
+               '(begin
+                  ;; Add -ldl to the libraries, because libfuse.a needs that.
+                  (substitute* "src/CMakeLists.txt"
+                    (("target_link_libraries(.*)\\)" _ libs)
+                     (string-append "target_link_libraries"
+                                    libs " dl)")))
+                  #t))))
     (arguments
      '(#:tests? #f
        #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")
@@ -1871,7 +1876,8 @@ system.")
                   (substitute* '("src/unicode_start" "src/unicode_stop")
                     ;; Assume the Coreutils are in $PATH.
                     (("/usr/bin/tty")
-                     "tty"))))))
+                     "tty"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2063,7 +2069,8 @@ time.")
                     (("confdir = .*$")
                      "confdir = @sysconfdir@\n")
                     (("DEFAULT_SYS_DIR = @DEFAULT_SYS_DIR@")
-                     "DEFAULT_SYS_DIR = @sysconfdir@"))))
+                     "DEFAULT_SYS_DIR = @sysconfdir@"))
+                  #t))
               (patches (search-patches "lvm2-static-link.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2247,7 +2254,9 @@ compliance.")
                 "1f9mcp78sdd4sci6v32vxfcl1rfjpv205jisz1p93kkfnaisy7ip"))
 
               ;; We're building 'regulatory.bin' by ourselves.
-              (snippet '(delete-file "regulatory.bin"))))
+              (snippet '(begin
+                          (delete-file "regulatory.bin")
+                          #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -2680,7 +2689,8 @@ also contains the libsysfs library.")
               "includedir = @includedir@"))
            (substitute* "configure"
              (("includedir='(\\$\\{prefix\\}/include)'" all orig)
-              (string-append "includedir='" orig "/sysfs'")))))))
+              (string-append "includedir='" orig "/sysfs'")))
+           #t))))
     (synopsis "System utilities based on Linux sysfs (version 1.x)")))
 
 (define-public cpufrequtils
@@ -3295,9 +3305,10 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
               (modules '((guix build utils)))
               ;; Fix erroneous man page location in Makefile leading to
               ;; a compilation failure.
-              (snippet
-               '(substitute* "CMakeLists.txt"
-                  (("thinkfan\\.1") "src/thinkfan.1")))))
+              (snippet '(begin
+                          (substitute* "CMakeLists.txt"
+                            (("thinkfan\\.1") "src/thinkfan.1"))
+                          #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
@@ -3348,11 +3359,12 @@ from userspace.")
                (base32
                 "1mb228p80hv97pgk3myyvgp975r9mxq56c6bdn1n24kngcfh4niy"))
               (modules '((guix build utils)))
-              (snippet
-               ;; Install under $prefix.
-               '(substitute* '("src/Makefile.in" "ntfsprogs/Makefile.in")
-                  (("/sbin")
-                   "@sbindir@")))))
+              (snippet '(begin
+                          ;; Install under $prefix.
+                          (substitute* '("src/Makefile.in" "ntfsprogs/Makefile.in")
+                            (("/sbin")
+                             "@sbindir@"))
+                          #t))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)
               ("fuse" ,fuse)))                    ;libuuid
@@ -3648,9 +3660,12 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
-               ;; The snapshots lack a .git directory, breaking ‘git describe’.
-               `(substitute* "Makefile"
-                  (("\"unknown\"") (string-append "\"v" ,version "\""))))))
+               `(begin
+                  ;; The snapshots lack a .git directory,
+                  ;; breaking ‘git describe’.
+                  (substitute* "Makefile"
+                    (("\"unknown\"") (string-append "\"v" ,version "\"")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

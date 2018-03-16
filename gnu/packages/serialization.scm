@@ -108,10 +108,10 @@ such as compact binary encodings, XML, or JSON.")
          "cpp-" version "/msgpack-" version ".tar.gz"))
        (snippet
         '(let ((p (open-file "msgpack.pc.in" "a")))
-           (begin
-             (display
-              (string-append "Requires: " "zlib" "\n") p)
-             (close-output-port p))))
+           (display
+            (string-append "Requires: " "zlib" "\n") p)
+           (close-output-port p)
+           #t))
        (sha256
         (base32
          "18hzmyfg3mvnp7ab03nqdzzvqagkl42gygjpi4zv4i7aca2dmwf0"))))

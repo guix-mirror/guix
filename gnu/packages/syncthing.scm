@@ -39,8 +39,9 @@
                 "0nv5g9ymykl4316l2g3mnac77y2rx9ps4j2kg3pymxlq6qms2dij"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
-              (snippet
-                '(delete-file-recursively "vendor"))))
+              (snippet '(begin
+                          (delete-file-recursively "vendor")
+                          #t))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size

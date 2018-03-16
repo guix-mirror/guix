@@ -184,7 +184,8 @@ and many other languages.")
               ;; setup.py tries to keep its own license the same as wxwidget's
               ;; license (which it expects under $WXWIN/docs).
               (("'preamble.txt', 'licence.txt', 'licendoc.txt', 'lgpl.txt'")
-                ""))))))
+               ""))
+            #t))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2

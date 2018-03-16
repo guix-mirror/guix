@@ -394,9 +394,11 @@ Ethernet devices.")
                 "045cbsq9ps32j24v8y5hpyqxnqn9mpaf3mgvirlhgpqyb9jsia0c"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Main.h"
-                  (("#include <stdio.h>")
-                   "#include <stdio.h>\n#include <stdlib.h>")))))
+               '(begin
+                  (substitute* "Main.h"
+                    (("#include <stdio.h>")
+                     "#include <stdio.h>\n#include <stdlib.h>"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                                ; no "check" target

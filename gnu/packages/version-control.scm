@@ -391,7 +391,9 @@ everything from small to very large projects with speed and efficiency.")
               (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))
 
               ;; Remove bundled software.
-              (snippet '(delete-file-recursively "deps"))
+              (snippet '(begin
+                          (delete-file-recursively "deps")
+                          #t))
               (modules '((guix build utils)))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
@@ -1716,7 +1718,8 @@ be served with a HTTP file server of your choice.")
              (("__TIME__") "\"00:00:00\""))
            (substitute* "src/impossible.h"
              (("__DATE__") "\"\"")
-             (("__TIME__") "\"\""))))))
+             (("__TIME__") "\"\""))
+           #t))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"

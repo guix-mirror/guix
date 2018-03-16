@@ -239,7 +239,8 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
                      "")
                     ;; Replace the call to 'sd_booted' by the truth value.
                     (("sd_booted\\(\\)")
-                     "1"))))))
+                     "1"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -462,26 +463,28 @@ embedded kernel situations.")
                                  "cool-retro-term-memory-leak-1.patch"))
                 (modules '((guix build utils)))
                 (snippet
-                 '(for-each (lambda (font)
-                              (delete-file-recursively
-                               (string-append "app/qml/fonts/" font))
-                              (substitute* '("app/qml/resources.qrc")
-                                (((string-append "<file>fonts/" font ".*"))
-                                 "")))
-                            '(;"1971-ibm-3278"     ; BSD 3-clause
-                              "1977-apple2"        ; Non-Free
-                              "1977-commodore-pet" ; Non-Free
-                              "1979-atari-400-800" ; Non-Free
-                              "1982-commodore64"   ; Non-Free
-                              "1985-atari-st"      ; ?
-                              "1985-ibm-pc-vga"    ; Unclear
-                              ;"modern-fixedsys-excelsior" ; Redistributable
-                              ;"modern-hermit"     ; SIL
-                              ;"modern-inconsolata"; SIL
-                              ;"modern-pro-font-win-tweaked" ; X11
-                              ;"modern-proggy-tiny"; X11
-                              ;"modern-terminus"   ; SIL
-                              "modern-monaco"))))) ; Apple non-free
+                 '(begin
+                    (for-each (lambda (font)
+                                (delete-file-recursively
+                                 (string-append "app/qml/fonts/" font))
+                                (substitute* '("app/qml/resources.qrc")
+                                  (((string-append "<file>fonts/" font ".*"))
+                                   "")))
+                              '(;;"1971-ibm-3278"             ; BSD 3-clause
+                                "1977-apple2"                 ; Non-Free
+                                "1977-commodore-pet"          ; Non-Free
+                                "1979-atari-400-800"          ; Non-Free
+                                "1982-commodore64"            ; Non-Free
+                                "1985-atari-st"               ; ?
+                                "1985-ibm-pc-vga"             ; Unclear
+                                ;;"modern-fixedsys-excelsior" ; Redistributable
+                                ;;"modern-hermit"             ; SIL
+                                ;;"modern-inconsolata"        ; SIL
+                                ;;"modern-pro-font-win-tweaked" ; X11
+                                ;;"modern-proggy-tiny"        ; X11
+                                ;;"modern-terminus"           ; SIL
+                                "modern-monaco"))             ; Apple non-free
+                    #t))))
       (build-system gnu-build-system)
       (inputs
        `(("qtbase" ,qtbase)

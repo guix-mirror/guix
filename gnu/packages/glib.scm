@@ -306,8 +306,10 @@ dynamic loading, and an object system.")
               (base32 "1y50pbn5qqbcv2h9rkz96wvv5jls2gma9bkqjq6wapmaszx5jw0d"))
              (modules '((guix build utils)))
              (snippet
-              '(substitute* "tools/g-ir-tool-template.in"
-                 (("#!/usr/bin/env @PYTHON@") "#!@PYTHON@")))
+              '(begin
+                 (substitute* "tools/g-ir-tool-template.in"
+                   (("#!/usr/bin/env @PYTHON@") "#!@PYTHON@"))
+                 #t))
              (patches (search-patches
                        "gobject-introspection-cc.patch"
                        "gobject-introspection-girepository.patch"

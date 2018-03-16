@@ -79,7 +79,8 @@
                   ;; output directory, not CUPS's prefix.
                   (substitute* "configure"
                     (("\\{CUPS_DATADIR\\}/data")
-                     "{prefix}/share/cups/data"))))))
+                     "{prefix}/share/cups/data"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output))
@@ -381,8 +382,10 @@ device-specific programs to convert and print many types of files.")
               (modules '((guix build utils)))
               (snippet
                ;; Fix type mismatch.
-               '(substitute* "prnt/hpcups/genPCLm.cpp"
-                  (("boolean") "bool")))))
+               '(begin
+                  (substitute* "prnt/hpcups/genPCLm.cpp"
+                    (("boolean") "bool"))
+                  #t))))
     (build-system gnu-build-system)
     (home-page "http://hplipopensource.com/")
     (synopsis "HP Printer Drivers")

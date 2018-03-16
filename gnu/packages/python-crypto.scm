@@ -563,7 +563,8 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
        (uri (pypi-uri "PyNaCl" version))
        (modules '((guix build utils)))
        ;; Remove bundled libsodium
-       (snippet '(delete-file-recursively "src/libsodium"))
+       (snippet '(begin (delete-file-recursively "src/libsodium")
+                        #t))
        (sha256
         (base32
          "135gz0020fqx8fbr9izpwyq49aww202nkqacq0cw61xz99sjpx9j"))))

@@ -539,7 +539,8 @@ data.")
 
                  ;; Don't try to build with -Werror.
                  (substitute* (find-files "." "Makefile\\.in")
-                   (("-Werror") ""))))))
+                   (("-Werror") ""))
+                 #t))))
     (build-system gnu-build-system)
     (arguments '(#:parallel-build? #f
                  #:parallel-tests? #f))
@@ -575,7 +576,8 @@ It aims to conform to RFC 7159.")
 
                  ;; Don't try to build with -Werror.
                  (substitute* (find-files "." "Makefile\\.in")
-                   (("-Werror") ""))))))))
+                   (("-Werror") ""))
+                 #t))))))
 
 (define-public qjson
   (package
@@ -4836,10 +4838,10 @@ config files---you only have to specify the www root.")
                (base32
                 "1w84y61f3ldg2f28q6qlyr1scn3mcx0bsbq3i5xi5w193wh3xa2q"))
               (modules '((guix build utils)))
-              (snippet
-               '(substitute* "src/error.h"
-                  (("__DATE__") "\"1970-01-01\"")
-                  (("__TIME__") "\"00:00:00\"")))))
+              (snippet '(begin
+                          (substitute* "src/error.h"
+                            (("__DATE__") "\"1970-01-01\"")
+                            (("__TIME__") "\"00:00:00\""))))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add dependency on geoip-tools.
@@ -4869,9 +4871,9 @@ on the fly.")
         (base32
          "0mn5s6p68n32xzadz6ds5i6bp44dyxzkq68r1yljlv470jr84bql"))
        (modules '((guix build utils)))
-       (snippet
-        ;; Remove non-free IETF RFC documentation.
-        '(delete-file-recursively "doc"))))
+       (snippet '(begin
+                   ;; Remove non-free IETF RFC documentation.
+                   (delete-file-recursively "doc")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -5005,9 +5007,10 @@ functions of Tidy.")
        (uri (string-append "https://www.hiawatha-webserver.org/files/"
                            "hiawatha-" version ".tar.gz"))
        (modules '((guix build utils)))
-       (snippet
-        ;; We use our packaged mbedtls, so delete the included copy.
-        '(delete-file-recursively "mbedtls"))
+       (snippet '(begin
+                   ;; We use our packaged mbedtls, so delete the included copy.
+                   (delete-file-recursively "mbedtls")
+                   #t))
        (sha256
         (base32
          "0x2zfc8kc6c7rl4gwymwmg13w1c60biv6c6c9fvzpnl59bc9jgin"))))

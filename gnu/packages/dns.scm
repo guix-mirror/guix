@@ -176,7 +176,9 @@ high-volume and high-reliability applications. The name BIND stands for
               (snippet
                ;; Delete bundled libltdl. XXX: This package also bundles
                ;; a modified libevent that cannot currently be removed.
-               '(delete-file-recursively "libltdl"))))
+               '(begin
+                  (delete-file-recursively "libltdl")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

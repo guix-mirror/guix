@@ -147,9 +147,11 @@ secure manner through client-server mutual authentication via tickets.")
                                        "heimdal-CVE-2017-11103.patch"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "configure"
-                  (("User=.*$") "User=Guix\n")
-                  (("Date=.*$") "Date=2017\n")))))
+               '(begin
+                  (substitute* "configure"
+                    (("User=.*$") "User=Guix\n")
+                    (("Date=.*$") "Date=2017\n"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list

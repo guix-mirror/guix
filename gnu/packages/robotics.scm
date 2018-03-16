@@ -91,10 +91,12 @@ hundred times faster than real-time.")
                 (modules '((guix build utils)))
                 (snippet
                  ;; Add missing Qt5::Network.
-                 '(substitute* "targets/playground/CMakeLists.txt"
-                    (("target_link_libraries(.*)\\$\\{EXTRA_LIBS\\}" _ middle)
-                     (string-append "target_link_libraries" middle
-                                    " Qt5::Network ${EXTRA_LIBS}"))))))
+                 '(begin
+                    (substitute* "targets/playground/CMakeLists.txt"
+                      (("target_link_libraries(.*)\\$\\{EXTRA_LIBS\\}" _ middle)
+                       (string-append "target_link_libraries" middle
+                                      " Qt5::Network ${EXTRA_LIBS}")))
+                    #t))))
       (build-system cmake-build-system)
       (arguments
        '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))

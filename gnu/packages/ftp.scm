@@ -112,7 +112,8 @@ reliability in mind.")
                   ;; This is free software, avoid any confusion.
                   (substitute* (find-files "." "\\.c$")
                     (("a freeware program")
-                     "free software"))))))
+                     "free software"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

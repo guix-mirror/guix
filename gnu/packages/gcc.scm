@@ -370,13 +370,15 @@ Go.  It also includes runtime support libraries for these languages.")
               ;; This is required for building with glibc-2.26.
               ;; https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81712
               (snippet
-               '(for-each
-                  (lambda (dir)
-                    (substitute* (string-append "libgcc/config/"
-                                                dir "/linux-unwind.h")
-                      (("struct ucontext") "ucontext_t")))
-                  '("aarch64" "alpha" "bfin" "i386" "m68k"
-                    "pa" "sh" "tilepro" "xtensa")))))
+               '(begin
+                  (for-each
+                   (lambda (dir)
+                     (substitute* (string-append "libgcc/config/"
+                                                 dir "/linux-unwind.h")
+                       (("struct ucontext") "ucontext_t")))
+                   '("aarch64" "alpha" "bfin" "i386" "m68k"
+                     "pa" "sh" "tilepro" "xtensa"))
+                  #t))))
     (supported-systems %supported-systems)
     (inputs
      `(("isl" ,isl-0.11)
@@ -402,13 +404,15 @@ Go.  It also includes runtime support libraries for these languages.")
               ;; This is required for building with glibc-2.26.
               ;; https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81712
               (snippet
-               '(for-each
-                  (lambda (dir)
-                    (substitute* (string-append "libgcc/config/"
-                                                dir "/linux-unwind.h")
-                      (("struct ucontext") "ucontext_t")))
-                  '("aarch64" "alpha" "bfin" "i386" "m68k" "nios2"
-                    "pa" "sh" "tilepro" "xtensa")))))
+               '(begin
+                  (for-each
+                   (lambda (dir)
+                     (substitute* (string-append "libgcc/config/"
+                                                 dir "/linux-unwind.h")
+                       (("struct ucontext") "ucontext_t")))
+                   '("aarch64" "alpha" "bfin" "i386" "m68k" "nios2"
+                     "pa" "sh" "tilepro" "xtensa"))
+                  #t))))
     ;; Override inherited texinfo-5 with latest version.
     (native-inputs `(("perl" ,perl)   ;for manpages
                      ("texinfo" ,texinfo)))))
@@ -440,9 +444,11 @@ Go.  It also includes runtime support libraries for these languages.")
                ;;
                ;;   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=67590
                ;;   http://cgit.openembedded.org/openembedded-core/commit/?id=f6e47aa9b12f9ab61530c40e0343f451699d9077
-               '(substitute* "libcc1/configure"
-                  (("\\$gcc_cv_objdump -T")
-                   "$OBJDUMP_FOR_TARGET -T")))))
+               '(begin
+                  (substitute* "libcc1/configure"
+                    (("\\$gcc_cv_objdump -T")
+                     "$OBJDUMP_FOR_TARGET -T"))
+                  #t))))
     (inputs
      `(("isl" ,isl)
        ,@(package-inputs gcc-4.7)))))
@@ -468,13 +474,15 @@ Go.  It also includes runtime support libraries for these languages.")
               ;; This can be removed when gcc-6.5.0 is released.
               ;; https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81712
               (snippet
-               '(for-each
-                  (lambda (dir)
-                    (substitute* (string-append "libgcc/config/"
-                                                dir "/linux-unwind.h")
-                      (("struct ucontext") "ucontext_t")))
-                  '("aarch64" "alpha" "bfin" "i386" "m68k" "nios2"
-                    "pa" "sh" "tilepro" "xtensa")))))
+               '(begin
+                  (for-each
+                   (lambda (dir)
+                     (substitute* (string-append "libgcc/config/"
+                                                 dir "/linux-unwind.h")
+                       (("struct ucontext") "ucontext_t")))
+                   '("aarch64" "alpha" "bfin" "i386" "m68k" "nios2"
+                     "pa" "sh" "tilepro" "xtensa"))
+                  #t))))
     (inputs
      `(("isl" ,isl)
        ,@(package-inputs gcc-4.7)))))

@@ -144,9 +144,11 @@ rates.")
              (snippet
               ;; Disable console-kit support by default since it's deprecated
               ;; anyway.
-              '(substitute* "src/daemon/default.pa.in"
-                 (("load-module module-console-kit" all)
-                  (string-append "#" all "\n"))))
+              '(begin
+                 (substitute* "src/daemon/default.pa.in"
+                   (("load-module module-console-kit" all)
+                    (string-append "#" all "\n")))
+                 #t))
              (patches (search-patches
                        "pulseaudio-fix-mult-test.patch"
                        "pulseaudio-longer-test-timeout.patch"))))

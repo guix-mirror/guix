@@ -169,9 +169,11 @@ interactive dialogs to guide them.")
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
-        '(for-each (lambda (d)
-                     (delete-file-recursively (string-append "libcoda/" d)))
-                   '("zlib" "pcre" "expat")))))
+        '(begin
+           (for-each (lambda (d)
+                       (delete-file-recursively (string-append "libcoda/" d)))
+                     '("zlib" "pcre" "expat"))
+           #t))))
     (native-inputs
      `(("fortran" ,gfortran)
        ("python" ,python)
@@ -819,7 +821,8 @@ extremely large and complex data collections.")
           (for-each delete-file
                     (list "SZip.tar.gz" "ZLib.tar.gz" "JPEG8d.tar.gz"
                           "HDF4.tar.gz" "HDF5.tar.gz"))
-          (delete-file-recursively ,(string-append "hdfjava-" version "/lib"))))))
+          (delete-file-recursively ,(string-append "hdfjava-" version "/lib"))
+          #t))))
    (build-system gnu-build-system)
    (native-inputs
     `(("jdk" ,icedtea "jdk")
@@ -1222,7 +1225,9 @@ online as well as original implementations of various other algorithms.")
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
-               '(delete-file-recursively "ThirdParty"))))
+               '(begin
+                  (delete-file-recursively "ThirdParty")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1446,7 +1451,9 @@ Open CASCADE library.")
       (modules '((guix build utils)))
       (snippet
        ;; Remove non-free METIS code
-       '(delete-file-recursively "contrib/Metis"))))
+       '(begin
+          (delete-file-recursively "contrib/Metis")
+          #t))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("fltk" ,fltk)
@@ -1980,7 +1987,8 @@ void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
                    (let ((line (read-line in 'concat)))
                     (unless (regexp-exec rx line)
                       (display line out)
-                      (loop)))))))))))
+                      (loop))))
+                 #t)))))))
     (build-system cmake-build-system)
     (native-inputs
      `(("tcsh" ,tcsh)))
@@ -2038,7 +2046,8 @@ void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
            (delete-file "SRC/mc64ad.f.bak")
            (substitute* "SRC/util.c"    ;adjust default algorithm
              (("RowPerm[[:blank:]]*=[[:blank:]]*LargeDiag")
-              "RowPerm = NOROWPERM"))))
+              "RowPerm = NOROWPERM"))
+           #t))
        (patches (search-patches "superlu-dist-scotchmetis.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2887,7 +2896,9 @@ Fresnel integrals, and similar related functions as well.")
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled metis source
-        '(delete-file-recursively "metis-5.1.0"))))
+        '(begin
+           (delete-file-recursively "metis-5.1.0")
+           #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f  ;no "check" target
@@ -3083,19 +3094,21 @@ specifications.")
         "12pj1idjz31r7c2mb5w03vy1cmvycvbkx9z29s40qdmkp1i7q6i0"))
       (modules '((guix build utils)))
       (snippet
-       '(substitute* (list "lp_solve/ccc" "lpsolve55/ccc")
-          (("^c=cc") "c=gcc")
-          ;; Pretend to be on a 64 bit platform to obtain a common directory
-          ;; name for the build results on all architectures; nothing else
-          ;; seems to depend on it.
-          (("^PLATFORM=.*$") "PLATFORM=ux64\n")
+       '(begin
+          (substitute* (list "lp_solve/ccc" "lpsolve55/ccc")
+            (("^c=cc") "c=gcc")
+            ;; Pretend to be on a 64 bit platform to obtain a common directory
+            ;; name for the build results on all architectures; nothing else
+            ;; seems to depend on it.
+            (("^PLATFORM=.*$") "PLATFORM=ux64\n")
 
-          ;; The check for 'isnan' as it is written fails with
-          ;; "non-floating-point argument in call to function
-          ;; ‘__builtin_isnan’", which leads to the 'NOISNAN' cpp macro
-          ;; definition, which in turn leads to bad things.  Fix the feature
-          ;; test.
-          (("isnan\\(0\\)") "isnan(0.)")))))
+            ;; The check for 'isnan' as it is written fails with
+            ;; "non-floating-point argument in call to function
+            ;; ‘__builtin_isnan’", which leads to the 'NOISNAN' cpp macro
+            ;; definition, which in turn leads to bad things.  Fix the feature
+            ;; test.
+            (("isnan\\(0\\)") "isnan(0.)"))
+          #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -3153,7 +3166,9 @@ revised simplex and the branch-and-bound methods.")
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
-        '(delete-file-recursively "bundled"))))
+        '(begin
+           (delete-file-recursively "bundled")
+           #t))))
     (build-system cmake-build-system)
     (inputs
      `(("tbb" ,tbb)

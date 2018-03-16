@@ -100,7 +100,8 @@
                 ;; in OCaml's directory in the store, which is read-only.
                 (substitute* "Makefile"
                   (("--prefix")
-                   "--libdir $(LIBDIR) --prefix")))))))
+                   "--libdir $(LIBDIR) --prefix"))
+                #t)))))
 
 ;; They also require almost the same set of arguments
 (define janestreet-arguments
@@ -781,7 +782,8 @@ libpanel, librsvg and quartz.")
             ;; Without the '-fix' argument, the html file produced does not
             ;; have functioning internal hyperlinks.
             (substitute* "doc/Makefile"
-              (("hevea unison") "hevea -fix unison"))))))
+              (("hevea unison") "hevea -fix unison"))
+            #t))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                  ; 1.9 MiB of documentation
@@ -2196,17 +2198,19 @@ file (POSIX like) and filename.")
                 "1ln7vc7ip6s5xbi20mhnn087xi4a2m5vqawx0703qqnfkzhmslqy"))
             (modules '((guix build utils)))
             (snippet
-             '(substitute* "test/test-main/Test.ml"
-                ;; most of these tests fail because ld cannot find crti.o, but according
-                ;; to the log file, the environment variables {LD_,}LIBRARY_PATH
-                ;; are set correctly whene LD_LIBRARY_PATH is defined beforhand.
-                (("TestBaseCompat.tests;") "")
-                (("TestExamples.tests;") "")
-                (("TestFull.tests;") "")
-                (("TestPluginDevFiles.tests;") "")
-                (("TestPluginInternal.tests;") "")
-                (("TestPluginOCamlbuild.tests;") "")
-                (("TestPluginOMake.tests;") "")))))
+             '(begin
+                (substitute* "test/test-main/Test.ml"
+                  ;; most of these tests fail because ld cannot find crti.o, but according
+                  ;; to the log file, the environment variables {LD_,}LIBRARY_PATH
+                  ;; are set correctly whene LD_LIBRARY_PATH is defined beforhand.
+                  (("TestBaseCompat.tests;") "")
+                  (("TestExamples.tests;") "")
+                  (("TestFull.tests;") "")
+                  (("TestPluginDevFiles.tests;") "")
+                  (("TestPluginInternal.tests;") "")
+                  (("TestPluginOCamlbuild.tests;") "")
+                  (("TestPluginOMake.tests;") ""))
+                #t))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlify" ,ocamlify)

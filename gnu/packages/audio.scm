@@ -209,7 +209,8 @@ streams from live audio.")
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port ,(string-append "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
+namespace ARDOUR { const char* revision = \"" version "\" ; }"))
+                    #t)))
               (sha256
                (base32
                 "0mla5lm51ryikc2rrk53max2m7a5ds6i1ai921l2h95wrha45nkr"))
@@ -510,7 +511,9 @@ tools (analyzer, mono/stereo tools, crossovers).")
               (modules '((guix build utils)))
               (snippet
                ;; remove prebuilt binaries
-               '(delete-file-recursively "linux_32bit"))))
+               '(begin
+                  (delete-file-recursively "linux_32bit")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
@@ -2745,8 +2748,10 @@ result.")
                     version ".tar.bz2"))
               (snippet
                ;; Don't optimize for a specific processor architecture.
-               '(substitute* "libs/Makefile"
-                  (("^CXXFLAGS \\+= -march=native") "")))
+               '(begin
+                  (substitute* "libs/Makefile"
+                    (("^CXXFLAGS \\+= -march=native") ""))
+                  #t))
               (modules '((guix build utils)))
               (sha256
                (base32
@@ -2790,8 +2795,10 @@ engine.")
                     version ".tar.bz2"))
               (snippet
                ;; Don't optimize for a specific processor architecture.
-               '(substitute* '("apps/Makefile" "libs/Makefile")
-                  (("^CXXFLAGS \\+= -march=native") "")))
+               '(begin
+                  (substitute* '("apps/Makefile" "libs/Makefile")
+                    (("^CXXFLAGS \\+= -march=native") ""))
+                  #t))
               (modules '((guix build utils)))
               (sha256
                (base32

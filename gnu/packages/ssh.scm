@@ -479,7 +479,8 @@ basis for almost any application.")
                     (("localhost") "127.0.0.1"))
 
                   (substitute* "src/testsuite/login-auth-test"
-                    (("/bin/cat") "cat"))))))
+                    (("/bin/cat") "cat"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("m4" ,m4)

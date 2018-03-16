@@ -54,9 +54,11 @@
               (modules '((guix build utils)))
               (snippet
                ;; Ensure reproducibility.
-               '(substitute* (find-files "cgi" "\\.c$")
-                  (("__DATE__") "\"1970-01-01\"")
-                  (("__TIME__") "\"00:00:00\"")))))
+               '(begin
+                  (substitute* (find-files "cgi" "\\.c$")
+                    (("__DATE__") "\"1970-01-01\"")
+                    (("__TIME__") "\"00:00:00\""))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

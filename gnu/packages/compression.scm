@@ -920,10 +920,11 @@ tarballs.")
                  (base32
                   "1qxxsasvwbbbh6dl3138y9h3fg0q2v7xdk5jjc690bdg7g1wrj6n"))
                 (modules '((guix build utils)))
-                (snippet
-                 ;; This is a recursive submodule that is unnecessary for this
-                 ;; package, so delete it.
-                 '(delete-file-recursively "brotli/terryfy"))))
+                (snippet '(begin
+                            ;; This is a recursive submodule that is
+                            ;; unnecessary for this package, so delete it.
+                            (delete-file-recursively "brotli/terryfy")
+                            #t))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -982,7 +983,9 @@ respectively, based on the reference implementation from Google.")
        (file-name (string-append name "-" version ".tar.gz"))
        (snippet
         ;; This file isn't freely distributable and has no effect on building.
-        '(delete-file "xdelta3/draft-korn-vcdiff.txt"))))
+        '(begin
+           (delete-file "xdelta3/draft-korn-vcdiff.txt")
+           #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1450,7 +1453,9 @@ handles the 7z format which features very high compression ratios.")
                 (modules '((guix build utils)))
                 (snippet
                  ;; Remove pre-compiled object.
-                 '(delete-file "gzstream.o"))))
+                 '(begin
+                    (delete-file "gzstream.o")
+                    #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -1487,7 +1492,9 @@ functionality in a C++ iostream.")
        (modules '((guix build utils)))
        (snippet
         ;; Delete irrelevant pre-compiled binaries.
-        '(for-each delete-file (find-files "." "\\.exe$")))))
+        '(begin
+           (for-each delete-file (find-files "." "\\.exe$"))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

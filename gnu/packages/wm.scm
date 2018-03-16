@@ -673,16 +673,17 @@ experience.")
                "0kwpbls9h1alxcmvxh5g9qb995fds5b2ngcr44w0ibazkyls2pdc"))
              (modules '((guix build utils)
                         (srfi srfi-19)))
-             (snippet
-              ;; Remove non-reproducible timestamp and use the date of the
-              ;; source file instead.
-              '(substitute* "common/version.c"
-                 (("__DATE__ \" \" __TIME__")
-                  (date->string
-                   (time-utc->date
-                    (make-time time-utc 0
-                               (stat:mtime (stat "awesome.c"))))
-                   "\"~c\""))))
+             (snippet '(begin
+                         ;; Remove non-reproducible timestamp and use the date
+                         ;; of the source file instead.
+                         (substitute* "common/version.c"
+                           (("__DATE__ \" \" __TIME__")
+                            (date->string
+                             (time-utc->date
+                              (make-time time-utc 0
+                                         (stat:mtime (stat "awesome.c"))))
+                             "\"~c\"")))
+                         #t))
              (patches (search-patches "awesome-reproducible-png.patch"))))
     (build-system cmake-build-system)
     (native-inputs `(("asciidoc" ,asciidoc)

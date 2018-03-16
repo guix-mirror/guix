@@ -435,7 +435,8 @@ applications.")
                                 (string-append "src/third_party/" dir)))
                             '("pcre-8.41" "scons-2.5.0" "snappy-1.1.3"
                               "valgrind-3.11.0" "wiredtiger"
-                              "yaml-cpp-0.5.3" "zlib-1.2.8"))))
+                              "yaml-cpp-0.5.3" "zlib-1.2.8"))
+                  #t))
               (patches
                (list
                 (search-patch "mongodb-support-unknown-linux-distributions.patch")))))
@@ -1932,10 +1933,12 @@ etc., and an SQL engine for performing simple SQL queries.")
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled lmdb source files.
-               '(for-each delete-file (list "lib/lmdb.h"
-                                            "lib/mdb.c"
-                                            "lib/midl.c"
-                                            "lib/midl.h")))))
+               '(begin
+                  (for-each delete-file (list "lib/lmdb.h"
+                                              "lib/mdb.c"
+                                              "lib/midl.c"
+                                              "lib/midl.h"))
+                  #t))))
     (build-system python-build-system)
     (inputs
      `(("lmdb" ,lmdb)))

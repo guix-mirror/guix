@@ -202,7 +202,8 @@ removable devices or support for multimedia.")
                                  "data/themes/Makefile.am"
                                  "data/themes/nyanology/Makefile.in"
                                  "data/themes/nyanology/Makefile.am")
-                    (("-fd \\$\\(top_srcdir\\)/data/fonts") ""))))))
+                    (("-fd \\$\\(top_srcdir\\)/data/fonts") ""))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

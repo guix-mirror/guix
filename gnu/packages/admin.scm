@@ -893,13 +893,15 @@ at once based on a Perl regular expression.")
                 "0751mb9l2f0jrk3vj6q8ilanifd121dliwk0c34g8k0dlzsv3kd7"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile.in"
-                  (("-o \\$\\{LOG_OWN\\} -g \\$\\{LOG_GROUP\\}")
-                   ;; Don't try to chown root.
-                   "")
-                  (("mkdir -p \\$\\(ROTT_STATDIR\\)")
-                   ;; Don't attempt to create /var/lib/rottlog.
-                   "true")))))
+               '(begin
+                  (substitute* "Makefile.in"
+                    (("-o \\$\\{LOG_OWN\\} -g \\$\\{LOG_GROUP\\}")
+                     ;; Don't try to chown root.
+                     "")
+                    (("mkdir -p \\$\\(ROTT_STATDIR\\)")
+                     ;; Don't attempt to create /var/lib/rottlog.
+                     "true"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "ROTT_ETCDIR=/etc/rottlog" ;rc file location
@@ -963,7 +965,9 @@ system administrator.")
                 "00pxp74xkwdcmrjwy55j0k8p684jk1zx3nzdc11v30q8q8kwnmkj"))
               (modules '((guix build utils)))
               (snippet
-               '(delete-file-recursively "lib/zlib"))))
+               '(begin
+                  (delete-file-recursively "lib/zlib")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1357,9 +1361,11 @@ environment variable is set and output is to tty.")
                (base32
                 "1nwvjmx7kb14ni34c0b8x9a3791pc20gvhj7xaj66d8q4h6n0qf4"))
               (modules '((guix build utils)))
-              (snippet '(substitute* "tests/testsuite"
-                          (("#![[:blank:]]?/bin/sh")
-                           "#!$SHELL")))))
+              (snippet '(begin
+                          (substitute* "tests/testsuite"
+                            (("#![[:blank:]]?/bin/sh")
+                             "#!$SHELL"))
+                          #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1747,14 +1753,16 @@ done with the @code{auditctl} utility.")
                 "08bga42ipymmbxd7wy4x5sl26c0ir1fm3n9rc6nqmhx69z66wyd8"))
               (modules '((guix build utils)))
               (snippet
-               '(map delete-file-recursively
-                 ;; Remove bundled lua, pcap, and pcre libraries.
-                 ;; FIXME: Remove bundled liblinear once packaged.
-                 '("liblua"
-                   "libpcap"
-                   "libpcre"
-                   ;; Remove pre-compiled binares.
-                   "mswin32")))))
+               '(begin
+                  (for-each delete-file-recursively
+                            ;; Remove bundled lua, pcap, and pcre libraries.
+                            ;; FIXME: Remove bundled liblinear once packaged.
+                            '("liblua"
+                              "libpcap"
+                              "libpcre"
+                              ;; Remove pre-compiled binares.
+                              "mswin32"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)
@@ -2055,7 +2063,9 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
        (snippet
         ;; Remove binaries contained in the tarball which are only for the
         ;; target and can be regenerated anyway.
-        '(delete-file-recursively "bin"))
+        '(begin
+           (delete-file-recursively "bin")
+           #t))
        (file-name (string-append name "-" version ".tar.gz"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)

@@ -81,7 +81,8 @@
          '(begin
             (delete-file-recursively "data/scripts")
             (substitute* "data/CMakeLists.txt"
-              (("NOT WIN32") "WIN32"))))))
+              (("NOT WIN32") "WIN32"))
+            #t))))
     (build-system cmake-build-system)
     (arguments
       ;; The three binaries are not mutually exlusive, and are all built

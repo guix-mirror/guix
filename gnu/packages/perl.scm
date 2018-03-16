@@ -7489,7 +7489,8 @@ TODO: {
     local $TODO = \"/proc/cpuinfo doesn't always report 'model name' or 'machine' ...\";
     $type = &Sys::CPU::cpu_type();
     ok( defined($type), \"CPU Type:  $type\" );
-}~%")))))))
+}~%")))
+                  #t))))
     (build-system perl-build-system)
     (synopsis "Perl extension for getting CPU information")
     (description

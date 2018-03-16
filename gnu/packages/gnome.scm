@@ -5021,7 +5021,8 @@ users.")
                  (substitute* "src/nm-session-monitor.c"
                    (("systemd") "elogind"))
                  (substitute* "./src/nm-logging.c"
-                   (("systemd") "elogind"))))))
+                   (("systemd") "elogind"))
+                 #t))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML

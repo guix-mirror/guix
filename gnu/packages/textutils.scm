@@ -93,10 +93,9 @@ to DOS format and vice versa.")
         (base32
          "0r4yhf7i7zp2nl2apyzz7r3i2in12n385hmr8zcfr18ly0ly530q"))
        (modules '((guix build utils)))
-       (snippet
-        `(begin
-           (delete-file "tests/Recode.c")
-           #t))))
+       (snippet '(begin
+                   (delete-file "tests/Recode.c")
+                   #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)

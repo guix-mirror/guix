@@ -155,7 +155,8 @@ printing, and psresize, for adjusting page sizes.")
          '(begin
             (for-each delete-file-recursively '("freetype" "jbig2dec" "jpeg"
                                                 "lcms2" "libpng"
-                                                "tiff" "zlib"))))))
+                                                "tiff" "zlib"))
+            #t))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))                  ;19 MiB of HTML/PS doc + examples
     (arguments

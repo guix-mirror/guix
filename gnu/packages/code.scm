@@ -414,7 +414,8 @@ functionality such as HTML output.")
            (let ((files (find-files "." ".*\\.cpp|.*\\.h")))
              (substitute* files
                (("#include ?\"rct/(.*.h)\"" all header)
-                (string-append "#include <rct/" header ">"))))))
+                (string-append "#include <rct/" header ">")))
+             #t)))
        (sha256
         (base32
          "0scjbp1z201q8njvrxqz7lk2m9b6k2rxd5q1shrng6532r7ndif2"))))

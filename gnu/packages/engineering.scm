@@ -329,7 +329,9 @@ featuring various improvements and bug fixes.")))
                 "0x37vfp6k0d2z3gnig0hbicvi0jp8v267xjnn3z8jdllpiaa6p3k"))
               (snippet
                ;; Remove a non-free file.
-               '(delete-file "doc/psfig.sty"))
+               '(begin
+                  (delete-file "doc/psfig.sty")
+                  #t))
               (patches (search-patches "fastcap-mulSetup.patch"
                                        "fastcap-mulGlobal.patch"))))
     (build-system gnu-build-system)
@@ -592,7 +594,8 @@ as well as pick-place files.")
                     ;; Use #include <catch.hpp>.
                     (substitute* (find-files "." "\\.[ch]pp$")
                       (("catch/catch\\.hpp")
-                       "catch.hpp"))))))
+                       "catch.hpp"))
+                    #t))))
       (build-system cmake-build-system)
       (arguments
        `(;; Have the RUNPATH of libao.so point to $libdir, where libefsw.so
@@ -1152,7 +1155,8 @@ bindings for Python, Java, OCaml and more.")
                   (substitute* "libr/parse/p/Makefile"
                     (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
                   (substitute* "libr/bin/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))))))
+                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f; tests require git and network access
@@ -1257,7 +1261,8 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
                     (("src/ciderlib/input/Makefile") "")
                     (("src/ciderlib/support/Makefile") "")
                     (("src/ciderlib/oned/Makefile") "")
-                    (("src/ciderlib/twod/Makefile") ""))))))
+                    (("src/ciderlib/twod/Makefile") ""))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(;; No tests for libngspice exist.

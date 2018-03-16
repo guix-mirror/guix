@@ -295,9 +295,10 @@ BAM files.")
                 "0093hkkvxmbwfaa7905s6185jymynvg42kq6sxv7fili11l5mxwz"))
               (patches (search-patches "bcftools-regidx-unsigned-char.patch"))
               (modules '((guix build utils)))
-              (snippet
-               ;; Delete bundled htslib.
-               '(delete-file-recursively "htslib-1.5"))))
+              (snippet '(begin
+                          ;; Delete bundled htslib.
+                          (delete-file-recursively "htslib-1.5")
+                          #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -1194,10 +1195,12 @@ errors at the end of reads.")
                 "0hwa5r9qbglppb7sz5z79rlmmddr3n51n468jb3wh8rwjgn3yr90"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile"
-                  ;; replace BUILD_HOST and BUILD_TIME for deterministic build
-                  (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
-                  (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))))
+               '(begin
+                  (substitute* "Makefile"
+                    ;; replace BUILD_HOST and BUILD_TIME for deterministic build
+                    (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
+                    (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\""))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl)
@@ -1391,10 +1394,12 @@ well as many of the command line options.")
                 "15z2w3bvnc0n4qmb9bd6d8ylc2h2nj883x2w9iixf4x3vki9b22i"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "setup.py"
-                  ;; remove dependency on outdated "distribute" module
-                  (("^from distribute_setup import use_setuptools") "")
-                  (("^use_setuptools\\(\\)") "")))))
+               '(begin
+                  (substitute* "setup.py"
+                    ;; remove dependency on outdated "distribute" module
+                    (("^from distribute_setup import use_setuptools") "")
+                    (("^use_setuptools\\(\\)") ""))
+                  #t))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;tests fail because test data are not included
@@ -1426,9 +1431,11 @@ multiple sequence alignments.")
                (base32
                 "0dzap2axin9cbbl0d825w294bpn00zagfm1sigamm4v2pm5bj9lp"))
               (modules '((guix build utils)))
-              (snippet
-               ;; Drop bundled htslib. TODO: Also remove samtools and bcftools.
-               '(delete-file-recursively "htslib"))))
+              (snippet '(begin
+                          ;; Drop bundled htslib. TODO: Also remove samtools
+                          ;; and bcftools.
+                          (delete-file-recursively "htslib")
+                          #t))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -1800,9 +1807,10 @@ time.")
               ;; for download from Sourceforge, but it has not been merged.
               (patches (search-patches "crossmap-allow-system-pysam.patch"))
               (modules '((guix build utils)))
-              ;; remove bundled copy of pysam
-              (snippet
-               '(delete-file-recursively "lib/pysam"))))
+              (snippet '(begin
+                          ;; remove bundled copy of pysam
+                          (delete-file-recursively "lib/pysam")
+                          #t))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -1911,7 +1919,8 @@ files.")
               (snippet
                '(begin
                   ;; Delete bundled libBigWig sources
-                  (delete-file-recursively "libBigWig")))))
+                  (delete-file-recursively "libBigWig")
+                  #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -3785,9 +3794,11 @@ sequences).")
                 "08znbvqq5xknfhmpp3wcj574zvi4p7i8zifi67c9qw9a6ikp42fj"))
               (modules '((guix build utils)))
               (snippet
-               ;; Delete bundled kseq.
-               ;; TODO: Also delete bundled murmurhash and open bloom filter.
-               '(delete-file "src/mash/kseq.h"))))
+               '(begin
+                  ;; Delete bundled kseq.
+                  ;; TODO: Also delete bundled murmurhash and open bloom filter.
+                  (delete-file "src/mash/kseq.h")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.
@@ -3965,18 +3976,19 @@ assembled metagenomic sequence.")
                (base32
                 "1z3x0vd8ma7pdrnywj7i3kgwl89sdkwrrn62zl7r5calqaq2hyip"))
               (modules '((guix build utils)))
-              (snippet
-               '(substitute* "setup.py"
-                  ;; Use setuptools, or else the executables are not
-                  ;; installed.
-                  (("distutils.core") "setuptools")
-                  ;; use "gcc" instead of "cc" for compilation
-                  (("^defines")
-                   "cc.set_executables(
+              (snippet '(begin
+                          (substitute* "setup.py"
+                            ;; Use setuptools, or else the executables are not
+                            ;; installed.
+                            (("distutils.core") "setuptools")
+                            ;; use "gcc" instead of "cc" for compilation
+                            (("^defines")
+                             "cc.set_executables(
 compiler='gcc',
 compiler_so='gcc',
 linker_exe='gcc',
-linker_so='gcc -shared'); defines")))))
+linker_so='gcc -shared'); defines"))
+                          #t))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; only Python 2 is supported
@@ -4777,7 +4789,8 @@ BAM and Wiggle files in both transcript-coordinate and genomic-coordinate.")
              (("^from distribute_setup import use_setuptools") "")
              (("^use_setuptools\\(\\)") "")
              ;; do not use bundled copy of pysam
-             (("^have_pysam = False") "have_pysam = True"))))))
+             (("^have_pysam = False") "have_pysam = True"))
+           #t))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2))
     (inputs
@@ -5333,9 +5346,10 @@ structures, classes for genomic regions, mapped sequencing reads, etc.")
               (sha256
                (base32 "08r684l50pnxjpvmhzjgqq56yv9rfw90k8vx0nsrnrzk8mf9hsdq"))
               (modules '((guix build utils)))
-              (snippet
-               ;; Remove bundled samtools.
-               '(delete-file-recursively "samtools"))))
+              (snippet '(begin
+                          ;; Remove bundled samtools.
+                          (delete-file-recursively "samtools")
+                          #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -11807,7 +11821,8 @@ bytes of memory space, where n is the length of the string.")
                     (snippet
                      '(begin (delete-file-recursively "include/spdlog")
                              (for-each delete-file '("include/xxhash.h"
-                                                     "src/xxhash.c"))))))
+                                                     "src/xxhash.c"))
+                             #t))))
        ("libdivsufsort" ,libdivsufsort)
        ("libgff" ,libgff)
        ("tbb" ,tbb)
@@ -12532,7 +12547,8 @@ contains
        (snippet
         '(begin
            (for-each delete-file (find-files "jar/lib" "\\.jar$"))
-           (delete-file-recursively "3rdParty")))))
+           (delete-file-recursively "3rdParty")
+           #t))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f                      ; test data are not included

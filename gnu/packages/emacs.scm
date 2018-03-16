@@ -148,7 +148,8 @@
                      (list line
                            "\"~/.guix-profile/include\""
                            "\"/var/guix/profiles/system/profile/include\"")
-                     " ")))))))
+                     " ")))
+                 #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -837,21 +838,23 @@ provides an optional IDE-like error list.")
                 "1b0kalhn81dir26jgsma30i5bbly7d3s1ngqpf01zjjpr7lw5v0h"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile"
-                  (("/usr/bin/install-info")
-                   ;; No need to use 'install-info' since it would create a
-                   ;; useless 'dir' file.
-                   "true")
-                  (("^INFODIR=.*")
-                   ;; Install Info files to $out/share/info, not $out/info.
-                   "INFODIR := $(PREFIX)/share/info\n")
-                  (("/site-lisp/emms")
-                   ;; Install directly in share/emacs/site-lisp, not in a
-                   ;; sub-directory.
-                   "/site-lisp")
-                  (("^all: (.*)\n" _ rest)
-                   ;; Build 'emms-print-metadata'.
-                   (string-append "all: " rest " emms-print-metadata\n"))))))
+               '(begin
+                  (substitute* "Makefile"
+                    (("/usr/bin/install-info")
+                     ;; No need to use 'install-info' since it would create a
+                     ;; useless 'dir' file.
+                     "true")
+                    (("^INFODIR=.*")
+                     ;; Install Info files to $out/share/info, not $out/info.
+                     "INFODIR := $(PREFIX)/share/info\n")
+                    (("/site-lisp/emms")
+                     ;; Install directly in share/emacs/site-lisp, not in a
+                     ;; sub-directory.
+                     "/site-lisp")
+                    (("^all: (.*)\n" _ rest)
+                     ;; Build 'emms-print-metadata'.
+                     (string-append "all: " rest " emms-print-metadata\n")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1011,9 +1014,11 @@ within a specified width.  It is useful for displaying long track titles.")
               (modules '((guix build utils)))
               (snippet
                ;; We don't want to build and install the PDF.
-               '(substitute* "doc/Makefile.in"
-                  (("^doc_DATA = .*$")
-                   "doc_DATA =\n")))))
+               '(begin
+                  (substitute* "doc/Makefile.in"
+                    (("^doc_DATA = .*$")
+                     "doc_DATA =\n"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2614,7 +2619,8 @@ to a key in your preferred mode.")
         '(begin
            (for-each delete-file '("dot-emacs.el" "Makefile"))
            (install-file "6.945-config/mit-scheme-doc.el" ".")
-           (delete-file-recursively "6.945-config")))
+           (delete-file-recursively "6.945-config")
+           #t))
        (file-name (string-append name "-" version ".tar.bz2"))
        (method url-fetch)
        (uri (string-append "http://groups.csail.mit.edu/mac/users/gjs/"
@@ -3739,7 +3745,8 @@ programming language.")
                   (substitute* "lisp/Makefile"
                     (("^\tjulia-mode.elc\\\\\n") "")
                     (("^all: \\$\\(ELC\\) ess-custom.el julia-mode.el")
-                     "all: $(ELC) ess-custom.el"))))))
+                     "all: $(ELC) ess-custom.el"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      (let ((base-directory "/share/emacs/site-lisp/guix.d/ess"))
@@ -4985,7 +4992,8 @@ mode-line.")
                   ;; warnings about a missing directory.
                   (substitute* "yasnippet.el"
                     (("^ +'yas-installed-snippets-dir\\)\\)\n")
-                     "))\n"))))))
+                     "))\n"))
+                  #t))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joaotavora/yasnippet")
     (synopsis "Yet another snippet extension for Emacs")

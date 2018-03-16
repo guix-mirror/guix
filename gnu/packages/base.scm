@@ -556,9 +556,11 @@ store.")
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
              ;; instead of ours.
-             '(substitute* "sysdeps/unix/sysv/linux/configure"
-                (("use_ldconfig=yes")
-                 "use_ldconfig=no")))
+             '(begin
+                (substitute* "sysdeps/unix/sysv/linux/configure"
+                  (("use_ldconfig=yes")
+                   "use_ldconfig=no"))
+                #t))
             (modules '((guix build utils)))
             (patches (search-patches "glibc-ldd-x86_64.patch"
                                      "glibc-versioned-locpath.patch"
@@ -1190,9 +1192,11 @@ and daylight-saving rules.")
               (snippet
                ;; Work around "declared gets" error on glibc systems (fixed by
                ;; Gnulib commit 66712c23388e93e5c518ebc8515140fa0c807348.)
-               '(substitute* "srclib/stdio.in.h"
-                  (("^#undef gets") "")
-                  (("^_GL_WARN_ON_USE \\(gets.*") "")))))
+               '(begin
+                  (substitute* "srclib/stdio.in.h"
+                    (("^#undef gets") "")
+                    (("^_GL_WARN_ON_USE \\(gets.*") ""))
+                  #t))))
     (build-system gnu-build-system)
     (synopsis "Character set conversion library")
     (description

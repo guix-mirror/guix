@@ -120,7 +120,7 @@ versions of ID3v2.")
               "0yfhqwk0w8q2hyv1jib1008jvzmwlpsxvc8qjllhna6p1hycqj97"))
             (modules '((guix build utils)))
             ;; Don't use bundled zlib
-            (snippet '(delete-file-recursively "zlib"))
+            (snippet '(begin (delete-file-recursively "zlib") #t))
             (patches (search-patches "id3lib-CVE-2007-4460.patch"))))
    (build-system gnu-build-system)
    (inputs `(("zlib" ,zlib)))
@@ -192,10 +192,12 @@ Speex, WavPack TrueAudio, WAV, AIFF, MP4 and ASF files.")
                 "042f1czcs9n2sbqvg4rsvfwlqib2gk976mfa2kxlfjghx5laqf04"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile"
-                  (("/bin/rm") "rm")
-                  (("/usr/bin/install") "install")
-                  (("man/man1") "share/man/man1")))))
+               '(begin
+                  (substitute* "Makefile"
+                    (("/bin/rm") "rm")
+                    (("/usr/bin/install") "install")
+                    (("man/man1") "share/man/man1"))
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out" "gui"))                      ;GTK+ interface in "gui"
     (arguments

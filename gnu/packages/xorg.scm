@@ -425,10 +425,12 @@ Resources file.")
     (modules '((guix build utils)))
     (snippet
      ;; Do not include timestamps in '.pcf.gz' files.
-     '(substitute* "Makefile.in"
-        (("^COMPRESS = (.*)$" _ rest)
-         (string-append "COMPRESS = " (string-trim-right rest)
-                        " --no-name\n"))))))
+     '(begin
+        (substitute* "Makefile.in"
+          (("^COMPRESS = (.*)$" _ rest)
+           (string-append "COMPRESS = " (string-trim-right rest)
+                          " --no-name\n")))
+        #t))))
 
 (define-syntax-rule (xorg-font-origin font version hash)
   "Expand to the 'origin' form for the given Xorg font package."

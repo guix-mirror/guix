@@ -145,7 +145,8 @@ system, and the core design of Django is reused in Grantlee.")
                         "qtcanvas3d/examples/canvas3d/3rdparty"))
                 ;; Tests depend on this example, which depends on the 3rd party code.
                 (substitute* "qtmultimedia/examples/multimedia/multimedia.pro"
-                  (("spectrum") "#"))))))
+                  (("spectrum") "#"))
+                #t))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
@@ -287,7 +288,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (modules '((guix build utils)))
              (snippet
               ;; Remove webkit module, which is not built.
-              '(delete-file-recursively "src/3rdparty/webkit"))))
+              '(begin (delete-file-recursively "src/3rdparty/webkit")
+                      #t))))
     (inputs `(,@(alist-delete "harfbuzz"
                               (alist-delete "libjpeg" (package-inputs qt)))
               ("libjepg" ,libjpeg-8)
@@ -686,8 +688,8 @@ HostData=lib/qt5
               (base32
                "1nfxvf96wh1smdmcsk4m9f7zg69fgp844f8772qpv6v4m20p1qb9"))
              (modules '((guix build utils)))
-             (snippet
-              '(delete-file-recursively "src/3rdparty"))))
+             (snippet '(begin (delete-file-recursively "src/3rdparty")
+                              #t))))
     (native-inputs `())
     (inputs
      `(("jasper" ,jasper)
@@ -901,7 +903,8 @@ recognition API for devices.")))
                    "examples/multimedia/spectrum/3rdparty")
                  ;; We also prevent the spectrum example from being built.
                  (substitute* "examples/multimedia/multimedia.pro"
-                   (("spectrum") "#"))))))
+                   (("spectrum") "#"))
+                 #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
@@ -947,7 +950,8 @@ set of plugins for interacting with pulseaudio and GStreamer.")))
              (modules '((guix build utils)))
              (snippet
                ;; The examples try to build and cause the build to fail
-              '(delete-file-recursively "examples"))))
+              '(begin (delete-file-recursively "examples")
+                      #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
@@ -1233,7 +1237,8 @@ coloring, and many more.")))
                "0zwch9vn17f3bpy300jcfxx6cx9qymk5j7khx0x9k1xqid4166c3"))
              (modules '((guix build utils)))
              (snippet
-              '(delete-file-recursively "tools/opengldummy/3rdparty"))))
+              '(begin (delete-file-recursively "tools/opengldummy/3rdparty")
+                      #t))))
     (native-inputs `())
     (inputs
      `(("qtbase" ,qtbase)
@@ -1292,7 +1297,8 @@ and mobile applications targeting TV-like form factors.")))
                  (delete-file-recursively "tests/3rdparty")
                  ;; the scion test refers to the bundled 3rd party test code.
                  (substitute* "tests/auto/auto.pro"
-                   (("scion") "#"))))))
+                   (("scion") "#"))
+                 #t))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)))
@@ -1338,7 +1344,8 @@ purchasing goods and services.")))
                "0agdxgk7knf6zkjdi6316y2k9zq72wcg5zn3cbhw4hzjw81qadgg"))
              (modules '((guix build utils)))
              (snippet
-              '(delete-file-recursively "examples/canvas3d/3rdparty"))))
+              '(begin (delete-file-recursively "examples/canvas3d/3rdparty")
+                      #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
       ;; Building the tests depends on the bundled 3rd party javascript files,

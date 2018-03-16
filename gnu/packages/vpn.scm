@@ -62,7 +62,8 @@
                   (substitute* "lib/Makefile.in"
                     (("getopt1?\\.(c|h|\\$\\(OBJEXT\\))") ""))
                   (for-each delete-file
-                            '("lib/getopt.h" "lib/getopt.c"))))))
+                            '("lib/getopt.h" "lib/getopt.c"))
+                  #t))))
     (build-system gnu-build-system)
     (home-page "http://software.schmorp.de/pkg/gvpe.html")
     (inputs `(("openssl" ,openssl)

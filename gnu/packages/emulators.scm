@@ -410,11 +410,13 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
-               '(for-each
-                 (lambda (subdir)
-                   (let ((lib-subdir (string-append "src/third-party/" subdir)))
-                     (delete-file-recursively lib-subdir)))
-                 '("libpng" "lzma" "sqlite3" "zlib")))))
+               '(begin
+                  (for-each
+                   (lambda (subdir)
+                     (let ((lib-subdir (string-append "src/third-party/" subdir)))
+                       (delete-file-recursively lib-subdir)))
+                   '("libpng" "lzma" "sqlite3" "zlib"))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no "test" target
@@ -1010,7 +1012,8 @@ towards a working Mupen64Plus for casual users.")
                   ;; Use system zlib.
                   (delete-file-recursively "source/zlib")
                   (substitute* "source/core/NstZlib.cpp"
-                    (("#include \"../zlib/zlib.h\"") "#include <zlib.h>"))))))
+                    (("#include \"../zlib/zlib.h\"") "#include <zlib.h>"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

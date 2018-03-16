@@ -465,7 +465,8 @@ detection, and lossless compression.")
            ;; Remove bundled shared libraries.
            (with-directory-excursion "src/borg/algorithms"
              (for-each delete-file-recursively
-                       (list "blake2" "lz4" "zstd")))))))
+                       (list "blake2" "lz4" "zstd")))
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((srfi srfi-26) ; for cut

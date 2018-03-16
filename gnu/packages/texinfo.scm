@@ -143,7 +143,9 @@ is on expressing the content semantically, avoiding physical markup commands.")
                ;; timestamp so we don't trigger the rule to update PO files,
                ;; which would require Gettext.
                ;; See <http://bugs.gnu.org/18247>.
-               '(utime "texi2html.pl" 0 0 0 0))))
+               '(begin
+                  (utime "texi2html.pl" 0 0 0 0)
+                  #t))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments

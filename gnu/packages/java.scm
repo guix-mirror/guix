@@ -752,10 +752,12 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                 "0bg9sb4f7qbq77c0zf9m17p47ga0kf0r9622g9p12ysg26jd1ksg"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile.in"
-                  ;; do not leak information about the build host
-                  (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
-                   "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
+               '(begin
+                  (substitute* "Makefile.in"
+                    ;; do not leak information about the build host
+                    (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
+                     "DISTRIBUTION_ID=\"\\\"guix\\\"\""))
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out"   ; Java Runtime Environment
                "jdk"   ; Java Development Kit
@@ -1096,10 +1098,12 @@ bootstrapping purposes.")
                   "0s0zh0mj1sab99kb516lsgq3859vsc951phc565gwix4l5g9zppk"))
                 (modules '((guix build utils)))
                 (snippet
-                 '(substitute* "Makefile.in"
-                    ;; do not leak information about the build host
-                    (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
-                     "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
+                 '(begin
+                    (substitute* "Makefile.in"
+                      ;; do not leak information about the build host
+                      (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
+                       "DISTRIBUTION_ID=\"\\\"guix\\\"\""))
+                    #t))))
       (build-system gnu-build-system)
       (outputs '("out"   ; Java Runtime Environment
                  "jdk"   ; Java Development Kit

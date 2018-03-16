@@ -730,7 +730,8 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
                     ;; See
                     ;; https://bitbucket.org/eigen/eigen/commits/ea8c22ce6920e982d15245ee41d0531a46a28e5d
                     ((".*svd_preallocate[^\n]*" &)
-                     (string-append "//" & " // Not supported by BDCSVD")))))))
+                     (string-append "//" & " // Not supported by BDCSVD")))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(;; Turn off debugging symbols to save space.

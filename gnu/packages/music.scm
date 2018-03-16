@@ -203,29 +203,31 @@ score, keyboard, guitar, drum and controller views.")
                    "0cdcj7di7j9jgzc1ihjna1a5df64f9hnmx7b9kh8rlg76hc0l0hi"))
                 (modules '((guix build utils)))
                 (snippet
-                  '(for-each
+                 '(begin
+                    (for-each
                      (lambda (dir)
                        (delete-file-recursively
-                         (string-append "3rdparty/" dir)))
+                        (string-append "3rdparty/" dir)))
                      (list
-                       ;; TODO: The following dependencies are still bundled:
-                       ;; - "qxt": Appears to be unmaintained upstream.
-                       ;; - "qsqlite"
-                       ;; - "qtsingleapplication"
-                       ;; - "qocoa"
-                       ;; - "qtiocompressor"
-                       ;; - "gmock": The tests crash when using our googletest
-                       ;;   package instead of the bundled gmock.
-                       "SPMediaKeyTap"
-                       "fancytabwidget"
-                       "google-breakpad"
-                       "libmygpo-qt"
-                       "libmygpo-qt5"
-                       "libprojectm"
-                       "qtwin"
-                       "sha2" ;; Replaced by openssl.
-                       "taglib"
-                       "tinysvcmdns")))
+                      ;; TODO: The following dependencies are still bundled:
+                      ;; - "qxt": Appears to be unmaintained upstream.
+                      ;; - "qsqlite"
+                      ;; - "qtsingleapplication"
+                      ;; - "qocoa"
+                      ;; - "qtiocompressor"
+                      ;; - "gmock": The tests crash when using our googletest
+                      ;;   package instead of the bundled gmock.
+                      "SPMediaKeyTap"
+                      "fancytabwidget"
+                      "google-breakpad"
+                      "libmygpo-qt"
+                      "libmygpo-qt5"
+                      "libprojectm"
+                      "qtwin"
+                      "sha2" ;; Replaced by openssl.
+                      "taglib"
+                      "tinysvcmdns"))
+                    #t))
                 (patches (search-patches "clementine-use-openssl.patch"
                                          "clementine-remove-crypto++-dependency.patch"))))
       (build-system cmake-build-system)
@@ -2607,7 +2609,8 @@ of tools for manipulating and accessing your music.")
                '(begin
                   (delete-file-recursively "resources/music")
                   (substitute* "CMakeLists.txt"
-                    (("add_subdirectory\\(resources/music\\)") ""))))))
+                    (("add_subdirectory\\(resources/music\\)") ""))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no check target
@@ -2645,9 +2648,11 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
-               `(substitute* "schism/version.c"
-                  (("Schism Tracker built %s %s.*$")
-                   (string-append "Schism Tracker version " ,version "\");"))))))
+               `(begin
+                  (substitute* "schism/version.c"
+                    (("Schism Tracker built %s %s.*$")
+                     (string-append "Schism Tracker version " ,version "\");")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2762,9 +2767,11 @@ available memory.")
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
-               '(substitute* "main.c"
-                  (("printf \\(\"            Built : %s\", __DATE__\\);") "")
-                  (("printf \\(\" %s\", __TIME__\\);") "")))))
+               '(begin
+                  (substitute* "main.c"
+                    (("printf \\(\"            Built : %s\", __DATE__\\);") "")
+                    (("printf \\(\" %s\", __TIME__\\);") ""))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

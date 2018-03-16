@@ -50,7 +50,8 @@
                conf-wrap)
              (newline conf-wrap)
              (close-output-port conf-wrap)
-             (chmod "configure" #o0755)))))
+             (chmod "configure" #o0755)
+             #t))))
 
     (build-system gnu-build-system)
     (arguments

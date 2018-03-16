@@ -364,7 +364,8 @@ in LXDE.")
                    (and (string-suffix? ".c" file)
                         (file-exists? (c->vala file))))))
            (for-each delete-file
-                     (find-files "." generated-c-file?))))))
+                     (find-files "." generated-c-file?))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

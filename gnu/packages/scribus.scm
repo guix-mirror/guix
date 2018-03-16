@@ -75,8 +75,10 @@
        (snippet
         ;; Fix typo.  Equivalent to patch at
         ;; https://bugs.scribus.net/view.php?id=14850
-        '(substitute* "cmake/modules/FindLIBPODOFO.cmake"
-           (("find_package\\(OPENSSL\\)") "find_package(OpenSSL)")))))
+        '(begin
+           (substitute* "cmake/modules/FindLIBPODOFO.cmake"
+             (("find_package\\(OPENSSL\\)") "find_package(OpenSSL)"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test target

@@ -3253,7 +3253,8 @@ that client code uses to construct the grammar directly in Python code.")
            ;; input since it would create a circular dependency: Extend the
            ;; test for Python 3, where it is already dropped, to Python 2.
            (substitute* "numpydoc/tests/test_plot_directive.py"
-             (("3") "2"))))))
+             (("3") "2"))
+           #t))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)))

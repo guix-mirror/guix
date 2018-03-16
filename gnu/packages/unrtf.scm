@@ -61,7 +61,7 @@
                                          #$grep "/bin:" #$sed "/bin:"
                                          #$coreutils "/bin:"
                                          (getenv "PATH")))
-                  (zero? (system* "autoreconf" "-vfi"))))))
+                  (invoke "autoreconf" "-vfi")))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/unrtf/")
     (synopsis "Convert Rich Text Format documents to other formats")

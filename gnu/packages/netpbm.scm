@@ -94,7 +94,8 @@
                   (("^DATE=.*")
                    "DATE=\"Thu Jan 01 00:00:00+0000 1970\"\n")
                   (("^USER=.*")
-                   "USER=Guix\n"))))))
+                   "USER=Guix\n"))
+                #t))))
 
    (build-system gnu-build-system)
    (inputs `(("ghostscript" ,ghostscript)

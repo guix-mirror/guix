@@ -86,7 +86,8 @@
                               "pcre/pcrelib"
                               "sqlite3/libsqlite"
                               "xmlrpc/libxmlrpc"
-                              "zip/lib"))))))
+                              "zip/lib"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

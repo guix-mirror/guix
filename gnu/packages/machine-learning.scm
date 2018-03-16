@@ -408,7 +408,8 @@ sample proximities between pairs of cases.")
                            (display line out))
                          (loop (read-line in 'concat) skip-next?)))))))
            (for-each delete-ifdefs (find-files "src/shogun/kernel/"
-                                               "^Kernel\\.(cpp|h)"))))))
+                                               "^Kernel\\.(cpp|h)"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ;no check target

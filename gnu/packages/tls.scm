@@ -793,7 +793,8 @@ then ported to the GNU / Linux environment.")
         '(begin
            (substitute* "include/mbedtls/dhm.h"
              (("#define MBEDTLS_DHM_RFC5114_MODP_P")
-              "#define MBEDTLS_DHM_RFC5114_MODP_2048_P"))))))
+              "#define MBEDTLS_DHM_RFC5114_MODP_2048_P"))
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

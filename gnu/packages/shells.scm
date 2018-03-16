@@ -103,9 +103,10 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                 "0nhc3yc5lnnan7zmxqqxm07rdpwjww5ijy45ll2njdc6fnfb2az4"))
               (modules '((guix build utils)))
               ;; Don't try to install /etc/fish/config.fish.
-              (snippet
-               '(substitute* "Makefile.in"
-                  ((".*INSTALL.*sysconfdir.*fish.*") "")))))
+              (snippet '(begin
+                          (substitute* "Makefile.in"
+                            ((".*INSTALL.*sysconfdir.*fish.*") ""))
+                          #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)))

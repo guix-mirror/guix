@@ -87,10 +87,12 @@ implementing both small and large scale systems.")
                 "0qslm2isyv22hffdpw0nh7xk8jw8cj3h5y7d40c9h5r833w7j6sz"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile.in"
-                  (("installdir=\\$\\(repexecdir\\)")
-                   ;; Install libraries for librep to $out/lib/rep.
-                   "installdir=$(libdir)/rep")))))
+               '(begin
+                  (substitute* "Makefile.in"
+                    (("installdir=\\$\\(repexecdir\\)")
+                     ;; Install libraries for librep to $out/lib/rep.
+                     "installdir=$(libdir)/rep"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (native-inputs
@@ -127,7 +129,8 @@ backend of Sawfish.")
                      "REP_DL_LOAD_PATH=$(REP_DL_LOAD_PATH):"))
                   (substitute* "src/Makefile.in"
                     ;; Install libraries for librep to $out/lib/rep.
-                    (("\\$\\(repexecdir\\)") "$(libdir)/rep"))))))
+                    (("\\$\\(repexecdir\\)") "$(libdir)/rep"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests

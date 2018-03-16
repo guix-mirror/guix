@@ -182,8 +182,10 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
 (define (cross-gcc-snippet target)
   "Return GCC snippet needed for TARGET."
   (cond ((target-mingw? target)
-         '(copy-recursively "libstdc++-v3/config/os/mingw32-w64"
-                            "libstdc++-v3/config/os/newlib"))
+         '(begin
+            (copy-recursively "libstdc++-v3/config/os/mingw32-w64"
+                              "libstdc++-v3/config/os/newlib")
+            #t))
         (else #f)))
 
 (define* (cross-gcc target

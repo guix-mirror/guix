@@ -137,9 +137,11 @@
              (snippet
               ;; For a rebuild of the Flex/Bison byproducts touched by the
               ;; patch above.
-              '(for-each delete-file
-                         '("mh/mh_alias_lex.c"
-                           "libmailutils/cfg/parser.c")))))
+              '(begin
+                 (for-each delete-file
+                           '("mh/mh_alias_lex.c"
+                             "libmailutils/cfg/parser.c"))
+                 #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

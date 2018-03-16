@@ -303,15 +303,15 @@ H.264 (MPEG-4 AVC) video streams.")
         (base32
          "0hknnnnx9661igm1r73dc7aqxnnrl5a8yvyvr1nhd9ymn2klwpl5"))
        (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Delete bundled libraries.
-           (for-each delete-file-recursively
-                     '("lib/libebml"
-                       "lib/libmatroska"
-                       "lib/nlohmann-json"
-                       "lib/pugixml"
-                       "lib/utf8-cpp"))))))
+       (snippet '(begin
+                   ;; Delete bundled libraries.
+                   (for-each delete-file-recursively
+                             '("lib/libebml"
+                               "lib/libmatroska"
+                               "lib/nlohmann-json"
+                               "lib/pugixml"
+                               "lib/utf8-cpp"))
+                   #t))))
     (build-system gnu-build-system)
     (inputs
      `(("boost" ,boost)
@@ -387,8 +387,9 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
          (base32
           "1gyd94jkwdii9308m07nymsbxrmrcl81c0j8i10zhslr2mj07w0v"))
         (modules '((guix build utils)))
-        (snippet
-         '(delete-file-recursively "source/compat/getopt"))))
+        (snippet '(begin
+                    (delete-file-recursively "source/compat/getopt")
+                    #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
@@ -1794,10 +1795,10 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
                (base32
                 "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))
               (modules '((guix build utils)))
-              (snippet
-               ;; As of glibc 2.26, <xlocale.h> no longer is.
-               '(substitute* "src/framework/mlt_property.h"
-                  (("xlocale\\.h") "locale.h")))))
+              (snippet '(begin
+                          ;; As of glibc 2.26, <xlocale.h> no longer is.
+                          (substitute* "src/framework/mlt_property.h"
+                            (("xlocale\\.h") "locale.h"))))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1983,7 +1984,8 @@ implementation.")
           "1x2ag1f2fwa4yh1g5spv99w9x1m33hbxlqwyhm205ssq0ra234bx"))
         (patches (search-patches "libvdpau-va-gl-unbundle.patch"))
         (modules '((guix build utils)))
-        (snippet '(delete-file-recursively "3rdparty"))))
+        (snippet '(begin (delete-file-recursively "3rdparty")
+                         #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; Tests require a running X11 server, with VA-API support.
@@ -2495,10 +2497,10 @@ many codecs and formats supported by libmediainfo.")
                (base32
                 "0f5kxpayqn3yhabqrd2cqlc74i6x2xr01jfkank1lcilxnfyrsnq"))
               (modules '((guix build utils)))
-              (snippet
-               ;; As of glibc 2.26, <xlocale.h> no longer is.
-               '(substitute* "liveMedia/include/Locale.hh"
-                  (("xlocale\\.h") "locale.h")))))
+              (snippet '(begin
+                          ;; As of glibc 2.26, <xlocale.h> no longer is.
+                          (substitute* "liveMedia/include/Locale.hh"
+                            (("xlocale\\.h") "locale.h"))))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
