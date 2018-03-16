@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -292,8 +292,8 @@ target that libc."
               (setenv "ARCH" ,(system->linux-architecture target))
               (format #t "`ARCH' set to `~a' (cross compiling)~%" (getenv "ARCH"))
 
-              (and (zero? (system* "make" ,(system->defconfig target)))
-                   (zero? (system* "make" "mrproper" "headers_check"))))
+              (invoke "make" ,(system->defconfig target))
+              (invoke "make" "mrproper" "headers_check"))
             ,phases))))
       (native-inputs `(("cross-gcc" ,xgcc)
                        ("cross-binutils" ,xbinutils)
