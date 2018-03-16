@@ -7386,3 +7386,23 @@ inherit a login shell's environment variables.  It also allows other
 environment variables to be retrieved from the shell, so that Emacs will see
 the same values you get in a terminal.")
     (license license:gpl3+)))
+
+(define-public emacs-deft
+  (package
+    (name "emacs-deft")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://stable.melpa.org/packages/deft-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1vb9cjxskc7c0yyf9pvxy1fzypg1vrcgwnjz0m3hslinsgdyig58"))))
+    (build-system emacs-build-system)
+    (home-page "https://jblevins.org/projects/deft/")
+    (synopsis "Quickly browse, filter, and edit plain text notes")
+    (description
+     "Deft is an Emacs mode for quickly browsing, filtering, and editing
+directories of plain text notes, inspired by Notational Velocity.")
+    (license license:bsd-3)))
