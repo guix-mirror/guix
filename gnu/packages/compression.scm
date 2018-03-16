@@ -951,7 +951,7 @@ tarballs.")
                     (add-after 'unpack 'autogen
                       (lambda _
                         (mkdir "m4")
-                        (zero? (system* "autoreconf" "-vfi")))))))
+                        (invoke "autoreconf" "-vfi"))))))
       (home-page "https://github.com/bagder/libbrotli/")
       (synopsis "Implementation of the Brotli compression algorithm")
       (description
