@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -164,7 +164,8 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
               ;; Add a `sh' -> `bash' link.
               (let ((out (assoc-ref outputs "out")))
                 (with-directory-excursion (string-append out "/bin")
-                  (symlink "bash" "sh")))))
+                  (symlink "bash" "sh")
+                  #t))))
 
           (add-after 'install 'move-development-files
             (lambda* (#:key outputs #:allow-other-keys)
