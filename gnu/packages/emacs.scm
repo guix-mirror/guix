@@ -7361,3 +7361,28 @@ highlighting and indentation support.")
 @uref{https://www.terraform.io/, Terraform} configuration files.  Most of the
 functionality is inherited from @code{hcl-mode}.")
     (license license:gpl3+)))
+
+(define-public emacs-exec-path-from-shell
+  (package
+    (name "emacs-exec-path-from-shell")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://stable.melpa.org/packages/exec-path-from-shell-"
+             version ".el"))
+       (sha256
+        (base32
+         "03qjgb81cq1l3j54lvlf98r75vmmgd06mj6qh5wa6mz4xzp4w26r"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/exec-path-from-shell")
+    (synopsis "Get environment variables such as @var{PATH} from the shell")
+    (description
+     "This library allows the user to set Emacs @var{exec-path} and @var{PATH}
+from the shell @var{PATH}, so that @code{shell-command}, @code{compile} and
+the like work as expected on systems on which Emacs is not guaranteed to
+inherit a login shell's environment variables.  It also allows other
+environment variables to be retrieved from the shell, so that Emacs will see
+the same values you get in a terminal.")
+    (license license:gpl3+)))
