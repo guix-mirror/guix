@@ -73,7 +73,7 @@
                         '())
                   ,@configure-flags)))
       (format #t "running 'cmake' with arguments ~s~%" args)
-      (zero? (apply system* "cmake" args)))))
+      (apply invoke "cmake" args))))
 
 (define* (check #:key (tests? #t) (parallel-tests? #t) (test-target "test")
                 #:allow-other-keys)
