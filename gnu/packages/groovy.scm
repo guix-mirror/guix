@@ -299,3 +299,39 @@ other groovy submodules.")))
        ,@(package-native-inputs java-groovy-bootstrap)))
     (synopsis "Groovy XML")
     (description "This package contains XML-related utilities for groovy.")))
+
+(define groovy-templates
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-templates")
+    (arguments
+     `(#:jar-name "groovy-templates.jar"
+       #:jdk ,icedtea-8
+       #:test-dir "subprojects/groovy-templates/src/test"
+       #:tests? #f;Requires spock-framework which is a circular dependency
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes" "-j"; joint compilation
+                    (find-files "subprojects/groovy-templates/src/main"
+                                ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-templates.jar"
+                     "-C" "build/classes" ".")
+             #t)))))
+    (inputs
+     `(("groovy-xml" ,groovy-xml)
+       ,@(package-inputs groovy-bootstrap)))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy template engine")
+    (description "This package contains a template framework which is
+well-suited to applications where the text to be generated follows the form of
+a static template.")))
