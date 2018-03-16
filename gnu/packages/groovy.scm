@@ -646,3 +646,57 @@ library used to build graphical interfaces.")))
     (synopsis "Groovy documentation generation")
     (description "This package contains a command line tool to generate
 documentation for groovy applications.")))
+
+(define groovy-groovysh
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-groovysh")
+    (arguments
+     `(#:jar-name "groovy-groovysh.jar"
+       #:test-dir "src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "subprojects/groovy-groovysh")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes" "-j"; joint compilation
+                    (find-files "src/main" ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-groovysh.jar"
+                     "-C" "build/classes" ".")
+             #t))
+         (replace 'check
+           (lambda _
+             (mkdir-p "build/test-classes")
+             (substitute* "build.xml"
+               (("depends=\"compile-tests\"") "depends=\"\"")
+               (("}/java") "}/groovy"))
+             (apply invoke "java" "-cp"
+                    (string-append (getenv "CLASSPATH") ":build/classes")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/test-classes" "-j"
+                    (append (find-files "src/test" ".*\\.(groovy|java)$")))
+             (invoke "ant" "check")
+             #t)))))
+    (inputs
+     `(("groovy-xml" ,groovy-xml)
+       ("groovy-console" ,groovy-console)
+       ,@(package-inputs groovy-bootstrap)))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy REPL")
+    (description "This package contains the Groovy REPL.")))
