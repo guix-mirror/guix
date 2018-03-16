@@ -2008,8 +2008,8 @@ from the module-init-tools project.")
              ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
              ;; similar tools to display product names.
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* (string-append out "/bin/udevadm")
-                               "hwdb" "--update"))))))
+               (invoke (string-append out "/bin/udevadm")
+                       "hwdb" "--update")))))
        #:configure-flags (list "--enable-manpages")))
     (native-inputs
      `(("autoconf" ,autoconf)
