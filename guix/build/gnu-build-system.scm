@@ -27,6 +27,8 @@
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-26)
   #:use-module (rnrs io ports)
   #:export (%standard-phases
@@ -437,17 +439,28 @@ makefiles."
 
     (for-each (lambda (file)
                 (when (or (elf-file? file) (ar-file? file))
-                  (when debug-output
-                    (make-debug-file file))
+                  ;; If an error occurs while processing a file, issue a
+                  ;; warning and continue to the next file.
+                  (guard (c ((invoke-error? c)
+                             (format (current-error-port)
+                                     "warning: ~a: program ~s exited\
+~@[ with non-zero exit status ~a~]\
+~@[ terminated by signal ~a~]~%"
+                                     file
+                                     (invoke-error-program c)
+                                     (invoke-error-exit-status c)
+                                     (invoke-error-term-signal c))))
+                    (when debug-output
+                      (make-debug-file file))
 
-                  ;; Ensure the file is writable.
-                  (make-file-writable file)
+                    ;; Ensure the file is writable.
+                    (make-file-writable file)
 
-                  (apply invoke strip-command
-                         (append strip-flags (list file)))
+                    (apply invoke strip-command
+                           (append strip-flags (list file)))
 
-                  (when debug-output
-                    (add-debug-link file))))
+                    (when debug-output
+                      (add-debug-link file)))))
               (find-files dir
                           (lambda (file stat)
                             ;; Ignore symlinks such as:
