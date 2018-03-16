@@ -2732,16 +2732,18 @@ used by the HTTP protocol (and then some more).")
 (define-public perl-http-message
   (package
     (name "perl-http-message")
-    (version "6.11")
+    (version "6.15")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/E/ET/ETHER/HTTP-Message-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/HTTP-Message-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "06yq6cjx4vzl4if4ykap77xsrrd8aa7ish90k7cqi8g6g83nicz7"))))
+               "11fbvisyvi6bw8z9iq9fm9mraf69qyds09fblhl9gyvg7ccll93v"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-try-tiny" ,perl-try-tiny)))
     (propagated-inputs
      `(("perl-encode-locale" ,perl-encode-locale)
        ("perl-http-date" ,perl-http-date)
