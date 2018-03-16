@@ -590,21 +590,22 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            (mkdir (string-append out "/bin"))
            (copy-file guile1 guile2)
 
-           ;; Does the relocated Guile work?
-           (and ,(if (%current-target-system)
-                     #t
-                     '(zero? (system* guile2 "--version")))
-                (begin
-                  ;; Strip store references.
-                  (remove-store-references guile2)
+           ;; Verify that the relocated Guile works.
+           ,@(if (%current-target-system)
+                 '()
+                 '((invoke guile2 "--version")))
 
-                  ;; Does the stripped Guile work?  If it aborts, it could be
-                  ;; that it tries to open iconv descriptors and fails because
-                  ;; libc's iconv data isn't available (see
-                  ;; `guile-default-utf8.patch'.)
-                  ,(if (%current-target-system)
-                       #t
-                       '(zero? (system* guile2 "--version")))))))))
+           ;; Strip store references.
+           (remove-store-references guile2)
+
+           ;; Verify that the stripped Guile works.  If it aborts, it could be
+           ;; that it tries to open iconv descriptors and fails because libc's
+           ;; iconv data isn't available (see `guile-default-utf8.patch'.)
+           ,@(if (%current-target-system)
+                 '()
+                 '((invoke guile2 "--version")))
+
+           #t))))
     (inputs `(("guile" ,%guile-static)))
     (outputs '("out"))
     (synopsis "Minimal statically-linked and relocatable Guile")))
