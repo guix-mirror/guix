@@ -909,9 +909,9 @@ effective code.")
                   (delete 'check)
                   (replace 'build
                            (lambda _
-                             (zero? (system* "make"
-                                             "gnu-c-manual.info"
-                                             "gnu-c-manual.html"))))
+                             (invoke "make"
+                                     "gnu-c-manual.info"
+                                     "gnu-c-manual.html")))
                   (replace 'install
                            (lambda* (#:key outputs #:allow-other-keys)
                              (let* ((out (assoc-ref outputs "out"))
