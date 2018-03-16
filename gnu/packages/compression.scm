@@ -1420,22 +1420,22 @@ It can be used as a replacement for the Apache @code{CBZip2InputStream} /
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key system outputs #:allow-other-keys)
-             (zero? (system* "cp"
-                             (let ((system ,(or (%current-target-system)
-                                                (%current-system))))
-                               (cond
-                                ((string-prefix? "x86_64" system)
-                                 "makefile.linux_amd64_asm")
-                                ((string-prefix? "i686" system)
-                                 "makefile.linux_x86_asm_gcc_4.X")
-                                (else
-                                 "makefile.linux_any_cpu_gcc_4.X")))
-                             "makefile.machine"))))
+             (invoke "cp"
+                     (let ((system ,(or (%current-target-system)
+                                        (%current-system))))
+                       (cond
+                        ((string-prefix? "x86_64" system)
+                         "makefile.linux_amd64_asm")
+                        ((string-prefix? "i686" system)
+                         "makefile.linux_x86_asm_gcc_4.X")
+                        (else
+                         "makefile.linux_any_cpu_gcc_4.X")))
+                     "makefile.machine")))
          (replace 'check
            (lambda _
-             (and (zero? (system* "make" "test"))
-                  (zero? (system* "make" "test_7z"))
-                  (zero? (system* "make" "test_7zr"))))))))
+             (invoke "make" "test")
+             (invoke "make" "test_7z")
+             (invoke "make" "test_7zr"))))))
     (inputs
      (let ((system (or (%current-target-system)
                        (%current-system))))
