@@ -603,3 +603,46 @@ library used to build graphical interfaces.")))
        ,@(package-native-inputs java-groovy-bootstrap)))
     (synopsis "Groovy graphical interface")
     (description "This package contains a graphical interface to run groovy.")))
+
+(define groovy-docgenerator
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-docgenerator")
+    (arguments
+     `(#:jar-name "groovy-docgenerator.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "subprojects/groovy-docgenerator")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes" "-j"; joint compilation
+                    (find-files "src/main" ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-docgenerator.jar"
+                     "-C" "build/classes" ".")
+             #t)))))
+    (inputs
+     `(("groovy-templates" ,groovy-templates)
+       ("groovy-swing" ,groovy-swing)
+       ("java-qdox-1.12" ,java-qdox-1.12)
+       ,@(package-inputs groovy-bootstrap)))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy documentation generation")
+    (description "This package contains a command line tool to generate
+documentation for groovy applications.")))
