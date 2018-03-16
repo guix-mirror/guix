@@ -1692,7 +1692,7 @@ using sh's word-splitting rules.")
        '(#:import-path "github.com/zillode/notify"))
       (propagated-inputs
        `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (synopsis "Filesystem event notification library")
+      (synopsis "File system event notification library")
       (description "This package provides @code{notify}, a file system event
 notification library in Go.")
       (home-page "https://github.com/zillode/notify")
@@ -1871,8 +1871,8 @@ Prometheus metrics.")
       (arguments
        '(#:import-path "github.com/prometheus/procfs"))
       (synopsis "Go library for reading @file{/proc}")
-      (description "This Go package @code{procfs} provides functions to retrieve
-system, kernel and process metrics from the pseudo-filesystem @file{/proc}.")
+      (description "The @code{procfs} Go package provides functions to retrieve
+system, kernel, and process metrics from the @file{/proc} pseudo file system.")
       (home-page "https://github.com/prometheus/procfs")
       (license asl2.0))))
 

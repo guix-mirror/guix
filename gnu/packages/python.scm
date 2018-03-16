@@ -12988,7 +12988,7 @@ interpreter. bpython's main features are
     (synopsis "Python library for monitoring inotify events")
     (description
      "@code{pyinotify} provides a Python interface for monitoring
-filesystem events on Linux.")
+file system events on Linux.")
     (license license:expat)))
 
 (define-public python2-pyinotify
