@@ -8992,13 +8992,13 @@ etc.")
 (define-public python-chai
   (package
     (name "python-chai")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "chai" version))
               (sha256
                (base32
-                "016kf3irrclpkpvcm7q0gmkfibq7jgy30a9v73pp42bq9h9a32bl"))))
+                "1k6n6zbgrrs83crp6mr3yqj9zlv40b8rpisyrliwsq7naml2p3gz"))))
     (build-system python-build-system)
     (home-page "https://github.com/agoragames/chai")
     (synopsis "Mocking framework for Python")
