@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
@@ -297,26 +297,25 @@ required structures.")
          'configure
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((out (assoc-ref outputs "out")))
-             (zero?
-              (system* "./config"
-                       "shared"                   ;build shared libraries
-                       "--libdir=lib"
+             (apply invoke "./config"
+                    "shared"                   ;build shared libraries
+                    "--libdir=lib"
 
-                       ;; The default for this catch-all directory is
-                       ;; PREFIX/ssl.  Change that to something more
-                       ;; conventional.
-                       (string-append "--openssldir=" out
-                                      "/share/openssl-" ,version)
+                    ;; The default for this catch-all directory is
+                    ;; PREFIX/ssl.  Change that to something more
+                    ;; conventional.
+                    (string-append "--openssldir=" out
+                                   "/share/openssl-" ,version)
 
-                       (string-append "--prefix=" out)
+                    (string-append "--prefix=" out)
 
-                       ;; XXX FIXME: Work around a code generation bug in GCC
-                       ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                       ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                       ,@(if (and (not (%current-target-system))
-                                  (string-prefix? "armhf" (%current-system)))
-                             '("-mfpu=vfpv3")
-                             '()))))))
+                    ;; XXX FIXME: Work around a code generation bug in GCC
+                    ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
+                    ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
+                    ,@(if (and (not (%current-target-system))
+                               (string-prefix? "armhf" (%current-system)))
+                          '("-mfpu=vfpv3")
+                          '())))))
         (add-after
          'install 'make-libraries-writable
          (lambda* (#:key outputs #:allow-other-keys)
@@ -422,27 +421,26 @@ required structures.")
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (lib (string-append out "/lib")))
-                 (zero?
-                  (system* "./config"
-                           "shared"                   ;build shared libraries
-                           "--libdir=lib"
+                 (apply invoke "./config"
+                        "shared"                   ;build shared libraries
+                        "--libdir=lib"
 
-                           ;; The default for this catch-all directory is
-                           ;; PREFIX/ssl.  Change that to something more
-                           ;; conventional.
-                           (string-append "--openssldir=" out
-                                          "/share/openssl-" ,version)
+                        ;; The default for this catch-all directory is
+                        ;; PREFIX/ssl.  Change that to something more
+                        ;; conventional.
+                        (string-append "--openssldir=" out
+                                       "/share/openssl-" ,version)
 
-                           (string-append "--prefix=" out)
-                           (string-append "-Wl,-rpath," lib)
+                        (string-append "--prefix=" out)
+                        (string-append "-Wl,-rpath," lib)
 
-                           ;; XXX FIXME: Work around a code generation bug in GCC
-                           ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                           ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                           ,@(if (and (not (%current-target-system))
-                                      (string-prefix? "armhf" (%current-system)))
-                                 '("-mfpu=vfpv3")
-                                 '()))))))
+                        ;; XXX FIXME: Work around a code generation bug in GCC
+                        ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
+                        ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
+                        ,@(if (and (not (%current-target-system))
+                                   (string-prefix? "armhf" (%current-system)))
+                              '("-mfpu=vfpv3")
+                              '())))))
 
            ;; XXX: Duplicate this phase to make sure 'version' evaluates
            ;; in the current scope and not the inherited one.
