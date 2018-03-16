@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build emacs-utils)
+  #:use-module (guix build utils)
   #:export (%emacs
             emacs-batch-eval
             emacs-batch-edit-file
@@ -39,16 +40,14 @@
 
 (define (emacs-batch-eval expr)
   "Run Emacs in batch mode, and execute the elisp code EXPR."
-  (unless (zero? (system* (%emacs) "--quick" "--batch"
-                          (format #f "--eval=~S" expr)))
-    (error "emacs-batch-eval failed!" expr)))
+  (invoke (%emacs) "--quick" "--batch"
+          (format #f "--eval=~S" expr)))
 
 (define (emacs-batch-edit-file file expr)
   "Load FILE in Emacs using batch mode, and execute the elisp code EXPR."
-  (unless (zero? (system* (%emacs) "--quick" "--batch"
-                          (string-append "--visit=" file)
-                          (format #f "--eval=~S" expr)))
-    (error "emacs-batch-edit-file failed!" file expr)))
+  (invoke (%emacs) "--quick" "--batch"
+          (string-append "--visit=" file)
+          (format #f "--eval=~S" expr)))
 
 (define (emacs-generate-autoloads name directory)
   "Generate autoloads for Emacs package NAME placed in DIRECTORY."
