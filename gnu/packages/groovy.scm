@@ -434,3 +434,60 @@ similar to javadoc.")))
        ,@(package-native-inputs java-groovy-bootstrap)))
     (synopsis "Groovy ant tasks")
     (description "This package contains groovy-related ant tasks definitions.")))
+
+(define groovy-bsf
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-bsf")
+    (arguments
+     `(#:jar-name "groovy-bsf.jar"
+       #:jdk ,icedtea-8
+       #:test-dir "src/test"
+       #:test-exclude (list
+;; exception from Groovy: org.codehaus.groovy.runtime.InvokerInvocationException:
+;; groovy.lang.MissingMethodException: No signature of method:
+;; java.util.ArrayList.each() is applicable for argument types:
+;; (groovy.script.MapFromList$_doit_closure1) values:
+;; [groovy.script.MapFromList$_doit_closure1@17e554d5]
+                        "**/BSFTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "subprojects/groovy-bsf")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes" "-j"; joint compilation
+                    (find-files "src/main" ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-bsf.jar"
+                     "-C" "build/classes" ".")
+             #t))
+         (replace 'check
+           (lambda _
+             (mkdir-p "build/test-classes")
+             (substitute* "build.xml"
+               (("depends=\"compile-tests\"") "depends=\"\""))
+             (apply invoke "java" "-cp"
+                    (string-append (getenv "CLASSPATH") ":build/classes")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/test-classes" "-j"
+                    (find-files "src/test" ".*\\.(groovy|java)$"))
+             (invoke "ant" "check")
+             #t)))))
+    (inputs
+     `(("java-commons-bsf" ,java-commons-bsf)
+       ,@(package-inputs groovy-bootstrap)))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy BSF engine")
+    (description "This package defines the BSF engine for using Groovy inside
+any @dfn{Bean Scripting Framework} (BSF) application.")))
