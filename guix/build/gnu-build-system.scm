@@ -223,7 +223,8 @@ $CONFIG_SHELL, but some don't, such as `mkinstalldirs' or Automake's
                         (lambda (file stat)
                           ;; Filter out symlinks.
                           (eq? 'regular (stat:type stat)))
-                        #:stat lstat)))
+                        #:stat lstat))
+  #t)
 
 (define (patch-generated-file-shebangs . rest)
   "Patch shebangs in generated files, including `SHELL' variables in
@@ -238,7 +239,9 @@ makefiles."
                         #:stat lstat))
 
   ;; Patch `SHELL' in generated makefiles.
-  (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$")))
+  (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$"))
+
+  #t)
 
 (define* (configure #:key build target native-inputs inputs outputs
                     (configure-flags '()) out-of-source?
@@ -461,7 +464,8 @@ makefiles."
                                   (let ((sub (string-append dir "/" d)))
                                     (and (directory-exists? sub) sub)))
                                 strip-directories)))
-                 outputs))))
+                 outputs)))
+  #t)
 
 (define* (validate-runpath #:key
                            (validate-runpath? #t)
@@ -504,10 +508,11 @@ phase after stripping."
                                  (filter-map (sub-directory output)
                                              elf-directories)))
                               outputs)))
-        (every* validate dirs))
-      (begin
-        (format (current-error-port) "skipping RUNPATH validation~%")
-        #t)))
+        (unless (every* validate dirs)
+          (error "RUNPATH validation failed")))
+      (format (current-error-port) "skipping RUNPATH validation~%"))
+
+  #t)
 
 (define* (validate-documentation-location #:key outputs
                                           #:allow-other-keys)
