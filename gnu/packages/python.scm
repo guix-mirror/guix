@@ -6433,14 +6433,14 @@ Debian-related files, such as:
 (define-public python-nbformat
   (package
     (name "python-nbformat")
-    (version "4.3.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbformat" version))
        (sha256
         (base32
-         "12s7j4qja8b5bs1kyw5dzmrqbjxxj8wk52cyasbiqbv7fblcrssz"))))
+         "00nlf08h8yc4q73nphfvfhxrcnilaqanb8z0mdy6nxk0vzq4wjgp"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no test target
     (propagated-inputs
