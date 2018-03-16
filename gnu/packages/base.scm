@@ -570,7 +570,6 @@ store.")
             (modules '((guix build utils)))
             (patches (search-patches "glibc-ldd-x86_64.patch"
                                      "glibc-versioned-locpath.patch"
-                                     "glibc-o-largefile.patch"
                                      "glibc-allow-kernel-2.6.32.patch"))))
    (build-system gnu-build-system)
 
@@ -867,7 +866,6 @@ GLIBC/HURD for a Hurd host"
                 "1813dzkgw6v8q8q1m4v96yfis7vjqc9pslqib6j9mrwh6fxxjyq6"))
               (patches (search-patches "glibc-ldd-x86_64.patch"
                                        "glibc-versioned-locpath.patch"
-                                       "glibc-o-largefile.patch"
                                        "glibc-vectorized-strcspn-guards.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
                                        "glibc-CVE-2017-1000366-pt2.patch"
@@ -886,7 +884,6 @@ GLIBC/HURD for a Hurd host"
                 "1lxmprg9gm73gvafxd503x70z32phwjzcy74i0adfi6ixzla7m4r"))
               (patches (search-patches "glibc-ldd-x86_64.patch"
                                        "glibc-versioned-locpath.patch"
-                                       "glibc-o-largefile.patch"
                                        "glibc-vectorized-strcspn-guards.patch"
                                        "glibc-CVE-2015-5180.patch"
                                        "glibc-CVE-2017-1000366-pt1.patch"
@@ -906,7 +903,6 @@ GLIBC/HURD for a Hurd host"
                 "1s8krs3y2n6pzav7ic59dz41alqalphv7vww4138ag30wh0fpvwl"))
               (patches (search-patches "glibc-ldd-x86_64.patch"
                                        "glibc-versioned-locpath.patch"
-                                       "glibc-o-largefile.patch"
                                        "glibc-vectorized-strcspn-guards.patch"
                                        "glibc-CVE-2015-5180.patch"
                                        "glibc-CVE-2016-3075.patch"
@@ -928,6 +924,7 @@ GLIBC/HURD for a Hurd host"
                (base32
                 "0j49682pm2nh4qbdw35bas82p1pgfnz4d2l7iwfyzvrvj0318wzb"))
               (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-o-largefile.patch"
                                        "glibc-vectorized-strcspn-guards.patch"
                                        "glibc-CVE-2015-5180.patch"
                                        "glibc-CVE-2015-7547.patch"
