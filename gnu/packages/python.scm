@@ -445,7 +445,7 @@ data types.")
 
 (define-public python2-minimal
   (package (inherit python-2)
-    (name "python-minimal")
+    (name "python2-minimal")
     (outputs '("out"))
 
     ;; Keep zlib, which is used by 'pip' (via the 'zipimport' module), which
