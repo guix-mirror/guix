@@ -210,3 +210,46 @@ is used to build the groovy submodules written in groovy.")))
     (synopsis "Groovy test classes")
     (description "This package contains three classes required for testing
 other groovy submodules.")))
+
+(define groovy-test
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-test")
+    (arguments
+     `(#:jar-name "groovy-test.jar"
+       #:jdk ,icedtea-8
+       #:test-dir "subprojects/groovy-test/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes" "-j"; joint compilation
+                    (find-files "subprojects/groovy-test/src/main"
+                                ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-test.jar"
+                     "-C" "build/classes" ".")
+             #t))
+         (replace 'check
+           (lambda _
+             (mkdir-p "build/test-classes")
+             (substitute* "build.xml"
+               (("depends=\"compile-tests\"") "depends=\"\"")
+               (("}/java") "}/groovy"))
+             (apply invoke "java" "-cp"
+                    (string-append (getenv "CLASSPATH") ":build/classes")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/test-classes" "-j"
+                    (append (find-files "subprojects/groovy-test/src/test"
+                                        ".*\\.(groovy|java)$")))
+             (invoke "ant" "check")
+             #t)))))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy test submodule")
+    (description "This package contains the test submodules used to test
+other groovy submodules.")))
