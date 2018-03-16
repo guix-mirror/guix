@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -96,9 +96,8 @@
                ,@(if (%current-target-system)
                      `((setenv "CHOST" ,(%current-target-system)))
                      '())
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (home-page "https://zlib.net/")
     (synopsis "Compression library")
     (description
