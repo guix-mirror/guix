@@ -1064,12 +1064,10 @@ understand, extend, and port to host languages other than Scheme.")
                                 (copy-file src-file
                                            dest-file)
                                 ;; Install compiled module.
-                                (unless (zero? (system* guild "compile"
-                                                        "-L" (getcwd)
-                                                        "-o" go-file
-                                                        src-file))
-                                  (error (format #f "Failed to compile ~s to ~s!"
-                                                 src-file dest-file)))))))
+                                (invoke guild "compile"
+                                        "-L" (getcwd)
+                                        "-o" go-file
+                                        src-file)))))
                          '(("irregex-guile.scm" "/rx/irregex")
                            ("irregex.scm" "/rx/source/irregex")
                            ;; Not really reachable via guile's packaging system,
