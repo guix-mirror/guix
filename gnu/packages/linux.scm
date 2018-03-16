@@ -1229,6 +1229,62 @@ The Discordian calendar was made popular by the \"Illuminatus!\" trilogy
 by Robert Shea and Robert Anton Wilson.")
     (license license:public-domain)))
 
+(define-public fbset
+  (package
+    (name "fbset")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://users.telenet.be/geertu/Linux/fbdev/fbset-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "080wnisi0jq7dp0jcwdp83rq8q8s3kw41vc712516xbv4jq4mzs0"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'install 'pre-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("mknod ") "true ")
+                 ;; The Makefile doesn't honour PREFIX or similar.
+                 (("/usr") out))
+               (mkdir out)
+               (with-directory-excursion out
+                 (for-each mkdir-p (list "sbin"
+                                         "man/man5"
+                                         "man/man8")))
+               #t)))
+         (add-after 'install 'install-fb.modes
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (etc (string-append out "/etc")))
+               (for-each (cut install-file <> etc)
+                         (find-files "etc" "^fb\\.modes"))
+               (symlink "fb.modes.ATI"
+                        (string-append etc "/fb.modes"))
+               #t))))
+       ;; Parallel building races to create modes.tab.c.
+       #:parallel-build? #f
+       #:tests? #f))                    ; no test suite
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (home-page "http://users.telenet.be/geertu/Linux/fbdev/")
+    (synopsis "Show and modify Linux frame buffer settings")
+    (description
+     "The kernel Linux's @dfn{frame buffers} provide a simple interface to
+different kinds of graphic displays.  The @command{fbset} utility can query and
+change various device settings such as depth, virtual resolution, and timing
+parameters.")
+    (license license:gpl2)))
+
 (define-public procps
   (package
     (name "procps")
