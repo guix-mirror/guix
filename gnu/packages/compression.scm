@@ -1765,11 +1765,11 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
                   (delete 'configure)
                   (replace 'build
                     (lambda* (#:key make-flags #:allow-other-keys)
-                      (zero? (apply system* "make"
-                                    `("-j" ,(number->string
-                                             (parallel-job-count))
-                                      ,@make-flags
-                                      "generic_gcc"))))))
+                      (apply invoke "make"
+                             `("-j" ,(number->string
+                                      (parallel-job-count))
+                               ,@make-flags
+                               "generic_gcc")))))
        #:make-flags (list "-f" "unix/Makefile"
                           (string-append "prefix=" %output)
                           (string-append "MANDIR=" %output "/share/man/man1"))))
