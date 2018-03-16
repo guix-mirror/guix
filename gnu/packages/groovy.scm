@@ -793,3 +793,54 @@ management and monitoring of JVM-based solutions.")))
        ,@(package-native-inputs java-groovy-bootstrap)))
     (synopsis "Groovy JSON")
     (description "This package contains JSON-related utilities for groovy.")))
+
+(define groovy-jsr223
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-jsr223")
+    (arguments
+     `(#:jar-name "groovy-jsr223.jar"
+       #:test-dir "src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "subprojects/groovy-jsr223")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                      "org.codehaus.groovy.tools.FileSystemCompiler"
+                      "-d" "build/classes" "-j"; joint compilation
+                      (find-files "src/main" ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-jsr223.jar"
+                     "-C" "build/classes" ".")
+             #t))
+         (replace 'check
+           (lambda _
+             (mkdir-p "build/test-classes")
+             (substitute* "build.xml"
+               (("depends=\"compile-tests\"") "depends=\"\"")
+               (("}/java") "}/groovy"))
+             (apply invoke "java" "-cp"
+                    (string-append (getenv "CLASSPATH") ":build/classes")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/test-classes" "-j"
+                    (append (find-files "src/test" ".*\\.(groovy|java)$")))
+             (invoke "ant" "check")
+             #t)))))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy's own JSR223 implementation")
+    (description "This package contains Groovy's own JSR223 implementation.  This
+module is used for interaction between Groovy and Java code.")))
