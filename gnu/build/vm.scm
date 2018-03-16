@@ -147,8 +147,6 @@ the #:references-graphs parameter of 'derivation'."
                         ",security_model=none,mount_tag=xchg")
          "-kernel" linux
          "-initrd" initrd
-         "-append" (string-append "console=ttyS0 --load="
-                                  builder)
          (append
           (if make-disk-image?
               `("-device" "virtio-blk,drive=myhd"
