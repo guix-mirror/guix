@@ -566,19 +566,26 @@ specifies modules in scope when evaluating SNIPPET."
 
               (for-each apply-patch '#+patches)
 
-              (unless #+(if snippet
-                            #~(let ((module (make-fresh-user-module)))
-                                (module-use-interfaces!
-                                 module
-                                 (map resolve-interface '#+modules))
-                                ((@ (system base compile) compile)
-                                 '#+snippet
-                                 #:to 'value
-                                 #:opts %auto-compilation-options
-                                 #:env module))
-                            #~#t)
-                (format (current-error-port)
-                        "snippet returned false, indicating failure~%"))
+              (let ((result #+(if snippet
+                                  #~(let ((module (make-fresh-user-module)))
+                                      (module-use-interfaces!
+                                       module
+                                       (map resolve-interface '#+modules))
+                                      ((@ (system base compile) compile)
+                                       '#+snippet
+                                       #:to 'value
+                                       #:opts %auto-compilation-options
+                                       #:env module))
+                                  #~#t)))
+                ;; Issue a warning unless the result is #t.
+                (unless (eqv? result #t)
+                  (format (current-error-port) "\
+## WARNING: the snippet returned `~s'.  Return values other than #t
+## are deprecated.  Please migrate this package so that its snippet
+## reports errors by raising an exception, and otherwise returns #t.~%"
+                          result))
+                (unless result
+                  (error "snippet returned false")))
 
               (chdir "..")
 
