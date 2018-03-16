@@ -175,3 +175,38 @@ groovy submodules.")
     (description "This package contains the first version of the Groovy compiler.
 Although already usable, it doesn't contain the groovy library yet.  This package
 is used to build the groovy submodules written in groovy.")))
+
+(define groovy-tests-bootstrap
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-tests-bootstrap")
+    (arguments
+     `(#:jar-name "groovy-tests-bootstrap.jar"
+       #:jdk ,icedtea-8
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes"
+                    "-j"; joint compilation
+                    (append
+                      (find-files "src/test" "TestSupport.java")
+                      (find-files "src/test" "HeadlessTestSupport.java")
+                      (find-files "src/test" "XmlAssert.java")))
+             (invoke "jar" "-cf" "build/jar/groovy-tests-bootstrap.jar"
+                     "-C" "build/classes" ".")
+             #t)))))
+    (inputs
+     `(("groovy-test" ,groovy-test)
+       ,@(package-inputs groovy-bootstrap)))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy test classes")
+    (description "This package contains three classes required for testing
+other groovy submodules.")))
