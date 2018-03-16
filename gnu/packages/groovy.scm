@@ -969,3 +969,42 @@ version of Java servlets.")))
     (synopsis "Groovy SQL library")
     (description "This package contains a facade over Java's normal JDBC APIs
 providing greatly simplified resource management and result set handling.")))
+
+(define groovy-testng
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-testng")
+    (arguments
+     `(#:jar-name "groovy-testng.jar"
+       #:tests? #f; No tests
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "subprojects/groovy-testng")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes"
+                    "-j"; joint compilation
+                    (find-files "src/main" ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-testng.jar"
+                     "-C" "build/classes" ".")
+             #t)))))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy testing framework")
+    (description "This package contains integration code for running TestNG
+tests in Groovy.")))
