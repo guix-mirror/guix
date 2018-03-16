@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -610,14 +610,14 @@ certificates for free.")
 (define-public perl-net-ssleay
   (package
     (name "perl-net-ssleay")
-    (version "1.82")
+    (version "1.85")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MI/MIKEM/"
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "1rf78z1macgmp6mwd7c2xq4yfw6wpf28hfwfz1d5wslqr4cwb5aq"))))
+                "1j5h4ycm8538397l204d2d5fkm9595aj174pj7bkpbhwzfwqi0cx"))))
     (build-system perl-build-system)
     (inputs `(("openssl" ,openssl)))
     (arguments
