@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -98,10 +98,10 @@
 (define* (package-from-tarball name source program-to-test description
                                #:key snippet)
   "Return a package that correspond to the extraction of SOURCE.
-PROGRAM-TO-TEST is a program to run after extraction of SOURCE, to
-check whether everything is alright.  If SNIPPET is provided, it is
-evaluated after extracting SOURCE.  SNIPPET should return true if
-successful, or false to signal an error."
+PROGRAM-TO-TEST is a program to run after extraction of SOURCE, to check
+whether everything is alright.  If SNIPPET is provided, it is evaluated after
+extracting SOURCE.  SNIPPET should raise an exception to signal an error; its
+return value is ignored."
   (package
     (name name)
     (version "0")
@@ -118,14 +118,14 @@ successful, or false to signal an error."
 
          (mkdir out)
          (copy-file tarball "binaries.tar.xz")
-         (system* xz "-d" "binaries.tar.xz")
+         (invoke xz "-d" "binaries.tar.xz")
          (let ((builddir (getcwd)))
            (with-directory-excursion out
-             (and (zero? (system* tar "xvf"
-                                  (string-append builddir "/binaries.tar")))
-                  ,@(if snippet (list snippet) '())
-                  (zero? (system* (string-append "bin/" ,program-to-test)
-                                  "--version"))))))))
+             (invoke tar "xvf"
+                     (string-append builddir "/binaries.tar"))
+             ,@(if snippet (list snippet) '())
+             (invoke (string-append "bin/" ,program-to-test)
+                     "--version"))))))
     (inputs
      `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
        ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
@@ -390,8 +390,7 @@ $out/bin/guile --version~%"
                            (if (not (elf-file? "bin/egrep"))
                              (substitute* '("bin/egrep" "bin/fgrep")
                                (("^exec grep") (string-append (getcwd) "/bin/grep"))))
-                           (chmod "bin" #o555)
-                           #t)))
+                           (chmod "bin" #o555))))
 
 (define %bootstrap-binutils
   (package-from-tarball "binutils-bootstrap"
@@ -446,18 +445,20 @@ $out/bin/guile --version~%"
 
          (mkdir out)
          (copy-file tarball "binaries.tar.xz")
-         (system* xz "-d" "binaries.tar.xz")
+         (invoke xz "-d" "binaries.tar.xz")
          (let ((builddir (getcwd)))
            (with-directory-excursion out
-             (system* tar "xvf"
-                      (string-append builddir
-                                     "/binaries.tar"))
+             (invoke tar "xvf"
+                     (string-append builddir
+                                    "/binaries.tar"))
              (chmod "lib" #o755)
 
              ;; Patch libc.so so it refers to the right path.
              (substitute* "lib/libc.so"
                (("/[^ ]+/lib/(libc|ld)" _ prefix)
-                (string-append out "/lib/" prefix))))))))
+                (string-append out "/lib/" prefix)))
+
+             #t)))))
     (inputs
      `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
        ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
@@ -518,12 +519,12 @@ $out/bin/guile --version~%"
 
          (mkdir out)
          (copy-file tarball "binaries.tar.xz")
-         (system* xz "-d" "binaries.tar.xz")
+         (invoke xz "-d" "binaries.tar.xz")
          (let ((builddir (getcwd))
                (bindir   (string-append out "/bin")))
            (with-directory-excursion out
-             (system* tar "xvf"
-                      (string-append builddir "/binaries.tar")))
+             (invoke tar "xvf"
+                     (string-append builddir "/binaries.tar")))
 
            (with-directory-excursion bindir
              (chmod "." #o755)
@@ -538,7 +539,8 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                          out libc libc libc
                          ,(glibc-dynamic-linker))))
 
-             (chmod "gcc" #o555))))))
+             (chmod "gcc" #o555)
+             #t)))))
     (inputs
      `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
        ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
