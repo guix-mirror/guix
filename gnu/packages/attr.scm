@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012, 2013, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,13 +43,14 @@
        (modify-phases %standard-phases
          (add-after 'configure 'patch-makefile-SHELL
            (lambda _
-             (patch-makefile-SHELL "include/buildmacros")))
+             (patch-makefile-SHELL "include/buildmacros")
+             #t))
          (replace 'install
            (lambda _
-             (zero? (system* "make"
-                             "install"
-                             "install-lib"
-                             "install-dev"))))
+             (invoke "make"
+                     "install"
+                     "install-lib"
+                     "install-dev")))
          (replace 'check
            (lambda* (#:key target #:allow-other-keys)
              ;; Use the right shell.
@@ -57,11 +59,14 @@
                 (which "sh")))
 
              ;; When building natively, run the tests.
+             ;;
+             ;; Note that we use system* and unconditionally return #t here
+             ;; to ignore the test result, because the tests will fail when
+             ;; the build is performed on a file system without support for
+             ;; extended attributes, and we wish to allow Guix to be built
+             ;; on such systems.
              (unless target
                (system* "make" "tests" "-C" "test"))
-
-             ;; XXX: Ignore the test result since this is
-             ;; dependent on the underlying file system.
              #t)))))
     (inputs
      ;; Perl is needed to run tests; remove it from cross builds.
