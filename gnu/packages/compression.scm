@@ -1706,14 +1706,11 @@ the actual decompression, the other input and output.")
                       (list "-f" "unix/Makefile"
                             (string-append "prefix=" out)
                             (string-append "MANDIR=" out "/share/man/man1")))
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (replace 'build
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "generic_gcc" make-flags))))
+             (apply invoke "make" "generic_gcc" make-flags)))
          (delete 'configure))))
     (home-page "http://www.info-zip.org/Zip.html")
     (synopsis "Compression and file packing utility")
