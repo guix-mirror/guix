@@ -1010,9 +1010,9 @@ respectively, based on the reference implementation from Google.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-build-directory
-           (lambda _ (chdir "xdelta3")))
+           (lambda _ (chdir "xdelta3") #t))
          (add-after 'enter-build-directory 'autoconf
-           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+           (lambda _ (invoke "autoreconf" "-vfi"))))))
     (home-page "http://xdelta.org")
     (synopsis "Delta encoder for binary files")
     (description "xdelta encodes only the differences between two binary files
