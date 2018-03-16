@@ -933,3 +933,39 @@ the functionality of the common library of Java.")))
     (synopsis "Groovy's servlet implementation")
     (description "This package contains a library to create groovlets, Groovy's
 version of Java servlets.")))
+
+(define groovy-sql
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-sql")
+    (arguments
+     `(#:jar-name "groovy-sql.jar"
+       #:test-dir "src/test"
+       #:tests? #f;TODO: Requires hsqldb
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "subprojects/groovy-sql")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                      "org.codehaus.groovy.tools.FileSystemCompiler"
+                      "-d" "build/classes" "-j"; joint compilation
+                      (find-files "src/main"
+                                  ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-sql.jar"
+                     "-C" "build/classes" ".")
+             #t)))))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy SQL library")
+    (description "This package contains a facade over Java's normal JDBC APIs
+providing greatly simplified resource management and result set handling.")))
