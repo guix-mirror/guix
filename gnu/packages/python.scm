@@ -12633,14 +12633,14 @@ and works only with Python 2 and NumPy < 1.9.")
 (define-public python-phonenumbers
   (package
     (name "python-phonenumbers")
-    (version "8.8.9")
+    (version "8.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "phonenumbers" version))
        (sha256
         (base32
-         "1lhhxmx3hk0b5891nc0p82dl5bq2w9cqbawmh8j5zy587af2j6fq"))))
+         "03fmrgb4r8x3ykmddjs9i3zhs703in8smikj3a6447blqpimwyh1"))))
     (build-system python-build-system)
     (home-page
      "https://github.com/daviddrysdale/python-phonenumbers")
