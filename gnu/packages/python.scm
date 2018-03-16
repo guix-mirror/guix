@@ -1092,7 +1092,7 @@ from the Python interpreter, or as a small part of a larger application.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "py.test" "-v")))))))
+             (invoke "py.test" "-v"))))))
     (native-inputs
      `(("python-py" ,python-py)
        ("python-pytest" ,python-pytest-bootstrap)))
