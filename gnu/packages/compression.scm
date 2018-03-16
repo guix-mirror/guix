@@ -126,7 +126,7 @@ in compression.")
            (lambda _ (chdir "contrib/minizip") #t))
          (add-after 'enter-source 'autoreconf
            (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
+             (invoke "autoreconf" "-vif"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
