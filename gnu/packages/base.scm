@@ -985,8 +985,7 @@ the 'share/locale' sub-directory of this package.")
     (arguments
      `(#:modules ((guix build utils))
        #:builder (begin
-                   (use-modules (srfi srfi-1)
-                                (guix build utils))
+                   (use-modules (guix build utils))
 
                    (let* ((libc      (assoc-ref %build-inputs "glibc"))
                           (gzip      (assoc-ref %build-inputs "gzip"))
@@ -997,27 +996,27 @@ the 'share/locale' sub-directory of this package.")
                      (setenv "PATH" (string-append libc "/bin:" gzip "/bin"))
 
                      (mkdir-p localedir)
-                     (every (lambda (locale)
-                              (define file
-                                ;; Use the "normalized codeset" by
-                                ;; default--e.g., "en_US.utf8".
-                                (string-append localedir "/" locale ".utf8"))
+                     (for-each (lambda (locale)
+                                 (define file
+                                   ;; Use the "normalized codeset" by
+                                   ;; default--e.g., "en_US.utf8".
+                                   (string-append localedir "/" locale ".utf8"))
 
-                              (and (zero? (system* "localedef" "--no-archive"
-                                                   "--prefix" localedir
-                                                   "-i" locale
-                                                   "-f" "UTF-8" file))
-                                   (begin
-                                     ;; For backward compatibility with Guix
-                                     ;; <= 0.8.3, add "xx_YY.UTF-8".
-                                     (symlink (string-append locale ".utf8")
-                                              (string-append localedir "/"
-                                                             locale ".UTF-8"))
-                                     #t)))
+                                 (invoke "localedef" "--no-archive"
+                                         "--prefix" localedir
+                                         "-i" locale
+                                         "-f" "UTF-8" file)
 
-                            ;; These are the locales commonly used for
-                            ;; tests---e.g., in Guile's i18n tests.
-                            '("de_DE" "el_GR" "en_US" "fr_FR" "tr_TR"))))))
+                                 ;; For backward compatibility with Guix
+                                 ;; <= 0.8.3, add "xx_YY.UTF-8".
+                                 (symlink (string-append locale ".utf8")
+                                          (string-append localedir "/"
+                                                         locale ".UTF-8")))
+
+                               ;; These are the locales commonly used for
+                               ;; tests---e.g., in Guile's i18n tests.
+                               '("de_DE" "el_GR" "en_US" "fr_FR" "tr_TR"))
+                     #t))))
     (inputs `(("glibc" ,glibc)
               ("gzip" ,gzip)))
     (synopsis "Small sample of UTF-8 locales")
