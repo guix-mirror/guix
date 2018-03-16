@@ -1618,7 +1618,7 @@ or junctions, and always follows hard links.")
              #t))
          (replace 'check
            (lambda _
-            (zero? (system* "./run-tests.sh")))))))
+             (invoke "./run-tests.sh"))))))
     (home-page "https://github.com/twogood/unshield")
     (synopsis "Extract CAB files from InstallShield installers")
     (description
