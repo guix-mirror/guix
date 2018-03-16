@@ -183,7 +183,7 @@ utility.  Instead of being written in Java, FastJar is written in C.")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'autoconf
-          (lambda _ (zero? (system* "sh" "autoreconf" "-vfi")))))))
+          (lambda _ (invoke "sh" "autoreconf" "-vfi"))))))
    (native-inputs
     `(("autoconf" ,autoconf)
       ("automake" ,automake)
