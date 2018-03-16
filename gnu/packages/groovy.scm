@@ -1008,3 +1008,55 @@ providing greatly simplified resource management and result set handling.")))
     (synopsis "Groovy testing framework")
     (description "This package contains integration code for running TestNG
 tests in Groovy.")))
+
+(define groovy-macro
+  (package
+    (inherit groovy-bootstrap)
+    (name "groovy-macro")
+    (arguments
+     `(#:jar-name "groovy-macro.jar"
+       #:test-dir "src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "subprojects/groovy-macro")
+             #t))
+         (replace 'build
+           (lambda _
+             (mkdir-p "build/classes")
+             (mkdir-p "build/jar")
+             (apply invoke "java" "-cp" (getenv "CLASSPATH")
+                    "org.codehaus.groovy.tools.FileSystemCompiler"
+                    "-d" "build/classes" "-j"; joint compilation
+                    (find-files "src/main" ".*\\.(groovy|java)$"))
+             (invoke "jar" "-cf" "build/jar/groovy-macro.jar"
+                     "-C" "build/classes" ".")
+             #t))
+         (replace 'check
+           (lambda _
+             (mkdir-p "build/test-classes")
+             (substitute* "build.xml"
+               (("depends=\"compile-tests\"") "depends=\"\"")
+               (("}/java") "}/groovy"))
+             (apply invoke "java" "-cp"
+                   (string-append (getenv "CLASSPATH") ":build/classes")
+                   "org.codehaus.groovy.tools.FileSystemCompiler"
+                   "-d" "build/test-classes" "-j"
+                   (append (find-files "src/test" ".*\\.(groovy|java)$")))
+             (invoke "ant" "check")
+             #t)))))
+    (inputs
+     `(("groovy-templates" ,groovy-templates)
+       ("groovy-xml" ,groovy-xml)
+       ,@(package-inputs groovy-bootstrap)))
+    (native-inputs
+     `(("groovy-bootstrap" ,groovy-bootstrap)
+       ("groovy-json" ,groovy-json)
+       ("groovy-test" ,groovy-test)
+       ("groovy-tests-bootstrap" ,groovy-tests-bootstrap)
+       ,@(package-native-inputs java-groovy-bootstrap)))
+    (synopsis "Groovy macro processor")
+    (description "This package contains a high-level library to create macro
+and modify groovy's @dfn{Abstract Syntax Tree} (AST).")))
