@@ -3133,10 +3133,9 @@ write access to exFAT devices.")
                       ;; need to bootstrap things ourselves.
                       (substitute* "autogen.sh"
                         (("/bin/sh") (which "sh")))
-                      (and (zero? (system* "./autogen.sh"))
-                           (begin
-                             (patch-makefile-SHELL "Makefile.include.in")
-                             #t)))))
+                      (invoke "./autogen.sh")
+                      (patch-makefile-SHELL "Makefile.include.in")
+                      #t)))
 
        ;; Make sure programs find libgpm.so.
        #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
