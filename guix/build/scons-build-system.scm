@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,24 +32,23 @@
 (define* (build #:key outputs (scons-flags '()) (parallel-build? #t) #:allow-other-keys)
   (let ((out (assoc-ref outputs "out")))
     (mkdir-p out)
-    (zero? (apply system* "scons"
-                  (append (if parallel-build?
-                              (list "-j" (number->string
-                                          (parallel-job-count)))
-                              (list))
-                          scons-flags)))))
+    (apply invoke "scons"
+           (append (if parallel-build?
+                       (list "-j" (number->string
+                                   (parallel-job-count)))
+                       (list))
+                   scons-flags))))
 
 (define* (check #:key tests? test-target (scons-flags '()) #:allow-other-keys)
   "Run the test suite of a given SCons application."
-  (cond (tests?
-         (zero? (apply system* "scons" test-target scons-flags)))
-        (else
-         (format #t "test suite not run~%")
-         #t)))
+  (if tests?
+      (apply invoke "scons" test-target scons-flags)
+      (format #t "test suite not run~%"))
+  #t)
 
 (define* (install #:key outputs (scons-flags '()) #:allow-other-keys)
   "Install a given SCons application."
-  (zero? (apply system* "scons" "install" scons-flags)))
+  (apply invoke "scons" "install" scons-flags))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
