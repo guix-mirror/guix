@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -121,9 +121,9 @@
          (format #t "running \"python setup.py\" with command ~s and parameters ~s~%"
                 command params)
          (if use-setuptools?
-             (zero? (apply system* "python" "-c" setuptools-shim
-                           command params))
-             (zero? (apply system* "python" "./setup.py" command params))))
+             (apply invoke "python" "-c" setuptools-shim
+                    command params)
+             (apply invoke "python" "./setup.py" command params)))
       (error "no setup.py found")))
 
 (define* (build #:key use-setuptools? #:allow-other-keys)
