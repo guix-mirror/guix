@@ -517,8 +517,8 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
                           (mkdir #$output)
                           (setenv "PATH" (string-append #$gzip "/bin"))
                           (chdir #$output)
-                          (zero? (system* (string-append #$tar "/bin/tar")
-                                          "xf" #$drv)))
+                          (invoke (string-append #$tar "/bin/tar")
+                                  "xf" #$drv))
                       #:local-build? #t)))
 
 (define* (url-fetch/zipbomb url hash-algo hash
@@ -546,8 +546,8 @@ own.  This helper makes it easier to deal with \"zip bombs\"."
                       #~(begin
                           (mkdir #$output)
                           (chdir #$output)
-                          (zero? (system* (string-append #$unzip "/bin/unzip")
-                                          #$drv)))
+                          (invoke (string-append #$unzip "/bin/unzip")
+                                  #$drv))
                       #:local-build? #t)))
 
 (define* (download-to-store store url #:optional (name (basename url))
