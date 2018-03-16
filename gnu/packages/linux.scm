@@ -184,29 +184,29 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
                                     (%current-system)))))
                (setenv "ARCH" arch)
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
-               (and (zero? (system* "make" defconfig))
-                    (zero? (system* "make" "mrproper" "headers_check"))))))
+               (invoke "make" defconfig)
+               (invoke "make" "mrproper" "headers_check"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (and (zero? (system* "make"
-                                    (string-append "INSTALL_HDR_PATH=" out)
-                                    "headers_install"))
-                    (begin
-                      (mkdir (string-append out "/include/config"))
-                      (call-with-output-file
-                          (string-append out
-                                         "/include/config/kernel.release")
-                        (lambda (p)
-                          (format p "~a-default~%" ,version)))
+               (invoke "make"
+                       (string-append "INSTALL_HDR_PATH=" out)
+                       "headers_install")
 
-                      ;; Remove the '.install' and '..install.cmd' files; the
-                      ;; latter contains store paths, which pulls in bootstrap
-                      ;; binaries in the build environment, and prevents bit
-                      ;; reproducibility for the bootstrap binaries.
-                      (for-each delete-file (find-files out "\\.install"))
+               (mkdir (string-append out "/include/config"))
+               (call-with-output-file
+                   (string-append out
+                                  "/include/config/kernel.release")
+                 (lambda (p)
+                   (format p "~a-default~%" ,version)))
 
-                      #t))))))
+               ;; Remove the '.install' and '..install.cmd' files; the
+               ;; latter contains store paths, which pulls in bootstrap
+               ;; binaries in the build environment, and prevents bit
+               ;; reproducibility for the bootstrap binaries.
+               (for-each delete-file (find-files out "\\.install"))
+
+               #t))))
        #:allowed-references ()
        #:tests? #f))
     (home-page "https://www.gnu.org/software/linux-libre/")
