@@ -138,7 +138,7 @@
 
 (define-public python-2.7
   (package
-    (name "python")
+    (name "python2")
     (version "2.7.14")
     (source
      (origin
