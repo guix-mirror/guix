@@ -6259,6 +6259,35 @@ container.")))
      `(("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
        ,@(package-native-inputs java-eclipse-jetty-util)))))
 
+(define-public java-eclipse-jetty-webapp-9.2
+  (package
+    (inherit java-eclipse-jetty-webapp)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (arguments
+     `(#:jar-name "eclipse-jetty-webapp.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-exclude (list "**/WebAppContextTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-webapp")
+             #t)))))
+    (inputs
+     `(("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
+       ("java-eclipse-jetty-http-9.2" ,java-eclipse-jetty-http-9.2)
+       ("java-eclipse-jetty-server-9.2" ,java-eclipse-jetty-server-9.2)
+       ("java-eclipse-jetty-servlet-9.2" ,java-eclipse-jetty-servlet-9.2)
+       ("java-eclipse-jetty-security-9.2" ,java-eclipse-jetty-security-9.2)
+       ("java-eclipse-jetty-xml-9.2" ,java-eclipse-jetty-xml-9.2)
+       ("java-tomcat" ,java-tomcat)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("java-eclipse-jetty-io-9.2" ,java-eclipse-jetty-io-9.2)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
+
 (define-public java-jsoup
   (package
     (name "java-jsoup")
