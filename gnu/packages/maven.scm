@@ -300,6 +300,32 @@ replacement with improvements.")
     (description "This package contains Java 5 annotations for use in Mojos.")
     (license license:asl2.0)))
 
+(define-public maven-wagon-provider-api
+  (package
+    (name "maven-wagon-provider-api")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.apache.org/dist/maven/wagon/"
+                                  "wagon-" version "-source-release.zip"))
+              (sha256 (base32 "1qb0q4m7vmf290xp3fnfdi3pwl3hkskia5g3z2v82q1ch3y2knqv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-wagon-provider-api.jar"
+       #:source-dir "wagon-provider-api/src/main/java"
+       #:test-dir "wagon-provider-api/src/test"))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-junit" ,java-junit)
+       ("java-easymock" ,java-easymock)))
+    (home-page "https://maven.apache.org/wagon")
+    (synopsis "Transport abstraction for Maven")
+    (description "Maven Wagon is a transport abstraction that is used in Maven's
+artifact and repository handling code.")
+    (license license:asl2.0)))
+
 (define-public maven-artifact
   (package
     (name "maven-artifact")
