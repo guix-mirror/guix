@@ -2244,6 +2244,7 @@ changes, and many require complicated build procedures or specific testing
 environments to get useful results.  Therefore, Intel GPU Tools includes
 low-level tools and tests specifically for development and testing of the
 Intel DRM Driver.")
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:expat)))
 
 (define-public fabric
