@@ -25,6 +25,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
 (define-public java-plexus-component-metadata
@@ -325,6 +326,30 @@ replacement with improvements.")
     (description "Maven Wagon is a transport abstraction that is used in Maven's
 artifact and repository handling code.")
     (license license:asl2.0)))
+
+(define-public maven-wagon-provider-test
+  (package
+    (inherit maven-wagon-provider-api)
+    (name "maven-wagon-provider-test")
+    (arguments
+     `(#:jar-name "maven-wagon-provider-test.jar"
+       #:source-dir "wagon-provider-test/src/main/java"
+       #:tests? #f; no tests
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
+       ("java-eclipse-jetty-security-9.2" ,java-eclipse-jetty-security-9.2)
+       ("java-eclipse-jetty-server-9.2" ,java-eclipse-jetty-server-9.2)
+       ("java-eclipse-jetty-servlet-9.2" ,java-eclipse-jetty-servlet-9.2)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-tomcat" ,java-tomcat)
+       ("maven-wagon-provider-api" ,maven-wagon-provider-api)))
+    (synopsis "Test classes from maven-wagon")
+    (description "Maven Wagon is a transport abstraction that is used in Maven's
+artifact and repository handling code.  This package contains common test
+classes used in multiple maven-wagon components.")))
 
 (define-public maven-artifact
   (package
