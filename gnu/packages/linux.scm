@@ -1278,7 +1278,8 @@ inadequately in modern network environments, and both should be deprecated.")
                  ;; think about adding them later.
                  (substitute* '("config.make" "config.h")
                    (("^.*HAVE_(AFDECnet|HWSTRIP|HWTR|SELINUX|AFBLUETOOTH)[ =]1.*$")
-                    "")))))
+                    ""))
+                 #t)))
            (add-after 'install 'remove-redundant-commands
              (lambda* (#:key outputs #:allow-other-keys)
                ;; Remove commands and man pages redundant with Inetutils.
