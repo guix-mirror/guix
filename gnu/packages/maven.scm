@@ -562,3 +562,56 @@ so really just plain objects.")))
        ("java-guava" ,java-guava)
        ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
        ("java-javax-inject" ,java-javax-inject)))))
+
+(define-public maven-plugin-api
+  (package
+    (inherit maven-artifact)
+    (name "maven-plugin-api")
+    (arguments
+     `(#:jar-name "maven-plugin-api.jar"
+       #:source-dir "maven-plugin-api/src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "maven-plugin-api/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (invoke "java" "org.codehaus.modello.ModelloCli"
+                       file mode "maven-plugin-api/src/main/java" version
+                       "false" "true"))
+             (let ((file "maven-plugin-api/src/main/mdo/lifecycle.mdo"))
+               (modello-single-mode file "1.0.0" "java")
+               (modello-single-mode file "1.0.0" "xpp3-reader")
+               (modello-single-mode file "1.0.0" "xpp3-writer"))
+             #t)))))
+    (inputs
+     `(("maven-artifact" ,maven-artifact)
+       ("maven-model" ,maven-model)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("guice" ,java-guice)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("sisu-inject" ,java-eclipse-sisu-inject)
+       ("javax-inject" ,java-javax-inject)
+       ("utils" ,java-plexus-utils)))
+    (native-inputs
+     `(("modello" ,java-modello-core)
+       ;; for modello:
+       ("classworlds" ,java-plexus-classworlds)
+       ("guava" ,java-guava)
+       ("xbean" ,java-geronimo-xbean-reflect)
+       ("build-api" ,java-sisu-build-api)
+       ;; modello plugins:
+       ("java" ,java-modello-plugins-java)
+       ("xml" ,java-modello-plugins-xml)
+       ("xpp3" ,java-modello-plugins-xpp3)
+       ;; for tests
+       ("java-junit" ,java-junit)))
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains strictly the API for plugins -- composed of goals
+implemented by Mojos -- development.
+
+A plugin is described in a @file{META-INF/maven/plugin.xml} plugin descriptor,
+generally generated from plugin sources using maven-plugin-plugin.")))
