@@ -416,6 +416,33 @@ artifact and repository handling code.  It uses providers, that are tools to
 manage artifacts and deployment.  This package contains the file provider which
 gets and puts artifacts using the file system.")))
 
+(define-public maven-wagon-tck-http
+  (package
+    (inherit maven-wagon-provider-api)
+    (name "maven-wagon-tck-http")
+    (arguments
+     `(#:jar-name "maven-wagon-tck-http.jar"
+       #:source-dir "wagon-tcks/wagon-tck-http/src/main/java"
+       #:tests? #f; no tests
+       #:jdk ,icedtea-8))
+    (inputs
+     `(("java-plexus-util" ,java-plexus-utils)
+       ("maven-wagon-provider-api" ,maven-wagon-provider-api)
+       ("java-tomcat" ,java-tomcat)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-commons-codec" ,java-commons-codec)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
+       ("java-eclipse-jetty-webapp-9.2" ,java-eclipse-jetty-webapp-9.2)
+       ("java-eclipse-jetty-security-9.2" ,java-eclipse-jetty-security-9.2)
+       ("java-eclipse-jetty-server-9.2" ,java-eclipse-jetty-server-9.2)
+       ("java-eclipse-jetty-servlet-9.2" ,java-eclipse-jetty-servlet-9.2)))
+    (synopsis "Wagon HTTP Test Compatibility Kit")
+    (description "Maven Wagon is a transport abstraction that is used in Maven's
+artifact and repository handling code.  This package contains the HTTP
+Test Compatibility Kit.")))
+
 (define-public maven-artifact
   (package
     (name "maven-artifact")
