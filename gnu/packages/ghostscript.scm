@@ -336,7 +336,8 @@ architecture.")
               (for-each
                 (lambda (file)
                   (copy-file file (string-append dir "/" file)))
-                (find-files "." "pfb|afm"))))))))
+                (find-files "." "pfb|afm"))
+              #t))))))
    (synopsis "Free replacements for the PostScript fonts")
    (description
     "Ghostscript fonts provides fonts and font metrics customarily distributed with
