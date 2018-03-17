@@ -615,3 +615,85 @@ implemented by Mojos -- development.
 
 A plugin is described in a @file{META-INF/maven/plugin.xml} plugin descriptor,
 generally generated from plugin sources using maven-plugin-plugin.")))
+
+(define maven-core-bootstrap
+  (package
+    (inherit maven-artifact)
+    (name "maven-core")
+    (arguments
+     `(#:jar-name "maven-core.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       ;; Tests need maven-compat, which requires maven-core
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             ;; Required for generating components.xml in maven-core
+             (chdir "maven-core")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (mkdir-p "build/classes/")
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (add-before 'build 'generate-sisu-named
+           (lambda _
+             (mkdir-p "build/classes/META-INF/sisu")
+             (chmod "../sisu.sh" #o755)
+             (invoke "../sisu.sh" "src/main/java"
+                     "build/classes/META-INF/sisu/javax.inject.Named")
+             #t))
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (invoke "java" "org.codehaus.modello.ModelloCli"
+                       file mode "src/main/java" version
+                       "false" "true"))
+             (let ((file "src/main/mdo/toolchains.mdo"))
+               (modello-single-mode file "1.1.0" "java")
+               (modello-single-mode file "1.1.0" "xpp3-reader")
+               (modello-single-mode file "1.1.0" "xpp3-writer"))
+             #t)))))
+    (inputs
+     `(("maven-artifact" ,maven-artifact)
+       ("maven-resolver-provider" ,maven-resolver-provider)
+       ("maven-builder-support" ,maven-builder-support)
+       ("maven-model" ,maven-model)
+       ("maven-model-builder" ,maven-model-builder)
+       ("maven-settings" ,maven-settings)
+       ("maven-settings-builder" ,maven-settings-builder)
+       ("maven-plugin-api" ,maven-plugin-api)
+       ("maven-repository-metadata" ,maven-repository-metadata)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("java-guava" ,java-guava)
+       ("java-guice" ,java-guice)
+       ("maven-resolver-api" ,maven-resolver-api)
+       ("maven-resolver-spi" ,maven-resolver-spi)
+       ("maven-resolver-util" ,maven-resolver-util)
+       ("maven-resolver-impl" ,maven-resolver-impl)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-plexus-classworld" ,java-plexus-classworlds)))
+    (native-inputs
+     `(("java-modello-core" ,java-modello-core)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-sisu-build-api" ,java-sisu-build-api)
+       ("java-modello-plugins-java" ,java-modello-plugins-java)
+       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
+       ("java-modello-plugins-xpp3" ,java-modello-plugins-xpp3)
+       ;; tests
+       ("java-junit" ,java-junit)
+       ("java-mockito-1" ,java-mockito-1)
+       ("java-commons-jxpath" ,java-commons-jxpath)))
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains the maven core classes managing the whole build
+process.")))
