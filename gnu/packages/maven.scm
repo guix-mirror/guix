@@ -767,3 +767,75 @@ generally generated from plugin sources using maven-plugin-plugin.")))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains the maven core classes managing the whole build
 process.")))
+
+(define-public maven-core
+  (package
+    (inherit maven-core-bootstrap)
+    (arguments
+      (substitute-keyword-arguments (package-arguments maven-core-bootstrap)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-before 'build 'modify-metainf
+              (lambda _
+                (substitute* "build.xml"
+                  (("message=\"\"") "message=\"Implementation-Version: 3.5.3\n\""))
+                #t))
+            (add-before 'build 'add-maven-files
+              (lambda _
+                (mkdir-p "build/classes/META-INF/maven/org.apache.maven/maven-core")
+                (copy-file "pom.xml"
+                           "build/classes/META-INF/maven/org.apache.maven/maven-core/pom.xml")
+                (with-output-to-file "build/classes/META-INF/maven/org.apache.maven/maven-core/pom.properties"
+                  (lambda _
+                    (format #t "version=~a~%
+groupId=org.apache.maven~%
+artifactId=maven-core" ,(package-version maven-core-bootstrap))))
+                #t))
+            (add-after 'build 'generate-metadata
+              (lambda _
+                (define (components file)
+                  (let ((sxml (with-input-from-file file
+                                (lambda _ (xml->sxml (current-input-port)
+                                                     #:trim-whitespace? #t)))))
+                    ;; Select the list of <component>s inside the <component-set>
+                    ;; and <components>.
+                    ((@ (ice-9 match) match) sxml
+                     (('*TOP*
+                       ('*PI* foo ...)
+                       ('component-set
+                        ('components x ...))) x))))
+                (use-modules (sxml simple))
+                (delete-file "build/classes/META-INF/plexus/components.xml")
+                (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                        "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                        "--source" "build/classes/META-INF/plexus"
+                        "--output" "build/classes/META-INF/plexus/components.t.xml"
+                        "--classes" "build/classes"
+                        "--descriptors" "build/classes")
+                ;; Now we merge all other components from hand-written xml
+                (let ((generated-xml (components "build/classes/META-INF/plexus/components.t.xml"))
+                      (components-xml (components "src/main/resources/META-INF/plexus/components.xml"))
+                      (default-bindings-xml (components "src/main/resources/META-INF/plexus/default-bindings.xml"))
+                      (artifact-handlers-xml (components "src/main/resources/META-INF/plexus/artifact-handlers.xml")))
+                  (with-output-to-file "build/classes/META-INF/plexus/components.xml"
+                    (lambda _
+                      (display "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+                      (sxml->xml
+                        `(component-set
+                           (components
+                             ,@(append generated-xml components-xml
+                                       default-bindings-xml
+                                       artifact-handlers-xml)))))))
+                #t))
+            (add-after 'generate-metadata 'rebuild
+              (lambda _
+                (invoke "ant" "jar")
+                #t))))))
+    (native-inputs
+     `(("java-plexus-component-metadata" ,java-plexus-component-metadata)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-plexus-cli" ,java-plexus-cli)
+       ("java-jdom2" ,java-jdom2)
+       ("java-qdox" ,java-qdox)
+       ("maven-core-boot" ,maven-core-bootstrap)
+       ,@(package-native-inputs maven-core-bootstrap)))))
