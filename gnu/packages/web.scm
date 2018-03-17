@@ -4841,7 +4841,8 @@ config files---you only have to specify the www root.")
               (snippet '(begin
                           (substitute* "src/error.h"
                             (("__DATE__") "\"1970-01-01\"")
-                            (("__TIME__") "\"00:00:00\""))))))
+                            (("__TIME__") "\"00:00:00\""))
+                          #t))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add dependency on geoip-tools.
@@ -4873,7 +4874,8 @@ on the fly.")
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Remove non-free IETF RFC documentation.
-                   (delete-file-recursively "doc")))))
+                   (delete-file-recursively "doc")
+                   #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
