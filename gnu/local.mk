@@ -864,8 +864,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libusb-for-axoloti.patch			\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
-  %D%/packages/patches/libvorbis-CVE-2017-14632.patch		\
-  %D%/packages/patches/libvorbis-CVE-2017-14633.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
