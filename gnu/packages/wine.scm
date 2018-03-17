@@ -270,12 +270,13 @@ integrate Windows applications into your desktop.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://dl.winehq.org/wine/source/3.x/wine-" version
-                    ".tar.xz"))
+                    "https://dl.winehq.org/wine/source/"
+                    (version-major version) ".x"
+                    "/wine-" version ".tar.xz"))
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0cx31jsll7mxd9r7v0vpahajqwb6da6cpwybv06l5ydkgfrbv505"))))
+                "14wf7536rkmhav9ibbvhqqkfqmbk1dckhd2679i5scizr5x290x4"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
               ("gtk+", gtk+)
               ("libva", libva)
