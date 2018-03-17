@@ -427,7 +427,8 @@ data types.")
                                          "-x" "(lib2to3|test/bad.*)"
                                          ,file)))
                               (find-files out "\\.py$")))
-                  (list '() '("-O") '("-OO"))))))))))
+                  (list '() '("-O") '("-OO")))
+                 #t)))))))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
