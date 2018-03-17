@@ -230,6 +230,30 @@ plexus-utils in Maven.  It is not a 100% API compatible replacement but a
 replacement with improvements.")
     (license license:asl2.0)))
 
+(define-public maven-plugin-annotations
+  (package
+    (name "maven-plugin-annotations")
+    (version "3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.apache.org/dist/maven/"
+                                  "plugin-tools/maven-plugin-tools-" version
+                                  "-source-release.zip"))
+              (sha256 (base32 "1ryqhs62j5pas93brhf5dsnvp99hxbvssf681yj5rk3r9h24hqm2"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-plugin-annotations.jar"
+       #:source-dir "maven-plugin-annotations/src/main/java"
+       #:tests? #f))
+    (inputs
+     `(("maven-artifact" ,maven-artifact)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://maven.apache.org/plugin-tools/maven-plugin-annotations/")
+    (synopsis "Java 5 annotations to use in Mojos")
+    (description "This package contains Java 5 annotations for use in Mojos.")
+    (license license:asl2.0)))
+
 (define-public maven-artifact
   (package
     (name "maven-artifact")
