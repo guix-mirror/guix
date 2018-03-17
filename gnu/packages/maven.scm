@@ -1303,3 +1303,120 @@ artifactId=maven-core" ,(package-version maven-core-bootstrap))))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains a Maven embeddable component, with CLI and
 logging support.")))
+
+(define-public maven-compat
+  (package
+    (inherit maven-artifact)
+    (name "maven-compat")
+    (arguments
+     `(#:jar-name "maven-compat.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "src/test"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Tests assume we're in this directory
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "maven-compat")
+             #t))
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (invoke "java" "org.codehaus.modello.ModelloCli"
+                       file mode "src/main/java" version
+                       "false" "true"))
+             (let ((file "src/main/mdo/profiles.mdo"))
+               (modello-single-mode file "1.0.0" "java")
+               (modello-single-mode file "1.0.0" "xpp3-reader")
+               (modello-single-mode file "1.0.0" "xpp3-writer"))
+             (let ((file "src/main/mdo/paramdoc.mdo"))
+               (modello-single-mode file "1.0.0" "java")
+               (modello-single-mode file "1.0.0" "xpp3-reader")
+               (modello-single-mode file "1.0.0" "xpp3-writer"))
+             #t))
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "src/main/java"
+                     "--output" "build/classes/META-INF/plexus/components.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes/META-INF")
+             #t))
+         (add-before 'check 'build-tests
+          (lambda _
+            (invoke "ant" "compile-tests")
+            #t))
+         (add-after 'build-tests 'generate-test-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                 ":build/classes"
+                                                 ":build/test-classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "src/test/java"
+                     "--output" "build/test-classes/META-INF/plexus/components.xml"
+                     "--classes" "build/test-classes"
+                     "--descriptors" "build/test-classes/META-INF")
+             #t))
+         (add-after 'generate-metadata 'rebuild
+           (lambda _
+             (invoke "ant" "jar")
+             #t)))))
+    (inputs
+     `(("maven-artifact" ,maven-artifact)
+       ("maven-repository-metadata" ,maven-repository-metadata)
+       ("maven-builder-support" ,maven-builder-support)
+       ("maven-model" ,maven-model)
+       ("maven-model-builder" ,maven-model-builder)
+       ("maven-settings" ,maven-settings)
+       ("maven-settings-builder" ,maven-settings-builder)
+       ("maven-core" ,maven-core)
+       ("maven-wagon-provider-api" ,maven-wagon-provider-api)
+       ("maven-wagon-file" ,maven-wagon-file)
+       ("maven-resolver-api" ,maven-resolver-api)
+       ("maven-resolver-util" ,maven-resolver-util)
+       ("maven-resolver-spi" ,maven-resolver-spi)
+       ("java-plexus-interpolation" ,java-plexus-interpolation)))
+    (native-inputs
+     `(("java-modello-core" ,java-modello-core)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-sisu-build-api" ,java-sisu-build-api)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-exclispe-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-guice" ,java-guice)
+       ("java-guava" ,java-guava)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("java-modello-plugins-java" ,java-modello-plugins-java)
+       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
+       ("java-modello-plugins-xpp3" ,java-modello-plugins-xpp3)
+       ;; metadata
+       ("java-plexus-component-metadata" ,java-plexus-component-metadata)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-plexus-cli" ,java-plexus-cli)
+       ("java-jdom2" ,java-jdom2)
+       ("maven-plugin-api" ,maven-plugin-api)
+       ("java-qdox" ,java-qdox)
+       ;; tests
+       ("java-plexus-cipher" ,java-plexus-cipher)
+       ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
+       ("java-jsr250", java-jsr250)
+       ("java-cdi-api" ,java-cdi-api)
+       ("java-junit" ,java-junit)
+       ("maven-resolver-impl" ,maven-resolver-impl)
+       ("maven-resolver-connector-basic" ,maven-resolver-connector-basic)
+       ("maven-resolver-transport-wagon" ,maven-resolver-transport-wagon)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("java-aop" ,java-aopalliance)
+       ("maven-resolver-provider" ,maven-resolver-provider)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-slf4j-simple" ,java-slf4j-simple)
+       ,@(package-inputs java-slf4j-api)))
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains Maven2 classes maintained as compatibility
+layer for plugins that need to keep Maven2 compatibility.")))
