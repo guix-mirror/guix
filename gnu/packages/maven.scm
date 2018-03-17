@@ -504,6 +504,90 @@ artifact and repository handling code.  It uses providers, that are tools to
 manage artifacts and deployment.  This package contains a shared library for
 wagon providers supporting HTTP.")))
 
+(define-public maven-wagon-http
+  (package
+    (inherit maven-wagon-provider-api)
+    (name "maven-wagon-http")
+    (arguments
+     `(#:jar-name "maven-wagon-http.jar"
+       #:source-dir "wagon-providers/wagon-http/src/main/java"
+       #:test-dir "wagon-providers/wagon-http/src/test"
+       #:test-exclude (list
+                        "**/Abstract*.java"
+                        ;; FIXME: javax.net.ssl.SSLHandshakeException:
+                        ;; sun.security.validator.ValidatorException:
+                        ;; PKIX path building failed:
+                        ;; sun.security.provider.certpath.SunCertPathBuilderException:
+                        ;; unable to find valid certification path to requested target
+                        "**/HttpsWagonPreemptiveTest.java"
+                        "**/HttpsWagonTest.java"
+                        ;; Injection errors
+                        "**/TckTest.java")
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (install-file "wagon-providers/wagon-http/src/main/resources/META-INF/plexus/components.xml"
+                           "build/classes/META-INF/plexus")
+             #t))
+         (add-before 'check 'fix-resource-path
+           (lambda _
+             (substitute* '("wagon-providers/wagon-http/src/test/java/org/apache/maven/wagon/providers/http/HttpsWagonPreemptiveTest.java"
+                            "wagon-providers/wagon-http/src/test/java/org/apache/maven/wagon/providers/http/HttpsWagonTest.java")
+               (("src/test") "wagon-providers/wagon-http/src/test"))
+             #t)))))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-httpcomponents-httpclient" ,java-httpcomponents-httpclient)
+       ("java-httpcomponents-httpcore" ,java-httpcomponents-httpcore)
+       ("maven-wagon-http-shared" ,maven-wagon-http-shared)
+       ("maven-wagon-tck-http" ,maven-wagon-tck-http)
+       ("maven-wagon-provider-api" ,maven-wagon-provider-api)))
+    (native-inputs
+     `(("maven-wagon-provider-test" ,maven-wagon-provider-test)
+       ("java-plexus-component-metadata" ,java-plexus-component-metadata)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-guava" ,java-guava)
+       ("java-guice" ,java-guice)
+       ("java-inject" ,java-javax-inject)
+       ("java-cglib" ,java-cglib)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-cli" ,java-plexus-cli)
+       ("maven-plugin-api" ,maven-plugin-api)
+       ("maven-plugin-annotations" ,maven-plugin-annotations)
+       ("maven-core" ,maven-core)
+       ("maven-model" ,maven-model)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-qdox" ,java-qdox)
+       ("java-jdom2" ,java-jdom2)
+       ("java-asm" ,java-asm)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-tomcat" ,java-tomcat)
+       ("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
+       ("java-eclipse-jetty-io-9.2" ,java-eclipse-jetty-io-9.2)
+       ("java-eclipse-jetty-http-9.2" ,java-eclipse-jetty-http-9.2)
+       ("java-eclipse-jetty-server-9.2" ,java-eclipse-jetty-server-9.2)
+       ("java-eclipse-jetty-servlet-9.2" ,java-eclipse-jetty-servlet-9.2)
+       ("java-eclipse-jetty-security-9.2" ,java-eclipse-jetty-security-9.2)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-commons-codec" ,java-commons-codec)
+       ("java-commons-io" ,java-commons-io)
+       ("java-jsoup" ,java-jsoup)
+       ("java-slf4j-simple" ,java-slf4j-simple)
+       ,@(package-native-inputs maven-wagon-provider-api)))
+    (synopsis "Wagon provider that gets and puts artifacts through HTTP(S)")
+    (description "Maven Wagon is a transport abstraction that is used in Maven's
+artifact and repository handling code.  It uses providers, that are tools to
+manage artifacts and deployment.  This package contains a Wagon provider that
+gets and puts artifacts through HTTP(S) using Apache HttpClient-4.x.")))
+
 (define-public maven-artifact
   (package
     (name "maven-artifact")
