@@ -1740,7 +1740,6 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
 (define-public unzip
   (package (inherit zip)
     (name "unzip")
-    (replacement unzip/fixed)
     (version "6.0")
     (source
      (origin
@@ -1768,6 +1767,13 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure)
+                  (add-after 'unpack 'fortify
+                    (lambda _
+                      ;; Mitigate CVE-2018-1000035, an exploitable buffer overflow.
+                      ;; This environment variable is recommended in 'unix/Makefile'
+                      ;; for passing flags to the C compiler.
+                      (setenv "LOCAL_UNZIP" "-D_FORTIFY_SOURCE=1")
+                      #t))
                   (replace 'build
                     (lambda* (#:key make-flags #:allow-other-keys)
                       (apply invoke "make"
@@ -1790,20 +1796,6 @@ subdirectories below it, all files from the specified zipfile.  UnZip
 recreates the stored directory structure by default.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
-
-(define unzip/fixed
-  (package/inherit unzip
-    (arguments
-      (substitute-keyword-arguments (package-arguments unzip)
-        ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'fortify
-               (lambda _
-                 ;; Mitigate CVE-2018-1000035, an exploitable buffer overflow.
-                 ;; This environment variable is recommended in 'unix/Makefile'
-                 ;; for passing flags to the C compiler.
-                 (setenv "LOCAL_UNZIP" "-D_FORTIFY_SOURCE=1")
-                 #t))))))))
 
 (define-public zziplib
   (package
