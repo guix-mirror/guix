@@ -297,8 +297,7 @@ required structures.")
          'configure
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((out (assoc-ref outputs "out")))
-             (apply invoke "./config"
-                    (list
+             (invoke "./config"
                      "shared"                 ;build shared libraries
                      "--libdir=lib"
 
@@ -316,7 +315,7 @@ required structures.")
                      ,@(if (and (not (%current-target-system))
                                 (string-prefix? "armhf" (%current-system)))
                            '("-mfpu=vfpv3")
-                           '()))))))
+                           '())))))
         (add-after
          'install 'make-libraries-writable
          (lambda* (#:key outputs #:allow-other-keys)
@@ -422,8 +421,7 @@ required structures.")
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (lib (string-append out "/lib")))
-                 (apply invoke "./config"
-                        (list
+                 (invoke "./config"
                          "shared"       ;build shared libraries
                          "--libdir=lib"
 
@@ -442,7 +440,7 @@ required structures.")
                          ,@(if (and (not (%current-target-system))
                                     (string-prefix? "armhf" (%current-system)))
                                '("-mfpu=vfpv3")
-                               '()))))))
+                               '())))))
 
            ;; XXX: Duplicate this phase to make sure 'version' evaluates
            ;; in the current scope and not the inherited one.
