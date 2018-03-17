@@ -6208,6 +6208,29 @@ container.")))
      `(("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
        ,@(package-native-inputs java-eclipse-jetty-util)))))
 
+(define-public java-eclipse-jetty-xml-9.2
+  (package
+    (inherit java-eclipse-jetty-xml)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (arguments
+     `(#:jar-name "eclipse-jetty-xml.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; most tests require network
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-xml")
+             #t)))))
+    (inputs
+     `(("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("java-eclipse-jetty-io-9.2" ,java-eclipse-jetty-io-9.2)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
+
 (define-public java-jsoup
   (package
     (name "java-jsoup")
