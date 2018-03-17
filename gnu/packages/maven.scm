@@ -839,3 +839,96 @@ artifactId=maven-core" ,(package-version maven-core-bootstrap))))
        ("java-qdox" ,java-qdox)
        ("maven-core-boot" ,maven-core-bootstrap)
        ,@(package-native-inputs maven-core-bootstrap)))))
+
+(define-public maven-embedder
+  (package
+    (inherit maven-artifact)
+    (name "maven-embedder")
+    (arguments
+     `(#:jar-name "maven-embedder.jar"
+       #:source-dir "maven-embedder/src/main/java"
+       #:test-dir "maven-embedder/src/test"
+       #:test-exclude (list "**/MavenCliTest.java")
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-sisu-named
+           (lambda _
+             (mkdir-p "build/classes/META-INF/sisu")
+             (chmod "sisu.sh" #o755)
+             (invoke "./sisu.sh" "maven-embedder/src/main/java"
+                     "build/classes/META-INF/sisu/javax.inject.Named")
+             #t))
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (invoke "java" "org.codehaus.modello.ModelloCli"
+                       file mode "maven-embedder/src/main/java" version
+                       "false" "true"))
+             (let ((file "maven-embedder/src/main/mdo/core-extensions.mdo"))
+               (modello-single-mode file "1.0.0" "java")
+               (modello-single-mode file "1.0.0" "xpp3-reader")
+               (modello-single-mode file "1.0.0" "xpp3-writer"))
+             #t))
+         (add-before 'check 'fix-test-paths
+           (lambda _
+             (substitute* "maven-embedder/src/test/java/org/apache/maven/cli/CLIManagerDocumentationTest.java"
+               (("target/test-classes") "build/test-classes"))
+             #t))
+         (add-before 'check 'fix-test-compilation
+           (lambda _
+             ;; Tests are in the java/ subdir. Other subdirectories contain
+             ;; additional test plugins, with duplicate classes, so we can't
+             ;; compile them. Also, they are meant to be built with maven, to
+             ;; test its build process.
+             (substitute* "build.xml"
+               (("srcdir=\"maven-embedder/src/test\"")
+                "srcdir=\"maven-embedder/src/test/java\""))
+             #t)))))
+    (inputs
+     `(("maven-core" ,maven-core)
+       ("maven-artifact" ,maven-artifact)
+       ("maven-plugin-api" ,maven-plugin-api)
+       ("maven-builder-support" ,maven-builder-support)
+       ("maven-model" ,maven-model)
+       ("maven-model-builder" ,maven-model-builder)
+       ("maven-settings" ,maven-settings)
+       ("maven-settings-builder" ,maven-settings-builder)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-plexus-util" ,java-plexus-utils)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-plexus-cipher" ,java-plexus-cipher)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
+       ("maven-resolevr-util" ,maven-resolver-util)
+       ("maven-resolevr-api" ,maven-resolver-api)
+       ("java-logback-core" ,java-logback-core)
+       ("java-logback-classic" ,java-logback-classic)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-commons-io" ,java-commons-io)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("java-guava" ,java-guava)
+       ("java-guice" ,java-guice)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-slf4j-simple" ,java-slf4j-simple)))
+    (native-inputs
+     `(("java-modello-core" ,java-modello-core)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-sisu-build-api" ,java-sisu-build-api)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("java-modello-plugins-java" ,java-modello-plugins-java)
+       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
+       ("java-modello-plugins-xpp3" ,java-modello-plugins-xpp3)
+       ;; tests
+       ("java-junit" ,java-junit)
+       ("java-objenesis" ,java-objenesis)
+       ("java-mockito-1" ,java-mockito-1)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains a Maven embeddable component, with CLI and
+logging support.")))
