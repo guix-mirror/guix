@@ -383,8 +383,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.15.9")
-(define %linux-libre-hash "13lcard7i6w2c1cf9rfhvmq79xk4qp2p1c1920mfi69l20yvm572")
+(define %linux-libre-version "4.15.10")
+(define %linux-libre-hash "10fp8jmy0fxq8l01m1nnagpq1hznl9jmhcwknk8izjmdcb5snq6c")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -392,8 +392,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.26")
-(define %linux-libre-4.14-hash "1m2zr17wpasg5riysbaa4g5i492jzr93py2jm088ki818s4a9cm3")
+(define %linux-libre-4.14-version "4.14.27")
+(define %linux-libre-4.14-hash "0mgkka9niyd0lj4qliy4v7jjh9lg1a5jwlv60yw7z0s4k7ajyyrp")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -556,7 +556,8 @@ providing the system administrator with some help in common tasks.")
               (sha256
                (base32
                 "04fzrnrr3pvqskvjn9f81y0knh0jvvqx4lmbz5pd4lfdm5pv2l8s"))
-              (patches (search-patches "util-linux-tests.patch"))
+              (patches (search-patches "util-linux-tests.patch"
+                                       "util-linux-CVE-2018-7738.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; We take the 'logger' program from GNU Inetutils and 'kill'

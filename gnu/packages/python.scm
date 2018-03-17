@@ -3873,6 +3873,7 @@ Python's distutils.")
        (uri (git-reference
              (url "https://github.com/dieterv/elib.intl.git")
              (commit "d09997cfef")))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "0y7vzff9xgbnaay7m0va1arl6g68ncwrvbgwl7jqlclsahzzb09d"))))

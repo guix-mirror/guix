@@ -1037,6 +1037,7 @@ contain.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "filecontents"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0swkbxv8vg0yizadfnvrwjb4cj0pn34v9wm6v7wqq903fdav7k7q"))))
@@ -1061,6 +1062,7 @@ overwrite existing files and letting you use @code{filecontents} /
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "generic" "ifxetex"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0w2xj7n0szavj329kds09q626szkc378p3w0sk022q0ln4ksz86d"))))
@@ -1089,6 +1091,7 @@ requires the e-TeX extensions to the TeX primitive set.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/generic/epsf"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "14w3j81ympyvg8hkk9i1xgr8a0gfnfsb2ki8qqsk5pa051za1xcy"))))
@@ -1121,6 +1124,7 @@ users, via its Plain TeX version.)")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "fancyvrb"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "03l7140y031rr14h02i4z9zqsfvrbn7wzwxbjsrjcgrk6sdr71wv"))))
@@ -1148,6 +1152,7 @@ verbatim source).")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "graphics"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "07azyn0b1s49vbdlr6dmygrminxp72ndl24j1091hiiccvrjq3xc"))))
@@ -1180,6 +1185,9 @@ verbatim source).")
            (uri (git-reference
                  (url "https://github.com/latex3/graphics-cfg.git")
                  (commit "19d1238af17df376cd46333b229579b0f7f3a41f")))
+           (file-name (string-append "graphics-cfg-"
+                                     (number->string %texlive-revision)
+                                     "-checkout"))
            (sha256
             (base32
              "12kbgbm52gmmgn8zajb74s8n5rvnxcfdvs3iyj8vcw5vrsw5i6mh"))))
@@ -1191,6 +1199,9 @@ verbatim source).")
                                      %texlive-tag "/Master/texmf-dist/"
                                      "/tex/latex/graphics-def"))
                  (revision %texlive-revision)))
+           (file-name (string-append "graphics-def-"
+                                     (number->string %texlive-revision)
+                                     "-checkout"))
            (sha256
             (base32
              "0gi4qv6378nl84s8n1yx3hjqvv7r4lza7hpbymbl5rzwgw8qrnyb"))))))
@@ -1212,6 +1223,7 @@ keyval, and lscape.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "xcolor"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "01n613s7bcrd2n4jfawm0k4nn2ny3aaifp2jjfif3lz4sbv31494"))))
@@ -1265,6 +1277,7 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "oberdiek"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0aswvsxgsn709xmvpcg50d2xl7vcy1ckdxb9c1cligqqfjjvviqf"))))
@@ -1295,6 +1308,7 @@ arrows; record information about document class(es) used; and many more.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "tools"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "052a0pch2k5zls5jlay9xxcf93rw3i60a2x28y3ip3rhbsv3xgiz"))))
@@ -1324,6 +1338,7 @@ xr, and xspace.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/url"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "184s2543cwia5l7iibhlkl1ffbncfhjpv5p56zq0c15by5sghlac"))))
@@ -1359,6 +1374,7 @@ of file names.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "l3kernel"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0r0wfk594j8wkdqhh21haimwsfq8x5jch4ldm21hkzk5dnmvpbg6"))))
@@ -1382,6 +1398,7 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "l3packages"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "16jplkvzdysfssijq9l051nsks65c2nrarsl17k8gjhc28yznj8y"))))
@@ -1429,6 +1446,7 @@ programming tools and kernel sup­port.  Packages provided in this release are:
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "fontspec"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1rx43y5xmjqvc27pjdnmqwp4pcw3czcfd6nfpmzc1gnqfl1hlc0q"))))
@@ -1459,6 +1477,7 @@ the l3kernel and xparse bundles from the LaTeX 3 development team.")
               (uri (string-append "https://github.com/lualatex/lualibs/"
                                   "releases/download/v"
                                   version "/lualibs.zip"))
+              (file-name (string-append name "-" version ".zip"))
               (sha256
                (base32
                 "1xx9blvrmx9hyhrl345lpai9m6xxnw997261a1ahn1bm5r2j5fqy"))))
@@ -1491,6 +1510,7 @@ this bundle for use independent of ConTeXt.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "amsmath"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "178ywjpdlv78qmfzqdyn6gy14620zjsn2q9wap76fbr9s4hw6dba"))))
@@ -1519,6 +1539,7 @@ definitions.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "amscls"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0jmcr37mcdi7drczppvr6lmz5d5yd9m67ii79gp2nglg1xpw934j"))))
@@ -1542,6 +1563,7 @@ distribution.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "babel"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1n3i5adsyy7jw0imnzrm2i8wkf73i3mjk9h3ic8cb9cd19i4r9r3"))))
@@ -1598,6 +1620,7 @@ for Canadian and USA text.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "cyrillic"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1mdhl35hwas68ki56qqngzar37dwv4mm64l2canihr255bz34lbv"))))
@@ -1620,6 +1643,7 @@ language that is written in a Cyrillic alphabet.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "psnfss"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1920dcq8613yzprasbg80fh4fcjcidvvl54wkx438nimyxcri7qz"))))
@@ -1963,6 +1987,7 @@ without affecting the structure of the list (this works for @code{itemize} and
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/filemod"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0vpxilfw69xv78f03g0j0zw0bw4qcn36whqp8phcq48qk1ax2kr2"))))
@@ -2022,6 +2047,7 @@ classes of systems.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "natbib"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0aqliq0nwblxyrzhwhv77pnmk7qh2y3prgq7z7qhwcbgz5kisld7"))))
@@ -2109,6 +2135,7 @@ re-processing.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/seminar"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0y4i651b75y6006n03x8n86bsqvjsailvvz9bhzy51dzsznqidq0"))))
@@ -2132,6 +2159,7 @@ recent classes such as powerdot or beamer, both of which are tuned to
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "trimspaces"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0da00lb32am4g63mn96625wg48p3pj3spx79lajrk17d549apwqa"))))
@@ -2479,6 +2507,7 @@ situations where longtable has problems.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/texinfo"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "09zj2w3lx0y6i2syfjjgizahf86z301dw8p37ln6syfhqhzqdz46"))))
@@ -2542,6 +2571,7 @@ does not affect @code{\\tt}, @code{\\texttt}, etc.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/anysize"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "19khwqjlvznc955sijhww3c4zbb0053rvzwv9nz738qknq7y18vb"))))
@@ -2571,6 +2601,7 @@ considered obsolete; alternatives are the @code{typearea} package from the
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "appendix"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0rxfpr8vq3brwx5rc7qn91ixlp9zva4zrms8a579fqa1g5yva7vg"))))
@@ -2593,6 +2624,7 @@ command.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "changebar"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1ik4m8pzfsn1grlda6fniqqfwmgj7rfxwg63jdw0p0qv002vc7ik"))))
@@ -2649,6 +2681,7 @@ copy-and-paste functions work properly.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "colortbl"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "190pmq8la2rq07xry8bn8z8yywzxv6fqyqaj7yjfj5rgw6x0mas8"))))
@@ -2672,6 +2705,7 @@ tables to be coloured.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/fancybox"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0smmnaad2q8qwicay1frri990lv65l0k8cwzsvdsyp3jk8kp042w"))))
@@ -2706,6 +2740,7 @@ floats, center, flushleft, and flushright, lists, and pages.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/fancyhdr"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "04h430agf8aj7ziwyb46xpk95c605rjk1wzhr63m6ylipihidlgw"))))
@@ -2735,6 +2770,7 @@ would automatically change the heading style in use).")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "float"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0nbl7wylkv22fcdv4p8byhhj575fli6jnqjpkhrkbv8dzwah84nq"))))
@@ -2758,6 +2794,7 @@ with @code{\\floatplacement{figure}{H}}.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "footmisc"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "03x61wwql8nh6zrqiiiq3rb0x7m3pn48c606zapy19y21fybwdxs"))))
@@ -2781,6 +2818,7 @@ footnotes with symbols rather than numbers.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "listings"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1nsn9wp3wl12b36c0sqrim33lf33cr5wky0h4ncnw8lvqgm7h8wf"))))
@@ -2808,6 +2846,7 @@ styles.  Support for @code{hyperref} is provided.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/jknapltx"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0m034x72f2g07icr50gacyxfb9g1lz2rmqh4kqr1qjb421x2kds9"))))
@@ -2846,6 +2885,7 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/fonts/source/jknappen/ec/"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "12av65fbz9xiashm09c9m1fj1mijxls5xspd7652ry1n5s0nixy4"))))
@@ -2873,13 +2913,13 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
              (mkdir "build")
              (every (lambda (font)
                       (format #t "building font ~a\n" font)
-                      (zero? (system* "mf" "-progname=mf"
-                                      "-output-directory=build"
-                                      (string-append "\\"
-                                                     "mode:=ljfour; "
-                                                     "mag:=1; "
-                                                     "batchmode; "
-                                                     "input " (basename font ".mf")))))
+                      (invoke "mf" "-progname=mf"
+                              "-output-directory=build"
+                              (string-append "\\"
+                                             "mode:=ljfour; "
+                                             "mag:=1; "
+                                             "batchmode; "
+                                             "input " (basename font ".mf"))))
                     (find-files "." "[0-9]+\\.mf$"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2927,6 +2967,7 @@ texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/fonts/source/public/rsfs/"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0r12pn02r4a955prcvq0048nifh86ihlcgvw3pppqqvfngv34l5h"))))
@@ -2954,13 +2995,13 @@ texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
              (mkdir "build")
              (every (lambda (font)
                       (format #t "building font ~a\n" font)
-                      (zero? (system* "mf" "-progname=mf"
-                                      "-output-directory=build"
-                                      (string-append "\\"
-                                                     "mode:=ljfour; "
-                                                     "mag:=1; "
-                                                     "batchmode; "
-                                                     "input " (basename font ".mf")))))
+                      (invoke "mf" "-progname=mf"
+                              "-output-directory=build"
+                              (string-append "\\"
+                                             "mode:=ljfour; "
+                                             "mag:=1; "
+                                             "batchmode; "
+                                             "input " (basename font ".mf"))))
                     (find-files "." "[0-9]+\\.mf$"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2996,6 +3037,7 @@ one of the packages @code{calrsfs} and @code{mathrsfs}.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "eso-pic"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1xvmms28mvvfpks9x7lfya2xhh5k8jy3qnlih1mzcnf156xnb89z"))))
@@ -3020,6 +3062,7 @@ routine, which may be used to place the output at fixed positions.  The
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/eepic"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1c68gvh021pvybg07apsd2xhq2ljbg80kq94wh71drdga3c2zqjw"))))
@@ -3088,6 +3131,7 @@ in the form @code{key=value} are available, for example:
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "multirow"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0qlxy47f1f8plgch3jqfsnrdgpyz20sz46yp33i2jwvf9hvfczf0"))))
@@ -3112,6 +3156,7 @@ entry at the \"natural\" width of its text.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/overpic"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0m29q9qdb00558b7g2i7iw6w62n5s46yx81j8m99qkv77magk4fm"))))
@@ -3177,6 +3222,7 @@ designed class) helps alleviate this untidiness.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "pdfpages"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "06p5smfq66559ppdnmkl3hp8534x84ywbscimsiir4gllpya3i9h"))))
@@ -3200,6 +3246,7 @@ use this package to insert PostScript files, in addition to PDF files.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "fonts" "stmaryrd"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "08pn4ca3vl6qm9l3wm5h5iyjsrg411kkm1yana329xwg2j14s9n6"))))
@@ -3232,6 +3279,7 @@ the whole font.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "subfigure"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "15spcl5wb7w269qd6y596vp4yi8sa5ppcx8w4z2i9kyp02r3a0yb"))))
@@ -3287,6 +3335,7 @@ according to the natural width of the widest cell in the column.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/threeparttable"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "10vy9k150w2lviw8h22s2mcykff38xci653m5823s2vv44pwbmzq"))))
@@ -3494,6 +3543,7 @@ of ink traps which typify the Kurier font.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/latex/titlesec"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "04nmkhqx6jxcxx9a30zbcd5smxi5fd0cbp132bki7fnvhspnhg21"))))
@@ -3554,6 +3604,7 @@ now contains a package @code{fix-cm},f which performs the task of
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "lh"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "00gdiwh3sfhh1iimjhpja7lm7k4vzqzql2irgwnpz94qvh25zwi5"))))
@@ -3584,6 +3635,7 @@ OT2 encoded fonts, CM bright shaped fonts and Concrete shaped fonts.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/metapost"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "03nvjddffiz796wll6axzmgfvynyciy2mqamv20qx252w71vwkwd"))))
@@ -3667,6 +3719,7 @@ get a narrower “natural” width.")
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "wasysym"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1sgwbfwjjf70g54hh93gsd9jp9nm67w6n74x9d72a56n07jbk5hv"))))
@@ -3821,6 +3874,7 @@ e-TeX.")
                                         %texlive-tag "/Master/texmf-dist/"
                                         "/tex/generic/pdftex"))
                     (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0k68zmqzs4qvrqxdwsrawbjb14hxqjfamq649azvai0jjxdpkljd"))))

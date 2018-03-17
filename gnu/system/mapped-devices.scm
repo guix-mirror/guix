@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,13 +25,14 @@
   #:use-module (guix i18n)
   #:use-module ((guix utils)
                 #:select (source-properties->location
+                          &fix-hint
                           &error-location))
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system uuid)
-  #:use-module ((gnu system linux-initrd)
-                #:select (check-device-initrd-modules))
   #:autoload   (gnu build file-systems) (find-partition-by-luks-uuid)
+  #:autoload   (gnu build linux-modules)
+                 (device-module-aliases matching-modules known-module-aliases)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
   #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
@@ -54,6 +55,8 @@
 
             device-mapping-service-type
             device-mapping-service
+
+            check-device-initrd-modules           ;XXX: needs a better place
 
             luks-device-mapping
             raid-device-mapping))
@@ -105,6 +108,48 @@
 (define (device-mapping-service mapped-device)
   "Return a service that sets up @var{mapped-device}."
   (service device-mapping-service-type mapped-device))
+
+
+;;;
+;;; Static checks.
+;;;
+
+(define (check-device-initrd-modules device linux-modules location)
+  "Raise an error if DEVICE needs modules beyond LINUX-MODULES to operate.
+DEVICE must be a \"/dev\" file name."
+  (define aliases
+    ;; Attempt to load 'modules.alias' from the current kernel, assuming we're
+    ;; on GuixSD, and assuming that corresponds to the kernel we'll be
+    ;; installing.  Skip the whole thing if that file cannot be read.
+    (catch 'system-error
+      (lambda ()
+        (known-module-aliases))
+      (const #f)))
+
+  (when aliases
+    (let ((modules (delete-duplicates
+                    (append-map (cut matching-modules <> aliases)
+                                (device-module-aliases device)))))
+      (unless (every (cute member <> linux-modules) modules)
+        (raise (condition
+                (&message
+                 (message (format #f (G_ "you may need these modules \
+in the initrd for ~a:~{ ~a~}")
+                                  device modules)))
+                (&fix-hint
+                 (hint (format #f (G_ "Try adding them to the
+@code{initrd-modules} field of your @code{operating-system} declaration, along
+these lines:
+
+@example
+ (operating-system
+   ;; @dots{}
+   (initrd-modules (append (list~{ ~s~})
+                           %base-initrd-modules)))
+@end example\n")
+                               modules)))
+                (&error-location
+                 (location (source-properties->location location)))))))))
 
 
 ;;;

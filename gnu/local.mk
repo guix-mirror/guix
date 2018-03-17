@@ -1073,6 +1073,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/scotch-test-threading.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
+  %D%/packages/patches/shadow-CVE-2018-7169.patch		\
   %D%/packages/patches/shepherd-close-fds.patch			\
   %D%/packages/patches/shepherd-herd-status-sorted.patch	\
   %D%/packages/patches/shishi-fix-libgcrypt-detection.patch	\
@@ -1125,6 +1126,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/unzip-overflow-long-fsize.patch		\
   %D%/packages/patches/unzip-remove-build-date.patch		\
   %D%/packages/patches/ustr-fix-build-with-gcc-5.patch		\
+  %D%/packages/patches/util-linux-CVE-2018-7738.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\

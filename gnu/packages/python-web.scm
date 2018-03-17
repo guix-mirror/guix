@@ -1693,14 +1693,14 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
 (define-public python-betamax
   (package
     (name "python-betamax")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "betamax" version))
         (sha256
          (base32
-          "18f8v5gng3j773jlbbzx4rg1i4y2zw3m2l1zpmbvp8bh5a2q1i42"))))
+          "1hki1c2vs7adq7zr56wi6i5bhrkia4s2ywpv2c98ibnczz709w2v"))))
     (build-system python-build-system)
     (arguments
      '(;; Many tests fail because they require networking.

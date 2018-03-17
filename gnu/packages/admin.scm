@@ -360,6 +360,7 @@ hostname.")
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
                     "download/" version "/shadow-" version ".tar.xz"))
+              (patches (search-patches "shadow-CVE-2018-7169.patch"))
               (sha256
                (base32
                 "0hdpai78n63l3v3fgr3kkiqzhd0awrpfnnzz4mf7lmxdh61qb37w"))))
@@ -1209,7 +1210,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20180209")
+    (version "20180313")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1217,7 +1218,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "04hyc5s9iiyiznvspx7q73r6ns98d51wrv8zfvqbqv52gqq8hzdh"))))
+                "16galaadmr37q2pvk2gyxrm8d1xldzk31djfxfq9v1c9yq4i425h"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2208,7 +2209,7 @@ buffers.")
 (define-public intel-gpu-tools
   (package
     (name "intel-gpu-tools")
-    (version "1.21")
+    (version "1.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
@@ -2216,7 +2217,7 @@ buffers.")
                                   "intel-gpu-tools-" version ".tar.gz"))
               (sha256
                (base32
-                "1xfy4cgimyyn5qixlrfkadgnl9qwbk30vw8k80g8vjnrcc4hx986"))))
+                "1jx5w5fr6jp67rcrlp5v79cn8kp9n0wgd5pbfgzamlah5cx6j3yd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; many of the tests try to load kernel modules
@@ -2228,7 +2229,8 @@ buffers.")
              (setenv "NOCONFIGURE" "1")
              (invoke "sh" "autogen.sh"))))))
     (inputs
-     `(("util-macros" ,util-macros)
+     `(("eudev" ,eudev)
+       ("util-macros" ,util-macros)
        ("libdrm" ,libdrm)
        ("libpciaccess" ,libpciaccess)
        ("kmod" ,kmod)
@@ -2252,6 +2254,7 @@ changes, and many require complicated build procedures or specific testing
 environments to get useful results.  Therefore, Intel GPU Tools includes
 low-level tools and tests specifically for development and testing of the
 Intel DRM Driver.")
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:expat)))
 
 (define-public fabric

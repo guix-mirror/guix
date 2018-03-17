@@ -62,6 +62,7 @@
             %default-console-font
             console-font-service-type
             console-font-service
+            virtual-terminal-service-type
 
             udev-configuration
             udev-configuration?
@@ -665,22 +666,27 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
   "Return a service that sets the host name to @var{name}."
   (service host-name-service-type name))
 
-(define (unicode-start tty)
-  "Return a gexp to start Unicode support on @var{tty}."
-  (with-imported-modules '((guix build syscalls))
-    #~(let* ((fd (open-fdes #$tty O_RDWR))
-             (termios (tcgetattr fd)))
-        (define (set-utf8-input termios)
-          (set-field termios (termios-input-flags)
-                     (logior (input-flags IUTF8)
-                             (termios-input-flags termios))))
-
-        (tcsetattr fd (tcsetattr-action TCSAFLUSH)
-                   (set-utf8-input termios))
-
-        ;; TODO: ioctl(fd, KDSKBMODE, K_UNICODE);
-        (close-fdes fd)
-        #t)))
+(define virtual-terminal-service-type
+  ;; Ensure that virtual terminals run in UTF-8 mode.  This is the case by
+  ;; default with recent Linux kernels, but this service allows us to ensure
+  ;; this.  This service must start before any 'term-' service so that newly
+  ;; created terminals inherit this property.  See
+  ;; <https://bugs.gnu.org/30505> for a discussion.
+  (shepherd-service-type
+   'virtual-terminal
+   (lambda (utf8?)
+     (shepherd-service
+      (documentation "Set virtual terminals in UTF-8 module.")
+      (provision '(virtual-terminal))
+      (requirement '(root-file-system))
+      (start #~(lambda _
+                 (call-with-output-file
+                     "/sys/module/vt/parameters/default_utf8"
+                   (lambda (port)
+                     (display 1 port)))
+                 #t))
+      (stop #~(const #f))))
+   #t))                                           ;default to UTF-8
 
 (define console-keymap-service-type
   (shepherd-service-type
@@ -719,8 +725,6 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
              (requirement (list (symbol-append 'term-
                                                (string->symbol tty))))
 
-             (modules '((guix build syscalls)     ;for 'tcsetattr'
-                        (srfi srfi-9 gnu)))       ;for 'set-field'
              (start #~(lambda _
                         ;; It could be that mingetty is not fully ready yet,
                         ;; which we check by calling 'ttyname'.
@@ -732,16 +736,18 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
                             (usleep 500)
                             (loop (- i 1))))
 
-                        (and #$(unicode-start device)
-                             ;; 'setfont' returns EX_OSERR (71) when an
-                             ;; KDFONTOP ioctl fails, for example.  Like
-                             ;; systemd's vconsole support, let's not treat
-                             ;; this as an error.
-                             (case (status:exit-val
-                                    (system* #$(file-append kbd "/bin/setfont")
-                                             "-C" #$device #$font))
-                               ((0 71) #t)
-                               (else #f)))))
+                        ;; Assume the VT is already in UTF-8 mode, thanks to
+                        ;; the 'virtual-terminal' service.
+                        ;;
+                        ;; 'setfont' returns EX_OSERR (71) when an
+                        ;; KDFONTOP ioctl fails, for example.  Like
+                        ;; systemd's vconsole support, let's not treat
+                        ;; this as an error.
+                        (case (status:exit-val
+                               (system* #$(file-append kbd "/bin/setfont")
+                                        "-C" #$device #$font))
+                          ((0 71) #t)
+                          (else #f))))
              (stop #~(const #t))
              (respawn? #f)))))
        tty+font))
@@ -1093,7 +1099,7 @@ the tty to run, among other things."
        ;; Since the login prompt shows the host name, wait for the 'host-name'
        ;; service to be done.  Also wait for udev essentially so that the tty
        ;; text is not lost in the middle of kernel messages (XXX).
-       (requirement '(user-processes host-name udev))
+       (requirement '(user-processes host-name udev virtual-terminal))
 
        (start  #~(make-forkexec-constructor
                   (list #$(file-append mingetty "/sbin/mingetty")
@@ -2034,7 +2040,7 @@ This service is not part of @var{%base-services}."
 
        (shepherd-service
         (documentation "kmscon virtual terminal")
-        (requirement '(user-processes udev dbus-system))
+        (requirement '(user-processes udev dbus-system virtual-terminal))
         (provision (list (symbol-append 'term- (string->symbol virtual-terminal))))
         (start #~(make-forkexec-constructor #$kmscon-command))
         (stop #~(make-kill-destructor)))))))
@@ -2044,6 +2050,7 @@ This service is not part of @var{%base-services}."
   ;; Convenience variable holding the basic services.
   (list (login-service)
 
+        (service virtual-terminal-service-type)
         (service console-font-service-type
                  (map (lambda (tty)
                         (cons tty %default-console-font))

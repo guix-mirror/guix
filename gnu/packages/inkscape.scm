@@ -68,6 +68,7 @@
        ("libgc" ,libgc)
        ("freetype" ,freetype)
        ("popt" ,popt)
+       ("potrace" ,potrace)
        ("python" ,python-2)
        ("lcms" ,lcms)
        ("boost" ,boost)))

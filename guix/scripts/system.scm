@@ -733,7 +733,8 @@ and TARGET arguments."
                       (#$installer #$bootloader #$device #$target))))))
 
 (define* (perform-action action os
-                         #:key install-bootloader?
+                         #:key skip-safety-checks?
+                         install-bootloader?
                          dry-run? derivations-only?
                          use-substitutes? bootloader-target target
                          image-size file-system-type full-boot?
@@ -750,7 +751,10 @@ When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
 building anything.
 
 When GC-ROOT is a path, also make that path an indirect root of the build
-output when building a system derivation, such as a disk image."
+output when building a system derivation, such as a disk image.
+
+When SKIP-SAFETY-CHECKS? is true, skip the file system and initrd module
+static checks."
   (define println
     (cut format #t "~a~%" <>))
 
@@ -760,7 +764,8 @@ output when building a system derivation, such as a disk image."
   ;; Check whether the declared file systems exist.  This is better than
   ;; instantiating a broken configuration.  Assume that we can only check if
   ;; running as root.
-  (when (memq action '(init reconfigure))
+  (when (and (not skip-safety-checks?)
+             (memq action '(init reconfigure)))
     (check-mapped-devices os)
     (when (zero? (getuid))
       (check-file-system-availability (operating-system-file-systems os))
@@ -933,6 +938,8 @@ Some ACTIONS support additional ARGS.\n"))
       --expose=SPEC      for 'vm', expose host file system according to SPEC"))
   (display (G_ "
       --full-boot        for 'vm', make a full boot sequence"))
+  (display (G_ "
+      --skip-checks      skip file system and initrd module safety checks"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -974,6 +981,9 @@ Some ACTIONS support additional ARGS.\n"))
          (option '("full-boot") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'full-boot? #t result)))
+         (option '("skip-checks") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'skip-safety-checks? #t result)))
 
          (option '("share") #t #f
                  (lambda (opt name arg result)
@@ -1067,6 +1077,8 @@ resulting from command-line parsing."
                              #:derivations-only? (assoc-ref opts
                                                             'derivations-only?)
                              #:use-substitutes? (assoc-ref opts 'substitutes?)
+                             #:skip-safety-checks?
+                             (assoc-ref opts 'skip-safety-checks?)
                              #:file-system-type (assoc-ref opts 'file-system-type)
                              #:image-size (assoc-ref opts 'image-size)
                              #:full-boot? (assoc-ref opts 'full-boot?)

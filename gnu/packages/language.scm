@@ -98,7 +98,7 @@ converting a word to singular or plural.")
 (define-public perl-lingua-en-inflect-phrase
   (package
     (name "perl-lingua-en-inflect-phrase")
-    (version "0.18")
+    (version "0.20")
     (source
      (origin
        (method url-fetch)
@@ -106,7 +106,7 @@ converting a word to singular or plural.")
                            "Lingua-EN-Inflect-Phrase-" version ".tar.gz"))
        (sha256
         (base32
-         "19prg6pkgnznrc82ymdkdi3l9schg815axjig7adca5yqa7mn2i9"))))
+         "1a6y1l2pjim2242wcpgz066di4pbzfgsjjdl7vg5a5wzm48qj1am"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-nowarnings" ,perl-test-nowarnings)))
@@ -365,7 +365,7 @@ stemmer at http://snowball.sourceforge.net.")
 (define-public perl-string-toidentifier-en
   (package
     (name "perl-string-toidentifier-en")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method url-fetch)
@@ -373,7 +373,7 @@ stemmer at http://snowball.sourceforge.net.")
                            "String-ToIdentifier-EN-" version ".tar.gz"))
        (sha256
         (base32
-         "1bawghkgkkx7j3avnrj5sg3vix1z5564ks6wf9az3jc2knh8s5nh"))))
+         "12nw7h2yiybhdw0vnnpc7bif8ylhsn6kqf6s39dsrf9h54iq9yrs"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-lingua-en-inflect-phrase" ,perl-lingua-en-inflect-phrase)

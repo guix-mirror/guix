@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
+;;; Copyright © 2018 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,52 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
+(define ghc-aeson-1.1.2.0
+  (package (inherit ghc-aeson)
+    (version "1.1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/aeson/aeson-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1zy5z8pzvh53qkjm0nm3f4rwqfqg3867ck8ncd6mrxpcyvxqqj1p"))))))
+
+(define ghc-trifecta-1.6.2.1
+  (package (inherit ghc-trifecta)
+    (version "1.6.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/trifecta/"
+             "trifecta-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rgv62dlmm4vkdymx5rw5jg3w8ifpzg1745rvs1m4kzdx16p5cxs"))))))
+
+;; ghc-cheapskate appeared too new. This follows LTS Haskell.
+(define ghc-cheapskate-0.1.0.5
+  (package
+    (inherit ghc-cheapskate)
+    (version "0.1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/cheapskate/cheapskate-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0cpsmfx5z2xykg71sv8j7pl8ga6pzyjnjdb9bxn00vcpqkzvfqvs"))))
+    (arguments
+     ;; LTS Haskell says data-default >=0.5 && <0.8
+     `(#:configure-flags (list "--allow-newer=data-default")))))
+
 (define-public idris
   (package
     (name "idris")
@@ -46,15 +93,15 @@
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
-       ("ghc-aeson" ,ghc-aeson)
-       ("ghc-async" ,ghc-async)
+       ("ghc-aeson" ,ghc-aeson-1.1.2.0)
        ("ghc-annotated-wl-pprint" ,ghc-annotated-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-async" ,ghc-async)
        ("ghc-base64-bytestring" ,ghc-base64-bytestring)
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-cheapskate" ,ghc-cheapskate)
+       ("ghc-cheapskate" ,ghc-cheapskate-0.1.0.5)
        ("ghc-code-page" ,ghc-code-page)
        ("ghc-fingertree" ,ghc-fingertree)
        ("ghc-fsnotify" ,ghc-fsnotify)
@@ -62,23 +109,18 @@
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-network" ,ghc-network)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-parsers" ,ghc-parsers)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
        ("ghc-safe" ,ghc-safe)
        ("ghc-split" ,ghc-split)
-       ("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
-       ("ghc-tasty-rerun" ,ghc-tasty-rerun)
        ("ghc-terminal-size" ,ghc-terminal-size)
        ("ghc-text" ,ghc-text)
-       ("ghc-trifecta" ,ghc-trifecta)
+       ("ghc-trifecta" ,ghc-trifecta-1.6.2.1)
        ("ghc-uniplate" ,ghc-uniplate)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)
        ("ghc-vector" ,ghc-vector)
-       ("ghc-zip-archive" ,ghc-zip-archive)
-       ("ghc-zlib" ,ghc-zlib)))
+       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)
+       ("ghc-zip-archive" ,ghc-zip-archive)))
     (arguments
      `(#:tests? #f ; FIXME: Test suite doesn't run in a sandbox.
        #:configure-flags

@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2112,3 +2113,46 @@ single-member files which can't be decompressed in parallel.")
    (description "innoextract allows extracting Inno Setup installers under
 non-Windows systems without running the actual installer using wine.")
    (license license:zlib)))
+
+(define-public google-brotli
+  (package
+    (name "google-brotli")
+    (version "1.0.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/google/brotli/archive/v"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "08kl9gww2058p1p7j9xqmcmrabcfihhj3fq984d7fi3bchb2mky2"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'rename-static-libraries
+           ;; The build tools put a 'static' suffix on the static libraries, but
+           ;; other applications don't know how to find these.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref %outputs "out") "/lib/")))
+               (rename-file (string-append lib "libbrotlicommon-static.a")
+                            (string-append lib "libbrotlicommon.a"))
+               (rename-file (string-append lib "libbrotlidec-static.a")
+                            (string-append lib "libbrotlidec.a"))
+               (rename-file (string-append lib "libbrotlienc-static.a")
+                            (string-append lib "libbrotlienc.a"))
+               #t))))
+       #:configure-flags
+       (list ;; Defaults to "lib64" on 64-bit archs.
+             (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out") "/lib"))))
+    (home-page "https://github.com/google/brotli")
+    (synopsis "General-purpose lossless compression")
+    (description "This package provides the reference implementation of Brotli,
+a generic-purpose lossless compression algorithm that compresses data using a
+combination of a modern variant of the LZ77 algorithm, Huffman coding and 2nd
+order context modeling, with a compression ratio comparable to the best
+currently available general-purpose compression methods.  It is similar in speed
+with @code{deflate} but offers more dense compression.
+
+The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
+    (license license:expat)))
