@@ -865,7 +865,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtasn1-CVE-2017-10790.patch		\
   %D%/packages/patches/libtasn1-CVE-2018-6003.patch		\
   %D%/packages/patches/libtheora-config-guess.patch		\
-  %D%/packages/patches/libtirpc-missing-headers.patch		\
   %D%/packages/patches/libtiff-CVE-2017-9935.patch		\
   %D%/packages/patches/libtiff-CVE-2017-18013.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\
