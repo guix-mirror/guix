@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -212,7 +213,7 @@ and the ICD.")
         (revision "1"))
     (package
       (name "shaderc")
-      (version (git-version "0.0.0-" revision commit))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -254,22 +255,14 @@ and the ICD.")
                                         out)))))
            (add-after 'unpack 'unpack-sources
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((spirv-tools-source (assoc-ref %build-inputs
-                                                    "spirv-tools-source"))
-                     (spirv-headers-source (assoc-ref %build-inputs
-                                                      "spirv-headers-source"))
-                     (glslang-source (assoc-ref %build-inputs
-                                                "glslang-source")))
-                 (mkdir-p "third-party/spirv-tools")
-                 (copy-recursively spirv-tools-source
-                                   "third_party/spirv-tools")
-                 (mkdir-p "third-party/spirv-tools/external/spirv-headers")
+               (let ((spirv-tools-source (assoc-ref inputs "spirv-tools-source"))
+                     (spirv-headers-source (assoc-ref inputs "spirv-headers-source"))
+                     (glslang-source (assoc-ref inputs "glslang-source")))
+                 (copy-recursively spirv-tools-source "third_party/spirv-tools")
                  (copy-recursively spirv-headers-source
                                    (string-append "third_party/spirv-tools"
                                                   "/external/spirv-headers"))
-                 (mkdir-p "third-party/glslang")
-                 (copy-recursively glslang-source
-                                   "third_party/glslang")
+                 (copy-recursively glslang-source "third_party/glslang")
                  #t))))))
       (inputs
        `(("python" ,python)))
