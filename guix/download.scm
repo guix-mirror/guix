@@ -66,7 +66,6 @@
        "ftp://gcc.gnu.org/pub/gcc/"
        ,@(map (cut string-append <> "/gcc") gnu-mirrors))
       (gnupg
-       "http://gd.tuwien.ac.at/privacy/gnupg/"
        "http://artfiles.org/gnupg.org"
        "http://www.crysys.hu/"
        "https://gnupg.org/ftp/gcrypt/"
@@ -143,7 +142,6 @@
        "http://apache.belnet.be/"
        "http://mirrors.ircam.fr/pub/apache/"
        "http://apache-mirror.rbc.ru/pub/apache/"
-       "ftp://gd.tuwien.ac.at/pub/infosys/servers/http/apache/dist/"
 
        ;; As a last resort, try the archive.
        "http://archive.apache.org/dist/")
@@ -163,7 +161,6 @@
        "ftp://ftp.piotrkosoft.net/pub/mirrors/ftp.x.org/"
        "ftp://ftp.portal-to-web.de/pub/mirrors/x.org/"
        "ftp://ftp.solnet.ch/mirror/x.org/"
-       "ftp://gd.tuwien.ac.at/X11/"
        "ftp://mi.mirror.garr.it/mirrors/x.org/"
        "ftp://mirror.cict.fr/x.org/"
        "ftp://mirror.switch.ch/mirror/X11/"
