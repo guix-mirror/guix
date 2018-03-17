@@ -2358,13 +2358,13 @@ tools to simplify the devolpment of R packages.")
 (define-public r-withr
   (package
     (name "r-withr")
-    (version "2.1.1")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "withr" version))
               (sha256
                (base32
-                "17pbllxv18gf1mli9mm5px4wzp364907a4wrl20r1y5q8qwawpxx"))))
+                "11j6zykklxnvp4xqsr6a2xib665i38m3khdspp887nwagmvnydj1"))))
     (build-system r-build-system)
     (home-page "https://github.com/jimhester/withr")
     (synopsis "Run code with temporarily modified global state")
