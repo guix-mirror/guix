@@ -338,6 +338,7 @@ data types.")
 
 (define-public python-3.6
   (package (inherit python-2)
+    (name "python")
     (version "3.6.4")
     (source (origin
               (method url-fetch)
