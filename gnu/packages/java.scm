@@ -5390,14 +5390,14 @@ logging framework for Java.")))
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
-    (version "1.3.1")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/commons/cli/source/"
                                   "commons-cli-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1fkjn552i12vp3xxk21ws4p70fi0lyjm004vzxsdaz7gdpgyxxyl"))))
+                "05hgi2z01fqz374y719gl1dxzqvzci5af071zm7vxrjg9vczipm1"))))
     (build-system ant-build-system)
     ;; TODO: javadoc
     (arguments
