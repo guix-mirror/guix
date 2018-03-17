@@ -279,10 +279,9 @@ without requiring the source code to be rewritten.")
   (package
     (inherit guile-2.2)
     (properties '((hidden? . #t)            ;people should install 'guile-2.2'
-                  (timeout . 72000)            ;20 hours
-                  (max-silent-time . 36000)))  ;10 hours (needed on ARM
-                                               ;  when heavily loaded)
-    (replacement #f)))
+                  (timeout . 72000)             ;20 hours
+                  (max-silent-time . 36000))))) ;10 hours (needed on ARM
+                                                ;  when heavily loaded)
 
 (define-public guile-2.2.2
   ;; Keep it so that, when 'guix' runs on 2.2.2, 'guix pull' compiles objects
