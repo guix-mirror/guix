@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -258,7 +259,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.22.1")
+    (version "0.22.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -266,7 +267,7 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1q57fz57d0b26z06m1wiq7c1sniwh885b0vs02mk4jgwva46nyr0"))))
+                "0b33w75s4w7xmz9cv8dyp8vy2gcffnrvjys20fhcpw26abw1wn2d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-mount-eeze")
