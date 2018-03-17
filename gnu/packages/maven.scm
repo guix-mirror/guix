@@ -237,6 +237,89 @@ for repositories using URI-based layouts.")))
        ("java-hamcrest-core" ,java-hamcrest-core)
        ("maven-resolver-test-util" ,maven-resolver-test-util)))))
 
+(define-public maven-resolver-transport-wagon
+  (package
+    (inherit maven-resolver-api)
+    (name "maven-resolver-transport-wagon")
+    (arguments
+     `(#:jar-name "maven-resolver-transport-wagon.jar"
+       #:source-dir "maven-resolver-transport-wagon/src/main/java"
+       #:test-dir "maven-resolver-transport-wagon/src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-sisu
+           (lambda _
+             (mkdir-p "build/classes/META-INF/sisu")
+             (with-output-to-file "build/classes/META-INF/sisu/javax.inject.Named"
+               (lambda _
+                 (display "org.eclipse.aether.transport.wagon.WagonTransporterFactory\n")))
+             #t))
+         (add-before 'build 'generate-components.xml
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (with-output-to-file "build/classes/META-INF/plexus/components.xml"
+               (lambda _
+                 (display
+                   (string-append
+                     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<component-set>
+  <components>
+    <component>
+      <role>org.eclipse.aether.transport.wagon.WagonConfigurator</role>
+      <role-hint>plexus</role-hint>
+      <implementation>org.eclipse.aether.internal.transport.wagon.PlexusWagonConfigurator</implementation>
+      <description />
+      <isolated-realm>false</isolated-realm>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.PlexusContainer</role>
+          <role-hint />
+          <field-name>container</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.eclipse.aether.transport.wagon.WagonProvider</role>
+      <role-hint>plexus</role-hint>
+      <implementation>org.eclipse.aether.internal.transport.wagon.PlexusWagonProvider</implementation>
+      <description />
+      <isolated-realm>false</isolated-realm>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.PlexusContainer</role>
+          <role-hint />
+          <field-name>container</field-name>
+        </requirement>
+      </requirements>
+    </component>
+  </components>
+</component-set>\n"))))
+             #t)))))
+    (inputs
+     `(("maven-resolver-api" ,maven-resolver-api)
+       ("maven-resolver-spi" ,maven-resolver-spi)
+       ("maven-resolver-util" ,maven-resolver-util)
+       ("java-javax-inject" ,java-javax-inject)
+       ("mavne-wagon-provider-api" ,maven-wagon-provider-api)
+       ("java-plexus-component-annotation" ,java-plexus-component-annotations)
+       ("java-plexus-classworld" ,java-plexus-classworlds)
+       ("java-plexus-plexus-util" ,java-plexus-utils)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("maven-resolver-test-util" ,maven-resolver-test-util)
+       ("java-guava" ,java-guava)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("java-aopalliance" ,java-aopalliance)
+       ("java-guice" ,java-guice)))
+    (synopsis "Transport implementation for Maven")
+    (description "This package contains a transport implementation based on
+Maven Wagon, for use in Maven.")))
+
 (define-public maven-shared-utils
   (package
     (name "maven-shared-utils")
