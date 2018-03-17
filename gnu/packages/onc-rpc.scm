@@ -59,7 +59,8 @@
 
              ;; Remove the dangling symlinks since it breaks the
              ;; 'patch-source-shebangs' file tree traversal.
-             (delete-file "INSTALL"))))))
+             (delete-file "INSTALL")
+             #t)))))
     (inputs `(("mit-krb5" ,mit-krb5)))
     (home-page "https://sourceforge.net/projects/libtirpc/")
     (synopsis "Transport-independent Sun/ONC RPC implementation")
