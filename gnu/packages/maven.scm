@@ -351,6 +351,71 @@ artifact and repository handling code.")
 artifact and repository handling code.  This package contains common test
 classes used in multiple maven-wagon components.")))
 
+(define-public maven-wagon-file
+  (package
+    (inherit maven-wagon-provider-api)
+    (name "maven-wagon-file")
+    (arguments
+     `(#:jar-name "maven-wagon-file.jar"
+       #:source-dir "wagon-providers/wagon-file/src/main/java"
+       #:test-dir "wagon-providers/wagon-file/src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-paths
+           (lambda _
+             ;; Tests assume they are run by maven, which copies test resources
+             ;; to target.  Our ant-build-system does the same, but with the
+             ;; build directory.
+             (substitute* "wagon-providers/wagon-file/src/test/java/org/apache/maven/wagon/providers/file/FileWagonTest.java"
+               (("target") "build"))
+             #t))
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "wagon-providers/wagon-file/src/main/java"
+                     "--output" "build/classes/META-INF/plexus/components.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes/META-INF")
+             #t))
+         (add-after 'generate-metadata 'rebuild
+           (lambda _
+             (invoke "ant" "jar")
+             #t)))))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("maven-wagon-provider-api" ,maven-wagon-provider-api)))
+    (native-inputs
+     `(("maven-wagon-provider-test" ,maven-wagon-provider-test)
+       ("java-plexus-component-metadata" ,java-plexus-component-metadata)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-guava" ,java-guava)
+       ("java-guice" ,java-guice)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-cglib" ,java-cglib)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-cli" ,java-plexus-cli)
+       ("maven-plugin-api" ,maven-plugin-api)
+       ("maven-plugin-annotations" ,maven-plugin-annotations)
+       ("maven-core" ,maven-core)
+       ("maven-model" ,maven-model)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-qdox" ,java-qdox)
+       ("java-jdom2" ,java-jdom2)
+       ("java-asm" ,java-asm)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ,@(package-native-inputs maven-wagon-provider-api)))
+    (synopsis "Wagon provider that gets and puts artifacts using the file system")
+    (description "Maven Wagon is a transport abstraction that is used in Maven's
+artifact and repository handling code.  It uses providers, that are tools to
+manage artifacts and deployment.  This package contains the file provider which
+gets and puts artifacts using the file system.")))
+
 (define-public maven-artifact
   (package
     (name "maven-artifact")
