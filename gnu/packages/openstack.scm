@@ -680,14 +680,14 @@ and better support for mocking results.")
 (define-public python-oslo.utils
   (package
     (name "python-oslo.utils")
-    (version "3.35.0")
+    (version "3.36.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "oslo.utils" version))
         (sha256
           (base32
-           "1ai9yyasyh1563khsri6ryk6iqdprmyiashg377m9h4nmv700ybx"))))
+           "0zvm31qdvqywxppqdjwbxxsqaga3dg4slpvbbmqqm9ig4n78mhay"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-debtcollector" ,python-debtcollector)
