@@ -420,9 +420,9 @@ functionality such as HTML output.")
          "0scjbp1z201q8njvrxqz7lk2m9b6k2rxd5q1shrng6532r7ndif2"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     '(#:build-type "RelWithDebInfo"
+       #:configure-flags
        '("-DRTAGS_NO_ELISP_FILES=1"
-         "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
          "-DCMAKE_CXX_FLAGS=-std=c++11"
          "-DBUILD_TESTING=FALSE")
        #:tests? #f))

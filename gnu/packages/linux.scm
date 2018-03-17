@@ -3404,8 +3404,8 @@ The package provides additional NTFS tools.")
        ;; Upstream uses the "ninja" build system and encourage distros
        ;; to do the same for consistency. They also recommend using the
        ;; "Release" build type.
-       #:configure-flags (list "-GNinja"
-                               "-DCMAKE_BUILD_TYPE=Release")
+       #:build-type "Release"
+       #:configure-flags (list "-GNinja")
        #:phases
        (modify-phases %standard-phases
          (replace 'build

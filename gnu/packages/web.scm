@@ -4971,10 +4971,10 @@ used to start services with both privileged and non-privileged port numbers.")
          "0n29wcgw32rhnraj9j21ibhwi0xagmmcskhbaz8ihxly7nx3p9h8"))))
     (build-system cmake-build-system)
     (outputs '("out"
-               "static")) ; 1.0MiB of .a files
+               "static"))               ; 1.0MiB of .a files
     (arguments
-     `(#:tests? #f ; No tests available
-       #:configure-flags (list "-DCMAKE_BUILD_TYPE=Release")
+     `(#:tests? #f                      ; no tests available
+       #:build-type "Release"
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'move-static-libraries

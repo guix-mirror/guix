@@ -300,8 +300,8 @@ RK3036, RK3066, RK312X, RK3168, RK3188, RK3288, RK3368.")
                 "1y7gwg3lipyp2zcysm2vid1qg5nwin9bxbvgzs28lz2rya4fz6sq"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
-       #:tests? #f; no tests
+     `(#:build-type "Release"
+       #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-invocations

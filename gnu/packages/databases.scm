@@ -2771,9 +2771,9 @@ Monitor read/write activity on a mongo server
              (setenv "JEMALLOC_HOME" (assoc-ref %build-inputs "jemalloc"))
              (setenv "RAPIDJSON_HOME" (assoc-ref %build-inputs "rapidjson"))
              #t)))
+       #:build-type "Release"
        #:configure-flags
-       (list "-DCMAKE_BUILD_TYPE=Release"
-             "-DARROW_PYTHON=ON"
+       (list "-DARROW_PYTHON=ON"
 
              ;; Install to PREFIX/lib (the default is
              ;; PREFIX/lib64).

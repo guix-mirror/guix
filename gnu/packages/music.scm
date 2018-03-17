@@ -1754,10 +1754,10 @@ projects.")
               (patches (list (search-patch "portmidi-modular-build.patch")))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; tests cannot be linked
+     `(#:tests? #f                      ; tests cannot be linked
+       #:build-type "Release"           ; needed to have PMALSA set
        #:configure-flags
        (list "-DPORTMIDI_ENABLE_JAVA=Off"
-             "-DCMAKE_BUILD_TYPE=Release"    ; needed to have PMALSA set
              "-DPORTMIDI_ENABLE_TEST=Off"))) ; tests fail linking
     (inputs
      `(("alsa-lib" ,alsa-lib)))

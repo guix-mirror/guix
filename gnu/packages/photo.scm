@@ -481,11 +481,11 @@ a complete panorama and stitch any series of overlapping pictures.")
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no test suite
+       #:build-type "release"
        #:configure-flags
        (list (string-append "-DLENSFUNDBDIR="
                             (assoc-ref %build-inputs "lensfun")
                             "/share/lensfun")
-             "-DCMAKE_BUILD_TYPE=release"
              ; Don't optimize the build for the host machine. See the file
              ; 'ProcessorTargets.cmake' in the source distribution for more
              ; information.

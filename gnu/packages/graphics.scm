@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -423,15 +423,14 @@ visual effects work for film.")
        (file-name (string-append name "-" version ".zip"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;; No test target available.
+     `(#:tests? #f ; no test target available
+       ;; Without this flag, 'rd' will be added to the name of the
+       ;; library binaries and break linking with other programs.
+       #:build-type "Release"
        #:configure-flags
        (list (string-append "-DCMAKE_INSTALL_RPATH="
                             (assoc-ref %outputs "out") "/lib:"
-                            (assoc-ref %outputs "out") "/lib64")
-             ;; We need to set this flag or otherwise 'rd' will be added
-             ;; to the name of the library binaries and break linking
-             ;; with other programs.
-             "-DCMAKE_BUILD_TYPE=Release")))
+                            (assoc-ref %outputs "out") "/lib64"))))
     (native-inputs
      `(("unzip" ,unzip)))
     (inputs
