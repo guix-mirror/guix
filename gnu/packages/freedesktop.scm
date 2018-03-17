@@ -1131,7 +1131,7 @@ manually by a user.")
 (define-public perl-file-basedir
   (package
     (name "perl-file-basedir")
-    (version "0.07")
+    (version "0.08")
     (source
      (origin
        (method url-fetch)
@@ -1139,7 +1139,7 @@ manually by a user.")
                            "File-BaseDir-" version ".tar.gz"))
        (sha256
         (base32
-         "0aq8d4hsaxqibp36f773y6dfck7zd82v85sp8vhi6pjkg3pmf2hj"))))
+         "1qq5ag9zffx8zc5i9b4z03ar80pqj4drgk3vjdlyfapjwb9zqrf0"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
