@@ -443,6 +443,67 @@ gets and puts artifacts using the file system.")))
 artifact and repository handling code.  This package contains the HTTP
 Test Compatibility Kit.")))
 
+(define-public maven-wagon-http-shared
+  (package
+    (inherit maven-wagon-provider-api)
+    (name "maven-wagon-http-shared")
+    (arguments
+     `(#:jar-name "maven-wagon-http-shared.jar"
+       #:source-dir "wagon-providers/wagon-http-shared/src/main/java"
+       #:test-dir "wagon-providers/wagon-http-shared/src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'generate-metadata
+           (lambda _
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH") ":build/classes")
+                     "org.codehaus.plexus.metadata.PlexusMetadataGeneratorCli"
+                     "--source" "wagon-providers/wagon-http-shared/src/main/java"
+                     "--output" "build/classes/META-INF/plexus/components.xml"
+                     "--classes" "build/classes"
+                     "--descriptors" "build/classes/META-INF")
+             #t))
+         (add-after 'generate-metadata 'rebuild
+           (lambda _
+             (invoke "ant" "jar")
+             #t)))))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-httpcomponents-httpclient" ,java-httpcomponents-httpclient)
+       ("java-httpcomponents-httpcore" ,java-httpcomponents-httpcore)
+       ("java-commons-io" ,java-commons-io)
+       ("java-jsoup" ,java-jsoup)
+       ("maven-wagon-provider-api" ,maven-wagon-provider-api)))
+    (native-inputs
+     `(("maven-wagon-provider-test" ,maven-wagon-provider-test)
+       ("java-plexus-component-metadata" ,java-plexus-component-metadata)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-guava" ,java-guava)
+       ("java-guice" ,java-guice)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-cglib" ,java-cglib)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-cli" ,java-plexus-cli)
+       ("maven-plugin-api" ,maven-plugin-api)
+       ("maven-plugin-annotations" ,maven-plugin-annotations)
+       ("maven-core" ,maven-core)
+       ("maven-model" ,maven-model)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-qdox" ,java-qdox)
+       ("java-jdom2" ,java-jdom2)
+       ("java-asm" ,java-asm)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ,@(package-native-inputs maven-wagon-provider-api)))
+    (synopsis "Shared Library for wagon providers supporting HTTP.")
+    (description "Maven Wagon is a transport abstraction that is used in Maven's
+artifact and repository handling code.  It uses providers, that are tools to
+manage artifacts and deployment.  This package contains a shared library for
+wagon providers supporting HTTP.")))
+
 (define-public maven-artifact
   (package
     (name "maven-artifact")
