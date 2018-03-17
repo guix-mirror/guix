@@ -1420,3 +1420,91 @@ logging support.")))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains Maven2 classes maintained as compatibility
 layer for plugins that need to keep Maven2 compatibility.")))
+
+(define-public maven
+  (package
+    (inherit maven-artifact)
+    (name "maven")
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (substitute* "apache-maven/src/bin/mvn"
+               (("cygwin=false;")
+                (string-append
+                  "CLASSPATH=" (getenv "CLASSPATH") "\n"
+                  "cygwin=false;"))
+               (("-classpath.*") "-classpath ${CLASSPATH} \\\n"))
+             #t))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/"))
+                   (conf (string-append (assoc-ref outputs "out") "/conf/")))
+               (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
+               (for-each (lambda (file)
+                           (install-file (string-append "apache-maven/src/bin/" file)
+                                         bin)
+                           (chmod (string-append bin file) #o755))
+                '("mvn" "mvnDebug" "mvnyjp"))
+               (install-file "apache-maven/src/bin/m2.conf" bin)
+               (copy-recursively "apache-maven/src/conf" conf))
+             #t)))))
+    (inputs
+     `(("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("maven-artifact" ,maven-artifact)
+       ("maven-embedder" ,maven-embedder)
+       ("maven-core" ,maven-core)
+       ("maven-compat" ,maven-compat)
+       ("maven-builder-support" ,maven-builder-support)
+       ("maven-model" ,maven-model)
+       ("maven-model-builder" ,maven-model-builder)
+       ("maven-settings" ,maven-settings)
+       ("maven-settings-builder" ,maven-settings-builder)
+       ("maven-plugin-api" ,maven-plugin-api)
+       ("maven-repository-metadata", maven-repository-metadata)
+       ("maven-shared-utils" ,maven-shared-utils)
+       ("maven-resolver-api" ,maven-resolver-api)
+       ("maven-resolver-spi" ,maven-resolver-spi)
+       ("maven-resolver-util" ,maven-resolver-util)
+       ("maven-resolver-impl" ,maven-resolver-impl)
+       ("maven-resolver-connector-basic" ,maven-resolver-connector-basic)
+       ("maven-resolver-provider" ,maven-resolver-provider)
+       ("maven-resolver-transport-wagon" ,maven-resolver-transport-wagon)
+       ("maven-wagon-provider-api" ,maven-wagon-provider-api)
+       ("maven-wagon-file" ,maven-wagon-file)
+       ("maven-wagon-http" ,maven-wagon-http)
+       ("java-commons-logging-minimal" ,java-commons-logging-minimal)
+       ("java-httpcomponents-httpclient" ,java-httpcomponents-httpclient)
+       ("java-httpcomponents-httpcore" ,java-httpcomponents-httpcore)
+       ("maven-wagon-http-shared" ,maven-wagon-http-shared)
+       ("maven-wagon-tck-http" ,maven-wagon-tck-http)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-guice" ,java-guice)
+       ("java-aopalliance" ,java-aopalliance)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-interpolation" ,java-plexus-interpolation)
+       ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
+       ("java-plexus-cipher" ,java-plexus-cipher)
+       ("java-guava" ,java-guava)
+       ("java-jansi" ,java-jansi)
+       ("java-jsr250" ,java-jsr250)
+       ("java-cdi-api" ,java-cdi-api)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-commons-io" ,java-commons-io)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ;; TODO: replace with maven-slf4j-provider
+       ("java-slf4j-simple" ,java-slf4j-simple)))
+    (description "Apache Maven is a software project management and comprehension
+tool.  Based on the concept of a project object model: builds, dependency
+management, documentation creation, site publication, and distribution
+publication are all controlled from the @file{pom.xml} declarative file.  Maven
+can be extended by plugins to utilise a number of other development tools for
+reporting or the build process.")))
