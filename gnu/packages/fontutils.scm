@@ -54,13 +54,13 @@
   (package
    (name "freetype")
    (version "2.8.1")
-   (replacement freetype/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "0y3xrimgp0k39gwq1vdi7b7wjy0z9fhwmzafisxqfardw015yhz5"))))
+                     "0y3xrimgp0k39gwq1vdi7b7wjy0z9fhwmzafisxqfardw015yhz5"))
+            (patches (search-patches "freetype-CVE-2018-6942.patch"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
@@ -78,13 +78,6 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "https://www.freetype.org/")))
-
-(define freetype/fixed
-  (package/inherit freetype
-                   (source
-                    (origin
-                      (inherit (package-source freetype))
-                      (patches (search-patches "freetype-CVE-2018-6942.patch"))))))
 
 (define-public ttfautohint
   (package
