@@ -1960,8 +1960,8 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "4")
-        (commit "951a32c56cc4d80f8836e3c7394783e69c1fcbad"))
+  (let ((revision "5")
+        (commit "2bb9fbbf93cf93496718efc85ad9394aefa21029"))
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
@@ -1971,7 +1971,7 @@ is not available for Guile 2.0.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "0qri9x73ij6g40ijs4hyhj8knxw39ydgghiafq74dp99bc8hh0qc"))
+                  "0z3v0v89dyp35zx2h2gsq6v29lba3wbzabc5n2g4hx2fcb6q5qqy"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
