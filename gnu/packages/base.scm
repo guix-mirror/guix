@@ -386,13 +386,17 @@ functionality beyond that which is outlined in the POSIX standard.")
             (sha256
              (base32
               "12f5zzyq2w56g95nni65hc0g5p7154033y2f3qmjvd016szn5qnn"))
-            (patches (search-patches "make-impure-dirs.patch"))))
+            (patches (search-patches "make-impure-dirs.patch"
+                                     "make-glibc-compat.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)))  ; to detect Guile
    (inputs `(("guile" ,guile-2.0)))
    (outputs '("out" "debug"))
    (arguments
-    '(#:phases
+    '(;; Work around faulty glob detection with glibc 2.27.  See
+      ;; <https://lists.nongnu.org/archive/html/bug-make/2017-11/msg00027.html>.
+      #:configure-flags '("make_cv_sys_gnu_glob=yes")
+      #:phases
       (modify-phases %standard-phases
         (add-before 'build 'set-default-shell
           (lambda* (#:key inputs #:allow-other-keys)
