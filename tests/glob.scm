@@ -23,14 +23,14 @@
 
 (test-begin "glob")
 
-(define-syntax test-compile-glob-pattern
+(define-syntax test-string->sglob
   (syntax-rules (=>)
     ((_ pattern => result rest ...)
      (begin
-       (test-equal (format #f "compile-glob-pattern, ~s" pattern)
+       (test-equal (format #f "string->sglob, ~s" pattern)
          result
-         (compile-glob-pattern pattern))
-       (test-compile-glob-pattern rest ...)))
+         (string->sglob pattern))
+       (test-string->sglob rest ...)))
     ((_)
      #t)))
 
@@ -39,14 +39,14 @@
     ((_ (pattern-string matches strings ... (and not others ...)) rest ...)
      (begin
        (test-assert (format #f "glob-match? ~s" pattern-string)
-         (let ((pattern (compile-glob-pattern pattern-string)))
+         (let ((pattern (string->compiled-sglob pattern-string)))
            (and (glob-match? pattern strings) ...
                 (not (glob-match? pattern others)) ...)))
        (test-glob-match rest ...)))
     ((_)
      #t)))
 
-(test-compile-glob-pattern
+(test-string->sglob
  "foo" => "foo"
  "?foo*" => '(? "foo" *)
  "foo[1-5]" => '("foo" (range #\1 #\5))

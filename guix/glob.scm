@@ -18,7 +18,9 @@
 
 (define-module (guix glob)
   #:use-module (ice-9 match)
-  #:export (compile-glob-pattern
+  #:export (string->sglob
+            compile-sglob
+            string->compiled-sglob
             glob-match?))
 
 ;;; Commentary:
@@ -37,9 +39,9 @@
     (lst
      `(set ,@lst))))
 
-(define (compile-glob-pattern str)
-  "Return an sexp that represents the compiled form of STR, a glob pattern
-such as \"foo*\" or \"foo??bar\"."
+(define (string->sglob str)
+  "Return an sexp, called an \"sglob\", that represents the compiled form of
+STR, a glob pattern such as \"foo*\" or \"foo??bar\"."
   (define flatten
     (match-lambda
       (((? string? str)) str)
@@ -83,9 +85,33 @@ such as \"foo*\" or \"foo??bar\"."
       ((chr . rest)
        (loop rest (cons chr pending) brackets result)))))
 
+(define (compile-sglob sglob)
+  "Compile SGLOB into a more efficient representation."
+  (if (string? sglob)
+      sglob
+      (let loop ((sglob sglob)
+                 (result '()))
+        (match sglob
+          (()
+           (reverse result))
+          (('? . rest)
+           (loop rest (cons char-set:full result)))
+          ((('range start end) . rest)
+           (loop rest (cons (ucs-range->char-set
+                             (char->integer start)
+                             (+ 1 (char->integer end)))
+                            result)))
+          ((('set . chars) . rest)
+           (loop rest (cons (list->char-set chars) result)))
+          ((head . rest)
+           (loop rest (cons head result)))))))
+
+(define string->compiled-sglob
+  (compose compile-sglob string->sglob))
+
 (define (glob-match? pattern str)
   "Return true if STR matches PATTERN, a compiled glob pattern as returned by
-'compile-glob-pattern'."
+'compile-sglob'."
   (let loop ((pattern pattern)
              (str str))
    (match pattern
@@ -101,21 +127,10 @@ such as \"foo*\" or \"foo??bar\"."
         (index (loop rest
                      (string-drop str
                                   (+ index (string-length suffix)))))))
-     (('? . rest)
-      (and (>= (string-length str) 1)
-           (loop rest (string-drop str 1))))
-     ((('range start end) . rest)
+     (((? char-set? cs) . rest)
       (and (>= (string-length str) 1)
            (let ((chr (string-ref str 0)))
-             (and (char-set-contains? (ucs-range->char-set
-                                       (char->integer start)
-                                       (+ 1 (char->integer end)))
-                                      chr)
-                  (loop rest (string-drop str 1))))))
-     ((('set . chars) . rest)
-      (and (>= (string-length str) 1)
-           (let ((chr (string-ref str 0)))
-             (and (char-set-contains? (list->char-set chars) chr)
+             (and (char-set-contains? cs chr)
                   (loop rest (string-drop str 1))))))
      ((prefix . rest)
       (and (string-prefix? prefix str)

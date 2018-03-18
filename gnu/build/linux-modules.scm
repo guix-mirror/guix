@@ -329,7 +329,7 @@ The modules corresponding to these aliases can then be found using
 list of alias/module pairs where each alias is a glob pattern as like the
 result of:
 
-  (compile-glob-pattern \"scsi:t-0x01*\")
+  (string->compiled-sglob \"scsi:t-0x01*\")
 
 and each module is a module name like \"snd_hda_intel\"."
   (define (comment? str)
@@ -354,7 +354,7 @@ and each module is a module name like \"snd_hda_intel\"."
       (line
        (match (tokenize line)
          (("alias" alias module)
-          (loop (alist-cons (compile-glob-pattern alias) module
+          (loop (alist-cons (string->compiled-sglob alias) module
                             aliases)))
          (()                                      ;empty line
           (loop aliases)))))))
