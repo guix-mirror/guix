@@ -112,10 +112,10 @@
          (replace 'install
                   (lambda _
                     ;; Don't try to create /var and /etc.
-                    (system* "make"
-                             "localstatedir=/tmp/dummy"
-                             "sysconfdir=/tmp/dummy"
-                             "install"))))))
+                    (invoke "make"
+                            "localstatedir=/tmp/dummy"
+                            "sysconfdir=/tmp/dummy"
+                            "install"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
