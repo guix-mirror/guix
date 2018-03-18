@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -190,7 +190,7 @@ include VERSION."
                             url)))
       (_ #f))))
 
-(define* (elpa-package->sexp pkg)
+(define* (elpa-package->sexp pkg #:optional license)
   "Return the `package' S-expression for the Emacs package PKG, a record of
 type '<elpa-package>'."
 
@@ -234,12 +234,17 @@ type '<elpa-package>'."
        (home-page ,(elpa-package-home-page pkg))
        (synopsis ,(elpa-package-synopsis pkg))
        (description ,(elpa-package-description pkg))
-       (license license:gpl3+))))
+       (license ,license))))
 
 (define* (elpa->guix-package name #:optional (repo 'gnu))
   "Fetch the package NAME from REPO and produce a Guix package S-expression."
-  (let ((pkg (fetch-elpa-package name repo)))
-    (and=> pkg elpa-package->sexp)))
+  (match (fetch-elpa-package name repo)
+    (#f #f)
+    (package
+      ;; ELPA is known to contain only GPLv3+ code.  Other repos may contain
+      ;; code under other license but there's no license metadata.
+      (let ((license (and (eq? 'gnu repo) 'license:gpl3+)))
+        (elpa-package->sexp package license)))))
 
 
 ;;;
