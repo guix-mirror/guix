@@ -150,7 +150,8 @@ X11 GUIs.")
                   (add-before
                    'configure 'pre-configure
                    (lambda _
-                     (chdir "unix")))
+                     (chdir "unix")
+                     #t))
                   (add-after
                    'install 'add-fontconfig-flag
                    (lambda* (#:key inputs outputs #:allow-other-keys)
