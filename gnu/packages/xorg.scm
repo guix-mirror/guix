@@ -4728,7 +4728,8 @@ protocol and arbitrary X extension protocol.")
                                           "/bin/mkfontdir")
                `("PATH" ":" prefix
                  (,(string-append (assoc-ref inputs "mkfontscale")
-                                  "/bin")))))))))
+                                  "/bin"))))
+             #t)))))
     (inputs
       `(("mkfontscale" ,mkfontscale)))
     (native-inputs
