@@ -39,6 +39,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cran)
@@ -172,21 +173,15 @@ be output in text, PostScript, PDF or HTML.")
              ;; queries the mtime of a given file and records it in an object.
              ;; This is acceptable at runtime to detect stale source files,
              ;; but it destroys reproducibility at build time.
-             ;;
-             ;; Instead of disabling this feature, which may have unexpected
-             ;; consequences, we reset the mtime of generated files before
-             ;; passing them to the "srcfile" procedure.
-             (substitute* "src/library/Makefile.in"
-               (("@\\(cd base && \\$\\(MAKE\\) mkdesc\\)" line)
-                (string-append line "\n	find $(top_builddir)/library/tools | xargs touch -d '1970-01-01'; \n"))
-               (("@\\$\\(MAKE\\) Rdobjects" line)
-                (string-append "@find $(srcdir)/tools | xargs touch -d '1970-01-01'; \n	"
-                               line)))
-             (substitute* "src/library/tools/Makefile.in"
-               (("@\\$\\(INSTALL_DATA\\) all.R \\$\\(top_builddir\\)/library/\\$\\(pkg\\)/R/\\$\\(pkg\\)" line)
-                (string-append
-                 line
-                 "\n	find $(srcdir)/$(pkg) $(top_builddir)/library/$(pkg) | xargs touch -d \"1970-01-01\"; \n")))
+
+             ;; Similarly, the "srcfilecopy" procedure records the current
+             ;; time.  We change both of them to respect SOURCE_DATE_EPOCH.
+             (substitute* "src/library/base/R/srcfile.R"
+               (("timestamp <- (timestamp.*|file.mtime.*)" _ time)
+                (string-append "timestamp <- \
+as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
+  as.numeric(Sys.getenv(\"SOURCE_DATE_EPOCH\"))\
+} else { " time "}, origin=\"1970-01-01\")\n")))
 
              ;; This library is installed using "install_package_description",
              ;; so we need to pass the "builtStamp" argument.
@@ -267,13 +262,16 @@ be output in text, PostScript, PDF or HTML.")
        ("libxt" ,libxt)
        ("pcre" ,pcre)
        ("readline" ,readline)
+       ;; This avoids a reference to the ungraftable static bash.  R uses the
+       ;; detected shell for the "system" procedure.
+       ("bash" ,bash-minimal)
        ("which" ,which)
        ("zlib" ,zlib)))
     (native-search-paths
      (list (search-path-specification
             (variable "R_LIBS_SITE")
             (files (list "site-library/")))))
-    (home-page "http://www.r-project.org/")
+    (home-page "https://www.r-project.org/")
     (synopsis "Environment for statistical computing and graphics")
     (description
      "R is a language and environment for statistical computing and graphics.
@@ -941,14 +939,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.1.6")
+    (version "1.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "122im5m8x9bqpahc0hbxmvdq6hnsmgnxwwyjpvbihyv2jq5kd44m"))))
+         "0nck1s2iglmkrn15ay2chrrwsy5lngcylz2sc87fxy5skxaahxdl"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2235,14 +2233,14 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "1.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "1j8smqrb79lnaf2n9icksjiy641fcazsbkhmgg916s3nnyjngjz3"))))
+         "1qyql5gpwf88bkm1qarjhbqbq4hn6w0d8j4pxb5x7i96is30ap30"))))
     (build-system r-build-system)
     (inputs
      `(("libressl" ,libressl)))
@@ -2598,7 +2596,11 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-rprojroot" ,r-rprojroot)
        ("r-stringr" ,r-stringr)
        ("r-yaml" ,r-yaml)
-       ("ghc-pandoc" ,ghc-pandoc)))
+       ;; rmarkdown works with the 2.x release of Pandoc, but with degraded
+       ;; functionality.  For example, tabbed plots do not currently work with
+       ;; Pandoc 2.  The authors of rmarkdown recommend the use of Pandoc 1
+       ;; for the time being.
+       ("ghc-pandoc" ,ghc-pandoc-1)))
     (home-page "http://rmarkdown.rstudio.com")
     (synopsis "Convert R Markdown documents into a variety of formats")
     (description
@@ -3331,20 +3333,20 @@ memory-mapped files.")
 (define-public r-nmf
   (package
     (name "r-nmf")
-    (version "0.20.6")
+    (version "0.21.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "NMF" version))
        (sha256
         (base32
-         "0mmh9bz0zjwd8h9jplz4rq3g94npaqj8s4px51vcv47csssd9k6z"))))
+         "1qq25n3k5sgh3srlshb3ic6q92s12c1ilqf5cd5anvq6cqfchc1v"))))
     (properties `((upstream-name . "NMF")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
-       ("r-bigmemory" ,r-bigmemory)
-       ("r-synchronicity" ,r-synchronicity)
+       ("r-bigmemory" ,r-bigmemory) ; suggested
+       ("r-synchronicity" ,r-synchronicity) ; suggested
        ("r-colorspace" ,r-colorspace)
        ("r-digest" ,r-digest)
        ("r-doparallel" ,r-doparallel)
@@ -4027,14 +4029,14 @@ existing packages provide.")
 (define-public r-sfsmisc
   (package
     (name "r-sfsmisc")
-    (version "1.1-1")
+    (version "1.1-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sfsmisc" version))
        (sha256
         (base32
-         "0jzmbywlyzfxs7hlmyd0iynghfc9qp5sa5lnhr73y8r360yv1ahf"))))
+         "0cgq2h11ngkzd6p34k6mqjnvlvc5vj4lnqrl64k05lb391j391w0"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/sfsmisc")
     (synopsis "Utilities from \"Seminar fuer Statistik\" ETH Zurich")
@@ -4906,27 +4908,6 @@ functions apply.  The implementation can easily be added to functions where
 showing the progress is useful e.g. bootstrap.")
     (license license:gpl2)))
 
-(define-public r-fnn
-  (package
-    (name "r-fnn")
-    (version "1.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "FNN" version))
-       (sha256
-        (base32
-         "1kncmiaraq1mrykb9fj3fsxswabk3l71fnp1vks0x9aay5xfk8mj"))))
-    (properties `((upstream-name . "FNN")))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/FNN")
-    (synopsis "Fast nearest neighbor search algorithms and applications")
-    (description
-     "This package provides cover-tree and kd-tree fast k-nearest neighbor
-search algorithms and related applications including KNN classification,
-regression and information measures.")
-    (license license:gpl2+)))
-
 (define-public r-minqa
   (package
     (name "r-minqa")
@@ -5037,7 +5018,7 @@ using modular prediction and response module classes.")
      `(("r-matrix" ,r-matrix)
        ("r-matrixmodels" ,r-matrixmodels)
        ("r-sparsem" ,r-sparsem)))
-    (home-page "http://www.r-project.org")
+    (home-page "https://www.r-project.org")
     (synopsis "Quantile regression")
     (description
      "This package provides an estimation and inference methods for models
@@ -5469,6 +5450,7 @@ manually \"recoding\").")
          (uri (hg-reference
                (url "https://bitbucket.org/tanaylab/tgstat")
                (changeset changeset)))
+         (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
            "0ilkkyximy77zbncm91kdfqbxf0qyndg16pd3q3p6a3xc9qcmxvn"))))
@@ -5503,6 +5485,7 @@ tools.")
          (uri (hg-reference
                (url "https://bitbucket.org/tanaylab/tgconfig")
                (changeset changeset)))
+         (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
            "0xy6c7s7mn1yx191154bwbv1bl424bnvc80syqpl1vdl28ba46rj"))))

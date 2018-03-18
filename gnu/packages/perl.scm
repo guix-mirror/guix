@@ -831,7 +831,7 @@ the Carp.pm module doesn't help.")
 (define-public perl-class-accessor
   (package
     (name "perl-class-accessor")
-    (version "0.34")
+    (version "0.51")
     (source
      (origin
        (method url-fetch)
@@ -839,7 +839,7 @@ the Carp.pm module doesn't help.")
                            "Class-Accessor-" version ".tar.gz"))
        (sha256
         (base32
-         "1z6fqg0yz8gay15r1iasslv8f1n1mzjkrhs47fvbj3rqz36y1cfd"))))
+         "07215zzr4ydf49832vn54i3gf2q5b97lydkv8j56wb2svvjs64mz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-sub-name" ,perl-sub-name)))
@@ -1681,7 +1681,7 @@ short and handy (e.g. to use it as part of a URL).")
 (define-public perl-data-dump
   (package
     (name "perl-data-dump")
-    (version "1.22")
+    (version "1.23")
     (source
      (origin
        (method url-fetch)
@@ -1689,7 +1689,7 @@ short and handy (e.g. to use it as part of a URL).")
                            "Data-Dump-" version ".tar.gz"))
        (sha256
         (base32
-         "1ciqlwsy1q35s94dry9bjy1pwanbq6b7q4rhxm9z8prgkzbslg2k"))))
+         "0r9ba52b7p8nnn6nw0ygm06lygi8g68piri78jmlqyrqy5gb0lxg"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Data-Dump/")
     (synopsis "Pretty printing of data structures")
@@ -2043,7 +2043,7 @@ Date::Calc.")
 (define-public perl-date-manip
   (package
     (name "perl-date-manip")
-    (version "6.50")
+    (version "6.70")
     (source
      (origin
        (method url-fetch)
@@ -2051,7 +2051,7 @@ Date::Calc.")
                            "Date-Manip-" version ".tar.gz"))
        (sha256
         (base32
-         "0zd0wbf91i49753rnf7m1lw197hdl5r97mxy0n43zdmcmhvkb3qq"))))
+         "0r4k4ypb09xwhvq6das0vpx2c0xbhhhx83knq6jfpf8m55h8qi9r"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (arguments
@@ -2091,7 +2091,7 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.43")
+    (version "1.46")
     (source
      (origin
        (method url-fetch)
@@ -2099,7 +2099,7 @@ hours, minutes, seconds, and time zones.")
                            "DateTime-" version ".tar.gz"))
        (sha256
         (base32
-         "0xgrcqs7zza7646g81j54z3fcxb8rw11ynlfm02afr436lgfnfql"))))
+         "1247d2q2gm912bxj88a0sr5gvj2nx4a7n6z1smkq16iy21cziz79"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
@@ -2332,7 +2332,7 @@ parsing logic.")
 (define-public perl-datetime-format-strptime
   (package
     (name "perl-datetime-format-strptime")
-    (version "1.73")
+    (version "1.75")
     (source
      (origin
        (method url-fetch)
@@ -2340,7 +2340,7 @@ parsing logic.")
                            "DateTime-Format-Strptime-" version ".tar.gz"))
        (sha256
         (base32
-         "1gmjcmvh81cla6yn2pvlkr7i25bspg90pzzsizrfb0c5xc37h1vd"))))
+         "069wmgbchydgx3nm9klqw0g6ksnja28g61d4allgzmvr9ynb5ksg"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
@@ -2361,7 +2361,7 @@ takes a string and a pattern and returns the `DateTime` object associated.")
 (define-public perl-datetime-locale
   (package
     (name "perl-datetime-locale")
-    (version "1.16")
+    (version "1.17")
     (source
      (origin
        (method url-fetch)
@@ -2369,7 +2369,7 @@ takes a string and a pattern and returns the `DateTime` object associated.")
                            "DateTime-Locale-" version ".tar.gz"))
        (sha256
         (base32
-         "1zkc0wggbsczbj4qadahh197imr9fa6knxr10zl241lw2i14rbyz"))))
+         "1jawnci23kik5x4gln6ixvv9bxznd5f6ira024yjxsc97y5mk9hc"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-file-sharedir" ,perl-file-sharedir)
@@ -2392,7 +2392,7 @@ the DateTime.pm class.")
 (define-public perl-datetime-timezone
   (package
     (name "perl-datetime-timezone")
-    (version "2.13")
+    (version "2.17")
     (source
      (origin
        (method url-fetch)
@@ -2400,7 +2400,7 @@ the DateTime.pm class.")
                            "DateTime-TimeZone-" version ".tar.gz"))
        (sha256
         (base32
-         "1371sk4p9clygfwxzvivfqz6q9dy8gn3n4dr1424d0xqsv63jg9k"))))
+         "1ckhjw7h545306b02p6ra60y8zxqnbqr2lsy7c1wib8libf0l2hx"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -3722,7 +3722,7 @@ single-letter approach, is provided but not enabled by default.")
 (define-public perl-getopt-long-descriptive
   (package
     (name "perl-getopt-long-descriptive")
-    (version "0.100")
+    (version "0.102")
     (source
      (origin
        (method url-fetch)
@@ -3730,7 +3730,7 @@ single-letter approach, is provided but not enabled by default.")
                            "Getopt-Long-Descriptive-" version ".tar.gz"))
        (sha256
         (base32
-         "1dpz5nhg5glmrpq46nkc90dg19cfqfjspqwhfvihsqyi229yfl8l"))))
+         "0ii8xafvlph5vzcqp3dpc83lg7nkg3l1l2hmqdf5382a567vkm4s"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
@@ -4042,7 +4042,7 @@ that reads or writes data from in-core strings.")
 (define-public perl-io-stringy
   (package
     (name "perl-io-stringy")
-    (version "2.110")
+    (version "2.111")
     (source
      (origin
        (method url-fetch)
@@ -4050,7 +4050,7 @@ that reads or writes data from in-core strings.")
                            "IO-stringy-" version ".tar.gz"))
        (sha256
         (base32
-         "1vh4n0k22hx20rwvf6h7lp25wb7spg0089shrf92d2lkncwg8g3y"))))
+         "178rpx0ym5l2m9mdmpnr92ziscvchm541w94fd7ygi6311kgsrwc"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/IO-stringy/")
     (synopsis "IO:: interface for reading/writing an array of lines")
@@ -4062,14 +4062,14 @@ filehandles; in particular, IO::Scalar, IO::ScalarArray, and IO::Lines.")
 (define-public perl-io-tty
   (package
     (name "perl-io-tty")
-    (version "1.11")
+    (version "1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/IO-Tty-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0lgd9xcbi4gf4gw1ka6fj94my3w1f3k1zamb4pfln0qxz45zlxx4"))))
+                "0399anjy3bc0w8xzsc3qx5vcyqryc9gc52lc7wh7i49hsdq8gvx2"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/~toddr/IO-Tty//")
     (synopsis "Perl interface to pseudo ttys")
@@ -4249,15 +4249,15 @@ installed.")
 (define-public perl-json-maybexs
   (package
     (name "perl-json-maybexs")
-    (version "1.003003")
+    (version "1.003010")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "JSON-MaybeXS-" version ".tar.gz"))
        (sha256
         (base32
-         "0q21wzz87drrvblxcm2py8fcvkzwx1hxzfybynz8ln7wv66vbx3f"))))
+         "0hs504x5zsa2vl6r7b3rvbygsak1ly24m1lg636bqp3x7jirmb30"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-without-module" ,perl-test-without-module)))
@@ -5759,7 +5759,7 @@ most specific one) is instantiated.")
        ("perl-file-configdir" ,perl-file-configdir)
        ("perl-file-find-rule" ,perl-file-find-rule)
        ("perl-hash-merge" ,perl-hash-merge)
-       ("perl-moo", perl-moo)
+       ("perl-moo" ,perl-moo)
        ("perl-moox-file-configdir" ,perl-moox-file-configdir)
        ("perl-namespace-clean" ,perl-namespace-clean)))
     (home-page "http://search.cpan.org/dist/MooX-ConfigFromFile/")
@@ -6577,14 +6577,14 @@ directory specifications in a cross-platform manner.")
 (define-public perl-path-tiny
   (package
     (name "perl-path-tiny")
-    (version "0.096")
+    (version "0.104")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
                                   "Path-Tiny-" version ".tar.gz"))
               (sha256
                (base32
-                "08dmr6ijjg3dp7h9dxix0nmad0fw16c6qzs4qc0hdz500gd64sr2"))))
+                "1vxaczi44d2acfyyzwa7p6c5gx3rgm6c36zbdl40982axg7iv7y6"))))
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f)) ; Tests require additional test modules to be packaged
@@ -6757,7 +6757,7 @@ variables that should not be changed.")
 (define-public perl-ref-util-xs
   (package
     (name "perl-ref-util-xs")
-    (version "0.116")
+    (version "0.117")
     (source
      (origin
        (method url-fetch)
@@ -6765,7 +6765,7 @@ variables that should not be changed.")
                            "Ref-Util-XS-" version ".tar.gz"))
        (sha256
         (base32
-         "0l5dzbd71iclv8fdjk7685rq6pbfiiydh0n70br6g9l9iy2smr6f"))))
+         "0g33cndhj353h5xjihvgjc2h6vxwkyyzw63r4l06czvq4flcar7v"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Ref-Util-XS/")
     (synopsis "XS implementation for Ref::Util")
@@ -6880,7 +6880,7 @@ safely on things that may not be objects.")
 (define-public perl-scope-guard
   (package
     (name "perl-scope-guard")
-    (version "0.20")
+    (version "0.21")
     (source
      (origin
        (method url-fetch)
@@ -6888,7 +6888,7 @@ safely on things that may not be objects.")
                            "Scope-Guard-" version ".tar.gz"))
        (sha256
         (base32
-         "1lsagnz6pli035zvx5c1x4qm9fabi773vns86yd8lzfpldhfv3sv"))))
+         "0y6jfzvxiz8h5yfz701shair0ilypq2mvimd7wn8wi2nbkm1p6wc"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Scope-Guard/")
     (synopsis "Lexically-scoped resource management")
@@ -7521,15 +7521,15 @@ of a system.")
 (define-public perl-task-weaken
   (package
     (name "perl-task-weaken")
-    (version "1.04")
+    (version "1.05")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Task-Weaken-" version ".tar.gz"))
        (sha256
         (base32
-         "1i7kd9v8fjsqyhr4rx4a1jv7n5vfjjm1v4agb24pizh0b72p3qk7"))))
+         "0p5ryr3421p5rqj6dk5dcvxsml5gl9skbn7gv4szk50fimrvzww5"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

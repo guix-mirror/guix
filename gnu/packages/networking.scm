@@ -87,17 +87,22 @@
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
+;; The gnu.org ‘home’ for this GNU project is a directory listing with 1.6.0 as
+;; the latest version.  The author's git repository, mentioned in the 1.6.0
+;; README and otherwise legit-looking, contains a proper 1.7.0 release tarball
+;; with many OUI updates.  Use it, even though it's also several years old now.
 (define-public macchanger
   (package
     (name "macchanger")
-    (version "1.6.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/"
-                                  name "/" name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1xsiivjjyhqcs6dyjcshrnxlgypvyfzacjz7gcjgl88xiw9lylri"))))
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/alobbs/macchanger/"
+                           "releases/download/" version "/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1gs5m0jxyprdp00w2qkbnaqm3ilkjz0q1gqdg4nzdm8g4xy73qns"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/macchanger/")
     (synopsis "Viewing and manipulating MAC addresses of network interfaces")
@@ -1220,11 +1225,11 @@ gone wild and are suddenly taking up your bandwidth.")
                        (assoc-ref %build-inputs "ncurses") "/lib")
         (string-append "--with-tlslib=GnuTLS"))))
     (build-system gnu-build-system)
-    (inputs `(("gnutls", gnutls)
-              ("libxml2", libxml2)
-              ("ncurses", ncurses)
-              ("zlib", zlib)))
-    (native-inputs `(("pkg-config", pkg-config)))
+    (inputs `(("gnutls" ,gnutls)
+              ("libxml2" ,libxml2)
+              ("ncurses" ,ncurses)
+              ("zlib" ,zlib)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/nzbget/nzbget")
     (synopsis "Usenet binary file downloader")
     (description
@@ -1450,11 +1455,11 @@ does not use SSH and requires a pre-shared symmetric key.")
               (patches
                (search-patches "quagga-reproducible-build.patch"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config",pkg-config)
-                     ("perl",perl)
-                     ("dejagnu",dejagnu)))
-    (inputs `(("readline",readline)
-              ("c-ares",c-ares)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("perl" ,perl)
+                     ("dejagnu" ,dejagnu)))
+    (inputs `(("readline" ,readline)
+              ("c-ares" ,c-ares)))
     (synopsis "Routing Software Suite")
     (description "Quagga is a routing software suite, providing implementations
 of OSPFv2, OSPFv3, RIP v1 and v2, RIPng and BGP-4 for Unix platforms.

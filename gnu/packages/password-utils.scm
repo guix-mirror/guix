@@ -458,14 +458,14 @@ winner of the 2015 Password Hashing Competition.")
 (define-public python-bcrypt
   (package
     (name "python-bcrypt")
-    (version "3.1.0")
+    (version "3.1.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "bcrypt" version))
         (sha256
          (base32
-          "1giy0dvd8gvq6flxh44np1v2nqwsji5qsnrz038mgwzgp7c20j75"))))
+          "13cyrnqwkhc70rs6dg65z4yrrr3dc42fhk11804fqmci9hvimvb7"))))
         (build-system python-build-system)
     (native-inputs
      `(("python-pycparser" ,python-pycparser)

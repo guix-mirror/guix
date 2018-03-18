@@ -5,7 +5,7 @@ gnu/packages.scm
 gnu/services.scm
 gnu/system.scm
 gnu/services/shepherd.scm
-gnu/system/linux-initrd.scm
+gnu/system/mapped-devices.scm
 gnu/system/shadow.scm
 guix/scripts.scm
 guix/scripts/build.scm

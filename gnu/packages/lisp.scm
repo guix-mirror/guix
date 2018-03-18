@@ -1370,6 +1370,7 @@ It is similar to the @code{CL:LOOP} macro, with these distinguishing marks:
          (uri (git-reference
                (url "https://github.com/mishoo/cl-uglify-js.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0k39y3c93jgxpr7gwz7w0d8yknn1fdnxrjhd03057lvk5w8js27a"))))

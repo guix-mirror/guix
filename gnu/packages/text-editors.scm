@@ -81,10 +81,10 @@
      (list (search-path-specification
             (variable "VIS_PATH")
             (files '("share/vis")))))
-    (inputs `(("lua", lua)
-              ("ncurses", ncurses)
-              ("libtermkey", libtermkey)
-              ("lua-lpeg", lua-lpeg)
+    (inputs `(("lua" ,lua)
+              ("ncurses" ,ncurses)
+              ("libtermkey" ,libtermkey)
+              ("lua-lpeg" ,lua-lpeg)
               ("tre" ,tre)))
     (synopsis "Vim-like text editor")
     (description

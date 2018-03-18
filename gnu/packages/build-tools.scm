@@ -90,7 +90,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
                   ;; Meson calls the various executables in out/bin through the
                   ;; Python interpreter, so we cannot use the shell wrapper.
                   (delete 'wrap))))
-    (inputs `(("ninja", ninja)))
+    (inputs `(("ninja" ,ninja)))
     (propagated-inputs `(("python" ,python)))
     (home-page "https://mesonbuild.com/")
     (synopsis "Build system designed to be fast and user-friendly")

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -73,7 +73,7 @@ staying as close to their API as is reasonable.")
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)                             ;for tests
-       ("autoconf" ,(autoconf-wrapper))
+       ("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (arguments

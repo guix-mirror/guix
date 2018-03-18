@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages qt)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -1252,3 +1254,65 @@ such as images.  This metadata can include captions and keywords, often used by
 popular photo management applications.  The library provides routines for
 parsing, viewing, modifying, and saving this metadata.")
     (license license:lgpl2.0+)))
+
+(define-public flameshot
+  (package
+    (name "flameshot")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lupoDharkael/flameshot/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kp451bqgssvg8n3sg60s3fifplm9l5kxiij0yxkl864p2mhw8im"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "qmake"
+                     "CONFIG+=packaging"
+                     (string-append "BASEDIR=" (assoc-ref outputs "out"))
+                     "PREFIX=/"))))))
+    (home-page "https://github.com/lupoDharkael/flameshot")
+    (synopsis "Powerful yet simple to use screenshot software")
+    (description "Flameshot is a screenshot program.
+Features:
+
+@itemize
+@item Customizable appearance.
+@item Easy to use.
+@item In-app screenshot edition.
+@item DBus interface.
+@item Upload to Imgur.
+@end itemize\n")
+    (license license:gpl3+)))
+
+(define-public r-jpeg
+  (package
+   (name "r-jpeg")
+   (version "0.1-8")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "jpeg" version))
+       (sha256
+        (base32
+         "05hawv5qcb82ljc1l2nchx1wah8mq2k2kfkhpzyww554ngzbwcnh"))))
+   (build-system r-build-system)
+   (inputs `(("libjpeg" ,libjpeg)))
+   (home-page "http://www.rforge.net/jpeg/")
+   (synopsis "Read and write JPEG images with R")
+   (description "This package provides a way to read, write and display bitmap
+images stored in the JPEG format with R.  It can read and write both files and
+in-memory raw vectors.")
+   (license license:gpl2+)))

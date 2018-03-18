@@ -271,6 +271,7 @@ sinks.")
               (method url-fetch)
               (uri (string-append "https://github.com/GeorgeFilipkin/"
                                   "pulsemixer/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1lpad90ifr2xfldyf39sbwx1v85rif2gm9w774gwwpjv53zfgk1g"))))

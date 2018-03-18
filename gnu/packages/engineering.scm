@@ -696,12 +696,12 @@ language.")
       (arguments
        `(#:out-of-source? #t
          #:tests? #f ; no tests
+         #:build-type "Release"
          #:configure-flags
          (list "-DKICAD_STABLE_VERSION=ON"
                "-DKICAD_REPO_NAME=stable"
                ,(string-append "-DKICAD_BUILD_VERSION=4.0-"
                                (string-take commit 7))
-               "-DCMAKE_BUILD_TYPE=Release"
                "-DKICAD_SKIP_BOOST=ON"; Use our system's boost library.
                "-DKICAD_SCRIPTING=ON"
                "-DKICAD_SCRIPTING_MODULES=ON"
@@ -862,7 +862,7 @@ the 'showing the effect of'-style of operation.")
     (inputs
      `(("boost" ,boost)))
     (native-inputs
-     `(("python-2", python-2)
+     `(("python-2" ,python-2)
        ("python2-cheetah" ,python2-cheetah)))
     (home-page "http://libvolk.org/")
     (synopsis "Vector-Optimized Library of Kernels")

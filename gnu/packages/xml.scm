@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -993,6 +993,7 @@ UTF-8 and UTF-16 encoding.")
                                   version "/tinyxml_"
                                   (string-join (string-split version #\.) "_")
                                   ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "14smciid19lvkxqznfig77jxn5s4iq3jpb47vh5a6zcaqp7gvg8m"))
@@ -1006,12 +1007,12 @@ UTF-8 and UTF-16 encoding.")
          (delete 'configure)
          (add-after 'build 'build-shared-library
            (lambda _
-             (zero? (system* "g++" "-Wall" "-O2" "-shared" "-fpic"
-                             "tinyxml.cpp" "tinyxmlerror.cpp"
-                             "tinyxmlparser.cpp" "tinystr.cpp"
-                             "-o" "libtinyxml.so"))))
+             (invoke "g++" "-Wall" "-O2" "-shared" "-fpic"
+                     "tinyxml.cpp" "tinyxmlerror.cpp"
+                     "tinyxmlparser.cpp" "tinystr.cpp"
+                     "-o" "libtinyxml.so")))
          (replace 'check
-           (lambda _ (zero? (system "./xmltest"))))
+           (lambda _ (invoke "./xmltest")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1060,9 +1061,10 @@ C++ programming language.")
        (method url-fetch)
        (uri (string-append "https://github.com/leethomason/tinyxml2/archive/"
                            version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-       (base32
-        "083z4r4khcndxi9k840lcr48sqxvar4gpsnf749xfdn1bkr8xcql"))))
+        (base32
+         "083z4r4khcndxi9k840lcr48sqxvar4gpsnf749xfdn1bkr8xcql"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))    ; no tests
@@ -1307,7 +1309,8 @@ SAX2 APIs.")
                                   version ".zip"))
               (sha256
                (base32
-                "0w19k1awslmihpwsxwjbg89hv0vjhk4k3i0vrfchy3mqknd988y5"))))
+                "0w19k1awslmihpwsxwjbg89hv0vjhk4k3i0vrfchy3mqknd988y5"))
+              (patches (search-patches "java-simple-xml-fix-tests.patch"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"
@@ -1413,7 +1416,7 @@ characters into a single event.")
     (propagated-inputs
      `(("perl-libxml" ,perl-libxml)
        ("perl-xml-filter-buffertext" ,perl-xml-filter-buffertext)
-       ("perl-xml-namespacesupport", perl-xml-namespacesupport)
+       ("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
        ("perl-xml-sax-base" ,perl-xml-sax-base)))
     (home-page "http://search.cpan.org/dist/XML-SAX-Writer/")
     (synopsis "SAX2 XML Writer")
@@ -1470,7 +1473,7 @@ It provides a flexible escaping technique and pretty printing.")
        ("perl-xml-sax-writer" ,perl-xml-sax-writer)
        ("perl-xml-simple" ,perl-xml-simple)
        ("perl-xml-xpathengine" ,perl-xml-xpathengine)
-       ("perl-test-pod", perl-test-pod)
+       ("perl-test-pod" ,perl-test-pod)
        ("perl-tree-xpathengine" ,perl-tree-xpathengine)))
     (home-page "http://search.cpan.org/dist/XML-Twig/")
     (synopsis "Perl module for processing huge XML documents in tree mode")

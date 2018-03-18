@@ -300,6 +300,8 @@ history mechanism, job control and a C-like syntax.")
                          (string-append
                            "http://www.zsh.org/pub/old/zsh-" version
                            ".tar.gz")))
+              (patches (search-patches "zsh-CVE-2018-7548.patch"
+                                       "zsh-CVE-2018-7549.patch"))
               (sha256
                (base32
                 "1jdcfinzmki2w963msvsanv29vqqfmdfm4rncwpw0r3zqnrcsywm"))))

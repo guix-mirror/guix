@@ -124,6 +124,7 @@ version of libusb to run with newer libusb.")
                 (uri (git-reference
                       (url "https://github.com/usb4java/libusb4java.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0wqgapalhfh9v38ycbl6i2f5lh1wpr6fzwn5dwd0rdacypkd1gml"))))

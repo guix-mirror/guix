@@ -1101,7 +1101,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.4.2")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -1109,7 +1109,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "1129cbg76g56c6ckzj5y5haf92jxhx3b71cr3qmhrb0n8g4gi38s"))))
+                "0li2hl55sxzdpbxxiwgxsvkhyy6bh8qd2j1r8xh8y6q8a318zsz9"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
@@ -1126,6 +1126,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
      `(("bison" ,bison)
        ("check" ,check)
        ("flex" ,flex)
+       ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:parallel-tests? #f ; May fail in some circumstances.
@@ -1136,8 +1137,30 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
              (substitute* '("test/helper-expand.c")
                (("~root") "/root")
                (("~") "")
-               (("g_get_home_dir \\(\\)") "\"/\"")))))))
-    (home-page "https://davedavenport.github.io/rofi/")
+               (("g_get_home_dir \\(\\)") "\"/\""))
+             #t))
+         (add-before 'check 'add-missing-configuration-files
+           (lambda _
+             ;; These files are missing in the 1.5.0 release, causing a test
+             ;; failure: <https://github.com/DaveDavenport/rofi/issues/782>.
+             (with-directory-excursion "subprojects/libnkutils/tests"
+               (mkdir "gtk-3.0")
+               (call-with-output-file "gtk-3.0/settings.ini"
+                 (lambda (port)
+                   (format port "[Settings]
+gtk-double-click-time = 300
+gtk-cursor-theme-name = gnome
+")))
+               (mkdir "gtk-4.0")
+               (call-with-output-file "gtk-4.0/settings.ini"
+                 (lambda (port)
+                   (format port "[Settings]
+gtk-double-click-time = 300
+gtk-icon-theme-name = nothing-like-this-theme
+gtk-enable-primary-paste = true
+")))
+               #t))))))
+    (home-page "https://github.com/DaveDavenport/rofi")
     (synopsis "Application launcher")
     (description "Rofi is a minimalist application launcher.  It memorizes which
 applications you regularly use and also allows you to search for an application
@@ -1309,9 +1332,9 @@ XCB util-xrm module provides the following libraries:
                         (install-file "README" doc)
                         ;; Avoid unspecified return value.
                         #t))))))
-    (inputs `(("libx11", libx11)
-              ("libxext", libxext)
-              ("libxxf86vm", libxxf86vm)))
+    (inputs `(("libx11" ,libx11)
+              ("libxext" ,libxext)
+              ("libxxf86vm" ,libxxf86vm)))
     (synopsis "Tiny monitor calibration loader for XFree86 (or X.org)")
     (description "xcalib is a tiny tool to load the content of vcgt-Tags in ICC
 profiles to the video card's gamma ramp.  It does work with most video card

@@ -1164,14 +1164,14 @@ after Andy Lester’s Perl module WWW::Mechanize.")
 (define-public python-simplejson
   (package
     (name "python-simplejson")
-    (version "3.10.0")
+    (version "3.13.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "simplejson" version))
       (sha256
        (base32
-        "1qhwsykjlb85igb4cfl6v6gkprzbbg8gyqdd7zscc8w3x0ifcfwm"))))
+        "02jg5nixffqyicfqdl4dil82fh1z9p2as758wp0nqwalw0hcykjc"))))
     (build-system python-build-system)
     (home-page "http://simplejson.readthedocs.org/en/latest/")
     (synopsis
@@ -1857,7 +1857,7 @@ version numbers.")
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
-    (version "2.5.1")
+    (version "2.6.0")
     (source (origin
              (method url-fetch)
              (uri
@@ -1866,7 +1866,7 @@ version numbers.")
                version ".tar.gz"))
              (sha256
               (base32
-               "0hddbqjm4jq63y8jf44nswina1crjs16l9snb6m3vvgyg31klrrn"))))
+               "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -1935,14 +1935,14 @@ something else) to Python data-types.")
 (define-public python-kitchen
   (package
     (name "python-kitchen")
-    (version "1.2.4")
+    (version "1.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "kitchen" version))
        (sha256
         (base32
-         "0ggv3p4x8jvmmzhp0xm00h6pvh1g0gmycw71rjwagnrj8n23vxrq"))))
+         "1zakh6l0yjvwic9p0nkvmbidpnkygkxbigh2skmb5gccyrhbp7xg"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-chardet" ,python-chardet)))
@@ -3806,6 +3806,7 @@ Python's distutils.")
        (uri (git-reference
              (url "https://github.com/dieterv/elib.intl.git")
              (commit "d09997cfef")))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "0y7vzff9xgbnaay7m0va1arl6g68ncwrvbgwl7jqlclsahzzb09d"))))
@@ -4055,13 +4056,13 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python-decorator
   (package
     (name "python-decorator")
-    (version "4.1.2")
+    (version "4.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "decorator" version))
        (sha256
-        (base32 "1d8npb11kxyi36mrvjdpcjij76l5zfyrz2f820brf0l0rcw4vdkw"))))
+        (base32 "03iaf116rm3w8b4agb8hzf6z9331mrvi4khfxq35zkx17sgxsikx"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no test target
     (home-page "https://pypi.python.org/pypi/decorator/")
@@ -4427,14 +4428,14 @@ without using the configuration machinery.")
 (define-public python-jupyter-core
   (package
     (name "python-jupyter-core")
-    (version "4.2.1")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append (pypi-uri "jupyter_core" version)))
        (sha256
         (base32
-         "1cy7inv218dgh4m1fbzbsiqpz733ylgjrj62jxqpfzs3r2cm7ic9"))))
+         "1dy083rarba8prn9f9srxq3c7n7vyql02ycrqq306c40lr57aw5s"))))
     (build-system python-build-system)
     ;; FIXME: not sure how to run the tests
     (arguments `(#:tests? #f))
@@ -5066,6 +5067,17 @@ more advanced mathematics.")
        (sha256
         (base32 "190n29sppw7g8ihilc5451y7jlfcaw56crqiqbf1jff43dlmfnxc"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Run the core tests after installation.  By default it would run
+         ;; *all* tests, which take a very long time to complete and are known
+         ;; to be flaky.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python3" "-c" "import sympy; sympy.test(\"/core\")")
+             #t)))))
     (propagated-inputs
      `(("python-mpmath" ,python-mpmath)))
     (home-page "http://www.sympy.org/")
@@ -5077,7 +5089,19 @@ as possible in order to be comprehensible and easily extensible.")
     (license license:bsd-3)))
 
 (define-public python2-sympy
-  (package-with-python2 python-sympy))
+  (package
+    (inherit (package-with-python2 python-sympy))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Run the core tests after installation.  By default it would run
+         ;; *all* tests, which take a very long time to complete and are known
+         ;; to be flaky.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "python" "-c" "import sympy; sympy.test(\"/core\")")
+             #t)))))))
 
 (define-public python-q
   (package
@@ -5557,14 +5581,14 @@ Python.")
 (define-public python-markdown
   (package
     (name "python-markdown")
-    (version "2.6.8")
+    (version "2.6.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Markdown" version))
        (sha256
         (base32
-         "0cqfhr1km2s5d8jm6hbwgkrrj9hvkjf2gab3s2axlrw1clgaij0a"))))
+         "108g80ryzykh8bj0i7jfp71510wrcixdi771lf2asyghgyf8cmm8"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5590,7 +5614,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
 (define-public python-ptyprocess
   (package
     (name "python-ptyprocess")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -5599,7 +5623,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
              version ".tar.gz"))
        (sha256
         (base32
-         "19l1xrjn4l9gjz01s3vg92gn2dd9d8mw1v86ppkzlnr9m5iwwc05"))))
+         "0ra31k10v3629xq0kdn8lwmfbi97anmk48r03yvh7mks0kq96hg6"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -5743,7 +5767,7 @@ from an XML-based format.")
 (define-public python-ly
   (package
     (name "python-ly")
-    (version "0.9.4")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
@@ -5752,7 +5776,7 @@ from an XML-based format.")
                            "/python-ly-" version ".tar.gz"))
        (sha256
         (base32
-         "0g6n288l83sfwavxh1aryi0aqvsr3sp7v6f903mckwqa4scpky62"))))
+         "0x98dv7p8mg26p4816yy8hz4f34zf6hpnnfmr56msgh9jnsm2qfl"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Some tests need network access.
@@ -6109,13 +6133,13 @@ implementations of ASN.1-based codecs and protocols.")
 (define-public python-ipaddress
   (package
     (name "python-ipaddress")
-    (version "1.0.18")
+    (version "1.0.19")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ipaddress" version))
               (sha256
                (base32
-                "1q8klj9d84cmxgz66073x1j35cplr3r77vx1znhxiwl5w74391ax"))))
+                "10agaa1cys1bk1ycpl2w8lky9vjx8h1xh1z29mg0niqx0638c390"))))
     (build-system python-build-system)
     (home-page "https://github.com/phihag/ipaddress")
     (synopsis "IP address manipulation library")
@@ -6409,14 +6433,14 @@ Debian-related files, such as:
 (define-public python-nbformat
   (package
     (name "python-nbformat")
-    (version "4.3.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbformat" version))
        (sha256
         (base32
-         "12s7j4qja8b5bs1kyw5dzmrqbjxxj8wk52cyasbiqbv7fblcrssz"))))
+         "00nlf08h8yc4q73nphfvfhxrcnilaqanb8z0mdy6nxk0vzq4wjgp"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no test target
     (propagated-inputs
@@ -6461,7 +6485,7 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python-entrypoints
   (package
     (name "python-entrypoints")
-    (version "0.2.2")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
@@ -6470,7 +6494,7 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0azqlkh3j0za080lsf5crnhaxx3c93k9dpv5ihkhf5cppgw5sjz5"))))
+         "1pdvgfr5bxyvnfvxbsd3zi0dh3il71pc4k6rinx6zpps91b84a56"))))
     (build-system python-build-system)
     ;; The package does not come with a setup.py file, so we have to generate
     ;; one ourselves.
@@ -6667,14 +6691,14 @@ in the data.")
 (define-public python-jupyter-console
   (package
     (name "python-jupyter-console")
-    (version "5.0.0")
+    (version "5.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jupyter_console" version))
        (sha256
         (base32
-         "04acmkwsi99rcg3vb54c6n492zv35s92h2ahabc0w6wj976cipvx"))))
+         "1kam1qzgwr7srhm5r6aj90di5sws4bq0jmiw15452ddamb9yspal"))))
     (build-system python-build-system)
     ;; FIXME: it's not clear how to run the tests.
     (arguments `(#:tests? #f))
@@ -7208,13 +7232,13 @@ Abstract Syntax Tree.")
 (define-public python-rply
   (package
     (name "python-rply")
-    (version "0.7.4")
+    (version "0.7.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "rply" version))
               (sha256
                (base32
-                "12rp1d9ba7nvd5rhaxi6xzx1rm67r1k1ylsrkzhpwnphqpb06cvj"))))
+                "0lv428895zxsz43968qx0q9bimwqnfykndz4dpjbq515w2gvzhjh"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)))
@@ -7384,14 +7408,14 @@ concurrent.futures package from Python 3.2")
 (define-public python-colorama
   (package
    (name "python-colorama")
-   (version "0.3.7")
+   (version "0.3.9")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "colorama" version))
      (sha256
       (base32
-       "0avqkn6362v7k2kg3afb35g4sfdvixjgy890clip4q174p9whhz0"))))
+       "1wd1szk0z3073ghx26ynw43gnc140ibln1safgsis6s6z3s25ss8"))))
    (build-system python-build-system)
    (synopsis "Colored terminal text rendering for Python")
    (description "Colorama is a Python library for rendering colored terminal
@@ -7487,14 +7511,14 @@ servers.")
 (define-public python-jmespath
   (package
    (name "python-jmespath")
-   (version "0.9.0")
+   (version "0.9.3")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "jmespath" version))
      (sha256
       (base32
-       "0g9xvl69y7nr3w7ag4fsp6sm4fqf6vrqjw7504x2hzrrsh3ampq8"))))
+       "0r7wc7fsxmlwzxx9j1j7rms06c6xs6d4sysirdhz1jk2mb4x90ba"))))
    (build-system python-build-system)
    (native-inputs
     `(("python-nose" ,python-nose)))
@@ -8586,12 +8610,12 @@ own code, responding to click events and updating clock every second.")
 (define-public python-tblib
   (package
     (name "python-tblib")
-    (version "1.3.0")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "tblib" version))
               (sha256 (base32
-                       "02iahfkfa927hb4jq2bak36ldihwapzacfiq5lyxg8llwn98a1yi"))))
+                       "1rsg8h069kqgncyv8fgzyj6qflk6j10cb78pa5jk34ixwq044vj3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -8861,14 +8885,14 @@ data in Python.")
 (define-public python-kazoo
   (package
     (name "python-kazoo")
-    (version "2.2.1")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "kazoo" version))
        (sha256
         (base32
-         "10pb864if9qi2pq9lfb9m8f7z7ss6rml80gf1d9h64lap5crjnjj"))))
+         "16y213k7r8shyn2zw1k6lkzjgcrvm441pqv8scvcjixhvpbx3hm7"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; XXX: needs zookeeper
     (propagated-inputs
@@ -8968,13 +8992,13 @@ etc.")
 (define-public python-chai
   (package
     (name "python-chai")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "chai" version))
               (sha256
                (base32
-                "016kf3irrclpkpvcm7q0gmkfibq7jgy30a9v73pp42bq9h9a32bl"))))
+                "1k6n6zbgrrs83crp6mr3yqj9zlv40b8rpisyrliwsq7naml2p3gz"))))
     (build-system python-build-system)
     (home-page "https://github.com/agoragames/chai")
     (synopsis "Mocking framework for Python")
@@ -10992,6 +11016,7 @@ exception message with a traceback that points to the culprit.")
        ;; The PyPI version wouldn't contain tests.
        (uri (string-append "https://github.com/mwclient/mwclient/archive/"
                            "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1jj0yhilkjir00719fc7w133x7hdyhkxhk6xblla4asig45klsfv"))))
@@ -11950,7 +11975,7 @@ library.")
        "08if5yax1xn5yfp8p3765ccjmfcv9di7i4m5jckgnwvdsgznwkbj"))))
    (build-system python-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)
-                    ("python-cython", python-cython)))
+                    ("python-cython" ,python-cython)))
    (home-page "https://github.com/aresch/rencode")
    (synopsis "Serialization of heterogeneous data structures")
    (description
@@ -12057,14 +12082,14 @@ ignoring formatting changes.")
 (define-public python-tqdm
   (package
     (name "python-tqdm")
-    (version "4.19.5")
+    (version "4.19.6")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "tqdm" version))
          (sha256
            (base32
-             "0xvkffm77nqckk29xjy5fkqvig5b97vk7nzafp3cn36w4zqyccnz"))))
+             "1pw0ngm0zn9papdmkwipi3yih5c3di6d0w849bdmrraq4d2d9h2y"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
@@ -12084,14 +12109,14 @@ design and layout.")
 (define-public python-pkginfo
   (package
     (name "python-pkginfo")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pkginfo" version))
         (sha256
           (base32
-            "17pqjfpq3c6xzdmk8pski6jcjgjv78q00zjf2bgzb668pzm6l6mv"))))
+            "0x6lm17p1ks031mj6pajyp4rkq74vpqq8qwjb7ikgwmkli1day2q"))))
     (build-system python-build-system)
     (arguments
      ;; The tests are broken upstream.
@@ -12125,7 +12150,7 @@ created by running @code{python setup.py develop}).")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-tqdm" ,python-tqdm)
-       ("python-pkginfo", python-pkginfo)
+       ("python-pkginfo" ,python-pkginfo)
        ("python-requests" ,python-requests)
        ("python-requests-toolbelt" ,python-requests-toolbelt)))
     (home-page "https://github.com/pypa/twine")
@@ -12232,6 +12257,7 @@ executed more than a given number of times during a given period.")
        (method url-fetch)
        (uri (string-append "https://github.com/kovidgoyal/dukpy/archive/v"
                            version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "0pj39rfwlzivqm5hkrsza7gssg6ggpxlq5ivc8f3h7x5pfgc6y6c"))))
@@ -12534,7 +12560,7 @@ is the new Pyro version that is actively developed.")
      `(("netcdf" ,netcdf)))
     (propagated-inputs
      `(("python-numpy" ,python2-numpy-1.8)
-       ("python-pyro", python2-pyro)))
+       ("python-pyro" ,python2-pyro)))
     (arguments
      ;; ScientificPython is not compatible with Python 3
      `(#:python ,python-2
@@ -12599,14 +12625,14 @@ and works only with Python 2 and NumPy < 1.9.")
 (define-public python-phonenumbers
   (package
     (name "python-phonenumbers")
-    (version "8.8.9")
+    (version "8.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "phonenumbers" version))
        (sha256
         (base32
-         "1lhhxmx3hk0b5891nc0p82dl5bq2w9cqbawmh8j5zy587af2j6fq"))))
+         "03fmrgb4r8x3ykmddjs9i3zhs703in8smikj3a6447blqpimwyh1"))))
     (build-system python-build-system)
     (home-page
      "https://github.com/daviddrysdale/python-phonenumbers")
@@ -12881,7 +12907,7 @@ and other tools.")
              #t)))))
     (propagated-inputs
      `(("python-pygments" ,python-pygments)
-       ("python-requests", python-requests)
+       ("python-requests" ,python-requests)
        ("python-babel" ,python-babel) ; optional, for internationalization
        ("python-curtsies" ,python-curtsies) ; >= 0.1.18
        ("python-greenlet" ,python-greenlet)
@@ -12954,8 +12980,64 @@ interpreter. bpython's main features are
     (synopsis "Python library for monitoring inotify events")
     (description
      "@code{pyinotify} provides a Python interface for monitoring
-filesystem events on Linux.")
+file system events on Linux.")
     (license license:expat)))
 
 (define-public python2-pyinotify
   (package-with-python2 python-pyinotify))
+
+;; Ada parser uses this version.
+(define-public python2-quex-0.67.3
+  (package
+    (name "python2-quex")
+    (version "0.67.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/quex/HISTORY/"
+                           (version-major+minor version)
+                           "/quex-" version ".zip"))
+       (sha256
+        (base32
+         "14gv8ll3ipqv4kyc2xiy891nrmjl4ic823zfyx8hassagyclyppw"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share/quex (string-append out "/share/quex"))
+                    (bin (string-append out "/bin")))
+               (copy-recursively "." share/quex)
+               (mkdir-p bin)
+               (symlink (string-append share/quex "/quex-exe.py")
+                        (string-append bin "/quex"))
+               #t))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "QUEX_PATH")
+            (files '("share/quex")))))
+    (home-page "http://quex.sourceforge.net/")
+    (synopsis "Lexical analyzer generator in Python")
+    (description "@code{quex} is a lexical analyzer generator in Python.")
+    (license license:lgpl2.1+)))        ; Non-military
+
+(define-public python2-quex
+  (package (inherit python2-quex-0.67.3)
+    (name "python2-quex")
+    (version "0.68.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/quex/DOWNLOAD/quex-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0svc9nla3b9145d6b7fb9dizx412l3difzqw0ilh9lz52nsixw8j"))
+       (file-name (string-append name "-" version ".tar.gz"))))))

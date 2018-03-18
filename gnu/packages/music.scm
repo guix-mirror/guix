@@ -399,7 +399,7 @@ many input formats and provides a customisable Vi-style user interface.")
                             "Clarinet in Bb.denemo"))
              #t)))))
     (native-inputs
-     `(("glib:bin", glib "bin")   ; for gtester
+     `(("glib:bin" ,glib "bin")   ; for gtester
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -417,7 +417,7 @@ many input formats and provides a customisable Vi-style user interface.")
        ("libsndfile" ,libsndfile)
        ("libtool" ,libtool)
        ("libxml2" ,libxml2)
-       ("lilypond", lilypond)
+       ("lilypond" ,lilypond)
        ("portaudio" ,portaudio)
        ("portmidi" ,portmidi)
        ("rubberband" ,rubberband)))
@@ -441,6 +441,7 @@ background while you work.")
               (uri (string-append
                     "https://github.com/hydrogen-music/hydrogen/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1dy2jfkdw0nchars4xi4isrz66fqn53a9qk13bqza7lhmsg3s3qy"))))
@@ -1753,10 +1754,10 @@ projects.")
               (patches (list (search-patch "portmidi-modular-build.patch")))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; tests cannot be linked
+     `(#:tests? #f                      ; tests cannot be linked
+       #:build-type "Release"           ; needed to have PMALSA set
        #:configure-flags
        (list "-DPORTMIDI_ENABLE_JAVA=Off"
-             "-DCMAKE_BUILD_TYPE=Release"    ; needed to have PMALSA set
              "-DPORTMIDI_ENABLE_TEST=Off"))) ; tests fail linking
     (inputs
      `(("alsa-lib" ,alsa-lib)))
@@ -2517,7 +2518,7 @@ websites such as Libre.fm.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-requests" ,python-requests)
-       ("eyed3", eyed3)
+       ("eyed3" ,eyed3)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("youtube-dl" ,youtube-dl)))
     (arguments

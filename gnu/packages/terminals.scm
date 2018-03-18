@@ -128,9 +128,9 @@ configurable through a graphical wizard.")
                            (string-append "DESTDIR="
                                           (assoc-ref %outputs "out")))))
     (inputs
-     `(("vte", vte-ng)
-       ("gtk+", gtk+)
-       ("ncurses", ncurses)))
+     `(("vte" ,vte-ng)
+       ("gtk+" ,gtk+)
+       ("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
 
@@ -292,10 +292,10 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
        #:phases (modify-phases %standard-phases
                   (delete 'configure))
        #:test-target "test"))
-    (inputs `(("ncurses", ncurses)))
-    (native-inputs `(("libtool", libtool)
+    (inputs `(("ncurses" ,ncurses)))
+    (native-inputs `(("libtool" ,libtool)
                      ("perl-test-harness" ,perl-test-harness)
-                     ("pkg-config", pkg-config)))
+                     ("pkg-config" ,pkg-config)))
     (synopsis "Keyboard entry processing library for terminal-based programs")
     (description
      "Libtermkey handles all the necessary logic to recognise special keys, UTF-8
@@ -692,7 +692,7 @@ terminal or piped input.")
              (delete-file "tests/test_input_output.py")
              #t)))))
     (propagated-inputs
-     `(("python-wcwidth", python-wcwidth)))
+     `(("python-wcwidth" ,python-wcwidth)))
     (native-inputs
      `(("python-pytest-runner" ,python-pytest-runner)
        ("python-pytest" ,python-pytest)))
@@ -762,7 +762,7 @@ than a terminal.")
              (invoke "nosetests" "-v"))))))
     (propagated-inputs
      `(("python-blessings" ,python-blessings)
-       ("python-wcwidth", python-wcwidth)))
+       ("python-wcwidth" ,python-wcwidth)))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pyte" ,python-pyte)

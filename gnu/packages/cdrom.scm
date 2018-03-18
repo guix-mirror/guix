@@ -698,14 +698,14 @@ laid out on the image.")
 (define-public libburn
   (package
     (name "libburn")
-    (version "1.4.6")
+    (version "1.4.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.libburnia-project.org/releases/"
                                  "libburn-" version ".tar.gz"))
              (sha256
               (base32
-               "0wbh49s3az3sfpai09z1zdgynq7wnwrk31v5589033274nmzldlx"))))
+               "19lxnzn8bz70glrrrn2hs43gf5g7gfbcka9rcbckhv1pb7is509y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -720,14 +720,14 @@ DVD-RW, DVD-R, DVD-R/DL, BD-R, and BD-RE.")
 (define-public libisofs
   (package
     (name "libisofs")
-    (version "1.4.6")
+    (version "1.4.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.libburnia-project.org/releases/"
                                  "libisofs-" version ".tar.gz"))
              (sha256
               (base32
-               "02m5g6lbmmkh2xc5xzq5zaf3ma6v31gls66aj886b3cq9qw0paql"))))
+               "0scvqb72qq24wcg814p1iw1dknldl21hr1hxsc1wy9vc6vgyk7fw"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
@@ -737,11 +737,11 @@ DVD-RW, DVD-R, DVD-R/DL, BD-R, and BD-RE.")
     (home-page "https://dev.lovelyhq.com/libburnia/libisofs")
     (synopsis "Library to create ISO 9660 images")
     (description
-     "Libisofs creates ISO 9660 (also known as ECMA-119) filesystem images
+     "Libisofs creates ISO 9660 (also known as ECMA-119) file system images
 which can either be written to POSIX file objects or handed over to
 libburn for being written directly to optical media.
 It can read metadata of ISO 9660 filesystems, manipulate them, and use them
-to produce new complete filesystem images or add-on images to be appended
-to the read filesystem image.
+to produce new complete file system images or add-on images to be appended
+to the read file system image.
 Supported extensions to ISO 9660 are Rock Ridge, Joliet, AAIP, zisofs.")
     (license gpl2+)))

@@ -28,6 +28,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages django)
   #:use-module (gnu packages gd)
@@ -262,3 +263,33 @@ and persisting them to disk using the Whisper time-series library.")
 two things: store numeric time-series data, and render graphs of this data on
 demand.")
     (license license:asl2.0)))
+
+(define-public python-prometheus-client
+  (package
+    (name "python-prometheus-client")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "prometheus_client" version))
+       (sha256
+        (base32
+         "164qzzg8q8awqk0angcm87p2sjiibaj1wgjz0xk6j0klvqi5q2mz"))))
+    (build-system python-build-system)
+    (arguments
+     '(;; No included tests.
+       #:tests? #f))
+    (home-page
+     "https://github.com/prometheus/client_python")
+    (synopsis "Python client for the Prometheus monitoring system")
+    (description
+     "The @code{prometheus_client} package supports exposing metrics from
+software written in Python, so that they can be scraped by a Prometheus
+service.
+
+Metrics can be exposed through a standalone web server, or through Twisted,
+WSGI and the node exporter textfile collector.")
+    (license license:asl2.0)))
+
+(define-public python2-prometheus-client
+  (package-with-python2 python-prometheus-client))

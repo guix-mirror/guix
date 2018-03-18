@@ -1074,7 +1074,7 @@ bootstrapping purposes.")
     (license license:gpl2+)))
 
 (define-public icedtea-7
-  (let* ((version "2.6.12")
+  (let* ((version "2.6.13")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -1092,7 +1092,7 @@ bootstrapping purposes.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "0s0zh0mj1sab99kb516lsgq3859vsc951phc565gwix4l5g9zppk"))
+                  "1w331rdqx1dcx2xb0fmjmrkdc71xqn20fxsgw8by4xhiblh88khh"))
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
@@ -1502,25 +1502,25 @@ bootstrapping purposes.")
       (native-inputs
        `(("openjdk-src"
           ,(drop "openjdk"
-                 "15qf3nfidgnigh2zny6djfp8bhfwjnwk9i06mxs2jbq6na953ql2"))
+                 "0l34ikyf62hbzlf9032alzkkqvf7bpmckz4gvirvph755w7gka8l"))
          ("corba-drop"
           ,(drop "corba"
-                 "1phvn8fyl5mw2n2sn97f17nm442k75xsz2023bfw4h66ywzkqhqy"))
+                 "050gv2jbg1pi6qkn8w18bwpbklfa5b0kymjvan9pncddbj8m84fz"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "0j4ms6lmnfa2cwfh9yfqdfg1bnn3fc40ay4x6k8zqa8yvspik5w5"))
+                 "1k6yldwnxfzdg5926r1nlfv8d1r1j7rlp2nkz6gqh05vgyamnfhl"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "09sddj73k7n29s39hvdk14r130mvlknbxkpd2w58f34sq5sgpdrg"))
+                 "110j7jlz47x2gg6f7653x12mssan5kvj9l9h1m1c8c92drfxbqyk"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "0q896zz8wyswmksy225q1k27nz3v3l27052dcvvpv20ryykz8yp7"))
+                 "0d1mca38ksxvdskp9im3pp7fdijhj1n3lwq9w13r9s4v3qyskgdd"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "0niicyfccim4a9is4akh87jd7wbl8jrazdaab957mcv9l1x3bnqc"))
+                 "0nq5236fzxn3p6x8cgncl56mzcmsj07q9gymysnws4c8byc6n0qj"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "1jw42qhbm3wfavk39304m53lmqipcllrvjqiab2f42mjs10i8gfx"))
+                 "17bdv39n4lh8l5737c96f3xgamx4y305m067p01cywgp7zaddqws"))
          ("ant" ,ant-bootstrap)
          ("attr" ,attr)
          ("coreutils" ,coreutils)
@@ -1570,7 +1570,7 @@ IcedTea build harness.")
       (license license:gpl2+))))
 
 (define-public icedtea-8
-  (let* ((version "3.6.0")
+  (let* ((version "3.7.0")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -1579,7 +1579,7 @@ IcedTea build harness.")
                          "/icedtea8/" version "/" name ".tar.xz"))
                    (sha256 (base32 hash))))))
     (package (inherit icedtea-7)
-      (version "3.6.0")
+      (version "3.7.0")
       (source (origin
                 (method url-fetch)
                 (uri (string-append
@@ -1587,11 +1587,12 @@ IcedTea build harness.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "0zj192zrrxqh6j1ywc3399gk2ycay9w8pvzcvvr2kvdkb37ak86h"))
+                  "09yqzn8rpccs7cyv89hhy5zlznpgqw5x3jz0w1ccp0cz1vgs8l5w"))
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
-                    (substitute* "acinclude.m4"
+                    (substitute* '("configure"
+                                   "acinclude.m4")
                       ;; Do not embed build time
                       (("(DIST_ID=\"Custom build).*$" _ prefix)
                        (string-append prefix "\"\n"))
@@ -1600,97 +1601,122 @@ IcedTea build harness.")
                        "DIST_NAME=\"guix\""))
                     #t))))
       (arguments
-       (substitute-keyword-arguments (package-arguments icedtea-7)
-         ((#:configure-flags flags)
-          `(let ((jdk (assoc-ref %build-inputs "jdk")))
-             `(;;"--disable-bootstrap"
-               "--enable-bootstrap"
-               "--enable-nss"
-               "--disable-downloading"
-               "--disable-system-pcsc"
-               "--disable-system-sctp"
-               "--disable-tests"      ;they are run in the check phase instead
-               "--with-openjdk-src-dir=./openjdk.src"
-               ,(string-append "--with-jdk-home=" jdk))))
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (delete 'fix-x11-extension-include-path)
-             (delete 'patch-paths)
-             (delete 'set-additional-paths)
-             (delete 'patch-patches)
-             (add-after 'unpack 'patch-jni-libs
-               ;; Hardcode dynamically loaded libraries.
-               (lambda _
-                 (let* ((library-path (search-path-as-string->list
-                                       (getenv "LIBRARY_PATH")))
-                        (find-library (lambda (name)
-                                        (search-path
-                                         library-path
-                                         (string-append "lib" name ".so")))))
-                   (for-each
-                    (lambda (file)
-                      (catch 'decoding-error
-                        (lambda ()
-                          (substitute* file
-                            (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
-                              _ name version)
-                             (format #f "\"~a\""  (find-library name)))
-                            (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                             (format #f "\"~a\"" (find-library name)))))
-                        (lambda _
-                          ;; Those are safe to skip.
-                          (format (current-error-port)
-                                  "warning: failed to substitute: ~a~%"
-                                  file))))
-                    (find-files "openjdk.src/jdk/src/solaris/native"
-                                "\\.c|\\.h"))
-                   #t)))
-             (replace 'install
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (let ((doc (string-append (assoc-ref outputs "doc")
-                                           "/share/doc/icedtea"))
-                       (jre (assoc-ref outputs "out"))
-                       (jdk (assoc-ref outputs "jdk")))
-                   (copy-recursively "openjdk.build/docs" doc)
-                   (copy-recursively "openjdk.build/images/j2re-image" jre)
-                   (copy-recursively "openjdk.build/images/j2sdk-image" jdk)
-                   ;; Install the nss.cfg file to JRE to enable SSL/TLS
-                   ;; support via NSS.
-                   (copy-file (string-append jdk "/jre/lib/security/nss.cfg")
-                              (string-append jre "/lib/security/nss.cfg"))
-                   #t)))))))
+       `(#:imported-modules
+         ((guix build ant-build-system)
+          (guix build syscalls)
+          ,@%gnu-build-system-modules)
+         ,@(substitute-keyword-arguments (package-arguments icedtea-7)
+             ((#:modules modules)
+              `((guix build utils)
+                (guix build gnu-build-system)
+                ((guix build ant-build-system) #:prefix ant:)
+                (ice-9 match)
+                (ice-9 popen)
+                (srfi srfi-19)
+                (srfi srfi-26)))
+             ((#:configure-flags flags)
+              `(let ((jdk (assoc-ref %build-inputs "jdk")))
+                 `( ;;"--disable-bootstrap"
+                   "--enable-bootstrap"
+                   "--enable-nss"
+                   "--disable-downloading"
+                   "--disable-system-pcsc"
+                   "--disable-system-sctp"
+                   "--disable-tests"  ;they are run in the check phase instead
+                   "--with-openjdk-src-dir=./openjdk.src"
+                   ,(string-append "--with-jdk-home=" jdk))))
+             ((#:phases phases)
+              `(modify-phases ,phases
+                 (delete 'fix-x11-extension-include-path)
+                 (delete 'patch-paths)
+                 (delete 'set-additional-paths)
+                 (delete 'patch-patches)
+                 ;; Prevent the keytool from recording the current time when
+                 ;; adding certificates at build time.
+                 (add-after 'unpack 'patch-keystore
+                   (lambda _
+                     (substitute* "openjdk.src/jdk/src/share/classes/sun/security/provider/JavaKeyStore.java"
+                       (("date = new Date\\(\\);")
+                        "\
+date = (System.getenv(\"SOURCE_DATE_EPOCH\") != null) ?\
+new Date(Long.parseLong(System.getenv(\"SOURCE_DATE_EPOCH\"))) :\
+new Date();"))
+                     #t))
+                 (add-after 'unpack 'patch-jni-libs
+                   ;; Hardcode dynamically loaded libraries.
+                   (lambda _
+                     (let* ((library-path (search-path-as-string->list
+                                           (getenv "LIBRARY_PATH")))
+                            (find-library (lambda (name)
+                                            (search-path
+                                             library-path
+                                             (string-append "lib" name ".so")))))
+                       (for-each
+                        (lambda (file)
+                          (catch 'decoding-error
+                            (lambda ()
+                              (substitute* file
+                                (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
+                                  _ name version)
+                                 (format #f "\"~a\""  (find-library name)))
+                                (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
+                                 (format #f "\"~a\"" (find-library name)))))
+                            (lambda _
+                              ;; Those are safe to skip.
+                              (format (current-error-port)
+                                      "warning: failed to substitute: ~a~%"
+                                      file))))
+                        (find-files "openjdk.src/jdk/src/solaris/native"
+                                    "\\.c|\\.h"))
+                       #t)))
+                 (replace 'install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((doc (string-append (assoc-ref outputs "doc")
+                                               "/share/doc/icedtea"))
+                           (jre (assoc-ref outputs "out"))
+                           (jdk (assoc-ref outputs "jdk")))
+                       (copy-recursively "openjdk.build/docs" doc)
+                       (copy-recursively "openjdk.build/images/j2re-image" jre)
+                       (copy-recursively "openjdk.build/images/j2sdk-image" jdk)
+                       ;; Install the nss.cfg file to JRE to enable SSL/TLS
+                       ;; support via NSS.
+                       (copy-file (string-append jdk "/jre/lib/security/nss.cfg")
+                                  (string-append jre "/lib/security/nss.cfg"))
+                       #t)))
+                 (add-after 'install 'strip-jar-timestamps
+                   (assoc-ref ant:%standard-phases 'strip-jar-timestamps)))))))
       (native-inputs
        `(("jdk" ,icedtea-7 "jdk")
          ("openjdk-src"
           ,(drop "openjdk"
-                 "0mqxh81kq05z4wydkik0yrr81ibf84xmwsdcw9n2gfrzs4f5jxnb"))
+                 "1mj6xgmw31i6qd30qi9dmv7160fbcfq5ikz1jwjihdg2793il19p"))
          ("aarch32-drop"
           ,(drop "aarch32"
-                 "0b207g2n6kn510zf5vwh58bsxgqrmkvrna4p20r74v9cwcwx83n2"))
+                 "1wb8k5zm40zld0986dvmlh5xh3gyixbg9h26sl662zy92amhmyyg"))
          ("corba-drop"
           ,(drop "corba"
-                 "0qinc1q4w01nkr9klhfyd8caxvyrrfxjrz32nd7kgyja2bj8x7dd"))
+                 "11ma4zz0599cy70xd219v7a8vin7p96xrhhz3wsaw6cjhkzpagah"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "07azrp3g86vk2laybmr5xfn0yrljkxs0rlm1q48385br225bgdxi"))
+                 "14m1y0z0fbm5z5zjw3vnq85py8dma84bi3f9cw8rhdyc6skk8q4i"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "018fd2hq57zp3pq06wlxy5pabqcyk36xi8hk0d6xk3a90wsjvyik"))
+                 "09andnm6xaasnp963hgx42yiflifiljp9z7z85jrfyc5z8a5whmf"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "0vs488kq5j2cc6kplc78jbhfxwq4fn06l34xrbq4d6y17777arg8"))
+                 "0s6lcpc0zckz2fnq98aqf28nz9y3wbi41a3kyaqqa2abwbkm1zwl"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "04f6d1wvck5jrpvrcw5gsbzxnihcry9zrf1v85czdm959q21zv9c"))
+                 "15wizy123vhk40chl1b4p552jf2pw2hdww0myf11qab425axz4nw"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "1mfgpzyr6zzy9klf8nn3z6d41fydb9ghpfpqzjq3cl95axfbdl1g"))
+                 "1ciz1w9j0kz7s1dxdhyqq71nla9icyz6qvn0b9z2zgkklqa98qmm"))
          ("nashorn-drop"
           ,(drop "nashorn"
-                 "1a26cmzbs50gkh4rmmmxls7zljx62vfp1wq02gsfd5jqs4xvlibj"))
+                 "19pzl3ppaw8j6r5cnyp8qiw3hxijh3hdc46l39g5yfhdl4pr4hpa"))
          ("shenandoah-drop"
           ,(drop "shenandoah"
-                 "11hmn9mwmvryfddcanzx3qffjm8bbiv18nwv3iy9cswrvxjy010f"))
+                 "0k33anxdzw1icn072wynfmmdjhsv50hay0j1sfkfxny12rb3vgdy"))
          ,@(fold alist-delete (package-native-inputs icedtea-7)
                  '("jdk" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
                    "jdk-drop" "langtools-drop" "hotspot-drop")))))))
@@ -3860,39 +3886,30 @@ The jMock library
   (package (inherit java-hamcrest-core)
     (name "java-hamcrest-all")
     (arguments
-     (substitute-keyword-arguments (package-arguments java-hamcrest-core)
-       ;; FIXME: a unit test fails because org.hamcrest.SelfDescribing is not
-       ;; found, although it is part of the hamcrest-core library that has
-       ;; just been built.
-       ;;
-       ;; Fixing this one test is insufficient, though, and upstream confirmed
-       ;; that the latest hamcrest release fails its unit tests when built
-       ;; with Java 7.  See https://github.com/hamcrest/JavaHamcrest/issues/30
-       ((#:tests? _) #f)
-       ((#:build-target _) "bigjar")
-       ((#:phases phases)
-        `(modify-phases ,phases
-           ;; Some build targets override the classpath, so we need to patch
-           ;; the build.xml to ensure that required dependencies are on the
-           ;; classpath.
-           (add-after 'unpack 'patch-classpath-for-integration
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "build.xml"
-                 ((" build/hamcrest-library-\\$\\{version\\}.jar" line)
-                  (string-join
-                   (cons line
-                         (append
-                          (find-files (assoc-ref inputs "java-hamcrest-core") "\\.jar$")
-                          (find-files (assoc-ref inputs "java-junit") "\\.jar$")
-                          (find-files (assoc-ref inputs "java-jmock") "\\.jar$")
-                          (find-files (assoc-ref inputs "java-easymock") "\\.jar$")))
-                   ";")))
-               #t))))))
+     `(#:jdk ,icedtea-8
+       ,@(substitute-keyword-arguments (package-arguments java-hamcrest-core)
+           ((#:build-target _) "bigjar")
+           ((#:phases phases)
+            `(modify-phases ,phases
+               ;; Some build targets override the classpath, so we need to patch
+               ;; the build.xml to ensure that required dependencies are on the
+               ;; classpath.
+               (add-after 'unpack 'patch-classpath-for-integration
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "build.xml"
+                     ((" build/hamcrest-library-\\$\\{version\\}.jar" line)
+                      (string-join
+                       (cons line
+                             (append
+                              (find-files (assoc-ref inputs "java-junit") "\\.jar$")
+                              (find-files (assoc-ref inputs "java-jmock") "\\.jar$")
+                              (find-files (assoc-ref inputs "java-easymock") "\\.jar$")))
+                       ";")))
+                   #t)))))))
     (inputs
      `(("java-junit" ,java-junit)
        ("java-jmock" ,java-jmock-1)
        ("java-easymock" ,java-easymock)
-       ("java-hamcrest-core" ,java-hamcrest-core)
        ,@(package-inputs java-hamcrest-core)))))
 
 (define-public java-jopt-simple
@@ -7290,6 +7307,7 @@ configuration.")
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/asomov/snakeyaml/get/v"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0rf5ha6w0waz50jz2479jsrbgmd0dnx0gs337m126j5z7zlmg7mg"))))
@@ -7965,6 +7983,7 @@ to use.")
                 (uri (git-reference
                       (url "https://github.com/neilalexander/jnacl.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1d6g6xhn83byv5943n7935wwjsk0ibk0qdvqgr699qqgqqmwisbb"))))
@@ -8561,7 +8580,8 @@ protocol-independent framework to build mail and messaging applications.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1gxkp7lv2ahymgrqdw94ncq54bmp4m4sw5m1x9gkp7l5bxn0xsyj"))))
+                "1gxkp7lv2ahymgrqdw94ncq54bmp4m4sw5m1x9gkp7l5bxn0xsyj"))
+              (patches (search-patches "java-jeromq-fix-tests.patch"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-jeromq.jar"
@@ -8575,7 +8595,13 @@ protocol-independent framework to build mail and messaging applications.")
          ;; Failures
          "**/DealerSpecTest.java"
          "**/CustomDecoderTest.java"
-         "**/CustomEncoderTest.java")))
+         "**/CustomEncoderTest.java"
+         "**/ConnectRidTest.java"
+         "**/ReqSpecTest.java"
+         "**/PushPullSpecTest.java"
+         "**/PubSubHwmTest.java"
+         "**/RouterSpecTest.java"
+         "**/ProxyTest.java")))
     (inputs
      `(("java-jnacl" ,java-jnacl)))
     (native-inputs

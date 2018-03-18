@@ -12,7 +12,7 @@
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Paul Garlick <pgarlick@tourbillion-technology.com>
@@ -23,6 +23,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -418,18 +419,26 @@ computing convex hulls.")
 (define-public arpack-ng
   (package
     (name "arpack-ng")
-    (version "3.2.0")
+    (version "3.5.0")
+    (home-page "https://github.com/opencollab/arpack-ng")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/opencollab/arpack-ng/archive/"
-                           version ".tar.gz"))
+       (uri (string-append home-page "/archive/" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fwch6vipms1ispzg2djvbzv5wag36f1dmmr3xs3mbp6imfyhvff"))))
+         "0f8jx3fifmj9qdp289zr7r651y1q48k1jya859rqxq62mvis7xsh"))))
     (build-system gnu-build-system)
-    (home-page "https://github.com/opencollab/arpack-ng")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'autoreconf
+                    (lambda _
+                      (invoke "autoreconf" "-vfi"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (inputs
      `(("lapack" ,lapack)
        ("fortran" ,gfortran)))
@@ -439,6 +448,21 @@ computing convex hulls.")
 large scale eigenvalue problems.")
     (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
+
+(define-public arpack-ng-3.3.0
+  (package
+    (inherit arpack-ng)
+    (version "3.3.0")
+    (name (package-name arpack-ng))
+    (home-page (package-home-page arpack-ng))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append home-page "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1cz53wqzcf6czmcpfb3vb61xi0rn5bwhinczl65hpmbrglg82ndd"))))))
 
 (define-public arpack-ng-openmpi
   (package (inherit arpack-ng)
@@ -724,7 +748,11 @@ incompatible with HDF5.")
              ;; unnecessary store references to those compilers:
              (substitute* "src/libhdf5.settings"
               (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
-               (string-append prefix (string-take hash 10) "...")))
+               (string-append prefix (string-take hash 10) "..."))
+              ;; Don't record the build-time kernel version to make the
+              ;; settings file reproducible.
+              (("Uname information:.*")
+               "Uname information: Linux\n"))
              #t))
          (add-after 'install 'patch-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -1280,7 +1308,7 @@ can solve two kinds of problems:
 (define-public octave
   (package
     (name "octave")
-    (version "4.2.1")
+    (version "4.2.2")
     (source
      (origin
       (method url-fetch)
@@ -1288,7 +1316,7 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "09zhhch79jw3ynw39vizx0i2cbd2bjz3sp38pjdzraqrbivpwp92"))))
+        "0pkkz1vazsh7ipffb09q0nc2jgx6q27pkkngygjij6jrpcly5zsp"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
@@ -3727,3 +3755,54 @@ specifications.  Also, state spaces can be manipulated, visualised and
 analysed.")
     (home-page "http://mcrl2.org")
     (license license:boost1.0)))
+
+(define-public r-subplex
+  (package
+    (name "r-subplex")
+    (version "1.5-2")
+    (source
+    (origin
+      (method url-fetch)
+      (uri (cran-uri "subplex" version))
+      (sha256
+       (base32
+        "1v9xrnkapnq7v1jbhlg32ignklzf2vn8rqpayc8pzk8wvz53r33g"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/subplex")
+    (synopsis "Unconstrained optimization using the subplex algorithm")
+    (description "This package implements the Subplex optimization algorithm.
+It solves unconstrained optimization problems using a simplex method on
+subspaces.  The method is well suited for optimizing objective functions that
+are noisy or are discontinuous at the solution.")
+    (license license:gpl3+)))
+
+(define-public r-desolve
+  (package
+    (name "r-desolve")
+    (version "1.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "deSolve" version))
+        (sha256
+         (base32
+          "18nx3maww979a8p8ly4hv63y65mnjx8vbj2fpipd6rhcbf1lbsan"))))
+    (properties `((upstream-name . "deSolve")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://desolve.r-forge.r-project.org/")
+    (synopsis "Solvers for initial value problems of differential equations")
+    (description "This package provides functions that solve initial
+value problems of a system of first-order ordinary differential equations (ODE),
+of partial differential equations (PDE), of differential algebraic equations
+(DAE), and of delay differential equations.  The functions provide an interface
+to the FORTRAN functions lsoda, lsodar, lsode, lsodes of the ODEPACK collection,
+to the FORTRAN functions dvode and daspk and a C-implementation of solvers of
+the Runge-Kutta family with fixed or variable time steps.  The package contains
+routines designed for solving ODEs resulting from 1-D, 2-D and 3-D partial
+differential equations (PDE) that have been converted to ODEs by numerical
+differencing.")
+    (license license:gpl2+)))

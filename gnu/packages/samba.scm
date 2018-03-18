@@ -50,14 +50,14 @@
 (define-public cifs-utils
   (package
     (name "cifs-utils")
-    (version "6.7")
+    (version "6.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.samba.org/pub/linux-cifs/"
                            name "/" name "-" version ".tar.bz2"))
        (sha256 (base32
-                "1ayghnkryy1n1zm5dyvyyr7n3807nsm6glfcbbki5c2a8w91dwmj"))))
+                "0ygz3pagjpaj5ky11hzh4byyymb7fpmqiqkprn11zwj31h2zdlg7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -148,14 +148,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.7.5")
+    (version "4.7.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "13gyr0sk9vx6mccr2h35ca3g92kp50cqxrlzfgrddfmskzx08v9i"))))
+               "0vkxqp3wh7bpn1fd45lznmrpn2ma1fq75yq28vi08rggr07y7v8y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

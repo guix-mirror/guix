@@ -473,7 +473,7 @@ to lock down your entire repository.")
 (define-public git-remote-gcrypt
   (package
    (name "git-remote-gcrypt")
-   (version "1.0.2")
+   (version "1.0.3")
    (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -482,7 +482,7 @@ to lock down your entire repository.")
              (file-name (string-append name "-" version "-checkout"))
              (sha256
               (base32
-               "0kc6qi5gavziqlwnzpy7v4ah7yw860v3i8pyna6way0cfr0qnpr2"))))
+               "1vay3204729c7wajgn3nxf0s0hzwpdrw14pl6kd8w2ss25gvw2k1"))))
    (build-system trivial-build-system)
    (arguments
     `(#:modules ((guix build utils))
@@ -785,6 +785,7 @@ will work.")
               (uri (git-reference
                     (url "https://github.com/nvie/gitflow/")
                     (commit "15aab26490facf285acef56cb5d61025eacb3a69")))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "01fs97q76fdfnvmrh2cyjhywcs3pykf1dg58sy0frflnsdzs6prx"))))
@@ -902,6 +903,7 @@ though this can be overridden.")
                       ;; are interested in just one for this package.
                       (url "https://github.com/dustin/bindir")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1dcq0y16yznbv4k9h8gg90kv1gkn8r8dbvl4m2rpfd7q5nqhn617"))))

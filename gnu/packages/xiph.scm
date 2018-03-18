@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -81,6 +81,7 @@ periodic timestamps for seeking.")
   (package
    (name "libvorbis")
    (version "1.3.5")
+   (replacement libvorbis-1.3.6)
    (source (origin
             (method url-fetch)
             (uri (string-append "http://downloads.xiph.org/releases/vorbis/"
@@ -104,6 +105,18 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
    (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution."))
    (home-page "https://xiph.org/vorbis/")))
+
+;; For CVE-2018-5146.
+(define-public libvorbis-1.3.6
+  (package/inherit libvorbis
+    (version "1.3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://downloads.xiph.org/releases/vorbis/"
+                                  "libvorbis-" version ".tar.xz"))
+              (sha256
+               (base32
+                "05dlzjkdpv46zb837wysxqyn8l636x3dw8v8ymlrwz2fg1dbn05g"))))))
 
 (define libtheora
   (package

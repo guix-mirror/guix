@@ -1435,90 +1435,91 @@ greyed out, instead of only later giving \"not selectable\" popup error.
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
 
-(define %dovecot-activation
+(define (%dovecot-activation config)
   ;; Activation gexp.
-  #~(begin
-      (use-modules (guix build utils))
-      (define (mkdir-p/perms directory owner perms)
-        (mkdir-p directory)
-        (chown "/var/run/dovecot" (passwd:uid owner) (passwd:gid owner))
-        (chmod directory perms))
-      (define (build-subject parameters)
-        (string-concatenate
-         (map (lambda (pair)
-                (let ((k (car pair)) (v (cdr pair)))
-                  (define (escape-char str chr)
-                    (string-join (string-split str chr) (string #\\ chr)))
-                  (string-append "/" k "="
-                                 (escape-char (escape-char v #\=) #\/))))
-              (filter (lambda (pair) (cdr pair)) parameters))))
-      (define* (create-self-signed-certificate-if-absent
-                #:key private-key public-key (owner (getpwnam "root"))
-                (common-name (gethostname))
-                (organization-name "GuixSD")
-                (organization-unit-name "Default Self-Signed Certificate")
-                (subject-parameters `(("CN" . ,common-name)
-                                      ("O" . ,organization-name)
-                                      ("OU" . ,organization-unit-name)))
-                (subject (build-subject subject-parameters)))
-        ;; Note that by default, OpenSSL outputs keys in PEM format.  This
-        ;; is what we want.
-        (unless (file-exists? private-key)
-          (cond
-           ((zero? (system* (string-append #$openssl "/bin/openssl")
-                            "genrsa" "-out" private-key "2048"))
-            (chown private-key (passwd:uid owner) (passwd:gid owner))
-            (chmod private-key #o400))
-           (else
-            (format (current-error-port)
-                    "Failed to create private key at ~a.\n" private-key))))
-        (unless (file-exists? public-key)
-          (cond
-           ((zero? (system* (string-append #$openssl "/bin/openssl")
-                            "req" "-new" "-x509" "-key" private-key
-                            "-out" public-key "-days" "3650"
-                            "-batch" "-subj" subject))
-            (chown public-key (passwd:uid owner) (passwd:gid owner))
-            (chmod public-key #o444))
-           (else
-            (format (current-error-port)
-                    "Failed to create public key at ~a.\n" public-key)))))
-      (let ((user (getpwnam "dovecot")))
-        (mkdir-p/perms "/var/run/dovecot" user #o755)
-        (mkdir-p/perms "/var/lib/dovecot" user #o755)
-        (mkdir-p/perms "/etc/dovecot" user #o755)
-        (mkdir-p/perms "/etc/dovecot/private" user #o700)
-        (create-self-signed-certificate-if-absent
-         #:private-key "/etc/dovecot/private/default.pem"
-         #:public-key "/etc/dovecot/default.pem"
-         #:owner (getpwnam "root")
-         #:common-name (format #f "Dovecot service on ~a" (gethostname))))))
+  (let ((config-str
+         (cond
+          ((opaque-dovecot-configuration? config)
+           (opaque-dovecot-configuration-string config))
+          (else
+           (with-output-to-string
+             (lambda ()
+               (serialize-configuration config
+                                        dovecot-configuration-fields)))))))
+    #~(begin
+        (use-modules (guix build utils))
+        (define (mkdir-p/perms directory owner perms)
+          (mkdir-p directory)
+          (chown "/var/run/dovecot" (passwd:uid owner) (passwd:gid owner))
+          (chmod directory perms))
+        (define (build-subject parameters)
+          (string-concatenate
+           (map (lambda (pair)
+                  (let ((k (car pair)) (v (cdr pair)))
+                    (define (escape-char str chr)
+                      (string-join (string-split str chr) (string #\\ chr)))
+                    (string-append "/" k "="
+                                   (escape-char (escape-char v #\=) #\/))))
+                (filter (lambda (pair) (cdr pair)) parameters))))
+        (define* (create-self-signed-certificate-if-absent
+                  #:key private-key public-key (owner (getpwnam "root"))
+                  (common-name (gethostname))
+                  (organization-name "GuixSD")
+                  (organization-unit-name "Default Self-Signed Certificate")
+                  (subject-parameters `(("CN" . ,common-name)
+                                        ("O" . ,organization-name)
+                                        ("OU" . ,organization-unit-name)))
+                  (subject (build-subject subject-parameters)))
+          ;; Note that by default, OpenSSL outputs keys in PEM format.  This
+          ;; is what we want.
+          (unless (file-exists? private-key)
+            (cond
+             ((zero? (system* (string-append #$openssl "/bin/openssl")
+                              "genrsa" "-out" private-key "2048"))
+              (chown private-key (passwd:uid owner) (passwd:gid owner))
+              (chmod private-key #o400))
+             (else
+              (format (current-error-port)
+                      "Failed to create private key at ~a.\n" private-key))))
+          (unless (file-exists? public-key)
+            (cond
+             ((zero? (system* (string-append #$openssl "/bin/openssl")
+                              "req" "-new" "-x509" "-key" private-key
+                              "-out" public-key "-days" "3650"
+                              "-batch" "-subj" subject))
+              (chown public-key (passwd:uid owner) (passwd:gid owner))
+              (chmod public-key #o444))
+             (else
+              (format (current-error-port)
+                      "Failed to create public key at ~a.\n" public-key)))))
+        (let ((user (getpwnam "dovecot")))
+          (mkdir-p/perms "/var/run/dovecot" user #o755)
+          (mkdir-p/perms "/var/lib/dovecot" user #o755)
+          (mkdir-p/perms "/etc/dovecot" user #o755)
+          (copy-file #$(plain-file "dovecot.conf" config-str)
+                     "/etc/dovecot/dovecot.conf")
+          (mkdir-p/perms "/etc/dovecot/private" user #o700)
+          (create-self-signed-certificate-if-absent
+           #:private-key "/etc/dovecot/private/default.pem"
+           #:public-key "/etc/dovecot/default.pem"
+           #:owner (getpwnam "root")
+           #:common-name (format #f "Dovecot service on ~a" (gethostname)))))))
 
 (define (dovecot-shepherd-service config)
   "Return a list of <shepherd-service> for CONFIG."
-  (let* ((config-str
-          (cond
-           ((opaque-dovecot-configuration? config)
-            (opaque-dovecot-configuration-string config))
-           (else
-            (with-output-to-string
-              (lambda ()
-                (serialize-configuration config
-                                         dovecot-configuration-fields))))))
-         (config-file (plain-file "dovecot.conf" config-str))
-         (dovecot (if (opaque-dovecot-configuration? config)
-                      (opaque-dovecot-configuration-dovecot config)
-                      (dovecot-configuration-dovecot config))))
+  (let ((dovecot (if (opaque-dovecot-configuration? config)
+                     (opaque-dovecot-configuration-dovecot config)
+                     (dovecot-configuration-dovecot config))))
     (list (shepherd-service
            (documentation "Run the Dovecot POP3/IMAP mail server.")
            (provision '(dovecot))
            (requirement '(networking))
            (start #~(make-forkexec-constructor
                      (list (string-append #$dovecot "/sbin/dovecot")
-                           "-F" "-c" #$config-file)))
+                           "-F")))
            (stop #~(make-forkexec-constructor
                     (list (string-append #$dovecot "/sbin/dovecot")
-                          "-c" #$config-file "stop")))))))
+                          "stop")))))))
 
 (define %dovecot-pam-services
   (list (unix-pam-service "dovecot")))
@@ -1533,7 +1534,7 @@ greyed out, instead of only later giving \"not selectable\" popup error.
                        (service-extension pam-root-service-type
                                           (const %dovecot-pam-services))
                        (service-extension activation-service-type
-                                          (const %dovecot-activation))))))
+                                          %dovecot-activation)))))
 
 (define* (dovecot-service #:key (config (dovecot-configuration)))
   "Return a service that runs @command{dovecot}, a mail server that can run

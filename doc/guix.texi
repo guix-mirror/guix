@@ -443,7 +443,8 @@ and rerun the @code{gpg --verify} command.
 @c end authentication part
 
 @item
-As @code{root}, run:
+Now, you need to become the @code{root} user.  Depending on your distribution,
+you may have to run @code{su -} or @code{sudo -i}.  As @code{root}, run:
 
 @example
 # cd /tmp
@@ -11157,6 +11158,23 @@ server.  Alternately, one can specify the @command{sftp-server} command:
            `(("sftp" ,(file-append openssh "/libexec/sftp-server"))))))
 @end example
 
+@item @code{accepted-environment} (default: @code{'()})
+List of strings describing which environment variables may be exported.
+
+Each string gets on its own line.  See the @code{AcceptEnv} option in
+@code{man sshd_config}.
+
+This example allows ssh-clients to export the @code{COLORTERM} variable.
+It is set by terminal emulators, which support colors.  You can use it in
+your shell's ressource file to enable colors for the prompt and commands
+if this variable is set.
+
+@example
+(service openssh-service-type
+         (openssh-configuration
+           (accepted-environment '("COLORTERM"))))
+@end example
+
 @item @code{authorized-keys} (default: @code{'()})
 @cindex authorized keys, SSH
 @cindex SSH authorized keys
@@ -20456,6 +20474,16 @@ of the image size as a function of the size of the system declared in
 @itemx -r @var{file}
 Make @var{file} a symlink to the result, and register it as a garbage
 collector root.
+
+@item --skip-checks
+Skip pre-installation safety checks.
+
+By default, @command{guix system init} and @command{guix system
+reconfigure} perform safety checks: they make sure the file systems that
+appear in the @code{operating-system} declaration actually exist
+(@pxref{File Systems}), and that any Linux kernel modules that may be
+needed at boot time are listed in @code{initrd-modules} (@pxref{Initial
+RAM Disk}).  Passing this option skips these tests altogether.
 
 @item --on-error=@var{strategy}
 Apply @var{strategy} when an error occurs when reading @var{file}.

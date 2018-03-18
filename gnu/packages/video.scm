@@ -1062,7 +1062,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("waf" ,python-waf)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
-       ("libxkbcommon", libxkbcommon)
+       ("libxkbcommon" ,libxkbcommon)
        ("youtube-dl" ,youtube-dl)
        ("zlib" ,zlib)))
     (arguments
@@ -1158,7 +1158,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.02.26")
+    (version "2018.03.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1166,7 +1166,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ijjnx8qjxk07v5dbz3n5z3cvz8dlkmh7jkyvgng7inl74c29zq5"))))
+                "1ibmz91anli1vzkgw2i3h4wf1i8arzd74730ylwcwyg3375xryjb"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1276,7 +1276,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1025")
+    (version "0.4.1040")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1285,7 +1285,7 @@ other site that youtube-dl supports.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "10103jw1gzar85jlajzl9wslk08vw21n26hkhfcz5bvkm9lxxs2c"))))
+                "0257p9bn426rv0cjk2j5hsx6cg7dz5gpjwlqq0sy1axa47phis46"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -2038,7 +2038,7 @@ making @dfn{screencasts}.")
 (define-public simplescreenrecorder
   (package
     (name "simplescreenrecorder")
-    (version "0.3.9")
+    (version "0.3.10")
     (source
      (origin
        (method url-fetch)
@@ -2047,7 +2047,7 @@ making @dfn{screencasts}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1gnf9wbiq2fcbqcn1a5nfmp8r0nxrrlgh2wly2mfkkwymynhx0pk"))))
+         "02rl9yyx3hlz9fqvgzv7ipmvx2qahj7ws5wx2m7zs3lssq3qag3g"))))
     (build-system cmake-build-system)
     ;; Although libx11, libxfixes, libxext are listed as build dependencies in
     ;; README.md, the program builds and functions properly without them.
@@ -2461,7 +2461,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("zlib" ,zlib)
-       ("libmediainfo", libmediainfo)
+       ("libmediainfo" ,libmediainfo)
        ("libzen" ,libzen)))
     (build-system gnu-build-system)
     (arguments
@@ -2761,7 +2761,7 @@ It counts more than 100 plugins.")
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,(autoconf-wrapper))
+     `(("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)))
     (inputs

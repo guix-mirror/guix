@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -111,9 +112,9 @@ to remotely control a user's Windows desktop.")
          ("zlib" ,zlib)
          ("openssl" ,openssl)))
       (arguments
-       `(#:configure-flags
-         (list "-DCMAKE_BUILD_TYPE=RELEASE"
-               "-DWITH_JPEG=ON"
+       `(#:build-type "RELEASE"
+         #:configure-flags
+         (list "-DWITH_JPEG=ON"
                ,@(if (string-prefix? "x86_64"
                                      (or (%current-target-system)
                                          (%current-system)))

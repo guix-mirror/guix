@@ -1095,7 +1095,7 @@ emulation community.  It provides highly accurate emulation.")
        ("sdl" ,sdl2)
        ("udev" ,eudev)
        ("vulkan-icd-loader" ,vulkan-icd-loader)
-       ("wayland", wayland)
+       ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)

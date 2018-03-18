@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,14 +149,14 @@ code.")
 (define-public python-protobuf
   (package
     (name "python-protobuf")
-    (version "3.4.0")
+    (version "3.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "protobuf" version))
        (sha256
         (base32
-         "0x33xz85cy5ilg1n2rn92l4qwlcw25vzysx2ldv7k625yjg600pg"))))
+         "1q4b1m55w4gvcbzklbk8iylaii98n4in41k27d94w8ypbwlrm1q9"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))

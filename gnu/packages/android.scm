@@ -457,7 +457,7 @@ def _FindRepo():
      ;; TODO: Add git-remote-persistent-https once it is available in guix
      `(("git" ,git)
        ("gnupg" ,gnupg)
-       ("ssh", openssh)))
+       ("ssh" ,openssh)))
     (native-inputs
      `(("nose" ,python2-nose)))
     (home-page "https://code.google.com/p/git-repo/")

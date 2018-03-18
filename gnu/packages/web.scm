@@ -159,6 +159,7 @@ and its related documentation.")
               (uri (string-append
                     "https://github.com/GrahamDumpleton/mod_wsgi/archive/"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0n1yhmrfp8mjbsngmyjl937c6rc0069p6wdi1lknrbn1q42hzw6q"))))
@@ -845,6 +846,7 @@ UTS#46.")
                      ":pserver:anonymous@tidy.cvs.sourceforge.net:/cvsroot/tidy")
                     (module "tidy")
                     (revision "2009-12-23")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "14dsnmirjcrvwsffqp3as70qr6bbfaig2fv3zvs5g7005jrsbvpb"))
@@ -958,9 +960,9 @@ of people.")
      ; named 'stubout'". The tests can be run by replacing the check phase with
      ; the command "python setup.py nosetests --verbosity=3".
     (native-inputs `(; Required for tests:
-                     ("python-mox3", python-mox3)
-                     ("python-nose", python-nose)))
-    (propagated-inputs `(("python-numpy", python-numpy)))
+                     ("python-mox3" ,python-mox3)
+                     ("python-nose" ,python-nose)))
+    (propagated-inputs `(("python-numpy" ,python-numpy)))
     (home-page "https://github.com/novnc/websockify")
     (synopsis "WebSockets support for any application/server")
     (description "Websockify translates WebSockets traffic to normal socket
@@ -987,7 +989,7 @@ directions.")
        #:tests? #f))                         ; no test target
     (native-inputs `(("flex" ,flex)))
     (inputs `(("gnutls" ,gnutls)
-              ("libcrypt", libgcrypt)))
+              ("libcrypt" ,libgcrypt)))
     (home-page "https://www.gedanken.org.uk/software/wwwoffle/")
     (synopsis "Caching web proxy optimized for intermittent internet links")
     (description "WWWOFFLE is a proxy web server that is especially good for
@@ -4972,10 +4974,10 @@ used to start services with both privileged and non-privileged port numbers.")
          "0n29wcgw32rhnraj9j21ibhwi0xagmmcskhbaz8ihxly7nx3p9h8"))))
     (build-system cmake-build-system)
     (outputs '("out"
-               "static")) ; 1.0MiB of .a files
+               "static"))               ; 1.0MiB of .a files
     (arguments
-     `(#:tests? #f ; No tests available
-       #:configure-flags (list "-DCMAKE_BUILD_TYPE=Release")
+     `(#:tests? #f                      ; no tests available
+       #:build-type "Release"
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'move-static-libraries
@@ -6275,7 +6277,7 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
 (define-public geomyidae
   (package
     (name "geomyidae")
-    (version "0.29")
+    (version "0.31")
     (source
      (origin
        (method url-fetch)
@@ -6283,7 +6285,7 @@ in Perl but is not nearly as capable as @code{HTML::Tidy}.")
                            "geomyidae-" version ".tar.bz2"))
        (sha256
         (base32
-         "0qxgxp6psfrgfqhndyq2z54nb1qrmvvljddnxdwp207jbz366bja"))))
+         "1ih7220c6mgq4r7blm4kx3pxbl53sph58lqgwci6cmi3c0sq5c3x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"

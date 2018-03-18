@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -102,7 +102,7 @@ default Emacs configuration, but it carries a much lighter feature set.")
          ,@(package-inputs zile)))
       (native-inputs
        `(("m4" ,m4)                               ;for 'bootstrap'
-         ("autoconf" ,(autoconf-wrapper))
+         ("autoconf" ,autoconf-wrapper)
          ("automake" ,automake)
 
          ;; For some reason, 'bootstrap' insists on having these.

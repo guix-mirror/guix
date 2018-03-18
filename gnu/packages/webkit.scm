@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,14 +55,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.18.6")
+    (version "2.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0g5cpdijjv5hlrbi4i4dh97yrh5apnyvm90wpr9f84hgyk12r4ck"))))
+                "0g0an3pc2yz13gzpaysfgch2yp510gw1qcpk0xr8m6mx43vl1xjp"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -79,7 +80,12 @@
                           ;; included.  More investigation is needed.  For
                           ;; now, we explicitly disable it to prevent an error
                           ;; at configuration time.
-                          "-DUSE_GSTREAMER_GL=OFF")
+                          "-DUSE_GSTREAMER_GL=OFF"
+
+                          ;; XXX Disable WOFF2 ‘web fonts’.  These were never
+                          ;; supported in our previous builds.  Enabling them
+                          ;; requires building libwoff2 and possibly woff2dec.
+                          "-DUSE_WOFF2=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after
@@ -130,7 +136,7 @@
        ("libxt" ,libxt)
        ("mesa" ,mesa)
        ("sqlite" ,sqlite)))
-    (home-page "http://www.webkitgtk.org/")
+    (home-page "https://www.webkitgtk.org/")
     (synopsis "Web content engine for GTK+")
     (description
      "WebKitGTK+ is a full-featured port of the WebKit rendering engine,

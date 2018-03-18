@@ -9,6 +9,7 @@
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,32 +110,6 @@
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
-
-(define-public r-ape
-  (package
-    (name "r-ape")
-    (version "5.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "ape" version))
-       (sha256
-        (base32
-         "0q59pmxawz498cb9mv5m49lhiwxib8ak94yyydz7qg8b6lpd4bn3"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-lattice" ,r-lattice)
-       ("r-nlme" ,r-nlme)
-       ("r-rcpp" ,r-rcpp)))
-    (home-page "http://ape-package.ird.fr/")
-    (synopsis "Analyses of phylogenetics and evolution")
-    (description
-     "This package provides functions for reading, writing, plotting, and
-manipulating phylogenetic trees, analyses of comparative data in a
-phylogenetic framework, ancestral character analyses, analyses of
-diversification and macroevolution, computing distances from DNA sequences,
-and several other tools.")
-    (license license:gpl2+)))
 
 (define-public aragorn
   (package
@@ -10680,6 +10655,16 @@ block processing.")
                (invoke "tar" "xvf" (assoc-ref inputs "hdf5-source"))
                (rename-file (string-append "hdf5-" ,(package-version hdf5))
                             "hdf5")
+               ;; Remove timestamp and host system information to make
+               ;; the build reproducible.
+               (substitute* "hdf5/src/libhdf5.settings.in"
+                 (("Configured on: @CONFIG_DATE@")
+                  "Configured on: Guix")
+                 (("Uname information:.*")
+                  "Uname information: Linux\n")
+                 ;; Remove unnecessary store reference.
+                 (("C Compiler:.*")
+                  "C Compiler: GCC\n"))
                (rename-file "Makevars.in" "Makevars")
                (substitute* "Makevars"
                  (("HDF5_CXX_LIB=.*")
@@ -10878,6 +10863,34 @@ contains high-performing functions operating on rows and columns of
 are optimized per data type and for subsetted calculations such that both
 memory usage and processing time is minimized.")
     (license license:expat)))
+
+(define-public r-phangorn
+  (package
+    (name "r-phangorn")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "phangorn" version))
+       (sha256
+        (base32
+         "0xc8k552nxczy19jr0xjjagrzc8x6lafasgk2c099ls8bc1yml1i"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-fastmatch" ,r-fastmatch)
+       ("r-igraph" ,r-igraph)
+       ("r-magrittr" ,r-magrittr)
+       ("r-matrix" ,r-matrix)
+       ("r-quadprog" ,r-quadprog)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/KlausVigo/phangorn")
+    (synopsis "Phylogenetic analysis in R")
+    (description
+     "Phangorn is a package for phylogenetic analysis in R.  It supports
+estimation of phylogenetic trees and networks using Maximum Likelihood,
+Maximum Parsimony, distance methods and Hadamard conjugation.")
+    (license license:gpl2+)))
 
 (define-public r-dropbead
   (let ((commit "d746c6f3b32110428ea56d6a0001ce52a251c247")
@@ -11407,7 +11420,7 @@ models.  TADbit is complemented by TADkit for visualizing 3D models.")
        ("tcsh" ,tcsh)
        ("perl" ,perl)
        ("libpng" ,libpng)
-       ("mysql" ,mysql)
+       ("mariadb" ,mariadb)
        ("openssl" ,openssl)))
     (home-page "http://genome.cse.ucsc.edu/index.html")
     (synopsis "Assorted bioinformatics utilities")
@@ -12664,6 +12677,13 @@ once.  This package provides tools to perform Drop-seq analyses.")
      `(#:parallel-tests? #f             ; not supported
        #:phases
        (modify-phases %standard-phases
+         ;; "test.sh" runs STAR, which requires excessive amounts of memory.
+         (add-after 'unpack 'disable-resource-intensive-test
+           (lambda _
+             (substitute* "Makefile.in"
+               (("(^  tests/test_trim_galore/test.sh).*" _ m) m)
+               (("^  test.sh") ""))
+             #t))
          (add-after 'install 'wrap-executable
            ;; Make sure the executable finds all R modules.
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -12713,3 +12733,277 @@ and a configuration file which describes the experiment.  In addition to
 quality control of the experiment, the pipeline produces a differential
 expression report comparing samples in an easily configurable manner.")
     (license license:gpl3+)))
+
+(define-public pigx-chipseq
+  (package
+    (name "pigx-chipseq")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
+                                  "releases/download/v" version
+                                  "/pigx_chipseq-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jliwhifnjgl9x0z730bzpxswi2s84fyg5y8cagbyzpw509452f5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           ;; Make sure the executable finds all R modules.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/pigx-chipseq")
+                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
+                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
+             #t)))))
+    (inputs
+     `(("r-minimal" ,r-minimal)
+       ("r-argparser" ,r-argparser)
+       ("r-chipseq" ,r-chipseq)
+       ("r-data-table" ,r-data-table)
+       ("r-genomation" ,r-genomation)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-rcas" ,r-rcas)
+       ("r-stringr" ,r-stringr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-heatmaply" ,r-heatmaply)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-plotly" ,r-plotly)
+       ("python-wrapper" ,python-wrapper)
+       ("python-pyyaml" ,python-pyyaml)
+       ("snakemake" ,snakemake)
+       ("macs" ,macs)
+       ("multiqc" ,multiqc)
+       ("perl" ,perl)
+       ("ghc-pandoc" ,ghc-pandoc)
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
+       ("fastqc" ,fastqc)
+       ("bowtie" ,bowtie)
+       ("idr" ,idr)
+       ("snakemake" ,snakemake)
+       ("samtools" ,samtools)
+       ("bedtools" ,bedtools)
+       ("kentutils" ,kentutils)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (synopsis "Analysis pipeline for ChIP sequencing experiments")
+    (description "PiGX ChIPseq is an analysis pipeline for preprocessing, peak
+calling and reporting for ChIP sequencing experiments.  It is easy to use and
+produces high quality reports.  The inputs are reads files from the sequencing
+experiment, and a configuration file which describes the experiment.  In
+addition to quality control of the experiment, the pipeline enables to set up
+multiple peak calling analysis and allows the generation of a UCSC track hub
+in an easily configurable manner.")
+    (license license:gpl3+)))
+
+(define-public pigx-bsseq
+  (package
+    (name "pigx-bsseq")
+    (version "0.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
+                                  "releases/download/v" version
+                                  "/pigx_bsseq-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1h8ma99vi7hs83nafvjpq8jmaq9977j3n11c4zd95hai0cf7zxmp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-timezone
+           ;; The readr package is picky about timezones.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "TZ" "UTC+1")
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t))
+         (add-after 'install 'wrap-executable
+           ;; Make sure the executable finds all R modules.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/pigx-bsseq")
+                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
+                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
+             #t)))))
+    (native-inputs
+     `(("tzdata" ,tzdata)))
+    (inputs
+     `(("r-minimal" ,r-minimal)
+       ("r-annotationhub" ,r-annotationhub)
+       ("r-dt" ,r-dt)
+       ("r-genomation" ,r-genomation)
+       ("r-methylkit" ,r-methylkit)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-bookdown" ,r-bookdown)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggbio" ,r-ggbio)
+       ("ghc-pandoc" ,ghc-pandoc)
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
+       ("python-wrapper" ,python-wrapper)
+       ("python-pyyaml" ,python-pyyaml)
+       ("snakemake" ,snakemake)
+       ("bismark" ,bismark)
+       ("fastqc" ,fastqc)
+       ("bowtie" ,bowtie)
+       ("trim-galore" ,trim-galore)
+       ("cutadapt" ,cutadapt)
+       ("samtools" ,samtools)))
+    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (synopsis "Bisulfite sequencing pipeline from fastq to methylation reports")
+    (description "PiGx BSseq is a data processing pipeline for raw fastq read
+data of bisulfite experiments; it produces reports on aggregate methylation
+and coverage and can be used to produce information on differential
+methylation and segmentation.")
+    (license license:gpl3+)))
+
+(define-public pigx-scrnaseq
+  (package
+    (name "pigx-scrnaseq")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
+                                  "releases/download/v" version
+                                  "/pigx_scrnaseq-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03gwp83823ji59y6nvyz89i4yd3faaqpc3791qia71i91470vfsg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "PICARDJAR=" (assoc-ref %build-inputs "java-picard")
+			    "/share/java/picard.jar")
+	     (string-append "DROPSEQJAR=" (assoc-ref %build-inputs "dropseq-tools")
+			    "/share/java/dropseq.jar"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           ;; Make sure the executable finds all R modules.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/pigx-scrnaseq")
+                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
+                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
+             #t)))))
+    (inputs
+     `(("dropseq-tools" ,dropseq-tools)
+       ("fastqc" ,fastqc)
+       ("java-picard" ,java-picard)
+       ("java" ,icedtea-8)
+       ("python-wrapper" ,python-wrapper)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-pandas" ,python-pandas)
+       ("python-numpy" ,python-numpy)
+       ("python-loompy" ,python-loompy)
+       ("ghc-pandoc" ,ghc-pandoc)
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
+       ("snakemake" ,snakemake)
+       ("star" ,star)
+       ("r-minimal" ,r-minimal)
+       ("r-argparser" ,r-argparser)
+       ("r-cowplot" ,r-cowplot)
+       ("r-data-table" ,r-data-table)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dropbead" ,r-dropbead)
+       ("r-dt" ,r-dt)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfiles" ,r-genomicfiles)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hdf5array" ,r-hdf5array)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-rtsne" ,r-rtsne)
+       ("r-scater" ,r-scater)
+       ("r-scran" ,r-scran)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-stringr" ,r-stringr)
+       ("r-yaml" ,r-yaml)))
+    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (synopsis "Analysis pipeline for single-cell RNA sequencing experiments")
+    (description "PiGX scRNAseq is an analysis pipeline for preprocessing and
+quality control for single cell RNA sequencing experiments.  The inputs are
+read files from the sequencing experiment, and a configuration file which
+describes the experiment.  It produces processed files for downstream analysis
+and interactive quality reports.  The pipeline is designed to work with UMI
+based methods.")
+    (license license:gpl3+)))
+
+(define-public pigx
+  (package
+    (name "pigx")
+    (version "0.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/BIMSBbioinfo/pigx/"
+                                  "releases/download/v" version
+                                  "/pigx-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nxb2hbp40yg3j7n56k4dhsd2fl1j8g0wpiiln56prqzljwnlgmf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("python" ,python)
+       ("pigx-bsseq" ,pigx-bsseq)
+       ("pigx-chipseq" ,pigx-chipseq)
+       ("pigx-rnaseq" ,pigx-rnaseq)
+       ("pigx-scrnaseq" ,pigx-scrnaseq)))
+    (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
+    (synopsis "Analysis pipelines for genomics")
+    (description "PiGx is a collection of genomics pipelines.  It includes the
+following pipelines:
+
+@itemize
+@item PiGx BSseq for raw fastq read data of bisulfite experiments
+@item PiGx RNAseq for RNAseq samples
+@item PiGx scRNAseq for single cell dropseq analysis
+@item PiGx ChIPseq for reads from ChIPseq experiments
+@end itemize
+
+All pipelines are easily configured with a simple sample sheet and a
+descriptive settings file.  The result is a set of comprehensive, interactive
+HTML reports with interesting findings about your samples.")
+    (license license:gpl3+)))
+
+(define-public r-diversitree
+  (package
+    (name "r-diversitree")
+    (version "0.9-10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "diversitree" version))
+        (sha256
+         (base32
+          "0gh4rcrp0an3jh8915i1fsxlgyfk7njywgbd5ln5r2jhr085kpz7"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs `(("fftw" ,fftw) ("gsl" ,gsl)))
+    (propagated-inputs
+     `(("r-ape" ,r-ape)
+       ("r-desolve" ,r-desolve)
+       ("r-rcpp" ,r-rcpp)
+       ("r-suplex" ,r-subplex)))
+    (home-page "https://www.zoology.ubc.ca/prog/diversitree")
+    (synopsis "Comparative 'phylogenetic' analyses of diversification")
+    (description "This package contains a number of comparative \"phylogenetic\"
+methods, mostly focusing on analysing diversification and character evolution.
+Contains implementations of \"BiSSE\" (Binary State Speciation and Extinction)
+and its unresolved tree extensions, \"MuSSE\" (Multiple State Speciation and
+Extinction), \"QuaSSE\", \"GeoSSE\", and \"BiSSE-ness\" Other included methods
+include Markov models of discrete and continuous trait evolution and constant
+rate speciation and extinction.")
+    (license license:gpl2+)))

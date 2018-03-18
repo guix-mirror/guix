@@ -315,7 +315,12 @@
         "USE_SYSTEM_OPENSPECFUN=1")))
     (inputs
      `(("llvm" ,llvm)
-       ("arpack-ng" ,arpack-ng)
+
+       ;; The bundled version is 3.3.0 so stick to that version.  With other
+       ;; versions, we get test failures in 'linalg/arnoldi' as described in
+       ;; <https://bugs.gnu.org/30282>.
+       ("arpack-ng" ,arpack-ng-3.3.0)
+
        ("coreutils" ,coreutils) ;for bindings to "mkdir" and the like
        ("lapack" ,lapack)
        ("openblas" ,openblas) ;Julia does not build with Atlas

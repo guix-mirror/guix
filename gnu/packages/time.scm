@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
@@ -43,7 +43,7 @@
 (define-public time
   (package
     (name "time")
-    (version "1.8")
+    (version "1.9")
     (source
      (origin
       (method url-fetch)
@@ -51,7 +51,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "06rfg8dn0q2r8pdq8i6brrs6rqrsgvkwbbl4kfx3a6lnal0m8bwa"))))
+        "07jj7cz6lc13iqrpgn81ivqh8rkm73p4rnivwgrrshk23v4g1b7v"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/time/")
     (synopsis "Run a command, then display its resource usage")

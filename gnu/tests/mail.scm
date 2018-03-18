@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,8 @@
   #:use-module (guix store)
   #:use-module (ice-9 ftw)
   #:export (%test-opensmtpd
-            %test-exim))
+            %test-exim
+            %test-dovecot))
 
 (define %opensmtpd-os
   (simple-operating-system
@@ -279,3 +281,119 @@ acl_check_data:
    (name "exim")
    (description "Send an email to a running an Exim server.")
    (value (run-exim-test))))
+
+(define %dovecot-os
+  (simple-operating-system
+   (dhcp-client-service)
+   (dovecot-service #:config
+                    (dovecot-configuration
+                     (disable-plaintext-auth? #f)
+                     (ssl? "no")
+                     (auth-mechanisms '("anonymous"))
+                     (auth-anonymous-username "alice")
+                     (mail-location
+                      (string-append "maildir:~/Maildir"
+                                     ":INBOX=~/Maildir/INBOX"
+                                     ":LAYOUT=fs"))))))
+
+(define (run-dovecot-test)
+  "Return a test of an OS running Dovecot service."
+  (define vm
+    (virtual-machine
+     (operating-system (marionette-operating-system
+                        %dovecot-os
+                        #:imported-modules '((gnu services herd))))
+     (port-forwardings '((8143 . 143)))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (ice-9 iconv)
+                       (ice-9 rdelim)
+                       (rnrs base)
+                       (rnrs bytevectors)
+                       (srfi srfi-64))
+
+          (define marionette
+            (make-marionette '(#$vm)))
+
+          (define* (message-length message #:key (encoding "iso-8859-1"))
+            (bytevector-length (string->bytevector message encoding)))
+
+          (define message "From: test@example.com\n\
+Subject: Hello Nice to meet you!")
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "dovecot")
+
+          ;; Wait for dovecot to be up and running.
+          (test-eq "dovecot running"
+            'running!
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'dovecot)
+                'running!)
+             marionette))
+
+          ;; Check Dovecot service's PID.
+          (test-assert "service process id"
+            (let ((pid
+                   (number->string (wait-for-file "/var/run/dovecot/master.pid"
+                                                  marionette))))
+              (marionette-eval `(file-exists? (string-append "/proc/" ,pid))
+                               marionette)))
+
+          (test-assert "accept an email"
+            (let ((imap (socket AF_INET SOCK_STREAM 0))
+                  (addr (make-socket-address AF_INET INADDR_LOOPBACK 8143)))
+              (connect imap addr)
+              ;; Be greeted.
+              (read-line imap) ;OK
+              ;; Authenticate
+              (write-line "a AUTHENTICATE ANONYMOUS" imap)
+              (read-line imap) ;+
+              (write-line "c2lyaGM=" imap)
+              (read-line imap) ;OK
+              ;; Create a TESTBOX mailbox
+              (write-line "a CREATE TESTBOX" imap)
+              (read-line imap) ;OK
+              ;; Append a message to a TESTBOX mailbox
+              (write-line (format #f "a APPEND TESTBOX {~a}"
+                                  (number->string (message-length message)))
+                          imap)
+              (read-line imap) ;+
+              (write-line message imap)
+              (read-line imap) ;OK
+              ;; Logout
+              (write-line "a LOGOUT" imap)
+              (close imap)
+              #t))
+
+          (test-equal "mail arrived"
+            message
+            (marionette-eval
+             '(begin
+                (use-modules (ice-9 ftw)
+                             (ice-9 match))
+                (let ((TESTBOX/new "/home/alice/Maildir/TESTBOX/new/"))
+                  (match (scandir TESTBOX/new)
+                    (("." ".." message-file)
+                     (call-with-input-file
+                         (string-append TESTBOX/new message-file)
+                       get-string-all)))))
+             marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "dovecot-test" test))
+
+(define %test-dovecot
+  (system-test
+   (name "dovecot")
+   (description "Connect to a running Dovecot server.")
+   (value (run-dovecot-test))))

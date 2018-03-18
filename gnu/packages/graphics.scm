@@ -6,8 +6,8 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -251,7 +251,7 @@ exception-handling library.")
 (define-public ogre
   (package
     (name "ogre")
-    (version "1.10.7")
+    (version "1.10.11")
     (source
      (origin
        (method url-fetch)
@@ -259,7 +259,7 @@ exception-handling library.")
                            "/archive/v" version ".tar.gz"))
        (sha256
         (base32
-         "1p0c91cc7zg3c00wjaibnxb0a0xm14mkg0h65pzpw93m0d6nc8wd"))
+         "13bdh9v4026qf8w8rbfln2rmwf0rby1a8fz55zpdvpy105i6cbpz"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -423,25 +423,24 @@ visual effects work for film.")
        (file-name (string-append name "-" version ".zip"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;; No test target available.
+     `(#:tests? #f ; no test target available
+       ;; Without this flag, 'rd' will be added to the name of the
+       ;; library binaries and break linking with other programs.
+       #:build-type "Release"
        #:configure-flags
        (list (string-append "-DCMAKE_INSTALL_RPATH="
                             (assoc-ref %outputs "out") "/lib:"
-                            (assoc-ref %outputs "out") "/lib64")
-             ;; We need to set this flag or otherwise 'rd' will be added
-             ;; to the name of the library binaries and break linking
-             ;; with other programs.
-             "-DCMAKE_BUILD_TYPE=Release")))
+                            (assoc-ref %outputs "out") "/lib64"))))
     (native-inputs
      `(("unzip" ,unzip)))
     (inputs
-     `(("giflib", giflib)
-       ("jasper", jasper)
-       ("librsvg", librsvg)
-       ("pth", pth)
-       ("qtbase", qtbase)
-       ("ffmpeg", ffmpeg)
-       ("mesa", mesa)))
+     `(("giflib" ,giflib)
+       ("jasper" ,jasper)
+       ("librsvg" ,librsvg)
+       ("pth" ,pth)
+       ("qtbase" ,qtbase)
+       ("ffmpeg" ,ffmpeg)
+       ("mesa" ,mesa)))
     (synopsis "High performance real-time graphics toolkit")
     (description
      "The OpenSceneGraph is a high performance 3D graphics toolkit

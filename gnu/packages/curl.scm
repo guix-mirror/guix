@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +48,7 @@
   (package
    (name "curl")
    (version "7.57.0")
-   (replacement curl-7.58.0)
+   (replacement curl-7.59.0)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
@@ -136,10 +137,10 @@ tunneling, and so on.")
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
 
-(define-public curl-7.58.0
+(define-public curl-7.59.0
   (package
     (inherit curl)
-    (version "7.58.0")
+    (version "7.59.0")
     (source
       (origin
         (method url-fetch)
@@ -147,12 +148,12 @@ tunneling, and so on.")
                             version ".tar.xz"))
         (sha256
          (base32
-          "1qz303lagxidmkyym90mxiaqnqddwi2219vzydsyn29n4iski0ba"))))))
+          "1z310hrjm2vmbcpkyp81dcmj9rk127zkjyawpy2pah0nz6yslkp4"))))))
 
 (define-public kurly
   (package
     (name "kurly")
-    (version "1.1.0")
+    (version "1.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -161,19 +162,24 @@ tunneling, and so on.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q192f457sjypgvwq7grrf8gq8w272p3zf1d5ppc20mriqm0mbc3"))))
+                "01kp33gvzxmk6ipz7323wqwmbc90q2mwzsjig8rzpqsm4kji5hi6"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/davidjpeacock/kurly"
        #:install-source? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'install-readme
-           (lambda* (#:key outputs import-path #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (readme (string-append "src/" import-path "/README.md"))
-                    (misc (string-append out "/share/kurly/misc/")))
-               (install-file readme misc)
+         (add-after 'install 'install-documentation
+           (lambda* (#:key import-path outputs #:allow-other-keys)
+             (let* ((source (string-append "src/" import-path))
+                    (out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
+                    (man (string-append out "/share/man/man1")))
+               (with-directory-excursion source
+                 (install-file "README.md" doc)
+                 (mkdir-p man)
+                 (copy-file "meta/kurly.man"
+                            (string-append man "/kurly.1")))
                #t))))))
     (inputs
      `(("go-github-com-alsm-ioprogress" ,go-github-com-alsm-ioprogress)

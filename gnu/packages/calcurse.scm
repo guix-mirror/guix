@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
 (define-public calcurse
   (package
     (name "calcurse")
-    (version "4.2.2")
+    (version "4.3.0")
     (source
      (origin
       (method url-fetch)
@@ -37,7 +38,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0il0y06akdqgy0f9p40m4x6arn66nh7sr1w1i41bszycs7div266"))))
+        "16jzg0nasnxdlz23i121x41pq5kbxmjzk52c5d863rg117fc7v1i"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (native-inputs `(("tzdata" ,tzdata-for-tests)))

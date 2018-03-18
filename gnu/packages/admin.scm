@@ -360,6 +360,7 @@ hostname.")
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
                     "download/" version "/shadow-" version ".tar.xz"))
+              (patches (search-patches "shadow-CVE-2018-7169.patch"))
               (sha256
                (base32
                 "0hdpai78n63l3v3fgr3kkiqzhd0awrpfnnzz4mf7lmxdh61qb37w"))))
@@ -1205,7 +1206,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20180209")
+    (version "20180313")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1213,7 +1214,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "04hyc5s9iiyiznvspx7q73r6ns98d51wrv8zfvqbqv52gqq8hzdh"))))
+                "16galaadmr37q2pvk2gyxrm8d1xldzk31djfxfq9v1c9yq4i425h"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2198,7 +2199,7 @@ buffers.")
 (define-public intel-gpu-tools
   (package
     (name "intel-gpu-tools")
-    (version "1.21")
+    (version "1.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
@@ -2206,7 +2207,7 @@ buffers.")
                                   "intel-gpu-tools-" version ".tar.gz"))
               (sha256
                (base32
-                "1xfy4cgimyyn5qixlrfkadgnl9qwbk30vw8k80g8vjnrcc4hx986"))))
+                "1jx5w5fr6jp67rcrlp5v79cn8kp9n0wgd5pbfgzamlah5cx6j3yd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; many of the tests try to load kernel modules
@@ -2218,7 +2219,8 @@ buffers.")
              (setenv "NOCONFIGURE" "1")
              (invoke "sh" "autogen.sh"))))))
     (inputs
-     `(("util-macros" ,util-macros)
+     `(("eudev" ,eudev)
+       ("util-macros" ,util-macros)
        ("libdrm" ,libdrm)
        ("libpciaccess" ,libpciaccess)
        ("kmod" ,kmod)
@@ -2242,6 +2244,7 @@ changes, and many require complicated build procedures or specific testing
 environments to get useful results.  Therefore, Intel GPU Tools includes
 low-level tools and tests specifically for development and testing of the
 Intel DRM Driver.")
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:expat)))
 
 (define-public fabric
@@ -2433,7 +2436,7 @@ on systems running the Linux kernel.")
 (define-public masscan
   (package
     (name "masscan")
-    (version "1.0.4")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/robertdavidgraham/masscan"
@@ -2441,16 +2444,18 @@ on systems running the Linux kernel.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1y9af345g00z83rliv6bmlqg37xwc7xpnx5xqdgmjikzcxgk9pji"))))
+                "0wxddsgyx27z45906icdhdbfsvfj8ij805208qpqjx46i0lnjs50"))))
     (build-system gnu-build-system)
     (inputs
      `(("libpcap" ,libpcap)))
     (arguments
      '(#:test-target "regress"
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; There is no ./configure script
+         (delete 'configure)            ; no ./configure script
          (add-after 'unpack 'patch-path
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2463,8 +2468,8 @@ on systems running the Linux kernel.")
 open ports, and also complete the TCP connection and interact with the remote
 application, collecting the information received.")
     (home-page "https://github.com/robertdavidgraham/masscan")
-        ;; 'src/siphash24.c' is the SipHash reference implementation, which
-        ;; bears a CC0 Public Domain Dedication.
+    ;; 'src/siphash24.c' is the SipHash reference implementation, which
+    ;; bears a CC0 Public Domain Dedication.
     (license license:agpl3+)))
 
 (define-public hungrycat

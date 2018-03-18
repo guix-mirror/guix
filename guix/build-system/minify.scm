@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +39,6 @@
 (define %minify-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build minify-build-system)
-    (ice-9 popen)
     ,@%gnu-build-system-modules))
 
 (define (default-uglify-js)

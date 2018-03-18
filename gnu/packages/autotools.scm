@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -124,8 +125,8 @@ know anything about Autoconf or M4.")
                                (string-append "--build=" build)))))))))))
 
 
-(define* (autoconf-wrapper #:optional (autoconf autoconf))
-  "Return an wrapper around AUTOCONF that generates `configure' scripts that
+(define (make-autoconf-wrapper autoconf)
+  "Return a wrapper around AUTOCONF that generates `configure' scripts that
 use our own Bash instead of /bin/sh in shebangs.  For that reason, it should
 only be used internally---users should not end up distributing `configure'
 files with a system-specific shebang."
@@ -191,12 +192,18 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                        (patch-shebang "configure"))
                      (exit (status:exit-val result))))
                 port)))
-           (chmod (string-append bin "/autoconf") #o555)))))))
+           (chmod (string-append bin "/autoconf") #o555)))))
+
+    ;; Do not show it in the UI since it's meant for internal use.
+    (properties '((hidden? . #t)))))
+
+(define-public autoconf-wrapper
+  (make-autoconf-wrapper autoconf))
 
 (define-public autoconf-archive
   (package
     (name "autoconf-archive")
-    (version "2017.09.28")
+    (version "2018.03.13")
     (source
      (origin
       (method url-fetch)
@@ -204,7 +211,7 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                           version ".tar.xz"))
       (sha256
        (base32
-        "00gsh9hkrgg291my98plkrwlcpxkfrpq64pglf18kciqbf2bb7sw"))))
+        "0ng1lvpijf3kv7w7nb1shqs23vp0398yicyvkf9lsk56kw6zjxb1"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/autoconf-archive/")
     (synopsis "Collection of freely reusable Autoconf macros")
@@ -253,7 +260,7 @@ output is indexed in many ways to simplify browsing.")
               (search-patches "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,(autoconf-wrapper))
+     `(("autoconf" ,autoconf-wrapper)
        ("perl" ,perl)))
     (native-search-paths
      (list (search-path-specification
@@ -319,14 +326,14 @@ Makefile, simplifying the entire process for the developer.")
   ;; Make this the default on the next rebuild cycle.
   (package
     (inherit automake)
-    (version "1.16")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/automake/automake-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "12jvcmkcmd5p14b41w9f7ixd3sca97pymd6lqbkwnl8qn6bjv3zr"))
+                "08g979ficj18i1w6w5219bgmns7czr03iadf20mk3lrzl8wbn1ax"))
               (patches
                (search-patches "automake-skip-amhello-tests.patch"))))))
 
@@ -348,7 +355,7 @@ Makefile, simplifying the entire process for the developer.")
                      ("perl" ,perl)
                      ("help2man" ,help2man) ;because we modify ltmain.sh
                      ("automake" ,automake)      ;some tests rely on 'aclocal'
-                     ("autoconf" ,(autoconf-wrapper)))) ;others on 'autom4te'
+                     ("autoconf" ,autoconf-wrapper))) ;others on 'autom4te'
 
     (arguments
      `(;; Libltdl is provided as a separate package, so don't install it here.

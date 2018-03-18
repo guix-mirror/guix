@@ -50,6 +50,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/accessibility.scm		\
   %D%/packages/acct.scm				\
   %D%/packages/acl.scm				\
+  %D%/packages/ada.scm				\
   %D%/packages/admin.scm			\
   %D%/packages/adns.scm				\
   %D%/packages/agda.scm				\
@@ -120,6 +121,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/datastructures.scm		\
   %D%/packages/dav.scm				\
   %D%/packages/dc.scm				\
+  %D%/packages/debian.scm			\
   %D%/packages/debug.scm			\
   %D%/packages/dejagnu.scm			\
   %D%/packages/dico.scm				\
@@ -409,6 +411,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/tcl.scm				\
   %D%/packages/telephony.scm			\
   %D%/packages/terminals.scm			\
+  %D%/packages/terraform.scm			\
   %D%/packages/texinfo.scm			\
   %D%/packages/tex.scm				\
   %D%/packages/textutils.scm			\
@@ -786,7 +789,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
+  %D%/packages/patches/java-jeromq-fix-tests.patch		\
   %D%/packages/patches/java-powermock-fix-java-files.patch		\
+  %D%/packages/patches/java-simple-xml-fix-tests.patch		\
   %D%/packages/patches/java-xerces-bootclasspath.patch	\
   %D%/packages/patches/java-xerces-build_dont_unzip.patch	\
   %D%/packages/patches/java-xerces-xjavac_taskdef.patch	\
@@ -886,6 +891,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
   %D%/packages/patches/llvm-for-extempore.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
+  %D%/packages/patches/lrzip-CVE-2017-8842.patch		\
   %D%/packages/patches/lua-CVE-2014-5461.patch                      \
   %D%/packages/patches/lua-pkgconfig.patch                      \
   %D%/packages/patches/lua51-liblua-so.patch                    \
@@ -1080,6 +1086,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/scotch-test-threading.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
+  %D%/packages/patches/shadow-CVE-2018-7169.patch		\
   %D%/packages/patches/shepherd-close-fds.patch			\
   %D%/packages/patches/shepherd-herd-status-sorted.patch	\
   %D%/packages/patches/shishi-fix-libgcrypt-detection.patch	\
@@ -1132,6 +1139,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/unzip-overflow-long-fsize.patch		\
   %D%/packages/patches/unzip-remove-build-date.patch		\
   %D%/packages/patches/ustr-fix-build-with-gcc-5.patch		\
+  %D%/packages/patches/util-linux-CVE-2018-7738.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
@@ -1183,7 +1191,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
   %D%/packages/patches/libyaml-CVE-2014-9130.patch 		\
-  %D%/packages/patches/zathura-plugindir-environment-variable.patch
+  %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
+  %D%/packages/patches/zsh-CVE-2018-7548.patch			\
+  %D%/packages/patches/zsh-CVE-2018-7549.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in

@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -639,3 +640,54 @@ termination.")
 per-goroutine.")
     (home-page "https://github.com/jtolds/gls")
     (license license:expat)))
+
+(define-public go-github-com-tj-docopt
+  (package
+    (name "go-github-com-tj-docopt")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tj/docopt")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06h8hdg1mh3s78zqlr01g4si7k0f0g6pr7fj7lnvfg446hgc7080"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/tj/docopt"))
+    (synopsis "Go implementation of docopt")
+    (description
+     "This library allows the user to define a command-line interface from a
+program's help message rather than specifying it programatically with
+command-line parsers.")
+    (home-page "https://github.com/tj/docopt")
+    (license license:expat)))
+
+(define-public go-github-com-hashicorp-hcl
+  (let ((commit "23c074d0eceb2b8a5bfdbb271ab780cde70f05a8")
+        (revision "0"))
+    (package
+      (name "go-github-com-hashicorp-hcl")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/hashicorp/hcl")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                  (base32
+                    "0db4lpqb5m130rmfy3s3gjjf4dxllypmyrzxv6ggqhkmwmc7w4mc"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:tests? #f
+         #:import-path "github.com/hashicorp/hcl"))
+      (synopsis "Go implementation of HashiCorp Configuration Language")
+      (description
+       "This package contains the main implementation of the @acronym{HCL,
+HashiCorp Configuration Language}.  HCL is designed to be a language for
+expressing configuration which is easy for both humans and machines to read.")
+      (home-page "https://github.com/hashicorp/hcl")
+      (license license:mpl2.0))))

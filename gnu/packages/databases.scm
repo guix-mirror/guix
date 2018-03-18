@@ -31,6 +31,7 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
+;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
@@ -92,6 +94,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -1356,7 +1359,7 @@ module, and nothing else.")
 (define-public perl-sql-abstract
   (package
     (name "perl-sql-abstract")
-    (version "1.84")
+    (version "1.85")
     (source
      (origin
        (method url-fetch)
@@ -1364,7 +1367,7 @@ module, and nothing else.")
                            "SQL-Abstract-" version ".tar.gz"))
        (sha256
         (base32
-         "0xayvgv6nic61jm3nhg41rzwgm8h83wfyazvpaks0z7asjillpv5"))))
+         "1aycggrvppy2zgkwwn85jkdz93n5gsx4dambrjk67k5067hayi4z"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
@@ -2738,3 +2741,120 @@ Replay oplog entries between MongoDB servers
 Monitor read/write activity on a mongo server
 @end table")
     (license license:asl2.0)))
+
+(define-public apache-arrow
+  (package
+    (name "apache-arrow")
+    (version "0.7.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/apache/arrow")
+               (commit (string-append "apache-arrow-" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "1x7sdd8lbs3nfqjql1pcgbkjc19bls56zmgjayshkmablvlc4dy3"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'enter-source-directory
+           (lambda _ (chdir "cpp") #t))
+         (add-after 'unpack 'set-env
+           (lambda _
+             (setenv "BOOST_ROOT" (assoc-ref %build-inputs "boost"))
+             (setenv "BROTLI_HOME" (assoc-ref %build-inputs "brotli"))
+             (setenv "FLATBUFFERS_HOME" (assoc-ref %build-inputs "flatbuffers"))
+             (setenv "JEMALLOC_HOME" (assoc-ref %build-inputs "jemalloc"))
+             (setenv "RAPIDJSON_HOME" (assoc-ref %build-inputs "rapidjson"))
+             #t)))
+       #:build-type "Release"
+       #:configure-flags
+       (list "-DARROW_PYTHON=ON"
+
+             ;; Install to PREFIX/lib (the default is
+             ;; PREFIX/lib64).
+             (string-append "-DCMAKE_INSTALL_LIBDIR="
+                            (assoc-ref %outputs "out")
+                            "/lib")
+
+             ;; XXX These Guix package offer static
+             ;; libraries that are not position independent,
+             ;; and ld fails to link them into the arrow .so
+             "-DARROW_WITH_SNAPPY=OFF"
+             "-DARROW_WITH_ZLIB=OFF"
+             "-DARROW_WITH_ZSTD=OFF"
+             "-DARROW_WITH_LZ4=OFF"
+
+             ;; Building the tests forces on all the
+             ;; optional features and the use of static
+             ;; libraries.
+             "-DARROW_BUILD_TESTS=OFF"
+             "-DARROW_BUILD_STATIC=OFF")))
+    (inputs
+     `(("boost" ,boost)
+       ("rapidjson" ,rapidjson)
+       ("brotli" ,google-brotli)
+       ("flatbuffers" ,flatbuffers)
+       ;; Arrow is not yet compatible with jemalloc >= 5:
+       ;; https://issues.apache.org/jira/browse/ARROW-1141
+       ("jemalloc" ,jemalloc-4.5.0)
+       ("python-3" ,python)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://arrow.apache.org/")
+    (synopsis "Columnar in-memory analytics")
+    (description "Apache Arrow is a columnar in-memory analytics layer
+designed to accelerate big data. It houses a set of canonical in-memory
+representations of flat and hierarchical data along with multiple
+language-bindings for structure manipulation. It also provides IPC and common
+algorithm implementations.")
+    (license license:asl2.0)))
+
+(define-public python-pyarrow
+  (package
+    (name "python-pyarrow")
+    (version "0.7.0")
+    (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/apache/arrow")
+             (commit (string-append "apache-arrow-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+         (base32
+           "1x7sdd8lbs3nfqjql1pcgbkjc19bls56zmgjayshkmablvlc4dy3"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f ; XXX Test failures related to missing libhdfs, libhdfs3,
+                   ; and "Unsupported numpy type 22".
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source-directory
+           (lambda _ (chdir "python") #t))
+         (add-after 'unpack 'set-env
+           (lambda _
+             (setenv "ARROW_HOME" (assoc-ref %build-inputs "apache-arrow"))
+             #t)))))
+    (propagated-inputs
+     `(("apache-arrow" ,apache-arrow)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("cmake" ,cmake)
+       ("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://arrow.apache.org/docs/python/")
+    (synopsis "Python bindings for Apache Arrow")
+    (description "This library provides a Pythonic API wrapper for the reference
+Arrow C++ implementation, along with tools for interoperability with pandas,
+NumPy, and other traditional Python scientific computing packages.")
+    (license license:asl2.0)))
+
+(define-public python2-pyarrow
+  (package-with-python2 python-pyarrow))

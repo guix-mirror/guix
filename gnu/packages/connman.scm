@@ -70,7 +70,7 @@
              (string-append
               "--with-dbusdatadir=" (assoc-ref %outputs "out") "/share"))))
     (native-inputs
-     `(("pkg-config", pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("python" ,python-2)))
     (inputs
      `(("dbus" ,dbus)
@@ -84,7 +84,7 @@
        ;; TODO: add neard, ofono
        ("openconnect" ,openconnect)
        ("openvpn" ,openvpn)
-       ("ppp", ppp)
+       ("ppp" ,ppp)
        ("vpnc" ,vpnc)
        ("wpa-supplicant" ,wpa-supplicant)))
     (home-page "https://01.org/connman")

@@ -30,6 +30,7 @@
   #:use-module (guix store)
   #:export (%test-memcached
             %test-mongodb
+            %test-postgresql
             %test-mysql))
 
 (define %memcached-os
@@ -206,6 +207,60 @@
    (name "mongodb")
    (description "Connect to a running MONGODB server.")
    (value (run-mongodb-test))))
+
+
+;;;
+;;; The PostgreSQL service.
+;;;
+
+(define %postgresql-os
+  (simple-operating-system
+   (service postgresql-service-type)))
+
+(define (run-postgresql-test)
+  "Run tests in %POSTGRESQL-OS."
+  (define os
+    (marionette-operating-system
+     %postgresql-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (memory-size 512)))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-64)
+                       (gnu build marionette))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "postgresql")
+
+          (test-assert "service running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'postgres))
+             marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "postgresql-test" test))
+
+(define %test-postgresql
+  (system-test
+   (name "postgresql")
+   (description "Start the PostgreSQL service.")
+   (value (run-postgresql-test))))
 
 
 ;;;
