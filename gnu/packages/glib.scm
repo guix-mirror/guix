@@ -199,7 +199,8 @@ shared NFS home directories.")
                            "glib/tests/utils.c"
                            "tests/spawn-test.c")
               (("/bin/sh")
-               (string-append (assoc-ref inputs "bash") "/bin/sh")))))
+               (string-append (assoc-ref inputs "bash") "/bin/sh")))
+            #t))
         (add-before 'check 'disable-failing-tests
           (lambda _
             (let ((disable
@@ -263,7 +264,8 @@ shared NFS home directories.")
                      ("gio/tests/gdbus-unix-addresses.c"
                       (;; Requires /etc/machine-id.
                        "/gdbus/x11-autolaunch")))))
-              (and-map (lambda (x) (apply disable x)) failing-tests)))))
+              (for-each (lambda (x) (apply disable x)) failing-tests)
+              #t))))
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
       #:configure-flags (list (string-append "--with-html-dir="
