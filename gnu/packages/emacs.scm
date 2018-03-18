@@ -65,6 +65,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages code)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages guile)
@@ -2745,6 +2746,57 @@ which you can use for intelligent, context-sensitive completion for any Scheme
 implementation in Emacs.  To use it just load this file and bind that function
 to a key in your preferred mode.")
       (license license:public-domain))))
+
+(define-public emacs-scel
+  (let ((version "20170629")
+        (revision "1")
+        (commit "aeea3ad4be9306d14c3a734a4ff54fee10ac135b"))
+    (package
+      (name "emacs-scel")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/supercollider/scel.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0jvmzs1lsjyndqshhii2y4mnr3wghai26i3p75453zrpxpg0zvvw"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:modules ((guix build emacs-build-system)
+                    ((guix build cmake-build-system) #:prefix cmake:)
+                    (guix build utils))
+         #:imported-modules (,@%emacs-build-system-modules
+                             (guix build cmake-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "el/CMakeLists.txt"
+                 (("share/emacs/site-lisp/SuperCollider")
+                  (string-append
+                   "share/emacs/site-lisp/guix.d/scel-" ,version)))
+               ((assoc-ref cmake:%standard-phases 'configure)
+                #:outputs outputs
+                #:configure-flags '("-DSC_EL_BYTECOMPILE=OFF"))))
+           (add-after 'set-emacs-load-path 'add-el-dir-to-emacs-load-path
+             (lambda _
+               (setenv "EMACSLOADPATH"
+                       (string-append (getcwd) "/el:" (getenv "EMACSLOADPATH")))
+               #t))
+           (replace 'install (assoc-ref cmake:%standard-phases 'install)))))
+      (inputs
+       `(("supercollider" ,supercollider)))
+      (native-inputs
+       `(("cmake" ,cmake)))
+      (home-page "https://github.com/supercollider/scel")
+      (synopsis "SuperCollider Emacs interface")
+      (description "@code{emacs-scel} is an Emacs interface to SuperCollider.
+SuperCollider is a platform for audio synthesis and algorithmic composition.")
+      (license license:gpl2+))))
 
 (define-public emacs-mit-scheme-doc
   (package
