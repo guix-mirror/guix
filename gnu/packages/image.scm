@@ -578,7 +578,8 @@ error-resilience, a Java-viewer for j2k-images, ...")
          (add-after 'unpack 'disable-html-doc-gen
            (lambda _
              (substitute* "doc/Makefile.in"
-               (("^all: allhtml manpages") ""))))
+               (("^all: allhtml manpages") ""))
+             #t))
          (add-after 'install 'install-manpages
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((bin (assoc-ref outputs "bin"))
@@ -591,7 +592,8 @@ error-resilience, a Java-viewer for j2k-images, ...")
                              (copy-file file
                                         (string-append
                                          man1dir "/" base))))
-                         (find-files "doc" "\\.1"))))))))
+                         (find-files "doc" "\\.1"))
+               #t))))))
     (synopsis "Tools and library for working with GIF images")
     (description
      "GIFLIB is a library for reading and writing GIF images.  It is API and
