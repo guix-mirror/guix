@@ -1166,7 +1166,7 @@ inspired by the SCSH regular expression system.")
                  (string-append module-dir "/gdbm.go"))
                 (compile-file
                  (lambda (in-file out-file)
-                   (system* guild "compile" "-o" out-file in-file))))
+                   (invoke guild "compile" "-o" out-file in-file))))
            ;; Switch directory for compiling and installing
            (chdir source)
 
