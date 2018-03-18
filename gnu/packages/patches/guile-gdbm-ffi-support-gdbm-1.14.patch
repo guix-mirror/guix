@@ -1,0 +1,53 @@
+From 1da99396dc65993ba34ac0370ca5d6acda6a3322 Mon Sep 17 00:00:00 2001
+From: Mark H Weaver <mhw@netris.org>
+Date: Sun, 18 Mar 2018 07:02:37 -0400
+Subject: [PATCH] Add support for gdbm-1.14.
+
+As of gdbm-1.14, 'gdbm_errno' no longer exists as a binary interface.
+It has been replaced by 'gdbm_errno_location', a function that returns
+int*.  We now use this new interface if it's available.
+---
+ gdbm.scm | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/gdbm.scm b/gdbm.scm
+index b92992f..4d38cc3 100644
+--- a/gdbm.scm
++++ b/gdbm.scm
+@@ -17,6 +17,9 @@
+ ;; You should have received a copy of the GNU General Public License
+ ;; along with this program. If not, see <http://www.gnu.org/licenses/>.
+ 
++;; Modified by Mark H Weaver <mhw@netris.org> in March 2018 to support
++;; gdbm-1.14 with its new 'gdbm_errno_location' interface.
++
+ (define-module (gdbm)
+   #:use-module (system foreign)
+   #:use-module (rnrs bytevectors)
+@@ -151,10 +154,21 @@
+ 
+ ;;; errors
+ 
+-(define %errno (dynamic-pointer "gdbm_errno" libgdbm))
++(define %list-int
++  (list int))
++
++(define (dereference-int ptr)
++  (apply (lambda (errno) errno)
++         (parse-c-struct ptr %list-int)))
++
++(define %errno-location
++  (or (false-if-exception
++       (let ((func (dynamic-func "gdbm_errno_location" libgdbm)))
++         (pointer->procedure '* func '())))
++      (const (dynamic-pointer "gdbm_errno" libgdbm))))
+ 
+ (define (gdbm-errno)
+-  (pointer-address (dereference-pointer %errno)))
++  (dereference-int (%errno-location)))
+ 
+ (define (gdbm-error)
+   (error (pointer->string (%gdbm-strerror (gdbm-errno)))))
+-- 
+2.16.2
+

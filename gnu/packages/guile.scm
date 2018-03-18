@@ -1134,6 +1134,15 @@ inspired by the SCSH regular expression system.")
                (base32
                 "1j8wrsw7v9w6qkl47xz0rdikg50v16nn6kbs3lgzcymjzpa7babj"))))
     (build-system trivial-build-system)
+    (inputs
+     `(("guile" ,guile-2.2)
+       ;; patch-and-repack doesn't work for git checkouts,
+       ;; so we must apply the patch manually.
+       ("patch" ,patch)
+       ("patch-file" ,(search-patch
+                       "guile-gdbm-ffi-support-gdbm-1.14.patch"))))
+    (propagated-inputs
+     `(("gdbm" ,gdbm)))
     (arguments
      `(#:modules
        ((guix build utils))
@@ -1186,12 +1195,16 @@ inspired by the SCSH regular expression system.")
               (format #f "(dynamic-link \"~a/lib/libgdbm.so\")"
                       (assoc-ref %build-inputs "gdbm"))))
 
+           ;; Apply the patch to add support for gdbm-1.14.
+           (let ((patch-command (string-append (assoc-ref %build-inputs "patch")
+                                               "/bin/patch"))
+                 (patch-file (assoc-ref %build-inputs "patch-file")))
+             (with-directory-excursion (dirname gdbm.scm-dest)
+               (format #t "applying '~a'...~%" patch-file)
+               (invoke patch-command "--force" "--input" patch-file)))
+
            ;; compile to the destination
            (compile-file gdbm.scm-dest gdbm.go-dest)))))
-    (inputs
-     `(("guile" ,guile-2.2)))
-    (propagated-inputs
-     `(("gdbm" ,gdbm)))
     (home-page "https://github.com/ijp/guile-gdbm")
     (synopsis "Guile bindings to the GDBM library via Guile's FFI")
     (description
