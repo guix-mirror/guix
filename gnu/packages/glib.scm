@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -320,6 +320,10 @@ dynamic loading, and an object system.")
                        "gobject-introspection-girepository.patch"
                        "gobject-introspection-absolute-shlib-path.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; The build system has at least one race condition involving Gio-2.0.gir
+     ;; which causes intermittent failures, as of 1.56.0.
+     `(#:parallel-build? #f))
     (inputs
      `(("bison" ,bison)
        ("flex" ,flex)
