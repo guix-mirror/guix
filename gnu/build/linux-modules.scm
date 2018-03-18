@@ -206,7 +206,9 @@ appears in BLACK-LIST are not loaded."
 
   (define (load-dependencies file)
     (let ((dependencies (module-dependencies file)))
-      (every (cut load-linux-module* <> #:lookup-module lookup-module)
+      (every (cut load-linux-module* <>
+                  #:lookup-module lookup-module
+                  #:black-list black-list)
              (map lookup-module dependencies))))
 
   (and (not (black-listed? (file-name->module-name file)))
