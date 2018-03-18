@@ -141,7 +141,7 @@
       (let ((before (find-files "build" "\\.egg-info$" #:directories? #t)))
         (call-setuppy test-target '() use-setuptools?)
         (let* ((after (find-files "build" "\\.egg-info$" #:directories? #t))
-               (inter (lset-difference eqv? after before)))
+               (inter (lset-difference string=? after before)))
           (for-each delete-file-recursively inter)))
       (format #t "test suite not run~%"))
   #t)
