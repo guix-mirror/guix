@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@pobox.com>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -432,8 +432,11 @@ Python.")
                (base32
                 "1f3sla6h0bw15fz8pjc67jhwj7pwmfdc7qlj42j5k9v116ycm07d"))))
     (build-system gnu-build-system)
+    ;; XXX These tests fail in the build environment.
     (arguments
-     `(#:parallel-tests? #f))
+     `(#:make-flags '("XFAIL_TESTS=display-test \
+queue-test socket-test protocol-logger-test compositor-introspection-test \
+sanity-test connection-test")))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
