@@ -89,7 +89,7 @@ information about package NAME. (Function 'elpa-package-info'.)"
          ('origin
            ('method 'url-fetch)
            ('uri ('string-append
-                  "http://elpa.gnu.org/packages/auctex-" 'version ".tar"))
+                  "https://elpa.gnu.org/packages/auctex-" 'version ".tar"))
            ('sha256 ('base32 (? string? hash)))))
         ('build-system 'emacs-build-system)
         ('home-page "http://www.gnu.org/software/auctex/")
