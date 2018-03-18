@@ -128,7 +128,8 @@
 
 (define* (build #:key use-setuptools? #:allow-other-keys)
   "Build a given Python package."
-  (call-setuppy "build" '() use-setuptools?))
+  (call-setuppy "build" '() use-setuptools?)
+  #t)
 
 (define* (check #:key tests? test-target use-setuptools? #:allow-other-keys)
   "Run the test suite of a given Python package."
@@ -138,15 +139,12 @@
       ;; (given with `package_dir`). This will by copied to the output, too,
       ;; so we need to remove.
       (let ((before (find-files "build" "\\.egg-info$" #:directories? #t)))
-        (if (call-setuppy test-target '() use-setuptools?)
-            (let* ((after (find-files "build" "\\.egg-info$" #:directories? #t))
-                   (inter (lset-difference eqv? after before)))
-              (for-each delete-file-recursively inter)
-              #t)
-            #f))
-      (begin
-        (format #t "test suite not run~%")
-        #t)))
+        (call-setuppy test-target '() use-setuptools?)
+        (let* ((after (find-files "build" "\\.egg-info$" #:directories? #t))
+               (inter (lset-difference eqv? after before)))
+          (for-each delete-file-recursively inter)))
+      (format #t "test suite not run~%"))
+  #t)
 
 (define (get-python-version python)
   (let* ((version     (last (string-split python #\-)))
@@ -183,7 +181,8 @@ when running checks after installing the package."
                                     "--root=/")
                              '())
                          configure-flags)))
-    (call-setuppy "install" params use-setuptools?)))
+    (call-setuppy "install" params use-setuptools?)
+    #t))
 
 (define* (wrap #:key inputs outputs #:allow-other-keys)
   (define (list-of-files dir)
@@ -212,7 +211,8 @@ when running checks after installing the package."
                 (let ((files (list-of-files dir)))
                   (for-each (cut wrap-program <> var)
                             files)))
-              bindirs)))
+              bindirs)
+    #t))
 
 (define* (rename-pth-file #:key name inputs outputs #:allow-other-keys)
   "Rename easy-install.pth to NAME.pth to avoid conflicts between packages
