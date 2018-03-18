@@ -92,18 +92,15 @@
 
                (invoke "./bootstrap.sh"
                        (string-append "--prefix=" out)
-                       "--with-toolset=gcc")
-               #t)))
+                       "--with-toolset=gcc"))))
          (replace 'build
-           (lambda* (#:key outputs make-flags #:allow-other-keys)
+           (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "./b2"
                     (format #f "-j~a" (parallel-job-count))
-                    make-flags)
-             #t))
+                    make-flags)))
          (replace 'install
-           (lambda* (#:key outputs make-flags #:allow-other-keys)
-             (apply invoke "./b2" "install" make-flags)
-             #t)))))
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "./b2" "install" make-flags))))))
 
     (home-page "http://www.boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
