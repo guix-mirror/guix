@@ -418,7 +418,8 @@ implementation techniques and as an expository tool.")
                "0cwcypzjfl9py1s695mhqkiapff7c1w29llsmdj7qgn58wl0apk5"))
              (patches (search-patches
                        ;; See: https://github.com/racket/racket/issues/1962
-                       "racket-minus_zero_p-disable-xform.patch"))))
+                       ;; This can be removed in whatever Racket release comes after 6.12
+                       "racket-fix-xform-issue.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
