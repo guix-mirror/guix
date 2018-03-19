@@ -12816,7 +12816,7 @@ in an easily configurable manner.")
 (define-public pigx-bsseq
   (package
     (name "pigx-bsseq")
-    (version "0.0.5")
+    (version "0.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
@@ -12824,7 +12824,7 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1h8ma99vi7hs83nafvjpq8jmaq9977j3n11c4zd95hai0cf7zxmp"))))
+                "0pw797gxx6x1n56lyrvglj7q5hqq4ylfqkvlcrzq1z3j5lxcyl69"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -12848,7 +12848,10 @@ in an easily configurable manner.")
     (native-inputs
      `(("tzdata" ,tzdata)))
     (inputs
-     `(("r-minimal" ,r-minimal)
+     `(("coreutils" ,coreutils)
+       ("sed" ,sed)
+       ("grep" ,grep)
+       ("r-minimal" ,r-minimal)
        ("r-annotationhub" ,r-annotationhub)
        ("r-dt" ,r-dt)
        ("r-genomation" ,r-genomation)
