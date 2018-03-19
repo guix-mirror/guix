@@ -47,7 +47,8 @@
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Ethan R. Jones <ethanrjones97@gmail.com
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
-;;;
+;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
+
 ;;; This file is part of GNU Guix.
 ;;;
 ;;; GNU Guix is free software; you can redistribute it and/or modify it
@@ -523,6 +524,33 @@ pidof, tty, taskset, pmap.")
     (description "Shapely is a Python package for manipulation and analysis of
 planar geometric objects.  It is based on the @code{GEOS} library.")
     (license license:bsd-3)))
+
+(define-public python-logwrap
+  (package
+    (name "python-logwrap")
+    (version "3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "logwrap" version ".zip"))
+       (sha256
+        (base32
+         "1d2k0hvpbi51vl410y8fbs5m0nxnlh2k7gr2nrh3k81ibhzscsra"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-typing" ,python-typing)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/penguinolog/logwrap")
+    (synopsis "Decorator for logging function arguments")
+    (description "This package provides a decorator to log function arguments
+and function call return values in a human-readable way.")
+    (license license:asl2.0)))
 
 (define-public python2-shapely
   (package-with-python2 python-shapely))
