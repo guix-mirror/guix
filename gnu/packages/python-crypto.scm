@@ -122,14 +122,14 @@ John the Ripper).")
 (define-public python-paramiko
   (package
     (name "python-paramiko")
-    (version "2.1.2")
+    (version "2.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "paramiko" version))
        (sha256
         (base32
-         "04734n0wy3hxk6rij4fr29in5jmr70nxpc7pqi2ksbjysfz4kbjz"))))
+         "1pf0zxzhgyy4avby3ajg5hp18b0d8iirbkdfw53z0h6w611bp0wk"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
