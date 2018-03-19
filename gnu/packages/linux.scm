@@ -2540,14 +2540,14 @@ thanks to the use of namespaces.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.54")
+    (version "9.55")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ghnhdj7wfw6acfyhdawpfa5n9kvkvzgi1fw6i7sghgbjx5nhyjd"))))
+                "1ivdvrzimaayiq03by8mcq0mhmdljndj06h012zkdpw34irnpixm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
