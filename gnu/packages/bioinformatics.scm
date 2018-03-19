@@ -12871,7 +12871,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.2")
+    (version "0.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -12879,7 +12879,7 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "03gwp83823ji59y6nvyz89i4yd3faaqpc3791qia71i91470vfsg"))))
+                "12qdq0nj1wdkyighdxj6924bmbpd1a0b3gam6w64l4hiqrv5sijz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -12898,7 +12898,9 @@ methylation and segmentation.")
                  `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
              #t)))))
     (inputs
-     `(("dropseq-tools" ,dropseq-tools)
+     `(("coreutils" ,coreutils)
+       ("perl" ,perl)
+       ("dropseq-tools" ,dropseq-tools)
        ("fastqc" ,fastqc)
        ("java-picard" ,java-picard)
        ("java" ,icedtea-8)
