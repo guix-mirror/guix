@@ -13,6 +13,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
@@ -200,30 +202,17 @@ identi.ca and status.net).")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.12.4")
+    (version "2.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ficrx56knz5y297qb0x5y02339yvyv734z7kpcx1ixvb0qr2dgs"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Delete dangling symlinks to a non-existent ‘/usr’.
-                  (with-directory-excursion "m4"
-                    (for-each (lambda (f) (delete-file f))
-                              '("intltool.m4" "libtool.m4" "lt~obsolete.m4"
-                                "ltoptions.m4" "ltsugar.m4" "ltversion.m4")))
-                  (delete-file-recursively "build-aux")
-                  (delete-file "po/Makefile.in.in")))))
-    (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("autoconf-archive" ,autoconf-archive)
-                     ("automake" ,automake)
-                     ("intltool" ,intltool)
-                     ("libtool" ,libtool)
+                "18h3l34zmazjlfx3irg7k7swppa62ad9ffbl0j3ry8p2xfyf8cmh"))))
+    (build-system meson-build-system)
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("perl" ,perl)
                      ("pkg-config" ,pkg-config)))
     (inputs `(("dbus-glib" ,dbus-glib)
               ("dbus" ,dbus)
@@ -232,6 +221,7 @@ identi.ca and status.net).")
               ("gtk" ,gtk+-2)
               ("libcanberra" ,libcanberra)
               ("libnotify" ,libnotify)
+              ("libproxy" ,libproxy)
               ("openssl" ,openssl)
 
               ;; Bindings for add-on scripts.
@@ -239,17 +229,18 @@ identi.ca and status.net).")
               ("perl-xml-parser" ,perl-xml-parser)
               ("python-2" ,python-2)))
     (arguments
-     `(#:make-flags '("UPDATE_ICON_CACHE=true") ; Disable icon theme generation
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         ;; Release 2.12.4 wasn't properly bootstrapped.  Later ones might be!
-         (add-after 'unpack 'bootstrap
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; This file is still required for autoreconf.
-             (copy-file (string-append (assoc-ref inputs "intltool")
-                                       "/share/intltool/Makefile.in.in")
-                        "po/Makefile.in.in")
-             (zero? (system* "autoreconf" "-fiv")))))))
+         (add-after 'unpack 'skip-desktop-database-updates
+           (lambda _
+             ;; The build scripts update icon and desktop file databases when
+             ;; DESTDIR is not set.  We can't update these databases from
+             ;; within the build chroot, but we also don't set DESTDIR.  So, we
+             ;; just skip this code.
+             (substitute* "meson_post_install.py"
+               (("if 'DESTDIR' not in os.environ:")
+                 "if False:"))
+             #t)))))
     (synopsis "Graphical IRC Client")
     (description
      "HexChat lets you connect to multiple IRC networks at once.  The main
