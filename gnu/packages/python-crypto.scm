@@ -556,7 +556,7 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
 (define-public python-pynacl
   (package
     (name "python-pynacl")
-    (version "1.1.2")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
@@ -566,7 +566,7 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
        (snippet '(delete-file-recursively "src/libsodium"))
        (sha256
         (base32
-         "135gz0020fqx8fbr9izpwyq49aww202nkqacq0cw61xz99sjpx9j"))))
+         "01vjq0pxyw1mxaqy013hzs8nknmvg3kpzlzmh69jxznyipgvria5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -576,7 +576,8 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
              (setenv "SODIUM_INSTALL" "system")
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-cffi" ,python-cffi)
        ("python-six" ,python-six)
