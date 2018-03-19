@@ -652,7 +652,8 @@ eval '(exit $?0)' && eval 'exec perl -wS \"$0\" ${1+\"$@\"}'
             (substitute* (append
                           '("qtest/bin/qtest-driver")
                           (find-files "." "\\.test"))
-              (("/usr/bin/env") (which "env"))))))))
+              (("/usr/bin/env") (which "env")))
+            #t)))))
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("perl" ,perl)))
