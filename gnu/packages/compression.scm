@@ -1807,16 +1807,15 @@ recreates the stored directory structure by default.")
 (define-public zziplib
   (package
     (name "zziplib")
-    (version "0.13.68")
+    (version "0.13.69")
+    (home-page "https://github.com/gdraheim/zziplib")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/zziplib/zziplib13/"
-                           version "/zziplib-"
-                           version ".tar.bz2"))
+       (uri (string-append home-page "/archive/v" version ".tar.gz"))
        (sha256
         (base32
-         "1s0wz1hf2q4qxcp4lkg4rzpbz2814xagmvlyicqdj0ww0cvxv036"))))
+         "0i052a7shww0fzsxrdp3rd7g4mbzx7324a8ysbc0br7frpblcql4"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -1826,12 +1825,6 @@ recreates the stored directory structure by default.")
                      ;; http://forums.gentoo.org/viewtopic-t-863161-start-0.html
                      ("python" ,python-2)
                      ("zip" ,zip))) ; to create test files
-    (arguments
-     ;; XXX: "make check" is broken, and the alternative (test/zziptests.py)
-     ;; requires network access.  See <https://github.com/gdraheim/zziplib/issues/20>
-     ;; and <https://github.com/gdraheim/zziplib/issues/24>.
-     `(#:tests? #f))
-    (home-page "http://zziplib.sourceforge.net/")
     (synopsis "Library for accessing zip files")
     (description
      "ZZipLib is a library based on zlib for accessing zip files.")
