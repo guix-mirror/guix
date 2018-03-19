@@ -2326,7 +2326,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.21")
+    (version "2.21.999")
     (source
      (origin
        (method url-fetch)
@@ -2334,11 +2334,12 @@ operators and scripters.")
        ;; patches and the version which adds extra fixes. Every distro uses
        ;; the patched version, and so do we to not break expectations.
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
-       (uri (string-append "http://alpine.freeiz.com/alpine/patches/alpine-"
-                           version "/alpine-" version ".tar.xz"))
+       (uri (string-append "http://repo.or.cz/alpine.git/snapshot/"
+                           "349642a84039a4b026513c32a3b4f8594acd50df.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1k9hcfjywfk3mpsl71hjza3nk6icgf1b6xxzgx10kdzg5yci5x5m"))))
+         "1rkvlfk3q7h9jcvaj91pk7l087bq4b38j30060jaw21zz94b90np"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc")
@@ -2376,7 +2377,7 @@ operators and scripters.")
        ("aspell" ,aspell)
        ("tcl" ,tcl)
        ("linux-pam" ,linux-pam)))
-    (home-page "http://alpine.freeiz.com/alpine/")
+    (home-page "http://repo.or.cz/alpine.git")
     (synopsis "Alternatively Licensed Program for Internet News and Email")
     (description
      "Alpine is a text-based mail and news client.  Alpine includes several
