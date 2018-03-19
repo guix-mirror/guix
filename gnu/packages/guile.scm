@@ -662,18 +662,51 @@ library.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.0.8")
+    (version "1.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/mcron/mcron-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0zparwgf01jgl1x53ik71ghabldq6zz18ha4dscps1i0qrzgap1b"))
-             (patches (search-patches "mcron-install.patch"))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/mcron/mcron-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1f547sqqfbp0k02sqk4ivwx8y9mx8l0rrx1c9rrj033av073h6xq"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("ed" ,ed) ("which" ,which) ("guile" ,guile-2.0)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-timezone
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; 'tests/schedule.sh' expects to be running in UTC+1.
+                      (let ((tzdata (assoc-ref inputs "tzdata")))
+                        (setenv "TZDIR"
+                                (string-append tzdata
+                                               "/share/zoneinfo"))
+                        (setenv "TZ" "UTC+1")
+                        #t)))
+                  (add-before 'check 'disable-schedule-test
+                    (lambda _
+                      ;; But!  As it turns out, that test additionally relies
+                      ;; on non-deterministic behavior; see
+                      ;; <https://lists.gnu.org/archive/html/bug-mcron/2018-03/msg00001.html>.
+                      (substitute* "tests/schedule.sh"
+                        (("mkdir cron") "exit 77\n"))
+                      #t))
+                  (add-after 'install 'wrap-programs
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; By default mcron doesn't have its own modules in the
+                      ;; search path, so the 'mcron' command fails to start.
+                      (let* ((output  (assoc-ref outputs "out"))
+                             (modules (string-append output
+                                                     "/share/guile/site/2.2"))
+                             (go      (string-append output
+                                                     "/lib/guile/2.2/site-ccache")))
+                        (wrap-program (string-append output "/bin/mcron")
+                          `("GUILE_LOAD_PATH" ":" prefix
+                            (,modules))
+                          `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,go)))
+                        #t))))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("tzdata" ,tzdata-for-tests)))
+    (inputs `(("ed" ,ed) ("which" ,which) ("guile" ,guile-2.2)))
     (home-page "https://www.gnu.org/software/mcron/")
     (synopsis "Run jobs at scheduled times")
     (description
@@ -684,67 +717,8 @@ format is also supported.")
     (license license:gpl3+)))
 
 (define-public mcron2
-  ;; This is mthl's mcron development branch, not yet merged in mcron.
-  (let ((commit "31baff1a5187d8ddc89324cbe42dbeffc309c962"))
-    (package
-      (inherit mcron)
-      (name "mcron2")
-      (version (string-append (package-version mcron) "-0."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://notabug.org/mthl/mcron/")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1h5wxy997hxi718hpx419c23q09939kbxrjbbq54lv0cgw1bb63z"))
-                (file-name (string-append name "-" version "-checkout"))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)
-         ("texinfo" ,texinfo)
-         ("help2man" ,help2man)))
-      (inputs
-       `(("guile-2.2" ,guile-2.2)
-         ,@(srfi-1:alist-delete "guile" (package-inputs mcron))))
-      (arguments
-       `(#:modules ((ice-9 match) (ice-9 ftw)
-                    ,@%gnu-build-system-modules)
-         ;; When building the targets in parallel, help2man tries to generate
-         ;; the manpage from ./cron --help before it is built, which fails.
-         #:parallel-build? #f
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'use-guile-2.2
-             (lambda _
-               (substitute* "configure.ac"
-                 (("PKG_CHECK_MODULES\\(\\[GUILE\\],.*$")
-                  "PKG_CHECK_MODULES([GUILE], [guile-2.2])\n")
-                 (("guile/site/2.0")
-                  "guile/site/2.2"))
-               #t))
-           (add-after 'use-guile-2.2 'bootstrap
-             (lambda _
-               (invoke "autoreconf" "-vfi")))
-           (add-after 'install 'wrap-mcron
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; Wrap the 'mcron' command to refer to the right
-               ;; modules.
-               (let* ((out  (assoc-ref outputs "out"))
-                      (bin  (string-append out "/bin"))
-                      (site (string-append
-                             out "/share/guile/site")))
-                 (match (scandir site)
-                   (("." ".." version)
-                    (let ((modules (string-append site "/" version)))
-                      (wrap-program (string-append bin "/mcron")
-                        `("GUILE_LOAD_PATH" ":" prefix
-                          (,modules))
-                        `("GUILE_LOAD_COMPILED_PATH" ":" prefix
-                          (,modules)))
-                      #t))))))))))))
+  ;; This was mthl's mcron development branch, and it became mcron 1.1.
+  (deprecated-package "mcron2" mcron))
 
 (define-public guile-ics
   (package

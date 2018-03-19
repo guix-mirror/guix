@@ -10479,7 +10479,7 @@ gexps to introduce job definitions that are passed to mcron
 for more information on mcron job specifications.  Below is the
 reference of the mcron service.
 
-@deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron2}]
+@deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron}]
 Return an mcron service running @var{mcron} that schedules @var{jobs}, a
 list of gexps denoting mcron job specifications.
 
@@ -10504,7 +10504,7 @@ mcron jobs to run.
 Data type representing the configuration of mcron.
 
 @table @asis
-@item @code{mcron} (default: @var{mcron2})
+@item @code{mcron} (default: @var{mcron})
 The mcron package to use.
 
 @item @code{jobs}
