@@ -405,7 +405,8 @@ functionality beyond that which is outlined in the POSIX standard.")
               (substitute* "job.c"
                 (("default_shell =.*$")
                  (format #f "default_shell = \"~a/bin/sh\";\n"
-                         bash)))))))))
+                         bash)))
+              #t))))))
    (synopsis "Remake files automatically")
    (description
     "Make is a program that is used to control the production of
