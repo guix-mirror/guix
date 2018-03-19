@@ -13,7 +13,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +37,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -464,20 +465,23 @@ by using the poppler rendering engine.")
 (define-public zathura
   (package
     (name "zathura")
-    (version "0.3.8")
+    (version "0.3.9")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura/download/zathura-"
-                              version ".tar.gz"))
+                              version ".tar.xz"))
               (sha256
                (base32
-                "0dz5pky3vmf3s2cp2rv1c099gb1s49p9xlgm3ghyy4pzyxc8bgs6"))
+                "0z09kz92a2n8qqv3cy8bx5j5k612g2f9mmh4szqlc7yvi39aax1g"))
               (patches (search-patches
                         "zathura-plugindir-environment-variable.patch"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
+
+                     ;; For building documentation.
+                     ("python-sphinx" ,python-sphinx)
 
                      ;; For tests.
                      ("check" ,check)
@@ -490,15 +494,9 @@ by using the poppler rendering engine.")
      (list (search-path-specification
             (variable "ZATHURA_PLUGIN_PATH")
             (files '("lib/zathura")))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags
-       `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
-         "CC=gcc" "COLOR=0")
-       #:test-target "test"
-       #:disallowed-references (,xorg-server-1.19.3)
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
+     `(#:phases (modify-phases %standard-phases
                   (add-before 'check 'start-xserver
                     ;; Tests require a running X server.
                     (lambda* (#:key inputs #:allow-other-keys)
