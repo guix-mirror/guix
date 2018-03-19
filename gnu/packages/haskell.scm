@@ -6396,6 +6396,19 @@ and also has a mode for converting bibliographic databases a YAML format
 suitable for inclusion in pandoc YAML metadata.")
     (license license:bsd-3)))
 
+(define-public ghc-pandoc-citeproc-with-pandoc-1
+  (let ((for-pandoc-1
+         (package-input-rewriting
+          `((,ghc-aeson        . ,ghc-aeson-for-pandoc-1)
+            (,ghc-yaml         . ,ghc-yaml-for-pandoc-1)
+            (,ghc-texmath      . ,ghc-texmath-for-pandoc-1)
+            (,ghc-pandoc-types . ,ghc-pandoc-types-for-pandoc-1)
+            (,ghc-hslua        . ,ghc-hslua-for-pandoc-1)
+            (,ghc-skylighting  . ,ghc-skylighting-for-pandoc-1)
+            (,ghc-doctemplates . ,ghc-doctemplates-for-pandoc-1)
+            (,ghc-pandoc       . ,ghc-pandoc-1)))))
+    (for-pandoc-1 ghc-pandoc-citeproc)))
+
 (define-public ghc-union-find
   (package
     (name "ghc-union-find")
