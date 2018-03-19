@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -263,7 +264,7 @@ without modification.")
 (define-public bash-completion
   (package
     (name "bash-completion")
-    (version "2.7")
+    (version "2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -271,7 +272,7 @@ without modification.")
                     version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "07j484vb3k90f4989xh1g1x99g01akrp69p3dml4lza27wnqkfj1"))
+                "0kgmflrr1ga9wfk770vmakna3nj46ylb5ky9ipd0v2k9ymq5a7y0"))
               (patches
                (search-patches "bash-completion-directories.patch"))))
     (build-system gnu-build-system)
