@@ -81,24 +81,31 @@ information about package NAME. (Function 'elpa-package-info'.)"
                                 auctex-readme-mock
                                 url)))
           (_ #f)))))
-   (match (elpa->guix-package pkg)
-     (('package
-        ('name "emacs-auctex")
-        ('version "11.88.6")
-        ('source
-         ('origin
-           ('method 'url-fetch)
-           ('uri ('string-append
-                  "http://elpa.gnu.org/packages/auctex-" 'version ".tar"))
-           ('sha256 ('base32 (? string? hash)))))
-        ('build-system 'emacs-build-system)
-        ('home-page "http://www.gnu.org/software/auctex/")
-        ('synopsis "Integrated environment for *TeX*")
-        ('description (? string?))
-        ('license 'license:gpl3+))
-      #t)
-     (x
-      (pk 'fail x #f)))))
+   (mock
+    ((guix build download) url-fetch
+     (lambda (url file . _)
+       (call-with-output-file file
+         (lambda (port)
+           (display "fake tarball" port)))))
+
+    (match (elpa->guix-package pkg)
+      (('package
+         ('name "emacs-auctex")
+         ('version "11.88.6")
+         ('source
+          ('origin
+            ('method 'url-fetch)
+            ('uri ('string-append
+                   "https://elpa.gnu.org/packages/auctex-" 'version ".tar"))
+            ('sha256 ('base32 (? string? hash)))))
+         ('build-system 'emacs-build-system)
+         ('home-page "http://www.gnu.org/software/auctex/")
+         ('synopsis "Integrated environment for *TeX*")
+         ('description (? string?))
+         ('license 'license:gpl3+))
+       #t)
+      (x
+       (pk 'fail x #f))))))
 
 (test-assert "elpa->guix-package test 1"
   (eval-test-with-elpa "auctex"))

@@ -23,36 +23,47 @@
 
 (test-begin "glob")
 
-(test-equal "compile-glob-pattern, no wildcards"
-  "foo"
-  (compile-glob-pattern "foo"))
+(define-syntax test-string->sglob
+  (syntax-rules (=>)
+    ((_ pattern => result rest ...)
+     (begin
+       (test-equal (format #f "string->sglob, ~s" pattern)
+         result
+         (string->sglob pattern))
+       (test-string->sglob rest ...)))
+    ((_)
+     #t)))
 
-(test-equal "compile-glob-pattern, Kleene star"
-  '("foo" * "bar")
-  (compile-glob-pattern "foo*bar"))
+(define-syntax test-glob-match
+  (syntax-rules (matches and not)
+    ((_ (pattern-string matches strings ... (and not others ...)) rest ...)
+     (begin
+       (test-assert (format #f "glob-match? ~s" pattern-string)
+         (let ((pattern (string->compiled-sglob pattern-string)))
+           (and (glob-match? pattern strings) ...
+                (not (glob-match? pattern others)) ...)))
+       (test-glob-match rest ...)))
+    ((_)
+     #t)))
 
-(test-equal "compile-glob-pattern, question mark"
-  '(? "foo" *)
-  (compile-glob-pattern "?foo*"))
+(test-string->sglob
+ "foo" => "foo"
+ "?foo*" => '(? "foo" *)
+ "foo[1-5]" => '("foo" (range #\1 #\5))
+ "foo[abc]bar" => '("foo" (set #\a #\b #\c) "bar")
+ "foo[a[b]c]bar" => '("foo" (set #\a #\[ #\b #\] #\c) "bar")
+ "[123]x" => '((set #\1 #\2 #\3) "x")
+ "[a-z]" => '((range #\a #\z)))
 
-(test-assert "literal match"
-  (let ((pattern (compile-glob-pattern "foo")))
-    (and (glob-match? pattern "foo")
-         (not (glob-match? pattern "foobar"))
-         (not (glob-match? pattern "barfoo")))))
-
-(test-assert "trailing star"
-  (let ((pattern (compile-glob-pattern "foo*")))
-    (and (glob-match? pattern "foo")
-         (glob-match? pattern "foobar")
-         (not (glob-match? pattern "xfoo")))))
-
-(test-assert "question marks"
-  (let ((pattern (compile-glob-pattern "foo??bar")))
-    (and (glob-match? pattern "fooxxbar")
-         (glob-match? pattern "fooZZbar")
-         (not (glob-match? pattern "foobar"))
-         (not (glob-match? pattern "fooxxxbar"))
-         (not (glob-match? pattern "fooxxbarzz")))))
+(test-glob-match
+ ("foo" matches "foo" (and not "foobar" "barfoo"))
+ ("foo*" matches "foo" "foobar" (and not "xfoo"))
+ ("foo??bar" matches "fooxxbar" "fooZZbar"
+  (and not "foobar" "fooxxxbar" "fooxxbarzz"))
+ ("foo?" matches "foox" (and not "fooxx"))
+ ("ab[0-9]c" matches "ab0c" "ab7c" "ab9c"
+  (and not "ab-c" "ab00c" "ab3"))
+ ("ab[cdefg]" matches "abc" "abd" "abg"
+  (and not "abh" "abcd" "ab[")))
 
 (test-end "glob")

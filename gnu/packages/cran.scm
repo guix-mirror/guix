@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
+;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,36 @@ phylogenetic framework, ancestral character analyses, analyses of
 diversification and macroevolution, computing distances from DNA sequences,
 and several other tools.")
     (license license:gpl2+)))
+
+(define-public r-abbyyr
+  (package
+    (name "r-abbyyr")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abbyyR" version))
+       (sha256
+        (base32
+         "1s8zf18sh0s89vk3dl09fzrq50csmmfvmsanf5vfkv9n5lx6pklg"))))
+    (properties `((upstream-name . "abbyyR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-httr" ,r-httr)
+       ("r-plyr" ,r-plyr)
+       ("r-progress" ,r-progress)
+       ("r-readr" ,r-readr)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/soodoku/abbyyR")
+    (synopsis "Access to Abbyy Optical Character Recognition (OCR) API")
+    (description
+     "This package provides tools to get text from images of text using Abbyy
+Cloud Optical Character Recognition (OCR) API.  With abbyyyR, one can easily
+OCR images, barcodes, forms, documents with machine readable zones, e.g.
+passports and get the results in a variety of formats including plain text and
+XML.  To learn more about the Abbyy OCR API, see @url{http://ocrsdk.com/}.")
+    (license license:expat)))
 
 (define-public r-colorspace
   (package
