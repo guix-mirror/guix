@@ -420,15 +420,15 @@ using the DjVuLibre library.")
 (define-public zathura-pdf-mupdf
   (package
     (name "zathura-pdf-mupdf")
-    (version "0.3.2")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura-pdf-mupdf"
-                              "/download/zathura-pdf-mupdf-" version ".tar.gz"))
+                              "/download/zathura-pdf-mupdf-" version ".tar.xz"))
               (sha256
                (base32
-                "0xkajc3is7ncmb2fmymbzfgrran2bz12i7zsm1vvxhxds728h7ck"))))
+                "1zbdqimav4wfgimpy3nfzl10qj7vyv23rdy2z5z7z93jwbp2rc2j"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("jbig2dec" ,jbig2dec)
@@ -437,13 +437,20 @@ using the DjVuLibre library.")
        ("openjpeg" ,openjpeg)
        ("openssl" ,openssl)
        ("zathura" ,zathura)))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "PLUGINDIR=" %output "/lib/zathura")
-                          "CC=gcc")
-       #:tests? #f ;No tests.
-       #:phases (modify-phases %standard-phases (delete 'configure))))
+     `(#:tests? #f                      ; package does not contain tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-plugin-directory
+           ;; Something of a regression in 0.3.3: the new Meson build system
+           ;; now hard-codes an incorrect plugin directory.  Fix it.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("(install_dir:).*" _ key)
+                (string-append key
+                               "'" (assoc-ref outputs "out") "/lib/zathura'\n")))
+             #t)))))
     (home-page "https://pwmt.org/projects/zathura-pdf-mupdf/")
     (synopsis "PDF support for zathura (mupdf backend)")
     (description "The zathura-pdf-mupdf plugin adds PDF support to zathura
