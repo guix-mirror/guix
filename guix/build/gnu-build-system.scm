@@ -33,6 +33,7 @@
   #:use-module (rnrs io ports)
   #:export (%standard-phases
             %license-file-regexp
+            dump-file-contents
             gnu-build))
 
 ;; Commentary:
@@ -335,15 +336,44 @@ makefiles."
                  '())
            ,@make-flags)))
 
+(define* (dump-file-contents directory file-regexp
+                             #:optional (port (current-error-port)))
+  "Dump to PORT the contents of files in DIRECTORY that match FILE-REGEXP."
+  (define (dump file)
+    (let ((prefix (string-append "\n--- " file " ")))
+      (display (if (< (string-length prefix) 78)
+                   (string-pad-right prefix 78 #\---)
+                   prefix)
+               port)
+      (display "\n\n" port)
+      (call-with-input-file file
+        (lambda (log)
+          (dump-port log port)))
+      (display "\n" port)))
+
+  (for-each dump (find-files directory file-regexp)))
+
+(define %test-suite-log-regexp
+  ;; Name of test suite log files as commonly found in GNU-based build systems
+  ;; and CMake.
+  "^(test-?suite\\.log|LastTestFailed\\.log)$")
+
 (define* (check #:key target (make-flags '()) (tests? (not target))
                 (test-target "check") (parallel-tests? #t)
+                (test-suite-log-regexp %test-suite-log-regexp)
                 #:allow-other-keys)
   (if tests?
-      (apply invoke "make" test-target
-             `(,@(if parallel-tests?
-                     `("-j" ,(number->string (parallel-job-count)))
-                     '())
-               ,@make-flags))
+      (guard (c ((invoke-error? c)
+                 ;; Dump the test suite log to facilitate debugging.
+                 (display "\nTest suite failed, dumping logs.\n"
+                          (current-error-port))
+                 (dump-file-contents "." test-suite-log-regexp)
+                 (raise c)))
+        (apply invoke "make" test-target
+               `(,@(if parallel-tests?
+                       `("-j" ,(number->string (parallel-job-count)))
+                       '())
+                 ,@make-flags)))
       (format #t "test suite not run~%"))
   #t)
 
