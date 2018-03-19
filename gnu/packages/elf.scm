@@ -109,7 +109,7 @@ Executable and Linkable Format (@dfn{ELF}).  This includes @command{ld},
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://nixos.org/releases/patchelf/patchelf-"
+                   "https://nixos.org/releases/patchelf/patchelf-"
                    version
                    "/patchelf-" version ".tar.bz2"))
              (sha256
