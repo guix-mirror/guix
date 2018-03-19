@@ -560,7 +560,7 @@ callback.")
 (define-public perl-xml-simple
   (package
     (name "perl-xml-simple")
-    (version "2.22")
+    (version "2.25")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -568,7 +568,7 @@ callback.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0jgbk30jizafpl7078jhw1di1yh08gf8d85dsvjllr595vr0widr"))))
+               "1y6vh328zrh085d40852v4ij2l4g0amxykswxd1nfhd2pspds7sk"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)
