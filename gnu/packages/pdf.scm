@@ -384,27 +384,33 @@ using libspectre.")
 (define-public zathura-djvu
   (package
     (name "zathura-djvu")
-    (version "0.2.7")
+    (version "0.2.8")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura-djvu/download/zathura-djvu-"
-                              version ".tar.gz"))
+                              version ".tar.xz"))
               (sha256
                (base32
-                "1sbfdsyp50qc85xc4458sn4w1rv1qbygdwmcr5kjlfpsmdq98vhd"))))
+                "0axkv1crdxn0z44whaqp2ibkdqcykhjnxk7qzms0dp1b67an9rnh"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("djvulibre" ,djvulibre)
        ("zathura" ,zathura)))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "PLUGINDIR=" %output "/lib/zathura")
-                          "CC=gcc")
-       #:tests? #f ; Package does not contain tests.
+     `(#:tests? #f                      ; package does not contain tests
        #:phases
-       (modify-phases %standard-phases (delete 'configure))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-plugin-directory
+           ;; Something of a regression in 0.2.8: the new Meson build system
+           ;; now hard-codes an incorrect plugin directory.  Fix it.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("(install_dir:).*" _ key)
+                (string-append key
+                               "'" (assoc-ref outputs "out") "/lib/zathura'\n")))
+             #t)))))
     (home-page "https://pwmt.org/projects/zathura-djvu/")
     (synopsis "DjVu support for zathura (DjVuLibre backend)")
     (description "The zathura-djvu plugin adds DjVu support to zathura
