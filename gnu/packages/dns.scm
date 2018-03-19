@@ -59,7 +59,7 @@
 (define-public dnsmasq
   (package
     (name "dnsmasq")
-    (version "2.78")
+    (version "2.79")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -67,7 +67,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0ar5h5v3kas2qx2wgy5iqin15gc4jhqrqs067xacgc3lii1rz549"))))
+                "07w6cw706yyahwvbvslhkrbjf2ynv567cgy9pal8bz8lrbsp9bbq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -79,8 +79,7 @@
        #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "CC=gcc"
                           "COPTS=\"-DHAVE_DBUS\"")
-       ;; No 'check' target.
-       #:tests? #f))
+       #:tests? #f))                    ; no ‘check’ target
     (home-page "http://www.thekelleys.org.uk/dnsmasq/doc.html")
     (synopsis "Small caching DNS proxy and DHCP/TFTP server")
     (description
