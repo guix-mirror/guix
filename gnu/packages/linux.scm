@@ -18,8 +18,8 @@
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -547,7 +547,6 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (replacement util-linux/fixed)
     (version "2.31")
     (source (origin
               (method url-fetch)
@@ -635,14 +634,31 @@ block devices, UUIDs, TTYs, and many other tools.")
     (license (list license:gpl3+ license:gpl2+ license:gpl2 license:lgpl2.0+
                    license:bsd-4 license:public-domain))))
 
-(define util-linux/fixed
+;; The patch 'util-linux-CVE-2018-7738.patch' fixes a security bug in
+;; the Bash completions for `mount`. Since this bug doesn't affect
+;; other programs that link against libraries from util-linux, we don't
+;; need to use a graft to make the fix available. Instead, users
+;; installing util-linux will get the fix in this newer version, and
+;; (@ (gnu system) %base-packages) takes care to use this package.
+;; This solution was suggested here:
+;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=30827#13>
+(define-public util-linux-2.31.1
   (package
     (inherit util-linux)
-    (source
-      (origin
-        (inherit (package-source util-linux))
-        (patches (append (origin-patches (package-source util-linux))
-                         (search-patches "util-linux-CVE-2018-7738.patch")))))))
+    (name "util-linux")
+    ;; XXX Don't update this without also updating %base-packages!
+    (version "2.31.1")
+    (source (origin
+              (inherit (package-source util-linux))
+              (uri (string-append "mirror://kernel.org/linux/utils/"
+                                  name "/v" (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "04fzrnrr3pvqskvjn9f81y0knh0jvvqx4lmbz5pd4lfdm5pv2l8s"))
+              (patches
+                (append (origin-patches (package-source util-linux))
+                        (search-patches "util-linux-CVE-2018-7738.patch")))))))
 
 (define-public ddate
   (package
