@@ -12737,7 +12737,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.2")
+    (version "0.0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12745,10 +12745,11 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1jliwhifnjgl9x0z730bzpxswi2s84fyg5y8cagbyzpw509452f5"))))
+                "1plw0bz0b7flj0g9irbn8n520005lmajkiq5flpizzapsl0a0r9g"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; parts of the tests rely on access to the network
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-executable
            ;; Make sure the executable finds all R modules.
@@ -12773,8 +12774,11 @@ expression report comparing samples in an easily configurable manner.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-plotly" ,r-plotly)
        ("python-wrapper" ,python-wrapper)
+       ("python-magic" ,python-magic)
        ("python-pyyaml" ,python-pyyaml)
+       ("python-xlrd" ,python-xlrd)
        ("snakemake" ,snakemake)
+       ("trim-galore" ,trim-galore)
        ("macs" ,macs)
        ("multiqc" ,multiqc)
        ("perl" ,perl)
