@@ -122,14 +122,14 @@ John the Ripper).")
 (define-public python-paramiko
   (package
     (name "python-paramiko")
-    (version "2.1.2")
+    (version "2.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "paramiko" version))
        (sha256
         (base32
-         "04734n0wy3hxk6rij4fr29in5jmr70nxpc7pqi2ksbjysfz4kbjz"))))
+         "1pf0zxzhgyy4avby3ajg5hp18b0d8iirbkdfw53z0h6w611bp0wk"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -281,14 +281,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.1.4")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1jm5c33qaz297sf99kz9kw8xi792ap9m6bwf0dfylls8z3rv9i3q"))))
+         "03cpmi5azvipphmva7dxv8k3w7ffblvn5452rs5r6smdhxyiqq6g"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -303,14 +303,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.1.4")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "14aj5ipbj1w5kba2hv6323954pachhflfrjhhmkjwssv3hvngng4"))))
+         "0j2gwr4qxvskip77z4n9nqvr4vi243n3bzij18ay4drc6sg2g87m"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -556,7 +556,7 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
 (define-public python-pynacl
   (package
     (name "python-pynacl")
-    (version "1.1.2")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
@@ -567,7 +567,7 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
                         #t))
        (sha256
         (base32
-         "135gz0020fqx8fbr9izpwyq49aww202nkqacq0cw61xz99sjpx9j"))))
+         "01vjq0pxyw1mxaqy013hzs8nknmvg3kpzlzmh69jxznyipgvria5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -577,7 +577,8 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
              (setenv "SODIUM_INSTALL" "system")
              #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-cffi" ,python-cffi)
        ("python-six" ,python-six)

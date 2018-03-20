@@ -1232,14 +1232,14 @@ after Andy Lester’s Perl module WWW::Mechanize.")
 (define-public python-simplejson
   (package
     (name "python-simplejson")
-    (version "3.10.0")
+    (version "3.13.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "simplejson" version))
       (sha256
        (base32
-        "1qhwsykjlb85igb4cfl6v6gkprzbbg8gyqdd7zscc8w3x0ifcfwm"))))
+        "02jg5nixffqyicfqdl4dil82fh1z9p2as758wp0nqwalw0hcykjc"))))
     (build-system python-build-system)
     (home-page "http://simplejson.readthedocs.org/en/latest/")
     (synopsis
@@ -1925,7 +1925,7 @@ version numbers.")
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
-    (version "2.5.1")
+    (version "2.6.0")
     (source (origin
              (method url-fetch)
              (uri
@@ -1934,7 +1934,7 @@ version numbers.")
                version ".tar.gz"))
              (sha256
               (base32
-               "0hddbqjm4jq63y8jf44nswina1crjs16l9snb6m3vvgyg31klrrn"))))
+               "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -4125,13 +4125,13 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python-decorator
   (package
     (name "python-decorator")
-    (version "4.1.2")
+    (version "4.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "decorator" version))
        (sha256
-        (base32 "1d8npb11kxyi36mrvjdpcjij76l5zfyrz2f820brf0l0rcw4vdkw"))))
+        (base32 "03iaf116rm3w8b4agb8hzf6z9331mrvi4khfxq35zkx17sgxsikx"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no test target
     (home-page "https://pypi.python.org/pypi/decorator/")
@@ -4497,14 +4497,14 @@ without using the configuration machinery.")
 (define-public python-jupyter-core
   (package
     (name "python-jupyter-core")
-    (version "4.2.1")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append (pypi-uri "jupyter_core" version)))
        (sha256
         (base32
-         "1cy7inv218dgh4m1fbzbsiqpz733ylgjrj62jxqpfzs3r2cm7ic9"))))
+         "1dy083rarba8prn9f9srxq3c7n7vyql02ycrqq306c40lr57aw5s"))))
     (build-system python-build-system)
     ;; FIXME: not sure how to run the tests
     (arguments `(#:tests? #f))
@@ -5683,7 +5683,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
 (define-public python-ptyprocess
   (package
     (name "python-ptyprocess")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -5692,7 +5692,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
              version ".tar.gz"))
        (sha256
         (base32
-         "19l1xrjn4l9gjz01s3vg92gn2dd9d8mw1v86ppkzlnr9m5iwwc05"))))
+         "0ra31k10v3629xq0kdn8lwmfbi97anmk48r03yvh7mks0kq96hg6"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -6502,14 +6502,14 @@ Debian-related files, such as:
 (define-public python-nbformat
   (package
     (name "python-nbformat")
-    (version "4.3.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbformat" version))
        (sha256
         (base32
-         "12s7j4qja8b5bs1kyw5dzmrqbjxxj8wk52cyasbiqbv7fblcrssz"))))
+         "00nlf08h8yc4q73nphfvfhxrcnilaqanb8z0mdy6nxk0vzq4wjgp"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no test target
     (propagated-inputs
@@ -6554,7 +6554,7 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python-entrypoints
   (package
     (name "python-entrypoints")
-    (version "0.2.2")
+    (version "0.2.3")
     (source
      (origin
        (method url-fetch)
@@ -6563,7 +6563,7 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0azqlkh3j0za080lsf5crnhaxx3c93k9dpv5ihkhf5cppgw5sjz5"))))
+         "1pdvgfr5bxyvnfvxbsd3zi0dh3il71pc4k6rinx6zpps91b84a56"))))
     (build-system python-build-system)
     ;; The package does not come with a setup.py file, so we have to generate
     ;; one ourselves.
@@ -6760,14 +6760,14 @@ in the data.")
 (define-public python-jupyter-console
   (package
     (name "python-jupyter-console")
-    (version "5.0.0")
+    (version "5.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jupyter_console" version))
        (sha256
         (base32
-         "04acmkwsi99rcg3vb54c6n492zv35s92h2ahabc0w6wj976cipvx"))))
+         "1kam1qzgwr7srhm5r6aj90di5sws4bq0jmiw15452ddamb9yspal"))))
     (build-system python-build-system)
     ;; FIXME: it's not clear how to run the tests.
     (arguments `(#:tests? #f))
@@ -8954,14 +8954,14 @@ data in Python.")
 (define-public python-kazoo
   (package
     (name "python-kazoo")
-    (version "2.2.1")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "kazoo" version))
        (sha256
         (base32
-         "10pb864if9qi2pq9lfb9m8f7z7ss6rml80gf1d9h64lap5crjnjj"))))
+         "16y213k7r8shyn2zw1k6lkzjgcrvm441pqv8scvcjixhvpbx3hm7"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; XXX: needs zookeeper
     (propagated-inputs
@@ -9061,13 +9061,13 @@ etc.")
 (define-public python-chai
   (package
     (name "python-chai")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "chai" version))
               (sha256
                (base32
-                "016kf3irrclpkpvcm7q0gmkfibq7jgy30a9v73pp42bq9h9a32bl"))))
+                "1k6n6zbgrrs83crp6mr3yqj9zlv40b8rpisyrliwsq7naml2p3gz"))))
     (build-system python-build-system)
     (home-page "https://github.com/agoragames/chai")
     (synopsis "Mocking framework for Python")
@@ -12044,7 +12044,7 @@ library.")
        "08if5yax1xn5yfp8p3765ccjmfcv9di7i4m5jckgnwvdsgznwkbj"))))
    (build-system python-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)
-                    ("python-cython", python-cython)))
+                    ("python-cython" ,python-cython)))
    (home-page "https://github.com/aresch/rencode")
    (synopsis "Serialization of heterogeneous data structures")
    (description
@@ -12186,14 +12186,14 @@ design and layout.")
 (define-public python-pkginfo
   (package
     (name "python-pkginfo")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pkginfo" version))
         (sha256
           (base32
-            "17pqjfpq3c6xzdmk8pski6jcjgjv78q00zjf2bgzb668pzm6l6mv"))))
+            "0x6lm17p1ks031mj6pajyp4rkq74vpqq8qwjb7ikgwmkli1day2q"))))
     (build-system python-build-system)
     (arguments
      ;; The tests are broken upstream.
@@ -12227,7 +12227,7 @@ created by running @code{python setup.py develop}).")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-tqdm" ,python-tqdm)
-       ("python-pkginfo", python-pkginfo)
+       ("python-pkginfo" ,python-pkginfo)
        ("python-requests" ,python-requests)
        ("python-requests-toolbelt" ,python-requests-toolbelt)))
     (home-page "https://github.com/pypa/twine")
@@ -12637,7 +12637,7 @@ is the new Pyro version that is actively developed.")
      `(("netcdf" ,netcdf)))
     (propagated-inputs
      `(("python-numpy" ,python2-numpy-1.8)
-       ("python-pyro", python2-pyro)))
+       ("python-pyro" ,python2-pyro)))
     (arguments
      ;; ScientificPython is not compatible with Python 3
      `(#:python ,python-2
@@ -12702,14 +12702,14 @@ and works only with Python 2 and NumPy < 1.9.")
 (define-public python-phonenumbers
   (package
     (name "python-phonenumbers")
-    (version "8.8.9")
+    (version "8.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "phonenumbers" version))
        (sha256
         (base32
-         "1lhhxmx3hk0b5891nc0p82dl5bq2w9cqbawmh8j5zy587af2j6fq"))))
+         "03fmrgb4r8x3ykmddjs9i3zhs703in8smikj3a6447blqpimwyh1"))))
     (build-system python-build-system)
     (home-page
      "https://github.com/daviddrysdale/python-phonenumbers")
@@ -12984,7 +12984,7 @@ and other tools.")
              #t)))))
     (propagated-inputs
      `(("python-pygments" ,python-pygments)
-       ("python-requests", python-requests)
+       ("python-requests" ,python-requests)
        ("python-babel" ,python-babel) ; optional, for internationalization
        ("python-curtsies" ,python-curtsies) ; >= 0.1.18
        ("python-greenlet" ,python-greenlet)
@@ -13057,7 +13057,7 @@ interpreter. bpython's main features are
     (synopsis "Python library for monitoring inotify events")
     (description
      "@code{pyinotify} provides a Python interface for monitoring
-filesystem events on Linux.")
+file system events on Linux.")
     (license license:expat)))
 
 (define-public python2-pyinotify

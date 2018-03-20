@@ -101,7 +101,7 @@
        ("qttools" ,qttools)))
     (inputs
      `(("qca" ,qca)
-       ("qtbase", qtbase)
+       ("qtbase" ,qtbase)
        ("qtscript" ,qtscript)
        ("snorenotify" ,snorenotify)
        ("zlib" ,zlib)))
@@ -156,14 +156,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "2.0.1")
+    (version "2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1l854dramvn9vfba7jpazkjwm4k4i5pshq58vjv6z2mxmcp5hhv9"))
+                "0f7d2vdbxc5kgjl7lkamnbxvidgxwa8f9j3nr9fd4gr4z0gzi86d"))
               (patches (search-patches "weechat-python.patch"))))
     (build-system cmake-build-system)
     (native-inputs

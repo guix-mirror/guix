@@ -273,7 +273,7 @@ features to enable users to create their discs easily and quickly.")
        ("gettext" ,gettext-minimal)
        ("itstool" ,itstool)
        ("intltool" ,intltool)
-       ("cmake", cmake)))
+       ("cmake" ,cmake)))
     (home-page "https://launchpad.net/deja-dup")
     (synopsis "Simple backup tool, for regular encrypted backups")
     (description
@@ -4422,7 +4422,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.27.4")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4430,7 +4430,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0g2vphhpxrljpy9sryfsgaayix807i1i9plj9bay72dk0zphqab2"))))
+                "1d797nmlz9gs6ri0h65b76s40ss6ma6h6405xqx03lhg5xni3kmg"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs
      `(("dconf" ,dconf)))

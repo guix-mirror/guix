@@ -302,6 +302,10 @@ The other options should be self-descriptive."
   (subsystems            openssh-configuration-subsystems
                          (default '(("sftp" "internal-sftp"))))
 
+  ;; list of strings
+  (accepted-environment  openssh-configuration-accepted-environment
+                         (default '()))
+
   ;; list of user-name/file-like tuples
   (authorized-keys       openssh-authorized-keys
                          (default '()))
@@ -429,6 +433,9 @@ of user-name/file-like tuples."
            ;; Add '/etc/authorized_keys.d/%u', which we populate.
            (format port "AuthorizedKeysFile \
  .ssh/authorized_keys .ssh/authorized_keys2 /etc/ssh/authorized_keys.d/%u\n")
+
+           (for-each (lambda (s) (format port "AcceptEnv ~a\n" s))
+                     '#$(openssh-configuration-accepted-environment config))
 
            (for-each
             (match-lambda

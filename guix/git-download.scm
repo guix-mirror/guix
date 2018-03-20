@@ -109,7 +109,7 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
           ;; grep, etc. to be in $PATH.
           (set-path-environment-variable "PATH" '("bin")
                                          (match '#+inputs
-                                           (((names dirs) ...)
+                                           (((names dirs outputs ...) ...)
                                             dirs)))
 
           (or (git-fetch (getenv "git url") (getenv "git commit")

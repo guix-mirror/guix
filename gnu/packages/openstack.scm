@@ -452,14 +452,14 @@ pipeline and used by various modules such as logging.")
 (define-public python-oslo.i18n
   (package
     (name "python-oslo.i18n")
-    (version "3.19.0")
+    (version "3.20.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "oslo.i18n" version))
         (sha256
           (base32
-           "18lbfq55cqrbmwm5p6vci9mkjfzr0zwz54ax3ysa463wba5m84cp"))))
+           "0kjcdw4bk3mi4vqmqwhhq053kxbbbj05si6nwxd1pzx33z067ky3"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-babel" ,python-babel)
@@ -646,14 +646,14 @@ from the OpenStack project.")
 (define-public python-oslotest
   (package
     (name "python-oslotest")
-    (version "3.2.0")
+    (version "3.3.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "oslotest" version))
         (sha256
           (base32
-            "1xay6wjxzqm4bg87fahqas84dhvhgf1gghzldkcczsfx897mqdkh"))))
+            "006i73w8kbc9s0av2v5mbni6mnkb91c2nq17wa0lz7bwk5zss992"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-fixtures" ,python-fixtures)
@@ -680,14 +680,14 @@ and better support for mocking results.")
 (define-public python-oslo.utils
   (package
     (name "python-oslo.utils")
-    (version "3.35.0")
+    (version "3.36.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "oslo.utils" version))
         (sha256
           (base32
-           "1ai9yyasyh1563khsri6ryk6iqdprmyiashg377m9h4nmv700ybx"))))
+           "0zvm31qdvqywxppqdjwbxxsqaga3dg4slpvbbmqqm9ig4n78mhay"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-debtcollector" ,python-debtcollector)

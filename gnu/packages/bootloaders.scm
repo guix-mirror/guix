@@ -181,7 +181,7 @@ menu to select one of the installed operating systems.")
     (synopsis "GRand Unified Boot loader (UEFI version)")
     (inputs
      `(("efibootmgr" ,efibootmgr)
-       ("mtools", mtools)
+       ("mtools" ,mtools)
        ,@(package-inputs grub)))
     (arguments
      `(;; TODO: Tests need a UEFI firmware for qemu. There is one at

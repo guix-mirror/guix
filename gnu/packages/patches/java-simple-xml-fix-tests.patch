@@ -1,0 +1,37 @@
+From b3b7a305f1278ec414500bf96c4c7a7f634c941b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jens=20Thee=C3=9F?= <theess@subshell.com>
+Date: Thu, 15 Sep 2016 13:08:26 +0200
+Subject: [PATCH] Dictionary uses stable order. This fixes unit tests.
+
+This is upstream pull request #15:
+https://github.com/ngallagher/simplexml/pull/15
+This software is unmaintained, this pull request will no get merged.
+The patch is modified, to match the directory layout of the tarball.
+
+---
+ src/main/java/org/simpleframework/xml/util/Dictionary.java | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/main/java/org/simpleframework/xml/util/Dictionary.java b/src/main/java/org/simpleframework/xml/util/Dictionary.java
+index 077d2514..c7327426 100644
+--- a/src/org/simpleframework/xml/util/Dictionary.java
++++ b/src/org/simpleframework/xml/util/Dictionary.java
+@@ -19,8 +19,8 @@
+ package org.simpleframework.xml.util;
+ 
+ import java.util.AbstractSet;
+-import java.util.HashMap;
+ import java.util.Iterator;
++import java.util.LinkedHashMap;
+ 
+ /**
+  * The <code>Dictionary</code> object represents a mapped set of entry
+@@ -134,7 +134,7 @@ public T remove(String name) {
+     *
+     * @see org.simpleframework.xml.util.Entry
+     */
+-   private static class Table<T> extends HashMap<String, T> {
++   private static class Table<T> extends LinkedHashMap<String, T> {
+       
+       /**
+        * Constructor for the <code>Table</code> object. This will

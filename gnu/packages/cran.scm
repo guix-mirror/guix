@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
+;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,36 @@ phylogenetic framework, ancestral character analyses, analyses of
 diversification and macroevolution, computing distances from DNA sequences,
 and several other tools.")
     (license license:gpl2+)))
+
+(define-public r-abbyyr
+  (package
+    (name "r-abbyyr")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abbyyR" version))
+       (sha256
+        (base32
+         "1s8zf18sh0s89vk3dl09fzrq50csmmfvmsanf5vfkv9n5lx6pklg"))))
+    (properties `((upstream-name . "abbyyR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-httr" ,r-httr)
+       ("r-plyr" ,r-plyr)
+       ("r-progress" ,r-progress)
+       ("r-readr" ,r-readr)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/soodoku/abbyyR")
+    (synopsis "Access to Abbyy Optical Character Recognition (OCR) API")
+    (description
+     "This package provides tools to get text from images of text using Abbyy
+Cloud Optical Character Recognition (OCR) API.  With abbyyyR, one can easily
+OCR images, barcodes, forms, documents with machine readable zones, e.g.
+passports and get the results in a variety of formats including plain text and
+XML.  To learn more about the Abbyy OCR API, see @url{http://ocrsdk.com/}.")
+    (license license:expat)))
 
 (define-public r-colorspace
   (package
@@ -1679,7 +1710,7 @@ simplifying cross-class interoperability.")
      `(("r-quadprog" ,r-quadprog)
        ("r-xts" ,r-xts)
        ("r-zoo" ,r-zoo)))
-    (home-page "http://r-forge.r-project.org/projects/returnanalytics/")
+    (home-page "https://r-forge.r-project.org/projects/returnanalytics/")
     (synopsis "Econometric tools for performance and risk analysis")
     (description "This is a collection of econometric functions for
 performance and risk analysis.  This package aims to aid practitioners and
@@ -1996,7 +2027,7 @@ traveling salesman problem).")
          "0d2d1ni1camixyi45lfy00f4pn3p063k7bsi8gj5scp6n15mdgb0"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/qap/")
+    (home-page "https://cran.r-project.org/web/packages/qap/")
     (synopsis "Heuristics for the quadratic assignment problem (QAP)")
     (description "This package implements heuristics for the @dfn{quadratic
 assignment problem} (QAP).  Currently only a simulated annealing heuristic is
@@ -2016,7 +2047,7 @@ available.")
          "02ba6zj9bjwrzykamjp40ajynx9xjx9h2i85n0ym0r5lcki4x6fn"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-cluster" ,r-cluster)))
-    (home-page "http://cran.r-project.org/web/packages/gclus/")
+    (home-page "https://cran.r-project.org/web/packages/gclus/")
     (synopsis "Clustering graphics")
     (description "This package orders panels in scatterplot matrices and
 parallel coordinate displays by some merit index.  It contains various indices
@@ -2355,7 +2386,7 @@ rules with R.")
          "11gjmn1azrjw5xlvdb4gknj9985kck9x8zb9np1rnk2smp6pka2m"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/leaps/")
+    (home-page "https://cran.r-project.org/web/packages/leaps/")
     (synopsis "Regression subset selection")
     (description
      "This package provides tools for regression subset selection, including
@@ -2376,7 +2407,7 @@ exhaustive search.")
     (properties `((upstream-name . "splus2R")))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/splus2R/")
+    (home-page "https://cran.r-project.org/web/packages/splus2R/")
     (synopsis "Supplemental S-PLUS functionality in R")
     (description
      "Currently there are many functions in S-PLUS that are missing in R.  To
@@ -2399,7 +2430,7 @@ provides some missing S-PLUS functionality in R.")
     (propagated-inputs
      `(("r-mass" ,r-mass)
        ("r-splus2r" ,r-splus2r)))
-    (home-page "http://cran.r-project.org/web/packages/ifultools/")
+    (home-page "https://cran.r-project.org/web/packages/ifultools/")
     (synopsis "Insightful research tools")
     (description "This package provides C code used by the wmtsa, fractal, and
 sapa R packages.")
@@ -2420,7 +2451,7 @@ sapa R packages.")
     (propagated-inputs
      `(("r-ifultools" ,r-ifultools)
        ("r-splus2r" ,r-splus2r)))
-    (home-page "http://cran.r-project.org/web/packages/sapa/")
+    (home-page "https://cran.r-project.org/web/packages/sapa/")
     (synopsis "Spectral analysis for physical applications")
     (description "This package provides software for the book Spectral
 Analysis for Physical Applications, Donald B. Percival and Andrew T. Walden,
@@ -2444,7 +2475,7 @@ Cambridge University Press, 1993.")
        ("r-ttr" ,r-ttr)
        ("r-xts" ,r-xts)
        ("r-zoo" ,r-zoo)))
-    (home-page "http://cran.r-project.org/web/packages/quantmod/")
+    (home-page "https://cran.r-project.org/web/packages/quantmod/")
     (synopsis "Quantitative financial modelling framework")
     (description "This package provides a quantitative financial modelling
 framework to allow users to specify, build, trade, and analyse quantitative
@@ -2469,7 +2500,7 @@ financial trading strategies.")
        ("r-zoo" ,r-zoo)))
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/tseries/")
+    (home-page "https://cran.r-project.org/web/packages/tseries/")
     (synopsis "Time series analysis and computational finance")
     (description
      "This package provides functions relating to time series analysis and
@@ -2492,7 +2523,7 @@ computational finance.")
      `(("r-ifultools" ,r-ifultools)
        ("r-mass" ,r-mass)
        ("r-splus2r" ,r-splus2r)))
-    (home-page "http://cran.r-project.org/web/packages/wmtsa/")
+    (home-page "https://cran.r-project.org/web/packages/wmtsa/")
     (synopsis "Wavelet methods for time series analysis")
     (description
      "This package provides software to accompany the book \"Wavelet Methods
@@ -2568,7 +2599,7 @@ multivariate distributions.")
        ("r-scatterplot3d" ,r-scatterplot3d)
        ("r-splus2r" ,r-splus2r)
        ("r-wmtsa" ,r-wmtsa)))
-    (home-page "http://cran.r-project.org/web/packages/fractal/")
+    (home-page "https://cran.r-project.org/web/packages/fractal/")
     (synopsis "Fractal time series modeling and analysis")
     (description
      "This package provides tools for stochastic fractal and deterministic
@@ -2589,7 +2620,7 @@ chaotic time series analysis.")
     (build-system r-build-system)
     (propagated-inputs `(("r-nlme" ,r-nlme)))
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/urca/")
+    (home-page "https://cran.r-project.org/web/packages/urca/")
     (synopsis "Unit root and cointegration tests for time series data")
     (description
      "This package provides unit root and cointegration tests encountered in
@@ -2637,7 +2668,7 @@ interface.")
      `(("r-extradistr" ,r-extradistr)))
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/trend/")
+    (home-page "https://cran.r-project.org/web/packages/trend/")
     (synopsis "Non-parametric trend tests and change-point detection")
     (description
      "The analysis of environmental data often requires the detection of
@@ -2666,7 +2697,7 @@ sample Robust Rank-Order Distributional Test.")
     (build-system r-build-system)
     (propagated-inputs `(("r-matrix" ,r-matrix)))
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://r-forge.r-project.org/projects/expm/")
+    (home-page "https://r-forge.r-project.org/projects/expm/")
     (synopsis "Tools for matrix exponentials and related quantities")
     (description
      "This package provides tools for the computation of the matrix
@@ -2688,7 +2719,7 @@ exponential, logarithm, square root, and related quantities.")
     (propagated-inputs
      `(("r-expm" ,r-expm)
        ("r-matrix" ,r-matrix)))
-    (home-page "http://cran.r-project.org/web/packages/complexplus/")
+    (home-page "https://cran.r-project.org/web/packages/complexplus/")
     (synopsis "Functions of complex or real variables")
     (description
      "This package extends several functions to the complex domain, including
@@ -2759,7 +2790,7 @@ ordered factor data types.")
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
        ("r-phontools" ,r-phontools)))
-    (home-page "http://cran.r-project.org/web/packages/powerplus/")
+    (home-page "https://cran.r-project.org/web/packages/powerplus/")
     (synopsis "Exponentiation operations")
     (description
      "This package provides tools for the computation of matrix and scalar
@@ -2966,7 +2997,7 @@ and within plot factors interact.")
     (build-system r-build-system)
     (propagated-inputs `(("r-mass" ,r-mass)))
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://cran.r-project.org/web/packages/signal/")
+    (home-page "https://cran.r-project.org/web/packages/signal/")
     (synopsis "Signal processing")
     (description
      "This package provides a set of signal processing functions originally
@@ -3075,7 +3106,7 @@ R itself can handle.")
         (base32
          "0b1zd8jbnl6l292cr9rb50m09fy3ylxvzkpgi5lfb1nbzddcwfis"))))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/abind/")
+    (home-page "https://cran.r-project.org/web/packages/abind/")
     (synopsis "Combine multidimensional arrays")
     (description
      "This package provides tools to combine multidimensional arrays into a
@@ -3098,7 +3129,7 @@ extracting and replacing data in arrays.")
          "03hvh92lq4i4w4mla9bvwrwb4626f4hvlxgdn57hamp70960vjyc"))))
     (properties `((upstream-name . "PRROC")))
     (build-system r-build-system)
-    (home-page "http://cran.r-project.org/web/packages/PRROC/")
+    (home-page "https://cran.r-project.org/web/packages/PRROC/")
     (synopsis "Precision-Recall and ROC curves for weighted and unweighted data")
     (description
      "This package computes the areas under the @dfn{precision-recall} (PR)

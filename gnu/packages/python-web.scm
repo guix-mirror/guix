@@ -823,7 +823,7 @@ internationalized messages within program source text.")
      '(#:tests? #f)) ; FIXME: Tests can't find zope.event.
     (propagated-inputs
      `(("python-zope-event" ,python-zope-event)
-       ("python-zope-exceptions", python-zope-exceptions)
+       ("python-zope-exceptions" ,python-zope-exceptions)
        ("python-zope-interface" ,python-zope-interface)))
     (native-inputs
      `(("python-zope-testing" ,python-zope-testing)

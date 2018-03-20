@@ -81,7 +81,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
                (base32
                 "06r8limj38mv884s5riiz6lpzw37cvhbf9jd0smzcbi7fwmv3yah"))))
     (build-system python-build-system)
-    (inputs `(("ninja", ninja)))
+    (inputs `(("ninja" ,ninja)))
     (propagated-inputs `(("python" ,python)))
     (home-page "https://mesonbuild.com/")
     (synopsis "Build system designed to be fast and user-friendly")

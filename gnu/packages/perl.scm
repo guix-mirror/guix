@@ -2044,7 +2044,7 @@ Date::Calc.")
 (define-public perl-date-manip
   (package
     (name "perl-date-manip")
-    (version "6.50")
+    (version "6.70")
     (source
      (origin
        (method url-fetch)
@@ -2052,7 +2052,7 @@ Date::Calc.")
                            "Date-Manip-" version ".tar.gz"))
        (sha256
         (base32
-         "0zd0wbf91i49753rnf7m1lw197hdl5r97mxy0n43zdmcmhvkb3qq"))))
+         "0r4k4ypb09xwhvq6das0vpx2c0xbhhhx83knq6jfpf8m55h8qi9r"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (arguments
@@ -5760,7 +5760,7 @@ most specific one) is instantiated.")
        ("perl-file-configdir" ,perl-file-configdir)
        ("perl-file-find-rule" ,perl-file-find-rule)
        ("perl-hash-merge" ,perl-hash-merge)
-       ("perl-moo", perl-moo)
+       ("perl-moo" ,perl-moo)
        ("perl-moox-file-configdir" ,perl-moox-file-configdir)
        ("perl-namespace-clean" ,perl-namespace-clean)))
     (home-page "http://search.cpan.org/dist/MooX-ConfigFromFile/")

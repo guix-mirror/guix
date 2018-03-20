@@ -1360,7 +1360,7 @@ module, and nothing else.")
 (define-public perl-sql-abstract
   (package
     (name "perl-sql-abstract")
-    (version "1.84")
+    (version "1.85")
     (source
      (origin
        (method url-fetch)
@@ -1368,7 +1368,7 @@ module, and nothing else.")
                            "SQL-Abstract-" version ".tar.gz"))
        (sha256
         (base32
-         "0xayvgv6nic61jm3nhg41rzwgm8h83wfyazvpaks0z7asjillpv5"))))
+         "1aycggrvppy2zgkwwn85jkdz93n5gsx4dambrjk67k5067hayi4z"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
@@ -2769,9 +2769,9 @@ Monitor read/write activity on a mongo server
              (setenv "JEMALLOC_HOME" (assoc-ref %build-inputs "jemalloc"))
              (setenv "RAPIDJSON_HOME" (assoc-ref %build-inputs "rapidjson"))
              #t)))
+       #:build-type "Release"
        #:configure-flags
-       (list "-DCMAKE_BUILD_TYPE=Release"
-             "-DARROW_PYTHON=ON"
+       (list "-DARROW_PYTHON=ON"
 
              ;; Install to PREFIX/lib (the default is
              ;; PREFIX/lib64).

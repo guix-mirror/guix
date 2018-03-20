@@ -206,7 +206,9 @@ appears in BLACK-LIST are not loaded."
 
   (define (load-dependencies file)
     (let ((dependencies (module-dependencies file)))
-      (every (cut load-linux-module* <> #:lookup-module lookup-module)
+      (every (cut load-linux-module* <>
+                  #:lookup-module lookup-module
+                  #:black-list black-list)
              (map lookup-module dependencies))))
 
   (and (not (black-listed? (file-name->module-name file)))
@@ -327,7 +329,7 @@ The modules corresponding to these aliases can then be found using
 list of alias/module pairs where each alias is a glob pattern as like the
 result of:
 
-  (compile-glob-pattern \"scsi:t-0x01*\")
+  (string->compiled-sglob \"scsi:t-0x01*\")
 
 and each module is a module name like \"snd_hda_intel\"."
   (define (comment? str)
@@ -352,17 +354,20 @@ and each module is a module name like \"snd_hda_intel\"."
       (line
        (match (tokenize line)
          (("alias" alias module)
-          (loop (alist-cons (compile-glob-pattern alias) module
+          (loop (alist-cons (string->compiled-sglob alias) module
                             aliases)))
          (()                                      ;empty line
           (loop aliases)))))))
 
-(define (current-alias-file)
-  "Return the absolute file name of the default 'modules.alias' file."
+(define (current-kernel-directory)
+  "Return the directory of the currently running Linux kernel."
   (string-append (or (getenv "LINUX_MODULE_DIRECTORY")
                      "/run/booted-system/kernel/lib/modules")
-                 "/" (utsname:release (uname))
-                 "/" "modules.alias"))
+                 "/" (utsname:release (uname))))
+
+(define (current-alias-file)
+  "Return the absolute file name of the default 'modules.alias' file."
+  (string-append (current-kernel-directory) "/modules.alias"))
 
 (define* (known-module-aliases #:optional (alias-file (current-alias-file)))
   "Return the list of alias/module pairs read from ALIAS-FILE.  Each alias is

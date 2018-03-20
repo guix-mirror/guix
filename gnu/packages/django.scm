@@ -75,7 +75,7 @@
              (zero? (system* "python" "tests/runtests.py")))))))
     ;; TODO: Install extras/django_bash_completion.
     (native-inputs
-     `(("tzdata", tzdata-for-tests)
+     `(("tzdata" ,tzdata-for-tests)
        ;; bcrypt and argon2-cffi are extra requirements not yet in guix
        ;;("python-argon2-cffi" ,python-argon2-cffi) ; >= 16.1.0
        ;;("python-bcrypt" ,python-bcrypt) ; not py-bcrypt!
@@ -199,7 +199,7 @@ useful tools for testing Django applications and projects.")
     (native-inputs
      `(("python-django" ,python-django)
        ("python-djangorestframework" ,python-djangorestframework)
-       ("python-django-crispy-forms", python-django-crispy-forms)
+       ("python-django-crispy-forms" ,python-django-crispy-forms)
        ("python-mock" ,python-mock)))
     (home-page "https://django-filter.readthedocs.io/en/latest/")
     (synopsis "Reusable Django application to filter querysets dynamically")

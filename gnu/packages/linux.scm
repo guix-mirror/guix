@@ -383,8 +383,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.15.10")
-(define %linux-libre-hash "10fp8jmy0fxq8l01m1nnagpq1hznl9jmhcwknk8izjmdcb5snq6c")
+(define %linux-libre-version "4.15.11")
+(define %linux-libre-hash "0nrsmw7x5nsc3906dfvfakkibv8pv09r1sf5ckzbkcbkwpyq62h8")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -392,8 +392,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.27")
-(define %linux-libre-4.14-hash "0mgkka9niyd0lj4qliy4v7jjh9lg1a5jwlv60yw7z0s4k7ajyyrp")
+(define %linux-libre-4.14-version "4.14.28")
+(define %linux-libre-4.14-hash "0xg3zsm1yjsvxir8sz7zliz8gcc8d45xh23qyiszl75cfqjl36l3")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -402,14 +402,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.87"
-                    "1p8phvmxp04npzqzqcfmv8k9l5l65s7vpjcakdm0fxfkzvnswsp6"
+  (make-linux-libre "4.9.88"
+                    "0qlhd8xw3g00i7krpfndkwxzjszk067h26qsxxsszvxyx2s6gp4x"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.121"
-                    "1d7djrhiib0ds9ssjkali6b5w6rzap4zgj5hf9jq1jmqpp54jkm4"
+  (make-linux-libre "4.4.122"
+                    "1ayilv7474vsif3jpb723jbcy4kymv1fpdr96c1g743bad1wkqqq"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -1776,9 +1776,9 @@ file system is as easy as logging into the server with an SSH client.")
         (base32
          "0v4si1ri6lhnq9q87gkx7fsh6lv6xz4bynknwndqncpvfp5cy1jg"))))
     (build-system gnu-build-system)
-    (inputs `(("fuse", fuse)
-              ("libarchive", libarchive)))
-    (native-inputs `(("pkg-config", pkg-config)))
+    (inputs `(("fuse" ,fuse)
+              ("libarchive" ,libarchive)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.cybernoia.de/software/archivemount")
     (synopsis "Tool for mounting archive files with FUSE")
     (description "archivemount is a FUSE-based file system for Unix variants,
@@ -2033,7 +2033,7 @@ from the module-init-tools project.")
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
        ("libxml2" ,libxml2)             ;for $XML_CATALOG_FILES
-       ("xsltproc", libxslt)))
+       ("xsltproc" ,libxslt)))
     (inputs
      ;; When linked against libblkid, eudev can populate /dev/disk/by-label
      ;; and similar; it also installs the '60-persistent-storage.rules' file,
@@ -2542,14 +2542,14 @@ thanks to the use of namespaces.")
 (define-public hdparm
   (package
     (name "hdparm")
-    (version "9.54")
+    (version "9.55")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ghnhdj7wfw6acfyhdawpfa5n9kvkvzgi1fw6i7sghgbjx5nhyjd"))))
+                "1ivdvrzimaayiq03by8mcq0mhmdljndj06h012zkdpw34irnpixm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
@@ -3403,8 +3403,8 @@ The package provides additional NTFS tools.")
        ;; Upstream uses the "ninja" build system and encourage distros
        ;; to do the same for consistency. They also recommend using the
        ;; "Release" build type.
-       #:configure-flags (list "-GNinja"
-                               "-DCMAKE_BUILD_TYPE=Release")
+       #:build-type "Release"
+       #:configure-flags (list "-GNinja")
        #:phases
        (modify-phases %standard-phases
          (replace 'build
@@ -3704,7 +3704,7 @@ are exceeded.")
     (inputs
      `(("acl" ,acl)
        ("libuuid" ,util-linux)
-       ("lzo", lzo)
+       ("lzo" ,lzo)
        ("zlib" ,zlib)))
     (build-system gnu-build-system)
     (arguments
@@ -4134,13 +4134,13 @@ used by nftables.")
         (base32
          "1i1gfy8l7qyhc5vlrpp63s0n5kybmc9pi4dywiq8rmkhrrnddsla"))))
     (build-system gnu-build-system)
-    (inputs `(("bison", bison)
-              ("flex", flex)
-              ("gmp", gmp)
-              ("libmnl", libmnl)
-              ("libnftnl", libnftnl)
-              ("readline", readline)))
-    (native-inputs `(("pkg-config", pkg-config)))
+    (inputs `(("bison" ,bison)
+              ("flex" ,flex)
+              ("gmp" ,gmp)
+              ("libmnl" ,libmnl)
+              ("libnftnl" ,libnftnl)
+              ("readline" ,readline)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.nftables.org")
     (synopsis "Userspace utility for Linux packet filtering")
     (description "nftables is the project that aims to replace the existing

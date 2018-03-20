@@ -8448,7 +8448,7 @@ paired-end data.")
        ("r-testthat" ,r-testthat)
        ;; During vignette building knitr checks that "pandoc-citeproc"
        ;; is in the PATH.
-       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)))
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc-with-pandoc-1)))
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
        ("r-biomart" ,r-biomart)
@@ -11521,7 +11521,7 @@ Browser.")
          (delete 'configure)
          (delete 'build)
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out")
                                        "/bin"))
                    (docdir  (string-append (assoc-ref outputs "out")
@@ -11544,7 +11544,16 @@ Browser.")
                          scripts)
                (for-each (lambda (file) (install-file file docdir))
                          docs)
+               ;; Fix references to gunzip
+               (substitute* (map (lambda (file)
+                                   (string-append bin "/" file))
+                                 scripts)
+                 (("\"gunzip -c")
+                  (string-append "\"" (assoc-ref inputs "gzip")
+                                 "/bin/gunzip -c")))
                #t))))))
+    (inputs
+     `(("gzip" ,gzip)))
     (home-page "http://www.bioinformatics.babraham.ac.uk/projects/bismark/")
     (synopsis "Map bisulfite treated sequence reads and analyze methylation")
     (description "Bismark is a program to map bisulfite treated sequencing
@@ -12729,8 +12738,8 @@ once.  This package provides tools to perform Drop-seq analyses.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-rjson" ,r-rjson)
        ("salmon" ,salmon)
-       ("ghc-pandoc" ,ghc-pandoc)
-       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
+       ("ghc-pandoc" ,ghc-pandoc-1)
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc-with-pandoc-1)
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)))
     (home-page "http://bioinformatics.mdc-berlin.de/pigx/")
@@ -12746,7 +12755,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.2")
+    (version "0.0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12754,10 +12763,11 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1jliwhifnjgl9x0z730bzpxswi2s84fyg5y8cagbyzpw509452f5"))))
+                "1plw0bz0b7flj0g9irbn8n520005lmajkiq5flpizzapsl0a0r9g"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; parts of the tests rely on access to the network
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-executable
            ;; Make sure the executable finds all R modules.
@@ -12782,13 +12792,16 @@ expression report comparing samples in an easily configurable manner.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-plotly" ,r-plotly)
        ("python-wrapper" ,python-wrapper)
+       ("python-magic" ,python-magic)
        ("python-pyyaml" ,python-pyyaml)
+       ("python-xlrd" ,python-xlrd)
        ("snakemake" ,snakemake)
+       ("trim-galore" ,trim-galore)
        ("macs" ,macs)
        ("multiqc" ,multiqc)
        ("perl" ,perl)
-       ("ghc-pandoc" ,ghc-pandoc)
-       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
+       ("ghc-pandoc" ,ghc-pandoc-1)
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc-with-pandoc-1)
        ("fastqc" ,fastqc)
        ("bowtie" ,bowtie)
        ("idr" ,idr)
@@ -12812,7 +12825,7 @@ in an easily configurable manner.")
 (define-public pigx-bsseq
   (package
     (name "pigx-bsseq")
-    (version "0.0.5")
+    (version "0.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
@@ -12820,7 +12833,7 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1h8ma99vi7hs83nafvjpq8jmaq9977j3n11c4zd95hai0cf7zxmp"))))
+                "0pw797gxx6x1n56lyrvglj7q5hqq4ylfqkvlcrzq1z3j5lxcyl69"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -12844,7 +12857,10 @@ in an easily configurable manner.")
     (native-inputs
      `(("tzdata" ,tzdata)))
     (inputs
-     `(("r-minimal" ,r-minimal)
+     `(("coreutils" ,coreutils)
+       ("sed" ,sed)
+       ("grep" ,grep)
+       ("r-minimal" ,r-minimal)
        ("r-annotationhub" ,r-annotationhub)
        ("r-dt" ,r-dt)
        ("r-genomation" ,r-genomation)
@@ -12854,8 +12870,8 @@ in an easily configurable manner.")
        ("r-bookdown" ,r-bookdown)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggbio" ,r-ggbio)
-       ("ghc-pandoc" ,ghc-pandoc)
-       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
+       ("ghc-pandoc" ,ghc-pandoc-1)
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc-with-pandoc-1)
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)
        ("snakemake" ,snakemake)
@@ -12876,7 +12892,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.2")
+    (version "0.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -12884,7 +12900,7 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "03gwp83823ji59y6nvyz89i4yd3faaqpc3791qia71i91470vfsg"))))
+                "12qdq0nj1wdkyighdxj6924bmbpd1a0b3gam6w64l4hiqrv5sijz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -12903,7 +12919,9 @@ methylation and segmentation.")
                  `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
              #t)))))
     (inputs
-     `(("dropseq-tools" ,dropseq-tools)
+     `(("coreutils" ,coreutils)
+       ("perl" ,perl)
+       ("dropseq-tools" ,dropseq-tools)
        ("fastqc" ,fastqc)
        ("java-picard" ,java-picard)
        ("java" ,icedtea-8)
@@ -12912,8 +12930,8 @@ methylation and segmentation.")
        ("python-pandas" ,python-pandas)
        ("python-numpy" ,python-numpy)
        ("python-loompy" ,python-loompy)
-       ("ghc-pandoc" ,ghc-pandoc)
-       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)
+       ("ghc-pandoc" ,ghc-pandoc-1)
+       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc-with-pandoc-1)
        ("snakemake" ,snakemake)
        ("star" ,star)
        ("r-minimal" ,r-minimal)
@@ -12953,7 +12971,7 @@ based methods.")
 (define-public pigx
   (package
     (name "pigx")
-    (version "0.0.1")
+    (version "0.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx/"
@@ -12961,7 +12979,7 @@ based methods.")
                                   "/pigx-" version ".tar.gz"))
               (sha256
                (base32
-                "1nxb2hbp40yg3j7n56k4dhsd2fl1j8g0wpiiln56prqzljwnlgmf"))))
+                "0sb708sl42h3s5z872jb1w70bbqplwapnsc1wm27zcsvi7li4gw8"))))
     (build-system gnu-build-system)
     (inputs
      `(("python" ,python)

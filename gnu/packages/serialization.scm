@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@infotropique.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -431,10 +431,10 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
           "0blc978wc5h91662vai24xj92c3bx56y6hzid90qva7il302jl64"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     '(#:build-type "Release"
+       #:configure-flags
        (list (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            (assoc-ref %outputs "out") "/lib")
-             "-DCMAKE_BUILD_TYPE=Release")))
+                            (assoc-ref %outputs "out") "/lib"))))
     (home-page "https://google.github.io/flatbuffers/")
     (synopsis "Memory-efficient serialization library")
     (description "FlatBuffers is a cross platform serialization library for C++,

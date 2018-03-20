@@ -112,7 +112,7 @@ host	all	all	::1/128 	trust"))
   (match file
     (($ <postgresql-config-file> log-destination hba-file
                                  ident-file extra-config)
-     (define (quote' string)
+     (define (single-quote string)
        (if string
            (list "'" string "'")
            '()))
@@ -124,9 +124,9 @@ host	all	all	::1/128 	trust"))
           ((key . #f) '())
           ((key values ...) `(,key " = " ,@values "\n")))
 
-        `(("log_destination" ,@(quote' log-destination))
-          ("hba_file" ,@(quote' hba-file))
-          ("ident_file" ,@(quote' ident-file))
+        `(("log_destination" ,@(single-quote log-destination))
+          ("hba_file" ,@(single-quote hba-file))
+          ("ident_file" ,@(single-quote ident-file))
           ,@extra-config)))
 
      (gexp->derivation

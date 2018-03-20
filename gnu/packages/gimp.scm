@@ -175,12 +175,12 @@ buffers.")
        ("libjpeg" ,libjpeg-8)
        ("atk" ,atk)
        ("gtk+" ,gtk+-2)
-       ("exif" ,libexif)                         ;optional, EXIF + XMP support
-       ("lcms" ,lcms)                            ;optional, color management
-       ("librsvg" ,librsvg)                      ;optional, SVG support
-       ("poppler", poppler)             ; optional, PDF support
-       ("python" ,python-2)                      ;optional, Python support
-       ("python2-pygtk" ,python2-pygtk)          ;optional, Python support
+       ("exif" ,libexif)                ; optional, EXIF + XMP support
+       ("lcms" ,lcms)                   ; optional, color management
+       ("librsvg" ,librsvg)             ; optional, SVG support
+       ("poppler" ,poppler)             ; optional, PDF support
+       ("python" ,python-2)             ; optional, Python support
+       ("python2-pygtk" ,python2-pygtk) ; optional, Python support
        ("gegl" ,gegl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)

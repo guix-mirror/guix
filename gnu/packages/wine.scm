@@ -221,7 +221,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
    (name "wine-staging-patchset-data")
-   (version "3.3")
+   (version "3.4")
    (source
     (origin
      (method url-fetch)
@@ -230,7 +230,7 @@ integrate Windows applications into your desktop.")
      (file-name (string-append name "-" version ".zip"))
      (sha256
       (base32
-       "16l28vrhqn27kipqwms622jz1prfky8qkjb8pj747k3qjnm2k1g9"))))
+       "00yzh9bqs2rjgvk78xv3gfkbv4f2bkch9vb1ii4xh883f7wvkz93"))))
    (build-system trivial-build-system)
    (native-inputs
     `(("bash" ,bash)
@@ -270,15 +270,16 @@ integrate Windows applications into your desktop.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://dl.winehq.org/wine/source/3.x/wine-" version
-                    ".tar.xz"))
+                    "https://dl.winehq.org/wine/source/"
+                    (version-major version) ".x"
+                    "/wine-" version ".tar.xz"))
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0cx31jsll7mxd9r7v0vpahajqwb6da6cpwybv06l5ydkgfrbv505"))))
+                "14wf7536rkmhav9ibbvhqqkfqmbk1dckhd2679i5scizr5x290x4"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
-              ("gtk+", gtk+)
-              ("libva", libva)
+              ("gtk+" ,gtk+)
+              ("libva" ,libva)
               ("python" ,python)
               ("sdl2" ,sdl2)
               ("util-linux" ,util-linux) ; for hexdump

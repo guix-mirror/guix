@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -65,22 +65,21 @@
 (define-public tilda
   (package
     (name "tilda")
-    (version "1.3.3")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/lanoxx/tilda/archive/"
                                   "tilda-" version ".tar.gz"))
               (sha256
                (base32
-                "1cc4qbg1m3i04lj5p6i6xbd0zvy1320pxdgmjhz5p3j95ibsbfki"))))
+                "0w2hry2bqcqrkik4l100b1a9jlsih6sq8zwhfpl8zzfq20i00lfs"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                 (add-before 'patch-source-shebangs 'autogen
-                  (lambda _       ; Avoid running ./configure.
-                   (substitute* "autogen.sh"
-                                (("^.*\\$srcdir/configure.*") ""))
-                   (zero? (system* "sh" "autogen.sh")))))))
+     '(#:phases (modify-phases %standard-phases
+                 (add-before 'patch-source-shebangs 'bootstrap
+                  (lambda _
+                    (setenv "NOCONFIGURE" "true")
+                    (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -128,9 +127,9 @@ configurable through a graphical wizard.")
                            (string-append "DESTDIR="
                                           (assoc-ref %outputs "out")))))
     (inputs
-     `(("vte", vte-ng)
-       ("gtk+", gtk+)
-       ("ncurses", ncurses)))
+     `(("vte" ,vte-ng)
+       ("gtk+" ,gtk+)
+       ("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
 
@@ -293,10 +292,10 @@ multi-seat support, a replacement for @command{mingetty}, and more.")
        #:phases (modify-phases %standard-phases
                   (delete 'configure))
        #:test-target "test"))
-    (inputs `(("ncurses", ncurses)))
-    (native-inputs `(("libtool", libtool)
+    (inputs `(("ncurses" ,ncurses)))
+    (native-inputs `(("libtool" ,libtool)
                      ("perl-test-harness" ,perl-test-harness)
-                     ("pkg-config", pkg-config)))
+                     ("pkg-config" ,pkg-config)))
     (synopsis "Keyboard entry processing library for terminal-based programs")
     (description
      "Libtermkey handles all the necessary logic to recognise special keys, UTF-8
@@ -695,7 +694,7 @@ terminal or piped input.")
              (delete-file "tests/test_input_output.py")
              #t)))))
     (propagated-inputs
-     `(("python-wcwidth", python-wcwidth)))
+     `(("python-wcwidth" ,python-wcwidth)))
     (native-inputs
      `(("python-pytest-runner" ,python-pytest-runner)
        ("python-pytest" ,python-pytest)))
@@ -765,7 +764,7 @@ than a terminal.")
              (invoke "nosetests" "-v"))))))
     (propagated-inputs
      `(("python-blessings" ,python-blessings)
-       ("python-wcwidth", python-wcwidth)))
+       ("python-wcwidth" ,python-wcwidth)))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pyte" ,python-pyte)

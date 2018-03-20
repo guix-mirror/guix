@@ -354,12 +354,12 @@ secure session between the peers.")
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("glib" ,glib)
-       ("pango", pango)
-       ("gtk", gtk+-2)
+       ("pango" ,pango)
+       ("gtk" ,gtk+-2)
        ("lua" ,lua)
        ("cairo" ,cairo)
        ("libffi" ,libffi)
-       ("xorg-server", xorg-server)))
+       ("xorg-server" ,xorg-server)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("dbus" ,dbus)))                          ;tests use 'dbus-run-session'
@@ -397,7 +397,7 @@ Notable examples are GTK+, GStreamer and Webkit.")
                              (string-append out "/share/lua/" lua-version))
                #t))))
        #:test-target "test"))
-    (inputs `(("lua", lua)))
+    (inputs `(("lua" ,lua)))
     (synopsis "Pattern-matching library for Lua")
     (description
      "LPeg is a pattern-matching library for Lua, based on Parsing Expression
@@ -436,7 +436,7 @@ Grammars (PEGs).")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
-    (inputs `(("lua", lua)))
+    (inputs `(("lua" ,lua)))
     (home-page "https://bitop.luajit.org/index.html")
     (synopsis "Bitwise operations on numbers for Lua")
     (description

@@ -144,6 +144,7 @@ made available under the /xchg CIFS share."
        (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
                          (base-initrd %linux-vm-file-systems
+                                      #:on-error 'backtrace
                                       #:linux linux
                                       #:linux-modules %base-initrd-modules
                                       #:qemu-networking? #t))))

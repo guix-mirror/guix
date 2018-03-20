@@ -560,7 +560,7 @@ callback.")
 (define-public perl-xml-simple
   (package
     (name "perl-xml-simple")
-    (version "2.22")
+    (version "2.25")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -568,7 +568,7 @@ callback.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0jgbk30jizafpl7078jhw1di1yh08gf8d85dsvjllr595vr0widr"))))
+               "1y6vh328zrh085d40852v4ij2l4g0amxykswxd1nfhd2pspds7sk"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)
@@ -707,14 +707,14 @@ a schema.")
 (define-public perl-xml-compile-soap
   (package
     (name "perl-xml-compile-soap")
-    (version "3.21")
+    (version "3.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-SOAP-" version ".tar.gz"))
               (sha256
                (base32
-                "0rxidh7kjyhnw2y789bqbwccnp8n0m3xskn524y9c752s64qpjcz"))))
+                "0pkcph562l2ij7rlwlvm58v6y062qsbydfpaz2qnph2ixqy0xfd1"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
@@ -1309,7 +1309,8 @@ SAX2 APIs.")
                                   version ".zip"))
               (sha256
                (base32
-                "0w19k1awslmihpwsxwjbg89hv0vjhk4k3i0vrfchy3mqknd988y5"))))
+                "0w19k1awslmihpwsxwjbg89hv0vjhk4k3i0vrfchy3mqknd988y5"))
+              (patches (search-patches "java-simple-xml-fix-tests.patch"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"
@@ -1415,7 +1416,7 @@ characters into a single event.")
     (propagated-inputs
      `(("perl-libxml" ,perl-libxml)
        ("perl-xml-filter-buffertext" ,perl-xml-filter-buffertext)
-       ("perl-xml-namespacesupport", perl-xml-namespacesupport)
+       ("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
        ("perl-xml-sax-base" ,perl-xml-sax-base)))
     (home-page "http://search.cpan.org/dist/XML-SAX-Writer/")
     (synopsis "SAX2 XML Writer")
@@ -1472,7 +1473,7 @@ It provides a flexible escaping technique and pretty printing.")
        ("perl-xml-sax-writer" ,perl-xml-sax-writer)
        ("perl-xml-simple" ,perl-xml-simple)
        ("perl-xml-xpathengine" ,perl-xml-xpathengine)
-       ("perl-test-pod", perl-test-pod)
+       ("perl-test-pod" ,perl-test-pod)
        ("perl-tree-xpathengine" ,perl-tree-xpathengine)))
     (home-page "http://search.cpan.org/dist/XML-Twig/")
     (synopsis "Perl module for processing huge XML documents in tree mode")

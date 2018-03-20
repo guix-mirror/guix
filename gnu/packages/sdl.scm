@@ -122,9 +122,9 @@ joystick, and graphics hardware.")
                ("fcitx" ,fcitx) ; helps with CJK input
                ("glib" ,glib)
                ("ibus" ,ibus)
-               ("libxkbcommon", libxkbcommon)
-               ("wayland", wayland)
-               ("wayland-protocols", wayland-protocols))
+               ("libxkbcommon" ,libxkbcommon)
+               ("wayland" ,wayland)
+               ("wayland-protocols" ,wayland-protocols))
              (package-inputs sdl)))
     (license bsd-3)))
 

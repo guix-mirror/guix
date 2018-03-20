@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +20,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
-  #:autoload   (gnu packages guile) (mcron2)
+  #:autoload   (gnu packages guile) (mcron)
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
@@ -53,7 +53,7 @@
   make-mcron-configuration
   mcron-configuration?
   (mcron             mcron-configuration-mcron    ;package
-                     (default mcron2))
+                     (default mcron))
   (jobs              mcron-configuration-jobs     ;list of <mcron-job>
                      (default '())))
 
@@ -100,7 +100,7 @@
                                          jobs)))))
                 (default-value (mcron-configuration)))) ;empty job list
 
-(define* (mcron-service jobs #:optional (mcron mcron2))
+(define* (mcron-service jobs #:optional (mcron mcron))
   "Return an mcron service running @var{mcron} that schedules @var{jobs}, a
 list of gexps denoting mcron job specifications.
 

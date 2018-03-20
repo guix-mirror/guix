@@ -36,6 +36,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ragel)
@@ -665,6 +666,72 @@ line of code.")
     ;; of the Expat license.
     (license license:bsd-3)))
 
+(define-public ruby-asciidoctor
+  (package
+  (name "ruby-asciidoctor")
+  (version "1.5.6.1")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "asciidoctor" version))
+      (sha256
+        (base32
+          "1jnf9y8q5asfdzilp8vcqafrc2faj719df4yh1993mh6jd0iqdy4"))))
+  (build-system ruby-build-system)
+  (arguments
+   `(#:test-target "test:all"
+     #:phases
+     (modify-phases %standard-phases
+       (add-before 'check 'remove-circular-tests
+         (lambda _
+           ;; Remove tests that require circular dependencies to load or pass.
+           (delete-file "test/invoker_test.rb")
+           (delete-file "test/converter_test.rb")
+           (delete-file "test/options_test.rb")
+           #t)))))
+  (native-inputs
+   `(("ruby-minitest" ,ruby-minitest)
+     ("ruby-nokogiri" ,ruby-nokogiri)
+     ("ruby-asciimath" ,ruby-asciimath)
+     ("ruby-coderay" ,ruby-coderay)))
+  (synopsis "Converter from AsciiDoc content to other formats")
+  (description
+    "Asciidoctor is a text processor and publishing toolchain for converting
+AsciiDoc content to HTML5, DocBook 5 (or 4.5) and other formats.")
+  (home-page "http://asciidoctor.org")
+  (license license:expat)))
+
+(define-public ruby-sporkmonger-rack-mount
+  ;; Testing the addressable gem requires a newer commit than that released, so
+  ;; use an up to date version.
+  (let ((revision "1")
+        (commit "076aa2c47d9a4c081f1e9bcb56a826a9e72bd5c3"))
+    (package
+      (name "ruby-sporkmonger-rack-mount")
+      (version (git-version "0.8.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/sporkmonger/rack-mount.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1scx273g3xd93424x9lxc4zyvcp2niknbw5mkz6wkivpf7xsyxdq"))))
+      (build-system ruby-build-system)
+      (arguments
+       ;; Tests currently fail so disable them.
+       ;; https://github.com/sporkmonger/rack-mount/pull/1
+       `(#:tests? #f))
+      (propagated-inputs `(("ruby-rack" ,ruby-rack)))
+      (synopsis "Stackable dynamic tree based Rack router")
+      (description
+       "@code{Rack::Mount} supports Rack's @code{X-Cascade} convention to
+continue trying routes if the response returns pass.  This allows multiple
+routes to be nested or stacked on top of each other.")
+      (home-page "https://github.com/sporkmonger/rack-mount")
+      (license license:expat))))
+
 (define-public ruby-ci-reporter
   (package
     (name "ruby-ci-reporter")
@@ -823,6 +890,29 @@ complexity.")
 functions.")
     (home-page "https://github.com/ahoward/options")
     (license license:ruby)))
+
+(define-public ruby-erubis
+  (package
+    (name "ruby-erubis")
+    (version "2.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "erubis" version))
+       (sha256
+        (base32
+         "1fj827xqjs91yqsydf0zmfyw9p4l2jz5yikg3mppz6d7fi8kyrb3"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests do not run properly with Ruby 2.0
+    (synopsis "Implementation of embedded Ruby (eRuby)")
+    (description
+     "Erubis is a fast implementation of embedded Ruby (eRuby) with several
+features such as multi-language support, auto escaping, auto trimming spaces
+around @code{<% %>}, a changeable embedded pattern, and Ruby on Rails
+support.")
+    (home-page "http://www.kuwata-lab.com/erubis/")
+    (license license:expat)))
 
 (define-public ruby-orderedhash
   (package
@@ -3293,6 +3383,106 @@ into a single method call.")
     (home-page "https://rack.github.io/")
     (license license:expat)))
 
+(define-public ruby-rack-test
+  (package
+    (name "ruby-rack-test")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rack-test" version))
+       (sha256
+        (base32
+         "14ij39zywvr1i9f6jsixfg4zxi2q1m1n1nydvf47f0b6sfc9mv1g"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Disable tests because of circular dependencies: requires sinatra,
+     ;; which requires rack-protection, which requires rack-test.  Instead
+     ;; simply require the library.
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "ruby" "-Ilib" "-r" "rack/test"))))))
+    (propagated-inputs
+     `(("ruby-rack" ,ruby-rack)))
+    (synopsis "Testing API for Rack applications")
+    (description
+     "Rack::Test is a small, simple testing API for Rack applications.  It can
+be used on its own or as a reusable starting point for Web frameworks and
+testing libraries to build on.")
+    (home-page "https://github.com/rack-test/rack-test")
+    (license license:expat)))
+
+(define-public ruby-rack-protection
+  (package
+    (name "ruby-rack-protection")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rack-protection" version))
+       (sha256
+        (base32
+         "0ywmgh7x8ljf7jfnq5hmfzki3f803waji3fcvi107w7mlyflbng7"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; Tests missing from the gem
+       #:tests? #f))
+    (propagated-inputs
+     `(("ruby-rack" ,ruby-rack)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec-2)
+       ("ruby-rack-test" ,ruby-rack-test)))
+    (synopsis "Rack middleware that protects against typical web attacks")
+    (description "Rack middleware that can be used to protect against typical
+web attacks.  It can protect all Rack apps, including Rails.  For instance, it
+protects against cross site request forgery, cross site scripting,
+clickjacking, directory traversal, session hijacking and IP spoofing.")
+    (home-page "https://github.com/sinatra/sinatra/tree/master/rack-protection")
+    (license license:expat)))
+
+(define-public ruby-contest
+  (package
+    (name "ruby-contest")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "contest" version))
+       (sha256
+        (base32
+         "1p9f2292b7b0fbrcjswvj9v01z7ig5ig52328wyqcabgb553qsdf"))))
+    (build-system ruby-build-system)
+    (synopsis "Write declarative tests using nested contexts")
+    (description
+     "Contest allows writing declarative @code{Test::Unit} tests using nested
+contexts without performance penalties.")
+    (home-page "https://github.com/citrusbyte/contest")
+    (license license:expat)))
+
+(define-public ruby-creole
+  (package
+    (name "ruby-creole")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "creole" version))
+       (sha256
+        (base32
+         "00rcscz16idp6dx0dk5yi5i0fz593i3r6anbn5bg2q07v3i025wm"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-bacon" ,ruby-bacon)))
+    (synopsis "Creole markup language converter")
+    (description
+     "Creole is a lightweight markup language and this library for converting
+creole to @code{HTML}.")
+    (home-page "https://github.com/minad/creole")
+    (license license:ruby)))
+
 (define-public ruby-docile
   (package
     (name "ruby-docile")
@@ -3525,6 +3715,55 @@ programs to concentrate on the implementation of network protocols.  It can be
 used to create both network servers and clients.")
     (home-page "http://rubyeventmachine.com")
     (license (list license:ruby license:gpl3)))) ; GPLv3 only AFAICT
+
+(define-public ruby-ruby-engine
+  (package
+    (name "ruby-ruby-engine")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ruby_engine" version))
+       (sha256
+        (base32
+         "1d0sd4q50zkcqhr395wj1wpn2ql52r0fpwhzjfvi1bljml7k546v"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'clean-up
+           (lambda _
+             (delete-file "Gemfile.lock")
+             (substitute* "ruby_engine.gemspec"
+               ;; Remove unnecessary imports that would entail further
+               ;; dependencies.
+               ((".*<rdoc.*") "")
+               ((".*<rubygems-tasks.*") "")
+               ;; Remove extraneous .gem file
+               (("\\\"pkg/ruby_engine-1.0.0.gem\\\",") "")
+               ;; Soften rake dependency
+               (("%q<rake>.freeze, \\[\\\"~> 10.0\\\"\\]")
+                "%q<rake>.freeze, [\">= 10.0\"]")
+               ;; Soften the rspec dependency
+               (("%q<rspec>.freeze, \\[\\\"~> 2.4\\\"\\]")
+                "%q<rspec>.freeze, [\">= 2.4\"]"))
+             (substitute* "Rakefile"
+               (("require 'rubygems/tasks'") "")
+               (("Gem::Tasks.new") ""))
+             ;; Remove extraneous .gem file that otherwise gets installed.
+             (delete-file "pkg/ruby_engine-1.0.0.gem")
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake" ,ruby-rake)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Simplifies checking for Ruby implementation")
+    (description
+     "@code{ruby_engine} provides an RubyEngine class that can be used to
+check which implementation of Ruby is in use.  It can provide the interpreter
+name and provides query methods such as @{RubyEngine.mri?}.")
+    (home-page "https://github.com/janlelis/ruby_engine")
+    (license license:expat)))
 
 (define-public ruby-turn
   (package
@@ -4720,4 +4959,25 @@ smart typographic punctuation HTML entities.")
 thing this library does today is convert org-mode files to HTML or Textile or
 Markdown.")
     (home-page "https://github.com/wallyqs/org-ruby")
+    (license license:expat)))
+
+(define-public ruby-rake
+  (package
+    (name "ruby-rake")
+    (version "12.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rake" version))
+       (sha256
+        (base32
+         "190p7cs8zdn07mjj6xwwsdna3g0r98zs4crz7jh2j2q5b0nbxgjf"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Rake is a Make-like program implemented in Ruby")
+    (description
+     "Rake is a Make-like program where tasks and dependencies are specified
+in standard Ruby syntax.")
+    (home-page "https://github.com/ruby/rake")
     (license license:expat)))

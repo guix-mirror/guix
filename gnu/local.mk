@@ -411,6 +411,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/tcl.scm				\
   %D%/packages/telephony.scm			\
   %D%/packages/terminals.scm			\
+  %D%/packages/terraform.scm			\
   %D%/packages/texinfo.scm			\
   %D%/packages/tex.scm				\
   %D%/packages/textutils.scm			\
@@ -787,6 +788,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/java-jeromq-fix-tests.patch		\
   %D%/packages/patches/java-powermock-fix-java-files.patch		\
+  %D%/packages/patches/java-simple-xml-fix-tests.patch		\
   %D%/packages/patches/java-xerces-bootclasspath.patch	\
   %D%/packages/patches/java-xerces-build_dont_unzip.patch	\
   %D%/packages/patches/java-xerces-xjavac_taskdef.patch	\
@@ -858,7 +860,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libssh2-fix-build-failure-with-gcrypt.patch	\
   %D%/packages/patches/libtar-CVE-2013-4420.patch 		\
   %D%/packages/patches/libtheora-config-guess.patch		\
-  %D%/packages/patches/libtirpc-missing-headers.patch		\
   %D%/packages/patches/libtiff-CVE-2017-9935.patch		\
   %D%/packages/patches/libtiff-CVE-2017-18013.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\

@@ -99,10 +99,18 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
                        (method url-fetch))))))
     (build-system gnu-build-system)
     (arguments
-     ;; The Avahi daemon socket is expected by src/Makefile.am to be at
-     ;; "$(localstatedir)/run/avahi-daemon/socket", so set $(localstatedir)
-     ;; appropriately.
-     '(#:configure-flags '("--localstatedir=/var")))
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'set-avahi-socket-name
+                    (lambda _
+                      ;; The Avahi daemon socket is expected by
+                      ;; src/Makefile.am to be at
+                      ;; "$(localstatedir)/run/avahi-daemon/socket", but
+                      ;; nowadays it lives in /run/avahi-daemon/socket.
+                      ;; Remove the "$(localstatedir)" bit.
+                      (substitute* "src/Makefile.in"
+                        (("\\$\\(localstatedir)/run/avahi-daemon/socket")
+                         "/run/avahi-daemon/socket"))
+                      #t)))))
     (synopsis "Multicast DNS Name Service Switch (@dfn{NSS}) plug-in")
     (description
      "Nss-mdns is a plug-in for the GNU C Library's Name Service Switch

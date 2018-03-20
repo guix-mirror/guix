@@ -78,7 +78,7 @@
        ("readline" ,readline)
        ("xorgproto" ,xorgproto)))
     (native-inputs
-     `(("perl",perl)
+     `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("ratpoison.desktop" ,ratpoison.desktop)))
     (home-page "https://www.nongnu.org/ratpoison/")

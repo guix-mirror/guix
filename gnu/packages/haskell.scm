@@ -6398,6 +6398,19 @@ and also has a mode for converting bibliographic databases a YAML format
 suitable for inclusion in pandoc YAML metadata.")
     (license license:bsd-3)))
 
+(define-public ghc-pandoc-citeproc-with-pandoc-1
+  (let ((for-pandoc-1
+         (package-input-rewriting
+          `((,ghc-aeson        . ,ghc-aeson-for-pandoc-1)
+            (,ghc-yaml         . ,ghc-yaml-for-pandoc-1)
+            (,ghc-texmath      . ,ghc-texmath-for-pandoc-1)
+            (,ghc-pandoc-types . ,ghc-pandoc-types-for-pandoc-1)
+            (,ghc-hslua        . ,ghc-hslua-for-pandoc-1)
+            (,ghc-skylighting  . ,ghc-skylighting-for-pandoc-1)
+            (,ghc-doctemplates . ,ghc-doctemplates-for-pandoc-1)
+            (,ghc-pandoc       . ,ghc-pandoc-1)))))
+    (for-pandoc-1 ghc-pandoc-citeproc)))
+
 (define-public ghc-union-find
   (package
     (name "ghc-union-find")
@@ -7883,7 +7896,7 @@ files in Haskell.")
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-network" ,ghc-network)
-       ("ghc-directory", ghc-directory)
+       ("ghc-directory" ,ghc-directory)
        ("ghc-old-locale" ,ghc-old-locale)))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
@@ -8460,7 +8473,7 @@ that are much lighter weight than IO-threads.")
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-ieee754", ghc-ieee754)
+       ("ghc-ieee754" ,ghc-ieee754)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
@@ -8584,7 +8597,7 @@ statically known size.")
     (build-system haskell-build-system)
     (inputs `(("ghc-tuple-th" ,ghc-tuple-th)
               ("ghc-contravariant" ,ghc-contravariant)
-              ("ghc-base-prelude",ghc-base-prelude)))
+              ("ghc-base-prelude" ,ghc-base-prelude)))
     (home-page "https://github.com/nikita-volkov/contravariant-extras")
     (synopsis "Extras for the @code{ghc-contravariant} Haskell package")
     (description "This Haskell package provides extras for the
@@ -8899,7 +8912,7 @@ and are often as efficient as hand-written folds.")
               ("ghc-vector-algorithms" ,ghc-vector-algorithms)
               ("ghc-split" ,ghc-split)))
     (native-inputs `(("ghc-hspec" ,ghc-hspec)
-                     ("ghc-hunit",ghc-hunit)
+                     ("ghc-hunit" ,ghc-hunit)
                      ("ghc-quickcheck" ,ghc-quickcheck)
                      ("ghc-semigroups" ,ghc-semigroups)
                      ("ghc-foldl" ,ghc-foldl)))

@@ -10479,7 +10479,7 @@ gexps to introduce job definitions that are passed to mcron
 for more information on mcron job specifications.  Below is the
 reference of the mcron service.
 
-@deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron2}]
+@deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron}]
 Return an mcron service running @var{mcron} that schedules @var{jobs}, a
 list of gexps denoting mcron job specifications.
 
@@ -10504,7 +10504,7 @@ mcron jobs to run.
 Data type representing the configuration of mcron.
 
 @table @asis
-@item @code{mcron} (default: @var{mcron2})
+@item @code{mcron} (default: @var{mcron})
 The mcron package to use.
 
 @item @code{jobs}
@@ -11156,6 +11156,23 @@ server.  Alternately, one can specify the @command{sftp-server} command:
          (openssh-configuration
           (subsystems
            `(("sftp" ,(file-append openssh "/libexec/sftp-server"))))))
+@end example
+
+@item @code{accepted-environment} (default: @code{'()})
+List of strings describing which environment variables may be exported.
+
+Each string gets on its own line.  See the @code{AcceptEnv} option in
+@code{man sshd_config}.
+
+This example allows ssh-clients to export the @code{COLORTERM} variable.
+It is set by terminal emulators, which support colors.  You can use it in
+your shell's ressource file to enable colors for the prompt and commands
+if this variable is set.
+
+@example
+(service openssh-service-type
+         (openssh-configuration
+           (accepted-environment '("COLORTERM"))))
 @end example
 
 @item @code{authorized-keys} (default: @code{'()})

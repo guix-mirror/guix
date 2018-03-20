@@ -1062,7 +1062,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("waf" ,python-waf)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
-       ("libxkbcommon", libxkbcommon)
+       ("libxkbcommon" ,libxkbcommon)
        ("youtube-dl" ,youtube-dl)
        ("zlib" ,zlib)))
     (arguments
@@ -1158,7 +1158,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.03.10")
+    (version "2018.03.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1166,7 +1166,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ibmz91anli1vzkgw2i3h4wf1i8arzd74730ylwcwyg3375xryjb"))))
+                "0j8j797gqc29fd5ra3cjvwkp8dgvigdydsj0zzjs05zccfqrj9lh"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2463,7 +2463,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("zlib" ,zlib)
-       ("libmediainfo", libmediainfo)
+       ("libmediainfo" ,libmediainfo)
        ("libzen" ,libzen)))
     (build-system gnu-build-system)
     (arguments

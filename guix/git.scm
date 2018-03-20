@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,8 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:export (%repository-cache-directory
             latest-repository-commit))
 
@@ -94,17 +97,32 @@ create the store directory name."
 
 (define (switch-to-ref repository ref)
   "Switch to REPOSITORY's branch, commit or tag specified by REF."
-  (let* ((oid (match ref
-                (('branch . branch)
-                 (reference-target
-                  (branch-lookup repository branch BRANCH-REMOTE)))
-                (('commit . commit)
-                 (string->oid commit))
-                (('tag    . tag)
-                 (reference-name->oid repository
-                                      (string-append "refs/tags/" tag)))))
-         (obj (object-lookup repository oid)))
-    (reset repository obj RESET_HARD)))
+  (define obj
+    (match ref
+      (('branch . branch)
+       (let ((oid (reference-target
+                   (branch-lookup repository branch BRANCH-REMOTE))))
+         (object-lookup repository oid)))
+      (('commit . commit)
+       (let ((len (string-length commit)))
+         ;; 'object-lookup-prefix' appeared in Guile-Git in Mar. 2018, so we
+         ;; can't be sure it's available.  Furthermore, 'string->oid' used to
+         ;; read out-of-bounds when passed a string shorter than 40 chars,
+         ;; which is why we delay calls to it below.
+         (if (< len 40)
+             (if (module-defined? (resolve-interface '(git object))
+                                  'object-lookup-prefix)
+                 (object-lookup-prefix repository (string->oid commit) len)
+                 (raise (condition
+                         (&message
+                          (message "long Git object ID is required")))))
+             (object-lookup repository (string->oid commit)))))
+      (('tag    . tag)
+       (let ((oid (reference-name->oid repository
+                                       (string-append "refs/tags/" tag))))
+         (object-lookup repository oid)))))
+
+  (reset repository obj RESET_HARD))
 
 (define* (latest-repository-commit store url
                                    #:key
