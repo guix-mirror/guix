@@ -12672,7 +12672,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
 (define-public pigx-rnaseq
   (package
     (name "pigx-rnaseq")
-    (version "0.0.2")
+    (version "0.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_rnaseq/"
@@ -12680,7 +12680,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
                                   "/pigx_rnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "168hx2ig3rarphx3l21ay9yyg8ipaakzixnrhpbdi0sknhyvrrk8"))))
+                "0pz080k4ajlc4rlznkn3najy2a6874gb56rf9g4ag9wqz31q174j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f             ; not supported
@@ -12702,7 +12702,8 @@ once.  This package provides tools to perform Drop-seq analyses.")
                  `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
              #t)))))
     (inputs
-     `(("snakemake" ,snakemake)
+     `(("gzip" ,gzip)
+       ("snakemake" ,snakemake)
        ("fastqc" ,fastqc)
        ("multiqc" ,multiqc)
        ("star" ,star)
