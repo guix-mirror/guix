@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -86,7 +86,8 @@
              (substitute* '("testsuite/test-limits.c"
                             "testsuite/exec_opcodes_sys.c")
                (("if \\(error\\) return 1;")
-                "if (error) return 77;")))))))
+                "if (error) return 77;"))
+             #t)))))
     (home-page "https://gstreamer.freedesktop.org/modules/orc.html")
     (synopsis "Oil runtime compiler")
     (description
