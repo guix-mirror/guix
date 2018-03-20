@@ -1828,7 +1828,9 @@ recreates the stored directory structure by default.")
     (synopsis "Library for accessing zip files")
     (description
      "ZZipLib is a library based on zlib for accessing zip files.")
-    (license license:lgpl2.0+)))
+    ;; zziplib is dual licensed under LGPL2.0+ and MPL1.1.  Some example source
+    ;; files carry the Zlib license; see "docs/copying.html" for details.
+    (license (list license:lgpl2.0+ license:mpl1.1))))
 
 (define-public perl-archive-zip
   (package
