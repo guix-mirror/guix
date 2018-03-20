@@ -631,6 +631,19 @@ for cgit to allow access to that repository.")
    (list '())
    "Extra options will be appended to cgitrc file."))
 
+;; This distinguishes fields whose order matters, and makes sure further
+;; changes won't inadvertently change the order.
+(define (serialize-cgit-configuration config)
+  (define (rest? field)
+    (not (memq (configuration-field-name field)
+               '(repositories))))
+  #~(string-append
+     #$(let ((rest (filter rest? cgit-configuration-fields)))
+         (serialize-configuration config rest))
+     #$(serialize-repository-cgit-configuration-list
+        'repositories
+        (cgit-configuration-repositories config))))
+
 (define-configuration opaque-cgit-configuration
   (cgit
    (package cgit)
@@ -651,7 +664,7 @@ for cgit to allow access to that repository.")
          (config-str
           (if opaque-config?
               (opaque-cgit-configuration-cgitrc config)
-              (serialize-configuration config cgit-configuration-fields))))
+              (serialize-cgit-configuration config))))
     #~(begin
         (use-modules (guix build utils))
         (mkdir-p #$(if opaque-config?
