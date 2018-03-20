@@ -22,6 +22,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages elf)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -121,20 +122,18 @@ Executable and Linkable Format (@dfn{ELF}).  This includes @command{ld},
     ;;      patch makes significant changes to the algorithm, possibly
     ;;      introducing bugs.  So, we apply the patch only on ARM systems.
     (inputs
-     (if (string-prefix? "arm" (or (%current-target-system) (%current-system)))
+     (if (target-arm32?)
          `(("patch/rework-for-arm" ,(search-patch
                                      "patchelf-rework-for-arm.patch")))
          '()))
     (arguments
-     (if (string-prefix? "arm" (or (%current-target-system) (%current-system)))
-         `(#:phases (modify-phases %standard-phases
-                      (add-after 'unpack 'patch/rework-for-arm
-                        (lambda* (#:key inputs #:allow-other-keys)
-                          (let ((patch-file
-                                 (assoc-ref inputs "patch/rework-for-arm")))
-                            (invoke "patch" "--force" "-p1"
-                                    "--input" patch-file)
-                            #t)))))
+     (if (target-arm32?)
+         `(#:phases
+           (modify-phases %standard-phases
+             (add-after 'unpack 'patch/rework-for-arm
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((patch-file (assoc-ref inputs "patch/rework-for-arm")))
+                   (invoke "patch" "--force" "-p1" "--input" patch-file))))))
          '()))
 
     (home-page "https://nixos.org/patchelf.html")

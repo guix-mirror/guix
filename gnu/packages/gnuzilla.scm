@@ -6,8 +6,8 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 ng0 <ng0@infotropique.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -254,7 +254,7 @@ in C/C++.")
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.17")
+    (version "4.19")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -262,7 +262,7 @@ in C/C++.")
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "158hdn285dsb5rys8wl1wi32dd1axwhqq0r8fwny4aj157m0l2jr"))))
+               "0agpv3f17h8kmzi0ifibaaxc1k3xc0q61wqw3l6r2xr2z8bmkn9f"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -272,6 +272,10 @@ in C/C++.")
                                (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib"))
+       ;; Use fixed timestamps for reproducibility.
+       #:make-flags '("SH_DATE='1970-01-01 00:00:01'"
+                      ;; This is epoch 1 in microseconds.
+                      "SH_NOW=100000")
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'chdir
                     (lambda _ (chdir "nspr") #t)))))
@@ -286,7 +290,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.34.1")
+    (version "3.36")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -297,7 +301,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "186x33wsk4mzjz7dzbn8p0py9a0nzkgzpfkdv4rlyy5gghv5vhd3"))
+                "1580qc0a4s8v3k3vg7zz4xly4alkjrw7qq9zy2nf6p4v56wcfg53"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))))

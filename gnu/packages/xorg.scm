@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
@@ -1052,7 +1052,7 @@ of new capabilities and controls for text keyboards.")
 (define-public libxshmfence
   (package
     (name "libxshmfence")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1060,7 +1060,7 @@ of new capabilities and controls for text keyboards.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "032b0nlkdrpbimdld4gqvhqx53rzn8fawvf1ybhzn7lcswgjs6yj"))))
+                "1ir0j92mnd1nk37mrv9bz5swnccqldicgszvfsh62jd14q6k115q"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("xorgproto" ,xorgproto)))
@@ -3716,7 +3716,7 @@ alternative implementations like XRandR or TwinView.")
 (define xkbcomp-intermediate ; used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
       (origin
         (method url-fetch)
@@ -3726,7 +3726,7 @@ alternative implementations like XRandR or TwinView.")
                ".tar.bz2"))
         (sha256
          (base32
-          "0syfc6zscvai824mzihlnrqxhkcr27dzkpy8zndavi83iischsdw"))))
+          "0djp7bb0ch2ddwmc1bkg4fddxdvamiiz375x0r0ni5dcb37w93bl"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)
@@ -3829,7 +3829,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.22")
+    (version "2.23.1")
     (source
       (origin
         (method url-fetch)
@@ -3839,7 +3839,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "1garmbyfjp0han04l2l90zzwlfbdgdxl6r1qnic36i5wkycckbny"))))
+            "1wq27cs1c9y7d1d7zp5yhq29paj9smajdb68lyvm28d2zq2vqjra"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gettext-minimal)

@@ -71,7 +71,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.44.0")
+    (version "0.45.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -79,8 +79,17 @@ makes a few sacrifices to acquire fast full and incremental build times.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06r8limj38mv884s5riiz6lpzw37cvhbf9jd0smzcbi7fwmv3yah"))))
+                "1r3wlimllakrswx2rb4mbdk1iricqk6myvdvib6dkyx362yanm9l"))))
     (build-system python-build-system)
+    (arguments
+     `(;; FIXME: Tests require many additional inputs, a fix for the RUNPATH
+       ;; patch in meson-for-build, and patching many hard-coded file system
+       ;; locations in "run_unittests.py".
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  ;; Meson calls the various executables in out/bin through the
+                  ;; Python interpreter, so we cannot use the shell wrapper.
+                  (delete 'wrap))))
     (inputs `(("ninja" ,ninja)))
     (propagated-inputs `(("python" ,python)))
     (home-page "https://mesonbuild.com/")
@@ -98,15 +107,8 @@ resembles Python.")
   (package
     (inherit meson)
     (name "meson-for-build")
-    (version "0.42.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/mesonbuild/meson/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1494hdnd40g2v6pky34j0f2iwc6kwn51vck37qwz7nl2xr17b18q"))
+              (inherit (package-source meson))
               (patches (search-patches "meson-for-build-rpath.patch"))))
 
     ;; People should probably install "meson", not "meson-for-build".

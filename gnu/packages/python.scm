@@ -23,7 +23,7 @@
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -5557,7 +5557,7 @@ complexity of Python source code.")
     (package (inherit base)
       (propagated-inputs
        `(("python2-configparser" ,python2-configparser)
-         ("python2-enum" ,python2-enum)
+         ("python2-enum34" ,python2-enum34)
           ,@(package-propagated-inputs base))))))
 
 ;; python-hacking requires flake8 <2.6.0.
@@ -12170,18 +12170,10 @@ ignoring formatting changes.")
       "Make loops show a progress bar on the console by just wrapping any
 iterable with @code{|tqdm(iterable)|}.  Offers many options to define
 design and layout.")
-    (license (list license:mpl2.0 license:expat))
-    (properties `((python2-variant . ,(delay python2-tqdm))))))
+    (license (list license:mpl2.0 license:expat))))
 
 (define-public python2-tqdm
-  (let ((tqdm (package-with-python2
-               (strip-python2-variant python-tqdm))))
-    (package
-      (inherit tqdm)
-      (native-inputs
-       ;; FIXME: This should be propagated from python2-flake8 instead.
-       `(("python2-enum34" ,python2-enum34)
-         ,@(package-native-inputs tqdm))))))
+  (package-with-python2 python-tqdm))
 
 (define-public python-pkginfo
   (package

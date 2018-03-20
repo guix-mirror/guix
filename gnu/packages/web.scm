@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@infotropique.org>
+;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
@@ -3507,15 +3507,18 @@ applications.")
 (define-public perl-uri
   (package
     (name "perl-uri")
-    (version "1.71")
+    (version "1.73")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                                  "URI-" version ".tar.gz"))
              (sha256
               (base32
-               "05a1ck1bhvqkkk690xhsxf7276dnagk96qkh2jy4prrrgw6wm3lw"))))
+               "04z4xwiryrbxxi48bwbkgq9q9pwfgqry3wp0ramcrwv3dx5ap9yc"))))
     (build-system perl-build-system)
+    (native-inputs
+     ;; For tests.
+     `(("perl-test-needs" ,perl-test-needs)))
     (license l:perl-license)
     (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
     (description

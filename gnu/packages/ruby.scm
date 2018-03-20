@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -3082,7 +3082,7 @@ access the result as a Nokogiri parsed document.")
 (define-public ruby-sanitize
   (package
     (name "ruby-sanitize")
-    (version "4.0.0")
+    (version "4.6.3")
     (source (origin
               (method url-fetch)
               ;; The gem does not include the Rakefile, so we download the
@@ -3092,7 +3092,7 @@ access the result as a Nokogiri parsed document.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "055xnj38l60gxnnng76kpy2l2jbrp0byjdyq17jw79w7l4b40znr"))))
+                "1fmqppwif3cm8h79006jfzkdnlxxzlry9kzk03psk0d5xpg55ycc"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-crass" ,ruby-crass)

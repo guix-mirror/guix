@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
+;;; Copyright © 2018 Sahithi Yarlagadda <sahi@swecha.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3244,4 +3245,31 @@ flow of information, resources etc. separates and joins, much like observing
 how rivers split and merge.  For example, they can be used to compare
 different clusterings.  This package provides an implementation of Sankey
 plots for R.")
+    (license license:gpl2+)))
+
+(define-public r-dyn
+  (package
+    (name "r-dyn")
+    (version "0.2-9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dyn" version))
+       (sha256
+        (base32
+         "16fqv9k7yxdgybwzafjkyqm16qpgqz13lcjpi6a1nc8xbzlzh0gb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-zoo" ,r-zoo)))
+    (home-page "https://cran.r-project.org/web/packages/dyn")
+    (synopsis "Time series regression")
+    (description
+     "This package provides the dyn class interfaces @code{ts}, @code{irts},
+@code{zoo} and @code{zooreg} time series classes to @code{lm}, @code{glm},
+@code{loess}, @code{quantreg::rq}, @code{MASS::rlm},
+@code{MCMCpack::MCMCregress()}, @code{quantreg::rq()},
+@code{randomForest::randomForest()} and other regression functions, allowing
+those functions to be used with time series including specifications that may
+contain lags, diffs and missing values.")
+    ;; Any GPL version.
     (license license:gpl2+)))

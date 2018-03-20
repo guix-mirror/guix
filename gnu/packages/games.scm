@@ -15,7 +15,7 @@
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -3550,42 +3550,46 @@ emerges from a sewer hole and pulls her below ground.")
                      license:cc-by-sa3.0)))))
 
 (define-public cdogs-sdl
-  (package
-    (name "cdogs-sdl")
-    (version "0.6.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/cxong/cdogs-sdl/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08gbx6vqqir48xs6qdfa4kv70gj4j96wzs90pg7qldfasxz34ljm"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "-DCDOGS_DATA_DIR="
-                            (assoc-ref %outputs "out")
-                            "/share/cdogs-sdl/"))))
-    (inputs
-     `(("mesa" ,mesa)
-       ("sdl2" ,sdl2)
-       ("sdl2-image" ,sdl2-image)
-       ("sdl2-mixer" ,sdl2-mixer)))
-    (home-page "https://cxong.github.io/cdogs-sdl/")
-    (synopsis "Classic overhead run-and-gun game")
-    (description "C-Dogs SDL is a classic overhead run-and-gun game,
+  ;; XXX: Use version 0.6.7 when it's available.
+  (let ((commit "bab2031369b9ea2dbeb7eedbde10a43dd8ca83db")
+        (revision "1"))
+   (package
+     (name "cdogs-sdl")
+     (version (git-version "0.6.6" revision commit))
+     (source (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/cxong/cdogs-sdl.git")
+                     (commit commit)))
+               (file-name (git-file-name name version))
+               (sha256
+                (base32
+                 "09sfqhrrffhvxbhigvrxfmai52w01w3f9kjmixjhqvqlkhn77c9n"))))
+     (build-system cmake-build-system)
+     (arguments
+      `(#:configure-flags
+        (list (string-append "-DCDOGS_DATA_DIR="
+                             (assoc-ref %outputs "out")
+                             "/share/cdogs-sdl/"))))
+     (inputs
+      `(("mesa" ,mesa)
+        ("sdl2" ,sdl2)
+        ("sdl2-image" ,sdl2-image)
+        ("sdl2-mixer" ,sdl2-mixer)))
+     (home-page "https://cxong.github.io/cdogs-sdl/")
+     (synopsis "Classic overhead run-and-gun game")
+     (description "C-Dogs SDL is a classic overhead run-and-gun game,
 supporting up to 4 players in co-op and deathmatch modes.  Customize your
 player, choose from many weapons, and blast, slide and slash your way through
 over 100 user-created campaigns.")
-    ;; GPLv2+ for code (includes files under BSD-2 and BSD-3),
-    ;; CC0/CC-BY/CC-BY-SA for assets.
-    (license (list license:gpl2+
-                   license:bsd-2
-                   license:bsd-3
-                   license:cc0
-                   license:cc-by3.0
-                   license:cc-by-sa3.0))))
+     ;; GPLv2+ for code (includes files under BSD-2 and BSD-3),
+     ;; CC0/CC-BY/CC-BY-SA for assets.
+     (license (list license:gpl2+
+                    license:bsd-2
+                    license:bsd-3
+                    license:cc0
+                    license:cc-by3.0
+                    license:cc-by-sa3.0)))))
 
 (define-public kiki
   (package

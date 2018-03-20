@@ -57,14 +57,14 @@
 (define libogg
   (package
    (name "libogg")
-   (version "1.3.2")
+   (version "1.3.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://downloads.xiph.org/releases/ogg/libogg-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "16z74q422jmprhyvy7c9x909li8cqzmvzyr8cgbm52xcsp6pqs1z"))))
+              "022wjlzn8fx7mfby4pcgyjwx8zir7jr7cizichh3jgaki8bwcgsg"))))
    (build-system gnu-build-system)
    (synopsis "Library for manipulating the ogg multimedia format")
    (description
