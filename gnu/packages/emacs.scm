@@ -7793,3 +7793,29 @@ including numbers, strings, symbols, lists, vectors, and closures.  EmacSQL
 has no concept of @code{TEXT} values; it's all just Lisp objects.  The Lisp
 object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
     (license license:gpl3+)))
+
+(define-public emacs-closql
+  (package
+    (name "emacs-closql")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/emacscollective/closql/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wa6r0kgbb7f19039p5f3di4dvrvxfgpd8bkam94fca7jvzj536c"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-emacsql" ,emacs-emacsql)))
+    (home-page "https://github.com/emacscollective/closql")
+    (synopsis "Store EIEIO objects using EmacSQL")
+    (description
+     "This package allows to store uniform EIEIO objects in an EmacSQL
+database.  SQLite is used as backend.  This library imposes some restrictions
+on what kind of objects can be stored; it isn't intended to store arbitrary
+objects.  All objects have to share a common superclass and subclasses cannot
+add any additional instance slots.")
+    (license license:gpl3)))
