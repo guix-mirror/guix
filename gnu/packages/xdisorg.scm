@@ -1109,7 +1109,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "10r1jd3h5i22pdr619hmvxv6dhzf9i13j50c28g7yffdggx8ncjg"))))
+                "0wx118banbwfqdwc5y44fkp3hxg97gj3vma16528slhy408hkg7i"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
@@ -1138,28 +1138,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                (("~root") "/root")
                (("~") "")
                (("g_get_home_dir \\(\\)") "\"/\""))
-             #t))
-         (add-before 'check 'add-missing-configuration-files
-           (lambda _
-             ;; These files are missing in the 1.5.0 release, causing a test
-             ;; failure: <https://github.com/DaveDavenport/rofi/issues/782>.
-             (with-directory-excursion "subprojects/libnkutils/tests"
-               (mkdir "gtk-3.0")
-               (call-with-output-file "gtk-3.0/settings.ini"
-                 (lambda (port)
-                   (format port "[Settings]
-gtk-double-click-time = 300
-gtk-cursor-theme-name = gnome
-")))
-               (mkdir "gtk-4.0")
-               (call-with-output-file "gtk-4.0/settings.ini"
-                 (lambda (port)
-                   (format port "[Settings]
-gtk-double-click-time = 300
-gtk-icon-theme-name = nothing-like-this-theme
-gtk-enable-primary-paste = true
-")))
-               #t))))))
+             #t)))))
     (home-page "https://github.com/DaveDavenport/rofi")
     (synopsis "Application launcher")
     (description "Rofi is a minimalist application launcher.  It memorizes which
