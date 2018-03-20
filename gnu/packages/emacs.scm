@@ -7041,6 +7041,15 @@ contexts.
                  (base32
                   "057cybkq3cy07n5s332k071sjiky3mziy003lza4rh75mgqkwhmh"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:include (cons* "^modes/.*\\.el$" %default-include)
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'set-emacs-load-path 'add-modes-subdir-to-load-path
+             (lambda _
+               (setenv "EMACSLOADPATH"
+                       (string-append (getenv "EMACSLOADPATH")
+                                      ":" (getcwd) "/modes" ":")))))))
       (home-page "https://github.com/vspinu/polymode")
       (synopsis "Framework for multiple Emacs modes based on indirect buffers")
       (description "Polymode is an Emacs package that offers generic support
