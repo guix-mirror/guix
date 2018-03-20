@@ -12817,7 +12817,7 @@ in an easily configurable manner.")
 (define-public pigx-bsseq
   (package
     (name "pigx-bsseq")
-    (version "0.0.7")
+    (version "0.0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
@@ -12825,7 +12825,7 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0pw797gxx6x1n56lyrvglj7q5hqq4ylfqkvlcrzq1z3j5lxcyl69"))))
+                "0irlnlhhw9fd4ha7hksrxn3y7j76mz5qq1wjswbs9p364laqg69y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
