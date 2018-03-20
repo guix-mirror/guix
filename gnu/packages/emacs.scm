@@ -66,6 +66,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages code)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -7711,3 +7712,84 @@ after its registered lisp object has been garbage collected.  This allows for
 extra resources, such as buffers and processes, to be cleaned up after the
 object has been freed.")
   (license license:unlicense)))
+
+(define-public emacs-emacsql
+  (package
+    (name "emacs-emacsql")
+    (version "2.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/skeeto/emacsql/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04hfjdgl1zc7jysgjc7d7d3xqpr7q1q9gsmzffjd91ii3hpqjgx6"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:modules ((guix build emacs-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build) ;‘build-emacsql-sqlite’ compiles ‘*.el’ files.
+         (add-before 'install 'patch-elisp-shell-shebangs
+           (lambda _
+             (substitute* (find-files "." "\\.el")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'patch-elisp-shell-shebangs 'setenv-shell
+           (lambda _
+             (setenv "SHELL" "sh")))
+         (add-after 'setenv-shell 'build-emacsql-sqlite
+           (lambda _
+             (invoke "make" "binary" "CC=gcc")))
+         (add-after 'build-emacsql-sqlite 'install-emacsql-sqlite
+           ;; This build phase installs emacs-emacsql binary.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "sqlite/emacsql-sqlite"
+                           (string-append (assoc-ref outputs "out")
+                                          "/bin"))
+             #t))
+         (add-after 'install-emacsql-sqlite 'patch-emacsql-sqlite.el
+           ;; This build phase removes interactive prompts
+           ;; and makes sure Emacs look for binaries in the right places.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((file "emacsql-sqlite.el"))
+               (chmod file #o644)
+               (emacs-substitute-sexps file
+                 ;; Avoid interactive prompts.
+                 ("(defvar emacsql-sqlite-user-prompted" 't)
+                 ;; Make sure Emacs looks for ‘GCC’ binary in the right place.
+                 ("(executable-find" (which "gcc"))
+                 ;; Make sure Emacs looks for ‘emacsql-sqlite’ binary
+                 ;; in the right place.
+                 ("(defvar emacsql-sqlite-executable"
+                  (string-append (assoc-ref outputs "out")
+                                 "/bin/emacsql-sqlite"))))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (install-file "sqlite/emacsql-sqlite"
+                             (string-append out "/bin"))
+               (for-each (cut install-file <>
+                              (string-append out "/share/emacs/site-lisp/guix.d/"
+                                             "emacsql" "-" ,version))
+                         (find-files "." "\\.elc*$")))
+             #t)))))
+    (inputs
+     `(("emacs-minimal" ,emacs-minimal)
+       ("mysql" ,mysql)
+       ("postgresql" ,postgresql)))
+    (propagated-inputs
+     `(("emacs-finalize" ,emacs-finalize)
+       ("emacs-pg" ,emacs-pg)))
+    (home-page "https://github.com/skeeto/emacsql")
+    (synopsis "Emacs high-level SQL database front-end")
+    (description "Any readable Lisp value can be stored as a value in EmacSQL,
+including numbers, strings, symbols, lists, vectors, and closures.  EmacSQL
+has no concept of @code{TEXT} values; it's all just Lisp objects.  The Lisp
+object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
+    (license license:gpl3+)))
