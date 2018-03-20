@@ -28,6 +28,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
@@ -231,18 +232,19 @@ fonts to/from the WOFF2 format.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.12.6")
+   (version "2.13.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
-            (patches (search-patches "fontconfig-remove-debug-printf.patch"))
             (sha256 (base32
-                     "05zh65zni11kgnhg726gjbrd55swspdvhqbcnj5a5xh8gn03036g"))))
+                     "1fgf28zgsqh7x6dw30n6zi9z679gx6dyfyahp55z7dsm454yipci"))))
    (build-system gnu-build-system)
+   ;; In Requires or Requires.private of fontconfig.pc.
    (propagated-inputs `(("expat" ,expat)
-                        ("freetype" ,freetype)))
+                        ("freetype" ,freetype)
+                        ("libuuid" ,util-linux)))
    (inputs `(("gs-fonts" ,gs-fonts)))
    (native-inputs
     `(("gperf" ,gperf)
