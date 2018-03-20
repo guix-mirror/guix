@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -438,14 +438,14 @@ geometry and singularity theory.")
 (define-public gmp-ecm
   (package
    (name "gmp-ecm")
-   (version "7.0")
+   (version "7.0.4")
    (source (origin
-            (method url-fetch)
-            (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                "file/35642/ecm-"
-                                version ".tar.gz"))
-            (sha256 (base32
-                     "00jzzwqp49m01vwsr9z1w7bvm8lb69l3f62x7qr8sfz0xiczxnpm"))))
+             (method url-fetch)
+             ;; Use the ‘Latest version’ link for a stable URI across releases.
+             (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                 "latestfile/160/ecm-" version ".tar.gz"))
+             (sha256 (base32
+                      "0hxs24c2m3mh0nq1zz63z3sb7dhy1rilg2s1igwwcb26x3pb7xqc"))))
    (build-system gnu-build-system)
    (inputs
     `(("gmp" ,gmp)))
