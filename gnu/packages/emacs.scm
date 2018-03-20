@@ -1738,26 +1738,31 @@ strings.")
     (license license:gpl2+)))
 
 (define-public emacs-sx
-  (package
-    (name "emacs-sx")
-    (version "0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/vermiculus/sx.el/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1w0xghfljqg31axcnv8gzlrd8pw25nji6idnrhflq0af9qh1dw03"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-markdown-mode" ,emacs-markdown-mode)))
-    (home-page "https://github.com/vermiculus/sx.el/")
-    (synopsis "Emacs StackExchange client")
-    (description
-     "Emacs StackExchange client.  Ask and answer questions on
+  (let ((version "20180212")
+        (revision "1")
+        (commit "833435fbf90d1c9e927d165b155f3b1ef39271de"))
+    (package
+      (name "emacs-sx")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vermiculus/sx.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1369xaxq1vy3d9yh862ddnhddikdpg2d0wv1ly00pnvdp9v4cqgd"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-markdown-mode" ,emacs-markdown-mode)))
+      (home-page "https://github.com/vermiculus/sx.el")
+      (synopsis "Emacs StackExchange client")
+      (description
+       "Emacs StackExchange client.  Ask and answer questions on
 Stack Overflow, Super User, and other StackExchange sites.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-f
   (package
