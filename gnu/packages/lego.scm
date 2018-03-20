@@ -117,7 +117,7 @@ restrictions that stem from limitations of the standard RCX firmware.")
                              (set-file-time file st)))
                          (find-files "." "leocad_.*\\.qm")))
              #t)))))
-    (home-page "http://www.leocad.org")
+    (home-page "https://www.leocad.org")
     (synopsis "Create virtual Lego models")
     (description
      "LeoCAD is a program for creating virtual LEGO models.  It has an
