@@ -150,10 +150,7 @@
   (if (null? val) ""
       (match val
         ((path text)
-         (format #t "repo.~a.~a=~a\n"
-                 (string-drop-right (uglify-field-name 'module-link-path)
-                                    (string-length "-path"))
-                 path text)))))
+         (format #t "repo.module-link.~a=~a\n" path text)))))
 
 (define repository-directory? string?)
 
