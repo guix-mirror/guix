@@ -3890,18 +3890,22 @@ cross-platform SDL C library.")
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          (replace 'build
            (lambda _
-             (zero? (system* "./remake"))))
+             (invoke "./remake")
+             #t))
          (replace 'check
            (lambda _
-             (zero? (system* "./remake" "check"))))
+             (invoke "./remake" "check")
+             #t))
              ;; TODO: requires coq-gappa and coq-interval.
-             ;(zero? (system* "./remake" "check-more"))))
+             ;(invoke "./remake" "check-more")
          (replace 'install
            (lambda _
-             (zero? (system* "./remake" "install")))))))
+             (invoke "./remake" "install")
+             #t)))))
     (home-page "http://flocq.gforge.inria.fr/")
     (synopsis "Floating-point formalization for the Coq system")
     (description "Flocq (Floats for Coq) is a floating-point formalization for
