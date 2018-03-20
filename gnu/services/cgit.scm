@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,8 +73,7 @@
 ;;;
 
 (define (uglify-field-name field-name)
-  (let ((str (symbol->string field-name)))
-    (string-join (string-split (string-delete #\? str) #\-) "-")))
+  (string-delete #\? (symbol->string field-name)))
 
 (define (serialize-field field-name val)
   (format #t "~a=~a\n" (uglify-field-name field-name) val))
