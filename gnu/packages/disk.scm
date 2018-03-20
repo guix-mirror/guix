@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -319,17 +319,17 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
 (define-public gparted
   (package
     (name "gparted")
-    (version "0.30.0")
+    (version "0.31.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/gparted/gparted/gparted-"
                            version "/gparted-" version ".tar.gz"))
        (sha256
-        (base32 "0jngbsbvg8k8vbpsphqbk8br2cbmxhabbm2c5bmxm2q5zvpr64fk"))))
+        (base32 "1fh7rpgb4xxdhgyjsirb83zvjfc5mfngb8a1pjbv7r6r6jj4jyrv"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; Tests require a network connection.
+     `(#:tests? #f                      ; tests require a network connection
        #:configure-flags '("--disable-scrollkeeper")))
     (inputs
      `(("util-linux" ,util-linux)
