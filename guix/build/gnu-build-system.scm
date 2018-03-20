@@ -342,7 +342,7 @@ makefiles."
   (define (dump file)
     (let ((prefix (string-append "\n--- " file " ")))
       (display (if (< (string-length prefix) 78)
-                   (string-pad-right prefix 78 #\---)
+                   (string-pad-right prefix 78 #\-)
                    prefix)
                port)
       (display "\n\n" port)
