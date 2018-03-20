@@ -9,7 +9,7 @@
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-# Copyright © 2018 ng0 <ng0@n0.is>
+# Copyright © 2018 Nils Gillmann <ng0@n0.is>
 #
 # This file is part of GNU Guix.
 #
