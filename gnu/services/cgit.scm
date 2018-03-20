@@ -163,6 +163,12 @@
         ((path text)
          (format #f "repo.module-link.~a=~a\n" path text)))))
 
+(define (serialize-project-list _ val)
+  (if (null? val) ""
+      (serialize-field
+       'project-list
+       (plain-file "project-list" (string-join val "\n")))))
+
 (define repository-directory? string?)
 
 (define (serialize-repository-directory _ val)
@@ -536,13 +542,11 @@ disabled.")
    (boolean #f)
    "Flag which, when set to @samp{#t}, will make cgit omit the standard
 header on all pages.")
-  ;; TODO: cgit expects a file name
-  ;; that should be created from a list of strings provided by the user.
-  ;;
-  ;; (project-list
-  ;;    (string "")
-  ;;    "A list of subdirectories inside of @code{repository-directory},
-  ;; relative to it, that should loaded as Git repositories.")
+  (project-list
+   (list '())
+   "A list of subdirectories inside of @code{repository-directory}, relative
+to it, that should loaded as Git repositories.  An empty list means that all
+subdirectories will be loaded.")
   (readme
    (file-object "")
    "Text which will be used as default value for @code{cgit-repo-readme}.")
@@ -636,10 +640,18 @@ for cgit to allow access to that repository.")
 (define (serialize-cgit-configuration config)
   (define (rest? field)
     (not (memq (configuration-field-name field)
-               '(repositories))))
+               '(project-list
+                 repository-directory
+                 repositories))))
   #~(string-append
      #$(let ((rest (filter rest? cgit-configuration-fields)))
          (serialize-configuration config rest))
+     #$(serialize-project-list
+        'project-list
+        (cgit-configuration-project-list config))
+     #$(serialize-repository-directory
+        'repository-directory
+        (cgit-configuration-repository-directory config))
      #$(serialize-repository-cgit-configuration-list
         'repositories
         (cgit-configuration-repositories config))))

@@ -19017,6 +19017,15 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
+@deftypevr {@code{cgit-configuration} parameter} list project-list
+A list of subdirectories inside of @code{repository-directory}, relative
+to it, that should loaded as Git repositories.  An empty list means that
+all subdirectories will be loaded.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
 @deftypevr {@code{cgit-configuration} parameter} file-object readme
 Text which will be used as default value for @code{cgit-repo-readme}.
 
