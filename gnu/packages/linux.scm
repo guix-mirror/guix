@@ -970,7 +970,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.1.4.1")
+    (version "1.1.5")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -978,7 +978,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0xjvi381105gldhv0z872a0x58sghznyx19j45lw5iyi2h68gfwi"))))
+               "1rhacnlj0grvfagjx5qzsnbhw7m7lyccghqs4jsv0dnsqv9qmxpl"))))
     (build-system gnu-build-system)
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -990,14 +990,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.1.4")
+    (version "1.1.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "17cxih9ibjp1193dyd79j50pyfa9dvrs6r9kpwrvzicjvr2110x7"))))
+               "1s727md6mb408y2cfwzjkx23abxhampyrjdkgpyygdhxx62x42rj"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -1037,14 +1037,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.1.4")
+    (version "1.1.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "12hsvm6rpinjkg06pa9hzndkdrbfw6wk6yk00cm8y1gbv8xiq3ak"))))
+               "073zpgvj4pldmzqq97l40wngvbqnvrkc8yw153mgny9kypwaazbr"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
@@ -3001,7 +3001,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.47")
+    (version "5.49")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3009,7 +3009,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1j22hfjz0fp4pgclgz9mfcwjbr4wqgah3gd2qhfg4r6msmybyxfg"))))
+                "15ffsaz7l3fgdg03l7g1xx9jw7xgs6pc548zxqsxawsca5x1sc1k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

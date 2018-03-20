@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -222,7 +222,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "17.3.1")
+    (version "17.3.6")
     (source
       (origin
         (method url-fetch)
@@ -234,7 +234,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1h94m2nkxa1y4n415d5idk2x2lkgbvjcikv6r2r6yn4ak7h0grls"))
+          "1y7vawz2sbpzdqk4b60w8kfrxb2rfkdjkifyxxfx1jaasj05d4g5"))
         (patches
          (search-patches "mesa-wayland-egl-symbols-check-mips.patch"
                          "mesa-skip-disk-cache-test.patch"))))
@@ -556,7 +556,7 @@ OpenGL graphics API.")
 (define-public libepoxy
   (package
     (name "libepoxy")
-    (version "1.4.1")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -564,7 +564,7 @@ OpenGL graphics API.")
                     version "/libepoxy-" version ".tar.xz"))
               (sha256
                (base32
-                "19hsyap2p0sflj75ycf4af9bsp453bamymbcgnmrphigabsspil8"))))
+                "1md58amxyp34yjnw4xa185hw5jm0hnb2xnhdc28zdsx6k19rk52c"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -575,10 +575,6 @@ OpenGL graphics API.")
                    (mesa (assoc-ref inputs "mesa")))
                (substitute* "src/gen_dispatch.py"
                  (("/usr/bin/env python") python))
-               ;; Add support for aarch64, see upstream:
-               ;; https://github.com/anholt/libepoxy/pull/114
-               (substitute* "test/dlwrap.c"
-                 (("GLIBC_2.4") "GLIBC_2.17\", \"GLIBC_2.4"))
                (substitute* (find-files "." "\\.[ch]$")
                  (("libGL.so.1") (string-append mesa "/lib/libGL.so.1"))
                  (("libEGL.so.1") (string-append mesa "/lib/libEGL.so.1")))

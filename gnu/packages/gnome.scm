@@ -1157,7 +1157,7 @@ XML/CSS rendering engine.")
 (define-public libgsf
   (package
     (name "libgsf")
-    (version "1.14.41")
+    (version "1.14.42")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1165,7 +1165,7 @@ XML/CSS rendering engine.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1lq87wnrsjbjafpk3c8xwd56gqx319fhck9xkg2da88hd9c9h2qm"))))
+                "1hhdz0ymda26q6bl5ygickkgrh998lxqq4z9i8dzpcvqna3zpzr9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -2265,18 +2265,20 @@ configuration storage systems.")
 (define-public json-glib
   (package
     (name "json-glib")
-    (version "1.2.8")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "json-glib-fix-tests-32bit.patch"))
               (sha256
                (base32
-                "02pl0wl3mf47c038bgv2r4pa6pr6y3shjhxn1l7s3rrrgl1sjmgx"))))
-    (build-system gnu-build-system)
+                "1j3dd2xj1l9fi12m1gpmfgf5p4c1w0i970m6k62k3is98yj0jxrd"))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("glib" ,glib "bin")              ;for glib-mkenums and glib-genmarshal
+     `(("gettext" ,gettext-minimal)
+       ("glib" ,glib "bin")              ;for glib-mkenums and glib-genmarshal
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -4873,7 +4875,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.24.3")
+    (version "3.26.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4881,27 +4883,44 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jj1q81bl3r0c8rnsfqi83igqlprzdcjim1fvygbyfy7b8gigqqk"))))
+                "1v0hwlrlm23bz5dmamdavm771f4gs64fyq82argrc0nwgn2a2fp4"))))
     (build-system cmake-build-system)
     (arguments
      '(;; XXX FIXME: 11/85 tests are failing.
        #:tests? #f
        #:configure-flags
-       (list "-DENABLE_UOA=OFF"             ;disable Ubuntu Online Accounts support
-             "-DENABLE_GOOGLE=OFF"          ;disable Google Contacts support
-             "-DENABLE_GOOGLE_AUTH=OFF"     ;disable Google authentication
-             "-DENABLE_VALA_BINDINGS=ON"
-             ;; FIXME: Building against ICU 60 requires C++11 or higher.  Remove
-             ;; this when our default compiler is >= GCC6.
-             "-DCMAKE_CXX_FLAGS=-std=gnu++11"
-             "-DENABLE_INTROSPECTION=ON")   ;required for Vala bindings
+       (let* ((lib (string-append (assoc-ref %outputs "out")
+                                  "/lib"))
+              (runpaths (map (lambda (s) (string-append
+                                          lib "/evolution-data-server/" s))
+                             '("addressbook-backends" "calendar-backends"
+                               "camel-providers" "credential-modules"
+                               "registry-modules"))))
+         (list "-DENABLE_UOA=OFF"             ;disable Ubuntu Online Accounts support
+               "-DENABLE_GOOGLE=OFF"          ;disable Google Contacts support
+               "-DENABLE_GOOGLE_AUTH=OFF"     ;disable Google authentication
+               "-DENABLE_VALA_BINDINGS=ON"
+               ;; FIXME: Building against ICU 60 requires C++11 or higher.  Remove
+               ;; this when our default compiler is >= GCC6.
+               "-DCMAKE_CXX_FLAGS=-std=gnu++11"
+               (string-append "-DCMAKE_INSTALL_RPATH=" lib ";"
+                              (string-append lib "/evolution-data-server;")
+                              (string-join runpaths ";"))
+               "-DENABLE_INTROSPECTION=ON"))  ;required for Vala bindings
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
           (lambda _
             (substitute* "tests/test-server-utils/e-test-server-utils.c"
               (("/bin/rm") (which "rm")))
-            #t)))))
+            #t))
+         (add-before 'configure 'dont-override-rpath
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               ;; CMakeLists.txt hard-codes runpath to just the libdir.
+               ;; Remove it so the configure flag is respected.
+               (("SET\\(CMAKE_INSTALL_RPATH .*") ""))
+             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -6149,7 +6168,7 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
 (define-public gnome-calendar
   (package
     (name "gnome-calendar")
-    (version "3.26.2")
+    (version "3.26.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6157,7 +6176,7 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "03n51mvlc0vabr1rx9577z927icl3mrxrrv8zckfjav6p4vwg8hr"))))
+                "1clnfvvsaqw9vpxrs6qrxzmgpaw9x2nkjik2x2vwvm07pdvhddxn"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -6189,6 +6208,7 @@ desktop.  It supports multiple calendars, month, week and year view.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "gnome-todo-libical-compat.patch"))
               (sha256
                (base32
                 "106xx1w18pxjmj5k0k2qjzi6b3c3kaz7b5kyrpknykibnr401ff9"))))

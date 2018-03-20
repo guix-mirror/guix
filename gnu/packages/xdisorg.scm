@@ -319,7 +319,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.89")
+    (version "2.4.91")
     (source
       (origin
         (method url-fetch)
@@ -329,7 +329,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "0bm06vqqjbb06mlz2f2h4man0xp0dz928pyycs8q1d5vma19g7v2"))
+          "0068dn47c478vm1lyyhy02gilrpsma0xmcblhvs0dzqyrk80wjk3"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -885,14 +885,14 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "0.26")
+    (version "0.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/linuxwacom/libwacom/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0xpvkjvzaj9blcmw8ha46616bzfivj99kwzvr91clxd6iaf11r63"))))
+                "1diklgcjhmvcxi9p1ifp6wcnyr6k7z9jhrlzfhzjqd6zipk01slw"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -917,7 +917,7 @@ Wacom tablet applet.")
 (define-public xf86-input-wacom
   (package
     (name "xf86-input-wacom")
-    (version "0.35.0")
+    (version "0.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -925,7 +925,7 @@ Wacom tablet applet.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0za44snc0zirq65a4lxsmg7blp1bynj6j835hm459x8yx1qhmxjm"))))
+                "1xi39hl8ddgj9m7m2k2ll2r3wh0k0aq45fvrsv43651bhz9cbrza"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="

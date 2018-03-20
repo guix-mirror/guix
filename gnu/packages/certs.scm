@@ -75,7 +75,7 @@
 (define-public nss-certs
   (package
     (name "nss-certs")
-    (version "3.35")
+    (version "3.36")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -86,7 +86,7 @@
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "1ypn68z9ncbbshi3184ywrhx5i846lyd72gps1grzqzdkgh7s4pl"))))
+                "1580qc0a4s8v3k3vg7zz4xly4alkjrw7qq9zy2nf6p4v56wcfg53"))))
     (build-system gnu-build-system)
     (outputs '("out"))
     (native-inputs
@@ -102,8 +102,10 @@
                   (srfi srfi-26)
                   (ice-9 regex))
        #:phases
-         (alist-cons-after
-           'unpack 'install
+       (modify-phases
+           (map (cut assq <> %standard-phases)
+                '(set-paths install-locale unpack))
+         (add-after 'unpack 'install
            (lambda _
              (let ((certsdir (string-append %output "/etc/ssl/certs/"))
                    (trusted-rx (make-regexp "^# openssl-trust=[a-zA-Z]"
@@ -131,10 +133,9 @@
                  ;; "Usage error; try -help."
                  ;; This looks like a bug in openssl-1.0.2, but we can also
                  ;; switch into the target directory.
-                 (system* "c_rehash" "."))))
+                 (invoke "c_rehash" "."))
+               #t))))))
 
-           (map (cut assq <> %standard-phases)
-                '(set-paths install-locale unpack)))))
     (synopsis "CA certificates from Mozilla")
     (description
      "This package provides certificates for Certification Authorities (CA)

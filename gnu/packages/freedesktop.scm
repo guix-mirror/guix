@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -30,10 +30,12 @@
 
 (define-module (gnu packages freedesktop)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages acl)
@@ -68,11 +70,13 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (srfi srfi-1))
 
 (define-public xdg-utils
   (package
@@ -142,26 +146,31 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.7.3")
+    (version "1.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "07fbzxddvhjcch43hdxb24sj7ri96zzpcjalvsicmw0i4wnn2v89"))))
-    (build-system gnu-build-system)
+                "1fbv354ii1g4wc4k7d7gbnalqjpzmk9zlpi8linqrzlf6inpc28m"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags '("-Ddocumentation=false")))
     (native-inputs
-     `(("cairo" ,cairo)
-       ("gtk+" ,gtk+)
-       ("pkg-config" ,pkg-config)))
+     `(("check" ,check)
+       ("pkg-config" ,pkg-config)
+       ("valgrind" ,valgrind)))
     (propagated-inputs
-     `(("libudev" ,eudev))) ; required by libinput.pc
-    (inputs
-     `(("glib" ,glib)
+     `(;; In Requires.private of libinput.pc.
        ("libevdev" ,libevdev)
-       ("mtdev" ,mtdev)
-       ("libwacom" ,libwacom)))
+       ("libudev" ,eudev)
+       ("libwacom" ,libwacom)
+       ("mtdev" ,mtdev)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)))
     (home-page "https://www.freedesktop.org/wiki/Software/libinput/")
     (synopsis "Input devices handling library")
     (description
@@ -172,14 +181,15 @@ other applications that need to directly deal with input devices.")
 (define-public libinput-minimal
   (package (inherit libinput)
     (name "libinput-minimal")
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("libevdev" ,libevdev)
-       ("mtdev" ,mtdev)))
+    (inputs '())
+    (propagated-inputs
+     (alist-delete "libwacom" (package-propagated-inputs libinput)))
     (arguments
-      `(#:configure-flags
-        '("--disable-libwacom")))))
+     (substitute-keyword-arguments (package-arguments libinput)
+      ((#:configure-flags flags ''())
+       `(cons* "-Dlibwacom=false"
+               "-Ddebug-gui=false"    ;requires gtk+@3
+               ,flags))))))
 
 (define-public libxdg-basedir
   (package
