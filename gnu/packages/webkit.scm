@@ -100,7 +100,8 @@
                     (string-append (getenv "C_INCLUDE_PATH")
                                    ":"
                                    (assoc-ref inputs "gst-plugins-base")
-                                   "/include/gstreamer-1.0")))))))
+                                   "/include/gstreamer-1.0"))
+            #t)))))
     (native-inputs
      `(("bison" ,bison)
        ("gettext" ,gettext-minimal)
