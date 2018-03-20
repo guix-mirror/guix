@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,7 +73,7 @@ restrictions that stem from limitations of the standard RCX firmware.")
 (define-public leocad
   (package
     (name "leocad")
-    (version "17.07")
+    (version "18.02")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/leozide/leocad/"
@@ -80,7 +81,7 @@ restrictions that stem from limitations of the standard RCX firmware.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02gm4950zlmsw4sxmdwypgkybn51b02qnmmk6rzjdr8si4k6gikq"))))
+                "189wj221fn08bnsfwy8050bxkjgjwinkn19qdcvb6c2ry2lnfra9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("qttools" ,qttools)))           ;for lrelease
