@@ -55,7 +55,8 @@
                                               "/bin/aspell")))
                (wrap-program bin/aspell
                  '("ASPELL_CONF" "" =
-                   ("${ASPELL_CONF:-\"dict-dir ${GUIX_PROFILE:-$HOME/.guix-profile}/lib/aspell\"}")))))))))
+                   ("${ASPELL_CONF:-\"dict-dir ${GUIX_PROFILE:-$HOME/.guix-profile}/lib/aspell\"}")))
+               #t))))))
     (inputs `(("perl" ,perl)))
 
     (native-search-paths
