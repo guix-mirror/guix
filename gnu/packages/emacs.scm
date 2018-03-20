@@ -7686,3 +7686,28 @@ match and total match information in the mode-line in various search modes.")
 @code{cl-generic} package introduced in Emacs-25, for use on previous
 @code{emacsen}.")
     (license license:gpl3+)))
+
+(define-public emacs-finalize
+  (package
+  (name "emacs-finalize")
+  (version "2.0.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/skeeto/elisp-finalize/archive/"
+                          version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+        (base32
+         "077fycy3i5f0kjw5z3rhf4kld5lbk2idz690nkwhkz04vppk4q4x"))))
+  (build-system emacs-build-system)
+  (propagated-inputs
+    `(("emacs-cl-generic" ,emacs-cl-generic)))
+  (home-page "https://github.com/skeeto/elisp-finalize")
+  (synopsis "Finalizers for Emacs Lisp")
+  (description
+    "This package will allows to immediately run a callback (a finalizer)
+after its registered lisp object has been garbage collected.  This allows for
+extra resources, such as buffers and processes, to be cleaned up after the
+object has been freed.")
+  (license license:unlicense)))
