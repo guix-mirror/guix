@@ -76,13 +76,12 @@
   (string-delete #\? (symbol->string field-name)))
 
 (define (serialize-field field-name val)
-  (format #t "~a=~a\n" (uglify-field-name field-name) val))
+  #~(format #f "~a=~a\n" #$(uglify-field-name field-name) #$val))
 
 (define (serialize-string field-name val)
-  (if (string=? val "") "" (serialize-field field-name val)))
-
-(define (serialize-boolean field-name val)
-  (serialize-field field-name (if val 1 0)))
+  (if (and (string? val) (string=? val ""))
+      ""
+      (serialize-field field-name val)))
 
 (define (serialize-list field-name val)
   (if (null? val) "" (serialize-field field-name (string-join val))))
@@ -96,7 +95,10 @@
   (exact-integer? val))
 
 (define (serialize-integer field-name val)
-  (serialize-field field-name val))
+  (serialize-field field-name (number->string val)))
+
+(define (serialize-boolean field-name val)
+  (serialize-integer field-name (if val 1 0)))
 
 (define (serialize-repository-cgit-configuration x)
   (serialize-configuration x repository-cgit-configuration-fields))
@@ -105,7 +107,13 @@
   (list? val))
 
 (define (serialize-repository-cgit-configuration-list field-name val)
-  (for-each serialize-repository-cgit-configuration val))
+  #~(string-append
+     #$@(map serialize-repository-cgit-configuration val)))
+
+(define (file-object? val)
+  (or (file-like? val) (string? val)))
+(define (serialize-file-object field-name val)
+  (serialize-string field-name val))
 
 
 ;;;
@@ -116,7 +124,7 @@
   (and (list? val) (and-map nginx-server-configuration? val)))
 
 (define (serialize-nginx-server-configuration-list field-name val)
-  #f)
+  "")
 
 
 ;;;
@@ -124,18 +132,18 @@
 ;;;
 
 (define (serialize-repo-field field-name val)
-  (format #t "repo.~a=~a\n" (uglify-field-name field-name) val))
+  #~(format #f "repo.~a=~a\n" #$(uglify-field-name field-name) #$val))
 
 (define (serialize-repo-list field-name val)
   (if (null? val) "" (serialize-repo-field field-name (string-join val))))
 
 (define repo-boolean? boolean?)
 
-(define (serialize-repo-boolean field-name val)
-  (serialize-repo-field field-name (if val 1 0)))
-
 (define (serialize-repo-integer field-name val)
-  (serialize-repo-field field-name val))
+  (serialize-repo-field field-name (number->string val)))
+
+(define (serialize-repo-boolean field-name val)
+  (serialize-repo-integer field-name (if val 1 0)))
 
 (define repo-list? list?)
 
@@ -144,23 +152,26 @@
 (define (serialize-repo-string field-name val)
   (if (string=? val "") "" (serialize-repo-field field-name val)))
 
+(define repo-file-object? file-object?)
+(define serialize-repo-file-object serialize-repo-string)
+
 (define module-link-path? list?)
 
 (define (serialize-module-link-path field-name val)
   (if (null? val) ""
       (match val
         ((path text)
-         (format #t "repo.module-link.~a=~a\n" path text)))))
+         (format #f "repo.module-link.~a=~a\n" path text)))))
 
 (define repository-directory? string?)
 
 (define (serialize-repository-directory _ val)
-  (if (string=? val "") "" (format #t "scan-path=~a\n" val)))
+  (if (string=? val "") "" (format #f "scan-path=~a\n" val)))
 
 (define mimetype-alist? list?)
 
 (define (serialize-mimetype-alist field-name val)
-  (format #t "# Mimetypes\n~a"
+  (format #f "# Mimetypes\n~a"
           (string-join
            (map (match-lambda
                   ((extension mimetype)
@@ -174,13 +185,13 @@
    "A mask of snapshot formats for this repo that cgit generates links for,
 restricted by the global @code{snapshots} setting.")
   (source-filter
-   (repo-string "")
+   (repo-file-object "")
    "Override the default @code{source-filter}.")
   (url
    (repo-string "")
    "The relative URL used to access the repository.")
   (about-filter
-   (repo-string "")
+   (repo-file-object "")
    "Override the default @code{about-filter}.")
   (branch-sort
    (repo-string "")
@@ -190,7 +201,7 @@ ref list, and when set to @samp{name} enables ordering by branch name.")
    (repo-list '())
    "A list of URLs which can be used to clone repo.")
   (commit-filter
-   (repo-string "")
+   (repo-file-object "")
    "Override the default @code{commit-filter}.")
   (commit-sort
    (repo-string "")
@@ -209,7 +220,7 @@ is no suitable HEAD.")
    (repo-string "")
    "The value to show as repository homepage.")
   (email-filter
-   (repo-string "")
+   (repo-file-object "")
    "Override the default @code{email-filter}.")
   (enable-commit-graph?
    (repo-boolean #f)
@@ -243,14 +254,14 @@ repository index.")
    (repo-boolean #f)
    "Flag which, when set to @samp{#t}, ignores the repository.")
   (logo
-   (repo-string "")
+   (repo-file-object "")
    "URL which specifies the source of an image which will be used as a
 logo on this repo’s pages.")
   (logo-link
    (repo-string "")
    "URL loaded when clicking on the cgit logo image.")
   (owner-filter
-   (repo-string "")
+   (repo-file-object "")
    "Override the default @code{owner-filter}.")
   (module-link
    (repo-string "")
@@ -296,7 +307,7 @@ after this option will inherit the current section name.")
    (nginx-server-configuration-list (list %cgit-configuration-nginx))
    "NGINX configuration.")
   (about-filter
-   (string "")
+   (file-object "")
    "Specifies a command which will be invoked to format the content of about
 pages (both top-level and for each repository).")
   (agefile
@@ -304,7 +315,7 @@ pages (both top-level and for each repository).")
    "Specifies a path, relative to each repository path, which can be used to
 specify the date and time of the youngest commit in the repository.")
   (auth-filter
-   (string "")
+   (file-object "")
    "Specifies a command that will be invoked for authenticating repository
 access.")
   (branch-sort
@@ -357,7 +368,7 @@ generates valid clone URLs for the repository.")
    (list '())
    "List of @code{clone-url} templates.")
   (commit-filter
-   (string "")
+   (file-object "")
    "Command which will be invoked to format commit messages.")
   (commit-sort
    (string "git log")
@@ -365,10 +376,10 @@ generates valid clone URLs for the repository.")
 commit log, and when set to @samp{topo} enables strict topological
 ordering.")
   (css
-   (string "/share/cgit/cgit.css")
+   (file-object "/share/cgit/cgit.css")
    "URL which specifies the css document to include in all cgit pages.")
   (email-filter
-   (string "")
+   (file-object "")
    "Specifies a command which will be invoked to format names and email
 address of committers, authors, and taggers, as represented in various
 places throughout the cgit interface.")
@@ -432,7 +443,7 @@ links for plaintext blobs printed in the tree view.")
    "Flag which, when set to @samp{#f}, will allow cgit to use Git config to
 set any repo specific settings.")
   (favicon
-   (string "/favicon.ico")
+   (file-object "/favicon.ico")
    "URL used as link to a shortcut icon for cgit.")
   (footer
    (string "")
@@ -448,7 +459,7 @@ verbatim in the HTML HEAD section on all pages.")
    "The content of the file specified with this option will be included
 verbatim at the top of all pages.")
   (include
-   (string "")
+   (file-object "")
    "Name of a configfile to include before the rest of the current config-
 file is parsed.")
   (index-header
@@ -464,14 +475,14 @@ verbatim below the heading on the repository index page.")
    "Flag which, if set to @samp{#t}, makes cgit print commit and tag times
 in the servers timezone.")
   (logo
-   (string "/share/cgit/cgit.png")
+   (file-object "/share/cgit/cgit.png")
    "URL which specifies the source of an image which will be used as a logo
 on all cgit pages.")
   (logo-link
    (string "")
    "URL loaded when clicking on the cgit logo image.")
   (owner-filter
-   (string "")
+   (file-object "")
    "Command which will be invoked to format the Owner column of the main
 page.")
   (max-atom-items
@@ -508,7 +519,7 @@ on the repository index page.")
                      (svg "image/svg+xml")))
    "Mimetype for the specified filename extension.")
   (mimetype-file
-   (string "")
+   (file-object "")
    "Specifies the file to use for automatic mimetype lookup.")
   (module-link
    (string "")
@@ -533,7 +544,7 @@ header on all pages.")
   ;;    "A list of subdirectories inside of @code{repository-directory},
   ;; relative to it, that should loaded as Git repositories.")
   (readme
-   (string "")
+   (file-object "")
    "Text which will be used as default value for @code{cgit-repo-readme}.")
   (remove-suffix?
    (boolean #f)
@@ -591,7 +602,7 @@ many path elements from each repo path to use as a default section name.")
    "If set to @samp{#t} shows side-by-side diffs instead of unidiffs per
 default.")
   (source-filter
-   (string "")
+   (file-object "")
    "Specifies a command which will be invoked to format plaintext blobs in the
 tree view.")
   (summary-branches
@@ -640,16 +651,14 @@ for cgit to allow access to that repository.")
          (config-str
           (if opaque-config?
               (opaque-cgit-configuration-cgitrc config)
-              (with-output-to-string
-                (lambda ()
-                  (serialize-configuration config
-                                           cgit-configuration-fields))))))
+              (serialize-configuration config cgit-configuration-fields))))
     #~(begin
         (use-modules (guix build utils))
         (mkdir-p #$(if opaque-config?
                        (opaque-cgit-configuration-cache-root config)
                        (cgit-configuration-cache-root config)))
-        (copy-file #$(plain-file "cgitrc" config-str) "/etc/cgitrc"))))
+        (copy-file #$(mixed-text-file "cgitrc" config-str)
+                   "/etc/cgitrc"))))
 
 (define (cgit-configuration-nginx-config config)
   (if (opaque-cgit-configuration? config)
