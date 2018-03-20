@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3837,8 +3837,9 @@ from within R.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://gforge.inria.fr/frs/download.php/36615/"
-                           "spams-R-v" version ".tar.gz"))
+       ;; Use the ‘Latest version’ link for a stable URI across releases.
+       (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                           "latestfile/4531/spams-R-v" version ".tar.gz"))
        (sha256
         (base32
          "13z2293jixf1r9g8dyy856xrhvpjr2ln2n9smn6644126r9hmhkx"))))
@@ -3848,7 +3849,7 @@ from within R.")
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _ (chdir "spams") #t))
-         ;; Don't tune for the building machine
+         ;; Don't tune for the building machine.
          (add-after 'chdir 'no-mtune
            (lambda _
              (substitute* "src/Makevars"
