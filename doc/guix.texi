@@ -18331,11 +18331,12 @@ Return the name of @var{platform}---a string such as @code{"arm"}.
 @subsubsection Version Control Services
 
 The @code{(gnu services version-control)} module provides a service to
-allow remote access to local Git repositories.  There are two options:
+allow remote access to local Git repositories.  There are three options:
 the @code{git-daemon-service}, which provides access to repositories via
-the @code{git://} unsecured TCP-based protocol, or extending the
+the @code{git://} unsecured TCP-based protocol, extending the
 @code{nginx} web server to proxy some requests to
-@code{git-http-backend}.
+@code{git-http-backend}, or providing a web interface with
+@code{cgit-service-type}.
 
 @deffn {Scheme Procedure} git-daemon-service [#:config (git-daemon-configuration)]
 
@@ -18467,199 +18468,6 @@ service will redirect all HTTP traffic on @code{git.my-host.org} to
 HTTPS.  You will also need to add an @code{fcgiwrap} proxy to your
 system services.  @xref{Web Services}.
 @end deffn
-
-@node Game Services
-@subsubsection Game Services
-
-@subsubheading The Battle for Wesnoth Service
-@cindex wesnothd
-@uref{https://wesnoth.org, The Battle for Wesnoth} is a fantasy, turn
-based tactical strategy game, with several single player campaigns, and
-multiplayer games (both networked and local).
-
-@defvar {Scheme Variable} wesnothd-service-type
-Service type for the wesnothd service.  Its value must be a
-@code{wesnothd-configuration} object.  To run wesnothd in the default
-configuration, instantiate it as:
-
-@example
-(service wesnothd-service-type)
-@end example
-@end defvar
-
-@deftp {Data Type} wesnothd-configuration
-Data type representing the configuration of @command{wesnothd}.
-
-@table @asis
-@item @code{package} (default: @code{wesnoth-server})
-The wesnoth server package to use.
-
-@item @code{port} (default: @code{15000})
-The port to bind the server to.
-@end table
-@end deftp
-
-@node Miscellaneous Services
-@subsubsection Miscellaneous Services
-
-@cindex sysctl
-@subsubheading System Control Service
-
-The @code{(gnu services sysctl)} provides a service to configure kernel
-parameters at boot.
-
-@defvr {Scheme Variable} sysctl-service-type
-The service type for @command{sysctl}, which modifies kernel parameters
-under @file{/proc/sys/}.  To enable IPv4 forwarding, it can be
-instantiated as:
-
-@example
-(service sysctl-service-type
-         (sysctl-configuration
-           (settings '(("net.ipv4.ip_forward" . "1")))))
-@end example
-@end defvr
-
-@deftp {Data Type} sysctl-configuration
-The data type representing the configuration of @command{sysctl}.
-
-@table @asis
-@item @code{sysctl} (default: @code{(file-append procps "/sbin/sysctl"})
-The @command{sysctl} executable to use.
-
-@item @code{settings} (default: @code{'()})
-An association list specifies kernel parameters and their values.
-@end table
-@end deftp
-
-@cindex lirc
-@subsubheading Lirc Service
-
-The @code{(gnu services lirc)} module provides the following service.
-
-@deffn {Scheme Procedure} lirc-service [#:lirc lirc] @
-       [#:device #f] [#:driver #f] [#:config-file #f] @
-       [#:extra-options '()]
-Return a service that runs @url{http://www.lirc.org,LIRC}, a daemon that
-decodes infrared signals from remote controls.
-
-Optionally, @var{device}, @var{driver} and @var{config-file}
-(configuration file name) may be specified.  See @command{lircd} manual
-for details.
-
-Finally, @var{extra-options} is a list of additional command-line options
-passed to @command{lircd}.
-@end deffn
-
-@cindex spice
-@subsubheading Spice Service
-
-The @code{(gnu services spice)} module provides the following service.
-
-@deffn {Scheme Procedure} spice-vdagent-service [#:spice-vdagent]
-Returns a service that runs @url{http://www.spice-space.org,VDAGENT}, a daemon
-that enables sharing the clipboard with a vm and setting the guest display
-resolution when the graphical console window resizes.
-@end deffn
-
-@subsubsection Dictionary Services
-@cindex dictionary
-The @code{(gnu services dict)} module provides the following service:
-
-@deffn {Scheme Procedure} dicod-service [#:config (dicod-configuration)]
-Return a service that runs the @command{dicod} daemon, an implementation
-of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
-
-The optional @var{config} argument specifies the configuration for
-@command{dicod}, which should be a @code{<dicod-configuration>} object, by
-default it serves the GNU Collaborative International Dictonary of English.
-
-You can add @command{open localhost} to your @file{~/.dico} file to make
-@code{localhost} the default server for @command{dico} client
-(@pxref{Initialization File,,, dico, GNU Dico Manual}).
-@end deffn
-
-@deftp {Data Type} dicod-configuration
-Data type representing the configuration of dicod.
-
-@table @asis
-@item @code{dico} (default: @var{dico})
-Package object of the GNU Dico dictionary server.
-
-@item @code{interfaces} (default: @var{'("localhost")})
-This is the list of IP addresses and ports and possibly socket file
-names to listen to (@pxref{Server Settings, @code{listen} directive,,
-dico, GNU Dico Manual}).
-
-@item @code{handlers} (default: @var{'()})
-List of @code{<dicod-handler>} objects denoting handlers (module instances).
-
-@item @code{databases} (default: @var{(list %dicod-database:gcide)})
-List of @code{<dicod-database>} objects denoting dictionaries to be served.
-@end table
-@end deftp
-
-@deftp {Data Type} dicod-handler
-Data type representing a dictionary handler (module instance).
-
-@table @asis
-@item @code{name}
-Name of the handler (module instance).
-
-@item @code{module} (default: @var{#f})
-Name of the dicod module of the handler (instance).  If it is @code{#f},
-the module has the same name as the handler.
-(@pxref{Modules,,, dico, GNU Dico Manual}).
-
-@item @code{options}
-List of strings or gexps representing the arguments for the module handler
-@end table
-@end deftp
-
-@deftp {Data Type} dicod-database
-Data type representing a dictionary database.
-
-@table @asis
-@item @code{name}
-Name of the database, will be used in DICT commands.
-
-@item @code{handler}
-Name of the dicod handler (module instance) used by this database
-(@pxref{Handlers,,, dico, GNU Dico Manual}).
-
-@item @code{complex?} (default: @var{#f})
-Whether the database configuration complex.  The complex configuration
-will need a corresponding @code{<dicod-handler>} object, otherwise not.
-
-@item @code{options}
-List of strings or gexps representing the arguments for the database
-(@pxref{Databases,,, dico, GNU Dico Manual}).
-@end table
-@end deftp
-
-@defvr {Scheme Variable} %dicod-database:gcide
-A @code{<dicod-database>} object serving the GNU Collaborative International
-Dictionary of English using the @code{gcide} package.
-@end defvr
-
-The following is an example @code{dicod-service} configuration.
-
-@example
-(dicod-service #:config
-  (dicod-configuration
-   (handlers (list (dicod-handler
-                    (name "wordnet")
-                    (module "dictorg")
-                    (options
-                     (list #~(string-append "dbdir=" #$wordnet))))))
-   (databases (list (dicod-database
-                     (name "wordnet")
-                     (complex? #t)
-                     (handler "wordnet")
-                     (options '("database=wn")))
-                    %dicod-database:gcide))))
-@end example
-
 
 @subsubheading Cgit Service
 
@@ -19597,6 +19405,199 @@ could instantiate a cgit service like this:
 (service cgit-service-type
          (opaque-cgit-configuration
           (cgitrc "")))
+@end example
+
+
+@node Game Services
+@subsubsection Game Services
+
+@subsubheading The Battle for Wesnoth Service
+@cindex wesnothd
+@uref{https://wesnoth.org, The Battle for Wesnoth} is a fantasy, turn
+based tactical strategy game, with several single player campaigns, and
+multiplayer games (both networked and local).
+
+@defvar {Scheme Variable} wesnothd-service-type
+Service type for the wesnothd service.  Its value must be a
+@code{wesnothd-configuration} object.  To run wesnothd in the default
+configuration, instantiate it as:
+
+@example
+(service wesnothd-service-type)
+@end example
+@end defvar
+
+@deftp {Data Type} wesnothd-configuration
+Data type representing the configuration of @command{wesnothd}.
+
+@table @asis
+@item @code{package} (default: @code{wesnoth-server})
+The wesnoth server package to use.
+
+@item @code{port} (default: @code{15000})
+The port to bind the server to.
+@end table
+@end deftp
+
+@node Miscellaneous Services
+@subsubsection Miscellaneous Services
+
+@cindex sysctl
+@subsubheading System Control Service
+
+The @code{(gnu services sysctl)} provides a service to configure kernel
+parameters at boot.
+
+@defvr {Scheme Variable} sysctl-service-type
+The service type for @command{sysctl}, which modifies kernel parameters
+under @file{/proc/sys/}.  To enable IPv4 forwarding, it can be
+instantiated as:
+
+@example
+(service sysctl-service-type
+         (sysctl-configuration
+           (settings '(("net.ipv4.ip_forward" . "1")))))
+@end example
+@end defvr
+
+@deftp {Data Type} sysctl-configuration
+The data type representing the configuration of @command{sysctl}.
+
+@table @asis
+@item @code{sysctl} (default: @code{(file-append procps "/sbin/sysctl"})
+The @command{sysctl} executable to use.
+
+@item @code{settings} (default: @code{'()})
+An association list specifies kernel parameters and their values.
+@end table
+@end deftp
+
+@cindex lirc
+@subsubheading Lirc Service
+
+The @code{(gnu services lirc)} module provides the following service.
+
+@deffn {Scheme Procedure} lirc-service [#:lirc lirc] @
+       [#:device #f] [#:driver #f] [#:config-file #f] @
+       [#:extra-options '()]
+Return a service that runs @url{http://www.lirc.org,LIRC}, a daemon that
+decodes infrared signals from remote controls.
+
+Optionally, @var{device}, @var{driver} and @var{config-file}
+(configuration file name) may be specified.  See @command{lircd} manual
+for details.
+
+Finally, @var{extra-options} is a list of additional command-line options
+passed to @command{lircd}.
+@end deffn
+
+@cindex spice
+@subsubheading Spice Service
+
+The @code{(gnu services spice)} module provides the following service.
+
+@deffn {Scheme Procedure} spice-vdagent-service [#:spice-vdagent]
+Returns a service that runs @url{http://www.spice-space.org,VDAGENT}, a daemon
+that enables sharing the clipboard with a vm and setting the guest display
+resolution when the graphical console window resizes.
+@end deffn
+
+@subsubsection Dictionary Services
+@cindex dictionary
+The @code{(gnu services dict)} module provides the following service:
+
+@deffn {Scheme Procedure} dicod-service [#:config (dicod-configuration)]
+Return a service that runs the @command{dicod} daemon, an implementation
+of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
+
+The optional @var{config} argument specifies the configuration for
+@command{dicod}, which should be a @code{<dicod-configuration>} object, by
+default it serves the GNU Collaborative International Dictonary of English.
+
+You can add @command{open localhost} to your @file{~/.dico} file to make
+@code{localhost} the default server for @command{dico} client
+(@pxref{Initialization File,,, dico, GNU Dico Manual}).
+@end deffn
+
+@deftp {Data Type} dicod-configuration
+Data type representing the configuration of dicod.
+
+@table @asis
+@item @code{dico} (default: @var{dico})
+Package object of the GNU Dico dictionary server.
+
+@item @code{interfaces} (default: @var{'("localhost")})
+This is the list of IP addresses and ports and possibly socket file
+names to listen to (@pxref{Server Settings, @code{listen} directive,,
+dico, GNU Dico Manual}).
+
+@item @code{handlers} (default: @var{'()})
+List of @code{<dicod-handler>} objects denoting handlers (module instances).
+
+@item @code{databases} (default: @var{(list %dicod-database:gcide)})
+List of @code{<dicod-database>} objects denoting dictionaries to be served.
+@end table
+@end deftp
+
+@deftp {Data Type} dicod-handler
+Data type representing a dictionary handler (module instance).
+
+@table @asis
+@item @code{name}
+Name of the handler (module instance).
+
+@item @code{module} (default: @var{#f})
+Name of the dicod module of the handler (instance).  If it is @code{#f},
+the module has the same name as the handler.
+(@pxref{Modules,,, dico, GNU Dico Manual}).
+
+@item @code{options}
+List of strings or gexps representing the arguments for the module handler
+@end table
+@end deftp
+
+@deftp {Data Type} dicod-database
+Data type representing a dictionary database.
+
+@table @asis
+@item @code{name}
+Name of the database, will be used in DICT commands.
+
+@item @code{handler}
+Name of the dicod handler (module instance) used by this database
+(@pxref{Handlers,,, dico, GNU Dico Manual}).
+
+@item @code{complex?} (default: @var{#f})
+Whether the database configuration complex.  The complex configuration
+will need a corresponding @code{<dicod-handler>} object, otherwise not.
+
+@item @code{options}
+List of strings or gexps representing the arguments for the database
+(@pxref{Databases,,, dico, GNU Dico Manual}).
+@end table
+@end deftp
+
+@defvr {Scheme Variable} %dicod-database:gcide
+A @code{<dicod-database>} object serving the GNU Collaborative International
+Dictionary of English using the @code{gcide} package.
+@end defvr
+
+The following is an example @code{dicod-service} configuration.
+
+@example
+(dicod-service #:config
+  (dicod-configuration
+   (handlers (list (dicod-handler
+                    (name "wordnet")
+                    (module "dictorg")
+                    (options
+                     (list #~(string-append "dbdir=" #$wordnet))))))
+   (databases (list (dicod-database
+                     (name "wordnet")
+                     (complex? #t)
+                     (handler "wordnet")
+                     (options '("database=wn")))
+                    %dicod-database:gcide))))
 @end example
 
 @node Setuid Programs
