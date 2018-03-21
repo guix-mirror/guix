@@ -614,3 +614,49 @@ AES-NI available, or you'll need to use a different implementation.")
     (description "Simple cryptographic random related types: a safe
 abstraction for CPRNGs.")
     (license license:bsd-3)))
+
+(define-public ghc-cprng-aes
+  (package
+    (name "ghc-cprng-aes")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cprng-aes-" version "/"
+                           "cprng-aes-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wr15kbmk1g3l8a75n0iwbzqg24ixv78slwzwb2q6rlcvq0jlnb4"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-byteable" ,ghc-byteable)
+              ("ghc-crypto-random" ,ghc-crypto-random)
+              ("ghc-cipher-aes" ,ghc-cipher-aes)))
+    (home-page "https://github.com/vincenthz/hs-cprng-aes")
+    (synopsis "Crypto Pseudo Random Number Generator using AES in counter mode
+in Haskell")
+    (description "Simple crypto pseudo-random-number-generator with really
+good randomness property.
+
+Using ent, a randomness property maker on one 1Mb sample:
+
+@itemize
+@item Entropy = 7.999837 bits per byte.
+@item Optimum compression would reduce the size of this 1048576 byte file by 0
+percent.
+@item Chi square distribution for 1048576 samples is 237.02.
+@item Arithmbetic mean value of data bytes is 127.3422 (127.5 = random).
+@item Monte Carlo value for Pi is 3.143589568 (error 0.06 percent).
+@end itemize
+
+Compared to urandom with the same sampling:
+
+@itemize
+@item Entropy = 7.999831 bits per byte.
+@item Optimum compression would reduce the size of this 1048576 byte file by 0
+percent.
+@item Chi square distribution for 1048576 samples is 246.63.
+@item Arithmetic mean value of data bytes is 127.6347 (127.5 = random).
+@item Monte Carlo value for Pi is 3.132465868 (error 0.29 percent).
+@end itemize")
+    (license license:bsd-3)))
