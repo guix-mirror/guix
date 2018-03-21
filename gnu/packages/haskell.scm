@@ -9267,4 +9267,36 @@ way.")
 ghc-aeson.")
     (license license:bsd-3)))
 
+(define-public ghc-persistent-template
+  (package
+    (name "ghc-persistent-template")
+    (version "2.5.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "persistent-template-" version "/"
+                           "persistent-template-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0449piw3n02q7dag7k1pakfmzmf3ms4wk1qmnagczpm1ckajinwd"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-persistent" ,ghc-persistent)
+              ("ghc-monad-control" ,ghc-monad-control)
+              ("ghc-text" ,ghc-text)
+              ("ghc-aeson" ,ghc-aeson)
+              ("ghc-aeson-compat" ,ghc-aeson-compat)
+              ("ghc-monad-logger" ,ghc-monad-logger)
+              ("ghc-unordered-containers" ,ghc-unordered-containers)
+              ("ghc-tagged" ,ghc-tagged)
+              ("ghc-path-pieces" ,ghc-path-pieces)
+              ("ghc-http-api-data" ,ghc-http-api-data)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)
+                     ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://www.yesodweb.com/book/persistent")
+    (synopsis "Type-safe, non-relational, multi-backend persistence")
+    (description "This Haskell package provides interfaces and helper
+functions for the ghc-persistent package.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
