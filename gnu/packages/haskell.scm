@@ -9400,4 +9400,40 @@ typeclass, a number of common instances, and a collection of common functions
 working with it.")
     (license license:expat)))
 
+(define-public ghc-persistent-sqlite
+  (package
+    (name "ghc-persistent-sqlite")
+    (version "2.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "persistent-sqlite-" version "/"
+                           "persistent-sqlite-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16mc2ra0hbyyc8ckjlxxc11bpskdymbr8c3g6ih6wzik639xprbm"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-persistent" ,ghc-persistent)
+              ("ghc-unliftio-core" ,ghc-unliftio-core)
+              ("ghc-aeson" ,ghc-aeson)
+              ("ghc-conduit" ,ghc-conduit)
+              ("ghc-monad-logger" ,ghc-monad-logger)
+              ("ghc-microlens-th" ,ghc-microlens-th)
+              ("ghc-resourcet" ,ghc-resourcet)
+              ("ghc-old-locale" ,ghc-old-locale)
+              ("ghc-resource-pool" ,ghc-resource-pool)
+              ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)
+                     ("ghc-persistent-template" ,ghc-persistent-template)
+                     ("ghc-temporary" ,ghc-temporary)
+                     ("ghc-text" ,ghc-text)))
+    (home-page
+     "https://www.yesodweb.com/book/persistent")
+    (synopsis "Backend for the persistent library using sqlite3")
+    (description "This Haskell package includes a thin sqlite3 wrapper based
+on the direct-sqlite package, as well as the entire C library, so there are no
+system dependencies.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
