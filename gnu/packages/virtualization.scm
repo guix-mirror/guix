@@ -281,11 +281,11 @@ server and embedded PowerPC, and S390 guests.")
        ("usb.ids"
         ,(origin
            (method url-fetch)
-           (uri "https://svn.code.sf.net/p/linux-usb/repo/trunk/htdocs/usb.ids?r=1551")
+           (uri "https://svn.code.sf.net/p/linux-usb/repo/trunk/htdocs/usb.ids?r=2681")
            (file-name "usb.ids")
            (sha256
             (base32
-             "17rg5i0wbyk289gr8v4kgvnc9q5bidz7ldcvv9x58l083wn16hq3"))))))
+             "1m6yhvz5k8aqzxgk7xj3jkk8frl1hbv0h3vgj4wbnvnx79qnvz3r"))))))
     (home-page "https://libosinfo.org/")
     (synopsis "Operating system information database")
     (description "libosinfo is a GObject based library API for managing
