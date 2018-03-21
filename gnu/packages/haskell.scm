@@ -9029,4 +9029,27 @@ for managing flexibly-sized collections of resources such as database
 connections.")
     (license license:bsd-3)))
 
+(define-public ghc-attoparsec-iso8601
+  (package
+    (name "ghc-attoparsec-iso8601")
+    (version "1.0.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "attoparsec-iso8601-" version "/"
+                           "attoparsec-iso8601-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12l55b76bhya9q89mfmqmy6sl5v39b6gzrw5rf3f70vkb23nsv5a"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
+              ("ghc-base-compat" ,ghc-base-compat)
+              ("ghc-text" ,ghc-text)))
+    (home-page "https://github.com/bos/aeson")
+    (synopsis "Parse ISO 8601 dates")
+    (description "Haskell library for parsing of ISO 8601 dates, originally
+from aeson.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
