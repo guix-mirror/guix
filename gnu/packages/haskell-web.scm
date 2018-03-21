@@ -953,3 +953,38 @@ Callas and Jesse Walker.
 
 This Haskell package uses bindings to the optimized C implementation of Skein.")
     (license license:bsd-3)))
+
+(define-public ghc-clientsession
+  (package
+    (name "ghc-clientsession")
+    (version "0.9.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "clientsession-" version "/"
+                           "clientsession-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0s6h4ykj16mpf7nlw2iqn2ji0p8g1fn5ni0s7yqaili6vv2as5ar"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-cereal" ,ghc-cereal)
+              ("ghc-tagged" ,ghc-tagged)
+              ("ghc-crypto-api" ,ghc-crypto-api)
+              ("ghc-skein" ,ghc-skein)
+              ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+              ("ghc-entropy" ,ghc-entropy)
+              ("ghc-cprng-aes" ,ghc-cprng-aes)
+              ("ghc-cipher-aes" ,ghc-cipher-aes)
+              ("ghc-crypto-random" ,ghc-crypto-random)
+              ("ghc-setenv" ,ghc-setenv)))
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)
+                     ("ghc-hspec" ,ghc-hspec)
+                     ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/yesodweb/clientsession/tree/master")
+    (synopsis "Haskell library for securely store session data in a
+client-side cookie")
+    (description "This Haskell package achieves security through AES-CTR
+encryption and Skein-MAC-512-256 authentication.  Uses Base64 encoding to
+avoid any issues with characters.")
+    (license license:expat)))
