@@ -9438,4 +9438,33 @@ on the direct-sqlite package, as well as the entire C library, so there are no
 system dependencies.")
     (license license:expat)))
 
+(define-public ghc-email-validate
+  (package
+    (name "ghc-email-validate")
+    (version "2.3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/"
+             "email-validate/email-validate-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0qvxysiap3r4mi3xff5nsk9qv6diqxfgwj186bypbamzvzlz0lav"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-doctest" ,ghc-doctest)))
+    (home-page
+     "https://github.com/Porges/email-validate-hs")
+    (synopsis "Email address validator for Haskell")
+    (description
+     "This Haskell package provides a validator that can validate an email
+address string against RFC 5322.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
