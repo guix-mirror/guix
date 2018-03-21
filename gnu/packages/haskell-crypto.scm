@@ -592,3 +592,25 @@ including very popular one (openssl, gnutls) also uses similar
 implementation.  If it matters for your case, you should make sure you have
 AES-NI available, or you'll need to use a different implementation.")
     (license license:bsd-3)))
+
+(define-public ghc-crypto-random
+  (package
+    (name "ghc-crypto-random")
+    (version "0.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "crypto-random-" version "/"
+                           "crypto-random-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0139kbbb2h7vshf68y3fvjda29lhj7jjwl4vq78w4y8k8hc7l2hp"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-securemem" ,ghc-securemem)
+              ("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/vincenthz/hs-crypto-random")
+    (synopsis "Simple cryptographic random related types for Haskell")
+    (description "Simple cryptographic random related types: a safe
+abstraction for CPRNGs.")
+    (license license:bsd-3)))
