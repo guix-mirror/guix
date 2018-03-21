@@ -2424,7 +2424,7 @@ Tracker as well as bug identifiers prepared for @code{bug-reference-mode}.")
 (define-public emacs-deferred
   (package
     (name "emacs-deferred")
-    (version "0.3.2")
+    (version "0.5.1")
     (home-page "https://github.com/kiwanami/emacs-deferred")
     (source (origin
               (method git-fetch)
@@ -2433,7 +2433,7 @@ Tracker as well as bug identifiers prepared for @code{bug-reference-mode}.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "0059jy01ni5irpgrj9fa81ayd9j25nvmjjm79ms3210ysx4pgqdr"))
+                "0xy9zb6wwkgwhcxdnslqk52bq3z24chgk6prqi4ks0qcf2bwyh5h"))
               (file-name (string-append name "-" version))))
     (build-system emacs-build-system)
     ;; FIXME: Would need 'el-expectations' to actually run tests.
