@@ -9003,4 +9003,30 @@ Haskell")
 a memory chunk that will be auto-scrubbed after it run out of scope.")
     (license license:bsd-3)))
 
+(define-public ghc-resource-pool
+  (package
+    (name "ghc-resource-pool")
+    (version "0.2.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "resource-pool-" version "/"
+                           "resource-pool-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04mw8b9djb14zp4rdi6h7mc3zizh597ffiinfbr4m0m8psifw9w6"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-hashable" ,ghc-hashable)
+              ("ghc-monad-control" ,ghc-monad-control)
+              ("ghc-transformers-base" ,ghc-transformers-base)
+              ("ghc-stm" ,ghc-stm)
+              ("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/bos/pool")
+    (synopsis "Striped resource pooling implementation in Haskell")
+    (description "This Haskell package provides striped pooling abstraction
+for managing flexibly-sized collections of resources such as database
+connections.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
