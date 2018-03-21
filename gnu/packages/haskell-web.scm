@@ -1134,3 +1134,48 @@ as text, number, time, checkbox, select, textarea, etc through the
 @code{Yesod.Form.Fields} module.  Also, there is @code{Yesod.Form.Nic} module
 providing richtext field using Nic editor. ")
     (license license:expat)))
+
+(define-public ghc-yesod
+  (package
+    (name "ghc-yesod")
+    (version "1.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/yesod/yesod-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1sg66nq8yaas2m5nqsdrxricvcizd1ik02zqk60sxh3wna08fz16"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-yesod-core" ,ghc-yesod-core)
+       ("ghc-yesod-persistent" ,ghc-yesod-persistent)
+       ("ghc-yesod-form" ,ghc-yesod-form)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-text" ,ghc-text)
+       ("ghc-monad-logger" ,ghc-monad-logger)
+       ("ghc-fast-logger" ,ghc-fast-logger)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-shakespeare" ,ghc-shakespeare)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-wai-logger" ,ghc-wai-logger)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (home-page "https://www.yesodweb.com")
+    (synopsis "Framework for creating type-safe, RESTful web applications")
+    (description "The Haskell package package groups together the various
+Yesod related packages into one cohesive whole.  This is the version of Yesod,
+whereas most of the core code lives in @code{ghc-yesod-core}.")
+    (license license:expat)))
