@@ -9100,4 +9100,38 @@ between constructors is represented using an n-ary sum, and the arguments of
 each constructor are represented using an n-ary product.")
     (license license:bsd-3)))
 
+(define-public ghc-uri-bytestring
+  (package
+    (name "ghc-uri-bytestring")
+    (version "0.3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "uri-bytestring-" version "/"
+                           "uri-bytestring-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04qjv1sgyrdg538290p9hqnvyxnahvr5cjwl8vm1rn9j0fv3ymq9"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
+              ("ghc-fail" ,ghc-fail)
+              ("ghc-blaze-builder" ,ghc-blaze-builder)
+              ("ghc-th-lift-instances" ,ghc-th-lift-instances)))
+    (native-inputs `(("ghc-attoparsec" ,ghc-attoparsec)
+                     ("ghc-hunit" ,ghc-hunit)
+                     ("ghc-quickcheck" ,ghc-quickcheck)
+                     ("ghc-tasty" ,ghc-tasty)
+                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+                     ("ghc-base-compat" ,ghc-base-compat)
+                     ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+                     ("ghc-semigroups" ,ghc-semigroups)
+                     ("ghc-generics-sop" ,ghc-generics-sop)))
+    (home-page "https://github.com/Soostone/uri-bytestring")
+    (synopsis "Haskell URI parsing as ByteStrings")
+    (description "This Haskell package aims to be an RFC3986 compliant URI
+parser that uses ByteStrings for parsing and representing the URI data.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
