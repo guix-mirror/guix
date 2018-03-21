@@ -9185,4 +9185,51 @@ query parameters")
 Haskell data types to and from HTTP API data.")
     (license license:bsd-3)))
 
+(define-public ghc-persistent
+  (package
+    (name "ghc-persistent")
+    (version "2.7.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "persistent-" version "/"
+                           "persistent-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jbvavdvr9qz5ld7vf6l1jgiadhmxx6zc4vqsdk9ivfq6d5wlg1p"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-old-locale" ,ghc-old-locale)
+              ("ghc-text" ,ghc-text)
+              ("ghc-conduit" ,ghc-conduit)
+              ("ghc-resourcet" ,ghc-resourcet)
+              ("ghc-exceptions" ,ghc-exceptions)
+              ("ghc-monad-control" ,ghc-monad-control)
+              ("ghc-lifted-base" ,ghc-lifted-base)
+              ("ghc-resource-pool" ,ghc-resource-pool)
+              ("ghc-path-pieces" ,ghc-path-pieces)
+              ("ghc-http-api-data" ,ghc-http-api-data)
+              ("ghc-aeson" ,ghc-aeson)
+              ("ghc-monad-logger" ,ghc-monad-logger)
+              ("ghc-transformers-base" ,ghc-transformers-base)
+              ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+              ("ghc-unordered-containers" ,ghc-unordered-containers)
+              ("ghc-vector" ,ghc-vector)
+              ("ghc-attoparsec" ,ghc-attoparsec)
+              ("ghc-haskell-src-meta" ,ghc-haskell-src-meta)
+              ("ghc-blaze-html" ,ghc-blaze-html)
+              ("ghc-blaze-markup" ,ghc-blaze-markup)
+              ("ghc-silently" ,ghc-silently)
+              ("ghc-mtl" ,ghc-mtl)
+              ("ghc-fast-logger" ,ghc-fast-logger)
+              ("ghc-scientific" ,ghc-scientific)
+              ("ghc-tagged" ,ghc-tagged)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://www.yesodweb.com/book/persistent")
+    (synopsis "Type-safe, multi-backend data serialization for Haskell")
+    (description "This Haskell package allows Haskell programs to access data
+storage sytems like PostgreSQL, SQLite, MySQL and MongoDB in a type-safe
+way.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
