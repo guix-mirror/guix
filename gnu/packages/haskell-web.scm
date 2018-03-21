@@ -1091,3 +1091,46 @@ functions, widgets, etc.")
     (description "This Haskell package provides helpers for using Persistent
 from Yesod.")
     (license license:expat)))
+
+(define-public ghc-yesod-form
+    (package
+    (name "ghc-yesod-form")
+    (version "1.4.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/yesod-form/yesod-form-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0lij3m5vn8nvh6y88r1dhk03xmmjwmjzazm307nc2wvc5fmx9p2j"))))
+    (build-system haskell-build-system)
+    (inputs
+      `(("ghc-yesod-core" ,ghc-yesod-core)
+        ("ghc-yesod-persistent" ,ghc-yesod-persistent)
+        ("ghc-shakespeare" ,ghc-shakespeare)
+        ("ghc-persistent" ,ghc-persistent)
+        ("ghc-data-default" ,ghc-data-default)
+        ("ghc-xss-sanitize" ,ghc-xss-sanitize)
+        ("ghc-blaze-builder" ,ghc-blaze-builder)
+        ("ghc-email-validate" ,ghc-email-validate)
+        ("ghc-text" ,ghc-text)
+        ("ghc-wai" ,ghc-wai)
+        ("ghc-blaze-html" ,ghc-blaze-html)
+        ("ghc-blaze-markup" ,ghc-blaze-markup)
+        ("ghc-attoparsec" ,ghc-attoparsec)
+        ("ghc-byteable" ,ghc-byteable)
+        ("ghc-aeson" ,ghc-aeson)
+        ("ghc-resourcet" ,ghc-resourcet)
+        ("ghc-semigroups" ,ghc-semigroups)
+        ("ghc-network-uri" ,ghc-network-uri)
+        ("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://www.yesodweb.com")
+    (synopsis "Form handling support for Yesod Web Framework")
+    (description "This Haskell package provies a set of basic form inputs such
+as text, number, time, checkbox, select, textarea, etc through the
+@code{Yesod.Form.Fields} module.  Also, there is @code{Yesod.Form.Nic} module
+providing richtext field using Nic editor. ")
+    (license license:expat)))
