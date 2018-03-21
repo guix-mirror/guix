@@ -9299,4 +9299,26 @@ ghc-aeson.")
 functions for the ghc-persistent package.")
     (license license:expat)))
 
+(define-public ghc-unliftio-core
+  (package
+    (name "ghc-unliftio-core")
+    (version "0.1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "unliftio-core-" version "/"
+                           "unliftio-core-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1193fplsjm1lcr05xwvkj1rsyzx74i755f6kw3ikmxbsv0bv0l3m"))))
+    (build-system haskell-build-system)
+    (home-page
+     "https://github.com/fpco/unliftio/tree/master/unliftio-core#readme")
+    (synopsis "The MonadUnliftIO typeclass for unlifting monads to IO")
+    (description "This Haskell package provides the core @code{MonadUnliftIO}
+typeclass, instances for base and transformers, and basic utility
+functions.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
