@@ -8980,4 +8980,27 @@ be used inline with a quasi-quoter or in an external file and it
 interpolates variables according to the type being inserted.")
     (license license:expat)))
 
+(define-public ghc-securemem
+  (package
+    (name "ghc-securemem")
+    (version "0.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "securemem-" version "/"
+                           "securemem-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dkhhjxa7njc3qbgvd5a23rkvr39vj2kn2a9nk6yjg7a8b2hvdpy"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-byteable" ,ghc-byteable)
+              ("ghc-memory" ,ghc-memory)))
+    (home-page "https://github.com/vincenthz/hs-securemem")
+    (synopsis "Auto-scrubbing and const-time-eq memory chunk abstraction for
+Haskell")
+    (description "SecureMem is similar to ByteString, except that it provides
+a memory chunk that will be auto-scrubbed after it run out of scope.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
