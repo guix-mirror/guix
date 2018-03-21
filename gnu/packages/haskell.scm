@@ -6251,7 +6251,7 @@ better for some purposes.")
 (define-public ghc-conduit-extra
   (package
     (name "ghc-conduit-extra")
-    (version "1.1.13.3")
+    (version "1.1.14")
     (source
      (origin
        (method url-fetch)
@@ -6260,7 +6260,7 @@ better for some purposes.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0j3cqpkrn7lbpviv6w0gjh93fjjbh1an2sq0yz7svaawja8civy2"))))
+         "1ij3qcfk7q90fl6gklpy2k5ka9jgzrvs8frq0gy7gdcgyaabqfkg"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
