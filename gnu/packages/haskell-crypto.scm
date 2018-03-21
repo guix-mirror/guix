@@ -530,3 +530,25 @@ list validation.")
      "This package provides a library to handle system accessors and storage
 for X.509 certificates.")
     (license license:bsd-3)))
+
+(define-public ghc-crypto-cipher-types
+  (package
+    (name "ghc-crypto-cipher-types")
+    (version "0.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "crypto-cipher-types-" version "/"
+                           "crypto-cipher-types-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03qa1i1kj07pfrxsi7fiaqnnd0vi94jd4jfswbmnm4gp1nvzcwr0"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-byteable" ,ghc-byteable)
+              ("ghc-securemem" ,ghc-securemem)))
+    (home-page "https://github.com/vincenthz/hs-crypto-cipher")
+    (synopsis "Generic cryptography cipher types for Haskell")
+    (description "This Haskell package provides basic typeclasses and types
+for symmetric ciphers.")
+    (license license:bsd-3)))
