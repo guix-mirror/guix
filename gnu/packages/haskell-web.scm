@@ -1058,3 +1058,36 @@ avoid any issues with characters.")
 Yesod, on which other packages can be built.  It provides dispatch, handler
 functions, widgets, etc.")
     (license license:expat)))
+
+(define-public ghc-yesod-persistent
+  (package
+    (name "ghc-yesod-persistent")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "yesod-persistent-" version "/"
+                           "yesod-persistent-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kiksw46c8ww9yiwl28pkrppx8d6fhsasr0hvmsliqbrp16likj8"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: hspec-discover not available in PATH.
+    (inputs `(("ghc-yesod-core" ,ghc-yesod-core)
+              ("ghc-persistent" ,ghc-persistent)
+              ("ghc-persistent-template" ,ghc-persistent-template)
+              ("ghc-blaze-builder" ,ghc-blaze-builder)
+              ("ghc-conduit" ,ghc-conduit)
+              ("ghc-resourcet" ,ghc-resourcet)
+              ("ghc-resource-pool" ,ghc-resource-pool)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)
+                     ("ghc-wai-extra" ,ghc-wai-extra)
+                     ("ghc-yesod-core" ,ghc-yesod-core)
+                     ("ghc-persistent-sqlite" ,ghc-persistent-sqlite)
+                     ("ghc-text" ,ghc-text)))
+    (home-page "http://www.yesodweb.com/")
+    (synopsis "Helpers for using Persistent from Yesod")
+    (description "This Haskell package provides helpers for using Persistent
+from Yesod.")
+    (license license:expat)))
