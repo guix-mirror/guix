@@ -7833,6 +7833,7 @@ bytestrings and their hexademical representation.")
         (base32
          "1dd6xv1wjxj1xinx155b14hijw8fafrg4096srzdzj7xyqq7qxbd"))))
     (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; Tests require QuickCheck < 2.10
     (inputs
      `(("ghc-hashable" ,ghc-hashable)))
     (native-inputs
