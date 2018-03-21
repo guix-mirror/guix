@@ -925,3 +925,31 @@ of a JSON value into a @code{Data.Aeson.Value}.")
     (description  "This Haskell package provides two typeclasses for converting
 Haskell data types to and from route pieces.")
     (license license:bsd-3)))
+
+(define-public ghc-skein
+  (package
+    (name "ghc-skein")
+    (version "1.0.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "skein-" version "/"
+                           "skein-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jdqdk0rz2wnvw735clnj8jh0a9rkrbqjg7vk3w6wczdql6cm0pq"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-cereal" ,ghc-cereal)
+              ("ghc-tagged" ,ghc-tagged)
+              ("ghc-crpto-api" ,ghc-crypto-api)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/yesodweb/path-pieces")
+    (synopsis "Skein family of cryptographic hash functions for Haskell")
+    (description "@uref{(http://www.skein-hash.info, Skein} is a family of
+fast secure cryptographic hash functions designed by Niels Ferguson, Stefan
+Lucks, Bruce Schneier, Doug Whiting, Mihir Bellare, Tadayoshi Kohno, Jon
+Callas and Jesse Walker.
+
+This Haskell package uses bindings to the optimized C implementation of Skein.")
+    (license license:bsd-3)))
