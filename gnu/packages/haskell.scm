@@ -9232,4 +9232,39 @@ storage sytems like PostgreSQL, SQLite, MySQL and MongoDB in a type-safe
 way.")
     (license license:expat)))
 
+(define-public ghc-aeson-compat
+  (package
+    (name "ghc-aeson-compat")
+    (version "0.3.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "aeson-compat-" version "/"
+                           "aeson-compat-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jya3lm9imclhb8qqihv39hhb62vvs3qpws7pc5fc23vwg0hsx2r"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f))  ;  FIXME: Tests require QuickCheck >= 2.10
+    (inputs `(("ghc-base-compat" ,ghc-base-compat)
+              ("ghc-aeson" ,ghc-aeson)
+              ("ghc-attoparsec" ,ghc-attoparsec)
+              ("ghc-attoparsec" ,ghc-attoparsec-iso8601)
+              ("ghc-exceptions" ,ghc-exceptions)
+              ("ghc-hashable" ,ghc-hashable)
+              ("ghc-scientific" ,ghc-scientific)
+              ("ghc-text" ,ghc-text)
+              ("ghc-time-locale-compat" ,ghc-time-locale-compat)
+              ("ghc-unordered-containers" ,ghc-unordered-containers)
+              ("ghc-vector" ,ghc-vector)
+              ("ghc-tagged" ,ghc-tagged)
+              ("ghc-semigroups" ,ghc-semigroups)
+              ("ghc-nats" ,ghc-nats)))
+    (home-page "https://github.com/phadej/aeson-compat")
+    (synopsis "Compatibility layer for ghc-aeson")
+    (description "This Haskell package provides compatibility layer for
+ghc-aeson.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
