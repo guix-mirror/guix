@@ -9154,4 +9154,35 @@ parser that uses ByteStrings for parsing and representing the URI data.")
 TimeLocale.")
     (license license:bsd-3)))
 
+(define-public ghc-http-api-data
+  (package
+    (name "ghc-http-api-data")
+    (version "0.3.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http-api-data-" version "/"
+                           "http-api-data-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zbmf0kkfsw7pfznisi205gh7jd284gfarxsyiavd2iw26akwqwc"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f))  ;  FIXME: Tests require QuickCheck >= 2.9
+    (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
+              ("ghc-attoparsec-iso8601" ,ghc-attoparsec-iso8601)
+              ("ghc-hashable" ,ghc-hashable)
+              ("ghc-http-types" ,ghc-http-types)
+              ("ghc-text" ,ghc-text)
+              ("ghc-time-locale-compat" ,ghc-time-locale-compat)
+              ("ghc-unordered-containers" ,ghc-unordered-containers)
+              ("ghc-uri-bytestring" ,ghc-uri-bytestring)
+              ("ghc-uuid-types" ,ghc-uuid-types)))
+    (home-page "https://github.com/fizruk/http-api-data")
+    (synopsis "Convert to/from HTTP API data like URL pieces, headers and
+query parameters")
+    (description "This Haskell package defines typeclasses used for converting
+Haskell data types to and from HTTP API data.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
