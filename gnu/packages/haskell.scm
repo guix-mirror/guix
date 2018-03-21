@@ -8302,7 +8302,8 @@ and regression and autocorrelation analysis.
          "0bszq6fijnr4pmadzz89smj7kfmzx0ca3wd9ga8gv0in9jk9vgp1"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-vector" ,ghc-vector)
-              ("ghc-semigroups" ,ghc-semigroups)))
+              ("ghc-semigroups" ,ghc-semigroups)
+              ("ghc-text" ,ghc-text)))
     (home-page "https://github.com/snoyberg/mono-traversable")
     (synopsis "Typeclasses for dealing with various chunked data
 representations for Haskell")
