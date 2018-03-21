@@ -8886,4 +8886,26 @@ similar to @code{Control.Concurrent.STM.@{TChan,TQueue@}} but with additional
 features.")
     (license license:bsd-3)))
 
+(define-public ghc-monad-loops
+  (package
+    (name "ghc-monad-loops")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "monad-loops-" version "/"
+                           "monad-loops-" version ".tar.gz"))
+       (sha256
+        (base32
+         "062c2sn3hc8h50p1mhqkpyv6x8dydz2zh3ridvlfjq9nqimszaky"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-tasty" ,ghc-tasty)
+                     ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/mokus0/monad-loops")
+    (synopsis "Monadic loops for Haskell")
+    (description "This Haskell package provides some useful control
+operators for looping.")
+    (license license:public-domain)))
+
 ;;; haskell.scm ends here
