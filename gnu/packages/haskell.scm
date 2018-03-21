@@ -9321,4 +9321,29 @@ typeclass, instances for base and transformers, and basic utility
 functions.")
     (license license:expat)))
 
+(define-public ghc-microlens
+  (package
+    (name "ghc-microlens")
+    (version "0.4.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "microlens-" version "/"
+                           "microlens-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17qx2mbqdrlnkc3gxq8njbp7qw8nh51drmz6fc8khgj9bls5ni2k"))))
+    (build-system haskell-build-system)
+    (home-page
+     "https://github.com/aelve/microlens")
+    (synopsis "Provides a tiny lens Haskell library with no dependencies")
+    (description "This Haskell package provides a lens library, just like
+@code{ghc-lens}, but smaller.  It provides essential lenses and
+traversals (like @code{_1} and @code{_Just}), as well as ones which are simply
+nice to have (like @code{each}, @code{at}, and @code{ix}), and some
+combinators (like @code{failing} and @code{singular}), but everything else is
+stripped.  As the result, this package has no dependencies.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
