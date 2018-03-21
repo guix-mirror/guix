@@ -9077,4 +9077,27 @@ instances.  This package provides orphan instances for containers, text,
 bytestring and vector.")
     (license license:bsd-3)))
 
+(define-public ghc-generics-sop
+  (package
+    (name "ghc-generics-sop")
+    (version "0.3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "generics-sop-" version "/"
+                           "generics-sop-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bazlhgmxcwv7vd44jhdx74cnhmaz6yy47jxfycapjj4mjrnp0x7"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (home-page "https://github.com/well-typed/generics-sop")
+    (synopsis "Generic Programming using True Sums of Products for Haskell")
+    (description "This Haskell package supports the definition of generic
+functions.  Datatypes are viewed in a uniform, structured way: the choice
+between constructors is represented using an n-ary sum, and the arguments of
+each constructor are represented using an n-ary product.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
