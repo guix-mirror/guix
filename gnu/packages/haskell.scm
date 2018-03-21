@@ -8908,4 +8908,42 @@ features.")
 operators for looping.")
     (license license:public-domain)))
 
+(define-public ghc-monad-logger
+  (package
+    (name "ghc-monad-logger")
+    (version "0.3.25.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "monad-logger-" version "/"
+                           "monad-logger-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yv4fsi566zrn30j2g5l901lyqgmflhvzy4hji7ikcbh5d45m920"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-transformers-compat" ,ghc-transformers-compat)
+              ("ghc-text" ,ghc-text)
+              ("ghc-stm" ,ghc-stm)
+              ("ghc-stm-chans" ,ghc-stm-chans)
+              ("ghc-lifted-base" ,ghc-lifted-base)
+              ("ghc-resourcet" ,ghc-resourcet)
+              ("ghc-conduit" ,ghc-conduit)
+              ("ghc-conduit-extra" ,ghc-conduit-extra)
+              ("ghc-fast-logger" ,ghc-fast-logger)
+              ("ghc-transformers-base" ,ghc-transformers-base)
+              ("ghc-monad-control" ,ghc-monad-control)
+              ("ghc-monad-loops" ,ghc-monad-loops)
+              ("ghc-mtl" ,ghc-mtl)
+              ("ghc-blaze-builder" ,ghc-blaze-builder)
+              ("ghc-exceptions" ,ghc-exceptions)))
+    (home-page "https://github.com/kazu-yamamoto/logger")
+    (synopsis "Provides a class of monads which can log messages for Haskell")
+    (description "This Haskell package uses a monad transformer approach
+for logging.
+
+This package provides Template Haskell functions for determining source
+code locations of messages.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
