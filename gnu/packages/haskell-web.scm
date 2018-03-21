@@ -901,3 +901,27 @@ of a JSON value into a @code{Data.Aeson.Value}.")
     (synopsis "Unicode aware uri-encoding")
     (description "Unicode aware uri-encoding for Haskell.")
     (license license:bsd-3)))
+
+(define-public ghc-path-pieces
+  (package
+    (name "ghc-path-pieces")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "path-pieces-" version "/"
+                           "path-pieces-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vx3sivcsld76058925hym2j6hm3g71f0qjr7v59f1g2afgx82q8"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-text" ,ghc-text)))
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)
+                     ("ghc-hspec" ,ghc-hspec)
+                     ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/yesodweb/path-pieces")
+    (synopsis "Used in Yesod to automatically marshall data in the request path")
+    (description  "This Haskell package provides two typeclasses for converting
+Haskell data types to and from route pieces.")
+    (license license:bsd-3)))
