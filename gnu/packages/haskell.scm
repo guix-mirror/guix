@@ -8946,4 +8946,38 @@ This package provides Template Haskell functions for determining source
 code locations of messages.")
     (license license:expat)))
 
+(define-public ghc-shakespeare
+  (package
+    (name "ghc-shakespeare")
+    (version "2.0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "shakespeare-" version "/"
+                           "shakespeare-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0j5zx8ka7d7scvb9shm7k3376qzl3k4kpim9aqqfs6n86901zpl4"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-parsec" ,ghc-parsec)
+              ("ghc-text" ,ghc-text)
+              ("ghc-aeson" ,ghc-aeson)
+              ("ghc-blaze-markup" ,ghc-blaze-markup)
+              ("ghc-blaze-html" ,ghc-blaze-html)
+              ("ghc-exceptions" ,ghc-exceptions)
+              ("ghc-vector" ,ghc-vector)
+              ("ghc-unordered-containers" ,ghc-unordered-containers)
+              ("ghc-scientific" ,ghc-scientific)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)
+                     ("ghc-hunit" ,ghc-hunit)
+                     ("hspec-discover" ,hspec-discover)))
+    (home-page "https://www.yesodweb.com/book/shakespearean-templates")
+    (synopsis "Family of type-safe template languages for Haskell")
+    (description "This Haskell package provides a family of type-safe
+templates with simple variable interpolation.  Shakespeare templates can
+be used inline with a quasi-quoter or in an external file and it
+interpolates variables according to the type being inserted.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
