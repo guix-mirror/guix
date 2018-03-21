@@ -3508,7 +3508,7 @@ S-expression.")
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
-    (version "5.4.0")
+    (version "5.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3517,7 +3517,7 @@ S-expression.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "117mvjqh4nm8mvmwmmvy4qmkdg23ldlzk08y91g8b8ac8kxwqg81"))))
+                "1f4k1hncy5ygh4izn7mqfp744nnisrp9ywn2njknbjxx34ai1q88"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("emacs-dash" ,emacs-dash)
