@@ -8864,4 +8864,26 @@ Foundation has the following goals:
 @end enumerate\n")
     (license license:bsd-3)))
 
+(define-public ghc-stm-chans
+  (package
+    (name "ghc-stm-chans")
+    (version "3.0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "stm-chans-" version "/"
+                           "stm-chans-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0f27sp09yha43xk9q55sc185jyjs5h7gq2dhsyx6bm9kz9dzqi13"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-stm" ,ghc-stm)))
+    (home-page "https://hackage.haskell.org/package/stm-chans")
+    (synopsis "Additional types of channels for ghc-stm")
+    (description "This Haskell package offers a collection of channel types,
+similar to @code{Control.Concurrent.STM.@{TChan,TQueue@}} but with additional
+features.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
