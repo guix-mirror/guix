@@ -760,6 +760,8 @@ symbol fonts.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((mf (assoc-ref inputs "texlive-metafont-base"))
                    (cwd (getcwd)))
+               ;; Make METAFONT reproducible
+               (setenv "SOURCE_DATE_EPOCH" "1")
                ;; Tell mf where to find mf.base
                (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
                ;; Tell mf where to look for source files
