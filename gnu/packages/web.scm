@@ -186,14 +186,14 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.13.9")
+    (version "1.13.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hpsyxpxj89p5vrzv9p1hp7xjbnj5c1w6fdy626ycvsiay4a3bjz"))))
+                "11a8m4lhy6h8mmrsakn73pd5gcyvhxpz1xvlr103rglh9l884q9k"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -220,7 +220,7 @@ Interface} specification.")
                           ;; --crossbuild option to avoid customizing for the
                           ;; kernel version on the build machine.
                           ,(let ((system "Linux")    ; uname -s
-                                 (release "2.6.32")  ; uname -r
+                                 (release "3.2.0")   ; uname -r
                                  ;; uname -m
                                  (machine (match (or (%current-target-system)
                                                      (%current-system))
