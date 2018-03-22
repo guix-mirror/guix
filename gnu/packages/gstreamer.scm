@@ -100,7 +100,7 @@ arrays of data.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.12.4")
+    (version "1.14.0")
     (source
      (origin
       (method url-fetch)
@@ -109,7 +109,7 @@ arrays of data.")
             version ".tar.xz"))
       (sha256
        (base32
-        "0x06jxmc5fhlz7cr1pl5lp0hm1jgz519jjic37d09srf9jm091ss"))))
+        "0vj6k01lp2yva6rfd95fkyng9jdr62gkz0x8d2l81dyly1ki6dpw"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -148,7 +148,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.12.4")
+    (version "1.14.0")
     (source
      (origin
       (method url-fetch)
@@ -156,15 +156,16 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "10i255q7i8an1hxz3szb36x1jcs9nfdy511pj2wg24h2vw1nnc2c"))))
+        "0h39bcp7fcd9kgb189lxr8l0hm0almvzpzgpdh1jpq2nzxh4d43y"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
-     `(("gstreamer" ,gstreamer))) ; required by gstreamer-plugins-base-1.0.pc
+     `(("glib" ,glib)              ;required by gstreamer-sdp-1.0.pc
+       ("gstreamer" ,gstreamer)    ;required by gstreamer-plugins-base-1.0.pc
+       ("orc" ,orc)))              ;required by gstreamer-audio-1.0.pc
     (inputs
      `(("cdparanoia" ,cdparanoia)
        ("opus" ,opus)
-       ("orc" ,orc)
        ("pango" ,pango)
        ("libogg" ,libogg)
        ("libtheora" ,libtheora)
@@ -176,7 +177,7 @@ This package provides the core library and elements.")
        ("alsa-lib" ,alsa-lib)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-        ("glib" ,glib "bin")
+        ("glib:bin" ,glib "bin")
         ("gobject-introspection" ,gobject-introspection)
         ("python-wrapper" ,python-wrapper)))
     (arguments
@@ -199,11 +200,10 @@ This package provides the core library and elements.")
 for the GStreamer multimedia library.")
     (license license:lgpl2.0+)))
 
-
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.12.4")
+    (version "1.14.0")
     (source
      (origin
       (method url-fetch)
@@ -212,7 +212,7 @@ for the GStreamer multimedia library.")
             name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0mxrbrqrfq1946gn9im19maj7ivld4k946vkwrzd94h8qsz4k7v4"))))
+        "1226s30cf7pqg3fj8shd20l7sp93yw9sqplgxns3m3ajgms3byka"))))
     (build-system gnu-build-system)
     (inputs
      `(("aalib" ,aalib)
@@ -262,18 +262,18 @@ developers consider to have good quality code and correct functionality.")
 (define-public gst-plugins-bad
   (package
     (name "gst-plugins-bad")
-    (version "1.12.4")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/src/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "021d3q81m968lpnah517sfclagadcqwd6jz3lqdmqvb82sz5fy0c"))))
+                "17sgzgx1c54k5rzz7ljyz3is0n7yj56k74vv05h8z1gjnsnjnppd"))))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; XXX: 18 of 65 tests fail
+     '(#:tests? #f ; XXX: 13 of 53 tests fail
        #:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
@@ -338,7 +338,7 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.12.4")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
@@ -346,7 +346,7 @@ par compared to the rest.")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "08p5kggk1szvr76cdbx3q3yfc235w1przb76v2n51lwfi26mn5hw"))))
+         "1la2nny9hfw3rf3wvqggkg8ivn52qrqqs4n4mqz4ppm2r1gymf9z"))))
     (build-system gnu-build-system)
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
@@ -377,7 +377,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.12.4")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -385,7 +385,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qly3lgamm36xql9q7wg5751gi6j2d3ifzz1pkr15ncc5mfslmia"))))
+                "12gglx6rarnxbaj0h1wivlgkv467n1bz2bwjigplciq57r6ln4zv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-system-libav")
@@ -415,7 +415,7 @@ compression formats through the use of the libav library.")
 (define-public python-gst
   (package
     (name "python-gst")
-    (version "1.12.4")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -423,7 +423,7 @@ compression formats through the use of the libav library.")
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "1sm3dy10klf6i3w6a6mz0rnm29l2lxci5hr8346496jwc7v6mki0"))))
+                "1rlr6gl4lg97ng4jxh3gb2ldmywm15vwsa72nvggr8qa2l8q3fg0"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Factorize python-sitedir with python-build-system.
