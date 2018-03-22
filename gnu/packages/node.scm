@@ -43,14 +43,14 @@
 (define-public node
   (package
     (name "node")
-    (version "9.8.0")
+    (version "9.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "1mjr1rm5w26c0yb4zq6z5yv3zbvqk18lwbswhwn1sha8hapinjp8"))
+                "1nmbbrdxnl02wrnp0cv92wpz44raznm7xrjlwv9627bwphrcyx77"))
               (modules '((guix build utils)))
               (snippet
                `(begin
