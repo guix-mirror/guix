@@ -483,4 +483,12 @@ FileSize: ~a~%"
   (let ((uri (publish-uri "/log/does-not-exist")))
     (response-code (http-get uri))))
 
+(test-equal "non-GET query"
+  '(200 404)
+  (let ((path (string-append "/" (store-path-hash-part %item)
+                             ".narinfo")))
+    (map response-code
+         (list (http-get (publish-uri path))
+               (http-post (publish-uri path))))))
+
 (test-end "publish")
