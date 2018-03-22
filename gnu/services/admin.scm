@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,7 +92,8 @@
 
 (define %rotated-files
   ;; Syslog files subject to rotation.
-  '("/var/log/messages" "/var/log/secure" "/var/log/maillog"))
+  '("/var/log/messages" "/var/log/secure" "/var/log/debug"
+    "/var/log/maillog"))
 
 (define %default-rotations
   (list (log-rotation                             ;syslog files
