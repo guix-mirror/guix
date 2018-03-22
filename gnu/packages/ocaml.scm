@@ -3871,8 +3871,9 @@ cross-platform SDL C library.")
     (version "2.6.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/file"
-                                  "/37054/flocq-" version ".tar.gz"))
+              ;; Use the ‘Latest version’ link for a stable URI across releases.
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                  "latestfile/2228/flocq-" version ".tar.gz"))
               (sha256
                (base32
                 "13fv150dcwnjrk00d7zj2c5x9jwmxgrq0ay440gkr730l8mvk3l3"))))
