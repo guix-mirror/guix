@@ -71,7 +71,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public meson
   (package
     (name "meson")
-    (version "0.45.0")
+    (version "0.45.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mesonbuild/meson/"
@@ -79,7 +79,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1r3wlimllakrswx2rb4mbdk1iricqk6myvdvib6dkyx362yanm9l"))))
+                "1yqa4337nb8w92bvr91rsxmn0xkf7pmdybq9ljvnqmdvn7dv02sd"))))
     (build-system python-build-system)
     (arguments
      `(;; FIXME: Tests require many additional inputs, a fix for the RUNPATH
