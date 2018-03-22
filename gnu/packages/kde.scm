@@ -236,7 +236,7 @@ plugins, as well as code to create plugins, or complete applications.")
 (define-public krita
   (package
     (name "krita")
-    (version "3.3.3")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -245,7 +245,7 @@ plugins, as well as code to create plugins, or complete applications.")
                     "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0pc6hnakkqy81x5b5ncivaps6hqv43i50sjwgi3i3cz9j8rlxh5y"))))
+                "0dh3bm90mxrbyvdp7x7hcf5li48j7ppkb44lls65lpn6c59r5waz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
