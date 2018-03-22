@@ -86,7 +86,8 @@
                          ;; to avoid superfluous entries in RUNPATH as described
                          ;; in <https://bugs.gnu.org/28444#46>, so armhf may now
                          ;; have different runtime dependencies from other arches.
-                         ,@(if (not (target-arm32?))
+                         ,@(if (not (string-prefix? "arm" (or (%current-target-system)
+                                                              (%current-system))))
                                `(("patchelf" ,(default-patchelf)))
                                '())
                          ,@native-inputs))
@@ -147,7 +148,8 @@ has a 'meson.build' file."
                     #:search-paths ',(map search-path-specification->sexp
                                           search-paths)
                     #:phases
-                    (if (target-arm32?)
+                    (if (string-prefix? "arm" ,(or (%current-target-system)
+                                                   (%current-system)))
                         (modify-phases build-phases (delete 'fix-runpath))
                         build-phases)
                     #:configure-flags ,configure-flags
