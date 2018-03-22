@@ -1736,30 +1736,34 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.60")
+    (version "7.70")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "08bga42ipymmbxd7wy4x5sl26c0ir1fm3n9rc6nqmhx69z66wyd8"))
+                "063fg8adx23l4irrh5kn57hsmi1xvjkar4vm4k6g94ppan4hcyw4"))
               (modules '((guix build utils)))
               (snippet
-               '(map delete-file-recursively
-                 ;; Remove bundled lua, pcap, and pcre libraries.
-                 ;; FIXME: Remove bundled liblinear once packaged.
-                 '("liblua"
-                   "libpcap"
-                   "libpcre"
-                   ;; Remove pre-compiled binares.
-                   "mswin32")))))
+               '(begin
+                  (map delete-file-recursively
+                       ;; Remove bundled lua, pcap, and pcre libraries.
+                       ;; FIXME: Remove bundled liblinear once packaged.
+                       '("liblua"
+                         "libpcap"
+                         "libpcre"
+                         ;; Remove pre-compiled binares.
+                         "mswin32"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)
        ("libpcap" ,libpcap)
        ("pcre" ,pcre)
        ("lua" ,lua)
+       ("zlib" ,zlib)                   ;for NSE compression support
+
        ;; For 'ndiff'.
        ("python" ,python-2)))
 
