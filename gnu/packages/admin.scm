@@ -159,16 +159,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.3.2")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://alpha.gnu.org/gnu/dmd/shepherd-"
+              (uri (string-append "https://alpha.gnu.org/gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "174q1qg7yg6w1hfvlfv720hr6hid4h5xzw15y3ycfpspllzldhcb"))
-              (patches (search-patches "shepherd-close-fds.patch"
-                                       "shepherd-herd-status-sorted.patch"))))
+                "1lgmsbxn8i8xdasxzkdp2cml75n128pplw6icvmspl6s0n9xmw8n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
