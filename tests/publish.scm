@@ -464,7 +464,7 @@ FileSize: ~a~%"
                                      (lambda (port)
                                        (display "Hello, build log!"
                                                 (current-error-port))
-                                       (display "" port)))))))
+                                       (display #$(random-text) port)))))))
     (build-derivations %store (list drv))
     (let* ((response (http-get
                       (publish-uri (string-append "/log/"
