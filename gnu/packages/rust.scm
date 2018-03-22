@@ -351,6 +351,12 @@ safety and thread safety guarantees.")
      (substitute-keyword-arguments (package-arguments rust-1.19)
        ((#:phases phases)
         `(modify-phases ,phases
+           (add-after 'unpack 'dont-build-native
+             (lambda _
+               ;; XXX: Revisit this when we use gcc 6.
+               (substitute* "src/binaryen/CMakeLists.txt"
+                 (("ADD_COMPILE_FLAG\\(\\\"-march=native\\\"\\)") ""))
+               #t))
            (add-after 'patch-tests 'patch-cargo-tests
              (lambda _
                (substitute* "src/tools/cargo/tests/build.rs"
