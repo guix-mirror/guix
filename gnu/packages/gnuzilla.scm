@@ -98,7 +98,9 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-timedout-test
            ;; This test times out on slower hardware.
-           (lambda _ (delete-file "js/src/jit-test/tests/basic/bug698584.js")))
+           (lambda _
+             (delete-file "js/src/jit-test/tests/basic/bug698584.js")
+             #t))
          (add-before 'configure 'chdir
            (lambda _
              (chdir "js/src")
@@ -109,12 +111,11 @@
              (let ((out (assoc-ref outputs "out")))
                (setenv "SHELL" (which "sh"))
                (setenv "CONFIG_SHELL" (which "sh"))
-               (zero? (system*
-                       "./configure" (string-append "--prefix=" out)
-                                     ,@(if (string=? "aarch64-linux"
-                                                     (%current-system))
-                                         '("--host=aarch64-unknown-linux-gnu")
-                                         '())))))))))
+               (invoke "./configure" (string-append "--prefix=" out)
+                       ,@(if (string=? "aarch64-linux"
+                                       (%current-system))
+                             '("--host=aarch64-unknown-linux-gnu")
+                             '()))))))))
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey")
     (synopsis "Mozilla javascript engine")
