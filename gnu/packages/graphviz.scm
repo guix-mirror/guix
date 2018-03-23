@@ -115,13 +115,13 @@ interfaces for other technical domains.")
 (define-public python-graphviz
   (package
     (name "python-graphviz")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "graphviz" version ".zip"))
               (sha256
                (base32
-                "00rzqsmq25b0say05vix5xivchdvsv83jl2i8pkryqd0nz4bxzvb"))))
+                "148h7ln8z65c1723w9vpx8khkvl9iigh8csv0qd4pidc53042rv0"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
