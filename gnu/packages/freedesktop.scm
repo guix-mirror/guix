@@ -275,11 +275,12 @@ the freedesktop.org XDG Base Directory specification.")
              ;; Fix compilation with glibc >= 2.26, which removed xlocale.h.
              ;; This can be removed for elogind 234.
              (substitute* "src/basic/parse-util.c"
-               (("xlocale\\.h") "locale.h"))))
+               (("xlocale\\.h") "locale.h"))
+             #t))
          (add-before 'configure 'autogen
            (lambda _
-             (and (zero? (system* "intltoolize" "--force" "--automake"))
-                  (zero? (system* "autoreconf" "-vif")))))
+             (invoke "intltoolize" "--force" "--automake")
+             (invoke "autoreconf" "-vif")))
          (add-before 'build 'fix-service-file
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Fix the file name of the 'elogind' binary in the D-Bus
@@ -287,7 +288,8 @@ the freedesktop.org XDG Base Directory specification.")
              (substitute* "src/login/org.freedesktop.login1.service"
                (("^Exec=.*")
                 (string-append "Exec=" (assoc-ref %outputs "out")
-                               "/libexec/elogind/elogind\n")))))
+                               "/libexec/elogind/elogind\n")))
+             #t))
          (add-after 'install 'add-libcap-to-search-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Add a missing '-L' for libcap in libelogind.la.  See
