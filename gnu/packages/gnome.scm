@@ -2865,7 +2865,8 @@ output devices.")
          (add-before 'configure 'patch-/bin/true
                      (lambda _
                        (substitute* "configure"
-                         (("/bin/true") (which "true"))))))))
+                         (("/bin/true") (which "true")))
+                       #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)
