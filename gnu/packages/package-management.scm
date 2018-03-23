@@ -155,7 +155,7 @@
                           (lambda (port)
                             (display ,version port)))
 
-                        (zero? (system* "sh" "bootstrap"))))
+                        (invoke "sh" "bootstrap")))
                     (add-before 'check 'copy-bootstrap-guile
                       (lambda* (#:key system inputs #:allow-other-keys)
                         ;; Copy the bootstrap guile tarball in the store used
