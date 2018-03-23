@@ -120,7 +120,7 @@ remote applications.")
                 #:phases (modify-phases %standard-phases
                            (add-before 'configure 'autoreconf
                              (lambda _
-                               (zero? (system* "autoreconf" "-v")))))))
+                               (invoke "autoreconf" "-v"))))))
    (native-inputs `(("autoconf" ,autoconf)
                     ("automake" ,automake)))
    (synopsis "Client-side C library implementing the SSH2 protocol")
