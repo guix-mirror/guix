@@ -4204,12 +4204,12 @@ PDF documents.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "qmake"
-                               (string-append "PREFIX=" out)
-                               (string-append "DESKTOPDIR=" out
-                                              "/share/applications")
-                               (string-append "ICONDIR=" out "/share/pixmaps")
-                               "texmaker.pro"))))))))
+               (invoke "qmake"
+                       (string-append "PREFIX=" out)
+                       (string-append "DESKTOPDIR=" out
+                                      "/share/applications")
+                       (string-append "ICONDIR=" out "/share/pixmaps")
+                       "texmaker.pro")))))))
     (inputs
      `(("poppler-qt5" ,poppler-qt5)
        ("qtbase" ,qtbase)
