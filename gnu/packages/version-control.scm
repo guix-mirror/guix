@@ -346,7 +346,9 @@ as well as the classic centralized workflow.")
               (wrap-program git-sm
                 `("PATH" ":" prefix
                   (,(string-append (assoc-ref inputs "perl")
-                                   "/bin")))))))
+                                   "/bin"))))
+
+              #t)))
         (add-after 'split 'install-man-pages
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
@@ -354,7 +356,7 @@ as well as the classic centralized workflow.")
                    (manpages (assoc-ref inputs "git-manpages")))
               (mkdir-p man)
               (with-directory-excursion man
-                (zero? (system* "tar" "xvf" manpages)))))))))
+                (invoke "tar" "xvf" manpages))))))))
 
    (native-search-paths
     ;; For HTTPS access, Git needs a single-file certificate bundle, specified
