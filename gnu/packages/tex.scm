@@ -694,20 +694,21 @@ fonts.")
                                       (assoc-ref inputs "texlive-fonts-cm")
                                       "/share/texmf-dist/fonts/source/public/cm")))
              (mkdir "build")
-             (every (lambda (font)
-                      (format #t "building font ~a\n" font)
-                      (zero? (system* "mf" "-progname=mf"
-                                      "-output-directory=build"
-                                      (string-append "\\"
-                                                     "mode:=ljfour; "
-                                                     "mag:=1; "
-                                                     "batchmode; "
-                                                     "input " font))))
-                    '("icmcsc10" "icmex10" "icmmi8" "icmsy8" "icmtt8"
-                      "ilasy8" "ilcmss8" "ilcmssb8" "ilcmssi8"
-                      "lasy5" "lasy6" "lasy7" "lasy8" "lasy9" "lasy10" "lasyb10"
-                      "lcircle10" "lcirclew10" "lcmss8" "lcmssb8" "lcmssi8"
-                      "line10" "linew10"))))
+             (for-each (lambda (font)
+                         (format #t "building font ~a\n" font)
+                         (invoke "mf" "-progname=mf"
+                                 "-output-directory=build"
+                                 (string-append "\\"
+                                                "mode:=ljfour; "
+                                                "mag:=1; "
+                                                "batchmode; "
+                                                "input " font)))
+                       '("icmcsc10" "icmex10" "icmmi8" "icmsy8" "icmtt8"
+                         "ilasy8" "ilcmss8" "ilcmssb8" "ilcmssi8"
+                         "lasy5" "lasy6" "lasy7" "lasy8" "lasy9" "lasy10" "lasyb10"
+                         "lcircle10" "lcirclew10" "lcmss8" "lcmssb8" "lcmssi8"
+                         "line10" "linew10"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
