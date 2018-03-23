@@ -682,7 +682,8 @@ Language.")
               (with-directory-excursion out
                 (for-each delete-file-recursively
                           '("data" "mysql-test" "sql-bench"
-                            "share/man/man1/mysql-test-run.pl.1")))))))))
+                            "share/man/man1/mysql-test-run.pl.1")))
+              #t))))))
     (native-inputs
      `(("bison" ,bison)
        ("perl" ,perl)))
