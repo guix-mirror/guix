@@ -1398,7 +1398,7 @@ manual SSL certificate verification.")
 (define-public libstrophe
   (package
     (name "libstrophe")
-    (version "0.9.1")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/strophe/libstrophe/archive/"
@@ -1406,7 +1406,7 @@ manual SSL certificate verification.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1hzwdax4nsz0fncf5bjfza0cn0lc6xsf38y569ql1gg5hvwr6169"))))
+                "0vxfcyfnhnlaj6spm2b0ljw5i3knbphy6mvzpl5zv9b52ny4b08m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
