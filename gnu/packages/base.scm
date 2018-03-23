@@ -1091,7 +1091,8 @@ command.")
                (let ((out (assoc-ref outputs "out")))
                  (close-port
                   (open-output-file
-                   (string-append out "/include/gnu/stubs.h"))))))
+                   (string-append out "/include/gnu/stubs.h"))))
+               #t))
            (delete 'build)              ; nothing to build
            (add-before 'configure 'patch-configure-script
              (lambda _
