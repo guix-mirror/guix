@@ -691,7 +691,9 @@ store.")
                          ;; "bilingual" eval/exec magic at the top of the file.
                          "")
                         (("exec @PERL@")
-                         "exec perl")))))
+                         "exec perl"))
+
+                      #t)))
 
                  (add-after 'install 'move-static-libs
                    (lambda* (#:key outputs #:allow-other-keys)
