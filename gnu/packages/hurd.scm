@@ -127,7 +127,7 @@ communication.")
        (modify-phases %standard-phases
          (replace 'install
            (lambda _
-             (zero? (system* "make" "install-headers" "no_deps=t"))))
+             (invoke "make" "install-headers" "no_deps=t")))
          (delete 'build))
 
        #:configure-flags '(;; Pretend we're on GNU/Hurd; 'configure' wants
