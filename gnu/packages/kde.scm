@@ -329,6 +329,23 @@ illustrators, matte and texture artists, and the VFX industry.  Notable
 features include brush stabilizers, brush engines and wrap-around mode.")
     (license license:gpl2+)))
 
+;; Krita 3 and 4's file formats are incompatible, so we are keeping Krita 3
+;; for now.
+(define-public krita-3
+  (package
+    (inherit krita)
+    (name "krita")
+    (version "3.3.3")
+    (source (origin
+              (inherit (package-source krita))
+              (uri (string-append
+                    "mirror://kde/stable/krita/"
+                    (version-prefix version 3)
+                    "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pc6hnakkqy81x5b5ncivaps6hqv43i50sjwgi3i3cz9j8rlxh5y"))))))
+
 (define-public kholidays
   (package
     (name "kholidays")
