@@ -60,8 +60,7 @@
        (modify-phases %standard-phases
          (replace 'install
            (lambda _
-             (zero?
-              (system* "make" "install-data"))))
+             (invoke "make" "install-data")))
          (delete 'build))
 
       ;; GNU Mach supports only IA32 currently, so cheat so that we can at
