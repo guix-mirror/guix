@@ -5179,10 +5179,10 @@ executable file @file{/gnu/store/@dots{}-list-files} along these lines:
 @end deffn
 
 @deffn {Scheme Procedure} program-file @var{name} @var{exp} @
-          [#:guile #f]
+          [#:guile #f] [#:module-path %load-path]
 Return an object representing the executable store item @var{name} that
 runs @var{gexp}.  @var{guile} is the Guile package used to execute that
-script.
+script.  Imported modules of @var{gexp} are looked up in @var{module-path}.
 
 This is the declarative counterpart of @code{gexp->script}.
 @end deffn

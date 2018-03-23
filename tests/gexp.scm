@@ -902,6 +902,33 @@
           (return (and (zero? (close-pipe pipe))
                        (= n (string->number str)))))))))
 
+(test-assertm "program-file #:module-path"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (define text (random-text))
+
+     (call-with-output-file (string-append directory "/stupid-module.scm")
+       (lambda (port)
+         (write `(begin (define-module (stupid-module))
+                        (define-public %stupid-thing ,text))
+                port)))
+
+     (let* ((exp    (with-imported-modules '((stupid-module))
+                      (gexp (begin
+                              (use-modules (stupid-module))
+                              (display %stupid-thing)))))
+            (file   (program-file "program" exp
+                                  #:guile %bootstrap-guile
+                                  #:module-path (list directory))))
+       (mlet* %store-monad ((drv (lower-object file))
+                            (out -> (derivation->output-path drv)))
+         (mbegin %store-monad
+           (built-derivations (list drv))
+           (let* ((pipe  (open-input-pipe out))
+                  (str   (get-string-all pipe)))
+             (return (and (zero? (close-pipe pipe))
+                          (string=? text str))))))))))
+
 (test-assertm "scheme-file"
   (let* ((text   (plain-file "foo" "Hello, world!"))
          (scheme (scheme-file "bar" #~(list "foo" #$text))))
