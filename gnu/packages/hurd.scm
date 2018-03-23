@@ -178,7 +178,7 @@ Library and other user programs.")
                  #t)))
            (replace 'build
              (lambda _
-               (zero? (system* "make" "-Clibihash" "libihash.a"))))))))
+               (invoke "make" "-Clibihash" "libihash.a")))))))
     (home-page "https://www.gnu.org/software/hurd/hurd.html")
     (synopsis "GNU Hurd libraries")
     (description
