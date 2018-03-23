@@ -269,9 +269,9 @@ fonts to/from the WOFF2 format.")
         (replace 'install
                  (lambda _
                    ;; Don't try to create /var/cache/fontconfig.
-                   (zero? (system* "make" "install"
-                                   "fc_cachedir=$(TMPDIR)"
-                                   "RUN_FC_CACHE_TEST=false")))))))
+                   (invoke "make" "install"
+                           "fc_cachedir=$(TMPDIR)"
+                           "RUN_FC_CACHE_TEST=false"))))))
    (synopsis "Library for configuring and customizing font access")
    (description
     "Fontconfig can discover new fonts when installed automatically;
