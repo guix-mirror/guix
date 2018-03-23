@@ -174,8 +174,8 @@ language.")
            (lambda _
              (setenv "LUA_CPATH" "src/?.so;;")
              (setenv "LUA_PATH"  "src/?.lua;;")
-             (and (zero? (system* "lua" "tests/test.lua"))
-                  (zero? (system* "lua" "tests/test-lom.lua"))))))))
+             (invoke "lua" "tests/test.lua")
+             (invoke "lua" "tests/test-lom.lua"))))))
     (inputs
      `(("lua" ,lua-5.1)
        ("expat" ,expat)))
