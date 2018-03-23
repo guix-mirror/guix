@@ -55,7 +55,9 @@
                              '((substitute* "extension/Makefile.in"
                                  (("^.*: check-for-shared-lib-support" match)
                                   (string-append "### " match))))
-                             '()))))
+                             '())
+
+                       #t)))
 
                  (add-before 'check 'adjust-test-infrastructure
                    (lambda _
