@@ -429,7 +429,8 @@ It adds a large amount of new and improved features to mutt.")
                  (let* ((base (basename prog-path))
                         (prog (which base)))
                    (string-append pre
-                                  (or prog (error "not found: " base))))))))))))
+                                  (or prog (error "not found: " base))))))
+              #t))))))
     (home-page "http://spruce.sourceforge.net/gmime/")
     (synopsis "MIME message parser and creator library")
     (description
