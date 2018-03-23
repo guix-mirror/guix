@@ -191,7 +191,9 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                        ;; found.
                        (substitute* "lib/Driver/ToolChains.cpp"
                          (("@GLIBC_LIBDIR@")
-                          (string-append libc "/lib")))))))))
+                          (string-append libc "/lib")))
+
+                       #t))))))
 
     ;; Clang supports the same environment variables as GCC.
     (native-search-paths
