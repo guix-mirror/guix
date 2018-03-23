@@ -146,7 +146,8 @@ text, lines, polygons, ellipses and Bézier curves.")
                 (("my \\$INC_magick = .*")
                  "my $INC_magick = `pkg-config --cflags ImageMagick`;\n")
                 (("my \\$LIBS_magick = .*")
-                 "my $LIBS_magick = `pkg-config --libs ImageMagick`;\n")))))
+                 "my $LIBS_magick = `pkg-config --libs ImageMagick`;\n"))
+              #t)))
          (add-before
           'check 'skip-mpeg-tests
           (lambda _
@@ -154,7 +155,8 @@ text, lines, polygons, ellipses and Bézier curves.")
             ;; MPEG.  Has been reported elsewhere,
             ;; http://www.imagemagick.org/discourse-server/viewtopic.php?f=7&t=25036,
             ;; so skip for now.
-            (delete-file "t/mpeg/read.t"))))))
+            (delete-file "t/mpeg/read.t")
+            #t)))))
     (home-page "http://search.cpan.org/dist/PerlMagick")
     (synopsis "Perl interface to ImageMagick")
     (description "This Perl extension allows the reading, manipulation and
