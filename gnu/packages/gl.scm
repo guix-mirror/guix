@@ -413,10 +413,11 @@ from software emulation to complete hardware acceleration for modern GPUs.")
          (delete 'build)
          (delete 'check)
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (copy-recursively "include" (string-append
-                                                 (assoc-ref outputs "out")
-                                                 "/include")))))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (copy-recursively "include" (string-append
+                                          (assoc-ref outputs "out")
+                                          "/include"))
+             #t)))))))
 
 ;;; The mesa-demos distribution contains non-free files, many files with no
 ;;; clear license information, and many demos that aren't useful for most
