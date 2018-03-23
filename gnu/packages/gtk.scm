@@ -546,7 +546,7 @@ in the GNOME project.")
                  (lambda _
                    ;; Don't fail on missing  '/etc/machine-id'.
                    (setenv "DBUS_FATAL_WARNINGS" "0")
-                   (zero? (system* "dbus-launch" "make" "check")))))))
+                   (invoke "dbus-launch" "make" "check"))))))
    (propagated-inputs
     ;; atspi-2.pc refers to all these.
     `(("dbus" ,dbus)
