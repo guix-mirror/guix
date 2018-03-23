@@ -79,7 +79,8 @@ a flexible and convenient way.")
                              (("#! /bin/sh")
                               (string-append "#!" (which "sh")))))
                          (remove file-is-directory?
-                                 (find-files "src/tests" ".*"))))))
+                                 (find-files "src/tests" ".*")))
+               #t)))
          (add-after 'unpack 'patch-iconv-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/man.c"
