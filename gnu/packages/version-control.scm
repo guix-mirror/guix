@@ -1106,23 +1106,21 @@ following features:
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Follow the instructions from 'subversion/bindings/swig/INSTALL'.
              (let ((out (assoc-ref outputs "out")))
-               (and (zero? (system* "make" "swig-pl-lib"))
-                    ;; FIXME: Test failures.
-                    ;; (zero? (system* "make" "check-swig-pl"))
-                    (zero? (system* "make" "install-swig-pl-lib"))
+               (invoke "make" "swig-pl-lib")
+               ;; FIXME: Test failures.
+               ;; (invoke "make" "check-swig-pl")
+               (invoke "make" "install-swig-pl-lib")
 
-                    ;; Set the right installation prefix.
-                    (with-directory-excursion
-                        "subversion/bindings/swig/perl/native"
-                      (and (zero?
-                            (system* "perl" "Makefile.PL"
-                                     "NO_PERLLOCAL=1"
-                                     (string-append "PREFIX=" out)))
-                           (zero?
-                            (system* "make" "install"
-                                     (string-append "OTHERLDFLAGS="
-                                                    "-Wl,-rpath="
-                                                    out "/lib"))))))))))))
+               ;; Set the right installation prefix.
+               (with-directory-excursion
+                   "subversion/bindings/swig/perl/native"
+                 (invoke "perl" "Makefile.PL"
+                         "NO_PERLLOCAL=1"
+                         (string-append "PREFIX=" out))
+                 (invoke "make" "install"
+                         (string-append "OTHERLDFLAGS="
+                                        "-Wl,-rpath="
+                                        out "/lib")))))))))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ;; For the Perl bindings.
