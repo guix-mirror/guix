@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -137,10 +137,10 @@
                  (substitute* '("mingw.cf" "Imake.tmpl" "nto.cf" "os2.cf"
                                 "linux.cf" "Amoeba.cf" "cygwin.cf")
                    (("/bin/sh") (which "bash")))
-                 (and (zero? (system* "./configure"
-                                      (string-append "SHELL=" (which "bash"))
-                                      (string-append "--prefix=" out)))
-                      (zero? (system* "make" "install"))))))))))
+                 (invoke "./configure"
+                         (string-append "SHELL=" (which "bash"))
+                         (string-append "--prefix=" out))
+                 (invoke "make" "install"))))))))
     (home-page "https://www.x.org/")
     (synopsis "Source code configuration and build system")
     (description
