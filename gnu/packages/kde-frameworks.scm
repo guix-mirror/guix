@@ -117,7 +117,8 @@
              (substitute* "modules/ECMGeneratePriFile.cmake"
                ;; Install pri-files into lib/qt5/mkspecs
                (("set\\(ECM_MKSPECS_INSTALL_DIR mkspecs/modules")
-                "set(ECM_MKSPECS_INSTALL_DIR lib/qt5/mkspecs/modules"))))
+                "set(ECM_MKSPECS_INSTALL_DIR lib/qt5/mkspecs/modules"))
+             #t))
          ;; install and check phase are swapped to prevent install from failing
          ;; after testsuire has run
          (add-after 'install 'check-post-install
