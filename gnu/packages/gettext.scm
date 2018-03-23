@@ -89,14 +89,17 @@
 
                (substitute* "gettext-tools/src/project-id"
                  (("/bin/pwd")
-                  "pwd"))))))
+                  "pwd"))
+
+               #t))))
         (add-before 'configure 'link-expat
          (lambda _
            ;; Gettext defaults to opening expat via dlopen on
            ;; "Linux".  Change to link directly.
            (substitute* "gettext-tools/configure"
              (("LIBEXPAT=\"-ldl\"") "LIBEXPAT=\"-ldl -lexpat\"")
-             (("LTLIBEXPAT=\"-ldl\"") "LTLIBEXPAT=\"-ldl -lexpat\"")))))
+             (("LTLIBEXPAT=\"-ldl\"") "LTLIBEXPAT=\"-ldl -lexpat\""))
+           #t)))
 
        ;; When tests fail, we want to know the details.
        #:make-flags '("VERBOSE=yes")))
