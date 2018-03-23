@@ -5658,7 +5658,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
 (define-public gnome-autoar
   (package
     (name "gnome-autoar")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5666,7 +5666,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qnafiwgajsaryh669lfclb4f6z5n1r9r4zhig1ha0ykxq32rzp1"))))
+                "02i4zgqqqj56h7bcys6dz7n78m4nj2x4dv1ggjmnrk98n06xpsax"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gnome-common" ,gnome-common)
