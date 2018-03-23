@@ -121,9 +121,9 @@ know anything about Autoconf or M4.")
                    (out  (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" bash)
                (setenv "SHELL" bash)
-               (zero? (system* bash "./configure"
-                               (string-append "--prefix=" out)
-                               (string-append "--build=" build)))))))))))
+               (invoke bash "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--build=" build))))))))))
 
 
 (define (make-autoconf-wrapper autoconf)
