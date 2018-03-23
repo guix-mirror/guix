@@ -628,13 +628,13 @@ display, and mathematical fonts in a range of styles, based on Monotype Modern
                        (string-append (getcwd) ":"
                                       mf "/share/texmf-dist/metafont/base")))
              (mkdir "build")
-             (zero? (system* "mf" "-progname=mf"
-                             "-output-directory=build"
-                             (string-append "\\"
-                                            "mode:=ljfour; "
-                                            "mag:=1; "
-                                            "batchmode; "
-                                            "input manfnt")))))
+             (invoke "mf" "-progname=mf"
+                     "-output-directory=build"
+                     (string-append "\\"
+                                    "mode:=ljfour; "
+                                    "mag:=1; "
+                                    "batchmode; "
+                                    "input manfnt"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
