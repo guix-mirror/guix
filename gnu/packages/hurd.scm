@@ -228,10 +228,9 @@ Hurd-minimal package which are needed for both glibc and GCC.")
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out  (assoc-ref outputs "out"))
                              (boot (string-append out "/boot")))
-                        (and (zero? (system* "make" "gnumach.gz"))
-                             (begin
-                               (install-file "gnumach.gz" boot)
-                               #t))))))))
+                        (invoke "make" "gnumach.gz")
+                        (install-file "gnumach.gz" boot)
+                        #t))))))
     (native-inputs
      `(("mig" ,mig)
        ("perl" ,perl)))
