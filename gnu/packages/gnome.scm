@@ -4357,7 +4357,7 @@ wraps things up in a developer-friendly way.")
 (define-public libgee
   (package
     (name "libgee")
-    (version "0.20.0")
+    (version "0.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4365,7 +4365,7 @@ wraps things up in a developer-friendly way.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1fy24dr8imrjlmsqj1syn0gi139gba6hwk3j5vd6sr3pxniqnc11"))))
+                "0c26x8gi3ivmhlbqcmiag4jwrkvcy28ld24j55nqr3jikb904a5v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
