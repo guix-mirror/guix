@@ -77,7 +77,8 @@
                         (let ((doc (assoc-ref outputs "doc")))
                           (string-append "DOCUMENTATION_PATH = "
                                          doc "/share/doc/"
-                                         ,name "-" ,version "\n"))))))
+                                         ,name "-" ,version "\n"))))
+                     #t))
                   (add-before
                    'configure 'strip-configure-xml
                    (lambda _
@@ -87,7 +88,8 @@
                        ;; include --docdir, and thus retain a reference to the
                        ;; 'doc' output.
                        (("@CONFIGURE_ARGS@")
-                        "not recorded")))))))
+                        "not recorded"))
+                     #t)))))
     ;; TODO: Add Jasper etc.
     (inputs `(("fftw" ,fftw)
               ("graphviz" ,graphviz)
