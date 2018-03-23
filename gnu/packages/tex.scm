@@ -470,7 +470,7 @@ converters, will completely supplant the older patterns.")
                                       cwd "/config")))
              (mkdir "build")
              (with-directory-excursion "build"
-               (zero? (system* "inimf" "mf.mf")))))
+               (invoke "inimf" "mf.mf"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
