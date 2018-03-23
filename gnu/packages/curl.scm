@@ -124,7 +124,7 @@
            ;; The top-level "make check" does "make -C tests quiet-test", which
            ;; is too quiet.  Use the "test" target instead, which is more
            ;; verbose.
-           (zero? (system* "make" "-C" "tests" "test")))))))
+           (invoke "make" "-C" "tests" "test"))))))
    (synopsis "Command line tool for transferring data with URL syntax")
    (description
     "curl is a command line tool for transferring data with URL syntax,
