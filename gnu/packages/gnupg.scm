@@ -355,7 +355,8 @@ libskba (working with X.509 certificates and CMS data).")
          (add-after 'unpack 'patch-check-sh
            (lambda _
              (substitute* "checks/Makefile.in"
-               (("/bin/sh") (which "sh"))))))))))
+               (("/bin/sh") (which "sh")))
+             #t)))))))
 
 (define-public gpgme
   (package
