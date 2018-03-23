@@ -214,11 +214,11 @@ printing, and psresize, for adjusting page sizes.")
            (lambda _
              ;; Build 'libgs.so', but don't build the statically-linked 'gs'
              ;; binary (saves 22 MiB).
-             (zero? (system* "make" "so" "-j"
-                             (number->string (parallel-job-count))))))
+             (invoke "make" "so" "-j"
+                     (number->string (parallel-job-count)))))
          (replace 'install
            (lambda _
-             (zero? (system* "make" "soinstall"))))
+             (invoke "make" "soinstall")))
          (add-after 'install 'create-gs-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
