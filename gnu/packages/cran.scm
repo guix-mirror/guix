@@ -3273,3 +3273,26 @@ those functions to be used with time series including specifications that may
 contain lags, diffs and missing values.")
     ;; Any GPL version.
     (license license:gpl2+)))
+
+(define-public r-catdap
+  (package
+    (name "r-catdap")
+    (version "1.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "catdap" version))
+       (sha256
+        (base32
+         "0i877l61f6c75pczi235rzci67w29zv1d7z5zn5p5ymndclvlpl2"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/catdap/")
+    (synopsis "Tools for categorical data analysis")
+    (description
+     "This package provides functions for analyzing multivariate data.
+Dependencies of the distribution of the specified variable (response
+variable) to other variables (explanatory variables) are derived and
+evaluated by the @dfn{Akaike Information Criterion} (AIC).")
+    (license license:gpl2+)))
