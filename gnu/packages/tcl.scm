@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -55,16 +55,15 @@
                  (add-after 'install 'install-private-headers
                    (lambda* (#:key outputs #:allow-other-keys)
                      ;; Private headers are needed by Expect.
-                     (and (zero? (system* "make"
-                                          "install-private-headers"))
-                          (let ((bin (string-append (assoc-ref outputs "out")
-                                                    "/bin")))
-                            ;; Create a tclsh -> tclsh8.6 symlink.
-                            ;; Programs such as Ghostscript rely on it.
-                            (with-directory-excursion bin
-                              (symlink (car (find-files "." "tclsh"))
-                                       "tclsh"))
-                            #t)))))
+                     (invoke "make" "install-private-headers")
+                     (let ((bin (string-append (assoc-ref outputs "out")
+                                               "/bin")))
+                       ;; Create a tclsh -> tclsh8.6 symlink.
+                       ;; Programs such as Ghostscript rely on it.
+                       (with-directory-excursion bin
+                         (symlink (car (find-files "." "tclsh"))
+                                  "tclsh"))
+                       #t))))
 
        ;; By default, man pages are put in PREFIX/man, but we want them in
        ;; PREFIX/share/man.  The 'validate-documentation-location' phase is
