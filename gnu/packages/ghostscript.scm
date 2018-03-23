@@ -295,7 +295,7 @@ output file formats and printers.")
             (substitute* "autogen.sh"
               (("^.*\\$srcdir/configure.*") "")
               (("^ + && echo Now type.*$")  ""))
-            (zero? (system* "bash" "autogen.sh")))))))
+            (invoke "bash" "autogen.sh"))))))
    (synopsis "IJS driver framework for inkjet and other raster devices")
    (description
     "IJS is a protocol for transmission of raster page images.  This package
