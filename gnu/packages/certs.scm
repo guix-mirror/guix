@@ -170,10 +170,9 @@ taken from the NSS package and thus ultimately from the Mozilla project.")
            ;; Create hash symlinks suitable for OpenSSL ('SSL_CERT_DIR' and
            ;; similar.)
            (chdir (string-append %output "/etc/ssl/certs"))
-           (unless (zero? (system* (string-append perl "/bin/perl")
-                                   (string-append openssl "/bin/c_rehash")
-                                   "."))
-             (error "'c_rehash' failed" openssl))))))
+           (invoke (string-append perl "/bin/perl")
+                   (string-append openssl "/bin/c_rehash")
+                   ".")))))
     (native-inputs
      `(("openssl" ,openssl)
        ("perl" ,perl)))                           ;for 'c_rehash'
