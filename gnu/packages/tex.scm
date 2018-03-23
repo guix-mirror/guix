@@ -2913,16 +2913,17 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
                                       (assoc-ref inputs "texlive-fonts-cm")
                                       "/share/texmf-dist/fonts/source/public/cm")))
              (mkdir "build")
-             (every (lambda (font)
-                      (format #t "building font ~a\n" font)
-                      (invoke "mf" "-progname=mf"
-                              "-output-directory=build"
-                              (string-append "\\"
-                                             "mode:=ljfour; "
-                                             "mag:=1; "
-                                             "batchmode; "
-                                             "input " (basename font ".mf"))))
-                    (find-files "." "[0-9]+\\.mf$"))))
+             (for-each (lambda (font)
+                         (format #t "building font ~a\n" font)
+                         (invoke "mf" "-progname=mf"
+                                 "-output-directory=build"
+                                 (string-append "\\"
+                                                "mode:=ljfour; "
+                                                "mag:=1; "
+                                                "batchmode; "
+                                                "input " (basename font ".mf"))))
+                       (find-files "." "[0-9]+\\.mf$"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
