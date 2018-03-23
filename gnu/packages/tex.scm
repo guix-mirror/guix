@@ -191,7 +191,7 @@
                (with-directory-excursion "texlive-extra"
                  (apply unpack (list #:source texlive-extra))
                  (apply patch-source-shebangs (list #:source texlive-extra))
-                 (system* "mv" "tlpkg" share))))))))
+                 (invoke "mv" "tlpkg" share))))))))
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
