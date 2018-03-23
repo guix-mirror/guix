@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix tests)
   #:use-module ((guix build utils) #:select (with-directory-excursion))
+  #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
@@ -852,6 +853,37 @@
            (str   (get-string-all pipe)))
       (return (and (zero? (close-pipe pipe))
                    (= (expt n 2) (string->number str)))))))
+
+(test-assertm "gexp->script #:module-path"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (define str
+       "Fake (guix base32) module!")
+
+     (mkdir (string-append directory "/guix"))
+     (call-with-output-file (string-append directory "/guix/base32.scm")
+       (lambda (port)
+         (write `(begin (define-module (guix base32))
+                        (define-public %fake! ,str))
+                port)))
+
+     (mlet* %store-monad ((exp -> (with-imported-modules '((guix base32))
+                                    (gexp (begin
+                                            (use-modules (guix base32))
+                                            (write (list %load-path
+                                                         %fake!))))))
+                          (drv    (gexp->script "guile-thing" exp
+                                                #:guile %bootstrap-guile
+                                                #:module-path (list directory)))
+                          (out -> (derivation->output-path drv))
+                          (done   (built-derivations (list drv))))
+       (let* ((pipe  (open-input-pipe out))
+              (data  (read pipe)))
+         (return (and (zero? (close-pipe pipe))
+                      (match data
+                        ((load-path str*)
+                         (and (string=? str* str)
+                              (not (member directory load-path))))))))))))
 
 (test-assertm "program-file"
   (let* ((n      (random (expt 2 50)))

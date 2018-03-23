@@ -5150,9 +5150,11 @@ is a list of additional arguments to pass to @code{gexp->derivation}.
 This is the declarative counterpart of @code{gexp->derivation}.
 @end deffn
 
-@deffn {Monadic Procedure} gexp->script @var{name} @var{exp}
+@deffn {Monadic Procedure} gexp->script @var{name} @var{exp} @
+  [#:guile (default-guile)] [#:module-path %load-path]
 Return an executable script @var{name} that runs @var{exp} using
 @var{guile}, with @var{exp}'s imported modules in its search path.
+Look up @var{exp}'s modules in @var{module-path}.
 
 The example below builds a script that simply invokes the @command{ls}
 command:
@@ -5186,11 +5188,13 @@ This is the declarative counterpart of @code{gexp->script}.
 @end deffn
 
 @deffn {Monadic Procedure} gexp->file @var{name} @var{exp} @
-            [#:set-load-path? #t]
+            [#:set-load-path? #t] [#:module-path %load-path] @
+            [#:guile (default-guile)]
 Return a derivation that builds a file @var{name} containing @var{exp}.
 When @var{set-load-path?} is true, emit code in the resulting file to
 set @code{%load-path} and @code{%load-compiled-path} to honor
-@var{exp}'s imported modules.
+@var{exp}'s imported modules.  Look up @var{exp}'s modules in
+@var{module-path}.
 
 The resulting file holds references to all the dependencies of @var{exp}
 or a subset thereof.
