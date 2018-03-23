@@ -159,7 +159,8 @@
              ;; Use `pwd', not `/bin/pwd'.
              (substitute* (find-files "." "^Makefile\\.in$")
                (("/bin/pwd")
-                "pwd"))))
+                "pwd"))
+             #t))
          (add-after 'install 'install-site-start
            ;; Use 'guix-emacs' in "site-start.el".  This way, Emacs packages
            ;; provided by Guix and installed in
