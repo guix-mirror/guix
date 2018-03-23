@@ -949,37 +949,35 @@ book).")
 
                (mkdir "build")
                (mkdir "web2c")
-               (and (invoke "luatex" "-ini" "-interaction=batchmode"
-                            "-output-directory=build" "unpack.ins")
-                    (invoke "tex" "-ini" "-interaction=batchmode"
-                            "-output-directory=web2c" "tex.ini")
-                    ;; LaTeX, pdfetex/pdftex, and XeTeX require e-TeX, which
-                    ;; is enabled only in extended mode (activated with a
-                    ;; leading asterisk).  We should not use luatex here,
-                    ;; because that would make the generated format files
-                    ;; incompatible with any other TeX engine.
-                    (every
-                     (lambda (format)
-                       (invoke "latex" "-ini" "-interaction=batchmode"
-                               "-output-directory=web2c"
-                               "-translate-file=cp227.tcx"
-                               (string-append "*" format ".ini")))
-                     '("latex"
-                       "pdflatex"
-                       "pdfetex"))
-                    (every
-                     (lambda (format)
-                       (invoke format "-ini" "-interaction=batchmode"
-                               "-output-directory=web2c"
-                               (string-append "*" format ".ini")))
-                     '("xetex"
-                       "xelatex"))
-                    (every
-                     (lambda (format)
-                       (invoke "luatex" "-ini" "-interaction=batchmode"
-                               "-output-directory=web2c"
-                               (string-append format ".ini")))
-                     '("dviluatex" "dvilualatex" "luatex" "lualatex")))))
+               (invoke "luatex" "-ini" "-interaction=batchmode"
+                       "-output-directory=build" "unpack.ins")
+               (invoke "tex" "-ini" "-interaction=batchmode"
+                       "-output-directory=web2c" "tex.ini")
+               ;; LaTeX, pdfetex/pdftex, and XeTeX require e-TeX, which
+               ;; is enabled only in extended mode (activated with a
+               ;; leading asterisk).  We should not use luatex here,
+               ;; because that would make the generated format files
+               ;; incompatible with any other TeX engine.
+               (for-each (lambda (format)
+                           (invoke "latex" "-ini" "-interaction=batchmode"
+                                   "-output-directory=web2c"
+                                   "-translate-file=cp227.tcx"
+                                   (string-append "*" format ".ini")))
+                         '("latex"
+                           "pdflatex"
+                           "pdfetex"))
+               (for-each (lambda (format)
+                           (invoke format "-ini" "-interaction=batchmode"
+                                   "-output-directory=web2c"
+                                   (string-append "*" format ".ini")))
+                         '("xetex"
+                           "xelatex"))
+               (for-each (lambda (format)
+                           (invoke "luatex" "-ini" "-interaction=batchmode"
+                                   "-output-directory=web2c"
+                                   (string-append format ".ini")))
+                         '("dviluatex" "dvilualatex" "luatex" "lualatex"))
+               #t))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
