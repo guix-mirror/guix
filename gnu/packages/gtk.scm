@@ -648,7 +648,8 @@ is part of the GNOME accessibility project.")
        (lambda _
          ;; FIXME: re-enable tests requiring an X server
          (substitute* "gtk/Makefile.in"
-           (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits .")))
+           (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits ."))
+         #t)
        %standard-phases)))
    (native-search-paths
     (list (search-path-specification
