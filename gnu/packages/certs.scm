@@ -121,7 +121,7 @@
                (mkdir-p certsdir)
                (with-directory-excursion "nss/lib/ckfw/builtins/"
                  ;; extract single certificates from blob
-                 (system* "certdata2pem.py" "certdata.txt")
+                 (invoke "certdata2pem.py" "certdata.txt")
                  ;; copy selected .pem files into the output
                  (for-each maybe-install-cert
                            (find-files "." ".*\\.pem")))
