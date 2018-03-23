@@ -454,7 +454,8 @@ from software emulation to complete hardware acceleration for modern GPUs.")
                (lambda (file)
                  (copy-file file (string-append out "/bin/" (basename file))))
                '("src/xdemos/glxdemo" "src/xdemos/glxgears"
-                 "src/xdemos/glxinfo" "src/xdemos/glxheads"))))))))
+                 "src/xdemos/glxinfo" "src/xdemos/glxheads"))
+              #t))))))
     (home-page "http://mesa3d.org/")
     (synopsis "Utility tools for Mesa")
     (description
