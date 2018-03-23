@@ -110,8 +110,25 @@ for system '~a'")
                         file-name system)))))))
 
 (define %distro-root-directory
-  ;; Absolute file name of the module hierarchy.
-  (dirname (search-path %load-path "guix.scm")))
+  ;; Absolute file name of the module hierarchy.  Since (gnu packages …) might
+  ;; live in a directory different from (guix), try to get the best match.
+  (letrec-syntax ((dirname* (syntax-rules ()
+                              ((_ file)
+                               (dirname file))
+                              ((_ file head tail ...)
+                               (dirname (dirname* file tail ...)))))
+                  (try      (syntax-rules ()
+                              ((_ (file things ...) rest ...)
+                               (match (search-path %load-path file)
+                                 (#f
+                                  (try rest ...))
+                                 (absolute
+                                  (dirname* absolute things ...))))
+                              ((_)
+                               #f))))
+    (try ("gnu/packages/base.scm" gnu/ packages/)
+         ("gnu/packages.scm"      gnu/)
+         ("guix.scm"))))
 
 (define %package-module-path
   ;; Search path for package modules.  Each item must be either a directory

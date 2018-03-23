@@ -81,6 +81,7 @@ MODULES =					\
   guix/derivations.scm				\
   guix/grafts.scm				\
   guix/gnu-maintenance.scm			\
+  guix/self.scm					\
   guix/upstream.scm				\
   guix/licenses.scm				\
   guix/glob.scm					\
