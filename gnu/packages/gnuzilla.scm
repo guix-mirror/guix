@@ -672,9 +672,9 @@ security standards.")
               (chdir "../build")
               (format #t "build directory: ~s~%" (getcwd))
               (format #t "configure flags: ~s~%" flags)
-              (zero? (apply system* bash
-                            (string-append srcdir "/configure")
-                            flags)))))
+              (apply invoke bash
+                     (string-append srcdir "/configure")
+                     flags))))
          (add-before 'configure 'install-desktop-entry
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install the '.desktop' file.
@@ -729,7 +729,8 @@ security standards.")
                       (copy-file file (string-append icons "/icecat.png"))))
                   '("default16.png" "default22.png" "default24.png"
                     "default32.png" "default48.png" "content/icon64.png"
-                    "mozicon128.png" "default256.png"))))))
+                    "mozicon128.png" "default256.png"))
+                 #t))))
          ;; This fixes the file chooser crash that happens with GTK 3.
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -738,7 +739,8 @@ security standards.")
                     (gtk (assoc-ref inputs "gtk+"))
                     (gtk-share (string-append gtk "/share")))
                (wrap-program (car (find-files lib "^icecat$"))
-                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))))))))
+                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))
+               #t))))))
     (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description
