@@ -2539,12 +2539,11 @@ libxml to ease remote use of the RESTful API.")
              #t))
          (replace 'install
            (lambda _
-             (zero?
-              (system* "make"
-                       ;; Install vala bindings into $out.
-                       (string-append "vapidir=" %output
-                                      "/share/vala/vapi")
-                       "install")))))))
+             (invoke "make"
+                     ;; Install vala bindings into $out.
+                     (string-append "vapidir=" %output
+                                    "/share/vala/vapi")
+                     "install"))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")                   ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
