@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -513,8 +513,10 @@ in the GNOME project.")
                       (find-files librsvg "^libpixbufloader-.*\\.so$")))
                     (gdk-pixbuf-query-loaders
                      (string-append out "/bin/gdk-pixbuf-query-loaders")))
-               (zero? (apply system* `(,gdk-pixbuf-query-loaders
-                                       "--update-cache" ,@loaders)))))))))
+               (apply invoke
+                      gdk-pixbuf-query-loaders
+                      "--update-cache"
+                      loaders)))))))
     (synopsis
      "GNOME image loading and manipulation library, with SVG support")))
 
