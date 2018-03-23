@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -226,12 +227,11 @@ backups (called chunks) to allow easy burning to CD/DVD.")
              ;; the chroot's /etc/passwd doesn't have it.  Turn off those tests.
              ;;
              ;; The tests allow one to disable tests matching a globbing pattern.
-             (and (zero? (system* "make"
-                                  "libarchive_test" "bsdcpio_test" "bsdtar_test"))
-                  ;; XXX: This glob disables too much.
-                  (zero? (system* "./libarchive_test" "^test_*_disk*"))
-                  (zero? (system* "./bsdcpio_test" "^test_owner_parse"))
-                  (zero? (system* "./bsdtar_test"))))))
+             (invoke "make" "libarchive_test" "bsdcpio_test" "bsdtar_test")
+             ;; XXX: This glob disables too much.
+             (invoke "./libarchive_test" "^test_*_disk*")
+             (invoke "./bsdcpio_test" "^test_owner_parse")
+             (invoke "./bsdtar_test"))))
        ;; libarchive/test/test_write_format_gnutar_filenames.c needs to be
        ;; compiled with C99 or C11 or a gnu variant.
        #:configure-flags '("CFLAGS=-O2 -g -std=c99")))
