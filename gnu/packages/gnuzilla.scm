@@ -225,23 +225,23 @@ in C/C++.")
                (chdir "js/src")
                (setenv "SHELL" (which "sh"))
                (setenv "CONFIG_SHELL" (which "sh"))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)
-                               "--enable-ctypes"
-                               "--enable-gcgenerational"
-                               "--enable-optimize"
-                               "--enable-pie"
-                               "--enable-readline"
-                               "--enable-shared-js"
-                               "--enable-system-ffi"
-                               "--enable-threadsafe"
-                               "--enable-xterm-updates"
-                               "--with-system-icu"
-                               "--with-system-nspr"
-                               "--with-system-zlib"
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       "--enable-ctypes"
+                       "--enable-gcgenerational"
+                       "--enable-optimize"
+                       "--enable-pie"
+                       "--enable-readline"
+                       "--enable-shared-js"
+                       "--enable-system-ffi"
+                       "--enable-threadsafe"
+                       "--enable-xterm-updates"
+                       "--with-system-icu"
+                       "--with-system-nspr"
+                       "--with-system-zlib"
 
-                               ;; Intl API requires bundled ICU.
-                               "--without-intl-api"))))))))
+                       ;; Intl API requires bundled ICU.
+                       "--without-intl-api")))))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
