@@ -153,15 +153,15 @@ in C/C++.")
                   ;; configure fails if it is followed by SHELL and CONFIG_SHELL
                   (setenv "SHELL" (which "sh"))
                   (setenv "CONFIG_SHELL" (which "sh"))
-                  (zero? (system* "./configure"
-                                  (string-append "--prefix=" out)
-                                  "--with-system-nspr"
-                                  "--enable-system-ffi"
-                                  "--enable-threadsafe"
-                                  ,@(if (string=? "aarch64-linux"
-                                                  (%current-system))
-                                      '("--host=aarch64-unknown-linux-gnu")
-                                      '()))))))))))
+                  (invoke "./configure"
+                          (string-append "--prefix=" out)
+                          "--with-system-nspr"
+                          "--enable-system-ffi"
+                          "--enable-threadsafe"
+                          ,@(if (string=? "aarch64-linux"
+                                          (%current-system))
+                                '("--host=aarch64-unknown-linux-gnu")
+                                '())))))))))
     (inputs
      `(("libffi" ,libffi)
        ("zlib" ,zlib)))))
