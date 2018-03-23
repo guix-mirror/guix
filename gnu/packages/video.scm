@@ -744,13 +744,13 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
                 (("#! /bin/sh") (string-append "#!" (which "sh"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
-              (zero? (apply system*
-                            "./configure"
-                            (string-append "--prefix=" out)
-                            ;; Add $libdir to the RUNPATH of all the binaries.
-                            (string-append "--extra-ldflags=-Wl,-rpath="
-                                           out "/lib")
-                            configure-flags)))))
+              (apply invoke
+                     "./configure"
+                     (string-append "--prefix=" out)
+                     ;; Add $libdir to the RUNPATH of all the binaries.
+                     (string-append "--extra-ldflags=-Wl,-rpath="
+                                    out "/lib")
+                     configure-flags))))
          (add-before
           'check 'set-ld-library-path
           (lambda _
