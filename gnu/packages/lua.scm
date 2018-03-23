@@ -73,10 +73,10 @@
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "make" "install"
-                               (string-append "INSTALL_TOP=" out)
-                               (string-append "INSTALL_MAN=" out
-                                              "/share/man/man1")))))))))
+               (invoke "make" "install"
+                       (string-append "INSTALL_TOP=" out)
+                       (string-append "INSTALL_MAN=" out
+                                      "/share/man/man1"))))))))
     (home-page "https://www.lua.org/")
     (synopsis "Embeddable scripting language")
     (description
