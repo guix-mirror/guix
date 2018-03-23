@@ -1097,7 +1097,7 @@ also play midifiles using a Soundfont.")
          (replace 'bootstrap
            (lambda _
              (substitute* "bootstrap" (("\r\n") "\n"))
-             (zero? (system* "sh" "bootstrap")))))))
+             (invoke "sh" "bootstrap"))))))
     (home-page "http://www.audiocoding.com/faad2.html")
     (synopsis "MPEG-4 and MPEG-2 AAC decoder")
     (description
