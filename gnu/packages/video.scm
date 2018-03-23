@@ -1753,14 +1753,14 @@ and custom quantization matrices.")
 (define-public streamlink
   (package
     (name "streamlink")
-    (version "0.10.0")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "streamlink" version))
        (sha256
         (base32
-         "17299xnd9jzi7m1d2rr4xdlj47q64bzj2957nlsrhw0hskds1s6h"))))
+         "02h8b3k8l5zz4vjm0nhxvl1pm924jms8y7sjl40fbybrzvsa4mg2"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs
@@ -1773,7 +1773,8 @@ and custom quantization matrices.")
        ("python-iso3166" ,python-iso3166)
        ("python-iso639" ,python-iso639)
        ("python-pycryptodome" ,python-pycryptodome)
-       ("python-requests" ,python-requests)))
+       ("python-requests" ,python-requests)
+       ("python-urllib3" ,python-urllib3)))
     (synopsis "Extract streams from various services")
     (description "Streamlink is command-line utility that extracts streams
 from sites like Twitch.tv and pipes them into a video player of choice.")
