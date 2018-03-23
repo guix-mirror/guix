@@ -596,7 +596,8 @@ RDBMS systems (which are deep in functionality).")
                      (substitute* "cmake/boost.cmake"
                        (("59")
                         ,(match (string-split (package-version boost) #\.)
-                           ((_ minor . _) minor))))))
+                           ((_ minor . _) minor))))
+                     #t))
                   (add-after
                    'install 'remove-extra-binaries
                    (lambda* (#:key outputs #:allow-other-keys)
