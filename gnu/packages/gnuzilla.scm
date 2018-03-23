@@ -345,7 +345,7 @@ in the Mozilla clients.")
              (setenv "DOMSUF" "(none)")
              (setenv "USE_IP" "TRUE")
              (setenv "IP_ADDRESS" "127.0.0.1")
-             (zero? (system* "./nss/tests/all.sh"))))
+             (invoke "./nss/tests/all.sh")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
