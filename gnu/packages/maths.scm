@@ -1260,7 +1260,7 @@ interfaces.")
 (define-public ceres
   (package
     (name "ceres-solver")
-    (version "1.13.0")
+    (version "1.14.0")
     (home-page "http://ceres-solver.org/")
     (source (origin
               (method url-fetch)
@@ -1268,7 +1268,7 @@ interfaces.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1kbxgab3q1vgyq7hjqasr1lji4b2sgn7ss351amklkb3jyhr1x0x"))))
+                "13lfxy8x58w8vprr0nkbzziaijlh0vvqshgahvcgw0mrqdgh0i27"))))
     (build-system cmake-build-system)
     (arguments
      ;; TODO: Build HTML user documentation and install separately.
