@@ -7952,7 +7952,7 @@ algorism to indicate multiplication by 1000.")
 (define-public perl-text-simpletable
   (package
     (name "perl-text-simpletable")
-    (version "2.03")
+    (version "2.04")
     (source
      (origin
        (method url-fetch)
@@ -7960,7 +7960,7 @@ algorism to indicate multiplication by 1000.")
                            "Text-SimpleTable-" version ".tar.gz"))
        (sha256
         (base32
-         "15hpry9jwrf1vbjyk21s65rllxrdvp2fdzzv9gsvczggby2yyzfs"))))
+         "14sjmdcy7s73sk740g3ccmzmwhwd52x5ay3bjmibjlql1cag70ld"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Text-SimpleTable/")
     (synopsis "Simple ASCII tables")
