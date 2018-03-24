@@ -5797,9 +5797,7 @@ from an XML-based format.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/57/4f/"
-                           "889579244947368f28eda66b782331b1e75f83fd72e63f9ece93cd7a18f9"
-                           "/python-ly-" version ".tar.gz"))
+       (uri (pypi-uri name version))
        (sha256
         (base32
          "0x98dv7p8mg26p4816yy8hz4f34zf6hpnnfmr56msgh9jnsm2qfl"))))
