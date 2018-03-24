@@ -710,7 +710,7 @@ Zoner Draw version 4 and 5.")
        (modify-phases %standard-phases
          (add-after 'unpack 'bootstrap
            (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
+             (invoke "autoreconf" "-vfi") #t)))))
     (native-search-paths (list (search-path-specification
                                 (variable "DICPATH")
                                 (files '("share/hunspell")))))
