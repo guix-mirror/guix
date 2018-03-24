@@ -589,7 +589,7 @@ authentication}.")
 (define-public autossh
   (package
     (name "autossh")
-    (version "1.4e")
+    (version "1.4f")
     (source
      (origin
        (method url-fetch)
@@ -597,7 +597,7 @@ authentication}.")
              "http://www.harding.motd.ca/autossh/autossh-"
              version ".tgz"))
        (sha256
-        (base32 "0mlicw28vq2jxa0jf0dys5ja75v0fxpjavlq9dpif6bnknji13ly"))))
+        (base32 "1wpqwa2872nqgqbhnb6nnkrlzpdawd5k69gh1qp68354pvhyawh1"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; There is no "make check" or anything similar
     (inputs `(("openssh" ,openssh)))
