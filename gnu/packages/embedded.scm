@@ -830,7 +830,7 @@ simulator.")
              (lambda _
                (substitute* "opcodes/Makefile.in"
                  (("guile\\{,-\\}1.8") "guile"))
-               (zero? (system* "which" "guile")))))))
+               (invoke "which" "guile"))))))
       (native-inputs
        `(("cgen"
           ,(origin
