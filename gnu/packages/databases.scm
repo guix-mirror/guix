@@ -253,23 +253,22 @@ standard Go idioms.")
                  (("docdir[[:blank:]]*=.*")
                   (string-append "docdir = " doc "/share/doc/bdb")))
 
-               (zero?
-                (system* "./dist/configure"
-                         (string-append "--prefix=" out)
-                         (string-append "CONFIG_SHELL=" (which "bash"))
-                         (string-append "SHELL=" (which "bash"))
+               (invoke "./dist/configure"
+                       (string-append "--prefix=" out)
+                       (string-append "CONFIG_SHELL=" (which "bash"))
+                       (string-append "SHELL=" (which "bash"))
 
-                         ;; Remove 7 MiB of .a files.
-                         "--disable-static"
+                       ;; Remove 7 MiB of .a files.
+                       "--disable-static"
 
-                         ;; The compatibility mode is needed by some packages,
-                         ;; notably iproute2.
-                         "--enable-compat185"
+                       ;; The compatibility mode is needed by some packages,
+                       ;; notably iproute2.
+                       "--enable-compat185"
 
-                         ;; The following flag is needed so that the inclusion
-                         ;; of db_cxx.h into C++ files works; it leads to
-                         ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-                         "--enable-cxx"))))))))
+                       ;; The following flag is needed so that the inclusion
+                       ;; of db_cxx.h into C++ files works; it leads to
+                       ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+                       "--enable-cxx")))))))
     (synopsis "Berkeley database")
     (description
      "Berkeley DB is an embeddable database allowing developers the choice of
@@ -307,28 +306,27 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                  (("docdir[[:blank:]]*=.*")
                   (string-append "docdir = " doc "/share/doc/bdb")))
 
-               (zero?
-                (system* "./dist/configure"
-                         (string-append "--prefix=" out)
-                         (string-append "CONFIG_SHELL=" (which "bash"))
-                         (string-append "SHELL=" (which "bash"))
+               (invoke "./dist/configure"
+                       (string-append "--prefix=" out)
+                       (string-append "CONFIG_SHELL=" (which "bash"))
+                       (string-append "SHELL=" (which "bash"))
 
-                         ;; Bdb doesn't recognize aarch64 as an architecture.
-                         ,@(if (string=? "aarch64-linux" (%current-system))
-                               '("--build=aarch64-unknown-linux-gnu")
-                               '())
+                       ;; Bdb doesn't recognize aarch64 as an architecture.
+                       ,@(if (string=? "aarch64-linux" (%current-system))
+                             '("--build=aarch64-unknown-linux-gnu")
+                             '())
 
-                         ;; Remove 7 MiB of .a files.
-                         "--disable-static"
+                       ;; Remove 7 MiB of .a files.
+                       "--disable-static"
 
-                         ;; The compatibility mode is needed by some packages,
-                         ;; notably iproute2.
-                         "--enable-compat185"
+                       ;; The compatibility mode is needed by some packages,
+                       ;; notably iproute2.
+                       "--enable-compat185"
 
-                         ;; The following flag is needed so that the inclusion
-                         ;; of db_cxx.h into C++ files works; it leads to
-                         ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-                         "--enable-cxx"))))))))))
+                       ;; The following flag is needed so that the inclusion
+                       ;; of db_cxx.h into C++ files works; it leads to
+                       ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+                       "--enable-cxx")))))))))
 
 (define-public es-dump-restore
   (package
