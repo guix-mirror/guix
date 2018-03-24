@@ -1767,15 +1767,14 @@ files.")
 (define-public python-pyld
   (package
     (name "python-pyld")
-    (version "0.7.1")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyLD" version))
               (sha256
                (base32
-                "1m0fs6897vxfkf7awah5i66i7b7smm5fnywf1w50fpzyfbfhr156"))))
+                "12i2g6xdj30k7xxcibg3sc5y76snwq8l6n8fy9lyi577kgy0h2pm"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f)) ; no tests
     (home-page "https://github.com/digitalbazaar/pyld")
     (synopsis "Python implementation of the JSON-LD specification")
     (description
