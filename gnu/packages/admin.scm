@@ -382,7 +382,8 @@ hostname.")
                                          "libc"))))
                (substitute* "lib/nscd.c"
                  (("/usr/sbin/nscd")
-                  (string-append libc "/sbin/nscd"))))))
+                  (string-append libc "/sbin/nscd")))
+               #t)))
          (add-after 'install 'remove-groups
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Remove `groups', which is already provided by Coreutils.
