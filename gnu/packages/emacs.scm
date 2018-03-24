@@ -3014,6 +3014,33 @@ This provides a basic API and common UI widgets such as popup tooltips
 and popup menus.")
     (license license:gpl3+)))
 
+(define-public emacs-puppet-mode
+  (let ((commit "b3ed5057166a4f49dfa9be638523a348b55a2fd2")
+        (revision "1"))
+    (package
+      (name "emacs-puppet-mode")
+      ;; The last release, 0.3 was several years ago, and there have been many
+      ;; commits since
+      (version (git-version "0.3" revision commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://raw.githubusercontent.com/voxpupuli/puppet-mode/"
+               commit "/puppet-mode.el"))
+         (sha256
+          (base32
+           "1indycxawsl0p2aqqg754f6735q3cmah9vd886rpn0ncc3ipi1xm"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/voxpupuli/puppet-mode")
+      (synopsis "Emacs major mode for the Puppet configuration language")
+      (description
+       "This package provides support for the Puppet configuration language,
+including syntax highlighting, indentation of expressions and statements,
+linting of manifests and integration with Puppet Debugger.")
+      ;; Also incorporates work covered by the Apache License, Version 2.0
+      (license license:gpl3+))))
+
 (define-public emacs-god-mode
   (let ((commit "6cf0807b6555eb6fcf8387a4e3b667071ef38964")
         (revision "1"))
