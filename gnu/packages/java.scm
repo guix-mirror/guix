@@ -139,9 +139,6 @@ and binary format defined in The Java Virtual Machine Specification.")
              "--disable-dssi"
              "--disable-alsa"
              "--disable-gjdoc")))
-    (inputs
-     `(("gconf" ,gconf)
-       ("gtk+" ,gtk+-2)))
     (native-inputs
      `(("jikes" ,jikes)
        ("fastjar" ,fastjar)
