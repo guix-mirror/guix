@@ -167,9 +167,9 @@ This package provides the classpath library.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-gc=gencopy" ; this seems to prevent a segfault
-             "--with-internal-libffi=no"
+       (list "--with-internal-libffi=no"
              "--with-internal-libpopt=no")
+       #:strip-binaries? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-timestamp-for-reproducibility
