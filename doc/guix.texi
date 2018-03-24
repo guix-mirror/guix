@@ -15740,7 +15740,7 @@ Must be either:
 @item @code{<php-fpm-on-demand-process-manager-configuration>}
 @end table
 @item @code{display-errors} (default @code{#f})
-Determines wether php errors and warning should be sent to clients
+Determines whether php errors and warning should be sent to clients
 and displayed in their browsers.
 This is useful for local php development, but a security risk for public sites,
 as error messages can reveal passwords and personal data.
