@@ -1366,7 +1366,7 @@ diagrams.")
 (define-public emacs-mmm-mode
   (package
     (name "emacs-mmm-mode")
-    (version "0.5.4")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
@@ -1376,7 +1376,7 @@ diagrams.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10kwslnflbjqm62wkrq420crqzdqalzfflp9pqk1i12zm6dm4mfv"))))
+         "0c5ing3hcr74k78hqhrfwiv6m3n8hqfrw89j2x34vf60f4iyqzqc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
