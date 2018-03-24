@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -468,14 +468,14 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.6.4")
+    (version "2.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07yi37a2ghsgj2b4w30q1s4d2inqnix7ika1m21y57p9z71212k3"))))
+                "0w3hdgcr4cq84cv7wkkg2clz9s6l2m2l92d6mfn70wxs6vi0fxck"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
