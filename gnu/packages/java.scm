@@ -431,7 +431,7 @@ requirement for all GNU Classpath releases after version 0.93.")
     (arguments
      `(#:modules ((guix build utils))
        #:builder
-       (let ((backend 'sablevm))
+       (begin
          (use-modules (guix build utils))
          (let* ((bin    (string-append (assoc-ref %outputs "out") "/bin"))
                 (target (string-append bin "/javac"))
@@ -439,24 +439,12 @@ requirement for all GNU Classpath releases after version 0.93.")
                                        "/bin/guile"))
                 (ecj    (string-append (assoc-ref %build-inputs "ecj-bootstrap")
                                        "/share/java/ecj-bootstrap.jar"))
-                (java   (case backend
-                          ((sablevm)
-                           (string-append (assoc-ref %build-inputs "sablevm")
-                                          "/lib/sablevm/bin/java"))
-                          ((jamvm)
-                           (string-append (assoc-ref %build-inputs "jamvm")
-                                          "/bin/jamvm"))))
-                (bootcp (case backend
-                          ((sablevm)
-                           (let ((jvmlib (string-append
-                                          (assoc-ref %build-inputs "sablevm-classpath")
-                                          "/lib/sablevm")))
-                             (string-append jvmlib "/jre/lib/rt.jar")))
-                          ((jamvm)
-                           (let ((jvmlib (string-append (assoc-ref %build-inputs "classpath")
-                                                        "/share/classpath")))
-                             (string-append jvmlib "/lib/glibj.zip:"
-                                            jvmlib "/lib/tools.zip"))))))
+                (java   (string-append (assoc-ref %build-inputs "jamvm")
+                                       "/bin/jamvm"))
+                (bootcp (let ((jvmlib (string-append (assoc-ref %build-inputs "classpath")
+                                                     "/share/classpath")))
+                          (string-append jvmlib "/lib/glibj.zip:"
+                                         jvmlib "/lib/tools.zip"))))
            (mkdir-p bin)
            (with-output-to-file target
              (lambda _
@@ -475,10 +463,11 @@ requirement for all GNU Classpath releases after version 0.93.")
                         (define (main args)
                           (let ((classpath (getenv "CLASSPATH")))
                             (setenv "CLASSPATH"
-                                    (string-append ,ecj
-                                                   (if classpath
-                                                       (string-append ":" classpath)
-                                                       ""))))
+                                    (string-join (list ,ecj
+                                                       ,(string-append (assoc-ref %build-inputs "jamvm")
+                                                                       "/lib/rt.jar")
+                                                       (or classpath ""))
+                                                 ":")))
                           (receive (vm-args other-args)
                               ;; Separate VM arguments from arguments to ECJ.
                               (partition (cut string-prefix? "-J" <>)
@@ -502,8 +491,8 @@ requirement for all GNU Classpath releases after version 0.93.")
     (native-inputs
      `(("guile" ,guile-2.2)
        ("ecj-bootstrap" ,ecj-bootstrap)
-       ("sablevm" ,sablevm)
-       ("sablevm-classpath" ,sablevm-classpath)))
+       ("jamvm" ,jamvm-1-bootstrap)
+       ("classpath" ,classpath-bootstrap)))
     (description "This package provides a wrapper around the @dfn{Eclipse
 compiler for Java} (ecj) with a command line interface that is compatible with
 the standard javac executable.")))
