@@ -589,92 +589,6 @@ gnu.classpath.tools.~a.~a $@"
 the GNU Classpath library.  They are executed by the JamVM virtual
 machine.")))
 
-(define ecj-javac-on-jamvm-wrapper
-  (package (inherit ecj-javac-wrapper)
-    (name "ecj-javac-on-jamvm-wrapper")
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       ;; TODO: This builder is exactly the same as in ecj-javac-wrapper,
-       ;; except that the backend is 'jamvm here.  Can we reuse the same
-       ;; builder somehow?
-       (let ((backend 'jamvm))
-         (use-modules (guix build utils))
-         (let* ((bin    (string-append (assoc-ref %outputs "out") "/bin"))
-                (target (string-append bin "/javac"))
-                (guile  (string-append (assoc-ref %build-inputs "guile")
-                                       "/bin/guile"))
-                (ecj    (string-append (assoc-ref %build-inputs "ecj-bootstrap")
-                                       "/share/java/ecj-bootstrap.jar"))
-                (java   (case backend
-                          ((sablevm)
-                           (string-append (assoc-ref %build-inputs "sablevm")
-                                          "/lib/sablevm/bin/java"))
-                          ((jamvm)
-                           (string-append (assoc-ref %build-inputs "jamvm")
-                                          "/bin/jamvm"))))
-                (bootcp (case backend
-                          ((sablevm)
-                           (let ((jvmlib (string-append
-                                          (assoc-ref %build-inputs "sablevm-classpath")
-                                          "/lib/sablevm")))
-                             (string-append jvmlib "/jre/lib/rt.jar")))
-                          ((jamvm)
-                           (let ((jvmlib (string-append (assoc-ref %build-inputs "classpath")
-                                                        "/share/classpath")))
-                             (string-append jvmlib "/lib/glibj.zip:"
-                                            jvmlib "/lib/tools.zip"))))))
-           (mkdir-p bin)
-           (with-output-to-file target
-             (lambda _
-               (format #t "#!~a --no-auto-compile\n!#\n" guile)
-               (write
-                `(begin (use-modules (ice-9 match)
-                                     (ice-9 receive)
-                                     (ice-9 hash-table)
-                                     (srfi srfi-1)
-                                     (srfi srfi-26))
-                        (define defaults
-                          '(("-bootclasspath" ,bootcp)
-                            ("-source" "1.5")
-                            ("-target" "1.5")
-                            ("-cp"     ".")))
-                        (define (main args)
-                          (let ((classpath (getenv "CLASSPATH")))
-                            (setenv "CLASSPATH"
-                                    (string-append ,ecj
-                                                   (if classpath
-                                                       (string-append ":" classpath)
-                                                       ""))))
-                          (receive (vm-args other-args)
-                              ;; Separate VM arguments from arguments to ECJ.
-                              (partition (cut string-prefix? "-J" <>)
-                                         (fold (lambda (default acc)
-                                                 (if (member (first default) acc)
-                                                     acc (append default acc)))
-                                               args defaults))
-                            (apply system* ,java
-                                   (append
-                                    ;; Remove "-J" prefix
-                                    (map (cut string-drop <> 2) vm-args)
-                                    '("org.eclipse.jdt.internal.compiler.batch.Main")
-                                    (cons "-nowarn" other-args)))))
-                        ;; Entry point
-                        (let ((args (cdr (command-line))))
-                          (if (null? args)
-                              (format (current-error-port) "javac: no arguments given!\n")
-                              (main args)))))))
-           (chmod target #o755)
-           #t))))
-    (native-inputs
-     `(("guile" ,guile-2.2)
-       ("ecj-bootstrap" ,ecj-bootstrap)
-       ("jamvm" ,jamvm-bootstrap)
-       ("classpath" ,classpath-on-sablevm)))
-    (description "This package provides a wrapper around the @dfn{Eclipse
-compiler for Java} (ecj) with a command line interface that is compatible with
-the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
-
 ;; The last release of GNU Classpath is 0.99 and it happened in 2012.  Since
 ;; then Classpath has gained much more support for Java 1.6.
 (define-public classpath-devel
@@ -737,7 +651,7 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
          ("texinfo" ,texinfo)
          ("classpath-jamvm-wrappers" ,classpath-jamvm-wrappers) ; for javah
          ("ecj-bootstrap" ,ecj-bootstrap)
-         ("ecj-javac-wrapper" ,ecj-javac-on-jamvm-wrapper)
+         ("ecj-javac-wrapper" ,ecj-javac-wrapper)
          ("fastjar" ,fastjar)
          ("jamvm" ,jamvm-1-bootstrap)
          ("libltdl" ,libltdl)
@@ -761,11 +675,11 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                             (assoc-ref %build-inputs "classpath")))))
     (inputs
      `(("classpath" ,classpath-devel)
-       ("ecj-javac-wrapper" ,ecj-javac-on-jamvm-wrapper)
+       ("ecj-javac-wrapper" ,ecj-javac-wrapper)
        ("zlib" ,zlib)))))
 
-(define ecj-javac-on-jamvm-wrapper-final
-  (package (inherit ecj-javac-on-jamvm-wrapper)
+(define ecj-javac-wrapper-final
+  (package (inherit ecj-javac-wrapper)
     (native-inputs
      `(("guile" ,guile-2.2)
        ("ecj-bootstrap" ,ecj-bootstrap)
@@ -773,9 +687,9 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
        ("classpath" ,classpath-devel)))))
 
 ;; The bootstrap JDK consisting of jamvm, classpath-devel,
-;; ecj-javac-on-jamvm-wrapper-final cannot build Icedtea 2.x directly, because
-;; it's written in Java 7.  It can, however, build the unmaintained Icedtea
-;; 1.x, which uses Java 6 only.
+;; ecj-javac-wrapper-final cannot build Icedtea 2.x directly, because it's
+;; written in Java 7.  It can, however, build the unmaintained Icedtea 1.x,
+;; which uses Java 6 only.
 (define-public icedtea-6
   (package
     (name "icedtea")
@@ -862,7 +776,8 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                     #t))))
          (add-after 'unpack 'use-classpath
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((jvmlib (assoc-ref inputs "classpath")))
+             (let ((jvmlib (assoc-ref inputs "classpath"))
+                   (jamvm  (assoc-ref inputs "jamvm")))
                ;; Classpath does not provide rt.jar.
                (substitute* "Makefile.in"
                  (("\\$\\(SYSTEM_JDK_DIR\\)/jre/lib/rt.jar")
@@ -870,7 +785,8 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                ;; Make sure we can find all classes.
                (setenv "CLASSPATH"
                        (string-append jvmlib "/share/classpath/glibj.zip:"
-                                      jvmlib "/share/classpath/tools.zip"))
+                                      jvmlib "/share/classpath/tools.zip:"
+                                      jamvm  "/lib/rt.jar"))
                (setenv "JAVACFLAGS"
                        (string-append "-cp "
                                       jvmlib "/share/classpath/glibj.zip:"
@@ -1007,7 +923,7 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
        ("cpio" ,cpio)
        ("cups" ,cups)
        ("ecj" ,ecj-bootstrap)
-       ("ecj-javac" ,ecj-javac-on-jamvm-wrapper-final)
+       ("ecj-javac" ,ecj-javac-wrapper-final)
        ("fastjar" ,fastjar)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
