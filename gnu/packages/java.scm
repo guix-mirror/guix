@@ -258,6 +258,37 @@ language.")
     ;; GPLv2 or later, with special linking exception.
     (license license:gpl2+)))
 
+;; This is the last version of JamVM that works with a version of GNU
+;; classpath that does not require ECJ.
+(define jamvm-1-bootstrap
+  (package
+    (name "jamvm")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/jamvm/jamvm/"
+                                  "JamVM%20" version "/jamvm-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "06lhi03l3b0h48pc7x58bk9my2nrcf1flpmglvys3wyad6yraf36"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-classpath-install-dir="
+                            (assoc-ref %build-inputs "classpath")))))
+    (inputs
+     `(("classpath" ,classpath-bootstrap)
+       ("jikes" ,jikes)
+       ("zlib" ,zlib)))
+    (home-page "http://jamvm.sourceforge.net/")
+    (synopsis "Small Java Virtual Machine")
+    (description "JamVM is a Java Virtual Machine conforming to the JVM
+specification edition 2 (blue book).  It is extremely small.  However, unlike
+other small VMs it supports the full spec, including object finalisation and
+JNI.")
+    (license license:gpl2+)))
+
 (define ant-bootstrap
   (package
     (name "ant-bootstrap")
