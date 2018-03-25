@@ -212,6 +212,7 @@ JNI.")
      `(#:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
+         (delete 'bootstrap)
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
@@ -226,12 +227,22 @@ JNI.")
                      (string-append (assoc-ref inputs "jamvm")
                                     "/lib/rt.jar"))
 
+             ;; Ant complains if this file doesn't exist.
+             (setenv "HOME" "/tmp")
+             (with-output-to-file "/tmp/.ant.properties"
+               (lambda _ (display "")))
+
              ;; Use jikes instead of javac for <javac ...> tags in build.xml
              (setenv "ANT_OPTS" "-Dbuild.compiler=jikes")
 
              ;; jikes produces lots of warnings, but they are not very
              ;; interesting, so we silence them.
              (setenv "$BOOTJAVAC_OPTS" "-nowarn")
+
+             ;; Without these JamVM options the build may freeze.
+             (substitute* "bootstrap.sh"
+               (("^\"\\$\\{JAVACMD\\}\" " m)
+                (string-append m "-Xnocompact -Xnoinlining ")))
 
              ;; Disable tests because we are bootstrapping and thus don't have
              ;; any of the dependencies required to build and run the tests.
