@@ -628,6 +628,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/eigen-arm-neon-fixes.patch		\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-disable-failing-tests.patch	\
+  %D%/packages/patches/elogind-glibc-2.27.patch			\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/emacs-browse-at-remote-cgit-gnu.patch	\
   %D%/packages/patches/emacs-exec-path.patch			\

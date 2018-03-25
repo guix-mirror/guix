@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
@@ -38,6 +38,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
@@ -236,6 +237,7 @@ the freedesktop.org XDG Base Directory specification.")
               (sha256
                (base32
                 "1qcxian48z2dj5gfmp7brrngdydqf2jm00f4rjr5sy1myh8fy931"))
+              (patches (search-patches "elogind-glibc-2.27.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -277,7 +279,7 @@ the freedesktop.org XDG Base Directory specification.")
              (substitute* "src/basic/parse-util.c"
                (("xlocale\\.h") "locale.h"))
              #t))
-         (add-before 'configure 'autogen
+         (replace 'bootstrap
            (lambda _
              (invoke "intltoolize" "--force" "--automake")
              (invoke "autoreconf" "-vif")))
