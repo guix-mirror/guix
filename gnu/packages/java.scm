@@ -294,8 +294,8 @@ JNI.")
     (name "ant-bootstrap")
     ;; The 1.10.x series requires Java 8.  1.9.0 and later use generics, which
     ;; are not supported.  The 1.8.x series is the last to use only features
-    ;; supported by Jikes, but it cannot seem to be built with sablevm.
-    (version "1.7.1")
+    ;; supported by Jikes.
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.apache.org/dist/"
@@ -303,7 +303,7 @@ JNI.")
                                   version "-src.tar.bz2"))
               (sha256
                (base32
-                "19pvqvgkxgpgsqm4lvbki5sm0z84kxmykdqicvfad47gc1r9mi2d"))))
+                "1cg0lga887qz5iizh6mlkxp01lciymrhmp7wzxpl6zpnldxmzrjx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
