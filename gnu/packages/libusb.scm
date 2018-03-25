@@ -48,7 +48,7 @@
 (define-public libusb
   (package
     (name "libusb")
-    (version "1.0.21")
+    (version "1.0.22")
     (source
      (origin
       (method url-fetch)
@@ -56,7 +56,7 @@
                           "libusb-" version "/libusb-" version ".tar.bz2"))
       (sha256
        (base32
-        "0jw2n5kdnrqvp7zh792fd6mypzzfap6jp4gfcmq4n6c1kb79rkkx"))))
+        "0mw1a5ss4alg37m6bd4k44v35xwrcwp5qm4s686q1nsgkbavkbkm"))))
     (build-system gnu-build-system)
 
     ;; XXX: Enabling udev is now recommended, but eudev indirectly depends on
