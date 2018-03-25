@@ -48,6 +48,7 @@
 (define-public flashrom
   (package
     (name "flashrom")
+    ;; XXX: The CFLAGS=... line below can probably be removed when updating.
     (version "1.0")
     (source (origin
               (method url-fetch)
@@ -64,9 +65,13 @@
               ("libftdi" ,libftdi)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output)
-                          "CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no")
+     '(#:make-flags
+       (list "CC=gcc"
+             ;; The default includes ‘-Wall -Werror’, causing the build to fail
+             ;; with deprecation warnings against libusb versions >= 1.0.22.
+             "CFLAGS=-Os -Wshadow"
+             (string-append "PREFIX=" %output)
+             "CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no")
        #:tests? #f                      ; no 'check' target
        #:phases
        (modify-phases %standard-phases
