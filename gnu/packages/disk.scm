@@ -416,3 +416,43 @@ capacity of a flash card (flash drive, flash disk, pendrive).  F3 writes to
 the card and then checks if can read it.  It will assure you haven't been sold
 a card with a smaller capacity than stated.")
     (license license:gpl3+)))
+
+(define-public python-parted
+  (package
+    (name "python-parted")
+    (version "3.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dcantrell/pyparted/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0r1nyjj40nacnfnv17x2mnsj6ga1qplyxyza82v2809dfhim2fwq"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             ;; See <https://github.com/dcantrell/pyparted/issues/47>.
+             (substitute* "tests/test__ped_ped.py"
+               (("\"/tmp/temp-device-\"") "self.path"))
+             (invoke "python" "-m" "unittest" "discover" "-v")
+             #t)))))
+    (native-inputs
+     `(("e2fsprogs" ,e2fsprogs)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (inputs
+     `(("parted" ,parted)))
+    (home-page "https://github.com/dcantrell/pyparted")
+    (synopsis "Parted bindings for Python")
+    (description "This package provides @code{parted} bindings for Python.")
+    (license license:gpl2+)))
+
+(define-public python2-parted
+  (package-with-python2 python-parted))
