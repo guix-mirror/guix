@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;;
@@ -1289,3 +1289,24 @@ serif (Nachlieli) and monospaced (Miriam Mono) trivials.  Also included Miriam,
 Drugulin, Aharoni, David, Hadasim etc.  Cantillation marks support is
 available in Keter YG.")
     (license license:gpl2))) ; consult the LICENSE file included
+
+(define-public font-lohit
+  (package
+    (name "font-lohit")
+    (version "20140220")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://releases.pagure.org/lohit/lohit-ttf-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1rmgr445hw1n851ywy28csfvswz1i6hnc8mzp88qw2xk9j4dn32d"))))
+    (build-system font-build-system)
+    (home-page "https://pagure.io/lohit")
+    (synopsis "Lohit TrueType Indic fonts")
+    (description "Lohit is a font family designed to cover Indic scripts.
+Lohit supports the Assamese, Bengali, Devanagari (Hindi, Kashmiri, Konkani,
+Maithili, Marathi, Nepali, Sindhi, Santali, Bodo, Dogri languages), Gujarati,
+Kannada, Malayalam, Manipuri, Oriya, Punjabi, Tamil and Telugu scripts.")
+    (license license:silofl1.1)))
