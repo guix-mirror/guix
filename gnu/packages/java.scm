@@ -544,10 +544,10 @@ the standard javac executable.")))
        ("libltdl" ,libltdl)
        ("pkg-config" ,pkg-config)))))
 
-;; We need this because the tools provided by the latest release of GNU
-;; Classpath don't actually work with sablevm.
+;; We need this because classpath-bootstrap does not provide all of the tools
+;; we need to build classpath-devel.
 (define classpath-jamvm-wrappers
-  (package (inherit classpath-on-sablevm)
+  (package (inherit classpath-0.99)
     (name "classpath-jamvm-wrappers")
     (source #f)
     (build-system trivial-build-system)
@@ -581,8 +581,8 @@ gnu.classpath.tools.~a.~a $@"
            #t))))
     (native-inputs
      `(("bash" ,bash)
-       ("jamvm" ,jamvm-bootstrap)
-       ("classpath" ,classpath-on-sablevm)))
+       ("jamvm" ,jamvm-1-bootstrap)
+       ("classpath" ,classpath-0.99)))
     (inputs '())
     (synopsis "Executables from GNU Classpath")
     (description "This package provides wrappers around the tools provided by
