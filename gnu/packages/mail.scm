@@ -108,7 +108,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages docbook)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
+                #:select (fdl1.1+ gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
                            public-domain bsd-4 isc (openssl . license:openssl)
                            bsd-2 x11-style agpl3 asl2.0 perl-license))
@@ -2464,3 +2464,51 @@ provides automatic tagging each time new mail is registered with notmuch.  It
 can add tags based on email headers or Maildir folders and can handle spam and
 killed threads.")
     (license isc)))
+
+(define-public pan
+  (package
+    (name "pan")
+    (version "0.144")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://pan.rebelbase.com/download/releases/"
+                           version "/source/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0l07y75z8jxhbmfv28slw81gjncs7i89x7fq44zif7xhq5vy7yli"))))
+    (arguments
+     `(#:configure-flags '("--with-gtk3" "--with-gtkspell" "--with-gnutls"
+                           "--enable-libnotify" "--enable-manual"
+                           "--enable-gkr")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-gpg2
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "pan/usenet-utils/gpg.cc"
+               (("\"gpg2\"") (string-append "\""
+                                            (assoc-ref inputs "gnupg")
+                                            "/bin/gpg\"")))
+             #t)))))
+    (inputs
+     `(("gmime" ,gmime)
+       ("gnupg" ,gnupg)
+       ("gnutls" ,gnutls)
+       ("gtk+" ,gtk+)
+       ("gtkspell3" ,gtkspell3)
+       ("libnotify" ,libnotify)
+       ("libsecret" ,libsecret)
+       ("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("gettext-minimal" ,gettext-minimal)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (build-system gnu-build-system)
+    (home-page "http://pan.rebelbase.com/")
+    (synopsis "Pan newsreader")
+    (description "@code{pan} is a Usenet newsreader that's good at both text
+and binaries. It supports offline reading, scoring and killfiles, yEnc, NZB,
+PGP handling, multiple servers, and secure connections.")
+    ;; License of the docs: fdl-1.1; Others: gpl2.
+    (license (list fdl1.1+ gpl2))))
