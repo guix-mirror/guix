@@ -79,24 +79,25 @@
 ;;;
 
 ;; The Java bootstrap begins with Jikes, a Java compiler written in C++.  We
-;; use it to build the SableVM standard library and virtual machine, which are
-;; written in a simpler dialect of Java and C, respectively.  This is
-;; sufficient to build an older version of Ant, which is needed to build an
-;; older version of ECJ, an incremental Java compiler, both of which are
-;; written in Java.
+;; use it to build a simple version of GNU Classpath, the Java standard
+;; library.  We chose version 0.93 because it is the last version that can be
+;; built with Jikes.  With Jikes and this version of GNU Classpath we can
+;; build JamVM, a Java Virtual Machine.  We build version 1.5.1 because it is
+;; the last version of JamVM that works with a version of GNU classpath that
+;; does not require ECJ.  These three packages make up the bootstrap JDK.
+
+;; This is sufficient to build an older version of Ant, which is needed to
+;; build an older version of ECJ, an incremental Java compiler, both of which
+;; are written in Java.
 ;;
-;; ECJ is needed to build the latest release of GNU Classpath (0.99).
-;; Classpath (> 0.98) is a requirement for JamVM, a more modern implementation
-;; of the Java virtual machine.
-;;
-;; With JamVM we can build the latest development version of GNU Classpath,
-;; which has much more support for Java 1.6 than the latest release.  Since
-;; the previous build of JamVM is limited by the use of GNU Classpath 0.99 we
-;; rebuild it with the latest development version of GNU Classpath.
-;;
-;; Finally, we use the bootstrap toolchain to build the OpenJDK with the
-;; Icedtea 1.x build framework.  We then build the more recent JDKs Icedtea
-;; 2.x and Icedtea 3.x.
+;; ECJ is needed to build the latest release (0.99) and the development
+;; version of GNU Classpath.  The development version of GNU Classpath has
+;; much more support for Java 1.6 than the latest release, but we need to
+;; build 0.99 first to get a working version of javah.  ECJ, the development
+;; version of GNU Classpath, and the latest version of JamVM make up the
+;; second stage JDK with which we can build the OpenJDK with the Icedtea 1.x
+;; build framework.  We then build the more recent JDKs Icedtea 2.x and
+;; Icedtea 3.x.
 
 (define jikes
   (package
@@ -116,104 +117,6 @@
 defined in The Java Language Specification into the bytecoded instruction set
 and binary format defined in The Java Virtual Machine Specification.")
     (license license:ibmpl1.0)))
-
-(define sablevm-classpath
-  (package
-    (name "sablevm-classpath")
-    (version "1.13")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/sablevm/sablevm/"
-                                  version "/sablevm-classpath-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1qyhyfz8idghxdam16hdgpa24r2x4xbg9z8c8asa3chnd79h3zw2"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "--with-jikes"
-             "--disable-Werror"
-             "--disable-gmp"
-             "--disable-gtk-peer"
-             "--disable-plugin"
-             "--disable-dssi"
-             "--disable-alsa"
-             "--disable-gjdoc")))
-    (native-inputs
-     `(("jikes" ,jikes)
-       ("fastjar" ,fastjar)
-       ("pkg-config" ,pkg-config)))
-    (home-page "http://sablevm.org/")
-    (synopsis "Java Virtual Machine")
-    (description "SableVM is a clean-room, highly portable and efficient Java
-virtual machine.  Its goals are to be reasonably small, fast, and compliant
-with the various specifications (JVM specification, JNI, invocation interface,
-etc.).  SableVM is no longer maintained.
-
-This package provides the classpath library.")
-    (license license:lgpl2.1+)))
-
-(define sablevm
-  (package
-    (name "sablevm")
-    (version "1.13")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/sablevm/sablevm/"
-                                  version "/sablevm-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1jyg4bsym6igz94wps5443c7wiwlzinqzkchcw972nz4kf1cql6g"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "--with-internal-libffi=no"
-             "--with-internal-libpopt=no")
-       #:strip-binaries? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-timestamp-for-reproducibility
-           (lambda _
-             (substitute* "src/sablevm/Makefile.in"
-               (("\\$\\(SVMCOMPILETIME\\)") "(unknown)"))
-             #t))
-         (add-after 'unpack 'link-with-popt
-           (lambda _
-             (substitute* "src/sablevm/Makefile.in"
-               (("\\$\\(SVMADD\\)" match)
-                (string-append match " -lpopt")))
-             #t))
-         (add-after 'unpack 'patch-path-to-classpath
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Makefile.in"
-               (("@datadir@/sablevm-classpath")
-                (string-append (assoc-ref inputs "classpath")
-                               "/share/sablevm-classpath")))
-             (substitute* "src/libsablevm/Makefile.in"
-               (("\\$\\(libdir\\)/sablevm-classpath")
-                (string-append (assoc-ref inputs "classpath")
-                               "/lib/sablevm-classpath"))
-               (("\\$\\(datadir\\)/sablevm-classpath")
-                (string-append (assoc-ref inputs "classpath")
-                               "/share/sablevm-classpath")))
-             #t)))))
-    (inputs
-     `(("classpath" ,sablevm-classpath)
-       ("jikes" ,jikes)
-       ("zlib" ,zlib)
-       ("popt" ,popt)
-       ("libffi" ,libffi)))
-    (native-inputs
-     `(("libltdl" ,libltdl)))
-    (home-page "http://sablevm.org/")
-    (synopsis "Java Virtual Machine")
-    (description "SableVM is a clean-room, highly portable and efficient Java
-virtual machine.  Its goals are to be reasonably small, fast, and compliant
-with the various specifications (JVM specification, JNI, invocation interface,
-etc.).  SableVM is no longer maintained.
-
-This package provides the virtual machine.")
-    (license license:lgpl2.1+)))
 
 ;; This is the last version of GNU Classpath that can be built without ECJ.
 (define classpath-bootstrap
