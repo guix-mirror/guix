@@ -497,14 +497,11 @@ requirement for all GNU Classpath releases after version 0.93.")
 compiler for Java} (ecj) with a command line interface that is compatible with
 the standard javac executable.")))
 
-;; Note: All the tool wrappers (e.g. for javah, javac, etc) fail with
-;; java.lang.UnsupportedClassVersionError.  They simply won't run on the old
-;; sablevm.  We use Classpath 0.99 to build JamVM, on which the Classpath
-;; tools do run.  Using these Classpath tools on JamVM we can then build the
-;; development version of GNU Classpath.
-(define classpath-on-sablevm
-  (package
-    (name "classpath")
+;; The classpath-bootstrap was built without a virtual machine, so it does not
+;; provide a wrapper for javah.  We cannot build the development version of
+;; Classpath without javah.
+(define classpath-0.99
+  (package (inherit classpath-bootstrap)
     (version "0.99")
     (source (origin
               (method url-fetch)
@@ -513,7 +510,6 @@ the standard javac executable.")))
               (sha256
                (base32
                 "1j7cby4k66f1nvckm48xcmh352b1d1b33qk7l6hi7dp9i9zjjagr"))))
-    (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ecj-jar="
@@ -523,8 +519,8 @@ the standard javac executable.")))
                             (assoc-ref %build-inputs "ecj-javac-wrapper")
                             "/bin/javac")
              (string-append "JAVA="
-                            (assoc-ref %build-inputs "sablevm")
-                            "/bin/java-sablevm")
+                            (assoc-ref %build-inputs "jamvm")
+                            "/bin/jamvm")
              "GCJ_JAVAC_TRUE=no"
              "ac_cv_prog_java_works=yes"  ; trust me
              "--disable-Werror"
@@ -543,17 +539,10 @@ the standard javac executable.")))
      `(("ecj-bootstrap" ,ecj-bootstrap)
        ("ecj-javac-wrapper" ,ecj-javac-wrapper)
        ("fastjar" ,fastjar)
-       ("sablevm" ,sablevm)
-       ("sablevm-classpath" ,sablevm-classpath)
+       ("jamvm" ,jamvm-1-bootstrap)
+       ("classpath" ,classpath-bootstrap)
        ("libltdl" ,libltdl)
-       ("pkg-config" ,pkg-config)))
-    (home-page "https://www.gnu.org/software/classpath/")
-    (synopsis "Essential libraries for Java")
-    (description "GNU Classpath is a project to create core class libraries
-for use with runtimes, compilers and tools for the Java programming
-language.")
-    ;; GPLv2 or later, with special linking exception.
-    (license license:gpl2+)))
+       ("pkg-config" ,pkg-config)))))
 
 (define jamvm-bootstrap
   (package
@@ -720,7 +709,7 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
 (define-public classpath-devel
   (let ((commit "e7c13ee0cf2005206fbec0eca677f8cf66d5a103")
         (revision "1"))
-    (package (inherit classpath-on-sablevm)
+    (package (inherit classpath-bootstrap)
       (version (string-append "0.99-" revision "." (string-take commit 9)))
       (source (origin
                 (method git-fetch)
