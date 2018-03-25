@@ -288,14 +288,6 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
                (("/bin/sh") "sh"))
              (substitute* '("src/clisp-link.in")
                (("/bin/pwd") "pwd"))
-             #t))
-         (add-after 'unpack 'remove-timestamps
-           (lambda _
-             (substitute* "src/constobj.d"
-               (("__DATE__ __TIME__") "\"1\""))
-             (substitute* "src/genclisph.d"
-               (("__DATE__") "\"1\"")
-               (("__TIME__") "\"1\""))
              #t)))
        ;; Makefiles seem to have race conditions.
        #:parallel-build? #f))
