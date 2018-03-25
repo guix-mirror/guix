@@ -7340,6 +7340,28 @@ Lisp.")
                (base32
                 "00vv8a75wdklygdyr4km9mc2ismxak69c45jmcny41xl44rp9x8m"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-sources
+           (lambda _
+             ;; See: https://github.com/tali713/esxml/pull/28.
+             (substitute* "css-lite.el"
+               ((";;; main interface")
+                (string-append ";;; main interface\n"
+                               "(require 'cl-lib)"))
+               (("mapcan")
+                "cl-mapcan")
+               (("',\\(cl-mapcan #'process-css-rule rules\\)")
+                "(cl-mapcan #'process-css-rule ',rules)"))
+             (substitute* "esxml-form.el"
+               ((",esxml-form-field-defn")
+                "#'esxml-form-field-defn"))
+             ;; See: https://github.com/tali713/esxml/issues/25
+             (delete-file "esxpath.el")
+             #t)))))
+    (propagated-inputs
+     `(("emacs-kv" ,emacs-kv)))
     (home-page "https://github.com/tali713/esxml/")
     (synopsis "SXML for EmacsLisp")
     (description "This is XML/XHTML done with S-Expressions in EmacsLisp.
