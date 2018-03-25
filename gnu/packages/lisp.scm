@@ -297,10 +297,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
      "GNU CLISP is an implementation of ANSI Common Lisp.  Common Lisp is a
 high-level, object-oriented functional programming language.  CLISP includes
 an interpreter, a compiler, a debugger, and much more.")
-    ;; Website says gpl2+, COPYRIGHT file says gpl2; actual source files have
-    ;; a lot of gpl3+.  (Also some parts are under non-copyleft licenses, such
-    ;; as CLX by Texas Instruments.)  In that case gpl3+ wins out.
-    (license license:gpl3+)))
+    (license license:gpl2+)))
 
 (define-public sbcl
   (package
