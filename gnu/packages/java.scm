@@ -481,7 +481,7 @@ the standard javac executable.")))
                        (with-output-to-file (string-append bin tool)
                          (lambda _
                            (format #t "#!~a/bin/sh
-~a/bin/jamvm -classpath ~a/share/classpath/tools.zip \
+~a/bin/jamvm -Xnocompact -Xnoinlining -classpath ~a/share/classpath/tools.zip \
 gnu.classpath.tools.~a.~a $@"
                                    bash jamvm classpath tool
                                    (if (string=? "native2ascii" tool)
