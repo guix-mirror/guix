@@ -471,7 +471,7 @@ archive content is independent of its creation time, thus making it
 reproducible.
 
 @item
-Make @code{root}'s profile available under @file{~/.guix-profile}:
+Make @code{root}'s profile available under @file{~root/.guix-profile}:
 
 @example
 # ln -sf /var/guix/profiles/per-user/root/guix-profile \
@@ -482,7 +482,7 @@ Source @file{etc/profile} to augment @code{PATH} and other relevant
 environment variables:
 
 @example
-# GUIX_PROFILE=$HOME/.guix-profile ; \
+# GUIX_PROFILE="`echo ~root`/.guix-profile" ; \
   source $GUIX_PROFILE/etc/profile
 @end example
 
