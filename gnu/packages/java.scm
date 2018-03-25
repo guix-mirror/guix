@@ -312,15 +312,16 @@ JNI.")
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "JAVA_HOME"
-                     (string-append (assoc-ref inputs "sablevm")
-                                    "/lib/sablevm"))
+             (setenv "JAVA_HOME" (assoc-ref inputs "jamvm"))
              (setenv "JAVACMD"
-                     (string-append (assoc-ref inputs "sablevm")
-                                    "/bin/java-sablevm"))
+                     (string-append (assoc-ref inputs "jamvm")
+                                    "/bin/jamvm"))
              (setenv "JAVAC"
-                     (string-append (assoc-ref inputs "sablevm")
-                                    "/bin/javac-sablevm"))
+                     (string-append (assoc-ref inputs "jikes")
+                                    "/bin/jikes"))
+             (setenv "CLASSPATH"
+                     (string-append (assoc-ref inputs "jamvm")
+                                    "/lib/rt.jar"))
 
              ;; Use jikes instead of javac for <javac ...> tags in build.xml
              (setenv "ANT_OPTS" "-Dbuild.compiler=jikes")
@@ -339,7 +340,7 @@ JNI.")
          (delete 'install))))
     (native-inputs
      `(("jikes" ,jikes)
-       ("sablevm" ,sablevm)))
+       ("jamvm" ,jamvm-1-bootstrap)))
     (home-page "http://ant.apache.org")
     (synopsis "Build tool for Java")
     (description
