@@ -572,7 +572,8 @@ libebml is a C++ library to read and write EBML files.")
             (let ((out (assoc-ref outputs "out")))
               (substitute* "va/drm/va_drm_auth_x11.c"
                 (("\"libva-x11\\.so\\.%d\"")
-                 (string-append "\"" out "/lib/libva-x11.so.%d\"")))))))
+                 (string-append "\"" out "/lib/libva-x11.so.%d\"")))
+              #t))))
        ;; Most drivers are in mesa's $prefix/lib/dri, so use that.  (Can be
        ;; overridden at run-time via LIBVA_DRIVERS_PATH.)
        #:configure-flags
