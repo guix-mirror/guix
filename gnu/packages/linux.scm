@@ -2263,6 +2263,11 @@ compliance.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'gzip-determinism
+                    (lambda _
+                      (substitute* "Makefile"
+                        (("gzip") "gzip --no-name"))
+                      #t))
                   (delete 'configure))
 
        ;; The 'all' target of the makefile depends on $(REGDB_CHANGED), which
