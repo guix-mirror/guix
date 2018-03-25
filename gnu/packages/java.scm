@@ -215,6 +215,49 @@ etc.).  SableVM is no longer maintained.
 This package provides the virtual machine.")
     (license license:lgpl2.1+)))
 
+;; This is the last version of GNU Classpath that can be built without ECJ.
+(define classpath-bootstrap
+  (package
+    (name "classpath")
+    (version "0.93")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/classpath/classpath-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0i99wf9xd3hw1sj2sazychb9prx8nadxh2clgvk3zlmb28v0jbfz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "JAVAC="
+                            (assoc-ref %build-inputs "jikes")
+                            "/bin/jikes")
+             "--disable-Werror"
+             "--disable-gmp"
+             "--disable-gtk-peer"
+             "--disable-gconf-peer"
+             "--disable-plugin"
+             "--disable-dssi"
+             "--disable-alsa"
+             "--disable-gjdoc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-data
+           (lambda _ (zero? (system* "make" "install-data")))))))
+    (native-inputs
+     `(("jikes" ,jikes)
+       ("fastjar" ,fastjar)
+       ("libltdl" ,libltdl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.gnu.org/software/classpath/")
+    (synopsis "Essential libraries for Java")
+    (description "GNU Classpath is a project to create core class libraries
+for use with runtimes, compilers and tools for the Java programming
+language.")
+    ;; GPLv2 or later, with special linking exception.
+    (license license:gpl2+)))
+
 (define ant-bootstrap
   (package
     (name "ant-bootstrap")
