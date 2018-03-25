@@ -252,14 +252,14 @@ implementing @code{javax.usb} (JSR-80).")
 (define-public libmtp
   (package
     (name "libmtp")
-    (version "1.1.14")
+    (version "1.1.15")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/libmtp/libmtp/" version
                                  "/libmtp-" version ".tar.gz"))
              (sha256
               (base32
-               "1s0jyhypxmj0j8s003ba1n74x63h1rw8am9q4z2ip3xyjvid65rq"))))
+               "089h79nkz7wcr3lbqi7025l8p75hbp0aigxk3wdk2zkm8q5r0h6h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
