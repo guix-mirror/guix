@@ -157,10 +157,10 @@ module into a binary representation.")
                #t))
            (add-after 'build 'pywrap
              (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "pywrap" make-flags))))
+               (apply invoke "make" "pywrap" make-flags)))
            (add-after 'install 'install-pywrap
              (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "install-pywrap" make-flags))))))))
+               (apply invoke "make" "install-pywrap" make-flags)))))))
     ;; These libraries are in "Requires.private" in libselinux.pc.
     (propagated-inputs
      `(("libsepol" ,libsepol)
