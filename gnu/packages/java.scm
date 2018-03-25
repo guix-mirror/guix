@@ -544,35 +544,6 @@ the standard javac executable.")))
        ("libltdl" ,libltdl)
        ("pkg-config" ,pkg-config)))))
 
-(define jamvm-bootstrap
-  (package
-    (name "jamvm")
-    (version "2.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/jamvm/jamvm/"
-                                  "JamVM%20" version "/jamvm-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "--with-classpath-install-dir="
-                            (assoc-ref %build-inputs "classpath")))))
-    (inputs
-     `(("classpath" ,classpath-on-sablevm)
-       ("ecj-javac-wrapper" ,ecj-javac-wrapper)
-       ("zlib" ,zlib)))
-    (home-page "http://jamvm.sourceforge.net/")
-    (synopsis "Small Java Virtual Machine")
-    (description "JamVM is a Java Virtual Machine conforming to the JVM
-specification edition 2 (blue book).  It is extremely small.  However, unlike
-other small VMs it supports the full spec, including object finalisation and
-JNI.")
-    (license license:gpl2+)))
-
 ;; We need this because the tools provided by the latest release of GNU
 ;; Classpath don't actually work with sablevm.
 (define classpath-jamvm-wrappers
@@ -768,12 +739,26 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
          ("ecj-bootstrap" ,ecj-bootstrap)
          ("ecj-javac-wrapper" ,ecj-javac-on-jamvm-wrapper)
          ("fastjar" ,fastjar)
-         ("jamvm" ,jamvm-bootstrap)
+         ("jamvm" ,jamvm-1-bootstrap)
          ("libltdl" ,libltdl)
          ("pkg-config" ,pkg-config))))))
 
-(define-public jamvm
-  (package (inherit jamvm-bootstrap)
+(define jamvm
+  (package (inherit jamvm-1-bootstrap)
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/jamvm/jamvm/"
+                                  "JamVM%20" version "/jamvm-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-classpath-install-dir="
+                            (assoc-ref %build-inputs "classpath")))))
     (inputs
      `(("classpath" ,classpath-devel)
        ("ecj-javac-wrapper" ,ecj-javac-on-jamvm-wrapper)
