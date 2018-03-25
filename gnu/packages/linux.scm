@@ -2190,6 +2190,11 @@ interface.")
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (delete 'configure)
+                  (add-after 'unpack 'gzip-determinism
+                    (lambda _
+                      (substitute* "Makefile"
+                        (("gzip") "gzip --no-name"))
+                      #t))
                   (add-before
                    'build 'no-werror-no-ldconfig
                    (lambda _
