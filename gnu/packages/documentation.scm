@@ -59,6 +59,9 @@
      `(#:tests? #f                     ; no 'check' target
        #:phases
        (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _
+             (invoke "autoconf")))
          ;; Some XML-related binaries are required for asciidoc's proper usage.
          ;; Without these, asciidoc fails when parsing XML documents, either
          ;; reporting a missing "xmllint" binary or, when passed the
