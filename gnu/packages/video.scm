@@ -1783,6 +1783,38 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public livestreamer
   (deprecated-package "livestreamer" streamlink))
 
+(define-public twitchy
+  (let ((commit "0c0f925b9c7ff2aed4a3b0046561cb794143c398")) ;Fixes tests.
+    (package
+      (name "twitchy")
+      (version (git-version "3.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BasioMeusPuga/twitchy.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "02aizvsr744sh8bdqvwwsmp2qpczlzn8fy76h5dyd3517n9nlcz9"))))
+      (build-system python-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'check-setup
+             (lambda _
+               (setenv "HOME" (getcwd)) ;Needs to write to ‘$HOME’.
+               #t)))))
+      (inputs
+       `(("python-requests" ,python-requests)
+         ("streamlink" ,streamlink)))
+      (home-page "https://github.com/BasioMeusPuga/twitchy")
+      (synopsis "Command-line interface for Twitch.tv")
+      (description
+       "This package provides a command-line interface for Twitch.tv")
+      (license license:gpl3+))))
+
 (define-public mlt
   (package
     (name "mlt")
