@@ -2942,7 +2942,13 @@ X server.")
                                     (string-prefix? "x86_64-" system)))
                %supported-systems))
       (arguments
-       '(#:configure-flags '("--with-default-accel=uxa")))
+       '(#:configure-flags '("--with-default-accel=uxa")
+         #:phases (modify-phases %standard-phases
+                    (add-before 'bootstrap 'pre-bootstrap
+                      (lambda _
+                        ;; Inhibit autogen.sh from running configure.
+                        (setenv "NOCONFIGURE" "1")
+                        #t)))))
       (home-page "https://www.x.org/wiki/")
       (synopsis "Intel video driver for X server")
       (description
