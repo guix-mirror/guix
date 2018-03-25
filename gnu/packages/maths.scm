@@ -2170,8 +2170,8 @@ implemented in ANSI C, and MPI for communications.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://gforge.inria.fr/frs/download.php/34618/"
-                          "scotch_" version ".tar.gz"))
+      (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                          "latestfile/298/scotch_" version ".tar.gz"))
       (sha256
        (base32 "1ir088mvrqggyqdkx9qfynmiaffqbyih5qfl5mga2nrlm1qlsgzm"))
       (patches (search-patches "scotch-test-threading.patch"
