@@ -7300,6 +7300,32 @@ scratch buffer, and, by virtue of this extension, do so using the Emacs
 formatting rules for that language.")
       (license license:bsd-2))))
 
+(define-public emacs-kv
+  (package
+    (name "emacs-kv")
+    (version "0.0.19")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nicferrier/emacs-kv.git")
+             (commit "721148475bce38a70e0b678ba8aa923652e8900e")))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "0r0lz2s6gvy04fwnafai668jsf4546h4k6zd6isx5wpk0n33pj5m"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch" "-l" "kv-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
+    (home-page "https://github.com/nicferrier/emacs-kv")
+    (synopsis "Key/Value data structures library for Emacs Lisp")
+    (description "@code{emacs-kv} is a collection of tools for dealing with
+key/value data structures such as plists, alists and hash-tables in Emacs
+Lisp.")
+    (license license:gpl3+)))
+
 (define-public emacs-esxml
   (package
     (name "emacs-esxml")
