@@ -379,9 +379,12 @@ build process and its dependencies, whereas Make uses Makefile format.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CLASSPATH"
                      (string-join
-                      (find-files (string-append (assoc-ref inputs "ant-bootstrap")
-                                                 "/lib")
-                                  "\\.jar$")
+                      (cons (string-append (assoc-ref inputs "jamvm")
+                                           "/lib/rt.jar")
+                            (find-files (string-append
+                                         (assoc-ref inputs "ant-bootstrap")
+                                         "/lib")
+                                        "\\.jar$"))
                       ":"))
              #t))
          (replace 'build
@@ -396,7 +399,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
 Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n")))
 
              ;; Compile it all!
-             (and (zero? (apply system* "javac-sablevm"
+             (and (zero? (apply system* "jikes"
                                 (find-files "." "\\.java$")))
                   (zero? (system* "fastjar" "cvfm"
                                   "ecj-bootstrap.jar" "manifest" ".")))))
@@ -410,7 +413,8 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n")))
     (native-inputs
      `(("ant-bootstrap" ,ant-bootstrap)
        ("unzip" ,unzip)
-       ("sablevm" ,sablevm)
+       ("jikes" ,jikes)
+       ("jamvm" ,jamvm-1-bootstrap)
        ("fastjar" ,fastjar)))
     (home-page "https://eclipse.org")
     (synopsis "Eclipse Java development tools core batch compiler")
