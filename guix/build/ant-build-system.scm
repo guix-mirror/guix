@@ -172,6 +172,19 @@ to the default GNU unpack strategy."
                 #:allow-other-keys)
   (zero? (apply system* `("ant" ,build-target ,@make-flags))))
 
+(define* (generate-jar-indices #:key outputs #:allow-other-keys)
+  "Generate file \"META-INF/INDEX.LIST\".  This file does not use word wraps
+and is preferred over \"META-INF/MAINFEST.MF\", which does use word wraps,
+by Java when resolving dependencies.  So we make sure to create it so that
+grafting works - and so that the garbage collector doesn't collect
+dependencies of this jar file."
+  (define (generate-index jar)
+    (invoke "jar" "-i" jar))
+  (every (match-lambda
+           ((output . directory)
+            (every generate-index (find-files directory "\\.jar$"))))
+         outputs))
+
 (define* (strip-jar-timestamps #:key outputs
                                #:allow-other-keys)
   "Unpack all jar archives, reset the timestamp of all contained files, and
@@ -233,7 +246,9 @@ repack them.  This is necessary to ensure that archives are reproducible."
     (replace 'build build)
     (replace 'check check)
     (replace 'install install)
-    (add-after 'install 'strip-jar-timestamps strip-jar-timestamps)))
+    (add-after 'install 'generate-jar-indices generate-jar-indices)
+    (add-after 'generate-jar-indices 'strip-jar-timestamps
+               strip-jar-timestamps)))
 
 (define* (ant-build #:key inputs (phases %standard-phases)
                     #:allow-other-keys #:rest args)
