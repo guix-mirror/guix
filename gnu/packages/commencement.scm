@@ -317,7 +317,8 @@
                            (lambda _
                              (substitute* "Configure"
                                (("^libswanted=(.*)pthread" _ before)
-                                (string-append "libswanted=" before)))))))
+                                (string-append "libswanted=" before)))
+                             #t))))
                      ;; Do not configure with '-Dusethreads' since pthread
                      ;; support is missing.
                      ((#:configure-flags configure-flags)
