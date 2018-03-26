@@ -305,37 +305,24 @@ The Liberation Fonts are sponsored by Red Hat.")
               (sha256
                (base32
                 "0x7cz6hvhpil1rh03rax9zsfzm54bh7r4bbrq8rz673gl9h47v0v"))))
-    (build-system gnu-build-system)
+    (build-system font-build-system)
     (arguments
-     `(#:tests? #f ; there are no tests
-       #:modules ((guix build utils)
-                  (guix build gnu-build-system)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
+         (add-before 'install 'build
            (lambda _
              (let ((compile
                     (lambda (name ext)
-                      (zero? (system*
-                              "fontforge" "-lang=ff"
-                              "-c" (string-append "Open('" name "');"
-                                                  "Generate('"
-                                                  (basename name "sfd") ext
-                                                  "')"))))))
-               (every (lambda (name)
-                        (and (compile name "ttf")
-                             (compile name "otf")))
-                      (find-files "." "\\.sfd$")))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((font-dir (string-append (assoc-ref outputs "out")
-                                            "/share/fonts/truetype")))
-               (mkdir-p font-dir)
-               (for-each (cut install-file <> font-dir)
-                         (find-files "." "\\.(otf|ttf)$"))
+                      (invoke
+                       "fontforge" "-lang=ff"
+                       "-c" (string-append "Open('" name "');"
+                                           "Generate('"
+                                           (basename name "sfd") ext
+                                           "')")))))
+               (for-each (lambda (name)
+                           (and (compile name "ttf")
+                                (compile name "otf")))
+                         (find-files "." "\\.sfd$"))
                #t))))))
     (native-inputs
      `(("fontforge" ,fontforge)))
