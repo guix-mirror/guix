@@ -470,6 +470,7 @@ EXTRA_DIST =						\
   build-aux/hydra/guix-modular.scm			\
   build-aux/check-available-binaries.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
+  build-aux/compile-as-derivation.scm			\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
   build-aux/update-guix-package.scm			\
@@ -535,6 +536,13 @@ $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 install-data-hook: set-bootstrap-executable-permissions
 	touch "$(DESTDIR)$(guileobjectdir)/guix/config.go"
 
+# Assuming Guix is already installed and the daemon is up and running, this
+# rule builds from $(srcdir), creating and building derivations.
+as-derivation:
+	$(AM_V_at)echo "Building Guix in Guix..." ;		\
+	$(GUILE) --no-auto-compile				\
+	  "$(top_srcdir)/build-aux/compile-as-derivation.scm"	\
+	  "$(abs_top_srcdir)"
 
 SUBDIRS = po/guix po/packages
 BUILT_SOURCES =
@@ -763,7 +771,7 @@ cuirass-jobs.scm: $(GOBJECTS)
 .PHONY: gen-ChangeLog gen-AUTHORS gen-tarball-version
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained
-.PHONY: clean-go make-go
+.PHONY: clean-go make-go as-derivation
 .PHONY: update-guix-package update-NEWS release
 
 ## -------------- ##
