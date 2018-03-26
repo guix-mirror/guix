@@ -9023,4 +9023,24 @@ Haskell programmers.  The ultimate goal is to support all Amazon
 Web Services.")
     (license license:bsd-3)))
 
+(define-public ghc-basement
+  (package
+    (name "ghc-basement")
+    (version "0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "basement/basement-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0w2g4k9bs2ph00p0fgrmcrng8ypdz6xis0r10g380nzkg2rvj0dm"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/haskell-foundation/foundation")
+    (synopsis "Basic primitives for Foundation starter pack")
+    (description
+     "This package contains basic primitives for the Foundation set of
+packages.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
