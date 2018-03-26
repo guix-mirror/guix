@@ -2270,6 +2270,8 @@ mode-line.")
         (base32
          "1vp45y99fwj88z04ah4yppz4z568qcib646az6m9az5ar0f203br"))))
     (build-system emacs-build-system)
+    (arguments
+     '(#:include (cons "^lib\\/" %default-include)))
     (propagated-inputs
      `(("emacs-inf-ruby" ,emacs-inf-ruby)))
     (home-page "https://github.com/dgutov/robe")
