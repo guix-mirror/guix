@@ -9043,4 +9043,38 @@ Web Services.")
 packages.")
     (license license:bsd-3)))
 
+(define-public ghc-foundation
+  (package
+    (name "ghc-foundation")
+    (version "0.0.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "foundation/foundation-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bg4g0xf4pb2vmahnfp8c4f0a3v0av73lb5g8bwnp170khxfcsms"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-basement" ,ghc-basement)))
+    (home-page "https://github.com/haskell-foundation/foundation")
+    (synopsis "Alternative prelude with batteries and no dependencies")
+    (description
+     "This package provides a custom prelude with no dependencies apart from
+the base package.
+
+Foundation has the following goals:
+
+@enumerate
+@item provide a base like sets of modules that provide a consistent set of
+   features and bugfixes across multiple versions of GHC (unlike base).
+@item provide a better and more efficient prelude than base's prelude.
+@item be self-sufficient: no external dependencies apart from base;
+@item provide better data-types: packed unicode string by default, arrays;
+@item Numerical classes that better represent mathematical things (no more
+   all-in-one @code{Num});
+@item I/O system with less lazy IO.
+@end enumerate\n")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
