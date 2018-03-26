@@ -129,7 +129,8 @@ and binary format defined in The Java Virtual Machine Specification.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0i99wf9xd3hw1sj2sazychb9prx8nadxh2clgvk3zlmb28v0jbfz"))))
+                "0i99wf9xd3hw1sj2sazychb9prx8nadxh2clgvk3zlmb28v0jbfz"))
+              (patches (search-patches "classpath-aarch64-support.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -424,7 +425,8 @@ the standard javac executable.")))
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1j7cby4k66f1nvckm48xcmh352b1d1b33qk7l6hi7dp9i9zjjagr"))))
+                "1j7cby4k66f1nvckm48xcmh352b1d1b33qk7l6hi7dp9i9zjjagr"))
+              (patches (search-patches "classpath-aarch64-support.patch"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ecj-jar="
