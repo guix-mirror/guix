@@ -489,7 +489,7 @@ operations.")
 (define-public magit-svn
   (package
     (name "magit-svn")
-    (version "2.1.1")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -498,12 +498,13 @@ operations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04y88j7q9h8xjbx5dbick6n5nr1522sn9i1znp0qwk3vjb4b5mzz"))))
+                "1c3n377v436zaxamlsz04y1ahdhp96x1vd43zaryv4y10m02ba47"))))
     (build-system trivial-build-system)
     (native-inputs `(("emacs" ,emacs-minimal)
                      ("tar" ,tar)
                      ("gzip" ,gzip)))
     (propagated-inputs `(("dash" ,emacs-dash)
+                         ("with-editor" ,emacs-with-editor)
                          ("magit" ,magit)))
     (arguments
      `(#:modules ((guix build utils)
@@ -525,6 +526,9 @@ operations.")
                 (dash     (string-append (assoc-ref %build-inputs "dash")
                                          "/share/emacs/site-lisp/guix.d/dash-"
                                          ,(package-version emacs-dash)))
+                (with-editor (string-append (assoc-ref %build-inputs "with-editor")
+                                            "/share/emacs/site-lisp/guix.d/with-editor-"
+                                            ,(package-version emacs-with-editor)))
                 (source   (assoc-ref %build-inputs "source"))
                 (lisp-dir (string-append %output "/share/emacs/site-lisp")))
            (setenv "PATH" PATH)
@@ -537,7 +541,7 @@ operations.")
              (parameterize ((%emacs emacs))
                (emacs-generate-autoloads ,name lisp-dir)
                (setenv "EMACSLOADPATH"
-                       (string-append ":" magit ":" dash))
+                       (string-append ":" magit ":" dash ":" with-editor))
                (emacs-batch-eval '(byte-compile-file "magit-svn.el"))))))))
     (home-page "https://github.com/magit/magit-svn")
     (synopsis "Git-SVN extension to Magit")
