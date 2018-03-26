@@ -332,7 +332,7 @@ packages."
                   (let ((module (make-user-module '())))
                     (packages->outputs (load* file module) mode)))
                  (('manifest . file)
-                  (let ((module (make-user-module '())))
+                  (let ((module (make-user-module '((guix profiles) (gnu)))))
                     (manifest->outputs (load* file module))))
                  (_ '(#f)))
                opts)))
