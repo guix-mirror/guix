@@ -181,7 +181,8 @@
 (define (all-service-modules)
   "Return the default set of service modules."
   (cons (resolve-interface '(gnu services))
-        (all-modules (%service-type-path))))
+        (all-modules (%service-type-path)
+                     #:warn warn-about-load-error)))
 
 (define* (fold-service-types proc seed
                              #:optional

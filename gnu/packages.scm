@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -159,7 +159,9 @@ for system '~a'")
 
 (define* (fold-packages proc init
                         #:optional
-                        (modules (all-modules (%package-module-path)))
+                        (modules (all-modules (%package-module-path)
+                                              #:warn
+                                              warn-about-load-error))
                         #:key (select? (negate hidden-package?)))
   "Call (PROC PACKAGE RESULT) for each available package defined in one of
 MODULES that matches SELECT?, using INIT as the initial value of RESULT.  It
