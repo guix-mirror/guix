@@ -357,8 +357,8 @@ requirement for all GNU Classpath releases after version 0.93.")
                                        "/bin/jamvm"))
                 (bootcp (let ((jvmlib (string-append (assoc-ref %build-inputs "classpath")
                                                      "/share/classpath")))
-                          (string-append jvmlib "/lib/glibj.zip:"
-                                         jvmlib "/lib/tools.zip"))))
+                          (string-append jvmlib "/glibj.zip:"
+                                         jvmlib "/tools.zip"))))
            (mkdir-p bin)
            (with-output-to-file target
              (lambda _
