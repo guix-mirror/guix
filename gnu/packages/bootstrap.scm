@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -31,7 +31,6 @@
   #:use-module ((guix derivations)
                 #:select (derivation derivation->output-path))
   #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
-  #:use-module ((guix build utils) #:select (elf-file?))
   #:use-module (guix memoization)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
