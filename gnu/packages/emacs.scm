@@ -670,7 +670,7 @@ programs.")
 (define-public flycheck
   (package
     (name "emacs-flycheck")
-    (version "30")
+    (version "31")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -678,7 +678,7 @@ programs.")
                     version "/flycheck-" version ".tar"))
               (sha256
                (base32
-                "1rxzkaqsj48z3nska5wsgwafvwkam014dzqd32baycmxjl0jxvy7"))))
+                "01rnwan16m7cyyrfca3c5c60mbj2r3knkpzbhji2fczsf0wns240"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
