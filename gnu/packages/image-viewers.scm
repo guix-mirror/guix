@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -105,7 +105,7 @@ actions.")
 (define-public geeqie
   (package
     (name "geeqie")
-    (version "1.3")
+    (version "1.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/BestImageViewer/geeqie/"
@@ -113,7 +113,7 @@ actions.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0gzc82sy66pbsmq7lnmq4y37zqad1zfwfls3ik3dmfm8s5nmcvsb"))))
+               "0ciygvcxb78pqg59r6p061mkbpvkgv2rv3r79j3kgv3kalb3ln2w"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Enable support for a "map" pane using GPS data.
@@ -123,7 +123,18 @@ actions.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
+             (define (write-dummy-changelog port)
+               (display "See Git history for a change log.\n" port))
+
              (setenv "NOCONFIGURE" "true")
+
+             ;; Create ChangeLog{,.html} to placate the makefile, which would
+             ;; otherwise require access to the Git repo.
+             (call-with-output-file "ChangeLog"
+               write-dummy-changelog)
+             (call-with-output-file "ChangeLog.html"
+               write-dummy-changelog)
+
              (zero? (system* "sh" "autogen.sh")))))))
     (inputs
      `(("clutter" ,clutter)
