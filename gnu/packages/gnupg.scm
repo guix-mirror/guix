@@ -568,7 +568,7 @@ signing, decryption, verification, and key-listing parsing.")
 (define-public pius
   (package
    (name "pius")
-   (version "2.2.4")
+   (version "2.2.6")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -576,7 +576,7 @@ signing, decryption, verification, and key-listing parsing.")
                   version "/pius-" version ".tar.bz2"))
             (sha256
              (base32
-              "0lgc0ipwdfqbq16zax8kn17wbv8xyw4ygc09fawl2yp459z0ql4n"))))
+              "1893hzpx3zv724drqv48csrn0cm98xw4ymb1zmhs2jvjj1778zfj"))))
    (build-system python-build-system)
    (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
              ("gpg" ,gnupg)))
