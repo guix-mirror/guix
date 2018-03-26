@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2018 Sahithi Yarlagadda <sahi@swecha.net>
+;;; Copyright © 2018 Sandeep Subramanian <sandeepsubramanian94@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3296,3 +3297,26 @@ Dependencies of the distribution of the specified variable (response
 variable) to other variables (explanatory variables) are derived and
 evaluated by the @dfn{Akaike Information Criterion} (AIC).")
     (license license:gpl2+)))
+
+(define-public r-arules
+  (package
+    (name "r-arules")
+    (version "1.6-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "arules" version))
+       (sha256
+        (base32
+         "14gbq5k2zkx4wc7kkfazz313ngij89qp1xmyxfg3nq3v1s84c3sl"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/mhahsler/arules")
+    (synopsis "Mining association rules and frequent itemsets")
+    (description
+     "This package provides an infrastructure for representing, manipulating
+and analyzing transaction data and patterns (frequent itemsets and association rules).
+It also provides C implementations of the association mining algorithms Apriori
+and Eclat.")
+    (license license:gpl3)))
