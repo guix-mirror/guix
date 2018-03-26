@@ -725,7 +725,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.26.0")
+    (version "3.28.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -733,7 +733,7 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1n69lkiagx2x8lrdbvdlz6c051cvzhma73b3ggnw7w1wfkdpnmkr"))))
+               "1a3kcls18dcz1lj8hrx8skcli9xxfyi71c17xjwayh71cm5jc8zs"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -772,6 +772,11 @@ forgotten when the session ends.")
        ("dconf" ,dconf)
        ("libcanberra" ,libcanberra)
        ("libsecret" ,libsecret)
+
+       ;; XXX: 'libarchive.pc' adds '-lnettle' so Nettle should really be
+       ;; propagated from there.
+       ("nettle" ,nettle)
+
        ;; For tests.
        ("dogtail" ,python2-dogtail)))
     (native-inputs
