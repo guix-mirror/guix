@@ -5838,15 +5838,18 @@ Damerau-Levenshtein algorithms.")
 (define-public ghc-memory
   (package
     (name "ghc-memory")
-    (version "0.13")
+    (version "0.14.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "memory/memory-" version ".tar.gz"))
               (sha256
                (base32
-                "02l742qxjqy3jw1a347gb7sn7pn7a5qha1vzi2qqbvgafcjn0wyw"))))
+                "03rbszi5d4z9rlbfv8ydrl1xf84xsh8z57g07f7j9qccn9587c3v"))))
     (build-system haskell-build-system)
+    (inputs
+     `(("ghc-basement" ,ghc-basement)
+       ("ghc-foundation" ,ghc-foundation)))
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
