@@ -1189,19 +1189,19 @@ It comes in 7 incremental weights:
 ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
     (license license:silofl1.1)))
 
-(define-public culmus
+(define-public font-culmus
   (package
-    (name "culmus")
+    (name "font-culmus")
     (version "0.132")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://sourceforge.net/projects/"
-                            "culmus/files/culmus/" version "/culmus-src-"
-                            version ".tar.gz"))
-        (sha256
-         (base32
-          "1djxalm26r7bcq33ckmfa15xfs6pmqzvcl64d5lqa1dl01bl4j4z"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://sourceforge.net/projects/"
+                           "culmus/files/culmus/" version "/culmus-src-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1djxalm26r7bcq33ckmfa15xfs6pmqzvcl64d5lqa1dl01bl4j4z"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
