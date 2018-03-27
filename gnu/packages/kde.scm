@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -384,7 +384,7 @@ other special events for a geographical region.")
 (define-public libkomparediff2
   (package
     (name "libkomparediff2")
-    (version "17.12.1")
+    (version "17.12.3")
     (source
       (origin
         (method url-fetch)
@@ -393,7 +393,7 @@ other special events for a geographical region.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0jd700pjw51vyan5d22k6j60jgb95pfn2nvwz2nfs2f4xlsly1hz"))))
+          "0w6p8lvm2rn7y4qz0x3s87lwh1758xnyhwkkkng55n8v9rpjjw7l"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
