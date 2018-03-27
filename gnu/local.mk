@@ -929,6 +929,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-latest-openjpeg.patch	\
   %D%/packages/patches/mupdf-CVE-2017-17858.patch		\
+  %D%/packages/patches/mupdf-CVE-2018-6544.patch		\
+  %D%/packages/patches/mupdf-CVE-2018-1000051.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/net-tools-bitrot.patch			\
