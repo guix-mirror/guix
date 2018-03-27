@@ -802,13 +802,12 @@ engineering.")
              (setenv "PATH" (string-append gzip "/bin"
                                            ":" texinfo "/bin"))
              (mkdir-p info-dir)
-             (and (zero?
-                   (system* "makeinfo" "--output"
-                            (string-append info-dir "/sicp.info")
-                            (string-append source "/sicp-pocket.texi")))
-                  (every zero?
-                         (map (cut system* "gzip" "-9n" <>)
-                              (find-files info-dir))))))))
+             (invoke "makeinfo" "--output"
+                     (string-append info-dir "/sicp.info")
+                     (string-append source "/sicp-pocket.texi"))
+             (for-each (cut invoke "gzip" "-9n" <>)
+                       (find-files info-dir))
+             #t))))
       (home-page "https://sarabander.github.io/sicp")
       (synopsis "Structure and Interpretation of Computer Programs")
       (description "Structure and Interpretation of Computer Programs (SICP) is
