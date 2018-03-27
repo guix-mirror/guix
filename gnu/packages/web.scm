@@ -3833,18 +3833,19 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "05pz4ychqp4cqywcdavdi8jj3y09gmam097d2idjnlcg9x61h2s9"))))
+                "0bs0i5mjfzxfshqz8i30nhn7kvgwly4fqn5bfq6dqfdrn7biai2x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
        ("r-jsonlite" ,r-jsonlite)
-       ("r-mime" ,r-mime)))
+       ("r-mime" ,r-mime)
+       ("r-xfun" ,r-xfun)))
     (native-inputs
      `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/yihui/servr")
