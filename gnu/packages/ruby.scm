@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -669,14 +669,14 @@ line of code.")
 (define-public ruby-asciidoctor
   (package
   (name "ruby-asciidoctor")
-  (version "1.5.6.1")
+  (version "1.5.6.2")
   (source
     (origin
       (method url-fetch)
       (uri (rubygems-uri "asciidoctor" version))
       (sha256
         (base32
-          "1jnf9y8q5asfdzilp8vcqafrc2faj719df4yh1993mh6jd0iqdy4"))))
+          "0zq3az4836nxkc8g5wnnbzmarw7663s1ky6gf8pc04sfpa8n2l3f"))))
   (build-system ruby-build-system)
   (arguments
    `(#:test-target "test:all"
