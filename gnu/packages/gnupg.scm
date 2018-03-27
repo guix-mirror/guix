@@ -933,7 +933,7 @@ over.")
 (define-public jetring
   (package
     (name "jetring")
-    (version "0.25")
+    (version "0.27")
     (source
       (origin
         (method url-fetch)
@@ -941,7 +941,7 @@ over.")
                             name "_" version ".tar.xz"))
         (sha256
          (base32
-          "0shcnnw0h31b08vmnvf18ni33dg40w18wv9smb69vkklz3h4jhpw"))))
+          "0jy0x5zj7v87xgyldlsx1knzp0mv10wzamblrw1b61i2m1ii4pxz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
