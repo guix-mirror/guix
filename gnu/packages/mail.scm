@@ -1180,7 +1180,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.0.1")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
@@ -1188,7 +1188,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "0lzisrdgrj5qqwjb7bv99mf2aljm568r6g108yisp0s644z2nxxb"))))
+                "14zva4f8k64x86sm9n21cp2yvrpph6k6k52bm22a00pxjwdq50q8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1205,20 +1205,23 @@ facilities for checking incoming mail.")
                   (add-before
                    'configure 'pre-configure
                    (lambda _
-                     ;; Simple hack to avoid installing in /etc
+                     ;; Simple hack to avoid installing in /etc.
                      (substitute* '("doc/Makefile.in"
                                     "doc/example-config/Makefile.in")
                        (("pkgsysconfdir = .*")
                         "pkgsysconfdir = /tmp/etc"))
                      #t))
                   (add-after
-                   'unpack 'patch-other-shebangs
+                   'unpack 'patch-other-file-names
                    (lambda _
                      (substitute*
-                       "src/lib-program-client/test-program-client-local.c"
+                         "src/lib-program-client/test-program-client-local.c"
+                       (("(/bin/| )cat") (which "cat"))
                        (("/bin/echo") (which "echo"))
-                       (("/bin/cat") (which "cat"))
-                       (("/bin/false") (which "false")))
+                       (("/bin/false") (which "false"))
+                       (("/bin/sh") (which "bash"))
+                       (("head") (which "head"))
+                       (("sleep") (which "sleep")))
                      #t)))))
     (home-page "https://www.dovecot.org")
     (synopsis "Secure POP3/IMAP server")
