@@ -86,15 +86,16 @@ for SYSTEM.  Use VERSION as the version identifier."
        (list (%current-system)))))
 
   (define guix-checkout
-    (assq-ref arguments 'guix))
+    (or (assq-ref arguments 'guix)                ;Hydra on hydra
+        (assq-ref arguments 'guix-modular)))      ;Cuirass on berlin
 
   (define version
     (or (assq-ref guix-checkout 'revision)
         "0.unknown"))
 
   (let ((file (assq-ref guix-checkout 'file-name)))
-    (format (current-error-port) "using checkout ~s (~s)~%"
-            guix-checkout file)
+    (format (current-error-port) "using checkout ~s (~s; arguments: ~s)~%"
+            guix-checkout file arguments)
 
     (map (lambda (system)
            (let ((name (string->symbol
