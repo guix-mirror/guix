@@ -3768,7 +3768,7 @@ developers.")
 (define-public radeontop
   (package
     (name "radeontop")
-    (version "1.0")
+    (version "1.1")
     (home-page "https://github.com/clbr/radeontop/")
     (source (origin
               (method url-fetch)
@@ -3776,7 +3776,7 @@ developers.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1z38nibirqxrbsfyhfcrnzlcw16cqjp4ds6qnjfxalwayf9fm5x9"))))
+                "1fv06j5c99imvzkac3j40lgjhr5b2i77fnyffhlvj92bli1fm1c6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
