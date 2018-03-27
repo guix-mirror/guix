@@ -207,7 +207,7 @@ old-fashioned output methods with powerful ascii-art renderer.")
                    ;; XXX We need to run ./bootstrap because of the build
                    ;; system fixes above.
                    (replace 'bootstrap
-                    (lambda _ (zero? (system* "sh" "bootstrap")))))))
+                     (lambda _ (invoke "sh" "bootstrap"))))))
     (home-page "http://liba52.sourceforge.net/")
     (synopsis "ATSC A/52 stream decoder")
     (description "liba52 is a library for decoding ATSC A/52 streams.  The
