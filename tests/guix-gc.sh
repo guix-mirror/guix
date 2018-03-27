@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -53,6 +53,9 @@ guix gc --references "$out/bin/guile"
 
 if guix gc --references /dev/null;
 then false; else true; fi
+
+# Check derivers.
+guix gc --derivers "$out" | grep "$drv"
 
 # Add then reclaim a .drv file.
 drv="`guix build idutils -d`"

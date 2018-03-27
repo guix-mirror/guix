@@ -2642,6 +2642,24 @@ of these, recursively.  In other words, the returned list is the
 of an element.  @xref{Invoking guix graph}, for a tool to visualize
 the graph of references.
 
+@item --derivers
+@cindex derivation
+Return the derivation(s) leading to the given store items
+(@pxref{Derivations}).
+
+For example, this command:
+
+@example
+guix gc --derivers `guix package -I ^emacs$ | cut -f4`
+@end example
+
+@noindent
+returns the @file{.drv} file(s) leading to the @code{emacs} package
+installed in your profile.
+
+Note that there may be zero matching @file{.drv} files, for instance
+because these files have been garbage-collected.  There can also be more
+than one matching @file{.drv} due to fixed-output derivations.
 @end table
 
 Lastly, the following options allow you to check the integrity of the

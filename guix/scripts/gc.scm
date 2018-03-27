@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +61,8 @@ Invoke the garbage collector.\n"))
   -R, --requisites       list the requisites of PATHS"))
   (display (G_ "
       --referrers        list the referrers of PATHS"))
+  (display (G_ "
+      --derivers         list the derivers of PATHS"))
   (newline)
   (display (G_ "
       --verify[=OPTS]    verify the integrity of the store; OPTS is a
@@ -153,6 +155,10 @@ Invoke the garbage collector.\n"))
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-referrers
                               (alist-delete 'action result))))
+        (option '("derivers") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'action 'list-derivers
+                              (alist-delete 'action result))))
         (option '("list-failures") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-failures
@@ -241,6 +247,8 @@ Invoke the garbage collector.\n"))
                            (requisites store (list item)))))
         ((list-referrers)
          (list-relatives referrers))
+        ((list-derivers)
+         (list-relatives valid-derivers))
         ((optimize)
          (assert-no-extra-arguments)
          (optimize-store store))
