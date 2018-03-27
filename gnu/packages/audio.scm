@@ -2059,7 +2059,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.9.1")
+    (version "3.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2068,7 +2068,7 @@ background file post-processing.")
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
               (sha256
                (base32
-                "150fgnjcmb06r3pa3mbsvb4iwnqlimjwdxgbs6p55zz6g8wbln7a"))))
+                "0d3cb6dw8jz7ijriqn3rlwin24gffczp69hl17pzxj1d5w57yj44"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
