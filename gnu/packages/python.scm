@@ -8616,14 +8616,14 @@ to occurrences in strings and comments.")
 (define-public python-py3status
   (package
     (name "python-py3status")
-    (version "3.1")
+    (version "3.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py3status" version))
        (sha256
         (base32
-         "0i283z1pivmir61z8kbiycigc94l61v33ygzkhczf1ifq7cppyds"))))
+         "0shxcfz4wcczj0mhwp4w0dvwd2fdd9bgprq8slim1519iiqzgwhq"))))
     (build-system python-build-system)
     (inputs
      `(("file" ,file)))
@@ -8636,8 +8636,8 @@ to occurrences in strings and comments.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((file-path (assoc-ref inputs "file")))
                (substitute* "py3status/parse_config.py"
-                 (("check_output\\(\\['file'")
-                  (string-append "check_output(['" file-path "/bin/file'")))
+                 (("\\['file', '-b'")
+                  (string-append "['" file-path "/bin/file', '-b'")))
                #t))))
        #:tests? #f)) ; TODO: Requires many libraries not in Guix.
     (home-page "https://github.com/ultrabug/py3status")
