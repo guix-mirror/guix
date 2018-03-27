@@ -1202,49 +1202,27 @@ ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
         (sha256
          (base32
           "1djxalm26r7bcq33ckmfa15xfs6pmqzvcl64d5lqa1dl01bl4j4z"))))
-    (build-system gnu-build-system)
+    (build-system font-build-system)
     (arguments
-     `(#:tests? #f ; no tests
-       #:modules ((guix build utils)
-                  (guix build gnu-build-system)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
+         (add-before 'install 'build
            (lambda _
              (let ((compile
                     (lambda (name ext)
-                      (zero? (system*
-                              "fontforge" "-lang=ff"
-                              "-c" (string-append "Open('" name "');"
-                                                  "Generate('"
-                                                  (basename name "sfd") ext
-                                                  "')"))))))
+                      (invoke
+                       "fontforge" "-lang=ff"
+                       "-c" (string-append "Open('" name "');"
+                                           "Generate('"
+                                           (basename name "sfd") ext
+                                           "')")))))
                ;; This part based on the fonts shipped in the non-source package.
-               (every (lambda (name)
-                        (compile name "ttf"))
-                      (find-files "." "^[^Nachlieli].*\\.sfd$"))
-               (every (lambda (name)
-                        (compile name "otf"))
-                      (find-files "." "^Nachlieli.*\\.sfd$"))
-               #t)))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out     (assoc-ref %outputs "out"))
-                    (ttf     (string-append out "/share/fonts/truetype"))
-                    (otf     (string-append out "/share/fonts/opentype"))
-                    (license (string-append out "/share/doc/" ,name)))
-               (for-each (lambda (file)
-                           (install-file file ttf))
-                         (find-files "." "\\.ttf$"))
-               (for-each (lambda (file)
-                           (install-file file otf))
-                         (find-files "." "\\.otf$"))
-               (for-each (lambda (file)
-                           (install-file file license))
-                         '("GNU-GPL" "LICENSE" "LICENSE-BITSTREAM"))
+               (for-each (lambda (name)
+                           (compile name "ttf"))
+                         (find-files "." "^[^Nachlieli].*\\.sfd$"))
+               (for-each (lambda (name)
+                           (compile name "otf"))
+                         (find-files "." "^Nachlieli.*\\.sfd$"))
                #t))))))
     (native-inputs
      `(("fontforge" ,fontforge)))
