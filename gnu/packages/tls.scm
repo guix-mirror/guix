@@ -255,6 +255,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
+   (replacement openssl-1.0.2o)
    (version "1.0.2n")
    (source (origin
              (method url-fetch)
@@ -398,6 +399,27 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
+
+(define openssl-1.0.2o
+  (package
+    (inherit openssl)
+    (name "openssl")
+    (version "1.0.2o")
+    (source (origin
+              (inherit (package-source openssl))
+              (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/"
+                                        name "-" version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/" name "-" version ".tar.gz")))
+              (sha256
+               (base32
+                "0kcy13l701054nhpbd901mz32v1kn4g311z0nifd83xs2jbmqgzc"))
+              ;; Erase the inherited snippet, which isn't applicable to
+              ;; OpenSSL 1.0.2o.
+              (snippet #f)))))
 
 (define-public openssl-next
   (package
