@@ -13,7 +13,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -269,14 +269,29 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
              (invoke "make" "-f" "Makefile-libbz2_so")))
          (add-after 'install 'install-shared-lib
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; The Makefile above does not have an 'install' target, nor does
+             ;; it create all the (un)versioned symlinks, so we handle it here.
              (let* ((out    (assoc-ref outputs "out"))
-                    (libdir (string-append out "/lib")))
-               (for-each (lambda (file)
-                           (format #t "installing `~a' to `~a'~%"
-                                   (basename file) libdir)
-                           (install-file file libdir))
-                         (find-files "." "^libbz2\\.so")))
-             #t))
+                    (libdir (string-append out "/lib"))
+                    ;; Find the actual library (e.g. "libbz2.so.1.0.6").
+                    (lib (string-drop
+                          (car (find-files
+                                "."
+                                (lambda (file stat)
+                                  (and (string-prefix? "./libbz2.so" file)
+                                       (eq? 'regular (stat:type stat))))))
+                          2))
+                    (soversion (string-drop lib (string-length "libbz2.so."))))
+               (install-file lib libdir)
+               (with-directory-excursion libdir
+                 ;; Create symlinks libbz2.so.1 -> libbz2.so.1.0, etc.
+                 (let loop ((base "libbz2.so")
+                            (numbers (string-split soversion #\.)))
+                   (unless (null? numbers)
+                     (let ((so-file (string-append base "." (car numbers))))
+                       (symlink so-file base)
+                       (loop so-file (cdr numbers))))))
+               #t)))
          (add-after 'install-shared-lib 'patch-scripts
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
