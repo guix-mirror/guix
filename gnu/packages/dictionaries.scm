@@ -62,7 +62,7 @@
                           (gz     (assoc-ref %build-inputs "gzip"))
                           (texi   (assoc-ref %build-inputs "texinfo")))
                      (setenv "PATH" (string-append gz "/bin"))
-                     (system* (string-append tar "/bin/tar") "xvf" source)
+                     (invoke (string-append tar "/bin/tar") "xvf" source)
 
                      (chdir (string-append "vera-" ,version))
                      (mkdir-p info)
@@ -70,14 +70,12 @@
 
                      ;; XXX: Use '--force' because the document is unhappy
                      ;; with Texinfo 5 (yes, documents can be unhappy.)
-                     (and (zero?
-                           (system* (string-append texi "/bin/makeinfo")
-                                    "vera.texi" "--force" "-o"
-                                    (string-append info "/vera.info")))
-                          (zero?
-                           (system* (string-append texi "/bin/makeinfo")
-                                    "vera.texi" "--force" "--html" "-o"
-                                    (string-append html "/vera.html"))))))
+                     (invoke (string-append texi "/bin/makeinfo")
+                             "vera.texi" "--force" "-o"
+                             (string-append info "/vera.info"))
+                     (invoke (string-append texi "/bin/makeinfo")
+                             "vera.texi" "--force" "--html" "-o"
+                             (string-append html "/vera.html"))))
       #:modules ((guix build utils))))
     (native-inputs `(("texinfo" ,texinfo)
                      ("tar" ,tar)
