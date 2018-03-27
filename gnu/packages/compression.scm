@@ -1611,7 +1611,7 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.3")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/zstd/archive/v"
@@ -1619,7 +1619,7 @@ or junctions, and always follows hard links.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0yr91gwi380632w9y7p6idl72svq0mq0jajvdii05pp77qalfz57"))))
+                "1a85sqk4z5b2jfp7fqkr38ibql8mdzca32lf4i3bssyjimp1pr4j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
