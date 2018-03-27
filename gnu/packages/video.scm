@@ -153,22 +153,22 @@
                     (let ((out     (assoc-ref outputs "out"))
                           (ncurses (assoc-ref inputs "ncurses")))
                       (setenv "CONFIG_SHELL" (which "bash"))
-                      (zero? (system* "./configure"
-                                      (string-append "--prefix=" out)
-                                      (string-append "--build=" build)
-                                      ;; The ancient config.guess is unable to
-                                      ;; guess the host triplet on mips64el.
-                                      ,@(if (string=? "mips64el-linux"
-                                                      (%current-system))
-                                            '("--host=mips64el-unknown-linux-gnu")
-                                            '())
-                                      ;; The same is also true with aarch64.
-                                      ,@(if (string=? "aarch64-linux"
-                                                      (%current-system))
-                                            '("--host=aarch64-unknown-linux-gnu")
-                                            '())
-                                      (string-append "--with-ncurses="
-                                                     ncurses)))))))))
+                      (invoke "./configure"
+                              (string-append "--prefix=" out)
+                              (string-append "--build=" build)
+                              ;; The ancient config.guess is unable to
+                              ;; guess the host triplet on mips64el.
+                              ,@(if (string=? "mips64el-linux"
+                                              (%current-system))
+                                    '("--host=mips64el-unknown-linux-gnu")
+                                    '())
+                              ;; The same is also true with aarch64.
+                              ,@(if (string=? "aarch64-linux"
+                                              (%current-system))
+                                    '("--host=aarch64-unknown-linux-gnu")
+                                    '())
+                              (string-append "--with-ncurses="
+                                             ncurses))))))))
     (home-page "http://aa-project.sourceforge.net/aalib/")
     (synopsis "ASCII-art library")
     (description
