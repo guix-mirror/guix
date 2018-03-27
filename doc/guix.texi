@@ -6997,6 +6997,15 @@ name instead of a package name, as in:
 @example
 guix graph -t derivation `guix system build -d my-config.scm`
 @end example
+
+@item module
+This is the graph of @dfn{package modules} (@pxref{Package Modules}).
+For example, the following command shows the graph for the package
+module that defines the @code{guile} package:
+
+@example
+guix graph -t module guile | dot -Tpdf > module-graph.pdf
+@end example
 @end table
 
 All the types above correspond to @emph{build-time dependencies}.  The
