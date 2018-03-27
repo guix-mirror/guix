@@ -4347,7 +4347,7 @@ and Karl Berry.")
      `(("python-2" ,python-2)
        ("pkg-config" ,pkg-config)
        ("bc" ,bc)))
-    (home-page "http://www.lyx.org/")
+    (home-page "https://www.lyx.org/")
     (synopsis "Document preparation system with GUI")
     (description "LyX is a document preparation system.  It excels at letting
 you create complex technical and scientific articles with mathematics,
