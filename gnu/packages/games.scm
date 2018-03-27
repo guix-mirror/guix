@@ -24,7 +24,7 @@
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -4767,7 +4767,7 @@ You can save humanity and get programming skills!")
 (define-public gzdoom
   (package
     (name "gzdoom")
-    (version "3.2.5")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -4775,7 +4775,7 @@ You can save humanity and get programming skills!")
                               version ".zip"))
               (sha256
                (base32
-                "1164d1zf5in98gp4j981ml3hwmks3q7vzfanlqpjlx2c09jmlv0q"))
+                "09a4kx3ry8pc9r578m7yprwa7zsdqxjpn10lyc92r5g9sx4l1m1a"))
               (patches (search-patches "gzdoom-search-in-installed-share.patch"))
               (modules '((guix build utils)))
               (snippet
