@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +49,7 @@
 (define-public vis
   (package
     (name "vis")
-    (version "0.4")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martanne/"
@@ -57,7 +57,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1iclfsc9vn40fqfiz56vrw6dmr4x8q9gvav0b53kkpc6zcfa86zi"))))
+                "1xbxb3q963s6sav63yw0x30lm0wvxsrzb7hr6a7dh4f8r7mp1skp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
