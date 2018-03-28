@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -1358,23 +1358,26 @@ normally the case.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "3.1.0")
+    (version "3.52.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "0qyqq9akm4vshhn8cngjc1qykcvsn7cz6dlm6njfsgpbraqrmbbw"))))
+                "0g54cypfi5qj6cgxfr7l1nb41r1cqhhngx4qxn4ga9h720rcsbr8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
        ("python-pytest" ,python-pytest-bootstrap)))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs-bootstrap)
+       ("python-coverage" ,python-coverage)))
     (synopsis "Library for property based testing")
     (description "Hypothesis is a library for testing your Python code against a
 much larger range of examples than you would ever want to write by hand.  It’s
 based on the Haskell library, Quickcheck, and is designed to integrate
 seamlessly into your existing Python unit testing work flow.")
-    (home-page "https://github.com/DRMacIver/hypothesis")
+    (home-page "https://github.com/HypothesisWorks/hypothesis-python")
     (license license:mpl2.0)
     (properties `((python2-variant . ,(delay python2-hypothesis))))))
 

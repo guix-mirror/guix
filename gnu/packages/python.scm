@@ -10778,6 +10778,16 @@ protocols.")
 (define-public python2-attrs
   (package-with-python2 python-attrs))
 
+(define-public python-attrs-bootstrap
+  (package
+    (inherit python-attrs)
+    (name "python-attrs-bootstrap")
+    (native-inputs `())
+    (arguments `(#:tests? #f))))
+
+(define-public python2-attrs-bootstrap
+  (package-with-python2 python-attrs-bootstrap))
+
 (define-public python2-cliapp
   (package
     (name "python2-cliapp")
