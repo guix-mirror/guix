@@ -407,18 +407,23 @@
                                                         (%current-system)))))
                     (arguments
                      `(#:guile ,%bootstrap-guile
+                       #:modules ((guix build utils))
                        #:builder
-                       (let ((tar    (assoc-ref %build-inputs "tar"))
-                             (xz     (assoc-ref %build-inputs "xz"))
-                             (source (assoc-ref %build-inputs "source")))
-                         (and (zero? (system* tar "xvf" source
-                                              "--use-compress-program" xz))
-                              (string=? "guile" (readlink "bin/guile-rocks"))
-                              (file-exists? "bin/scripts/compile.scm")
-                              (let ((out (assoc-ref %outputs "out")))
-                                (call-with-output-file out
-                                  (lambda (p)
-                                    (display "OK" p))))))))))
+                       (begin
+                         (use-modules (guix build utils))
+                         (let ((tar    (assoc-ref %build-inputs "tar"))
+                               (xz     (assoc-ref %build-inputs "xz"))
+                               (source (assoc-ref %build-inputs "source")))
+                           (invoke tar "xvf" source
+                                   "--use-compress-program" xz)
+                           (unless (and (string=? "guile" (readlink "bin/guile-rocks"))
+                                        (file-exists? "bin/scripts/compile.scm"))
+                             (error "the snippet apparently failed"))
+                           (let ((out (assoc-ref %outputs "out")))
+                             (call-with-output-file out
+                               (lambda (p)
+                                 (display "OK" p))))
+                           #t))))))
          (drv    (package-derivation %store package))
          (out    (derivation->output-path drv)))
     (and (build-derivations %store (list (pk 'snippet-drv drv)))
@@ -486,7 +491,8 @@
                    (mkdir %output)
                    (call-with-output-file (string-append %output "/test")
                      (lambda (p)
-                       (display '(hello guix) p))))))))
+                       (display '(hello guix) p)))
+                   #t)))))
          (d (package-derivation %store p)))
     (and (build-derivations %store (list d))
          (let ((p (pk 'drv d (derivation->output-path d))))
@@ -500,8 +506,10 @@
               (source #f)
               (arguments
                `(#:guile ,%bootstrap-guile
-                 #:builder (copy-file (assoc-ref %build-inputs "input")
-                                      %output)))
+                 #:builder (begin
+                             (copy-file (assoc-ref %build-inputs "input")
+                                        %output)
+                             #t)))
               (inputs `(("input" ,i)))))
          (d (package-derivation %store p)))
     (and (build-derivations %store (list d))
@@ -516,8 +524,10 @@
               (source i)
               (arguments
                `(#:guile ,%bootstrap-guile
-                 #:builder (copy-file (assoc-ref %build-inputs "source")
-                                      %output)))))
+                 #:builder (begin
+                             (copy-file (assoc-ref %build-inputs "source")
+                                        %output)
+                             #t)))))
          (d (package-derivation %store p)))
     (and (build-derivations %store (list d))
          (let ((p (derivation->output-path d)))
@@ -530,11 +540,14 @@
               (source #f)
               (arguments
                `(#:guile ,%bootstrap-guile
+                 #:modules ((guix build utils))
                  #:builder
-                 (let ((out  (assoc-ref %outputs "out"))
-                       (bash (assoc-ref %build-inputs "bash")))
-                   (zero? (system* bash "-c"
-                                   (format #f "echo hello > ~a" out))))))
+                 (begin
+                   (use-modules (guix build utils))
+                   (let ((out  (assoc-ref %outputs "out"))
+                         (bash (assoc-ref %build-inputs "bash")))
+                     (invoke bash "-c"
+                             (format #f "echo hello > ~a" out))))))
               (inputs `(("bash" ,(search-bootstrap-binary "bash"
                                                           (%current-system)))))))
          (d (package-derivation %store p)))
@@ -554,7 +567,8 @@
                    (mkdir %output)
                    ;; The reference to itself isn't allowed so building it
                    ;; should fail.
-                   (symlink %output (string-append %output "/self")))))))
+                   (symlink %output (string-append %output "/self"))
+                   #t)))))
          (d (package-derivation %store p)))
     (guard (c ((nix-protocol-error? c) #t))
       (build-derivations %store (list d))
@@ -766,7 +780,9 @@
                 (inherit p1r) (name "p1") (replacement p1r)
                 (arguments
                  `(#:guile ,%bootstrap-guile
-                   #:builder (mkdir (assoc-ref %outputs "out"))))))
+                   #:builder (begin
+                               (mkdir (assoc-ref %outputs "out"))
+                               #t)))))
          (p2r (dummy-package "P2"
                 (build-system trivial-build-system)
                 (inputs `(("p1" ,p1)))
@@ -786,7 +802,8 @@
                                (mkdir out)
                                (chdir out)
                                (symlink (assoc-ref %build-inputs "p1")
-                                        "p1"))))))
+                                        "p1")
+                               #t)))))
          (p3  (dummy-package "p3"
                 (build-system trivial-build-system)
                 (inputs `(("p2" ,p2)))
@@ -796,7 +813,8 @@
                                (mkdir out)
                                (chdir out)
                                (symlink (assoc-ref %build-inputs "p2")
-                                        "p2")))))))
+                                        "p2")
+                               #t))))))
     (lset= equal?
            (package-grafts %store p3)
            (list (graft
@@ -990,7 +1008,8 @@
                                 (call-with-output-file
                                     (string-append out "/xml/bar/baz/catalog.xml")
                                   (lambda (port)
-                                    (display "xml? wat?!" port)))))))
+                                    (display "xml? wat?!" port)))
+                                #t))))
                (synopsis #f) (description #f)
                (home-page #f) (license #f)))
          (p2 (package
@@ -1001,7 +1020,9 @@
                (build-system trivial-build-system)
                (arguments
                 `(#:guile ,%bootstrap-guile
-                  #:builder (mkdir (assoc-ref %outputs "out"))))
+                  #:builder (begin
+                              (mkdir (assoc-ref %outputs "out"))
+                              #t)))
                (native-search-paths (package-native-search-paths libxml2))
                (synopsis #f) (description #f)
                (home-page #f) (license #f)))
@@ -1043,7 +1064,9 @@
                (build-system trivial-build-system)
                (arguments
                 `(#:guile ,%bootstrap-guile
-                  #:builder (mkdir (assoc-ref %outputs "out"))))
+                  #:builder (begin
+                              (mkdir (assoc-ref %outputs "out"))
+                              #t)))
                (native-search-paths (package-native-search-paths git))))
          (prof1 (run-with-store %store
                   (profile-derivation
