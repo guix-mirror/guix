@@ -7564,14 +7564,14 @@ library as well as on the command line.")
 (define-public python-pluggy
   (package
    (name "python-pluggy")
-   (version "0.3.1")
+   (version "0.6.0")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "pluggy" version))
      (sha256
       (base32
-       "18qfzfm40bgx672lkg8q9x5hdh76n7vax99aank7vh2nw21wg70m"))))
+       "1zqckndfn85l1cd8pndw212zg1bq9fkg1nnj32kp2mppppsyg2kz"))))
    (build-system python-build-system)
    (synopsis "Plugin and hook calling mechanism for Python")
    (description "Pluggy is an extraction of the plugin manager as used by
