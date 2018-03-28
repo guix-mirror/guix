@@ -24,6 +24,7 @@
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3840,3 +3841,24 @@ routines designed for solving ODEs resulting from 1-D, 2-D and 3-D partial
 differential equations (PDE) that have been converted to ODEs by numerical
 differencing.")
     (license license:gpl2+)))
+
+(define-public tcalc
+  (package
+  (name "tcalc")
+  (version "2.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://sites.google.com/site/mohammedisam2000/tcalc/tcalc-"
+                            version ".tar.gz"))
+      (sha256
+        (base32
+          "0jq806m4dqfia85nppfm75mml9w57g0cgv4cdw9bp3zymda83s0m"))))
+  (build-system gnu-build-system)
+  (synopsis "The terminal calculator")
+  (description
+    "The terminal calculator is a small program to help users of the GNU/Linux
+terminal do calculations simply and quickly.  The formula to be calculated can
+be fed to @command{tcalc} through the command line.")
+  (home-page "https://sites.google.com/site/mohammedisam2000/tcalc")
+  (license license:gpl3+)))
