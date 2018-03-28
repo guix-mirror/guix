@@ -483,8 +483,8 @@ allow automatic login and starting any app.")
                           (output (assoc-ref %outputs "out"))
                           (etc    (string-append output "/etc")))
                      (setenv "PATH" (string-append xz "/bin"))
-                     (system* (string-append tar "/bin/tar") "xvf"
-                              source)
+                     (invoke (string-append tar "/bin/tar") "xvf"
+                             source)
                      (chdir ,(string-append "netbase-" version))
                      (mkdir-p etc)
                      (for-each copy-file

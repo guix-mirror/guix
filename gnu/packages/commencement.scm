@@ -586,7 +586,9 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                                            triplet "-" tool)
                                             tool))
                                  '("ar" "ranlib"))
-                       (for-each wrap-program '("gcc" "g++")))))))
+                       (for-each wrap-program '("gcc" "g++")))
+
+                     #t))))
     (native-inputs
      `(("binutils" ,binutils)
        ("gcc" ,gcc)
@@ -1014,7 +1016,8 @@ COREUTILS-FINAL vs. COREUTILS, etc."
 
                      (union-build (assoc-ref %outputs "debug")
                                   (list (assoc-ref %build-inputs
-                                                   "libc-debug")))))))
+                                                   "libc-debug")))
+                     #t))))
 
     (native-search-paths (package-native-search-paths gcc))
     (search-paths (package-search-paths gcc))

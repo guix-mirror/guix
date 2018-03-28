@@ -187,13 +187,13 @@ supervised tests.")
                           (incdir (string-append output "/include"))
                           (docdir (string-append output "/share/doc/catch-"
                                                  ,version)))
-                     (begin
-                       (for-each mkdir-p (list incdir docdir))
-                       (install-file (string-append source
-                                                 "/single_include/catch.hpp")
-                                     incdir)
-                       (copy-recursively (string-append source "/docs")
-                                         docdir))))))
+                     (for-each mkdir-p (list incdir docdir))
+                     (install-file (string-append source
+                                                  "/single_include/catch.hpp")
+                                   incdir)
+                     (copy-recursively (string-append source "/docs")
+                                       docdir)
+                     #t))))
     (home-page "http://catch-lib.net/")
     (synopsis "Automated test framework for C++ and Objective-C")
     (description

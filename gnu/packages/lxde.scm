@@ -449,7 +449,7 @@ in LXDE.")
     (version (package-version lxde-common))
     (source #f)
     (build-system trivial-build-system)
-    (arguments '(#:builder (mkdir %output)))
+    (arguments '(#:builder (begin (mkdir %output) #t)))
     (propagated-inputs
      ;; TODO:
      ;; lxshortcut, lxsession-edit

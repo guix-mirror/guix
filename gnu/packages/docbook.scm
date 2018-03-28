@@ -58,11 +58,12 @@
                           (dtd    (string-append out "/xml/dtd/docbook")))
                      (mkdir-p dtd)
                      (with-directory-excursion dtd
-                       (system* unzip source))
+                       (invoke unzip source))
                      (substitute* (string-append out "/xml/dtd/docbook/catalog.xml")
                        (("uri=\"") 
                         (string-append 
-                         "uri=\"file://" dtd "/")))))
+                         "uri=\"file://" dtd "/")))
+                     #t))
                  #:modules ((guix build utils))))
     (native-inputs `(("unzip" ,unzip)))
     (home-page "http://docbook.org")
@@ -127,7 +128,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                (dtd    (string-append (assoc-ref %outputs "out")
                                       "/xml/dtd/docbook")))
            (mkdir-p dtd)
-           (zero? (system* unzip source "-d" dtd))))))))
+           (invoke unzip source "-d" dtd)))))))
 
 (define-public docbook-xsl
   (package
@@ -154,7 +155,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                           (out    (assoc-ref %outputs "out"))
                           (xsl    (string-append out "/xml/xsl")))
                      (setenv "PATH" (string-append bzip2 "/bin" ":" xz "/bin"))
-                     (system* (string-append tar "/bin/tar") "xvf" source)
+                     (invoke (string-append tar "/bin/tar") "xvf" source)
 
                      (mkdir-p xsl)
                      (copy-recursively name-version
@@ -163,8 +164,9 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                      (substitute* (string-append xsl "/" name-version "/catalog.xml")
                        (("rewritePrefix=\"./")
                         (string-append "rewritePrefix=\"file://" xsl "/"
-                                       name-version "/")))))
-                 #:modules ((guix build utils))))
+                                       name-version "/")))
+                     #t))
+       #:modules ((guix build utils))))
     (native-inputs `(("bzip2" ,bzip2)
                      ("xz" ,xz)
                      ("tar" ,tar)))

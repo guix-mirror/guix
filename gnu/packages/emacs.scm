@@ -530,7 +530,7 @@ operations.")
                 (source   (assoc-ref %build-inputs "source"))
                 (lisp-dir (string-append %output "/share/emacs/site-lisp")))
            (setenv "PATH" PATH)
-           (system* tar "xvf" source)
+           (invoke tar "xvf" source)
 
            (install-file (string-append ,name "-" ,version "/magit-svn.el")
                          lisp-dir)
@@ -540,7 +540,9 @@ operations.")
                (emacs-generate-autoloads ,name lisp-dir)
                (setenv "EMACSLOADPATH"
                        (string-append ":" magit ":" dash))
-               (emacs-batch-eval '(byte-compile-file "magit-svn.el"))))))))
+               (emacs-batch-eval '(byte-compile-file "magit-svn.el"))))
+
+           #t))))
     (home-page "https://github.com/magit/magit-svn")
     (synopsis "Git-SVN extension to Magit")
     (description
@@ -5038,7 +5040,8 @@ abbreviation and automatically expand it into function templates.")
                                          dir)))
                        (scandir "." (lambda (fname)
                                       (and (string-match "-mode$" fname)
-                                           (directory-exists? fname)))))))))
+                                           (directory-exists? fname))))))
+           #t)))
       (home-page "https://github.com/AndreaCrotti/yasnippet-snippets")
       (synopsis "Collection of YASnippet snippets for many languages")
       (description
@@ -6980,7 +6983,7 @@ for external literate programming tools for exporting, weaving and tangling.")
          (setenv "PATH" (string-append
                          (assoc-ref %build-inputs "tar") "/bin" ":"
                          (assoc-ref %build-inputs "gzip") "/bin"))
-         (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
          (chdir (string-append "eless" "-" ,version))
          (substitute* "eless" (("/usr/bin/env bash")
                                (string-append (assoc-ref %build-inputs "bash")
@@ -7303,7 +7306,7 @@ Features:
          (setenv "PATH" (string-append
                          (assoc-ref %build-inputs "tar") "/bin" ":"
                          (assoc-ref %build-inputs "gzip") "/bin"))
-         (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
          (chdir (string-append ,name "-" ,version))
          ;; Patch shebangs
          (substitute* "epipe"

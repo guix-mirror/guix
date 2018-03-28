@@ -5549,8 +5549,8 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
             "PATH" '("bin") (map (match-lambda ((_ . input) input))
                                  %build-inputs))
            (mkdir-p share-rss-bridge)
-           (system* "tar" "xvf" (assoc-ref %build-inputs "source")
-                    "--strip-components" "1" "-C" share-rss-bridge)
+           (invoke "tar" "xvf" (assoc-ref %build-inputs "source")
+                   "--strip-components" "1" "-C" share-rss-bridge)
            #t))))
     (home-page "https://github.com/RSS-Bridge/rss-bridge")
     (synopsis "Generate Atom feeds for social networking websites")
@@ -6340,7 +6340,8 @@ features include:
               "if(isset($_SERVER['CACHE_DIR']))
 $cachepath = $_SERVER['CACHE_DIR'];
 else
-die('You need to set the CACHE_DIR variable first.');"))))))
+die('You need to set the CACHE_DIR variable first.');"))
+           #t))))
     (home-page "https://framagit.org/Deevad/cat-avatar-generator")
     (synopsis "Random avatar generator")
     (description "Cat avatar generator is a generator of cat pictures optimised

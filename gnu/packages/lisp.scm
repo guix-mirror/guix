@@ -1231,7 +1231,8 @@ multiple inspectors with independent history.")
                          (assoc-ref %outputs "image")
                          "/bin/slynk")
                         %outputs
-                        #:dependencies ',slynk-systems)))))))
+                        #:dependencies ',slynk-systems))
+         #t)))))
 
 (define-public ecl-slynk
   (package
@@ -1253,7 +1254,8 @@ multiple inspectors with independent history.")
          (match %build-inputs
            (((names . paths) ...)
             (union-build (assoc-ref %outputs "out")
-                         paths))))))))
+                         paths)
+            #t)))))))
 
 (define-public sbcl-stumpwm+slynk
   (package

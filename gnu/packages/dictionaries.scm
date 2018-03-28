@@ -110,9 +110,9 @@ acronyms distributed as an info document.")
                      (set-path-environment-variable "PATH" '("bin")
                                                     (list tar xz))
                      (mkdir-p datadir)
-                     (zero? (system* "tar" "-C" datadir
-                                     "--strip-components=1"
-                                     "-xvf" src))))
+                     (invoke "tar" "-C" datadir
+                             "--strip-components=1"
+                             "-xvf" src)))
        #:modules ((guix build utils))))
     (native-inputs
      `(("tar" ,tar)

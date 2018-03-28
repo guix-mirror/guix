@@ -206,7 +206,8 @@ manager, which is required to build itself.")
            ;; binaries expect a compiler called cc. Thus symlink gcc
            ;; to cc.
            (symlink (string-append gcc "/bin/gcc")
-                    (string-append out "/bin/cc"))))))
+                    (string-append out "/bin/cc"))
+           #t))))
     (home-page "https://www.rust-lang.org")
     (synopsis "Rust bootstrapping meta package")
     (description "Meta package for a rust environment. Provides pre-compiled

@@ -530,7 +530,8 @@ wrapper for the cross-linker for that target, called 'TARGET-ld'."
                                                              target "-ld")
                                               "/bin/ld"))))
                        (chmod ld #o555)
-                       (compile-file ld #:output-file go))))))
+                       (compile-file ld #:output-file go)
+                       #t)))))
     (synopsis "The linker wrapper")
     (description
      "The linker wrapper (or 'ld-wrapper') wraps the linker to add any

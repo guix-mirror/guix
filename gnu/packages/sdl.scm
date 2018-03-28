@@ -324,7 +324,8 @@ If PACKAGES are not specified, all SDL packages are used."
                    (match %build-inputs
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
-                                   directories))))))
+                                   directories)
+                      #t)))))
     (inputs (map (lambda (package)
                    (list (package-name package) package))
                  packages))

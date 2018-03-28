@@ -3519,9 +3519,10 @@ TeX metrics (VF and TFM files) and macros for use with LaTeX.")
                                       "/share/texmf-dist/"))
                (unzip  (string-append (assoc-ref %build-inputs "unzip")
                                       "/bin/unzip")))
-           (system* unzip (assoc-ref %build-inputs "source"))
+           (invoke unzip (assoc-ref %build-inputs "source"))
            (mkdir-p target)
-           (copy-recursively "iwona" target)))))
+           (copy-recursively "iwona" target)
+           #t))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "http://jmn.pl/en/kurier-i-iwona/")
@@ -4021,7 +4022,8 @@ This package contains the complete tree of texmf-dist data.")
                    (for-each
                      (lambda (name)
                        (symlink (string-append texmf "/share/" name) name))
-                     '("texmf-dist" "texmf-var"))))))))
+                     '("texmf-dist" "texmf-var"))))
+               #t))))
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.

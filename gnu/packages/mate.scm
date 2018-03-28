@@ -1523,7 +1523,8 @@ used to bring up authentication dialogs.")
          (match %build-inputs
            (((names . directories) ...)
             (union-build (assoc-ref %outputs "out")
-                         directories))))))
+                         directories)
+            #t)))))
     (inputs
      ;; TODO: Add more packages
      `(("at-spi2-core"              ,at-spi2-core)

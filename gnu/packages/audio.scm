@@ -1201,14 +1201,15 @@ PS, and DAB+.")
                      (setenv "PATH" (string-append
                                      (assoc-ref %build-inputs "bzip2") "/bin:"
                                      (assoc-ref %build-inputs "tar") "/bin"))
-                     (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+                     (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
                      (chdir "freepats")
                      ;; Use absolute pattern references
                      (substitute* "freepats.cfg"
                        (("Tone_000") (string-append out "/Tone_000"))
                        (("Drum_000") (string-append out "/Drum_000")))
                      (mkdir-p out)
-                     (copy-recursively "." out)))))
+                     (copy-recursively "." out)
+                     #t))))
     (native-inputs
      `(("tar" ,tar)
        ("bzip2" ,bzip2)))
@@ -3369,7 +3370,8 @@ using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
            (let ((file (assoc-ref %build-inputs "source"))
                  (out (string-append %output "/share/soundfonts")))
              (mkdir-p out)
-             (copy-file file (string-append out "/FluidR3Mono_GM.sf3"))))))
+             (copy-file file (string-append out "/FluidR3Mono_GM.sf3"))
+             #t))))
       (home-page  "https://github.com/musescore/MuseScore/tree/master/share/sound")
       (synopsis "Pro-quality GM soundfont")
       (description "Fluid-3 is Frank Wen's pro-quality GM soundfont.")

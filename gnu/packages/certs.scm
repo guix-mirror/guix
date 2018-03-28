@@ -63,7 +63,8 @@
               (("crt") "pem"))
             (mkdir-p bin)
             (copy-file "certdata2pem.py"
-                       (string-append bin "/certdata2pem.py"))))))
+                       (string-append bin "/certdata2pem.py"))
+            #t))))
    (synopsis "Python script to extract .pem data from certificate collection")
    (description
     "certdata2pem.py is a Python script to transform X.509 certificate

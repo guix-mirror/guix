@@ -85,12 +85,12 @@ list.")
             (setenv "PATH" (string-append gzip "/bin"
                                           ":" texinfo "/bin"))
             (mkdir-p info-dir)
-            (system* "makeinfo" "--output" info-dir
-                     (string-append source "/maintain.texi"))
-            (system* "makeinfo" "--output" info-dir
-                     (string-append source "/standards.texi"))
-            (system* "gzip" (string-append info-dir "/maintain.info"))
-            (system* "gzip" (string-append info-dir "/standards.info"))))))
+            (invoke "makeinfo" "--output" info-dir
+                    (string-append source "/maintain.texi"))
+            (invoke "makeinfo" "--output" info-dir
+                    (string-append source "/standards.texi"))
+            (invoke "gzip" (string-append info-dir "/maintain.info"))
+            (invoke "gzip" (string-append info-dir "/standards.info"))))))
     (home-page "https://www.gnu.org/prep/standards/")
     (synopsis "GNU coding standards and maintainer information")
     (description "The GNU Coding Standards were written by Richard Stallman

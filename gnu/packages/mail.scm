@@ -1808,7 +1808,7 @@ in Perl.")
            (mkdir-p bin)
            (with-directory-excursion bin
              (copy-file source "mb2md.gz")
-             (system* (string-append gzip "/bin/gzip") "-d" "mb2md.gz")
+             (invoke (string-append gzip "/bin/gzip") "-d" "mb2md.gz")
              (substitute* "mb2md"
                (("#!/usr/bin/perl")
                 (string-append "#!/usr/bin/perl -I " perl5lib)))

@@ -60,10 +60,10 @@
                                %build-inputs))
          (let ((install-directory (string-append %output "/share/fonts/mathjax")))
            (mkdir-p install-directory)
-           (zero? (system* "tar" "-C" install-directory "-xvf"
-                           (assoc-ref %build-inputs "source")
-                           ,(string-append "MathJax-" version "/fonts")
-                           "--strip" "2"))))))
+           (invoke "tar" "-C" install-directory "-xvf"
+                   (assoc-ref %build-inputs "source")
+                   ,(string-append "MathJax-" version "/fonts")
+                   "--strip" "2")))))
     (native-inputs
      `(("gzip" ,gzip)
        ("tar" ,tar)))
@@ -94,10 +94,10 @@
           (list (assoc-ref %build-inputs "glibc-utf8-locales")))
          (setenv "LANG" "en_US.UTF-8")
          (let ((install-directory (string-append %output "/share/javascript/mathjax")))
-           (system* "tar" "xvf" (assoc-ref %build-inputs "source")
-                    ,(string-append "MathJax-" (package-version font-mathjax)
-                                    "/unpacked")
-                    "--strip" "2")
+           (invoke "tar" "xvf" (assoc-ref %build-inputs "source")
+                   ,(string-append "MathJax-" (package-version font-mathjax)
+                                   "/unpacked")
+                   "--strip" "2")
            (mkdir-p install-directory)
            (symlink (string-append (assoc-ref %build-inputs "font-mathjax")
                                    "/share/fonts/mathjax")
@@ -118,7 +118,9 @@
                         (dump-port minified port)))))
                  (else
                   (install-file file (dirname installed))))))
-            (find-files "."))))))
+            (find-files "."))
+
+           #t))))
     (native-inputs
      `(("font-mathjax" ,font-mathjax)
        ("glibc-utf8-locales" ,glibc-utf8-locales)
@@ -159,9 +161,9 @@ be able to view it naturally and easily.")))
                                %build-inputs))
          (let ((install-directory (string-append %output
                                                  "/share/javascript/respond/")))
-           (system* "tar" "xvf"
-                    (assoc-ref %build-inputs "source")
-                    "--strip" "1")
+           (invoke "tar" "xvf"
+                   (assoc-ref %build-inputs "source")
+                   "--strip" "1")
            (mkdir-p install-directory)
            (let* ((file "src/respond.js")
                   (installed (string-append install-directory "respond.min.js")))

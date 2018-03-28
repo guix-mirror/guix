@@ -718,7 +718,8 @@ on your desktop.")
          (match %build-inputs
            (((names . directories) ...)
             (union-build (assoc-ref %outputs "out")
-                         directories))))))
+                         directories)
+            #t)))))
     (inputs
      `(("exo"                  ,exo)
        ("garcon"               ,garcon)

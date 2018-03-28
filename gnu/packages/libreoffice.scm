@@ -746,8 +746,8 @@ word compounding or character encoding.")
                           (doc      (string-append out "/share/doc/"
                                                    ,name))
                           (unzip    (assoc-ref %build-inputs "unzip")))
-                     (system* (string-append unzip "/bin/unzip")
-                              (assoc-ref %build-inputs "source"))
+                     (invoke (string-append unzip "/bin/unzip")
+                             (assoc-ref %build-inputs "source"))
                      (for-each (cut install-file <> hunspell)
                                (find-files "."
                                            ,(string-append variant

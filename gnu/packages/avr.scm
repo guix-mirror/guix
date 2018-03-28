@@ -117,7 +117,7 @@ for use with GCC on Atmel AVR microcontrollers.")
       (version (package-version avr-gcc))
       (source #f)
       (build-system trivial-build-system)
-      (arguments '(#:builder (mkdir %output)))
+      (arguments '(#:builder (begin (mkdir %output) #t)))
       (propagated-inputs
        `(("avrdude" ,avrdude)
          ("binutils" ,avr-binutils)

@@ -5965,7 +5965,7 @@ associations for GNOME.")
     (version (package-version gnome-shell))
     (source #f)
     (build-system trivial-build-system)
-    (arguments '(#:builder (mkdir %output)))
+    (arguments '(#:builder (begin (mkdir %output) #t)))
     (propagated-inputs
      ;; TODO: Add more packages according to:
      ;;       <https://packages.debian.org/jessie/gnome-core>.

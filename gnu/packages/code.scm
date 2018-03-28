@@ -493,7 +493,8 @@ importantly we give you proper follow-symbol and find-references support.")
            (install-files '("AUTHORS" "BUGS" "ChangeLog" "README") doc)
            (install-files '("colormake" "colormake-short" "clmake"
                             "clmake-short" "colormake.pl")
-                          bin)))))
+                          bin)
+           #t))))
     (home-page "http://bre.klaki.net/programs/colormake/")
     (synopsis "Wrapper around @command{make} to produce colored output")
     (description "This package provides a wrapper around @command{make} to

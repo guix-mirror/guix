@@ -251,7 +251,8 @@ library variant NEWLIB."
            (match %build-inputs
              (((names . directories) ...)
               (union-build (assoc-ref %outputs "out")
-                           directories))))))
+                           directories)
+              #t)))))
       (propagated-inputs
        `(("binutils" ,(cross-binutils "arm-none-eabi"))
          ("libstdc++" ,(make-libstdc++-arm-none-eabi xgcc newlib-with-xgcc))
@@ -610,7 +611,7 @@ micro-controller.")
     (version (package-version propeller-gcc))
     (source #f)
     (build-system trivial-build-system)
-    (arguments '(#:builder (mkdir %output)))
+    (arguments '(#:builder (begin (mkdir %output) #t)))
     (propagated-inputs
      `(("binutils" ,propeller-binutils)
        ("libc" ,proplib)
@@ -785,7 +786,7 @@ two-thirds of the opcodes in the P2 instruction set.")
     (version (package-version propeller-gcc))
     (source #f)
     (build-system trivial-build-system)
-    (arguments '(#:builder (mkdir %output)))
+    (arguments '(#:builder (begin (mkdir %output) #t)))
     (propagated-inputs
      `(("toolchain" ,propeller-toolchain)
        ("openspin" ,openspin)

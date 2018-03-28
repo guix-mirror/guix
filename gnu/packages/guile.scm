@@ -911,16 +911,15 @@ specification.  These are the main features:
                          ;; Install source module.
                          (copy-file file dest-file)
                          ;; Install compiled module.
-                         (unless (zero? (system* guild "compile"
-                                                 "-L" source
-                                                 "-o" go-file
-                                                 file))
-                           (error (format #f "Failed to compile ~s to ~s!"
-                                          file go-file)))))
+                         (invoke guild "compile"
+                                 "-L" source
+                                 "-o" go-file
+                                 file)))
                      scm-files)
 
            ;; Also copy over the README.
            (install-file "README.org" doc)
+
            #t))))
     (inputs
      `(("guile" ,guile-2.0)))
@@ -1181,7 +1180,9 @@ inspired by the SCSH regular expression system.")
                (invoke patch-command "--force" "--input" patch-file)))
 
            ;; compile to the destination
-           (compile-file gdbm.scm-dest gdbm.go-dest)))))
+           (compile-file gdbm.scm-dest gdbm.go-dest)
+
+           #t))))
     (home-page "https://github.com/ijp/guile-gdbm")
     (synopsis "Guile bindings to the GDBM library via Guile's FFI")
     (description

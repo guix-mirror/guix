@@ -617,7 +617,7 @@ curves, Cox models, and parametric accelerated failure time models.")
     (name "r")
     (source #f)
     (build-system trivial-build-system)
-    (arguments '(#:builder (mkdir %output)))
+    (arguments '(#:builder (begin (mkdir %output) #t)))
     (propagated-inputs
      `(("r-minimal" ,r-minimal)
        ("r-boot" ,r-boot)

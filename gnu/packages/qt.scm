@@ -1805,7 +1805,8 @@ This package provides the Python bindings.")))
                    (match %build-inputs
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
-                                   directories))))))
+                                   directories)
+                      #t)))))
     (inputs
      `(("python-pyqt" ,python-pyqt)
        ("python-qscintilla" ,python-qscintilla)))
