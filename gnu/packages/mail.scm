@@ -618,6 +618,14 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                             "guile/mu/Makefile.in")
                (("share/guile/site/2.0/") "share/guile/site/2.2/"))
              #t))
+         (add-after 'patch-configure 'fix-date-tests
+           ;; Loosen test tolerances to prevent failures caused by daylight
+           ;; saving time (DST).  See: https://github.com/djcb/mu/issues/1214.
+           (lambda _
+             (substitute* "lib/parser/test-utils.cc"
+               (("\\* 60 \\* 60, 1 },")
+                "* 60 * 60, 3600 + 1 },"))
+             #t))
          (add-before 'install 'fix-ffi
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "guile/mu.scm"
