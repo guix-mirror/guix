@@ -856,6 +856,11 @@ exceptions, macros, and a dynamic programming environment.")
                     #t))
                 (file-name (string-append name "-" version ".tar.gz"))))
       (build-system gnu-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (replace 'bootstrap
+                      (lambda _
+                        (invoke "autoreconf" "-vfi"))))))
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,autoconf)
                        ("automake" ,automake)
