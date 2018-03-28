@@ -13151,3 +13151,28 @@ file system events on Linux.")
         (base32
          "0svc9nla3b9145d6b7fb9dizx412l3difzqw0ilh9lz52nsixw8j"))
        (file-name (string-append name "-" version ".tar.gz"))))))
+
+(define-public python-more-itertools
+  (package
+    (name "python-more-itertools")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "more-itertools" version))
+       (sha256
+        (base32
+         "0i3ch700g5fyjp692gprlnzbysl8w0sa2vijbp3s40drvk67xkn9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/erikrose/more-itertools")
+    (synopsis "More routines for operating on iterables, beyond itertools")
+    (description "Python's built-in @code{itertools} module implements a
+number of iterator building blocks inspired by constructs from APL, Haskell,
+and SML.  @code{more-itertools} includes additional building blocks for
+working with iterables.")
+    (license license:expat)))
+
+(define-public python2-more-itertools
+  (package-with-python2 python-more-itertools))
