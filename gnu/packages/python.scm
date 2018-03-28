@@ -1740,14 +1740,14 @@ matching them against a list of media-ranges.")
 (define-public python-py
   (package
     (name "python-py")
-    (version "1.4.34")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py" version))
        (sha256
         (base32
-         "1qyd5z0hv8ymxy84v5vig3vps2fvhcf4bdlksb3r03h549fmhb8g"))))
+         "10gq2lckvgwlk9w6yzijhzkarx44hsaknd0ypa08wlnpjnsgmj99"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: "ImportError: 'test' module incorrectly imported from
@@ -1755,7 +1755,7 @@ matching them against a list of media-ranges.")
      ;; Expected '/tmp/guix-build-python-py-1.4.31.drv-0/py-1.4.31/py'.
      ;; Is this module globally installed?"
      '(#:tests? #f))
-    (home-page "http://pylib.readthedocs.org/")
+    (home-page "http://pylib.readthedocs.io/")
     (synopsis "Python library for parsing, I/O, instrospection, and logging")
     (description
      "Py is a Python library for file name parsing, .ini file parsing, I/O,
