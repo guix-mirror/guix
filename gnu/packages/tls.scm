@@ -245,7 +245,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2n")
+   (version "1.0.2o")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -257,14 +257,7 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "1zm82pyq5a9jm10q6iv7d3dih3xwjds4x30fqph3k317byvsn2rp"))
-             (snippet
-              '(begin
-                 ;; Remove ELF files.  'substitute*' can't read them.
-                 (delete-file "test/ssltest_old")
-                 (delete-file "test/v3ext")
-                 (delete-file "test/x509aux")
-                 #t))
+               "0kcy13l701054nhpbd901mz32v1kn4g311z0nifd83xs2jbmqgzc"))
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
