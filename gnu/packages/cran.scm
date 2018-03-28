@@ -7,6 +7,7 @@
 ;;; Copyright © 2018 Sahithi Yarlagadda <sahi@swecha.net>
 ;;; Copyright © 2018 Sandeep Subramanian <sandeepsubramanian94@gmail.com>
 ;;; Copyright © 2018 Charlie Ritter <chewzeirta@posteo.net>
+;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3548,3 +3549,25 @@ and analyzing transaction data and patterns (frequent itemsets and association r
 It also provides C implementations of the association mining algorithms Apriori
 and Eclat.")
     (license license:gpl3)))
+
+(define-public r-parsedate
+  (package
+    (name "r-parsedate")
+    (version "1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "parsedate" version))
+       (sha256
+        (base32
+         "0mg7hbm3903iwvmpn51gjpaaq03rsp72hjb1g8h5g84r81iha002"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/gaborcsardi/parsedate")
+    (synopsis
+     "Recognize and parse dates in various formats")
+    (description
+     "This package provides three functions for dealing with dates:
+@code{parse_iso_8601} recognizes and parses all valid ISO 8601 date and
+time formats, @code{parse_date} parses dates in unspecified formats,
+and @code{format_iso_8601} formats a date in ISO 8601 format.")
+    (license license:gpl2)))
