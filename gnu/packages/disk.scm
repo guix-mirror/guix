@@ -9,6 +9,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -456,3 +458,47 @@ a card with a smaller capacity than stated.")
 
 (define-public python2-parted
   (package-with-python2 python-parted))
+
+(define-public duperemove
+  (package
+    (name "duperemove")
+    (version "v0.11.beta4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/markfasheh/duperemove/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1h5nk03kflfnzihvn2rvfz1h623x1zpkn9hp29skd7n3f2bc5k7x"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("sqlite" ,sqlite)))
+    (arguments
+     `(#:tests? #f                                ;no test suite
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure))
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          "CC=gcc")))
+    (home-page "https://github.com/markfasheh/duperemove")
+    (synopsis "Tools for de-duplicating file system data")
+    (description "Duperemove is a simple tool for finding duplicated extents
+and submitting them for deduplication.  When given a list of files it will
+hash their contents on a block by block basis and compare those hashes to each
+other, finding and categorizing blocks that match each other.  When given the
+@option{-d} option, duperemove will submit those extents for deduplication
+using the Linux kernel extent-same @code{ioctl}.
+
+Duperemove can store the hashes it computes in a @dfn{hash file}.  If given an
+existing hash file, duperemove will only compute hashes for those files which
+have changed since the last run.  Thus you can run duperemove repeatedly on
+your data as it changes, without having to re-checksum unchanged data.
+
+Duperemove can also take input from the @command{fdupes} program.")
+    (license license:gpl2)))
