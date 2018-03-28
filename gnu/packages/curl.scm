@@ -64,7 +64,7 @@
              ("libidn" ,libidn)
              ("libssh2" ,libssh2)
              ("openldap" ,openldap)
-             ("nghttp2" ,nghttp2)
+             ("nghttp2" ,nghttp2 "lib")
              ("zlib" ,zlib)))
    (native-inputs
      `(("perl" ,perl)
