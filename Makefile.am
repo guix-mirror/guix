@@ -115,6 +115,7 @@ MODULES =					\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
   guix/http-client.scm				\
+  guix/ci.scm					\
   guix/gnupg.scm				\
   guix/elf.scm					\
   guix/profiling.scm				\
