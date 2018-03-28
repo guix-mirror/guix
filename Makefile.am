@@ -115,7 +115,6 @@ MODULES =					\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
   guix/http-client.scm				\
-  guix/ci.scm					\
   guix/gnupg.scm				\
   guix/elf.scm					\
   guix/profiling.scm				\
@@ -205,7 +204,6 @@ MODULES =					\
   guix/scripts/import/texlive.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
-  guix/scripts/weather.scm			\
   guix/scripts/edit.scm				\
   guix/scripts/size.scm				\
   guix/scripts/graph.scm			\
@@ -217,6 +215,7 @@ MODULES =					\
 if HAVE_GUILE_JSON
 
 MODULES +=					\
+  guix/ci.scm					\
   guix/docker.scm	   			\
   guix/import/cpan.scm				\
   guix/import/crate.scm				\
@@ -230,7 +229,8 @@ MODULES +=					\
   guix/scripts/import/gem.scm			\
   guix/scripts/import/json.scm  		\
   guix/scripts/import/pypi.scm			\
-  guix/scripts/import/stackage.scm
+  guix/scripts/import/stackage.scm		\
+  guix/scripts/weather.scm
 
 endif
 
