@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
@@ -29,6 +29,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -37,6 +38,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -90,7 +92,8 @@
                                  version ".tar.xz"))
              (sha256
               (base32
-               "11l6cs6mib16rgdrnqrhkqs033fjik316gkgfz3asbmxz38lalca"))))
+               "11l6cs6mib16rgdrnqrhkqs033fjik316gkgfz3asbmxz38lalca"))
+             (patches (search-patches "qemu-glibc-2.27.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -192,6 +195,8 @@ exec smbd $@")))
        ("zlib" ,zlib)))
     (native-inputs `(("glib:bin" ,glib "bin") ; gtester, etc.
                      ("perl" ,perl)
+                     ("flex" ,flex)
+                     ("bison" ,bison)
                      ("pkg-config" ,pkg-config)
                      ("python" ,python-2) ; incompatible with Python 3 according to error message
                      ("texinfo" ,texinfo)))
