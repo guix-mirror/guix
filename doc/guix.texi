@@ -7912,15 +7912,27 @@ https://guix.example.org
   19,824.2 MiB on disk (uncompressed)
   0.030 seconds per request (182.9 seconds in total)
   33.5 requests per second
+
+  9.8% (342 out of 3,470) of the missing items are queued
+  867 queued builds
+      x86_64-linux: 518 (59.7%)
+      i686-linux: 221 (25.5%)
+      aarch64-linux: 128 (14.8%)
+  build rate: 23.41 builds per hour
+      x86_64-linux: 11.16 builds per hour
+      i686-linux: 6.03 builds per hour
+      aarch64-linux: 6.41 builds per hour
 @end example
 
+@cindex continuous integration, statistics
 As you can see, it reports the fraction of all the packages for which
 substitutes are available on the server---regardless of whether
 substitutes are enabled, and regardless of whether this server's signing
 key is authorized.  It also reports the size of the compressed archives
 (``nars'') provided by the server, the size the corresponding store
 items occupy in the store (assuming deduplication is turned off), and
-the server's throughput.
+the server's throughput.  The second part gives continuous integration
+(CI) statistics, if the server supports it.
 
 To achieve that, @command{guix weather} queries over HTTP(S) meta-data
 (@dfn{narinfos}) for all the relevant store items.  Like @command{guix
