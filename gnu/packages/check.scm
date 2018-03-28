@@ -597,14 +597,14 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "3.2.3")
+    (version "3.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "0g6w86ks73fnrnsyib9ii2rbyx830vn7aglsjqz9v1n2xwbndyi7"))))
+         "1q832zd07zak2lyxbycxjydh0jp7y3hvawjqzlvra6aghz8r3r7s"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -622,7 +622,11 @@ standard library.")
                                line)))
              #t)))))
     (propagated-inputs
-     `(("python-py" ,python-py)))
+     `(("python-attrs" ,python-attrs-bootstrap)
+       ("python-more-itertools" ,python-more-itertools)
+       ("python-pluggy" ,python-pluggy)
+       ("python-py" ,python-py)
+       ("python-six" ,python-six-bootstrap)))
     (native-inputs
      `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
        ("bash" ,bash)
@@ -636,20 +640,33 @@ standard library.")
      "Pytest is a testing tool that provides auto-discovery of test modules
 and functions, detailed info on failing assert statements, modular fixtures,
 and many external plugins.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest))))))
 
 (define-public python2-pytest
-  (package-with-python2 python-pytest))
+  (let ((pytest (package-with-python2
+                 (strip-python2-variant python-pytest))))
+    (package
+      (inherit pytest)
+      (propagated-inputs
+       `(("python2-funcsigs" ,python2-funcsigs)
+         ,@(package-propagated-inputs pytest))))))
 
 (define-public python-pytest-bootstrap
   (package
-    (inherit python-pytest)
+    (inherit (strip-python2-variant python-pytest))
     (name "python-pytest-bootstrap")
     (native-inputs `(("python-setuptools-scm" ,python-setuptools-scm)))
-    (arguments `(#:tests? #f))))
+    (arguments `(#:tests? #f))
+    (properties `((python2-variant . ,(delay python2-pytest-bootstrap))))))
 
 (define-public python2-pytest-bootstrap
-  (package-with-python2 python-pytest-bootstrap))
+  (let ((pytest (package-with-python2
+                 (strip-python2-variant python-pytest-bootstrap))))
+    (package (inherit pytest)
+             (propagated-inputs
+              `(("python2-funcsigs" ,python2-funcsigs-bootstrap)
+                ,@(package-propagated-inputs pytest))))))
 
 (define-public python-pytest-cov
   (package

@@ -1157,6 +1157,16 @@ Python file, so it can be easily copied into your project.")
 (define-public python2-six
   (package-with-python2 python-six))
 
+(define-public python-six-bootstrap
+  (package
+    (inherit python-six)
+    (name "python-six-bootstrap")
+    (native-inputs `())
+    (arguments `(#:tests? #f))))
+
+(define-public python2-six-bootstrap
+  (package-with-python2 python-six-bootstrap))
+
 (define-public python-schedule
   (package
     (name "python-schedule")
@@ -1712,6 +1722,15 @@ matching them against a list of media-ranges.")
     (description
      "Backport of @code{funcsigs} which was introduced in Python 3.3.")
     (license license:asl2.0)))
+
+(define-public python2-funcsigs-bootstrap
+  (package
+    (inherit python2-funcsigs)
+    (name "python2-funcsigs-bootstrap")
+    (native-inputs `())
+    (arguments
+     `(#:tests? #f
+       ,@(package-arguments python2-funcsigs)))))
 
 (define-public python-pafy
   (package
@@ -13175,7 +13194,7 @@ file system events on Linux.")
          "0i3ch700g5fyjp692gprlnzbysl8w0sa2vijbp3s40drvk67xkn9"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     `(("python-six" ,python-six-bootstrap)))
     (home-page "https://github.com/erikrose/more-itertools")
     (synopsis "More routines for operating on iterables, beyond itertools")
     (description "Python's built-in @code{itertools} module implements a
