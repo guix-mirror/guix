@@ -3155,7 +3155,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.14.1")
+    (version "4.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3163,14 +3163,15 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1palnddw3d50kyflwk1j4xapbc6jniid6j5i9dsr8l8a7nkv7ich"))))
+                "15izak6jg6pqr6ha9447cdrdj9k6kfiarvwlrj53cpvrsv02l437"))
+              (patches (search-patches "btrfs-progs-e-value-block.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
     (arguments
      '(#:phases (modify-phases %standard-phases
                  (add-after 'build 'build-static
-                   (lambda _ (zero? (system* "make" "static"))))
+                   (lambda _ (invoke "make" "static")))
                  (add-after 'install 'install-bash-completion
                    (lambda* (#:key outputs #:allow-other-keys)
                      (let* ((out (assoc-ref outputs "out"))
@@ -3183,9 +3184,9 @@ and copy/paste text in the console and in xterm.")
                    (let ((staticbin (string-append (assoc-ref %outputs "static")
                                                   "/bin")))
                      (lambda _
-                       (zero? (system* "make"
-                                       (string-append "bindir=" staticbin)
-                                       "install-static"))))))
+                       (invoke "make"
+                               (string-append "bindir=" staticbin)
+                               "install-static")))))
        #:test-target "test"
        #:parallel-tests? #f)) ; tests fail when run in parallel
     (inputs `(("e2fsprogs" ,e2fsprogs)
@@ -3204,7 +3205,9 @@ and copy/paste text in the console and in xterm.")
                      ("docbook-xsl" ,docbook-xsl)
                      ;; For tests.
                      ("acl" ,acl)
-                     ("which" ,which)))
+                     ("which" ,which)
+                     ;; The tests need 'grep' with perl regexp support.
+                     ("grep" ,grep)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
     (description "Btrfs is a @dfn{copy-on-write} (CoW) file system for Linux

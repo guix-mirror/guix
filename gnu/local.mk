@@ -579,6 +579,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/boost-fix-icu-build.patch		\
+  %D%/packages/patches/btrfs-progs-e-value-block.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
