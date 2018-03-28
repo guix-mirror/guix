@@ -18,6 +18,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1166,32 +1167,22 @@ printing and other features typical of a source code editor.")
 (define-public python-pycairo
   (package
     (name "python-pycairo")
-    (version "1.10.0")
+    (version "1.16.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://cairographics.org/releases/pycairo-"
-                          version ".tar.bz2"))
+      (uri (string-append "https://github.com/pygobject/pycairo/releases/download/v"
+                          version "/pycairo-" version ".tar.gz"))
       (sha256
        (base32
-        "1gjkf8x6hyx1skq3hhwcbvwifxvrf9qxis5vx8x5igmmgs70g94s"))
-      (patches (search-patches "pycairo-wscript.patch"))))
-    (build-system waf-build-system)
+        "1xq1bwhyi5imca5kvd28szh2rdzi8g0kaspwaqgsbczqskjj3csv"))))
+    (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-waf" ,python-waf)))
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs                  ;pycairo.pc references cairo
      `(("cairo" ,cairo)))
-    (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before
-          'configure 'patch-waf
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; The bundled `waf' doesn't work with python-3.4.x.
-            (copy-file (assoc-ref %build-inputs "python-waf") "./waf"))))))
-    (home-page "http://cairographics.org/pycairo/")
+    (home-page "https://cairographics.org/pycairo/")
     (synopsis "Python bindings for cairo")
     (description
      "Pycairo is a set of Python bindings for the Cairo graphics library.")
@@ -1199,26 +1190,15 @@ printing and other features typical of a source code editor.")
     (properties `((python2-variant . ,(delay python2-pycairo))))))
 
 (define-public python2-pycairo
-  (package (inherit (strip-python2-variant python-pycairo))
-    (name "python2-pycairo")
-    (version "1.10.0")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "http://cairographics.org/releases/py2cairo-"
-                          version ".tar.bz2"))
-      (sha256
-       (base32
-        "0cblk919wh6w0pgb45zf48xwxykfif16qk264yga7h9fdkq3j16k"))))
-    (arguments
-     `(#:python ,python-2
-       ,@(substitute-keyword-arguments (package-arguments python-pycairo)
-           ((#:phases phases)
-            `(modify-phases ,phases (delete 'patch-waf)))
-           ((#:native-inputs native-inputs)
-            `(alist-delete "python-waf" ,native-inputs)))))
-    ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
-    (license (list license:lgpl2.1 license:mpl1.1))))
+  (let ((pycairo (package-with-python2
+                  (strip-python2-variant python-pycairo))))
+    (package
+      (inherit pycairo)
+      (propagated-inputs
+       `(("python2-funcsigs" ,python2-funcsigs)
+         ,@(package-propagated-inputs pycairo)))
+      ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
+      (license (list license:lgpl2.1 license:mpl1.1)))))
 
 (define-public python2-pygtk
   (package
