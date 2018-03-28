@@ -2653,7 +2653,7 @@ as USB mice.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "7.10.0")
+    (version "18.0.1")
     (source
       (origin
         (method url-fetch)
@@ -2663,7 +2663,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0yafix56vkqglw243cwb94nv91vbjv12sqh29x1bap0hwd1dclgf"))))
+            "180l2yw8c63cbcs3zk729vx439aig1d7yicpyxj0nmfl4y0kpskj"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
