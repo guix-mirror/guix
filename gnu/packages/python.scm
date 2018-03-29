@@ -339,7 +339,7 @@ data types.")
 (define-public python-3.6
   (package (inherit python-2)
     (name "python")
-    (version "3.6.4")
+    (version "3.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -352,7 +352,7 @@ data types.")
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "1fna7g8jxzl4kd2pqmmqhva5724c5m920x3fsrpsgskaylmr76qm"))
+                "19l7inxm056jjw33zz97z0m02hsi7jnnx5kyb76abj5ml4xhad7l"))
               (snippet
                '(begin
                   (for-each delete-file
