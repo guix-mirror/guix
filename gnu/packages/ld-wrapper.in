@@ -15,7 +15,7 @@ main="(@ (gnu build-support ld-wrapper) ld-wrapper)"
 exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line)))" "$@"
 !#
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -270,7 +270,8 @@ impure library ~s~%"
               "ld-wrapper: libraries linked: ~s~%" libs)
       (format (current-error-port)
               "ld-wrapper: invoking `~a' with ~s~%"
-              %real-ld args))
+              %real-ld args)
+      (force-output (current-error-port)))
     (apply execl %real-ld (basename %real-ld) args)))
 
 ;;; ld-wrapper.scm ends here
