@@ -1049,6 +1049,26 @@ tools for inference in parametric models are provided.")
     ;; Either version is okay
     (license (list license:gpl2 license:gpl3))))
 
+(define-public r-idr
+  (package
+    (name "r-idr")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "idr" version))
+              (sha256
+               (base32
+                "05nvgw1xdg670bsjjrxkgd1mrdkciccpw4krn0zcgdf2r21dzgwb"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/idr/")
+    (synopsis "Irreproducible discovery rate")
+    (description
+     "This is a package for estimating the copula mixture model and plotting
+correspondence curves in \"Measuring reproducibility of high-throughput
+experiments\" (2011), Annals of Applied Statistics, Vol. 5, No. 3, 1752-1779,
+by Li, Brown, Huang, and Bickel")
+    (license license:gpl2+)))
+
 (define-public r-inline
   (package
     (name "r-inline")
