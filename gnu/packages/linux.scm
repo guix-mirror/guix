@@ -547,7 +547,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.31.1")
+    (version "2.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -555,9 +555,8 @@ providing the system administrator with some help in common tasks.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04fzrnrr3pvqskvjn9f81y0knh0jvvqx4lmbz5pd4lfdm5pv2l8s"))
-              (patches (search-patches "util-linux-tests.patch"
-                                       "util-linux-CVE-2018-7738.patch"))
+                "0d2758kjll5xqm5fpp3sww1h66aahx161sf2b60jxqv4qymrfwvc"))
+              (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; We take 'nologin' from Shadow, the 'logger' program from
