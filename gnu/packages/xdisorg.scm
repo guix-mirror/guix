@@ -1247,7 +1247,7 @@ program for X11.  It was designed to be fast, tiny and scriptable in any languag
 (define-public xcb-util-xrm
   (package
     (name "xcb-util-xrm")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1255,7 +1255,7 @@ program for X11.  It was designed to be fast, tiny and scriptable in any languag
                     "/download/v" version "/xcb-util-xrm-" version ".tar.bz2"))
               (sha256
                (base32
-                "0vbqhag51i0njc8d5fc8c6aa12496cwrc3s6s7sa5kfc17cwhppp"))
+                "118cj1ybw86pgw0l5whn9vbg5n5b0ijcpx295mwahzi004vz671h"))
               (modules '((guix build utils)))
               (snippet
                ;; Drop bundled m4.
