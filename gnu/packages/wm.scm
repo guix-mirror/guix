@@ -102,7 +102,7 @@ nested include statements).")
 (define-public bspwm
   (package
     (name "bspwm")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -112,7 +112,7 @@ nested include statements).")
              version ".tar.gz"))
        (sha256
         (base32
-         "17dwj7w16cdj7g4s2y2f96lgj5msq1s4543dnfa3rijlazzy6mmk"))))
+         "0yjr0vzbj3ar8qfr6gvpvjd82ay8iy1sg2fkw2swghlqiy6ix4kw"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
