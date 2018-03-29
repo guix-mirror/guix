@@ -401,6 +401,24 @@ data types.")
               ("openssl" ,openssl)
               ("zlib" ,zlib)))))
 
+(define-public python-debug
+  (package
+    (inherit python)
+    (name "python-debug")
+    (outputs '("out" "debug"))
+    (build-system gnu-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments python)
+       ((#:configure-flags flags '())
+        `(cons "--with-pydebug" ,flags))))
+    (synopsis
+     "High-level, dynamically-typed programming language (for debugging)")
+    (description
+     "This variant of Python provides an interpreter built with
+@code{--with-pydebug} to help develop and debug extensions.  See
+@url{https://pythonextensionpatterns.readthedocs.io/en/latest/debugging/debug.html},
+for more information.")))
+
 (define* (wrap-python3 python
                        #:optional
                        (name (string-append (package-name python) "-wrapper")))
