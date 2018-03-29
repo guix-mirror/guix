@@ -265,6 +265,25 @@ into a pipeline of data manipulation and visualisation.")
 embedded @url{https://github.com/WizardMac/ReadStat,ReadStat} C library.")
     (license license:expat)))
 
+(define-public r-amap
+  (package
+    (name "r-amap")
+    (version "0.8-14")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "amap" version))
+              (sha256
+               (base32
+                "1dz37z9v4zvyvqrs4xvpfv468jwvpxav60qn2w0049bw8llj6xdl"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://mulcyber.toulouse.inra.fr/projects/amap/")
+    (synopsis "Another multidimensional analysis package")
+    (description "This package provides tools for clustering and principal
+component analysis (with robust methods, and parallelized functions).")
+    (license license:gpl2+)))
+
 (define-public r-ape
   (package
     (name "r-ape")
