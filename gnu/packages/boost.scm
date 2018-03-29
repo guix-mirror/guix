@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages icu4c)
@@ -109,6 +113,38 @@
 across a broad spectrum of applications.")
     (license (license:x11-style "http://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
+
+(define-public boost-sync
+  (let ((commit "c72891d9b90e2ceb466ec859f640cd012b2d8709")
+        (version "1.55")
+        (revision "1"))
+    (package
+      (name "boost-sync")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/boostorg/sync.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "197mp5z048vz5kv1m4v3jm447l2gqsyv0rbfz11dz0ns343ihbyx"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((source (assoc-ref %build-inputs "source")))
+             (copy-recursively (string-append source "/include")
+                               (string-append %output "/include"))))))
+      (home-page "https://github.com/boostorg/sync")
+      (synopsis "Boost.Sync library")
+      (description "The Boost.Sync library provides mutexes, semaphores, locks
+and events and other thread related facilities.  Boost.Sync originated from
+Boost.Thread.")
+      (license (license:x11-style "http://www.boost.org/LICENSE_1_0.txt")))))
 
 (define-public mdds
   (package

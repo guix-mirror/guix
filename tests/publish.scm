@@ -464,7 +464,7 @@ FileSize: ~a~%"
                                      (lambda (port)
                                        (display "Hello, build log!"
                                                 (current-error-port))
-                                       (display "" port)))))))
+                                       (display #$(random-text) port)))))))
     (build-derivations %store (list drv))
     (let* ((response (http-get
                       (publish-uri (string-append "/log/"
@@ -482,5 +482,13 @@ FileSize: ~a~%"
   404
   (let ((uri (publish-uri "/log/does-not-exist")))
     (response-code (http-get uri))))
+
+(test-equal "non-GET query"
+  '(200 404)
+  (let ((path (string-append "/" (store-path-hash-part %item)
+                             ".narinfo")))
+    (map response-code
+         (list (http-get (publish-uri path))
+               (http-post (publish-uri path))))))
 
 (test-end "publish")

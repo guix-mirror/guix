@@ -139,14 +139,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
    ;; to be updated as well.
-   (version "2.16.2")
+   (version "2.16.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "05y7480f2p7fkncbhf08zz56jbykcp0ia5gl6y3djs0lsa5mfq2m"))))
+              "0j1dwvg5llnj3g0fp8hdgpms4hp90qw9f6509vqw30dhwplrjpfn"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -159,7 +159,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "01fbmfsqcv7jmyh80yg3fv5jwv78zvxys9b0fd6bdcy89h9ybvj2"))))))
+            "15ckcia3bdbn1dpwlh3fifd8fzk38l1pdgxsf2yl8l8xd1z8jqaz"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -698,13 +698,13 @@ allowing to handle large objects with a small memory footprint.")
 (define-public python-gitpython
   (package
     (name "python-gitpython")
-    (version "2.1.8")
+    (version "2.1.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "GitPython" version))
               (sha256
                (base32
-                "1sbn018mn3y2r58ix5z12na1s02ccprhckb88yq3bdddvqjvqqdd"))))
+                "0a9in1jfv9ssxhckl6sasw45bhm762y2r5ikgb2pk2g8yqdc6z64"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;XXX: Tests can only be run within the GitPython repository.
@@ -1737,11 +1737,9 @@ be served with a HTTP file server of your choice.")
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-findbin" ,ghc-findbin)
        ("ghc-hunit" ,ghc-hunit)
-       ("ghc-array" ,ghc-array)
        ("ghc-async" ,ghc-async)
        ("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-binary" ,ghc-binary)
        ("ghc-bytestring-builder" ,ghc-bytestring-builder)
        ("ghc-cryptohash" ,ghc-cryptohash)
        ("ghc-data-ordlist" ,ghc-data-ordlist)
@@ -1749,7 +1747,6 @@ be served with a HTTP file server of your choice.")
        ("ghc-system-filepath" ,ghc-system-filepath)
        ("ghc-graphviz" ,ghc-graphviz)
        ("ghc-hashable" ,ghc-hashable)
-       ("ghc-haskeline" ,ghc-haskeline)
        ("ghc-html" ,ghc-html)
        ("ghc-mmap" ,ghc-mmap)
        ("ghc-mtl" ,ghc-mtl)

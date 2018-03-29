@@ -23,7 +23,7 @@ Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
-Copyright @copyright{} 2016, 2017 Chris Marusich@*
+Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nils Gillmann@*
@@ -471,7 +471,7 @@ archive content is independent of its creation time, thus making it
 reproducible.
 
 @item
-Make @code{root}'s profile available under @file{~/.guix-profile}:
+Make @code{root}'s profile available under @file{~root/.guix-profile}:
 
 @example
 # ln -sf /var/guix/profiles/per-user/root/guix-profile \
@@ -482,7 +482,7 @@ Source @file{etc/profile} to augment @code{PATH} and other relevant
 environment variables:
 
 @example
-# GUIX_PROFILE=$HOME/.guix-profile ; \
+# GUIX_PROFILE="`echo ~root`/.guix-profile" ; \
   source $GUIX_PROFILE/etc/profile
 @end example
 
@@ -2642,6 +2642,24 @@ of these, recursively.  In other words, the returned list is the
 of an element.  @xref{Invoking guix graph}, for a tool to visualize
 the graph of references.
 
+@item --derivers
+@cindex derivation
+Return the derivation(s) leading to the given store items
+(@pxref{Derivations}).
+
+For example, this command:
+
+@example
+guix gc --derivers `guix package -I ^emacs$ | cut -f4`
+@end example
+
+@noindent
+returns the @file{.drv} file(s) leading to the @code{emacs} package
+installed in your profile.
+
+Note that there may be zero matching @file{.drv} files, for instance
+because these files have been garbage-collected.  There can also be more
+than one matching @file{.drv} due to fixed-output derivations.
 @end table
 
 Lastly, the following options allow you to check the integrity of the
@@ -2899,6 +2917,10 @@ added to it or removed from it after extraction of the pack.
 
 One use case for this is the Guix self-contained binary tarball
 (@pxref{Binary Installation}).
+
+@item --bootstrap
+Use the bootstrap binaries to build the pack.  This option is only
+useful to Guix developers.
 @end table
 
 In addition, @command{guix pack} supports all the common build options
@@ -5150,9 +5172,11 @@ is a list of additional arguments to pass to @code{gexp->derivation}.
 This is the declarative counterpart of @code{gexp->derivation}.
 @end deffn
 
-@deffn {Monadic Procedure} gexp->script @var{name} @var{exp}
+@deffn {Monadic Procedure} gexp->script @var{name} @var{exp} @
+  [#:guile (default-guile)] [#:module-path %load-path]
 Return an executable script @var{name} that runs @var{exp} using
 @var{guile}, with @var{exp}'s imported modules in its search path.
+Look up @var{exp}'s modules in @var{module-path}.
 
 The example below builds a script that simply invokes the @command{ls}
 command:
@@ -5177,20 +5201,22 @@ executable file @file{/gnu/store/@dots{}-list-files} along these lines:
 @end deffn
 
 @deffn {Scheme Procedure} program-file @var{name} @var{exp} @
-          [#:guile #f]
+          [#:guile #f] [#:module-path %load-path]
 Return an object representing the executable store item @var{name} that
 runs @var{gexp}.  @var{guile} is the Guile package used to execute that
-script.
+script.  Imported modules of @var{gexp} are looked up in @var{module-path}.
 
 This is the declarative counterpart of @code{gexp->script}.
 @end deffn
 
 @deffn {Monadic Procedure} gexp->file @var{name} @var{exp} @
-            [#:set-load-path? #t]
+            [#:set-load-path? #t] [#:module-path %load-path] @
+            [#:guile (default-guile)]
 Return a derivation that builds a file @var{name} containing @var{exp}.
 When @var{set-load-path?} is true, emit code in the resulting file to
 set @code{%load-path} and @code{%load-compiled-path} to honor
-@var{exp}'s imported modules.
+@var{exp}'s imported modules.  Look up @var{exp}'s modules in
+@var{module-path}.
 
 The resulting file holds references to all the dependencies of @var{exp}
 or a subset thereof.
@@ -6989,6 +7015,15 @@ name instead of a package name, as in:
 @example
 guix graph -t derivation `guix system build -d my-config.scm`
 @end example
+
+@item module
+This is the graph of @dfn{package modules} (@pxref{Package Modules}).
+For example, the following command shows the graph for the package
+module that defines the @code{guile} package:
+
+@example
+guix graph -t module guile | dot -Tpdf > module-graph.pdf
+@end example
 @end table
 
 All the types above correspond to @emph{build-time dependencies}.  The
@@ -7877,15 +7912,27 @@ https://guix.example.org
   19,824.2 MiB on disk (uncompressed)
   0.030 seconds per request (182.9 seconds in total)
   33.5 requests per second
+
+  9.8% (342 out of 3,470) of the missing items are queued
+  867 queued builds
+      x86_64-linux: 518 (59.7%)
+      i686-linux: 221 (25.5%)
+      aarch64-linux: 128 (14.8%)
+  build rate: 23.41 builds per hour
+      x86_64-linux: 11.16 builds per hour
+      i686-linux: 6.03 builds per hour
+      aarch64-linux: 6.41 builds per hour
 @end example
 
+@cindex continuous integration, statistics
 As you can see, it reports the fraction of all the packages for which
 substitutes are available on the server---regardless of whether
 substitutes are enabled, and regardless of whether this server's signing
 key is authorized.  It also reports the size of the compressed archives
 (``nars'') provided by the server, the size the corresponding store
 items occupy in the store (assuming deduplication is turned off), and
-the server's throughput.
+the server's throughput.  The second part gives continuous integration
+(CI) statistics, if the server supports it.
 
 To achieve that, @command{guix weather} queries over HTTP(S) meta-data
 (@dfn{narinfos}) for all the relevant store items.  Like @command{guix
@@ -10396,6 +10443,8 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
 @cindex session limits
 @cindex ulimit
 @cindex priority
+@cindex realtime
+@cindex jackd
 @deffn {Scheme Procedure} pam-limits-service [#:limits @code{'()}]
 
 Return a service that installs a configuration file for the
@@ -15730,7 +15779,7 @@ Must be either:
 @item @code{<php-fpm-on-demand-process-manager-configuration>}
 @end table
 @item @code{display-errors} (default @code{#f})
-Determines wether php errors and warning should be sent to clients
+Determines whether php errors and warning should be sent to clients
 and displayed in their browsers.
 This is useful for local php development, but a security risk for public sites,
 as error messages can reveal passwords and personal data.
@@ -18325,11 +18374,12 @@ Return the name of @var{platform}---a string such as @code{"arm"}.
 @subsubsection Version Control Services
 
 The @code{(gnu services version-control)} module provides a service to
-allow remote access to local Git repositories.  There are two options:
+allow remote access to local Git repositories.  There are three options:
 the @code{git-daemon-service}, which provides access to repositories via
-the @code{git://} unsecured TCP-based protocol, or extending the
+the @code{git://} unsecured TCP-based protocol, extending the
 @code{nginx} web server to proxy some requests to
-@code{git-http-backend}.
+@code{git-http-backend}, or providing a web interface with
+@code{cgit-service-type}.
 
 @deffn {Scheme Procedure} git-daemon-service [#:config (git-daemon-configuration)]
 
@@ -18461,199 +18511,6 @@ service will redirect all HTTP traffic on @code{git.my-host.org} to
 HTTPS.  You will also need to add an @code{fcgiwrap} proxy to your
 system services.  @xref{Web Services}.
 @end deffn
-
-@node Game Services
-@subsubsection Game Services
-
-@subsubheading The Battle for Wesnoth Service
-@cindex wesnothd
-@uref{https://wesnoth.org, The Battle for Wesnoth} is a fantasy, turn
-based tactical strategy game, with several single player campaigns, and
-multiplayer games (both networked and local).
-
-@defvar {Scheme Variable} wesnothd-service-type
-Service type for the wesnothd service.  Its value must be a
-@code{wesnothd-configuration} object.  To run wesnothd in the default
-configuration, instantiate it as:
-
-@example
-(service wesnothd-service-type)
-@end example
-@end defvar
-
-@deftp {Data Type} wesnothd-configuration
-Data type representing the configuration of @command{wesnothd}.
-
-@table @asis
-@item @code{package} (default: @code{wesnoth-server})
-The wesnoth server package to use.
-
-@item @code{port} (default: @code{15000})
-The port to bind the server to.
-@end table
-@end deftp
-
-@node Miscellaneous Services
-@subsubsection Miscellaneous Services
-
-@cindex sysctl
-@subsubheading System Control Service
-
-The @code{(gnu services sysctl)} provides a service to configure kernel
-parameters at boot.
-
-@defvr {Scheme Variable} sysctl-service-type
-The service type for @command{sysctl}, which modifies kernel parameters
-under @file{/proc/sys/}.  To enable IPv4 forwarding, it can be
-instantiated as:
-
-@example
-(service sysctl-service-type
-         (sysctl-configuration
-           (settings '(("net.ipv4.ip_forward" . "1")))))
-@end example
-@end defvr
-
-@deftp {Data Type} sysctl-configuration
-The data type representing the configuration of @command{sysctl}.
-
-@table @asis
-@item @code{sysctl} (default: @code{(file-append procps "/sbin/sysctl"})
-The @command{sysctl} executable to use.
-
-@item @code{settings} (default: @code{'()})
-An association list specifies kernel parameters and their values.
-@end table
-@end deftp
-
-@cindex lirc
-@subsubheading Lirc Service
-
-The @code{(gnu services lirc)} module provides the following service.
-
-@deffn {Scheme Procedure} lirc-service [#:lirc lirc] @
-       [#:device #f] [#:driver #f] [#:config-file #f] @
-       [#:extra-options '()]
-Return a service that runs @url{http://www.lirc.org,LIRC}, a daemon that
-decodes infrared signals from remote controls.
-
-Optionally, @var{device}, @var{driver} and @var{config-file}
-(configuration file name) may be specified.  See @command{lircd} manual
-for details.
-
-Finally, @var{extra-options} is a list of additional command-line options
-passed to @command{lircd}.
-@end deffn
-
-@cindex spice
-@subsubheading Spice Service
-
-The @code{(gnu services spice)} module provides the following service.
-
-@deffn {Scheme Procedure} spice-vdagent-service [#:spice-vdagent]
-Returns a service that runs @url{http://www.spice-space.org,VDAGENT}, a daemon
-that enables sharing the clipboard with a vm and setting the guest display
-resolution when the graphical console window resizes.
-@end deffn
-
-@subsubsection Dictionary Services
-@cindex dictionary
-The @code{(gnu services dict)} module provides the following service:
-
-@deffn {Scheme Procedure} dicod-service [#:config (dicod-configuration)]
-Return a service that runs the @command{dicod} daemon, an implementation
-of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
-
-The optional @var{config} argument specifies the configuration for
-@command{dicod}, which should be a @code{<dicod-configuration>} object, by
-default it serves the GNU Collaborative International Dictonary of English.
-
-You can add @command{open localhost} to your @file{~/.dico} file to make
-@code{localhost} the default server for @command{dico} client
-(@pxref{Initialization File,,, dico, GNU Dico Manual}).
-@end deffn
-
-@deftp {Data Type} dicod-configuration
-Data type representing the configuration of dicod.
-
-@table @asis
-@item @code{dico} (default: @var{dico})
-Package object of the GNU Dico dictionary server.
-
-@item @code{interfaces} (default: @var{'("localhost")})
-This is the list of IP addresses and ports and possibly socket file
-names to listen to (@pxref{Server Settings, @code{listen} directive,,
-dico, GNU Dico Manual}).
-
-@item @code{handlers} (default: @var{'()})
-List of @code{<dicod-handler>} objects denoting handlers (module instances).
-
-@item @code{databases} (default: @var{(list %dicod-database:gcide)})
-List of @code{<dicod-database>} objects denoting dictionaries to be served.
-@end table
-@end deftp
-
-@deftp {Data Type} dicod-handler
-Data type representing a dictionary handler (module instance).
-
-@table @asis
-@item @code{name}
-Name of the handler (module instance).
-
-@item @code{module} (default: @var{#f})
-Name of the dicod module of the handler (instance).  If it is @code{#f},
-the module has the same name as the handler.
-(@pxref{Modules,,, dico, GNU Dico Manual}).
-
-@item @code{options}
-List of strings or gexps representing the arguments for the module handler
-@end table
-@end deftp
-
-@deftp {Data Type} dicod-database
-Data type representing a dictionary database.
-
-@table @asis
-@item @code{name}
-Name of the database, will be used in DICT commands.
-
-@item @code{handler}
-Name of the dicod handler (module instance) used by this database
-(@pxref{Handlers,,, dico, GNU Dico Manual}).
-
-@item @code{complex?} (default: @var{#f})
-Whether the database configuration complex.  The complex configuration
-will need a corresponding @code{<dicod-handler>} object, otherwise not.
-
-@item @code{options}
-List of strings or gexps representing the arguments for the database
-(@pxref{Databases,,, dico, GNU Dico Manual}).
-@end table
-@end deftp
-
-@defvr {Scheme Variable} %dicod-database:gcide
-A @code{<dicod-database>} object serving the GNU Collaborative International
-Dictionary of English using the @code{gcide} package.
-@end defvr
-
-The following is an example @code{dicod-service} configuration.
-
-@example
-(dicod-service #:config
-  (dicod-configuration
-   (handlers (list (dicod-handler
-                    (name "wordnet")
-                    (module "dictorg")
-                    (options
-                     (list #~(string-append "dbdir=" #$wordnet))))))
-   (databases (list (dicod-database
-                     (name "wordnet")
-                     (complex? #t)
-                     (handler "wordnet")
-                     (options '("database=wn")))
-                    %dicod-database:gcide))))
-@end example
-
 
 @subsubheading Cgit Service
 
@@ -19593,6 +19450,199 @@ could instantiate a cgit service like this:
           (cgitrc "")))
 @end example
 
+
+@node Game Services
+@subsubsection Game Services
+
+@subsubheading The Battle for Wesnoth Service
+@cindex wesnothd
+@uref{https://wesnoth.org, The Battle for Wesnoth} is a fantasy, turn
+based tactical strategy game, with several single player campaigns, and
+multiplayer games (both networked and local).
+
+@defvar {Scheme Variable} wesnothd-service-type
+Service type for the wesnothd service.  Its value must be a
+@code{wesnothd-configuration} object.  To run wesnothd in the default
+configuration, instantiate it as:
+
+@example
+(service wesnothd-service-type)
+@end example
+@end defvar
+
+@deftp {Data Type} wesnothd-configuration
+Data type representing the configuration of @command{wesnothd}.
+
+@table @asis
+@item @code{package} (default: @code{wesnoth-server})
+The wesnoth server package to use.
+
+@item @code{port} (default: @code{15000})
+The port to bind the server to.
+@end table
+@end deftp
+
+@node Miscellaneous Services
+@subsubsection Miscellaneous Services
+
+@cindex sysctl
+@subsubheading System Control Service
+
+The @code{(gnu services sysctl)} provides a service to configure kernel
+parameters at boot.
+
+@defvr {Scheme Variable} sysctl-service-type
+The service type for @command{sysctl}, which modifies kernel parameters
+under @file{/proc/sys/}.  To enable IPv4 forwarding, it can be
+instantiated as:
+
+@example
+(service sysctl-service-type
+         (sysctl-configuration
+           (settings '(("net.ipv4.ip_forward" . "1")))))
+@end example
+@end defvr
+
+@deftp {Data Type} sysctl-configuration
+The data type representing the configuration of @command{sysctl}.
+
+@table @asis
+@item @code{sysctl} (default: @code{(file-append procps "/sbin/sysctl"})
+The @command{sysctl} executable to use.
+
+@item @code{settings} (default: @code{'()})
+An association list specifies kernel parameters and their values.
+@end table
+@end deftp
+
+@cindex lirc
+@subsubheading Lirc Service
+
+The @code{(gnu services lirc)} module provides the following service.
+
+@deffn {Scheme Procedure} lirc-service [#:lirc lirc] @
+       [#:device #f] [#:driver #f] [#:config-file #f] @
+       [#:extra-options '()]
+Return a service that runs @url{http://www.lirc.org,LIRC}, a daemon that
+decodes infrared signals from remote controls.
+
+Optionally, @var{device}, @var{driver} and @var{config-file}
+(configuration file name) may be specified.  See @command{lircd} manual
+for details.
+
+Finally, @var{extra-options} is a list of additional command-line options
+passed to @command{lircd}.
+@end deffn
+
+@cindex spice
+@subsubheading Spice Service
+
+The @code{(gnu services spice)} module provides the following service.
+
+@deffn {Scheme Procedure} spice-vdagent-service [#:spice-vdagent]
+Returns a service that runs @url{http://www.spice-space.org,VDAGENT}, a daemon
+that enables sharing the clipboard with a vm and setting the guest display
+resolution when the graphical console window resizes.
+@end deffn
+
+@subsubsection Dictionary Services
+@cindex dictionary
+The @code{(gnu services dict)} module provides the following service:
+
+@deffn {Scheme Procedure} dicod-service [#:config (dicod-configuration)]
+Return a service that runs the @command{dicod} daemon, an implementation
+of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
+
+The optional @var{config} argument specifies the configuration for
+@command{dicod}, which should be a @code{<dicod-configuration>} object, by
+default it serves the GNU Collaborative International Dictonary of English.
+
+You can add @command{open localhost} to your @file{~/.dico} file to make
+@code{localhost} the default server for @command{dico} client
+(@pxref{Initialization File,,, dico, GNU Dico Manual}).
+@end deffn
+
+@deftp {Data Type} dicod-configuration
+Data type representing the configuration of dicod.
+
+@table @asis
+@item @code{dico} (default: @var{dico})
+Package object of the GNU Dico dictionary server.
+
+@item @code{interfaces} (default: @var{'("localhost")})
+This is the list of IP addresses and ports and possibly socket file
+names to listen to (@pxref{Server Settings, @code{listen} directive,,
+dico, GNU Dico Manual}).
+
+@item @code{handlers} (default: @var{'()})
+List of @code{<dicod-handler>} objects denoting handlers (module instances).
+
+@item @code{databases} (default: @var{(list %dicod-database:gcide)})
+List of @code{<dicod-database>} objects denoting dictionaries to be served.
+@end table
+@end deftp
+
+@deftp {Data Type} dicod-handler
+Data type representing a dictionary handler (module instance).
+
+@table @asis
+@item @code{name}
+Name of the handler (module instance).
+
+@item @code{module} (default: @var{#f})
+Name of the dicod module of the handler (instance).  If it is @code{#f},
+the module has the same name as the handler.
+(@pxref{Modules,,, dico, GNU Dico Manual}).
+
+@item @code{options}
+List of strings or gexps representing the arguments for the module handler
+@end table
+@end deftp
+
+@deftp {Data Type} dicod-database
+Data type representing a dictionary database.
+
+@table @asis
+@item @code{name}
+Name of the database, will be used in DICT commands.
+
+@item @code{handler}
+Name of the dicod handler (module instance) used by this database
+(@pxref{Handlers,,, dico, GNU Dico Manual}).
+
+@item @code{complex?} (default: @var{#f})
+Whether the database configuration complex.  The complex configuration
+will need a corresponding @code{<dicod-handler>} object, otherwise not.
+
+@item @code{options}
+List of strings or gexps representing the arguments for the database
+(@pxref{Databases,,, dico, GNU Dico Manual}).
+@end table
+@end deftp
+
+@defvr {Scheme Variable} %dicod-database:gcide
+A @code{<dicod-database>} object serving the GNU Collaborative International
+Dictionary of English using the @code{gcide} package.
+@end defvr
+
+The following is an example @code{dicod-service} configuration.
+
+@example
+(dicod-service #:config
+  (dicod-configuration
+   (handlers (list (dicod-handler
+                    (name "wordnet")
+                    (module "dictorg")
+                    (options
+                     (list #~(string-append "dbdir=" #$wordnet))))))
+   (databases (list (dicod-database
+                     (name "wordnet")
+                     (complex? #t)
+                     (handler "wordnet")
+                     (options '("database=wn")))
+                    %dicod-database:gcide))))
+@end example
+
 @node Setuid Programs
 @subsection Setuid Programs
 
@@ -20374,12 +20424,18 @@ containing at least the kernel, initrd, and bootloader data files must
 be created.  The @code{--image-size} option can be used to specify the
 size of the image.
 
+@cindex System images, creation in various formats
+@cindex Creating system images in various formats
 @item vm-image
 @itemx disk-image
-Return a virtual machine or disk image of the operating system declared
-in @var{file} that stands alone.  By default, @command{guix system}
-estimates the size of the image needed to store the system, but you can
-use the @option{--image-size} option to specify a value.
+@itemx docker-image
+Return a virtual machine, disk image, or Docker image of the operating
+system declared in @var{file} that stands alone.  By default,
+@command{guix system} estimates the size of the image needed to store
+the system, but you can use the @option{--image-size} option to specify
+a value.  Docker images are built to contain exactly what they need, so
+the @option{--image-size} option is ignored in the case of
+@code{docker-image}.
 
 You can specify the root file system type by using the
 @option{--file-system-type} option.  It defaults to @code{ext4}.
@@ -20396,6 +20452,28 @@ using the following command:
 @example
 # dd if=$(guix system disk-image my-os.scm) of=/dev/sdc
 @end example
+
+When using @code{docker-image}, a Docker image is produced.  Guix builds
+the image from scratch, not from a pre-existing Docker base image.  As a
+result, it contains @emph{exactly} what you define in the operating
+system configuration file.  You can then load the image and launch a
+Docker container using commands like the following:
+
+@example
+image_id="$(docker load < guixsd-docker-image.tar.gz)"
+docker run -e GUIX_NEW_SYSTEM=/var/guix/profiles/system \\
+    --entrypoint /var/guix/profiles/system/profile/bin/guile \\
+    $image_id /var/guix/profiles/system/boot
+@end example
+
+This command starts a new Docker container from the specified image.  It
+will boot the GuixSD system in the usual manner, which means it will
+start any services you have defined in the operating system
+configuration.  Depending on what you run in the Docker container, it
+may be necessary to give the container additional permissions.  For
+example, if you intend to build software using Guix inside of the Docker
+container, you may need to pass the @option{--privileged} option to
+@code{docker run}.
 
 @item container
 Return a script to run the operating system declared in @var{file}
@@ -21012,16 +21090,16 @@ services.
 
 Otherwise, it must be a one-argument procedure.  The procedure is called
 by @code{fold-services} and is passed a list of values collected from
-extensions.  It must return a value that is a valid parameter value for
-the service instance.
+extensions.  It may return any single value.
 
 @item @code{extend} (default: @code{#f})
 If this is @code{#f}, services of this type cannot be extended.
 
 Otherwise, it must be a two-argument procedure: @code{fold-services}
-calls it, passing it the initial value of the service as the first argument
-and the result of applying @code{compose} to the extension values as the
-second argument.
+calls it, passing it the initial value of the service as the first
+argument and the result of applying @code{compose} to the extension
+values as the second argument.  It must return a value that is a valid
+parameter value for the service instance.
 @end table
 
 @xref{Service Types and Services}, for examples.

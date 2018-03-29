@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -280,11 +281,11 @@ server and embedded PowerPC, and S390 guests.")
        ("usb.ids"
         ,(origin
            (method url-fetch)
-           (uri "http://linux-usb.cvs.sourceforge.net/viewvc/linux-usb/htdocs/usb.ids?revision=1.551")
+           (uri "https://svn.code.sf.net/p/linux-usb/repo/trunk/htdocs/usb.ids?r=2681")
            (file-name "usb.ids")
            (sha256
             (base32
-             "17rg5i0wbyk289gr8v4kgvnc9q5bidz7ldcvv9x58l083wn16hq3"))))))
+             "1m6yhvz5k8aqzxgk7xj3jkk8frl1hbv0h3vgj4wbnvnx79qnvz3r"))))))
     (home-page "https://libosinfo.org/")
     (synopsis "Operating system information database")
     (description "libosinfo is a GObject based library API for managing

@@ -257,7 +257,7 @@ the C implementation.")
 (define-public ghc-cryptonite
   (package
     (name "ghc-cryptonite")
-    (version "0.20")
+    (version "0.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -265,10 +265,11 @@ the C implementation.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0m63np0affci7ba9mrkvw2flzxn0s2mk930xldc4dwijw32gl6r6"))))
+                "131wbbdr5yavs5k1ah9sz6fqx1ffyvaxf66pwjzsfc47mwc1mgl9"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-memory" ,ghc-memory)
+     `(("ghc-basement" ,ghc-basement)
+       ("ghc-memory" ,ghc-memory)
        ("ghc-byteable" ,ghc-byteable)))
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)

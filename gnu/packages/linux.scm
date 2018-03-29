@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -383,8 +383,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.15.11")
-(define %linux-libre-hash "0nrsmw7x5nsc3906dfvfakkibv8pv09r1sf5ckzbkcbkwpyq62h8")
+(define %linux-libre-version "4.15.13")
+(define %linux-libre-hash "1z9f3m44n5w9ayad08h6nvx4nihc28h2jplk4jvyaj0460v8d11f")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -392,8 +392,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.28")
-(define %linux-libre-4.14-hash "0xg3zsm1yjsvxir8sz7zliz8gcc8d45xh23qyiszl75cfqjl36l3")
+(define %linux-libre-4.14-version "4.14.30")
+(define %linux-libre-4.14-hash "1j1vnr4397y4js7i24jdpfq85mc50b7kjz7gz1bbbrmda6cflwig")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -402,14 +402,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.88"
-                    "0qlhd8xw3g00i7krpfndkwxzjszk067h26qsxxsszvxyx2s6gp4x"
+  (make-linux-libre "4.9.90"
+                    "0mzy6wcxp9m9icb8mvsbywp1lrbvbv6n8rs3xszqm43dxy9zj1jd"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.122"
-                    "1ayilv7474vsif3jpb723jbcy4kymv1fpdr96c1g743bad1wkqqq"
+  (make-linux-libre "4.4.124"
+                    "1368x0wki8zhk0hwz36hrkp2lr2kbm9i0fwzws201h3y85mldgh4"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3761,7 +3761,7 @@ developers.")
 (define-public radeontop
   (package
     (name "radeontop")
-    (version "1.0")
+    (version "1.1")
     (home-page "https://github.com/clbr/radeontop/")
     (source (origin
               (method url-fetch)
@@ -3769,7 +3769,7 @@ developers.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1z38nibirqxrbsfyhfcrnzlcw16cqjp4ds6qnjfxalwayf9fm5x9"))))
+                "1fv06j5c99imvzkac3j40lgjhr5b2i77fnyffhlvj92bli1fm1c6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

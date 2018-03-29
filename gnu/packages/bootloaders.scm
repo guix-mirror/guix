@@ -35,6 +35,7 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages disk)
+  #:use-module (gnu packages firmware)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
@@ -422,7 +423,7 @@ also initializes the boards (RAM etc).")
                (let* ((out (assoc-ref outputs "out"))
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
-                                    (find-files "." ".*\\.(bin|efi|img|spl)$")
+                                    (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb)$")
                                     (find-files "." "^MLO$"))))
                  (mkdir-p libexec)
                  (install-file ".config" libexec)
@@ -444,6 +445,27 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-odroid-c2
   (make-u-boot-package "odroid-c2" "aarch64-linux-gnu"))
+
+(define-public u-boot-pine64-plus
+  (let ((base (make-u-boot-package "pine64_plus" "aarch64-linux-gnu")))
+    (package
+      (inherit base)
+      (arguments
+        (substitute-keyword-arguments (package-arguments base)
+          ((#:phases phases)
+           `(modify-phases ,phases
+              (add-after 'unpack 'set-environment
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((bl31 (string-append (assoc-ref inputs "firmware")
+                                             "/bl31.bin")))
+                    (setenv "BL31" bl31)
+                    ;; This is necessary while we're using the bundled dtc.
+                    (setenv "PATH" (string-append (getenv "PATH") ":"
+                                                  "scripts/dtc")))
+                  #t))))))
+      (native-inputs
+       `(("firmware" ,arm-trusted-firmware-pine64-plus)
+         ,@(package-native-inputs base))))))
 
 (define-public u-boot-banana-pi-m2-ultra
   (make-u-boot-package "Bananapi_M2_Ultra" "arm-linux-gnueabihf"))

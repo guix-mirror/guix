@@ -184,7 +184,7 @@ MTP, and much more.")
 (define-public perl-image-exiftool
   (package
     (name "perl-image-exiftool")
-    (version "10.55")
+    (version "10.80")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -192,7 +192,7 @@ MTP, and much more.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0z8zwjjfvyllnhsafhddbybywpgqv0pl1dbn1g034cs27yj836q2"))))
+                "14rwr5wk2snqv4yva6fax1gfsdv88941n237m0wyzn3n0xh9dy5w"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -330,7 +330,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "2.4.0")
+    (version "2.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -339,7 +339,7 @@ photographic equipment.")
                     version "/darktable-" version ".tar.xz"))
               (sha256
                (base32
-                "0y0q7a7k09sbg05k5xl1lz8n2ak1v8yarfv222ksvmbrxs53hdwx"))))
+                "10asz918kv2248px3w9bn5k8cfrad5xrci58x9y61l0yf5hcpk0r"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -470,14 +470,14 @@ a complete panorama and stitch any series of overlapping pictures.")
 (define-public rawtherapee
   (package
     (name "rawtherapee")
-    (version "5.3")
+    (version "5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://rawtherapee.com/shared/source/"
                                   "rawtherapee-" version ".tar.xz"))
               (sha256
                (base32
-                "1y1ygxqmqfp4zg8rcgrlfdc1597cyr5zqgp5zjpldhvwdfa9r5cp"))))
+                "1229hxqq824hcqg1hy2cfglsp7kjbhhis9m33ss39pgmrb1w227d"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no test suite

@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -236,7 +236,7 @@ plugins, as well as code to create plugins, or complete applications.")
 (define-public krita
   (package
     (name "krita")
-    (version "3.3.3")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -245,7 +245,7 @@ plugins, as well as code to create plugins, or complete applications.")
                     "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0pc6hnakkqy81x5b5ncivaps6hqv43i50sjwgi3i3cz9j8rlxh5y"))))
+                "0dh3bm90mxrbyvdp7x7hcf5li48j7ppkb44lls65lpn6c59r5waz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -329,6 +329,23 @@ illustrators, matte and texture artists, and the VFX industry.  Notable
 features include brush stabilizers, brush engines and wrap-around mode.")
     (license license:gpl2+)))
 
+;; Krita 3 and 4's file formats are incompatible, so we are keeping Krita 3
+;; for now.
+(define-public krita-3
+  (package
+    (inherit krita)
+    (name "krita")
+    (version "3.3.3")
+    (source (origin
+              (inherit (package-source krita))
+              (uri (string-append
+                    "mirror://kde/stable/krita/"
+                    (version-prefix version 3)
+                    "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pc6hnakkqy81x5b5ncivaps6hqv43i50sjwgi3i3cz9j8rlxh5y"))))))
+
 (define-public kholidays
   (package
     (name "kholidays")
@@ -367,7 +384,7 @@ other special events for a geographical region.")
 (define-public libkomparediff2
   (package
     (name "libkomparediff2")
-    (version "17.12.1")
+    (version "17.12.3")
     (source
       (origin
         (method url-fetch)
@@ -376,7 +393,7 @@ other special events for a geographical region.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0jd700pjw51vyan5d22k6j60jgb95pfn2nvwz2nfs2f4xlsly1hz"))))
+          "0w6p8lvm2rn7y4qz0x3s87lwh1758xnyhwkkkng55n8v9rpjjw7l"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))

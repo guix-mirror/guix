@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -669,14 +669,14 @@ line of code.")
 (define-public ruby-asciidoctor
   (package
   (name "ruby-asciidoctor")
-  (version "1.5.6.1")
+  (version "1.5.6.2")
   (source
     (origin
       (method url-fetch)
       (uri (rubygems-uri "asciidoctor" version))
       (sha256
         (base32
-          "1jnf9y8q5asfdzilp8vcqafrc2faj719df4yh1993mh6jd0iqdy4"))))
+          "0zq3az4836nxkc8g5wnnbzmarw7663s1ky6gf8pc04sfpa8n2l3f"))))
   (build-system ruby-build-system)
   (arguments
    `(#:test-target "test:all"
@@ -4964,14 +4964,14 @@ Markdown.")
 (define-public ruby-rake
   (package
     (name "ruby-rake")
-    (version "12.3.0")
+    (version "12.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rake" version))
        (sha256
         (base32
-         "190p7cs8zdn07mjj6xwwsdna3g0r98zs4crz7jh2j2q5b0nbxgjf"))))
+         "1idi53jay34ba9j68c3mfr9wwkg3cd9qh0fn9cg42hv72c6q8dyg"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))

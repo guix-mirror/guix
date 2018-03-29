@@ -3632,7 +3632,7 @@ data.")
 (define-public kaiju
   (package
     (name "kaiju")
-    (version "1.5.0")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3641,7 +3641,7 @@ data.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0afbfalfw9y39bkwnqjrh9bghs118ws1pzj5h8l0nblgn3mbjdks"))))
+                "1kdn4rxs0kr9ibmrgrfcci71aa6j6gr71dbc8pff7731rpab6kj7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -3659,7 +3659,8 @@ data.")
                (copy-recursively "util" bin))
              #t)))))
     (inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("zlib" ,zlib)))
     (home-page "http://kaiju.binf.ku.dk/")
     (synopsis "Fast and sensitive taxonomic classification for metagenomics")
     (description "Kaiju is a program for sensitive taxonomic classification
@@ -6077,14 +6078,14 @@ data types as well.")
 (define-public r-annotate
   (package
     (name "r-annotate")
-    (version "1.56.1")
+    (version "1.56.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "annotate" version))
        (sha256
         (base32
-         "14c5xd9kasvcwg5gbjys2c1vizxhlqlzxakqc2kml0kw97hmx0rq"))))
+         "0ybg9k1s289h15nj1kp9821i1rsk1gkn8i8blplmk7gsgpbw1f42"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -6886,8 +6887,7 @@ also known as views, in a controlled vocabulary.")
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-tinytex" ,r-tinytex)
        ("r-yaml" ,r-yaml)
-       ("r-xfun" ,r-xfun)
-       ("ghc-pandoc" ,ghc-pandoc)))
+       ("r-xfun" ,r-xfun)))
     (home-page "https://github.com/rstudio/bookdown")
     (synopsis "Authoring books and technical documents with R markdown")
     (description "This package provides output formats and utilities for
@@ -8526,14 +8526,14 @@ library implementing most of the pipeline's features.")
 (define-public r-mutationalpatterns
   (package
     (name "r-mutationalpatterns")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MutationalPatterns" version))
        (sha256
         (base32
-         "08ay9h5cqsi8ypb6r0g4rfa5l1g06jgfzl64wmhgz134yqbl7vfv"))))
+         "0ml4gsp5dfv23xqrknxh25q8q65hly1xb1215lcwyc8hj9z8f941"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -8543,7 +8543,6 @@ library implementing most of the pipeline's features.")
        ("r-genomicranges" ,r-genomicranges)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-gridextra" ,r-gridextra)
        ("r-iranges" ,r-iranges)
        ("r-nmf" ,r-nmf)
        ("r-plyr" ,r-plyr)
@@ -12757,7 +12756,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.8")
+    (version "0.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12765,7 +12764,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1plw0bz0b7flj0g9irbn8n520005lmajkiq5flpizzapsl0a0r9g"))))
+                "13w99bkr0w4j28ms0yzpl1x6fkpdqay0vh495q3x20bcilsjwnf1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; parts of the tests rely on access to the network
@@ -12780,24 +12779,34 @@ expression report comparing samples in an easily configurable manner.")
                  `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
              #t)))))
     (inputs
-     `(("r-minimal" ,r-minimal)
+     `(("grep" ,grep)
+       ("coreutils" ,coreutils)
+       ("r-minimal" ,r-minimal)
        ("r-argparser" ,r-argparser)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
        ("r-chipseq" ,r-chipseq)
        ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
        ("r-genomation" ,r-genomation)
+       ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicranges" ,r-genomicranges)
+       ("r-rsamtools" ,r-rsamtools)
        ("r-rtracklayer" ,r-rtracklayer)
-       ("r-rcas" ,r-rcas)
+       ("r-s4vectors" ,r-s4vectors)
        ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
        ("r-jsonlite" ,r-jsonlite)
        ("r-heatmaply" ,r-heatmaply)
+       ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-ggplot2" ,r-ggplot2)
        ("r-plotly" ,r-plotly)
+       ("r-rmarkdown" ,r-rmarkdown)
        ("python-wrapper" ,python-wrapper)
-       ("python-magic" ,python-magic)
        ("python-pyyaml" ,python-pyyaml)
+       ("python-magic" ,python-magic)
        ("python-xlrd" ,python-xlrd)
-       ("snakemake" ,snakemake)
        ("trim-galore" ,trim-galore)
        ("macs" ,macs)
        ("multiqc" ,multiqc)

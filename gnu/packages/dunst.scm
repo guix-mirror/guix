@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2017, 2018 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +32,7 @@
 (define-public dunst
   (package
     (name "dunst")
-    (version "1.2.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -41,12 +41,16 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1bf5fmmj79wlwi8wzir3rd8czyrxfx16w8q7c957123yz1g5ph53"))))
+                "1mkdp1vqc376z8clwm5s9070jq1g92j8hv2rr231jr2468fnwaga"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
        #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+                          (string-append "PREFIX=" %output)
+                          ;; Otherwise it tries to install service file
+                          ;; to "dbus" store directory.
+                          (string-append "SERVICEDIR_DBUS=" %output
+                                         "/share/dbus-1/services"))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
     (native-inputs
@@ -55,8 +59,8 @@
        ("which" ,which)))
     (inputs
      `(("dbus" ,dbus)
+       ("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
-       ("gtk" ,gtk+-2)
        ("cairo" ,cairo)
        ("pango" ,pango)
        ("libx11" ,libx11)

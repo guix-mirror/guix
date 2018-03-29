@@ -36,7 +36,6 @@
 (define-module (gnu packages guile)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
-  #:use-module (gnu packages admin) ;;for tree
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)

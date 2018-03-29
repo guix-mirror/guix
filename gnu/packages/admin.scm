@@ -159,16 +159,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.3.2")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://alpha.gnu.org/gnu/dmd/shepherd-"
+              (uri (string-append "https://alpha.gnu.org/gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "174q1qg7yg6w1hfvlfv720hr6hid4h5xzw15y3ycfpspllzldhcb"))
-              (patches (search-patches "shepherd-close-fds.patch"
-                                       "shepherd-herd-status-sorted.patch"))))
+                "1lgmsbxn8i8xdasxzkdp2cml75n128pplw6icvmspl6s0n9xmw8n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -1745,14 +1743,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.60")
+    (version "7.70")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "08bga42ipymmbxd7wy4x5sl26c0ir1fm3n9rc6nqmhx69z66wyd8"))
+                "063fg8adx23l4irrh5kn57hsmi1xvjkar4vm4k6g94ppan4hcyw4"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1771,6 +1769,8 @@ done with the @code{auditctl} utility.")
        ("libpcap" ,libpcap)
        ("pcre" ,pcre)
        ("lua" ,lua)
+       ("zlib" ,zlib)                   ;for NSE compression support
+
        ;; For 'ndiff'.
        ("python" ,python-2)))
 

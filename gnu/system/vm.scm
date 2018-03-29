@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
 
 (define-module (gnu system vm)
   #:use-module (guix config)
+  #:use-module (guix docker)
   #:use-module (guix store)
   #:use-module (guix gexp)
   #:use-module (guix derivations)
@@ -29,6 +31,7 @@
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix modules)
+  #:use-module (guix scripts pack)
   #:use-module (guix utils)
   #:use-module (guix hash)
   #:use-module (guix base32)
@@ -38,7 +41,9 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootloaders)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages guile)
+  #:autoload   (gnu packages gnupg) (libgcrypt)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages less)
@@ -75,6 +80,7 @@
             system-qemu-image/shared-store
             system-qemu-image/shared-store-script
             system-disk-image
+            system-docker-image
 
             virtual-machine
             virtual-machine?))
@@ -87,8 +93,8 @@
 ;;; Code:
 
 (define %linux-vm-file-systems
-  ;; File systems mounted for 'derivation-in-linux-vm'.  The store and /xchg
-  ;; directory are shared with the host over 9p.
+  ;; File systems mounted for 'derivation-in-linux-vm'.  These are shared with
+  ;; the host over 9p.
   (list (file-system
           (mount-point (%store-prefix))
           (device "store")
@@ -99,6 +105,13 @@
         (file-system
           (mount-point "/xchg")
           (device "xchg")
+          (type "9p")
+          (needed-for-boot? #t)
+          (options "trans=virtio")
+          (check? #f))
+        (file-system
+          (mount-point "/tmp")
+          (device "tmp")
           (type "9p")
           (needed-for-boot? #t)
           (options "trans=virtio")
@@ -368,6 +381,106 @@ the image."
    #:disk-image-size disk-image-size
    #:disk-image-format disk-image-format
    #:references-graphs inputs))
+
+(define* (system-docker-image os
+                              #:key
+                              (name "guixsd-docker-image")
+                              register-closures?)
+  "Build a docker image.  OS is the desired <operating-system>.  NAME is the
+base name to use for the output file.  When REGISTER-CLOSURES? is not #f,
+register the closure of OS with Guix in the resulting Docker image.  This only
+makes sense when you want to build a GuixSD Docker image that has Guix
+installed inside of it.  If you don't need Guix (e.g., your GuixSD Docker
+image just contains a web server that is started by the Shepherd), then you
+should set REGISTER-CLOSURES? to #f."
+  (define not-config?
+    (match-lambda
+      (('guix 'config) #f)
+      (('guix rest ...) #t)
+      (('gnu rest ...) #t)
+      (rest #f)))
+
+  (define config
+    ;; (guix config) module for consumption by (guix gcrypt).
+    (scheme-file "gcrypt-config.scm"
+                 #~(begin
+                     (define-module (guix config)
+                       #:export (%libgcrypt))
+
+                     ;; XXX: Work around <http://bugs.gnu.org/15602>.
+                     (eval-when (expand load eval)
+                       (define %libgcrypt
+                         #+(file-append libgcrypt "/lib/libgcrypt"))))))
+  (mlet %store-monad ((os-drv (operating-system-derivation os #:container? #t))
+                      (name -> (string-append name ".tar.gz"))
+                      (graph -> "system-graph"))
+    (define build
+      (with-imported-modules `(,@(source-module-closure '((guix docker)
+                                                          (guix build utils)
+                                                          (gnu build vm))
+                                                        #:select? not-config?)
+                               (guix build store-copy)
+                               ((guix config) => ,config))
+        #~(begin
+            ;; Guile-JSON is required by (guix docker).
+            (add-to-load-path
+             (string-append #+guile-json "/share/guile/site/"
+                            (effective-version)))
+            (use-modules (guix docker)
+                         (guix build utils)
+                         (gnu build vm)
+                         (srfi srfi-19)
+                         (guix build store-copy))
+
+            (let* ((inputs '#$(append (list tar)
+                                      (if register-closures?
+                                          (list guix)
+                                          '())))
+                   ;; This initializer requires elevated privileges that are
+                   ;; not normally available in the build environment (e.g.,
+                   ;; it needs to create device nodes).  In order to obtain
+                   ;; such privileges, we run it as root in a VM.
+                   (initialize (root-partition-initializer
+                                #:closures '(#$graph)
+                                #:register-closures? #$register-closures?
+                                #:system-directory #$os-drv
+                                ;; De-duplication would fail due to
+                                ;; cross-device link errors, so don't do it.
+                                #:deduplicate? #f))
+                   ;; Even as root in a VM, the initializer would fail due to
+                   ;; lack of privileges if we use a root-directory that is on
+                   ;; a file system that is shared with the host (e.g., /tmp).
+                   (root-directory "/guixsd-system-root"))
+              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+              (mkdir root-directory)
+              (initialize root-directory)
+              (build-docker-image
+               (string-append "/xchg/" #$name) ;; The output file.
+               (cons* root-directory
+                      (call-with-input-file (string-append "/xchg/" #$graph)
+                        read-reference-graph))
+               #$os-drv
+               #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
+               #:creation-time (make-time time-utc 0 1)
+               #:transformations `((,root-directory -> "")))))))
+    (expression->derivation-in-linux-vm
+     name
+     ;; The VM's initrd Guile doesn't support dlopen, but our "build" gexp
+     ;; needs to be run by a Guile that can dlopen libgcrypt.  The following
+     ;; hack works around that problem by putting the "build" gexp into an
+     ;; executable script (created by program-file) which, when executed, will
+     ;; run using a Guile that supports dlopen.  That way, the VM's initrd
+     ;; Guile can just execute it via invoke, without using dlopen.  See:
+     ;; https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00233.html
+     (with-imported-modules `((guix build utils))
+       #~(begin
+           (use-modules (guix build utils))
+           ;; If we use execl instead of invoke here, the VM will crash with a
+           ;; kernel panic.
+           (invoke #$(program-file "build-docker-image" build))))
+     #:make-disk-image? #f
+     #:single-file-output? #t
+     #:references-graphs `((,graph ,os-drv)))))
 
 
 ;;;

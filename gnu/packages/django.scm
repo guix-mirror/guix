@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -788,14 +788,14 @@ provides features like a web browseable API and authentication policies.")
 (define-public python-django-crispy-forms
   (package
     (name "python-django-crispy-forms")
-    (version "1.7.0")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-crispy-forms" version))
        (sha256
         (base32
-         "16s05jx86jmimlvnwpq73kl0mqw1v9lryc8zi61a9qwl25krm6mj"))))
+         "0pv7y648i8iz7mf64gkjizpbx5d01ap2s4vqqa30n38if6wvlljr"))))
     (build-system python-build-system)
     (arguments
      '(;; No included tests

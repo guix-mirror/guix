@@ -108,7 +108,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages docbook)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
+                #:select (fdl1.1+ gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
                            non-copyleft (expat . license:expat) bsd-3
                            public-domain bsd-4 isc (openssl . license:openssl)
                            bsd-2 x11-style agpl3 asl2.0 perl-license))
@@ -298,7 +298,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20180223")
+    (version "20180323")
     (source
      (origin
        (method url-fetch)
@@ -306,7 +306,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fr7158xhrhasylyxp709g9mdbggdmni3qn3baxvczfg2w003fhh"))))
+         "12v7zkm809cvjxfz0n7jb4qa410ns1ydyf0gjin99vbdrlj88jac"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -620,6 +620,14 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
              (substitute* '("guile/Makefile.in"
                             "guile/mu/Makefile.in")
                (("share/guile/site/2.0/") "share/guile/site/2.2/"))
+             #t))
+         (add-after 'patch-configure 'fix-date-tests
+           ;; Loosen test tolerances to prevent failures caused by daylight
+           ;; saving time (DST).  See: https://github.com/djcb/mu/issues/1214.
+           (lambda _
+             (substitute* "lib/parser/test-utils.cc"
+               (("\\* 60 \\* 60, 1 },")
+                "* 60 * 60, 3600 + 1 },"))
              #t))
          (add-before 'install 'fix-ffi
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1183,7 +1191,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.0.1")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
@@ -1191,7 +1199,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "0lzisrdgrj5qqwjb7bv99mf2aljm568r6g108yisp0s644z2nxxb"))))
+                "14zva4f8k64x86sm9n21cp2yvrpph6k6k52bm22a00pxjwdq50q8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1208,20 +1216,23 @@ facilities for checking incoming mail.")
                   (add-before
                    'configure 'pre-configure
                    (lambda _
-                     ;; Simple hack to avoid installing in /etc
+                     ;; Simple hack to avoid installing in /etc.
                      (substitute* '("doc/Makefile.in"
                                     "doc/example-config/Makefile.in")
                        (("pkgsysconfdir = .*")
                         "pkgsysconfdir = /tmp/etc"))
                      #t))
                   (add-after
-                   'unpack 'patch-other-shebangs
+                   'unpack 'patch-other-file-names
                    (lambda _
                      (substitute*
-                       "src/lib-program-client/test-program-client-local.c"
+                         "src/lib-program-client/test-program-client-local.c"
+                       (("(/bin/| )cat") (which "cat"))
                        (("/bin/echo") (which "echo"))
-                       (("/bin/cat") (which "cat"))
-                       (("/bin/false") (which "false")))
+                       (("/bin/false") (which "false"))
+                       (("/bin/sh") (which "bash"))
+                       (("head") (which "head"))
+                       (("sleep") (which "sleep")))
                      #t)))))
     (home-page "https://www.dovecot.org")
     (synopsis "Secure POP3/IMAP server")
@@ -2326,7 +2337,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.21")
+    (version "2.21.999")
     (source
      (origin
        (method url-fetch)
@@ -2334,11 +2345,12 @@ operators and scripters.")
        ;; patches and the version which adds extra fixes. Every distro uses
        ;; the patched version, and so do we to not break expectations.
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
-       (uri (string-append "http://alpine.freeiz.com/alpine/patches/alpine-"
-                           version "/alpine-" version ".tar.xz"))
+       (uri (string-append "http://repo.or.cz/alpine.git/snapshot/"
+                           "349642a84039a4b026513c32a3b4f8594acd50df.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1k9hcfjywfk3mpsl71hjza3nk6icgf1b6xxzgx10kdzg5yci5x5m"))))
+         "1rkvlfk3q7h9jcvaj91pk7l087bq4b38j30060jaw21zz94b90np"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc")
@@ -2376,7 +2388,7 @@ operators and scripters.")
        ("aspell" ,aspell)
        ("tcl" ,tcl)
        ("linux-pam" ,linux-pam)))
-    (home-page "http://alpine.freeiz.com/alpine/")
+    (home-page "http://repo.or.cz/alpine.git")
     (synopsis "Alternatively Licensed Program for Internet News and Email")
     (description
      "Alpine is a text-based mail and news client.  Alpine includes several
@@ -2467,3 +2479,51 @@ provides automatic tagging each time new mail is registered with notmuch.  It
 can add tags based on email headers or Maildir folders and can handle spam and
 killed threads.")
     (license isc)))
+
+(define-public pan
+  (package
+    (name "pan")
+    (version "0.144")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://pan.rebelbase.com/download/releases/"
+                           version "/source/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0l07y75z8jxhbmfv28slw81gjncs7i89x7fq44zif7xhq5vy7yli"))))
+    (arguments
+     `(#:configure-flags '("--with-gtk3" "--with-gtkspell" "--with-gnutls"
+                           "--enable-libnotify" "--enable-manual"
+                           "--enable-gkr")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-gpg2
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "pan/usenet-utils/gpg.cc"
+               (("\"gpg2\"") (string-append "\""
+                                            (assoc-ref inputs "gnupg")
+                                            "/bin/gpg\"")))
+             #t)))))
+    (inputs
+     `(("gmime" ,gmime)
+       ("gnupg" ,gnupg)
+       ("gnutls" ,gnutls)
+       ("gtk+" ,gtk+)
+       ("gtkspell3" ,gtkspell3)
+       ("libnotify" ,libnotify)
+       ("libsecret" ,libsecret)
+       ("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("gettext-minimal" ,gettext-minimal)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (build-system gnu-build-system)
+    (home-page "http://pan.rebelbase.com/")
+    (synopsis "Pan newsreader")
+    (description "@code{pan} is a Usenet newsreader that's good at both text
+and binaries. It supports offline reading, scoring and killfiles, yEnc, NZB,
+PGP handling, multiple servers, and secure connections.")
+    ;; License of the docs: fdl-1.1; Others: gpl2.
+    (license (list fdl1.1+ gpl2))))

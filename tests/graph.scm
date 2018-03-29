@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -270,6 +270,24 @@ edges."
                              ids))
                           (list txt out))
                   (equal? edges `((,txt ,out)))))))))))
+
+(test-assert "module graph"
+  (let-values (((backend nodes+edges) (make-recording-backend)))
+    (run-with-store %store
+      (export-graph '((gnu packages guile)) 'port
+                    #:node-type %module-node-type
+                    #:backend backend))
+
+    (let-values (((nodes edges) (nodes+edges)))
+      (and (member '(gnu packages guile)
+                   (match nodes
+                     (((ids labels) ...) ids)))
+           (->bool (and (member (list '(gnu packages guile)
+                                      '(gnu packages libunistring))
+                                edges)
+                        (member (list '(gnu packages guile)
+                                      '(gnu packages bdw-gc))
+                                edges)))))))
 
 (test-assert "node-edges"
   (run-with-store %store

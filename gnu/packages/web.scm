@@ -115,14 +115,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.29")
+    (version "2.4.33")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "003z3yckkdihfv69rgqsik1w2jsnh14j3ci8fjia4s2mlajm6xvp"))))
+               "01bghiq4pbgjbgd6gic0nb8bbk6mfpwx3gcsbf21f3dhb4c520ny"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -186,14 +186,14 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.13.9")
+    (version "1.13.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hpsyxpxj89p5vrzv9p1hp7xjbnj5c1w6fdy626ycvsiay4a3bjz"))))
+                "11a8m4lhy6h8mmrsakn73pd5gcyvhxpz1xvlr103rglh9l884q9k"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -220,7 +220,7 @@ Interface} specification.")
                           ;; --crossbuild option to avoid customizing for the
                           ;; kernel version on the build machine.
                           ,(let ((system "Linux")    ; uname -s
-                                 (release "2.6.32")  ; uname -r
+                                 (release "3.2.0")   ; uname -r
                                  ;; uname -m
                                  (machine (match (or (%current-target-system)
                                                      (%current-system))
@@ -3661,7 +3661,7 @@ library.")
 (define-public perl-www-mechanize
   (package
     (name "perl-www-mechanize")
-    (version "1.87")
+    (version "1.88")
     (source
      (origin
        (method url-fetch)
@@ -3669,7 +3669,7 @@ library.")
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "1kxrydhl7nxlyjv0xvyiyj4igdv4fwnggv0ihlp79bysbjjl54w1"))))
+         "0yd8a1zsfpbv5wr79x3iqmik9gvcd10iam9dfrdan4dri9vpxn9n"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
      `(("perl-cgi" ,perl-cgi)
@@ -3832,18 +3832,19 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "05pz4ychqp4cqywcdavdi8jj3y09gmam097d2idjnlcg9x61h2s9"))))
+                "0bs0i5mjfzxfshqz8i30nhn7kvgwly4fqn5bfq6dqfdrn7biai2x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
        ("r-jsonlite" ,r-jsonlite)
-       ("r-mime" ,r-mime)))
+       ("r-mime" ,r-mime)
+       ("r-xfun" ,r-xfun)))
     (native-inputs
      `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/yihui/servr")
@@ -5120,7 +5121,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
 (define-public http-parser
   (package
     (name "http-parser")
-    (version "2.7.1")
+    (version "2.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nodejs/http-parser/"
@@ -5128,7 +5129,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1cw6nf8xy4jhib1w0jd2y0gpqjbdasg8b7pkl2k2vpp54k9rlh3h"))))
+                "17a7k3nxv2p1sp2x5d89wr51vk770753vz6qnlp2gz7nkgwwcxvj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

@@ -466,7 +466,6 @@ desktop environment.")
        ("ghc-quickcheck"            ,ghc-quickcheck)
        ("ghc-setlocale"             ,ghc-setlocale)
        ("ghc-utf8-string"           ,ghc-utf8-string)
-       ("ghc-directory"             ,ghc-directory)
        ("ghc-x11"                   ,ghc-x11)))
     (arguments
      `(#:phases

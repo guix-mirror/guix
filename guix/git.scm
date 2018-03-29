@@ -147,6 +147,13 @@ Git repositories are kept in the cache directory specified by
      (when cache-exists?
        (remote-fetch (remote-lookup repository "origin")))
      (switch-to-ref repository ref)
+
+     ;; Reclaim file descriptors and memory mappings associated with
+     ;; REPOSITORY as soon as possible.
+     (when (module-defined? (resolve-interface '(git repository))
+                            'repository-close!)
+       (repository-close! repository))
+
      (copy-to-store store cache-dir
                     #:url url
                     #:repository repository))))

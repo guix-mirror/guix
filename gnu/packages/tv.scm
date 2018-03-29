@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016, 2017, 2018 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +26,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
@@ -55,6 +56,8 @@
        ("libxml2" ,libxml2)
        ("freetype" ,freetype)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://tvtime.sourceforge.net")
     (synopsis "Television viewer")
     (description

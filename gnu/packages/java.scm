@@ -79,24 +79,25 @@
 ;;;
 
 ;; The Java bootstrap begins with Jikes, a Java compiler written in C++.  We
-;; use it to build the SableVM standard library and virtual machine, which are
-;; written in a simpler dialect of Java and C, respectively.  This is
-;; sufficient to build an older version of Ant, which is needed to build an
-;; older version of ECJ, an incremental Java compiler, both of which are
-;; written in Java.
+;; use it to build a simple version of GNU Classpath, the Java standard
+;; library.  We chose version 0.93 because it is the last version that can be
+;; built with Jikes.  With Jikes and this version of GNU Classpath we can
+;; build JamVM, a Java Virtual Machine.  We build version 1.5.1 because it is
+;; the last version of JamVM that works with a version of GNU classpath that
+;; does not require ECJ.  These three packages make up the bootstrap JDK.
+
+;; This is sufficient to build an older version of Ant, which is needed to
+;; build an older version of ECJ, an incremental Java compiler, both of which
+;; are written in Java.
 ;;
-;; ECJ is needed to build the latest release of GNU Classpath (0.99).
-;; Classpath (> 0.98) is a requirement for JamVM, a more modern implementation
-;; of the Java virtual machine.
-;;
-;; With JamVM we can build the latest development version of GNU Classpath,
-;; which has much more support for Java 1.6 than the latest release.  Since
-;; the previous build of JamVM is limited by the use of GNU Classpath 0.99 we
-;; rebuild it with the latest development version of GNU Classpath.
-;;
-;; Finally, we use the bootstrap toolchain to build the OpenJDK with the
-;; Icedtea 1.x build framework.  We then build the more recent JDKs Icedtea
-;; 2.x and Icedtea 3.x.
+;; ECJ is needed to build the latest release (0.99) and the development
+;; version of GNU Classpath.  The development version of GNU Classpath has
+;; much more support for Java 1.6 than the latest release, but we need to
+;; build 0.99 first to get a working version of javah.  ECJ, the development
+;; version of GNU Classpath, and the latest version of JamVM make up the
+;; second stage JDK with which we can build the OpenJDK with the Icedtea 1.x
+;; build framework.  We then build the more recent JDKs Icedtea 2.x and
+;; Icedtea 3.x.
 
 (define jikes
   (package
@@ -117,114 +118,88 @@ defined in The Java Language Specification into the bytecoded instruction set
 and binary format defined in The Java Virtual Machine Specification.")
     (license license:ibmpl1.0)))
 
-(define sablevm-classpath
+;; This is the last version of GNU Classpath that can be built without ECJ.
+(define classpath-bootstrap
   (package
-    (name "sablevm-classpath")
-    (version "1.13")
+    (name "classpath")
+    (version "0.93")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/sablevm/sablevm/"
-                                  version "/sablevm-classpath-" version ".tar.gz"))
+              (uri (string-append "mirror://gnu/classpath/classpath-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1qyhyfz8idghxdam16hdgpa24r2x4xbg9z8c8asa3chnd79h3zw2"))))
+                "0i99wf9xd3hw1sj2sazychb9prx8nadxh2clgvk3zlmb28v0jbfz"))
+              (patches (search-patches "classpath-aarch64-support.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-jikes"
+       (list (string-append "JAVAC="
+                            (assoc-ref %build-inputs "jikes")
+                            "/bin/jikes")
              "--disable-Werror"
              "--disable-gmp"
              "--disable-gtk-peer"
+             "--disable-gconf-peer"
              "--disable-plugin"
              "--disable-dssi"
              "--disable-alsa"
-             "--disable-gjdoc")))
-    (inputs
-     `(("gconf" ,gconf)
-       ("gtk+" ,gtk+-2)))
+             "--disable-gjdoc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-data
+           (lambda _ (zero? (system* "make" "install-data")))))))
     (native-inputs
      `(("jikes" ,jikes)
        ("fastjar" ,fastjar)
+       ("libltdl" ,libltdl)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://sablevm.org/")
-    (synopsis "Java Virtual Machine")
-    (description "SableVM is a clean-room, highly portable and efficient Java
-virtual machine.  Its goals are to be reasonably small, fast, and compliant
-with the various specifications (JVM specification, JNI, invocation interface,
-etc.).  SableVM is no longer maintained.
+    (home-page "https://www.gnu.org/software/classpath/")
+    (synopsis "Essential libraries for Java")
+    (description "GNU Classpath is a project to create core class libraries
+for use with runtimes, compilers and tools for the Java programming
+language.")
+    ;; GPLv2 or later, with special linking exception.
+    (license license:gpl2+)))
 
-This package provides the classpath library.")
-    (license license:lgpl2.1+)))
-
-(define sablevm
+;; This is the last version of JamVM that works with a version of GNU
+;; classpath that does not require ECJ.
+(define jamvm-1-bootstrap
   (package
-    (name "sablevm")
-    (version "1.13")
+    (name "jamvm")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/sablevm/sablevm/"
-                                  version "/sablevm-" version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/jamvm/jamvm/"
+                                  "JamVM%20" version "/jamvm-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1jyg4bsym6igz94wps5443c7wiwlzinqzkchcw972nz4kf1cql6g"))))
+                "06lhi03l3b0h48pc7x58bk9my2nrcf1flpmglvys3wyad6yraf36"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-threading=switch" ; slower but prevents segfault
-             "--with-internal-libffi=no"
-             "--with-internal-libpopt=no")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-timestamp-for-reproducibility
-           (lambda _
-             (substitute* "src/sablevm/Makefile.in"
-               (("\\$\\(SVMCOMPILETIME\\)") "(unknown)"))
-             #t))
-         (add-after 'unpack 'link-with-popt
-           (lambda _
-             (substitute* "src/sablevm/Makefile.in"
-               (("\\$\\(SVMADD\\)" match)
-                (string-append match " -lpopt")))
-             #t))
-         (add-after 'unpack 'patch-path-to-classpath
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Makefile.in"
-               (("@datadir@/sablevm-classpath")
-                (string-append (assoc-ref inputs "classpath")
-                               "/share/sablevm-classpath")))
-             (substitute* "src/libsablevm/Makefile.in"
-               (("\\$\\(libdir\\)/sablevm-classpath")
-                (string-append (assoc-ref inputs "classpath")
-                               "/lib/sablevm-classpath"))
-               (("\\$\\(datadir\\)/sablevm-classpath")
-                (string-append (assoc-ref inputs "classpath")
-                               "/share/sablevm-classpath")))
-             #t)))))
+       (list (string-append "--with-classpath-install-dir="
+                            (assoc-ref %build-inputs "classpath")))))
     (inputs
-     `(("classpath" ,sablevm-classpath)
+     `(("classpath" ,classpath-bootstrap)
        ("jikes" ,jikes)
-       ("zlib" ,zlib)
-       ("popt" ,popt)
-       ("libffi" ,libffi)))
-    (native-inputs
-     `(("libltdl" ,libltdl)))
-    (home-page "http://sablevm.org/")
-    (synopsis "Java Virtual Machine")
-    (description "SableVM is a clean-room, highly portable and efficient Java
-virtual machine.  Its goals are to be reasonably small, fast, and compliant
-with the various specifications (JVM specification, JNI, invocation interface,
-etc.).  SableVM is no longer maintained.
-
-This package provides the virtual machine.")
-    (license license:lgpl2.1+)))
+       ("zlib" ,zlib)))
+    (home-page "http://jamvm.sourceforge.net/")
+    (synopsis "Small Java Virtual Machine")
+    (description "JamVM is a Java Virtual Machine conforming to the JVM
+specification edition 2 (blue book).  It is extremely small.  However, unlike
+other small VMs it supports the full spec, including object finalisation and
+JNI.")
+    (license license:gpl2+)))
 
 (define ant-bootstrap
   (package
     (name "ant-bootstrap")
     ;; The 1.10.x series requires Java 8.  1.9.0 and later use generics, which
     ;; are not supported.  The 1.8.x series is the last to use only features
-    ;; supported by Jikes, but it cannot seem to be built with sablevm.
-    (version "1.7.1")
+    ;; supported by Jikes.
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.apache.org/dist/"
@@ -232,24 +207,31 @@ This package provides the virtual machine.")
                                   version "-src.tar.bz2"))
               (sha256
                (base32
-                "19pvqvgkxgpgsqm4lvbki5sm0z84kxmykdqicvfad47gc1r9mi2d"))))
+                "1cg0lga887qz5iizh6mlkxp01lciymrhmp7wzxpl6zpnldxmzrjx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
+         (delete 'bootstrap)
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "JAVA_HOME"
-                     (string-append (assoc-ref inputs "sablevm")
-                                    "/lib/sablevm"))
+             (setenv "JAVA_HOME" (assoc-ref inputs "jamvm"))
              (setenv "JAVACMD"
-                     (string-append (assoc-ref inputs "sablevm")
-                                    "/bin/java-sablevm"))
+                     (string-append (assoc-ref inputs "jamvm")
+                                    "/bin/jamvm"))
              (setenv "JAVAC"
-                     (string-append (assoc-ref inputs "sablevm")
-                                    "/bin/javac-sablevm"))
+                     (string-append (assoc-ref inputs "jikes")
+                                    "/bin/jikes"))
+             (setenv "CLASSPATH"
+                     (string-append (assoc-ref inputs "jamvm")
+                                    "/lib/rt.jar"))
+
+             ;; Ant complains if this file doesn't exist.
+             (setenv "HOME" "/tmp")
+             (with-output-to-file "/tmp/.ant.properties"
+               (lambda _ (display "")))
 
              ;; Use jikes instead of javac for <javac ...> tags in build.xml
              (setenv "ANT_OPTS" "-Dbuild.compiler=jikes")
@@ -257,6 +239,11 @@ This package provides the virtual machine.")
              ;; jikes produces lots of warnings, but they are not very
              ;; interesting, so we silence them.
              (setenv "$BOOTJAVAC_OPTS" "-nowarn")
+
+             ;; Without these JamVM options the build may freeze.
+             (substitute* "bootstrap.sh"
+               (("^\"\\$\\{JAVACMD\\}\" " m)
+                (string-append m "-Xnocompact -Xnoinlining ")))
 
              ;; Disable tests because we are bootstrapping and thus don't have
              ;; any of the dependencies required to build and run the tests.
@@ -268,7 +255,7 @@ This package provides the virtual machine.")
          (delete 'install))))
     (native-inputs
      `(("jikes" ,jikes)
-       ("sablevm" ,sablevm)))
+       ("jamvm" ,jamvm-1-bootstrap)))
     (home-page "http://ant.apache.org")
     (synopsis "Build tool for Java")
     (description
@@ -307,9 +294,12 @@ build process and its dependencies, whereas Make uses Makefile format.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CLASSPATH"
                      (string-join
-                      (find-files (string-append (assoc-ref inputs "ant-bootstrap")
-                                                 "/lib")
-                                  "\\.jar$")
+                      (cons (string-append (assoc-ref inputs "jamvm")
+                                           "/lib/rt.jar")
+                            (find-files (string-append
+                                         (assoc-ref inputs "ant-bootstrap")
+                                         "/lib")
+                                        "\\.jar$"))
                       ":"))
              #t))
          (replace 'build
@@ -324,7 +314,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
 Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n")))
 
              ;; Compile it all!
-             (and (zero? (apply system* "javac-sablevm"
+             (and (zero? (apply system* "jikes"
                                 (find-files "." "\\.java$")))
                   (zero? (system* "fastjar" "cvfm"
                                   "ecj-bootstrap.jar" "manifest" ".")))))
@@ -338,7 +328,8 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n")))
     (native-inputs
      `(("ant-bootstrap" ,ant-bootstrap)
        ("unzip" ,unzip)
-       ("sablevm" ,sablevm)
+       ("jikes" ,jikes)
+       ("jamvm" ,jamvm-1-bootstrap)
        ("fastjar" ,fastjar)))
     (home-page "https://eclipse.org")
     (synopsis "Eclipse Java development tools core batch compiler")
@@ -355,7 +346,7 @@ requirement for all GNU Classpath releases after version 0.93.")
     (arguments
      `(#:modules ((guix build utils))
        #:builder
-       (let ((backend 'sablevm))
+       (begin
          (use-modules (guix build utils))
          (let* ((bin    (string-append (assoc-ref %outputs "out") "/bin"))
                 (target (string-append bin "/javac"))
@@ -363,24 +354,12 @@ requirement for all GNU Classpath releases after version 0.93.")
                                        "/bin/guile"))
                 (ecj    (string-append (assoc-ref %build-inputs "ecj-bootstrap")
                                        "/share/java/ecj-bootstrap.jar"))
-                (java   (case backend
-                          ((sablevm)
-                           (string-append (assoc-ref %build-inputs "sablevm")
-                                          "/lib/sablevm/bin/java"))
-                          ((jamvm)
-                           (string-append (assoc-ref %build-inputs "jamvm")
-                                          "/bin/jamvm"))))
-                (bootcp (case backend
-                          ((sablevm)
-                           (let ((jvmlib (string-append
-                                          (assoc-ref %build-inputs "sablevm-classpath")
-                                          "/lib/sablevm")))
-                             (string-append jvmlib "/jre/lib/rt.jar")))
-                          ((jamvm)
-                           (let ((jvmlib (string-append (assoc-ref %build-inputs "classpath")
-                                                        "/share/classpath")))
-                             (string-append jvmlib "/lib/glibj.zip:"
-                                            jvmlib "/lib/tools.zip"))))))
+                (java   (string-append (assoc-ref %build-inputs "jamvm")
+                                       "/bin/jamvm"))
+                (bootcp (let ((jvmlib (string-append (assoc-ref %build-inputs "classpath")
+                                                     "/share/classpath")))
+                          (string-append jvmlib "/glibj.zip:"
+                                         jvmlib "/tools.zip"))))
            (mkdir-p bin)
            (with-output-to-file target
              (lambda _
@@ -399,10 +378,11 @@ requirement for all GNU Classpath releases after version 0.93.")
                         (define (main args)
                           (let ((classpath (getenv "CLASSPATH")))
                             (setenv "CLASSPATH"
-                                    (string-append ,ecj
-                                                   (if classpath
-                                                       (string-append ":" classpath)
-                                                       ""))))
+                                    (string-join (list ,ecj
+                                                       ,(string-append (assoc-ref %build-inputs "jamvm")
+                                                                       "/lib/rt.jar")
+                                                       (or classpath ""))
+                                                 ":")))
                           (receive (vm-args other-args)
                               ;; Separate VM arguments from arguments to ECJ.
                               (partition (cut string-prefix? "-J" <>)
@@ -412,6 +392,7 @@ requirement for all GNU Classpath releases after version 0.93.")
                                                args defaults))
                             (apply system* ,java
                                    (append
+                                    (list "-Xnocompact" "-Xnoinlining")
                                     ;; Remove "-J" prefix
                                     (map (cut string-drop <> 2) vm-args)
                                     '("org.eclipse.jdt.internal.compiler.batch.Main")
@@ -426,20 +407,17 @@ requirement for all GNU Classpath releases after version 0.93.")
     (native-inputs
      `(("guile" ,guile-2.2)
        ("ecj-bootstrap" ,ecj-bootstrap)
-       ("sablevm" ,sablevm)
-       ("sablevm-classpath" ,sablevm-classpath)))
+       ("jamvm" ,jamvm-1-bootstrap)
+       ("classpath" ,classpath-bootstrap)))
     (description "This package provides a wrapper around the @dfn{Eclipse
 compiler for Java} (ecj) with a command line interface that is compatible with
 the standard javac executable.")))
 
-;; Note: All the tool wrappers (e.g. for javah, javac, etc) fail with
-;; java.lang.UnsupportedClassVersionError.  They simply won't run on the old
-;; sablevm.  We use Classpath 0.99 to build JamVM, on which the Classpath
-;; tools do run.  Using these Classpath tools on JamVM we can then build the
-;; development version of GNU Classpath.
-(define classpath-on-sablevm
-  (package
-    (name "classpath")
+;; The classpath-bootstrap was built without a virtual machine, so it does not
+;; provide a wrapper for javah.  We cannot build the development version of
+;; Classpath without javah.
+(define classpath-0.99
+  (package (inherit classpath-bootstrap)
     (version "0.99")
     (source (origin
               (method url-fetch)
@@ -447,8 +425,8 @@ the standard javac executable.")))
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1j7cby4k66f1nvckm48xcmh352b1d1b33qk7l6hi7dp9i9zjjagr"))))
-    (build-system gnu-build-system)
+                "1j7cby4k66f1nvckm48xcmh352b1d1b33qk7l6hi7dp9i9zjjagr"))
+              (patches (search-patches "classpath-aarch64-support.patch"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ecj-jar="
@@ -458,8 +436,8 @@ the standard javac executable.")))
                             (assoc-ref %build-inputs "ecj-javac-wrapper")
                             "/bin/javac")
              (string-append "JAVA="
-                            (assoc-ref %build-inputs "sablevm")
-                            "/bin/java-sablevm")
+                            (assoc-ref %build-inputs "jamvm")
+                            "/bin/jamvm")
              "GCJ_JAVAC_TRUE=no"
              "ac_cv_prog_java_works=yes"  ; trust me
              "--disable-Werror"
@@ -478,51 +456,15 @@ the standard javac executable.")))
      `(("ecj-bootstrap" ,ecj-bootstrap)
        ("ecj-javac-wrapper" ,ecj-javac-wrapper)
        ("fastjar" ,fastjar)
-       ("sablevm" ,sablevm)
-       ("sablevm-classpath" ,sablevm-classpath)
+       ("jamvm" ,jamvm-1-bootstrap)
+       ("classpath" ,classpath-bootstrap)
        ("libltdl" ,libltdl)
-       ("pkg-config" ,pkg-config)))
-    (home-page "https://www.gnu.org/software/classpath/")
-    (synopsis "Essential libraries for Java")
-    (description "GNU Classpath is a project to create core class libraries
-for use with runtimes, compilers and tools for the Java programming
-language.")
-    ;; GPLv2 or later, with special linking exception.
-    (license license:gpl2+)))
+       ("pkg-config" ,pkg-config)))))
 
-(define jamvm-bootstrap
-  (package
-    (name "jamvm")
-    (version "2.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/jamvm/jamvm/"
-                                  "JamVM%20" version "/jamvm-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list (string-append "--with-classpath-install-dir="
-                            (assoc-ref %build-inputs "classpath")))))
-    (inputs
-     `(("classpath" ,classpath-on-sablevm)
-       ("ecj-javac-wrapper" ,ecj-javac-wrapper)
-       ("zlib" ,zlib)))
-    (home-page "http://jamvm.sourceforge.net/")
-    (synopsis "Small Java Virtual Machine")
-    (description "JamVM is a Java Virtual Machine conforming to the JVM
-specification edition 2 (blue book).  It is extremely small.  However, unlike
-other small VMs it supports the full spec, including object finalisation and
-JNI.")
-    (license license:gpl2+)))
-
-;; We need this because the tools provided by the latest release of GNU
-;; Classpath don't actually work with sablevm.
+;; We need this because classpath-bootstrap does not provide all of the tools
+;; we need to build classpath-devel.
 (define classpath-jamvm-wrappers
-  (package (inherit classpath-on-sablevm)
+  (package (inherit classpath-0.99)
     (name "classpath-jamvm-wrappers")
     (source #f)
     (build-system trivial-build-system)
@@ -541,7 +483,7 @@ JNI.")
                        (with-output-to-file (string-append bin tool)
                          (lambda _
                            (format #t "#!~a/bin/sh
-~a/bin/jamvm -classpath ~a/share/classpath/tools.zip \
+~a/bin/jamvm -Xnocompact -Xnoinlining -classpath ~a/share/classpath/tools.zip \
 gnu.classpath.tools.~a.~a $@"
                                    bash jamvm classpath tool
                                    (if (string=? "native2ascii" tool)
@@ -556,106 +498,20 @@ gnu.classpath.tools.~a.~a $@"
            #t))))
     (native-inputs
      `(("bash" ,bash)
-       ("jamvm" ,jamvm-bootstrap)
-       ("classpath" ,classpath-on-sablevm)))
+       ("jamvm" ,jamvm-1-bootstrap)
+       ("classpath" ,classpath-0.99)))
     (inputs '())
     (synopsis "Executables from GNU Classpath")
     (description "This package provides wrappers around the tools provided by
 the GNU Classpath library.  They are executed by the JamVM virtual
 machine.")))
 
-(define ecj-javac-on-jamvm-wrapper
-  (package (inherit ecj-javac-wrapper)
-    (name "ecj-javac-on-jamvm-wrapper")
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       ;; TODO: This builder is exactly the same as in ecj-javac-wrapper,
-       ;; except that the backend is 'jamvm here.  Can we reuse the same
-       ;; builder somehow?
-       (let ((backend 'jamvm))
-         (use-modules (guix build utils))
-         (let* ((bin    (string-append (assoc-ref %outputs "out") "/bin"))
-                (target (string-append bin "/javac"))
-                (guile  (string-append (assoc-ref %build-inputs "guile")
-                                       "/bin/guile"))
-                (ecj    (string-append (assoc-ref %build-inputs "ecj-bootstrap")
-                                       "/share/java/ecj-bootstrap.jar"))
-                (java   (case backend
-                          ((sablevm)
-                           (string-append (assoc-ref %build-inputs "sablevm")
-                                          "/lib/sablevm/bin/java"))
-                          ((jamvm)
-                           (string-append (assoc-ref %build-inputs "jamvm")
-                                          "/bin/jamvm"))))
-                (bootcp (case backend
-                          ((sablevm)
-                           (let ((jvmlib (string-append
-                                          (assoc-ref %build-inputs "sablevm-classpath")
-                                          "/lib/sablevm")))
-                             (string-append jvmlib "/jre/lib/rt.jar")))
-                          ((jamvm)
-                           (let ((jvmlib (string-append (assoc-ref %build-inputs "classpath")
-                                                        "/share/classpath")))
-                             (string-append jvmlib "/lib/glibj.zip:"
-                                            jvmlib "/lib/tools.zip"))))))
-           (mkdir-p bin)
-           (with-output-to-file target
-             (lambda _
-               (format #t "#!~a --no-auto-compile\n!#\n" guile)
-               (write
-                `(begin (use-modules (ice-9 match)
-                                     (ice-9 receive)
-                                     (ice-9 hash-table)
-                                     (srfi srfi-1)
-                                     (srfi srfi-26))
-                        (define defaults
-                          '(("-bootclasspath" ,bootcp)
-                            ("-source" "1.5")
-                            ("-target" "1.5")
-                            ("-cp"     ".")))
-                        (define (main args)
-                          (let ((classpath (getenv "CLASSPATH")))
-                            (setenv "CLASSPATH"
-                                    (string-append ,ecj
-                                                   (if classpath
-                                                       (string-append ":" classpath)
-                                                       ""))))
-                          (receive (vm-args other-args)
-                              ;; Separate VM arguments from arguments to ECJ.
-                              (partition (cut string-prefix? "-J" <>)
-                                         (fold (lambda (default acc)
-                                                 (if (member (first default) acc)
-                                                     acc (append default acc)))
-                                               args defaults))
-                            (apply system* ,java
-                                   (append
-                                    ;; Remove "-J" prefix
-                                    (map (cut string-drop <> 2) vm-args)
-                                    '("org.eclipse.jdt.internal.compiler.batch.Main")
-                                    (cons "-nowarn" other-args)))))
-                        ;; Entry point
-                        (let ((args (cdr (command-line))))
-                          (if (null? args)
-                              (format (current-error-port) "javac: no arguments given!\n")
-                              (main args)))))))
-           (chmod target #o755)
-           #t))))
-    (native-inputs
-     `(("guile" ,guile-2.2)
-       ("ecj-bootstrap" ,ecj-bootstrap)
-       ("jamvm" ,jamvm-bootstrap)
-       ("classpath" ,classpath-on-sablevm)))
-    (description "This package provides a wrapper around the @dfn{Eclipse
-compiler for Java} (ecj) with a command line interface that is compatible with
-the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
-
 ;; The last release of GNU Classpath is 0.99 and it happened in 2012.  Since
 ;; then Classpath has gained much more support for Java 1.6.
 (define-public classpath-devel
   (let ((commit "e7c13ee0cf2005206fbec0eca677f8cf66d5a103")
         (revision "1"))
-    (package (inherit classpath-on-sablevm)
+    (package (inherit classpath-bootstrap)
       (version (string-append "0.99-" revision "." (string-take commit 9)))
       (source (origin
                 (method git-fetch)
@@ -713,21 +569,35 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
          ("texinfo" ,texinfo)
          ("classpath-jamvm-wrappers" ,classpath-jamvm-wrappers) ; for javah
          ("ecj-bootstrap" ,ecj-bootstrap)
-         ("ecj-javac-wrapper" ,ecj-javac-on-jamvm-wrapper)
+         ("ecj-javac-wrapper" ,ecj-javac-wrapper)
          ("fastjar" ,fastjar)
-         ("jamvm" ,jamvm-bootstrap)
+         ("jamvm" ,jamvm-1-bootstrap)
          ("libltdl" ,libltdl)
          ("pkg-config" ,pkg-config))))))
 
-(define-public jamvm
-  (package (inherit jamvm-bootstrap)
+(define jamvm
+  (package (inherit jamvm-1-bootstrap)
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/jamvm/jamvm/"
+                                  "JamVM%20" version "/jamvm-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-classpath-install-dir="
+                            (assoc-ref %build-inputs "classpath")))))
     (inputs
      `(("classpath" ,classpath-devel)
-       ("ecj-javac-wrapper" ,ecj-javac-on-jamvm-wrapper)
+       ("ecj-javac-wrapper" ,ecj-javac-wrapper)
        ("zlib" ,zlib)))))
 
-(define ecj-javac-on-jamvm-wrapper-final
-  (package (inherit ecj-javac-on-jamvm-wrapper)
+(define ecj-javac-wrapper-final
+  (package (inherit ecj-javac-wrapper)
     (native-inputs
      `(("guile" ,guile-2.2)
        ("ecj-bootstrap" ,ecj-bootstrap)
@@ -735,9 +605,9 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
        ("classpath" ,classpath-devel)))))
 
 ;; The bootstrap JDK consisting of jamvm, classpath-devel,
-;; ecj-javac-on-jamvm-wrapper-final cannot build Icedtea 2.x directly, because
-;; it's written in Java 7.  It can, however, build the unmaintained Icedtea
-;; 1.x, which uses Java 6 only.
+;; ecj-javac-wrapper-final cannot build Icedtea 2.x directly, because it's
+;; written in Java 7.  It can, however, build the unmaintained Icedtea 1.x,
+;; which uses Java 6 only.
 (define-public icedtea-6
   (package
     (name "icedtea")
@@ -826,7 +696,8 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                     #t))))
          (add-after 'unpack 'use-classpath
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((jvmlib (assoc-ref inputs "classpath")))
+             (let ((jvmlib (assoc-ref inputs "classpath"))
+                   (jamvm  (assoc-ref inputs "jamvm")))
                ;; Classpath does not provide rt.jar.
                (substitute* "Makefile.in"
                  (("\\$\\(SYSTEM_JDK_DIR\\)/jre/lib/rt.jar")
@@ -834,7 +705,8 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
                ;; Make sure we can find all classes.
                (setenv "CLASSPATH"
                        (string-append jvmlib "/share/classpath/glibj.zip:"
-                                      jvmlib "/share/classpath/tools.zip"))
+                                      jvmlib "/share/classpath/tools.zip:"
+                                      jamvm  "/lib/rt.jar"))
                (setenv "JAVACFLAGS"
                        (string-append "-cp "
                                       jvmlib "/share/classpath/glibj.zip:"
@@ -971,7 +843,7 @@ the standard javac executable.  The tool runs on JamVM instead of SableVM.")))
        ("cpio" ,cpio)
        ("cups" ,cups)
        ("ecj" ,ecj-bootstrap)
-       ("ecj-javac" ,ecj-javac-on-jamvm-wrapper-final)
+       ("ecj-javac" ,ecj-javac-wrapper-final)
        ("fastjar" ,fastjar)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -6919,7 +6791,7 @@ package contains utilities for obtaining services via the Java SE 6
 (define-public java-aqute-bnd-annotation
   (package
     (name "java-aqute-bnd-annotation")
-    (version "3.4.0")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bndtools/bnd/archive/"
@@ -6927,7 +6799,7 @@ package contains utilities for obtaining services via the Java SE 6
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "09vgb6axikbz66zi9falijbnzh1qnp9ysfns123dmzdb01cbza9q"))))
+                "1ggyiq0as0f6cz333a0dh98j72kmvv5pf2s47v9554yh905lfqdl"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-aqute-bnd-annotation.jar"

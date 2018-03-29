@@ -352,7 +352,7 @@ directory."
                 (extensions
                  (list (service-extension system-service-type
                                           boot-script-entry)))
-                (compose append)
+                (compose identity)
                 (extend compute-boot-script)))
 
 (define %boot-service
@@ -457,7 +457,7 @@ ACTIVATION-SCRIPT-TYPE."
                 (extensions
                  (list (service-extension boot-service-type
                                           gexps->activation-gexp)))
-                (compose append)
+                (compose identity)
                 (extend second-argument)))
 
 (define %activation-service

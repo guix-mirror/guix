@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +29,7 @@
             file-name->module-name
             module-name->file-name
 
+            source-module-dependencies
             source-module-closure
             live-module-closure
             guix-module-name?))

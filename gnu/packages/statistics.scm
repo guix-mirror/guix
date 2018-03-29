@@ -2672,16 +2672,17 @@ that package, other packages are unaffected.")
 (define-public r-blob
   (package
     (name "r-blob")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "blob" version))
               (sha256
                (base32
-                "05pazzcyz3c3vd2l70zq9cf172cgjff4dnf419zigfnxycyn1mhn"))))
+                "0lsg91hk508dd95ivig2lwg62qafwnarjw68110kx63cfk4zkjxc"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-tibble" ,r-tibble)))
+     `(("r-prettyunits" ,r-prettyunits)
+       ("r-tibble" ,r-tibble)))
     (home-page "https://github.com/hadley/blob")
     (synopsis "Simple S3 Class for representing vectors of binary data")
     (description "Raw vectors in R are useful for storing a single binary
@@ -3837,8 +3838,9 @@ from within R.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://gforge.inria.fr/frs/download.php/36615/"
-                           "spams-R-v" version ".tar.gz"))
+       ;; Use the ‘Latest version’ link for a stable URI across releases.
+       (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                           "latestfile/4531/spams-R-v" version ".tar.gz"))
        (sha256
         (base32
          "13z2293jixf1r9g8dyy856xrhvpjr2ln2n9smn6644126r9hmhkx"))))
@@ -3848,7 +3850,7 @@ from within R.")
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _ (chdir "spams") #t))
-         ;; Don't tune for the building machine
+         ;; Don't tune for the building machine.
          (add-after 'chdir 'no-mtune
            (lambda _
              (substitute* "src/Makevars"
@@ -4525,14 +4527,14 @@ perform @dfn{independent component analysis} (ICA) and projection pursuit.")
 (define-public r-randomforest
   (package
     (name "r-randomforest")
-    (version "4.6-12")
+    (version "4.6-14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "randomForest" version))
        (sha256
         (base32
-         "1i43idaihhl6nwqw42v9dqpl6f8z3ykcn2in32lh2755i27jylbf"))))
+         "0kbmm0l42fc2d1rdq0l7k09d34kd87q4lx651ffsic4y84h8kf7l"))))
     (properties `((upstream-name . "randomForest")))
     (build-system r-build-system)
     (home-page "https://www.stat.berkeley.edu/~breiman/RandomForests/")

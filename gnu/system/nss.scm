@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,6 +93,8 @@
 ;;;
 
 (define %compat
+  ;; Note: Starting from version 2.26, libc no longer provides libnss_compat
+  ;; so this specification has become useless.
   (name-service
     (name "compat")
     (reaction (lookup-specification (not-found => return)))))
@@ -124,7 +126,7 @@
   (ethers     name-service-switch-ethers
               (default '()))
   (group      name-service-switch-group
-              (default (list %compat %files)))
+              (default (list %files)))
   (gshadow    name-service-switch-gshadow
               (default '()))
   (hosts      name-service-switch-hosts
@@ -136,7 +138,7 @@
   (networks   name-service-switch-networks
               (default (list %files %dns)))
   (password   name-service-switch-password
-              (default (list %compat %files)))
+              (default (list %files)))
   (public-key name-service-switch-public-key
               (default '()))
   (rpc        name-service-switch-rpc
@@ -144,7 +146,7 @@
   (services   name-service-switch-services
               (default '()))
   (shadow     name-service-switch-shadow
-              (default (list %compat %files))))
+              (default (list %files))))
 
 (define %default-nss
   ;; Default NSS configuration.

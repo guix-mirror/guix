@@ -47,7 +47,8 @@
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Ethan R. Jones <ethanrjones97@gmail.com
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
-;;;
+;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
+
 ;;; This file is part of GNU Guix.
 ;;;
 ;;; GNU Guix is free software; you can redistribute it and/or modify it
@@ -468,6 +469,24 @@ data types.")
               ("openssl" ,openssl)
               ("zlib" ,zlib)))))
 
+(define-public python-debug
+  (package
+    (inherit python)
+    (name "python-debug")
+    (outputs '("out" "debug"))
+    (build-system gnu-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments python)
+       ((#:configure-flags flags '())
+        `(cons "--with-pydebug" ,flags))))
+    (synopsis
+     "High-level, dynamically-typed programming language (for debugging)")
+    (description
+     "This variant of Python provides an interpreter built with
+@code{--with-pydebug} to help develop and debug extensions.  See
+@url{https://pythonextensionpatterns.readthedocs.io/en/latest/debugging/debug.html},
+for more information.")))
+
 (define* (wrap-python3 python
                        #:optional
                        (name (string-append (package-name python) "-wrapper")))
@@ -591,6 +610,33 @@ pidof, tty, taskset, pmap.")
     (description "Shapely is a Python package for manipulation and analysis of
 planar geometric objects.  It is based on the @code{GEOS} library.")
     (license license:bsd-3)))
+
+(define-public python-logwrap
+  (package
+    (name "python-logwrap")
+    (version "3.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "logwrap" version ".zip"))
+       (sha256
+        (base32
+         "1d2k0hvpbi51vl410y8fbs5m0nxnlh2k7gr2nrh3k81ibhzscsra"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-typing" ,python-typing)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python-cython" ,python-cython)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/penguinolog/logwrap")
+    (synopsis "Decorator for logging function arguments")
+    (description "This package provides a decorator to log function arguments
+and function call return values in a human-readable way.")
+    (license license:asl2.0)))
 
 (define-public python2-shapely
   (package-with-python2 python-shapely))
@@ -1807,15 +1853,14 @@ files.")
 (define-public python-pyld
   (package
     (name "python-pyld")
-    (version "0.7.1")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyLD" version))
               (sha256
                (base32
-                "1m0fs6897vxfkf7awah5i66i7b7smm5fnywf1w50fpzyfbfhr156"))))
+                "12i2g6xdj30k7xxcibg3sc5y76snwq8l6n8fy9lyi577kgy0h2pm"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f)) ; no tests
     (home-page "https://github.com/digitalbazaar/pyld")
     (synopsis "Python implementation of the JSON-LD specification")
     (description
@@ -5687,9 +5732,7 @@ markdown_py is also provided to convert Markdown files to HTML.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/ptyprocess/ptyprocess-"
-             version ".tar.gz"))
+       (uri (pypi-uri "ptyprocess" version))
        (sha256
         (base32
          "0ra31k10v3629xq0kdn8lwmfbi97anmk48r03yvh7mks0kq96hg6"))))
@@ -5840,9 +5883,7 @@ from an XML-based format.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/57/4f/"
-                           "889579244947368f28eda66b782331b1e75f83fd72e63f9ece93cd7a18f9"
-                           "/python-ly-" version ".tar.gz"))
+       (uri (pypi-uri name version))
        (sha256
         (base32
          "0x98dv7p8mg26p4816yy8hz4f34zf6hpnnfmr56msgh9jnsm2qfl"))))

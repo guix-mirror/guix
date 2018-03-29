@@ -3875,8 +3875,9 @@ cross-platform SDL C library.")
     (version "2.6.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/file"
-                                  "/37054/flocq-" version ".tar.gz"))
+              ;; Use the ‘Latest version’ link for a stable URI across releases.
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                  "latestfile/2228/flocq-" version ".tar.gz"))
               (sha256
                (base32
                 "13fv150dcwnjrk00d7zj2c5x9jwmxgrq0ay440gkr730l8mvk3l3"))))
@@ -3894,18 +3895,22 @@ cross-platform SDL C library.")
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          (replace 'build
            (lambda _
-             (zero? (system* "./remake"))))
+             (invoke "./remake")
+             #t))
          (replace 'check
            (lambda _
-             (zero? (system* "./remake" "check"))))
+             (invoke "./remake" "check")
+             #t))
              ;; TODO: requires coq-gappa and coq-interval.
-             ;(zero? (system* "./remake" "check-more"))))
+             ;(invoke "./remake" "check-more")
          (replace 'install
            (lambda _
-             (zero? (system* "./remake" "install")))))))
+             (invoke "./remake" "install")
+             #t)))))
     (home-page "http://flocq.gforge.inria.fr/")
     (synopsis "Floating-point formalization for the Coq system")
     (description "Flocq (Floats for Coq) is a floating-point formalization for

@@ -1320,6 +1320,9 @@ handling for most notations in use for IPv4 and IPv6 addresses and
 networks.")
     (license license:bsd-3)))
 
+(define-public python2-ipy
+  (package-with-python2 python-ipy))
+
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")

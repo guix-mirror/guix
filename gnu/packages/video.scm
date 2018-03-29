@@ -1512,7 +1512,7 @@ encapsulated.")
 (define-public libdvdcss
   (package
     (name "libdvdcss")
-    (version "1.4.1")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/pub/"
@@ -1520,7 +1520,7 @@ encapsulated.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1b7awvyahivglp7qmgx2g5005kc5npv257gw7wxdprjsnx93f1zb"))))
+                "0x957zzpf4w2cp8zlk29prj8i2q6hay3lzdzsyz8y3cwxivyvhkq"))))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libdvdcss.html")
     (synopsis "Library for accessing DVDs as block devices")
@@ -1754,14 +1754,14 @@ and custom quantization matrices.")
 (define-public streamlink
   (package
     (name "streamlink")
-    (version "0.10.0")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "streamlink" version))
        (sha256
         (base32
-         "17299xnd9jzi7m1d2rr4xdlj47q64bzj2957nlsrhw0hskds1s6h"))))
+         "02h8b3k8l5zz4vjm0nhxvl1pm924jms8y7sjl40fbybrzvsa4mg2"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs
@@ -1774,7 +1774,8 @@ and custom quantization matrices.")
        ("python-iso3166" ,python-iso3166)
        ("python-iso639" ,python-iso639)
        ("python-pycryptodome" ,python-pycryptodome)
-       ("python-requests" ,python-requests)))
+       ("python-requests" ,python-requests)
+       ("python-urllib3" ,python-urllib3)))
     (synopsis "Extract streams from various services")
     (description "Streamlink is command-line utility that extracts streams
 from sites like Twitch.tv and pipes them into a video player of choice.")
@@ -1782,6 +1783,38 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 
 (define-public livestreamer
   (deprecated-package "livestreamer" streamlink))
+
+(define-public twitchy
+  (let ((commit "0c0f925b9c7ff2aed4a3b0046561cb794143c398")) ;Fixes tests.
+    (package
+      (name "twitchy")
+      (version (git-version "3.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BasioMeusPuga/twitchy.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "02aizvsr744sh8bdqvwwsmp2qpczlzn8fy76h5dyd3517n9nlcz9"))))
+      (build-system python-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'check-setup
+             (lambda _
+               (setenv "HOME" (getcwd)) ;Needs to write to ‘$HOME’.
+               #t)))))
+      (inputs
+       `(("python-requests" ,python-requests)
+         ("streamlink" ,streamlink)))
+      (home-page "https://github.com/BasioMeusPuga/twitchy")
+      (synopsis "Command-line interface for Twitch.tv")
+      (description
+       "This package provides a command-line interface for Twitch.tv")
+      (license license:gpl3+))))
 
 (define-public mlt
   (package

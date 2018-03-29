@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -60,6 +60,7 @@
             program-file-name
             program-file-gexp
             program-file-guile
+            program-file-module-path
 
             scheme-file
             scheme-file?
@@ -380,25 +381,28 @@ This is the declarative counterpart of 'gexp->derivation'."
          (apply gexp->derivation name gexp options)))))
 
 (define-record-type <program-file>
-  (%program-file name gexp guile)
+  (%program-file name gexp guile path)
   program-file?
   (name       program-file-name)                  ;string
   (gexp       program-file-gexp)                  ;gexp
-  (guile      program-file-guile))                ;package
+  (guile      program-file-guile)                 ;package
+  (path       program-file-module-path))          ;list of strings
 
-(define* (program-file name gexp #:key (guile #f))
+(define* (program-file name gexp #:key (guile #f) (module-path %load-path))
   "Return an object representing the executable store item NAME that runs
-GEXP.  GUILE is the Guile package used to execute that script.
+GEXP.  GUILE is the Guile package used to execute that script.  Imported
+modules of GEXP are looked up in MODULE-PATH.
 
 This is the declarative counterpart of 'gexp->script'."
-  (%program-file name gexp guile))
+  (%program-file name gexp guile module-path))
 
 (define-gexp-compiler (program-file-compiler (file <program-file>)
                                              system target)
   ;; Compile FILE by returning a derivation that builds the script.
   (match file
-    (($ <program-file> name gexp guile)
+    (($ <program-file> name gexp guile module-path)
      (gexp->script name gexp
+                   #:module-path module-path
                    #:guile (or guile (default-guile))))))
 
 (define-record-type <scheme-file>
@@ -1116,11 +1120,14 @@ they can refer to each other."
   (module-ref (resolve-interface '(gnu packages guile))
               'guile-2.2))
 
-(define (load-path-expression modules)
+(define* (load-path-expression modules #:optional (path %load-path))
   "Return as a monadic value a gexp that sets '%load-path' and
-'%load-compiled-path' to point to MODULES, a list of module names."
-  (mlet %store-monad ((modules  (imported-modules modules))
-                      (compiled (compiled-modules modules)))
+'%load-compiled-path' to point to MODULES, a list of module names.  MODULES
+are searched for in PATH."
+  (mlet %store-monad ((modules  (imported-modules modules
+                                                  #:module-path path))
+                      (compiled (compiled-modules modules
+                                                  #:module-path path)))
     (return (gexp (eval-when (expand load eval)
                     (set! %load-path
                       (cons (ungexp modules) %load-path))
@@ -1129,11 +1136,13 @@ they can refer to each other."
                             %load-compiled-path)))))))
 
 (define* (gexp->script name exp
-                       #:key (guile (default-guile)))
+                       #:key (guile (default-guile))
+                       (module-path %load-path))
   "Return an executable script NAME that runs EXP using GUILE, with EXP's
-imported modules in its search path."
+imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
   (mlet %store-monad ((set-load-path
-                       (load-path-expression (gexp-modules exp))))
+                       (load-path-expression (gexp-modules exp)
+                                             module-path)))
     (gexp->derivation name
                       (gexp
                        (call-with-output-file (ungexp output)
@@ -1148,12 +1157,16 @@ imported modules in its search path."
 
                            (write '(ungexp set-load-path) port)
                            (write '(ungexp exp) port)
-                           (chmod port #o555)))))))
+                           (chmod port #o555))))
+                      #:module-path module-path)))
 
-(define* (gexp->file name exp #:key (set-load-path? #t))
+(define* (gexp->file name exp #:key
+                     (set-load-path? #t)
+                     (module-path %load-path))
   "Return a derivation that builds a file NAME containing EXP.  When
 SET-LOAD-PATH? is true, emit code in the resulting file to set '%load-path'
-and '%load-compiled-path' to honor EXP's imported modules."
+and '%load-compiled-path' to honor EXP's imported modules.  Lookup EXP's
+modules in MODULE-PATH."
   (match (if set-load-path? (gexp-modules exp) '())
     (()                                           ;zero modules
      (gexp->derivation name
@@ -1164,13 +1177,15 @@ and '%load-compiled-path' to honor EXP's imported modules."
                        #:local-build? #t
                        #:substitutable? #f))
     ((modules ...)
-     (mlet %store-monad ((set-load-path (load-path-expression modules)))
+     (mlet %store-monad ((set-load-path (load-path-expression modules
+                                                              module-path)))
        (gexp->derivation name
                          (gexp
                           (call-with-output-file (ungexp output)
                             (lambda (port)
                               (write '(ungexp set-load-path) port)
                               (write '(ungexp exp) port))))
+                         #:module-path module-path
                          #:local-build? #t
                          #:substitutable? #f)))))
 

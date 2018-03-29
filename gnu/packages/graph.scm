@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -207,14 +208,14 @@ lines.")
 (define-public python-plotly
   (package
     (name "python-plotly")
-    (version "2.4.0")
+    (version "2.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "plotly" version))
         (sha256
          (base32
-          "0n18116jz6bl5n9cq23vabv1gcbh1x3yficdnfq55v0z4cwy0zlf"))))
+          "0s9gk2fl53x8wwncs3fwii1vzfngr0sskv15v3mpshqmrqfrk27m"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; The tests are not distributed in the release

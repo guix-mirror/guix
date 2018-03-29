@@ -24,6 +24,7 @@
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1265,7 +1266,7 @@ interfaces.")
 (define-public ceres
   (package
     (name "ceres-solver")
-    (version "1.13.0")
+    (version "1.14.0")
     (home-page "http://ceres-solver.org/")
     (source (origin
               (method url-fetch)
@@ -1273,7 +1274,7 @@ interfaces.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1kbxgab3q1vgyq7hjqasr1lji4b2sgn7ss351amklkb3jyhr1x0x"))))
+                "13lfxy8x58w8vprr0nkbzziaijlh0vvqshgahvcgw0mrqdgh0i27"))))
     (build-system cmake-build-system)
     (arguments
      ;; TODO: Build HTML user documentation and install separately.
@@ -2179,8 +2180,8 @@ implemented in ANSI C, and MPI for communications.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://gforge.inria.fr/frs/download.php/34618/"
-                          "scotch_" version ".tar.gz"))
+      (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                          "latestfile/298/scotch_" version ".tar.gz"))
       (sha256
        (base32 "1ir088mvrqggyqdkx9qfynmiaffqbyih5qfl5mga2nrlm1qlsgzm"))
       (patches (search-patches "scotch-test-threading.patch"
@@ -2841,7 +2842,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
 (define-public openlibm
   (package
     (name "openlibm")
-    (version "0.5.1")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
@@ -2850,7 +2851,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "11czx2z7nh6dfpz45s3xl7v38hw36jxzxfvny454bk3if14pfakq"))))
+         "1z8cj5q8ca8kmrakwkpjxf8svi81waw0c568cx8v8pv9kvswbp07"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -3855,3 +3856,24 @@ routines designed for solving ODEs resulting from 1-D, 2-D and 3-D partial
 differential equations (PDE) that have been converted to ODEs by numerical
 differencing.")
     (license license:gpl2+)))
+
+(define-public tcalc
+  (package
+  (name "tcalc")
+  (version "2.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://sites.google.com/site/mohammedisam2000/tcalc/tcalc-"
+                            version ".tar.gz"))
+      (sha256
+        (base32
+          "0jq806m4dqfia85nppfm75mml9w57g0cgv4cdw9bp3zymda83s0m"))))
+  (build-system gnu-build-system)
+  (synopsis "The terminal calculator")
+  (description
+    "The terminal calculator is a small program to help users of the GNU/Linux
+terminal do calculations simply and quickly.  The formula to be calculated can
+be fed to @command{tcalc} through the command line.")
+  (home-page "https://sites.google.com/site/mohammedisam2000/tcalc")
+  (license license:gpl3+)))

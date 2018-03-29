@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,7 @@
 (define-public fribidi
   (package
     (name "fribidi")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
       (origin
         (method url-fetch)
@@ -35,9 +36,11 @@
                         "/download/v" version "/fribidi-" version
                          ".tar.bz2"))
         (sha256
-          (base32 "1r3ll7apx4b8bhvdkwi71y06df9kvr4q3asvajswvdlh0pbq5cf1"))))
-
+          (base32 "0aw3i1g96axbr96flw4543dvhb8zlgb0w8314ks6cq2g1i9invdx"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-docs")))        ; TODO: enable; requires c2man
     (synopsis "Implementation of the Unicode bidirectional algorithm")
     (description
      "GNU FriBidi is an implementation of the Unicode Bidirectional

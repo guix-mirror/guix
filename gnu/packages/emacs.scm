@@ -491,7 +491,7 @@ operations.")
 (define-public magit-svn
   (package
     (name "magit-svn")
-    (version "2.1.1")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -500,12 +500,13 @@ operations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04y88j7q9h8xjbx5dbick6n5nr1522sn9i1znp0qwk3vjb4b5mzz"))))
+                "1c3n377v436zaxamlsz04y1ahdhp96x1vd43zaryv4y10m02ba47"))))
     (build-system trivial-build-system)
     (native-inputs `(("emacs" ,emacs-minimal)
                      ("tar" ,tar)
                      ("gzip" ,gzip)))
     (propagated-inputs `(("dash" ,emacs-dash)
+                         ("with-editor" ,emacs-with-editor)
                          ("magit" ,magit)))
     (arguments
      `(#:modules ((guix build utils)
@@ -527,6 +528,9 @@ operations.")
                 (dash     (string-append (assoc-ref %build-inputs "dash")
                                          "/share/emacs/site-lisp/guix.d/dash-"
                                          ,(package-version emacs-dash)))
+                (with-editor (string-append (assoc-ref %build-inputs "with-editor")
+                                            "/share/emacs/site-lisp/guix.d/with-editor-"
+                                            ,(package-version emacs-with-editor)))
                 (source   (assoc-ref %build-inputs "source"))
                 (lisp-dir (string-append %output "/share/emacs/site-lisp")))
            (setenv "PATH" PATH)
@@ -539,9 +543,8 @@ operations.")
              (parameterize ((%emacs emacs))
                (emacs-generate-autoloads ,name lisp-dir)
                (setenv "EMACSLOADPATH"
-                       (string-append ":" magit ":" dash))
+                       (string-append ":" magit ":" dash ":" with-editor))
                (emacs-batch-eval '(byte-compile-file "magit-svn.el"))))
-
            #t))))
     (home-page "https://github.com/magit/magit-svn")
     (synopsis "Git-SVN extension to Magit")
@@ -674,7 +677,7 @@ programs.")
 (define-public flycheck
   (package
     (name "emacs-flycheck")
-    (version "30")
+    (version "31")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -682,7 +685,7 @@ programs.")
                     version "/flycheck-" version ".tar"))
               (sha256
                (base32
-                "1rxzkaqsj48z3nska5wsgwafvwkam014dzqd32baycmxjl0jxvy7"))))
+                "01rnwan16m7cyyrfca3c5c60mbj2r3knkpzbhji2fczsf0wns240"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -1374,7 +1377,7 @@ diagrams.")
 (define-public emacs-mmm-mode
   (package
     (name "emacs-mmm-mode")
-    (version "0.5.4")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
@@ -1384,7 +1387,7 @@ diagrams.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10kwslnflbjqm62wkrq420crqzdqalzfflp9pqk1i12zm6dm4mfv"))))
+         "0c5ing3hcr74k78hqhrfwiv6m3n8hqfrw89j2x34vf60f4iyqzqc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1832,34 +1835,36 @@ of files under Git version control from within Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-minitest
-  (package
-    (name "emacs-minitest")
-    (version "0.8.0")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/arthurnn/minitest-emacs/archive/v"
-                   version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1dsb7kzvs1x6g4sgqmq73jqacb7wzm0wfkiq5m9dqdzq8mppgiqs"))))
-    (build-system emacs-build-system)
-    (arguments
-     '(#:include (cons "^snippets\\/minitest-mode\\/" %default-include)
-       #:exclude (delete "^[^/]*tests?\\.el$" %default-exclude)))
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-f" ,emacs-f)))
-    (home-page "https://github.com/arthurnn/minitest-emacs")
-    (synopsis "Emacs minitest mode")
-    (description
-     "The minitest mode provides commands to run the tests for the current
+  (let ((commit "1aadb7865c1dc69c201cecee275751ecec33a182")
+        (revision "1"))
+    (package
+      (name "emacs-minitest")
+      (version (git-version "0.8.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/arthurnn/minitest-emacs")
+                      (commit commit)))
+                (file-name (git-file-name name commit))
+                (sha256
+                 (base32
+                  "1l18zqpdzbnqj2qawq8hj7z7pl8hr8z9d8ihy8jaiqma915hmhj1"))))
+      (build-system emacs-build-system)
+      (arguments
+       '(#:include (cons "^snippets\\/minitest-mode\\/" %default-include)
+         #:exclude (delete "^[^/]*tests?\\.el$" %default-exclude)))
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)))
+      (home-page "https://github.com/arthurnn/minitest-emacs")
+      (synopsis "Emacs minitest mode")
+      (description
+       "The minitest mode provides commands to run the tests for the current
 file or line, as well as rerunning the previous tests, or all the tests for a
 project.
 
 This package also includes relevant snippets for yasnippet.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public emacs-el-mock
   (package
@@ -2272,6 +2277,8 @@ mode-line.")
         (base32
          "1vp45y99fwj88z04ah4yppz4z568qcib646az6m9az5ar0f203br"))))
     (build-system emacs-build-system)
+    (arguments
+     '(#:include (cons "^lib\\/" %default-include)))
     (propagated-inputs
      `(("emacs-inf-ruby" ,emacs-inf-ruby)))
     (home-page "https://github.com/dgutov/robe")
@@ -2432,7 +2439,7 @@ Tracker as well as bug identifiers prepared for @code{bug-reference-mode}.")
 (define-public emacs-deferred
   (package
     (name "emacs-deferred")
-    (version "0.3.2")
+    (version "0.5.1")
     (home-page "https://github.com/kiwanami/emacs-deferred")
     (source (origin
               (method git-fetch)
@@ -2441,7 +2448,7 @@ Tracker as well as bug identifiers prepared for @code{bug-reference-mode}.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "0059jy01ni5irpgrj9fa81ayd9j25nvmjjm79ms3210ysx4pgqdr"))
+                "0xy9zb6wwkgwhcxdnslqk52bq3z24chgk6prqi4ks0qcf2bwyh5h"))
               (file-name (string-append name "-" version))))
     (build-system emacs-build-system)
     ;; FIXME: Would need 'el-expectations' to actually run tests.
@@ -3517,7 +3524,7 @@ S-expression.")
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
-    (version "5.4.0")
+    (version "5.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3526,7 +3533,7 @@ S-expression.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "117mvjqh4nm8mvmwmmvy4qmkdg23ldlzk08y91g8b8ac8kxwqg81"))))
+                "1f4k1hncy5ygh4izn7mqfp744nnisrp9ywn2njknbjxx34ai1q88"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -4504,14 +4511,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "20180226")
+    (version "20180327")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0jqvry6gah1bwnryha4asynj13jyds3qim0xcy7s01rxk99m2ziy"))))
+                "0xmlzlxf15996sd3gj3naiz383d17ngjd9963p4h9kssrkjlwljy"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4531,7 +4538,7 @@ reproducible research.")
                                   (package-version emacs-org) ".tar"))
               (sha256
                (base32
-                "034wp70hcqnpidji5k1k80mj35iyyy098nbvc2sl7i2aca4m03zc"))))
+                "1nqn7m1x9w5y356ylv5hia6v62pqfz9g3rzjbiffjxyyc34xvpfm"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -5715,14 +5722,14 @@ which code derived from Kelvin H's org-page.")
 (define-public emacs-xelb
   (package
     (name "emacs-xelb")
-    (version "0.12")
+    (version "0.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/xelb-"
                                   version ".tar"))
               (sha256
                (base32
-                "0i9n0f3ibj4a5pwcsvwrah9m0fz32m0x6a9wsmjn3li20v8pcb81"))))
+                "09flnbjy9ck784kprz036rwg9qk45hpv0w5hz3pz3zhwyk57fv74"))))
     (build-system emacs-build-system)
     ;; The following functions and variables needed by emacs-xelb are
     ;; not included in emacs-minimal:
@@ -5754,7 +5761,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.16")
+    (version "0.18")
     (synopsis "Emacs X window manager")
     (source (origin
               (method url-fetch)
@@ -5762,7 +5769,7 @@ It should enable you to implement low-level X11 applications.")
                                   version ".tar"))
               (sha256
                (base32
-                "0c4w5k9lzqj8yzhdqipdb4fs7ld2qklc6s137104jnfdvmrwcv2i"))))
+                "1shz5bf4v4gg3arjaaldics5qkg3aiiaf3ngys8lb6qyxhcpvh6q"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -5845,7 +5852,7 @@ other operations.")
 (define-public emacs-exwm-x
   (package
     (name "emacs-exwm-x")
-    (version "1.7.2")
+    (version "1.8.1")
     (synopsis "Derivative window manager based on EXWM")
     (source (origin
               (method url-fetch)
@@ -5855,7 +5862,7 @@ other operations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ny13i82fb72917jgl0ndwjg1x6l9f8gfhcx7cwlwhh5saq23mvy"))))
+                "0ali1100aacq4zbvcck80h51pvw204jlxhn4aikkqq4ngbx03kkr"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-exwm" ,emacs-exwm)

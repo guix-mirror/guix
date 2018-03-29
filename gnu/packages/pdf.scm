@@ -574,7 +574,9 @@ extracting content or merging files.")
         (uri (string-append "https://mupdf.com/downloads/archive/"
                             name "-" version "-source.tar.xz"))
         (patches (search-patches "mupdf-build-with-latest-openjpeg.patch"
-                                 "mupdf-CVE-2017-17858.patch"))
+                                 "mupdf-CVE-2017-17858.patch"
+                                 "mupdf-CVE-2018-6544.patch"
+                                 "mupdf-CVE-2018-1000051.patch"))
         (sha256
          (base32
           "0b9j0gqbc3jhmx87r6idcsh8lnb30840c3hyx6dk2gdjqqh3hysp"))

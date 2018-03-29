@@ -86,6 +86,10 @@
          (modify-phases %standard-phases
            (add-after 'unpack 'autogen
              (lambda _
+               ;; Build without '-Werror', in particular to avoid errors due
+               ;; to the use of the deprecated 'libusb_set_debug' function.
+               (substitute* "configure.ac"
+                 (("-Werror") ""))
                (zero? (system* "autoreconf" "-vfi")))))))
       (synopsis "Tools for sending USB device traffic over a network")
       (description "Usbredir is a network protocol for sending USB device traffic

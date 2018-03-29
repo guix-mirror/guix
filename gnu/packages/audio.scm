@@ -11,6 +11,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnunet) ; libmicrohttpd
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages qt)
@@ -75,6 +77,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
@@ -2055,6 +2058,114 @@ into various outputs and to start, stop and configure jackd")
     (description "QJackRcd is a simple graphical stereo recorder for JACK
 supporting silence processing for automatic pause, file splitting, and
 background file post-processing.")
+    (license license:gpl2+)))
+
+(define-public supercollider
+  (package
+    (name "supercollider")
+    (version "3.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/supercollider/supercollider"
+                    "/releases/download/Version-" version
+                    "/SuperCollider-" version "-Source-linux.tar.bz2"))
+              (sha256
+               (base32
+                "0d3cb6dw8jz7ijriqn3rlwin24gffczp69hl17pzxj1d5w57yj44"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
+                           "-DSC_EL=off") ;scel is packaged individually as
+                                          ;emacs-scel.
+       #:modules ((guix build utils)
+                  (guix build cmake-build-system)
+                  (ice-9 ftw))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'rm-bundled-libs
+           (lambda _
+             ;; The build system doesn't allow us to unbundle the following
+             ;; libraries.  hidapi is also heavily patched and upstream not
+             ;; actively maintained.
+             (let ((keep-dirs '("nova-simd" "nova-tt" "hidapi" "TLSF-2.4.6"
+                                "oscpack_1_1_0" "." "..")))
+               (with-directory-excursion "./external_libraries"
+                 (for-each
+                  delete-file-recursively
+                  (scandir "."
+                           (lambda (x)
+                             (and (eq? (stat:type (stat x)) 'directory)
+                                  (not (member (basename x) keep-dirs))))))))
+             #t))
+         ;; Some tests are broken (see:
+         ;; https://github.com/supercollider/supercollider/issues/3555 and
+         ;; https://github.com/supercollider/supercollider/issues/1736
+         (add-after 'rm-bundled-libs 'disable-broken-tests
+           (lambda _
+             (substitute* "testsuite/supernova/CMakeLists.txt"
+               (("server_test.cpp")
+                "")
+               (("perf_counter_test.cpp")
+                ""))
+             (delete-file "testsuite/supernova/server_test.cpp")
+             (delete-file "testsuite/supernova/perf_counter_test.cpp")
+             (substitute* "testsuite/CMakeLists.txt"
+               (("add_subdirectory\\(sclang\\)")
+                ""))
+             (delete-file "testsuite/sclang/CMakeLists.txt")
+             #t))
+         ;; TODO: Remove after version 3.9.2 is released
+         ;; (see: https://github.com/supercollider/supercollider/pull/3558).
+         (add-after 'disable-broken-tests 'apply-system-yaml-cpp-fix
+           (lambda _
+             ;; cmake: correctly include yaml-cpp (commit f82cec5ae).
+             (substitute* "editors/sc-ide/CMakeLists.txt"
+               (("external_libraries/boost\\)$")
+                "external_libraries/boost)
+include_directories(${YAMLCPP_INCLUDE_DIR})")
+               (("    yaml")
+                "    ${YAMLCPP_LIBRARY}"))
+             ;; set YAMLCPP_LIBRARY and YAMLCPP_INCLUDE_DIR if not using
+             ;; system (commit 031922987).
+             (substitute* "external_libraries/CMakeLists.txt"
+               (("set_property\\( TARGET yaml PROPERTY FOLDER 3rdparty \\)")
+                "set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
+set(YAMLCPP_LIBRARY yaml)
+set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/\
+external_libraries/yaml-cpp/include)"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("jack" ,jack-1)
+       ("libsndfile" ,libsndfile)
+       ("fftw" ,fftw)
+       ("libxt" ,libxt)
+       ("readline" ,readline)           ;readline support for sclang's CLI
+       ("alsa" ,alsa-lib)               ;for sclang's MIDI interface
+       ("eudev" ,eudev)                 ;for user interactions with devices
+       ("avahi" ,avahi)                 ;zeroconf service discovery support
+       ("icu4c" ,icu4c)
+       ("boost" ,boost)
+       ("boost-sync" ,boost-sync)
+       ("yaml-cpp" ,yaml-cpp)
+       ("qtbase" ,qtbase)               ;IDE support
+       ("qtwebkit" ,qtwebkit)
+       ("qtsensors" ,qtsensors)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtlocation" ,qtlocation)))
+    (home-page "https://github.com/supercollider/supercollider")
+    (synopsis "Synthesis engine and programming language")
+    (description "SuperCollider is a synthesis engine (@code{scsynth} or
+@code{supernova}) and programming language (@code{sclang}).  It can be used
+for experimenting with sound synthesis and algorithmic composition.
+
+SuperCollider requires jackd to be installed in your user profile and your
+user must be allowed to access the realtime features of the kernel.  Search
+for \"realtime\" in the index of the Guix manual to learn how to achieve this
+using GuixSD.")
     (license license:gpl2+)))
 
 (define-public raul

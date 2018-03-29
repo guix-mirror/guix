@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,11 +29,14 @@
   #:use-module (guix grafts)
   #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:use-module (guix scripts substitute)
+  #:use-module (guix http-client)
+  #:use-module (guix ci)
   #:use-module (gnu packages)
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
@@ -100,6 +103,57 @@ values."
 (define-syntax-rule (let/time ((time result exp)) body ...)
   (call-with-time (lambda () exp) (lambda (time result) body ...)))
 
+(define (histogram field proc seed lst)
+  "Return an alist giving a histogram of all the values of FIELD for elements
+of LST. FIELD must be a one element procedure that returns a field's value.
+For each FIELD value, call PROC with the previous field-specific result.
+Example:
+
+  (histogram car (lambda (x n) (+ 1 n)) 0 '((a . x)(b . y)(a . z)))
+  => ((a . 2) (b . 1))
+
+meaning that we have two a's and one b."
+  (let loop ((lst lst)
+             (result '()))
+    (match lst
+      (()
+       result)
+      ((head . tail)
+       (let ((value (field head)))
+         (loop tail
+               (match (assoc-ref result value)
+                 (#f
+                  `((,value . ,(proc head seed)) ,@result))
+                 (previous
+                  `((,value . ,(proc head previous))
+                    ,@(alist-delete value result))))))))))
+
+(define (throughput lst timestamp)
+  "Return the throughput, in items per second, given the elements of LST,
+calling TIMESTAMP to get the \"timestamp\" of each item."
+  (let ((oldest (reduce min +inf.0 (map build-timestamp lst)))
+        (now    (time-second (current-time time-utc))))
+    (/ (length lst) (- now oldest) 1.)))
+
+(define (queued-subset queue items)
+  "Return the subset of ITEMS, a list of store file names, that appears in
+QUEUE, a list of builds.  Return #f if elements in QUEUE lack information
+about the derivations queued, as is the case with Hydra."
+  (define queued
+    (append-map (lambda (build)
+                  (match (false-if-exception
+                          (read-derivation-from-file (build-derivation build)))
+                    (#f
+                     '())
+                    (drv
+                     (match (derivation->output-paths drv)
+                       (((names . items) ...) items)))))
+                queue))
+
+  (if (any (negate build-derivation) queue)
+      #f                                          ;no derivation information
+      (lset-intersection string=? queued items)))
+
 (define (report-server-coverage server items)
   "Report the subset of ITEMS available as substitutes on SERVER."
   (define MiB (* (expt 2 20) 1.))
@@ -111,6 +165,8 @@ values."
     (format #t "~a~%" server)
     (let ((obtained  (length narinfos))
           (requested (length items))
+          (missing   (lset-difference string=?
+                                      items (map narinfo-path narinfos)))
           (sizes     (filter-map narinfo-file-size narinfos))
           (time      (+ (time-second time)
                         (/ (time-nanosecond time) 1e9))))
@@ -131,7 +187,56 @@ values."
       (format #t (G_ "  ~,3h seconds per request (~,1h seconds in total)~%")
               (/ time requested 1.) time)
       (format #t (G_ "  ~,1h requests per second~%")
-              (/ requested time 1.)))))
+              (/ requested time 1.))
+
+      (guard (c ((http-get-error? c)
+                 (if (= 404 (http-get-error-code c))
+                     (format (current-error-port)
+                             (G_ "  (continuous integration information \
+unavailable)~%"))
+                     (format (current-error-port)
+                             (G_ "  '~a' returned ~a (~s)~%")
+                             (uri->string (http-get-error-uri c))
+                             (http-get-error-code c)
+                             (http-get-error-reason c)))))
+        (let* ((max    %query-limit)
+               (queue  (queued-builds server max))
+               (len    (length queue))
+               (histo  (histogram build-system
+                                  (lambda (build count)
+                                    (+ 1 count))
+                                  0 queue)))
+          (newline)
+          (unless (null? missing)
+            (let ((missing (length missing)))
+              (match (queued-subset queue missing)
+                (#f #f)
+                ((= length queued)
+                 (format #t (G_ "  ~,1f% (~h out of ~h) of the missing items \
+are queued~%")
+                         (* 100. (/ queued missing))
+                         queued missing)))))
+
+          (if (>= len max)
+              (format #t (G_ "  at least ~h queued builds~%") len)
+              (format #t (G_ "  ~h queued builds~%") len))
+          (for-each (match-lambda
+                      ((system . count)
+                       (format #t (G_ "      ~a: ~a (~0,1f%)~%")
+                               system count (* 100. (/ count len)))))
+                    histo))
+
+        (let* ((latest     (latest-builds server))
+               (builds/sec (throughput latest build-timestamp)))
+          (format #t (G_ "  build rate: ~1,2f builds per hour~%")
+                  (* builds/sec 3600.))
+          (for-each (match-lambda
+                      ((system . builds)
+                       (format #t (G_ "      ~a: ~,2f builds per hour~%")
+                               system
+                               (* (throughput builds build-timestamp)
+                                  3600.))))
+                    (histogram build-system cons '() latest)))))))
 
 
 ;;;

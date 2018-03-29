@@ -2445,7 +2445,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.26.0")
+    (version "0.27.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2453,7 +2453,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0yrqs88b7yn9nljwlxzn76jfmvf0sh939kzij5b2jvr2qa7mbjmb"))))
+                "18v8qry7493k37bcfbfwdr4xrygyjivpzvgsj7s1dxmzn1n53c3p"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2673,7 +2673,7 @@ as USB mice.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "7.10.0")
+    (version "18.0.1")
     (source
       (origin
         (method url-fetch)
@@ -2683,7 +2683,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0yafix56vkqglw243cwb94nv91vbjv12sqh29x1bap0hwd1dclgf"))))
+            "180l2yw8c63cbcs3zk729vx439aig1d7yicpyxj0nmfl4y0kpskj"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)

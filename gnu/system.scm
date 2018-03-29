@@ -515,7 +515,8 @@ explicitly appear in OS."
   ;; required for basic administrator tasks.
   (cons* procps psmisc which less zile nano
          pciutils usbutils
-         util-linux inetutils isc-dhcp
+         util-linux
+         inetutils isc-dhcp
          (@ (gnu packages admin) shadow)          ;for 'passwd'
 
          ;; wireless-tools is deprecated in favor of iw, but it's still what

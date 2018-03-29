@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -69,13 +69,21 @@
 found.  Return #f if no build log was found."
   (define (valid-url? url)
     ;; Probe URL and return #t if it is accessible.
-    (catch 'getaddrinfo-error
+    (catch #t
       (lambda ()
         (guard (c ((http-get-error? c) #f))
           (close-port (http-fetch url #:buffered? #f))
           #t))
-      (lambda _
-        #f)))
+      (match-lambda*
+        (('getaddrinfo-error . _)
+         #f)
+        (('tls-certificate-error args ...)
+         (report-error (G_ "cannot access build log at '~a':~%") url)
+         (print-exception (current-error-port) #f
+                          'tls-certificate-error args)
+         (exit 1))
+        ((key . args)
+         (apply throw key args)))))
 
   (define (find-url file)
     (let ((base (basename file)))

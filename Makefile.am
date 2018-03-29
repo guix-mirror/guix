@@ -204,7 +204,6 @@ MODULES =					\
   guix/scripts/import/texlive.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
-  guix/scripts/weather.scm			\
   guix/scripts/edit.scm				\
   guix/scripts/size.scm				\
   guix/scripts/graph.scm			\
@@ -216,6 +215,7 @@ MODULES =					\
 if HAVE_GUILE_JSON
 
 MODULES +=					\
+  guix/ci.scm					\
   guix/docker.scm	   			\
   guix/import/cpan.scm				\
   guix/import/crate.scm				\
@@ -229,7 +229,8 @@ MODULES +=					\
   guix/scripts/import/gem.scm			\
   guix/scripts/import/json.scm  		\
   guix/scripts/import/pypi.scm			\
-  guix/scripts/import/stackage.scm
+  guix/scripts/import/stackage.scm		\
+  guix/scripts/weather.scm
 
 endif
 
@@ -374,6 +375,7 @@ SH_TESTS =					\
   tests/guix-download.sh			\
   tests/guix-gc.sh				\
   tests/guix-hash.sh				\
+  tests/guix-pack.sh				\
   tests/guix-package.sh				\
   tests/guix-package-net.sh			\
   tests/guix-system.sh				\

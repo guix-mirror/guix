@@ -349,6 +349,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pumpio.scm			\
   %D%/packages/pretty-print.scm			\
   %D%/packages/protobuf.scm			\
+  %D%/packages/pure.scm				\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
   %D%/packages/python-crypto.scm		\
@@ -592,6 +593,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
+  %D%/packages/patches/classpath-aarch64-support.patch		\
   %D%/packages/patches/clementine-remove-crypto++-dependency.patch	\
   %D%/packages/patches/clementine-use-openssl.patch		\
   %D%/packages/patches/clisp-glibc-2.26.patch			\
@@ -778,7 +780,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/htop-fix-process-tree.patch		\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
-  %D%/packages/patches/hwloc-tests-without-sysfs.patch		\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-use-system-graphite2.patch	\
@@ -877,7 +878,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-newer-libconfig.patch		\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
-  %D%/packages/patches/links-CVE-2017-11114.patch		\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
@@ -894,6 +894,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
+  %D%/packages/patches/lyx-2.2.3-fix-test.patch			\
   %D%/packages/patches/mailutils-uninitialized-memory.patch	\
   %D%/packages/patches/make-glibc-compat.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
@@ -922,6 +923,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-latest-openjpeg.patch	\
   %D%/packages/patches/mupdf-CVE-2017-17858.patch		\
+  %D%/packages/patches/mupdf-CVE-2018-6544.patch		\
+  %D%/packages/patches/mupdf-CVE-2018-1000051.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/net-tools-bitrot.patch			\
@@ -1079,8 +1082,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/shadow-CVE-2018-7169.patch		\
-  %D%/packages/patches/shepherd-close-fds.patch			\
-  %D%/packages/patches/shepherd-herd-status-sorted.patch	\
   %D%/packages/patches/shishi-fix-libgcrypt-detection.patch	\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
@@ -1111,6 +1112,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tipp10-fix-compiling.patch		\
   %D%/packages/patches/tipp10-remove-license-code.patch		\
   %D%/packages/patches/tk-find-library.patch			\
+  %D%/packages/patches/translate-shell-fix-curl-tests.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\
