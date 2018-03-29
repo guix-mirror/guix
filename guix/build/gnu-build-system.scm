@@ -87,6 +87,9 @@ See https://reproducible-builds.org/specs/source-date-epoch/."
       (#f                                         ; not cross compiling
        '())))
 
+  ;; Tell 'ld-wrapper' to disallow non-store libraries.
+  (setenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES" "no")
+
   ;; When cross building, $PATH must refer only to native (host) inputs since
   ;; target inputs are not executable.
   (set-path-environment-variable "PATH" '("bin" "sbin")

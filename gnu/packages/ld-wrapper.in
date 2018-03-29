@@ -81,7 +81,19 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
 
 (define %allow-impurities?
   ;; Whether to allow references to libraries outside the store.
-  (getenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES"))
+  ;; Allow them by default for convenience.
+  (let ((value (getenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES")))
+    (or (not value)
+        (let ((value (string-downcase value)))
+          (cond ((member value '("yes" "y" "t" "true" "1"))
+                 #t)
+                ((member value '("no" "n" "f" "false" "0"))
+                 #f)
+                (else
+                 (format (current-error-port)
+                         "ld-wrapper: ~s: invalid value for \
+'GUIX_LD_WRAPPER_ALLOW_IMPURITIES'~%"
+                         value)))))))
 
 (define %debug?
   ;; Whether to emit debugging output.
