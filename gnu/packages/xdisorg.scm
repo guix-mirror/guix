@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
+;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1408,3 +1409,32 @@ or playing a PCM encoded WAVE file.")
 System, and launches a program of your choice if there is no activity after
 a user-configurable period of time.")
     (license license:gpl2)))
+
+(define-public screen-message
+  (package
+    (name "screen-message")
+    (version "0.25")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.joachim-breitner.de/archive/screen-message"
+                    "/screen-message-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lw955qq5pq010lzmaf32ylj2iprgsri9ih4hx672c3f794ilab0"))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk3" ,gtk+)
+              ("gdk" ,gdk-pixbuf)
+              ("pango" ,pango)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     ;; The default configure puts the 'sm' binary in games/ instead of bin/ -
+     ;; this fixes it:
+     `(#:make-flags (list (string-append "execgamesdir=" %output "/bin"))))
+    (synopsis "Print messages on your screen")
+    (description "@code{screen-message} is a tool for displaying text on
+your screen.  It will make the text as large as possible and display it
+with black color on a white background (colors are configurable on the
+commandline).")
+    (home-page "https://www.joachim-breitner.de/projects#screen-message")
+    (license license:gpl2+)))
