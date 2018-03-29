@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
@@ -360,6 +360,27 @@ colors are provided.")
 inspired by Python's Literal String Interpolation (PEP-0498) and
 Docstrings (PEP-0257) and Julia's Triple-Quoted String Literals.")
     (license license:expat)))
+
+(define-public r-pastecs
+  (package
+   (name "r-pastecs")
+   (version "1.3.21")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "pastecs" version))
+            (sha256
+             (base32
+              "0z4dic94ar646w7zc2ggi5hgvf2qnznsani94c5pyql8zspz47lc"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-boot" ,r-boot)))
+   (home-page "http://www.sciviews.org/pastecs")
+   (synopsis "Analysis of space-time ecological series")
+   (description
+    "This package provides functions for regulation, decomposition and analysis
+of space-time series.  The @code{pastecs} library is a PNEC-Art4 and IFREMER
+initiative to bring PASSTEC 2000 functionalities to R.")
+   (license license:gpl2+)))
 
 (define-public r-plogr
   (package
