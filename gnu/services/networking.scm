@@ -31,6 +31,7 @@
   #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages connman)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tor)
   #:use-module (gnu packages messaging)
@@ -92,6 +93,9 @@
             connman-configuration?
             connman-service-type
 
+            modem-manager-configuration
+            modem-manager-configuration?
+            modem-manager-service-type
             wpa-supplicant-service-type
 
             openvswitch-service-type
@@ -811,6 +815,17 @@ and @command{wicd-curses} user interfaces."
 
 
 ;;;
+;;; ModemManager
+;;;
+
+(define-record-type* <modem-manager-configuration>
+  modem-manager-configuration make-modem-manager-configuration
+  modem-manager-configuration?
+  (modem-manager modem-manager-configuration-modem-manager
+                   (default modem-manager)))
+
+
+;;;
 ;;; NetworkManager
 ;;;
 
@@ -945,6 +960,30 @@ wireless networking."))))
                   (description
                    "Run @url{https://01.org/connman,Connman},
 a network connection manager."))))
+
+
+;;;
+;;; Modem manager
+;;;
+
+(define modem-manager-service-type
+  (let ((config->package
+         (match-lambda
+          (($ <modem-manager-configuration> modem-manager)
+           (list modem-manager)))))
+    (service-type (name 'modem-manager)
+                  (extensions
+                   (list (service-extension dbus-root-service-type
+                                            config->package)
+                         (service-extension udev-service-type
+                                            config->package)
+                         (service-extension polkit-service-type
+                                            config->package)))
+                  (default-value (modem-manager-configuration))
+                  (description
+                   "Run @uref{https://wiki.gnome.org/Projects/ModemManager,
+ModemManager}, a modem management daemon that aims to simplify dialup
+networking."))))
 
 
 ;;;

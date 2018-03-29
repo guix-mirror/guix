@@ -22,6 +22,7 @@
   #:use-module (gnu system)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu services networking)
   #:use-module (guix gexp)
   #:use-module (guix store)

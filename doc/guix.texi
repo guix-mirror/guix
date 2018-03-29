@@ -10773,6 +10773,28 @@ several commands to interact with the daemon and configure networking:
 and @command{wicd-curses} user interfaces.
 @end deffn
 
+@cindex ModemManager
+
+@defvr {Scheme Variable} modem-manager-service-type
+This is the service type for the
+@uref{https://wiki.gnome.org/Projects/ModemManager, ModemManager}
+service. The value for this service type is a
+@code{modem-manager-configuration} record.
+
+This service is part of @code{%desktop-services} (@pxref{Desktop
+Services}).
+@end defvr
+
+@deftp {Data Type} modem-manager-configuration
+Data type representing the configuration of ModemManager.
+
+@table @asis
+@item @code{modem-manager} (default: @code{modem-manager})
+The ModemManager package to use.
+
+@end table
+@end deftp
+
 @cindex NetworkManager
 
 @defvr {Scheme Variable} network-manager-service-type
