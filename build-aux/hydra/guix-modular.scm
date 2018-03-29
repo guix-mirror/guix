@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,35 +21,14 @@
 ;;; Guix as 'guix pull', which is defined in (guix self).
 ;;;
 
-;; Attempt to use our very own Guix modules.
-(eval-when (compile load eval)
-
-  ;; Ignore any available .go, and force recompilation.  This is because our
-  ;; checkout in the store has mtime set to the epoch, and thus .go files look
-  ;; newer, even though they may not correspond.
-  (set! %fresh-auto-compile #t)
-
-  (and=> (assoc-ref (current-source-location) 'filename)
-         (lambda (file)
-           (let ((dir (canonicalize-path
-                       (string-append (dirname file) "/../.."))))
-             (format (current-error-port) "prepending ~s to the load path~%"
-                     dir)
-             (set! %load-path (cons dir %load-path))))))
-
-
 (use-modules (guix store)
              (guix config)
              (guix utils)
-             (guix grafts)
              ((guix packages) #:select (%hydra-supported-systems))
              (guix derivations)
              (guix monads)
-             (guix gexp)
-             (guix self)
              ((guix licenses) #:prefix license:)
              (srfi srfi-1)
-             (srfi srfi-26)
              (ice-9 match))
 
 ;; XXX: Debugging hack: since `hydra-eval-guile-jobs' redirects the output
@@ -61,11 +40,12 @@
   "Return a Hydra job a list building the modular Guix derivation from SOURCE
 for SYSTEM.  Use VERSION as the version identifier."
   (lambda ()
+    (define build
+      (primitive-load (string-append source "/build-aux/build-self.scm")))
+
     `((derivation . ,(derivation-file-name
-                      (parameterize ((%graft? #f))
-                        (run-with-store store
-                          (lower-object (compiled-guix source
-                                                       #:version version))))))
+                      (run-with-store store
+                        (build source #:version version #:system system))))
       (description . "Modular Guix")
       (long-description
        . "This is the modular Guix package as produced by 'guix pull'.")
