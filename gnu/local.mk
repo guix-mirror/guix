@@ -621,6 +621,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
+  %D%/packages/patches/delly-use-system-libraries.patch		\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/diffutils-getopt.patch			\

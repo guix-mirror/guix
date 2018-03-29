@@ -2030,6 +2030,53 @@ normalized and standardized files, multiple visualizations can be created to
 identify enrichments with functional annotations of the genome.")
     (license license:gpl3+)))
 
+(define-public delly
+  (package
+    (name "delly")
+    (version "0.7.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tobiasrausch/delly/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "0dkwy3pyxmi6dhh1lpsr3698ri5sslw9qz67hfys0bz8dgrqwabj"))
+              (patches (search-patches "delly-use-system-libraries.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests to run.
+       #:make-flags '("PARALLEL=1") ; Allow parallel execution at run-time.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; There is no configure phase.
+         (replace 'install
+           (lambda _
+             (let ((bin (string-append (assoc-ref %outputs "out") "/bin"))
+                   (templates (string-append (assoc-ref %outputs "out")
+                                             "/share/delly/templates")))
+               (mkdir-p bin)
+               (mkdir-p templates)
+               (copy-recursively "excludeTemplates" templates)
+               (install-file "src/cov" bin)
+               (install-file "src/delly" bin)
+               (install-file "src/dpe" bin)))))))
+    (native-inputs
+     `(("python" ,python-2)))
+    (inputs
+     `(("boost" ,boost)
+       ("htslib" ,htslib)
+       ("zlib" ,zlib)
+       ("bzip2" ,bzip2)))
+    (home-page "https://github.com/tobiasrausch/delly")
+    (synopsis "Integrated structural variant prediction method")
+    (description "Delly is an integrated structural variant prediction method
+that can discover and genotype deletions, tandem duplications, inversions and
+translocations at single-nucleotide resolution in short-read massively parallel
+sequencing data.  It uses paired-ends and split-reads to sensitively and
+accurately delineate genomic rearrangements throughout the genome.")
+    (license license:gpl3+)))
+
 (define-public diamond
   (package
     (name "diamond")
