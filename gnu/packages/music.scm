@@ -2270,10 +2270,10 @@ analogue-like user interface.")
     (license license:gpl2+)))
 
 (define-public mod-host
-  ;; The last release was in 2014 but since then more than 140 commits have
+  ;; The last release was in 2014 but since then hundreds of commits have
   ;; been made.
-  (let ((commit "299a3977476e8eb0285837fbd7522cec506a11de")
-        (revision "2"))
+  (let ((commit "1726ad06b11323da7e1aaed690ff8aef91f702b5")
+        (revision "3"))
     (package
       (name "mod-host")
       (version (string-append "0.10.6-" revision "." (string-take commit 9)))
@@ -2284,7 +2284,7 @@ analogue-like user interface.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "128q7p5mph086v954rqnafalfbkyvhgwclaq6ks6swrhj45wnag6"))
+                  "1nrd37c35w6z6ldczgrwmmd9hx1n3zyvcjcgb3mi4cygqdanvspv"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
