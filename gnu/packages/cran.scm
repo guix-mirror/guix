@@ -3676,3 +3676,31 @@ package which implements several @dfn{Approximate Bayesian Computation} (ABC)
 algorithms for performing parameter estimation, model selection, and
 goodness-of-fit.")
     (license license:gpl3+)))
+
+(define-public r-abc
+  (package
+    (name "r-abc")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abc" version))
+       (sha256
+        (base32
+         "0ngzaaz2y2s03fhngvwipmy4kq38xrmyddaz6a6l858rxvadrlhb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abc-data" ,r-abc-data)
+       ("r-locfit" ,r-locfit)
+       ("r-mass" ,r-mass)
+       ("r-nnet" ,r-nnet)
+       ("r-quantreg" ,r-quantreg)))
+    (home-page "https://cran.r-project.org/web/packages/abc/")
+    (synopsis "Tools for Approximate Bayesian Computation (ABC)")
+    (description
+     "This package implements several @dfn{Approximate Bayesian
+Computation} (ABC) algorithms for performing parameter estimation, model
+selection, and goodness-of-fit.  Cross-validation tools are also available for
+measuring the accuracy of ABC estimates, and to calculate the
+misclassification probabilities of different models.")
+    (license license:gpl3+)))
