@@ -90,6 +90,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages mail)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
@@ -4972,7 +4973,8 @@ customizable by the user.")
     (propagated-inputs
      `(("emacs-alert" ,emacs-alert)
        ("emacs-s" ,emacs-s)
-       ("emacs-ht" ,emacs-ht)))
+       ("emacs-ht" ,emacs-ht)
+       ("mu" ,mu)))
     (home-page "https://github.com/iqbalansari/mu4e-alert")
     (synopsis "Desktop notification for mu4e")
     (description
