@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xml)
   #:use-module (guix build-system python))
 
 (define-public pwgen
@@ -641,3 +643,50 @@ is the community-enhanced, \"jumbo\" version of John the Ripper.")
 to encrypted files on a directory hierarchy.  The information is protected
 by GnuPG's symmetrical encryption.")
     (license license:expat)))
+
+(define-public fpm2
+  (package
+    (name "fpm2")
+    (version "0.79")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://als.regnet.cz/fpm2/download/fpm2-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "19sdy1lygfhkg5nxi2w9a4d9kwvw24nxp0ix0p0lz91qpvk9qpnm"))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk2" ,gtk+-2)
+              ("gnupg" ,gnupg)
+              ("libxml2" ,libxml2)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("intltool" ,intltool)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           ;; The file po/POTFILES.in ends up missing for some reason in
+           ;; both nix and guix builds. Adding the file with contents
+           ;; found during troubleshooting.
+           (lambda _
+             (call-with-output-file "po/POTFILES.in"
+               (lambda (port)
+                 (format port "data/fpm2.desktop.in
+data/fpm2.desktop.in.in
+fpm2.glade
+src/callbacks.c
+src/fpm.c
+src/fpm_file.c
+src/interface.c
+src/support.c
+fpm2.glade
+")))
+             #t)))))
+    (synopsis "Manage, generate and store passwords encrypted")
+    (description "FPM2 is GTK2 port from Figaro's Password Manager
+originally developed by John Conneely, with some new enhancements.
+
+Upstream development seems to have stopped.  It is therefore recommended
+to use a different password manager.")
+    (home-page "https://als.regnet.cz/fpm2/")
+    (license license:gpl2+)))
