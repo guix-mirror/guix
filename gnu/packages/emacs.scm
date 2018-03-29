@@ -4817,7 +4817,8 @@ reproducible research.")
                  (for-each delete-file duplicates))
                #t))))))
     (propagated-inputs
-     `(("emacs-org" ,emacs-org)))
+     `(("emacs-org" ,emacs-org)
+       ("emacs-scel" ,emacs-scel)))
     (synopsis "Contributed packages to Org mode")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
 lists, and project planning with a fast and effective plain-text system.
