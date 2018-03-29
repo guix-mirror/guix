@@ -217,8 +217,8 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
                        (begin
                          (format (current-error-port)
                                  "ld-wrapper: error: attempt to use \
-impure library ~s~%"
-                                 file)
+library outside of ~a: ~s~%"
+                                 %store-directory file)
                          (exit 1)))))
               '()
               library-files))
