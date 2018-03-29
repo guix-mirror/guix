@@ -42,7 +42,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.10.2")
+    (version "3.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cmake.org/files/v"
@@ -50,7 +50,7 @@
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "12r1ldq4l032d6f5gc22dlayck4cr29cczqsl9xf0vdm9anzml40"))
+                "0sv5k9q6braa8hhw0y3w19avqn0xn5czv5jf5fz5blnlf7ivw4y3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -74,15 +74,15 @@
        (let ((skipped-tests
               (list "BundleUtilities" ; This test fails on Guix.
                     "CTestTestSubdir" ; This test fails to build 2 of the 3 tests.
-                    "CMake.String" ; This test depends on clock being set to
-                                        ; current time, which is not the case in
-                                        ; the build environment.
                     ;; These tests requires network access.
                     "CTestCoverageCollectGCOV"
                     "CTestTestUpload")))
          (list
           (string-append
-           "ARGS=--exclude-regex ^\\(" (string-join skipped-tests "\\|") "\\)$")))
+           ;; These arguments apply for the tests only.
+           "ARGS=-j " (number->string (parallel-job-count))
+           " --output-on-failure"
+           " --exclude-regex ^\\(" (string-join skipped-tests "\\|") "\\)$")))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-bin-sh
@@ -94,7 +94,6 @@
                    "Modules/CPack.RuntimeScript.in"
                    "Source/cmakexbuild.cxx"
                    "Source/cmGlobalXCodeGenerator.cxx"
-                   "Source/CTest/cmCTestBatchTestHandler.cxx"
                    "Source/cmLocalUnixMakefileGenerator3.cxx"
                    "Source/cmExecProgramCommand.cxx"
                    "Utilities/Release/release_cmake.cmake"
@@ -114,7 +113,8 @@
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (invoke
-                "./configure"
+                "./configure" "--verbose"
+                (string-append "--parallel=" (number->string (parallel-job-count)))
                 (string-append "--prefix=" out)
                 "--system-libs"
                 "--no-system-jsoncpp" ; FIXME: Circular dependency.
@@ -127,16 +127,7 @@
                 "--mandir=share/man"
                 ,(string-append
                   "--docdir=share/doc/cmake-"
-                  (version-major+minor version))))))
-         (add-before 'check 'set-test-environment
-           (lambda _
-             ;; Get verbose output from failed tests.
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "TRUE")
-             ;; Parallel tests fail in the 3.10.2 release.
-             ;; Run tests in parallel.
-             ;; (setenv "CTEST_PARALLEL_LEVEL"
-             ;;         (number->string (parallel-job-count)))
-             #t)))))
+                  (version-major+minor version)))))))))
     (inputs
      `(("bzip2" ,bzip2)
        ("curl" ,curl)
@@ -163,59 +154,3 @@ and workspaces that can be used in the compiler environment of your choice.")
                    license:bsd-2             ; cmlibarchive
                    license:expat             ; cmjsoncpp is dual MIT/public domain
                    license:public-domain)))) ; cmlibarchive/archive_getdate.c
-
-;; Recent Ceph requires Boost 1.66, which in turn requires CMake 3.11 for
-;; its updated "FindBoost.cmake" facility.
-(define-public cmake-3.11
-  (package
-    (inherit cmake)
-    (version "3.11.0-rc2")
-    (source (origin
-              (inherit (package-source cmake))
-              (uri (string-append "https://www.cmake.org/files/v"
-                                  (version-major+minor version)
-                                  "/cmake-" version ".tar.gz"))
-              (sha256
-               (base32
-                "14p6ais19nfcwl914n4n5rbzaqwafv3qkg6nd8jw54ykn6lz6mf3"))
-              (snippet
-               '(begin
-                  ;; Drop bundled software.
-                  (with-directory-excursion "Utilities"
-                    (for-each delete-file-recursively
-                              '("cmbzip2"
-                                "cmcurl"
-                                "cmexpat"
-                                "cmliblzma"
-                                "cmzlib"))
-                    #t)))))
-    (build-system gnu-build-system)
-    (arguments
-     (substitute-keyword-arguments (package-arguments cmake)
-       ((#:make-flags flags ''()) `(cons (string-append
-                                          "ARGS=-j "
-                                          (number->string (parallel-job-count))
-                                          " --output-on-failure")
-                                         ,flags))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'patch-bin-sh
-             (lambda _
-               (substitute*
-                   '("Modules/CompilerId/Xcode-3.pbxproj.in"
-                     "Modules/CPack.RuntimeScript.in"
-                     "Source/cmakexbuild.cxx"
-                     "Source/cmGlobalXCodeGenerator.cxx"
-                     "Source/cmLocalUnixMakefileGenerator3.cxx"
-                     "Source/cmExecProgramCommand.cxx"
-                     "Utilities/Release/release_cmake.cmake"
-                     "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
-                     "Tests/CMakeLists.txt"
-                     "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
-                 (("/bin/sh") (which "sh")))
-               #t))
-           ;; This is now passed through #:make-flags.
-           (delete 'set-test-environment)))))
-    (inputs
-     `(("rhash" ,rhash)
-       ,@(package-inputs cmake)))))
