@@ -133,6 +133,13 @@ version of libusb to run with newer libusb.")
        `(#:tests? #f                    ; there are no tests
          #:phases
          (modify-phases %standard-phases
+           ;; FIXME: libusb 1.0.22 deprecated libusb_set_debug, so the build
+           ;; fails because libusb4java uses a deprecated procedure.
+           (add-after 'unpack 'disable-Werror
+             (lambda _
+               (substitute* "CMakeLists.txt"
+                 (("-Werror") ""))
+               #t))
            (add-before 'configure 'set-JAVA_HOME
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
