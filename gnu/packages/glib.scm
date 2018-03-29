@@ -35,6 +35,7 @@
   #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
@@ -609,7 +610,11 @@ useful for C++.")
          "1zdzznrj2s1gsrv2z4r0n88fzba8zjc1n2r313xi77lhl1daja56"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("which" ,which)
+     `(;; Use gcc-7 to work around an internal compiler error that happens
+       ;; when using gcc-5.5.0.  FIXME: Try removing this when the default
+       ;; compiler is no longer gcc-5.5.0.
+       ("gcc" ,gcc-7)
+       ("which" ,which)
        ;for tests: dbus-run-session and glib-compile-schemas
        ("dbus" ,dbus)
        ("glib-bin" ,glib "bin")
