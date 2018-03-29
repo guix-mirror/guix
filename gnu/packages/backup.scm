@@ -204,7 +204,6 @@ backups (called chunks) to allow easy burning to CD/DVD.")
         (base32
          "1km0mzfl6in7l5vz9kl09a88ajx562rw93ng9h2jqavrailvsbgd"))))
     (build-system gnu-build-system)
-    ;; TODO: Add -L/path/to/nettle in libarchive.pc.
     (inputs
      `(("zlib" ,zlib)
        ("nettle" ,nettle)
@@ -231,7 +230,29 @@ backups (called chunks) to allow easy burning to CD/DVD.")
              ;; XXX: This glob disables too much.
              (invoke "./libarchive_test" "^test_*_disk*")
              (invoke "./bsdcpio_test" "^test_owner_parse")
-             (invoke "./bsdtar_test"))))
+             (invoke "./bsdtar_test")))
+         (add-after 'install 'add--L-in-libarchive-pc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (lib     (string-append out "/lib"))
+                    (nettle  (assoc-ref inputs "nettle"))
+                    (libxml2 (assoc-ref inputs "libxml2"))
+                    (xz      (assoc-ref inputs "xz"))
+                    (zlib    (assoc-ref inputs "zlib"))
+                    (bzip2   (assoc-ref inputs "bzip2")))
+               (substitute* (string-append lib "/pkgconfig/libarchive.pc")
+                 (("-lnettle")
+                  (string-append "-L" nettle "/lib -lnettle"))
+                 (("-lxml2")
+                  (string-append "-L" libxml2 "/lib -lxml2"))
+                 (("-llzma")
+                  (string-append "-L" xz "/lib -llzma"))
+                 (("-lz")
+                  (string-append "-L" zlib "/lib -lz"))
+                 (("-lbz2")
+                  (string-append "-L" bzip2 "/lib -lbz2")))
+               #t))))
+
        ;; libarchive/test/test_write_format_gnutar_filenames.c needs to be
        ;; compiled with C99 or C11 or a gnu variant.
        #:configure-flags '("CFLAGS=-O2 -g -std=c99")))
