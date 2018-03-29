@@ -1876,6 +1876,29 @@ University Press.  It provides smoothing methods for nonparametric regression
 and density estimation")
     (license license:gpl2+)))
 
+(define-public r-venndiagram
+  (package
+    (name "r-venndiagram")
+    (version "1.6.20")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "VennDiagram" version))
+              (sha256
+               (base32
+                "1ic1jaxzw98si2p4n1fl4n3myhd7fpw0njb634cwhviwybzv6775"))))
+    (properties `((upstream-name . "VennDiagram")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-futile-logger" ,r-futile-logger)))
+    (home-page "https://cran.r-project.org/web/packages/VennDiagram/")
+    (synopsis "Generate High-Resolution Venn and Euler Plots")
+    (description
+     "This package provides a set of functions to generate high-resolution
+Venn and Euler plots.  It includes handling for several special cases,
+including two-case scaling, and extensive customization of plot shape and
+structure.")
+    (license license:gpl2+)))
+
 (define-public r-vioplot
   (package
     (name "r-vioplot")
