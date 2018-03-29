@@ -21090,16 +21090,16 @@ services.
 
 Otherwise, it must be a one-argument procedure.  The procedure is called
 by @code{fold-services} and is passed a list of values collected from
-extensions.  It must return a value that is a valid parameter value for
-the service instance.
+extensions.  It may return any single value.
 
 @item @code{extend} (default: @code{#f})
 If this is @code{#f}, services of this type cannot be extended.
 
 Otherwise, it must be a two-argument procedure: @code{fold-services}
-calls it, passing it the initial value of the service as the first argument
-and the result of applying @code{compose} to the extension values as the
-second argument.
+calls it, passing it the initial value of the service as the first
+argument and the result of applying @code{compose} to the extension
+values as the second argument.  It must return a value that is a valid
+parameter value for the service instance.
 @end table
 
 @xref{Service Types and Services}, for examples.
