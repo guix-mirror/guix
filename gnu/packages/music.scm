@@ -435,19 +435,28 @@ background while you work.")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "0.9.7")
+    (version "1.0.0-beta1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/hydrogen-music/hydrogen/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hydrogen-music/hydrogen.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1dy2jfkdw0nchars4xi4isrz66fqn53a9qk13bqza7lhmsg3s3qy"))))
+                "0nv83l70j5bjz2wd6n3a8cq3bmgrvdvg6g2hjhc1g5h6xnbqsh9x"))))
     (build-system cmake-build-system)
     (arguments
-    `(#:test-target "tests"))
+     `(#:test-target "tests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-data-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("/usr/share/pixmaps")
+                (string-append (assoc-ref outputs "out")
+                               "/share/pixmaps")))
+             #t)))))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("pkg-config" ,pkg-config)))
@@ -460,7 +469,8 @@ background while you work.")
        ("libsndfile" ,libsndfile)
        ("libtar" ,libtar)
        ("lrdf" ,lrdf)
-       ("qt" ,qt-4)
+       ("qtbase" ,qtbase)
+       ("qtxmlpatterns" ,qtxmlpatterns)
        ("zlib" ,zlib)))
     (home-page "http://www.hydrogen-music.org")
     (synopsis "Drum machine")
