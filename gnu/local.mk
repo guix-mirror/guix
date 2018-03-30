@@ -723,6 +723,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-locales.patch			\
   %D%/packages/patches/glibc-memchr-overflow-i686.patch		\
   %D%/packages/patches/glibc-o-largefile.patch			\
+  %D%/packages/patches/glibc-reinstate-prlimit64-fallback.patch	\
   %D%/packages/patches/glibc-vectorized-strcspn-guards.patch	\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
   %D%/packages/patches/glibc-2.27-git-fixes.patch		\

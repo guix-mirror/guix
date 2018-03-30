@@ -1,0 +1,127 @@
+This patch reinstates fallback code when the 'prlimit64' system call is
+missing by reverting the relevant part of this upstream commit:
+
+  commit 695d7d138eda449678a1650a8b8b58181033353f
+  Author: Joseph Myers <joseph@codesourcery.com>
+  Date:   Tue May 9 14:05:09 2017 +0000
+
+      Assume prlimit64 is available.
+
+The fallback code is useful on systems that lack 'prlimit64', such as the
+2.6.32-on-steroid kernel found on RHEL 6:
+
+  <https://lists.gnu.org/archive/html/guix-devel/2018-03/msg00349.html>
+
+diff --git a/sysdeps/unix/sysv/linux/getrlimit64.c b/sysdeps/unix/sysv/linux/getrlimit64.c
+index 37c173286f..56af3c0646 100644
+--- b/sysdeps/unix/sysv/linux/getrlimit64.c
++++ a/sysdeps/unix/sysv/linux/getrlimit64.c
+@@ -35,7 +35,40 @@
+ int
+ __getrlimit64 (enum __rlimit_resource resource, struct rlimit64 *rlimits)
+ {
+-  return INLINE_SYSCALL_CALL (prlimit64, 0, resource, NULL, rlimits);
++#ifdef __NR_prlimit64
++  int res = INLINE_SYSCALL_CALL (prlimit64, 0, resource, NULL, rlimits);
++  if (res == 0 || errno != ENOSYS)
++    return res;
++#endif
++
++/* The fallback code only makes sense if the platform supports either
++   __NR_ugetrlimit and/or __NR_getrlimit.  */
++#if defined (__NR_ugetrlimit) || defined (__NR_getrlimit)
++# ifndef __NR_ugetrlimit
++#  define __NR_ugetrlimit __NR_getrlimit
++# endif
++# if __RLIM_T_MATCHES_RLIM64_T
++#  define rlimits32 (*rlimits)
++# else
++  struct rlimit rlimits32;
++# endif
++
++  if (INLINE_SYSCALL_CALL (ugetrlimit, resource, &rlimits32) < 0)
++    return -1;
++
++# if !__RLIM_T_MATCHES_RLIM64_T
++  if (rlimits32.rlim_cur == RLIM_INFINITY)
++    rlimits->rlim_cur = RLIM64_INFINITY;
++  else
++    rlimits->rlim_cur = rlimits32.rlim_cur;
++  if (rlimits32.rlim_max == RLIM_INFINITY)
++    rlimits->rlim_max = RLIM64_INFINITY;
++  else
++    rlimits->rlim_max = rlimits32.rlim_max;
++# endif /* !__RLIM_T_MATCHES_RLIM64_T */
++#endif /* defined (__NR_ugetrlimit) || defined (__NR_getrlimit)  */
++
++  return 0;
+ }
+ libc_hidden_def (__getrlimit64)
+ 
+diff --git a/sysdeps/unix/sysv/linux/setrlimit.c b/sysdeps/unix/sysv/linux/setrlimit.c
+index 01812ac355..8773c78236 100644
+--- b/sysdeps/unix/sysv/linux/setrlimit.c
++++ a/sysdeps/unix/sysv/linux/setrlimit.c
+@@ -34,6 +34,7 @@
+ int
+ __setrlimit (enum __rlimit_resource resource, const struct rlimit *rlim)
+ {
++# ifdef __NR_prlimit64
+   struct rlimit64 rlim64;
+ 
+   if (rlim->rlim_cur == RLIM_INFINITY)
+@@ -45,7 +46,11 @@
+   else
+     rlim64.rlim_max = rlim->rlim_max;
+ 
+-  return INLINE_SYSCALL_CALL (prlimit64, 0, resource, &rlim64, NULL);
++  int res = INLINE_SYSCALL_CALL (prlimit64, 0, resource, &rlim64, NULL);
++  if (res == 0 || errno != ENOSYS)
++    return res;
++# endif
++  return INLINE_SYSCALL_CALL (setrlimit, resource, rlim);
+ }
+ 
+ # if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_2)
+diff --git a/sysdeps/unix/sysv/linux/setrlimit64.c b/sysdeps/unix/sysv/linux/setrlimit64.c
+index 2dd129d99e..db1960fc18 100644
+--- b/sysdeps/unix/sysv/linux/setrlimit64.c
++++ a/sysdeps/unix/sysv/linux/setrlimit64.c
+@@ -36,7 +36,36 @@
+ int
+ __setrlimit64 (enum __rlimit_resource resource, const struct rlimit64 *rlimits)
+ {
+-  return INLINE_SYSCALL_CALL (prlimit64, 0, resource, rlimits, NULL);
++  int res;
++
++#ifdef __NR_prlimit64
++  res = INLINE_SYSCALL_CALL (prlimit64, 0, resource, rlimits, NULL);
++  if (res == 0 || errno != ENOSYS)
++    return res;
++#endif
++
++/* The fallback code only makes sense if the platform supports
++   __NR_setrlimit.  */
++#ifdef __NR_setrlimit
++# if !__RLIM_T_MATCHES_RLIM64_T
++  struct rlimit rlimits32;
++
++  if (rlimits->rlim_cur >= RLIM_INFINITY)
++    rlimits32.rlim_cur = RLIM_INFINITY;
++  else
++    rlimits32.rlim_cur = rlimits->rlim_cur;
++  if (rlimits->rlim_max >= RLIM_INFINITY)
++    rlimits32.rlim_max = RLIM_INFINITY;
++  else
++    rlimits32.rlim_max = rlimits->rlim_max;
++# else
++#  define rlimits32 (*rlimits)
++# endif
++
++  res = INLINE_SYSCALL_CALL (setrlimit, resource, &rlimits32);
++#endif
++
++  return res;
+ }
+ weak_alias (__setrlimit64, setrlimit64)
+ 
