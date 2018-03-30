@@ -4523,13 +4523,14 @@ reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
+    (version "20180327")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
-                                  (package-version emacs-org) ".tar"))
+                                  version ".tar"))
               (sha256
                (base32
-                "1nqn7m1x9w5y356ylv5hia6v62pqfz9g3rzjbiffjxyyc34xvpfm"))))
+                "1y1nn0bxnh9y4a3zrqng8n639j5da5387q2314sr3a8ggy1nb93s"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -4550,8 +4551,7 @@ reproducible research.")
                                  string=? contrib-files org+contrib-files)))
                (with-directory-excursion
                    (string-append
-                    out "/share/emacs/site-lisp/guix.d/org-contrib-"
-                    ,(package-version emacs-org))
+                    out "/share/emacs/site-lisp/guix.d/org-contrib-" ,version)
                  (for-each delete-file duplicates))
                #t))))))
     (propagated-inputs
