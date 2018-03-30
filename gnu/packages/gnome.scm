@@ -80,6 +80,7 @@
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -4618,6 +4619,14 @@ configuration program to choose applications starting on login.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'work-around-gcc-7-include-path-issue
+           ;; FIXME: Work around a problem with gcc-7 includes (see
+           ;; <https://bugs.gnu.org/30756>).  Note that we use gcc-7
+           ;; to work around an internal compiler error in gcc-5.
+           (lambda _
+             (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPLUS_INCLUDE_PATH")
+             #t))
          (add-before
           'check 'pre-check
           (lambda _
@@ -4635,7 +4644,11 @@ configuration program to choose applications starting on login.")
               ((".*expect\\(datestr\\).*") ""))
             #t)))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
+     `(("gcc" ,gcc-7) ; FIXME: Work around an internal compiler error in
+                      ; gcc-5.  Try removing this when our default compiler is
+                      ; no longer gcc-5.5.0, and also remove the
+                      ; 'work-around-gcc-7-include-path-issue' phase above.
+       ("glib:bin" ,glib "bin")       ; for glib-compile-resources
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)
        ;; For testing
