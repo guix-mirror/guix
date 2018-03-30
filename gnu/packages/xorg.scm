@@ -2892,12 +2892,11 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "af6d8e9e8f546e5cba60e3a62765c2dbd0328e83")
-        (revision "9"))
+  (let ((commit "d7dfab62a9853b44bbcd67dac08391d8e5114c97")
+        (revision "10"))
     (package
       (name "xf86-video-intel")
-      (version (string-append "2.99.917-" revision "-"
-                              (string-take commit 7)))
+      (version (git-version "2.99.917" revision commit))
       (source
        (origin
          ;; there's no current tarball
@@ -2907,8 +2906,8 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "0f6sbkgykvvdggy8z6y7blf7yharg9vmiixxy190643bjxlnpp2s"))
-         (file-name (string-append name "-" version))))
+           "1vcfal4xr9q6016p28lnlyg709da6d305dysyyrj3fjp9fj48sva"))
+         (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
                 ("udev" ,eudev)
