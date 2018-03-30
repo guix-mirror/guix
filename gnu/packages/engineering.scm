@@ -618,7 +618,8 @@ language.")
       (license (list license:lgpl2.1+             ;library
                      license:gpl2+)))))           ;Guile bindings and GUI
 
-(deprecated-package "ao-cad" libfive)
+(define-public ao
+  (deprecated-package "ao-cad" libfive))
 
 ;; We use kicad from a git commit, because support for boost 1.61.0 has been
 ;; recently added.
