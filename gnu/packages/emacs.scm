@@ -3102,7 +3102,9 @@ single theme but a set of guidelines with numerous implementations.")
                (base32
                 "0q5as813xs8y29i3v2rm97phd6m7xsmmw6hwbvx57gwmi8i1c409"))))
     (build-system emacs-build-system)
-    (propagated-inputs `(("emacs-dash" ,emacs-dash)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-markdown-mode" ,emacs-markdown-mode)))
     (home-page "https://github.com/Fuco1/smartparens")
     (synopsis "Paredit-like insertion, wrapping and navigation with user
 defined pairs")
