@@ -32,6 +32,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2017, 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7414,3 +7415,24 @@ the same values you get in a terminal.")
      "Deft is an Emacs mode for quickly browsing, filtering, and editing
 directories of plain text notes, inspired by Notational Velocity.")
     (license license:bsd-3)))
+
+(define-public emacs-anzu
+  (package
+    (name "emacs-anzu")
+    (version "0.62")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://stable.melpa.org/packages/anzu-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1h3p1x2h2830n83dzvkh8p2892n34a95x7aavhi10p7vfjk406fd"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/syohex/emacs-anzu")
+    (synopsis "Show number of matches in mode-line while searching")
+    (description
+     "Anzu provides a minor mode which displays \"current match/total
+matches\" in the mode line in various search modes.  This is an Emacs port of
+Anzu.zim.")
+    (license license:gpl3+)))
