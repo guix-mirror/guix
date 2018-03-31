@@ -1950,7 +1950,9 @@ port of @code{cl-spark} to Emacs Lisp.")
     (propagated-inputs
      ;; The version of org in Emacs 24.5 is not sufficient, and causes tables
      ;; to be rendered incorrectly
-     `(("emacs-org" ,emacs-org)))
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-org" ,emacs-org)
+       ("emacs-spark" ,emacs-spark)))
     (home-page "https://github.com/dakrone/es-mode")
     (synopsis "Major mode for editing Elasticsearch queries")
     (description "@code{es-mode} includes highlighting, completion and
