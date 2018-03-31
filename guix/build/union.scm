@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;;
@@ -93,14 +93,12 @@ make sure the caller can modify them later."
     (cond ((null? dirs)
            ;; The inputs are all files.
            (format (current-error-port)
-                   "~%warning: collision encountered:~%~{~a~%~}"
+                   "~%warning: collision encountered:~%~{  ~a~%~}"
                    files)
 
            (let ((file (first files)))
              ;; TODO: Implement smarter strategies.
-             (format (current-error-port)
-                     "warning: arbitrarily choosing ~a~%"
-                     file)
+             (format (current-error-port) "warning: choosing ~a~%" file)
 
              (symlink* file output)))
 
