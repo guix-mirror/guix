@@ -132,7 +132,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.22")
+    (version "9.23")
     (source
       (origin
         (method url-fetch)
@@ -142,7 +142,7 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "1fyi4yvdj39bjgs10klr31cda1fbx1ar7a7b7yz7v68gykk65y61"))
+          "1ng8d9fm5lza7k1f7ybc791275c07z5hcmpkrl2i226nshkxrkhz"))
         (patches (search-patches "ghostscript-runpath.patch"
                                  "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
@@ -152,10 +152,10 @@ printing, and psresize, for adjusting page sizes.")
           ;; Remove bundled libraries. The bundled OpenJPEG is a patched fork so
           ;; we leave it, at least for now.
           ;; TODO Try unbundling ijs, which is developed alongside Ghostscript.
+          ;; Likewise for the thread-safe lcms2 fork called "lcms2art".
          '(begin
             (for-each delete-file-recursively '("freetype" "jbig2dec" "jpeg"
-                                                "lcms2" "libpng"
-                                                "tiff" "zlib"))
+                                                "libpng" "tiff" "zlib"))
             #t))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))                  ;19 MiB of HTML/PS doc + examples
@@ -180,13 +180,6 @@ printing, and psresize, for adjusting page sizes.")
                    '()))
        #:phases
        (modify-phases %standard-phases
-        (add-after 'unpack 'fix-doc-dir
-          (lambda _
-            ;; Honor --docdir.
-            (substitute* "Makefile.in"
-              (("^docdir=.*$") "docdir = @docdir@\n")
-              (("^exdir=.*$") "exdir = $(docdir)/examples\n"))
-            #t))
         (add-after 'configure 'remove-doc-reference
           (lambda _
             ;; Don't retain a reference to the 'doc' output in 'gs'.
@@ -195,6 +188,10 @@ printing, and psresize, for adjusting page sizes.")
             (substitute* "base/gscdef.c"
               (("GS_DOCDIR")
                "\"~/.guix-profile/share/doc/ghostscript\""))
+            ;; The docdir default changed in 9.23 and a compatibility
+            ;; symlink was added from datadir->docdir.  Remove it.
+            (substitute* "base/unixinst.mak"
+              (("ln -s \\$\\(DESTDIR\\)\\$\\(docdir\\).*") ""))
             #t))
          (add-after 'configure 'patch-config-files
            (lambda _
@@ -234,13 +231,11 @@ printing, and psresize, for adjusting page sizes.")
        ;; these libraries.
        ,@(if (%current-target-system)
              `(("zlib/native" ,zlib)
-               ("libjpeg/native" ,libjpeg)
-               ("lcms2/native" ,lcms))
+               ("libjpeg/native" ,libjpeg))
              '())))
     (inputs
      `(("freetype" ,freetype)
        ("jbig2dec" ,jbig2dec)
-       ("lcms2" ,lcms)
        ("libjpeg" ,libjpeg)
        ("libpaper" ,libpaper)
        ("libpng" ,libpng)
