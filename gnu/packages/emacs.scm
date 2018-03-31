@@ -6346,6 +6346,45 @@ from within Emacs.  Restclient runs queries from a plan-text query sheet,
 displays results pretty-printed in XML or JSON with @code{restclient-mode}")
       (license license:public-domain))))
 
+(define-public emacs-eimp
+  (let ((version "1.4.0")
+        (commit "2e7536fe6d8f7faf1bad7a8ae37faba0162c3b4f")
+        (revision "1"))
+    (package
+      (name "emacs-eimp")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nicferrier/eimp.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "154d57yafxbcf39r89n5j43c86rp2fki3lw3gwy7ww2g6qkclcra"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((imagemagick (assoc-ref inputs "imagemagick")))
+                 ;; eimp.el is read-only in git.
+                 (chmod "eimp.el" #o644)
+                 (emacs-substitute-variables "eimp.el"
+                   ("eimp-mogrify-program"
+                    (string-append imagemagick "/bin/mogrify"))))
+               #t)))))
+      (inputs
+       `(("imagemagick" ,imagemagick)))
+      (home-page "https://github.com/nicferrier/eimp")
+      (synopsis "Interactive image manipulation utility for Emacs")
+      (description "@code{emacs-eimp} allows interactive image manipulation
+from within Emacs.  It uses the code@{mogrify} utility from ImageMagick to do
+the actual transformations.")
+      (license license:gpl2+))))
+
 (define-public emacs-dired-hacks
   (let ((commit "eda68006ce73bbf6b9b995bfd70d08bec8cade36")
         (revision "1"))
