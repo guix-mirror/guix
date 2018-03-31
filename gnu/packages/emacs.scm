@@ -1908,6 +1908,31 @@ Expectations, but it can be used in other contexts.")
 definitions for testing with the Ecukes framework.")
     (license license:gpl3+)))
 
+(define-public emacs-spark
+  (let ((version "20160503")  ; no proper tag, use date of commit
+        (commit "0bf148c3ede3b31d56fd75f347cdd0b0eae60025")
+        (revision "1"))
+    (package
+      (name "emacs-spark")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alvinfrancis/spark.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1ykqr86j17mi95s08d9fp02d7ych1331b04dcqxzxnmpkhwngyj1"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/alvinfrancis/spark")
+      (synopsis "Sparkline generation library for Emacs Lisp")
+      (description "@code{emacs-spark} is a sparkline generation library for
+Emacs Lisp.  It generates a sparkline string given a list of numbers.  It is a
+port of @code{cl-spark} to Emacs Lisp.")
+      (license license:expat))))
+
 (define-public emacs-es-mode
   (package
     (name "emacs-es-mode")
