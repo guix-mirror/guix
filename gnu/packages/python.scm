@@ -48,6 +48,7 @@
 ;;; Copyright © 2018 Ethan R. Jones <ethanrjones97@gmail.com
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
+;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1304,9 +1305,9 @@ applications. dogtail scripts are written in Python and executed like any
 other Python program.")
     (license license:gpl2+)))
 
-(define-public python2-empy
+(define-public python-empy
   (package
-    (name "python2-empy")
+    (name "python-empy")
     (version "3.3")
     (source (origin
              (method url-fetch)
@@ -1317,12 +1318,7 @@ other Python program.")
                "01g8mmkfnvjdmlhsihwyx56lrg7r5m5d2fg6mnxsvy6g0dnl69f6"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (zero? (system* "./test.sh")))))))
+     `(#:tests? #f))                    ;python2 only
     (home-page "http://www.alcyone.com/software/empy/")
     (synopsis "Templating system for Python")
     (description
@@ -1338,6 +1334,9 @@ recording and playback via diversions, and dynamic, chainable filters.  The
 system is highly configurable via command line options and embedded
 commands.")
     (license license:lgpl2.1+)))
+
+(define-public python2-empy
+  (package-with-python2 python-empy))
 
 (define-public python2-element-tree
   (package
