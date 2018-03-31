@@ -5514,6 +5514,8 @@ conversion for Emacs Lisp.")
         (base32
          "0pivapphmykc6vhvpx7hdyl55ls37vc4jcrxpvs4yk7jzcmwa9xp"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-auctex" ,emacs-auctex)))
     (home-page "https://github.com/cdominik/cdlatex")
     (synopsis "Fast Emacs input methods for LaTeX environments and
 math")
