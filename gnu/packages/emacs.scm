@@ -1270,6 +1270,8 @@ searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
         (base32
          "17ssg8gx66yp63nhygjq2r6kgl4h45cacmrxsxs9f0lrfcx37k0l"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-howm" ,emacs-howm)))
     (home-page "https://github.com/kiwanami/emacs-calfw/")
     (synopsis "Calendar framework for Emacs")
     (description
