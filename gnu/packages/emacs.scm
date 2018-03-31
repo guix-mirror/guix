@@ -1218,6 +1218,42 @@ or XEmacs.")
 a set of simplified face specifications and a user-supplied color palette")
     (license license:gpl3+)))
 
+(define-public emacs-howm
+  (package
+    (name "emacs-howm")
+    (version "1.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://howm.sourceforge.jp/a/howm-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ddm91l6z58j7x59fa966j6q1rg4cinyza4r8ibg80hprn5h31qk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("emacs" ,emacs-minimal)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-howmdir=" %output
+                            "/share/emacs/site-lisp/guix.d/howm-" ,version))
+       #:modules ((guix build gnu-build-system)
+                  ((guix build emacs-build-system) #:prefix emacs:)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-build-system)
+                           (guix build emacs-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'rename-lispdir 'make-autoloads
+           (assoc-ref emacs:%standard-phases 'make-autoloads)))))
+    (home-page "http://howm.osdn.jp/")
+    (synopsis "Note-taking tool for Emacs")
+    (description "Howm is a note-taking tool for Emacs.  Like
+code@{emacs-wiki.el}, it facilitates using hyperlinks and doing full-text
+searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
+    (license license:gpl1+)))
+
 (define-public emacs-calfw
   (package
     (name "emacs-calfw")
