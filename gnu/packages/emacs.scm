@@ -2487,7 +2487,24 @@ framework for Emacs Lisp to be used with @code{ert}.")
                 "0xy9zb6wwkgwhcxdnslqk52bq3z24chgk6prqi4ks0qcf2bwyh5h"))
               (file-name (string-append name "-" version))))
     (build-system emacs-build-system)
-    ;; FIXME: Would need 'el-expectations' to actually run tests.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("\\$\\(CASK\\) exec ") ""))
+             #t)))
+       #:tests? #t
+       ;; FIXME: Normally we'd run the "test" target but for some reason the
+       ;; test-deferred target fails when run in the Guix build environment
+       ;; with the error: (file-error "Searching for program" "No such file or
+       ;; directory" "/bin/sh").
+       #:test-command '("make" "test-concurrent" "test-concurrent-compiled")))
+    (native-inputs
+     `(("emacs-ert-expectations" ,emacs-ert-expectations)
+       ("emacs-undercover" ,emacs-undercover)
+       ("ert-runner" ,ert-runner)))
     (synopsis "Simple asynchronous functions for Emacs Lisp")
     (description
      "The @code{deferred.el} library provides support for asynchronous tasks.
