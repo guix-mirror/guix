@@ -2460,6 +2460,24 @@ A minor mode @code{debbugs-browse-mode} let you browse URLs to the GNU Bug
 Tracker as well as bug identifiers prepared for @code{bug-reference-mode}.")
     (license license:gpl3+)))
 
+(define-public emacs-ert-expectations
+  (package
+    (name "emacs-ert-expectations")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri "https://www.emacswiki.org/emacs/download/ert-expectations.el")
+       (sha256
+        (base32
+         "0cwy3ilsid90abzzjb7ha2blq9kmv3gfp3icwwfcz6qczgirq6g7"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/ert-expectations.el")
+    (synopsis "Simple unit test framework for Emacs Lisp")
+    (description "@code{emacs-ert-expectations} is a simple unit test
+framework for Emacs Lisp to be used with @code{ert}.")
+    (license license:gpl3+)))
+
 (define-public emacs-deferred
   (package
     (name "emacs-deferred")
