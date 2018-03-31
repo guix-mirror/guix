@@ -33,6 +33,7 @@
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2017, 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
+;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7436,4 +7437,24 @@ directories of plain text notes, inspired by Notational Velocity.")
      "Anzu provides a minor mode which displays \"current match/total
 matches\" in the mode line in various search modes.  This is an Emacs port of
 Anzu.zim.")
+    (license license:gpl3+)))
+
+(define-public emacs-emmet-mode
+  (package
+    (name "emacs-emmet-mode")
+    (version "1.0.8")
+    (source (origin
+	      (method url-fetch)
+	      (uri (string-append "https://github.com/smihica/emmet-mode"
+				  "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+	      (sha256
+	       (base32
+		"0g3p22yabfcp98cfv9dgl9il2m2pd53isq2q11vb3s7qyn31f7zj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/smihica/emmet-mode")
+    (synopsis "Unofficial Emmet's support for Emacs")
+    (description
+     "Unfold CSS-selector-like expressions to markup.  It is intended to be
+used with SGML-like languages: XML, HTML, XHTML, XSL, etc.")
     (license license:gpl3+)))
