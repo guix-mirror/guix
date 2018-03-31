@@ -7057,6 +7057,8 @@ Feautures:
         (base32
          "1hm0k53m7d8zv2pk4p93k5mmilsv1mz7y2z6dqf7r6f0zmncs31a"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)))
     (home-page "https://github.com/redguardtoo/evil-matchit")
     (synopsis "Vim matchit ported into Emacs")
     (description
