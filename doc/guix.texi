@@ -2039,6 +2039,16 @@ variable, even though, taken individually, neither @file{foo} nor
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.
 
+@cindex collisions, in a profile
+@cindex colliding packages in profiles
+@cindex profile collisions
+@item --allow-collisions
+Allow colliding packages in the new profile.  Use at your own risk!
+
+By default, @command{guix package} reports as an error @dfn{collisions}
+in the profile.  Collisions happen when two or more different versions
+or variants of a given package end up in the profile.
+
 @item --verbose
 Produce verbose output.  In particular, emit the build log of the
 environment on the standard error port.
