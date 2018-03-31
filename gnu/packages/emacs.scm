@@ -6404,6 +6404,7 @@ the actual transformations.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
+         ("emacs-eimp" ,emacs-eimp)
          ("emacs-f" ,emacs-f)
          ("emacs-s" ,emacs-s)))
       (home-page "https://github.com/Fuco1/dired-hacks")
