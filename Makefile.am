@@ -459,7 +459,7 @@ EXTRA_DIST =						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
-  bin/guix.in						\
+  scripts/guix.in					\
   etc/guix-install.sh					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
