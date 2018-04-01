@@ -4889,8 +4889,8 @@ on the fly.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (home-page "http://www.nocrew.org/software/httptunnel.html")
     (synopsis "Tunnel data connections through HTTP requests")
     (description "httptunnel creates a bidirectional virtual data connection
