@@ -5239,12 +5239,12 @@ command-line arguments or read from stdin.")
              (add-installed-pythonpath inputs outputs)
              (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
                                            ":" (getenv "PATH")))
-             (zero? (system* "py.test" "-v" "-k"
-                             (string-append
-                              ;; These tests attempt to make a connection to
-                              ;; an external web service.
-                              "not test_get_item_with_kwargs"
-                              " and not test_ia"))))))))
+             (invoke "py.test" "-v" "-k"
+                     (string-append
+                      ;; These tests attempt to make a connection to
+                      ;; an external web service.
+                      "not test_get_item_with_kwargs"
+                      " and not test_ia")))))))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-jsonpatch" ,python-jsonpatch-0.4)
