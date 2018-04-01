@@ -5305,14 +5305,15 @@ internetarchive python module for programatic access to archive.org.")
          (modify-phases %standard-phases
            (add-after 'unpack 'get-tests
              (lambda _
-               (copy-file (assoc-ref %build-inputs "test-clf") "test_clf.py")))
+               (copy-file (assoc-ref %build-inputs "test-clf") "test_clf.py")
+               #t))
            (replace 'check
              (lambda _
-               (zero? (system* "nosetests"
-                               ;; These tests require internet connection
-                               "--exclude=test_browse"
-                               "--exclude=test_command"
-                               "--exclude=test_search")))))))
+               (invoke "nosetests"
+                       ;; These tests require an Internet connection.
+                       "--exclude=test_browse"
+                       "--exclude=test_command"
+                       "--exclude=test_search"))))))
       (home-page "https://github.com/ncrocfer/clf")
       (synopsis "Search code snippets on @url{https://commandlinefu.com}")
       (description "@code{clf} is a command line tool for searching code
