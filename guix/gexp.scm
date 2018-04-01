@@ -1068,25 +1068,21 @@ they can refer to each other."
          (define (regular? file)
            (not (member file '("." ".."))))
 
+         (define (process-entry entry output)
+           (if (file-is-directory? entry)
+               (let ((output (string-append output "/" (basename entry))))
+                 (mkdir-p output)
+                 (process-directory entry output))
+               (let* ((base   (basename entry ".scm"))
+                      (output (string-append output "/" base ".go")))
+                 (compile-file entry
+                               #:output-file output
+                               #:opts %auto-compilation-options))))
+
          (define (process-directory directory output)
            (let ((entries (map (cut string-append directory "/" <>)
                                (scandir directory regular?))))
-             (for-each (lambda (entry)
-                         (if (file-is-directory? entry)
-                             (let ((output (string-append output "/"
-                                                          (basename entry))))
-                               (mkdir-p output)
-                               (process-directory entry output))
-                             (let* ((base   (string-drop-right
-                                             (basename entry)
-                                             4)) ;.scm
-                                    (output (string-append output "/" base
-                                                           ".go")))
-                               (compile-file entry
-                                             #:output-file output
-                                             #:opts
-                                             %auto-compilation-options))))
-                       entries)))
+             (for-each (cut process-entry <> output) entries)))
 
          (set! %load-path (cons (ungexp modules) %load-path))
          (mkdir (ungexp output))
