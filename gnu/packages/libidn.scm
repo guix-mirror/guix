@@ -32,14 +32,14 @@
 (define-public libidn
   (package
    (name "libidn")
-   (version "1.33")
+   (version "1.34")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libidn/libidn-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "068fjg2arlppjqqpzd714n1lf6gxkpac9v5yyvp1qwmv6nvam9s4"))
+              "0g3fzypp0xjcgr90c5cyj57apx1cmy0c6y9lvw2qdcigbyby469p"))
             (modules '((guix build utils)))
             (snippet
              '(begin
