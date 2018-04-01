@@ -4185,7 +4185,7 @@ not tied in the trap of backward compatibility.")
 (define-public emacs-helm-swoop
   (package
     (name "emacs-helm-swoop")
-    (version "1.7.2")
+    (version "1.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4195,7 +4195,7 @@ not tied in the trap of backward compatibility.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1z34pfi0gsk054pxr906ilaalaw0xz3s536163gf9ykkwmc2356d"))))
+                "1ssivsjzlnkg049cg993l8fp09l5nhpz6asj7w5c91zp5kpc6fh7"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
