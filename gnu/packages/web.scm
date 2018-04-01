@@ -690,8 +690,8 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
          (add-after 'wrap-program 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (with-directory-excursion "data"
-               (zero? (system* (string-append (assoc-ref outputs "out") "/bin/ktImportText")
-                               "ec.tsv"))))))))
+               (invoke (string-append (assoc-ref outputs "out") "/bin/ktImportText")
+                       "ec.tsv")))))))
    (inputs
     `(("perl" ,perl)))
    (home-page "https://github.com/marbl/Krona/wiki")
