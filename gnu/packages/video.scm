@@ -368,13 +368,13 @@ H.264 (MPEG-4 AVC) video streams.")
          (replace 'build
            (lambda _
              (let ((-j (list "-j" (number->string (parallel-job-count)))))
-               (zero? (apply system* "rake" -j)))))
+               (apply invoke "rake" -j))))
          (replace 'check
            (lambda _
-             (zero? (system* "rake" "tests/unit"))))
+             (invoke "rake" "tests/unit")))
          (replace 'install
            (lambda _
-             (zero? (system* "rake" "install")))))))
+             (invoke "rake" "install"))))))
     (home-page "https://mkvtoolnix.download")
     (synopsis "Tools to create, alter and inspect Matroska files")
     (description
