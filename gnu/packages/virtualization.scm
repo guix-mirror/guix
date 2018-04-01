@@ -347,14 +347,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "4.0.0")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1j6zzajh4j3zzsaqn5f5mrchm0590xcf6rzkfajvqw3bd4dcms79"))))
+                "0nq1iz5iic466qahp0i8dlvyd6li0b0pdrvvrz9286l12x2fm61s"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -420,7 +420,7 @@ manage system or application containers.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("polkit" ,polkit)
-       ("python" ,python-2)))
+       ("python" ,python)))
     (home-page "https://libvirt.org")
     (synopsis "Simple API for virtualization")
     (description "Libvirt is a C toolkit to interact with the virtualization
