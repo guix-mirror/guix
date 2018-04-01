@@ -928,6 +928,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     ("grep" ,grep-final)
     ,@%boot5-inputs))
 
+(define sed-final
+  ;; The final sed.
+  (let ((sed (package-with-bootstrap-guile
+              (package-with-explicit-inputs sed %boot6-inputs
+                                            (current-source-location)
+                                            #:guile guile-final))))
+    (package/inherit sed (native-inputs `(("perl" ,perl-boot0))))))
+
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by 'gnu-build-system'.  We
   ;; still use 'package-with-bootstrap-guile' so that the bootstrap tools are
@@ -946,9 +954,9 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                ("file" ,file)
                ("diffutils" ,diffutils)
                ("patch" ,patch)
-               ("sed" ,sed)
                ("findutils" ,findutils)
                ("gawk" ,gawk)))
+      ("sed" ,sed-final)
       ("grep" ,grep-final)
       ("coreutils" ,coreutils-final)
       ("make" ,gnu-make-final)

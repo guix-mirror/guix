@@ -128,14 +128,14 @@ including, for example, recursive directory searching.")
 (define-public sed
   (package
    (name "sed")
-   (version "4.4")
+   (version "4.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sed/sed-" version
                                 ".tar.xz"))
             (sha256
              (base32
-              "0fv88bcnraixc8jvpacvxshi30p5x9m7yb8ns1hfv07hmb2ypmnb"))))
+              "0h3b2jfj57wmz680vkbyavlsrkak556qhvs7m7fdlawwhg477bbs"))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (arguments
@@ -149,15 +149,9 @@ including, for example, recursive directory searching.")
             (substitute* "Makefile.in"
               (("^doc/sed\\.1:.*")
                "doc/sed.1:\n"))
-            #t))
-        (add-before 'patch-source-shebangs 'patch-test-suite
-          (lambda* (#:key inputs #:allow-other-keys)
-            (patch-makefile-SHELL "testsuite/Makefile.tests")
-            (substitute* '("testsuite/bsd.sh"
-                           "testsuite/bug-regex9.c")
-              (("/bin/sh")
-               (which "sh")))
             #t)))))
+   (native-inputs
+    `(("perl" ,perl)))                            ;for tests
    (description
     "Sed is a non-interactive, text stream editor.  It receives a text
 input from a file or from standard input and it then applies a series of text
