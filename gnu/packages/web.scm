@@ -4786,7 +4786,7 @@ handling many of the web standards in use today.")
              (let* ((out (assoc-ref %outputs "out"))
                     (man (string-append out "/share/man/man1")))
                (with-directory-excursion man
-                 (zero? (system* "gzip" "elvi.1sr")))))))))
+                 (invoke "gzip" "elvi.1sr"))))))))
     (inputs
      `(("perl" ,perl)
        ("perl-www-opensearch" ,perl-www-opensearch)
