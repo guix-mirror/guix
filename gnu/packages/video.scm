@@ -24,6 +24,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +57,7 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
@@ -2821,3 +2823,39 @@ changed.  Or in other words, it can detect motion.")
 
     ;; Some files say "version 2" and others "version 2 or later".
     (license license:gpl2)))
+
+(define-public subdl
+  (let ((commit "4cf5789b11f0ff3f863b704b336190bf968cd471")
+        (revision "1"))
+    (package
+      (name "subdl")
+      (version (git-version "1.0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alexanderwink/subdl.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0kmk5ck1j49q4ww0lvas2767kwnzhkq0vdwkmjypdx5zkxz73fn8"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder (begin
+                     (use-modules (guix build utils))
+                     (let* ((out (assoc-ref %outputs "out"))
+                            (bin (string-append out "/bin"))
+                            (source (assoc-ref %build-inputs "source"))
+                            (python (assoc-ref %build-inputs "python")))
+                       (install-file (string-append source "/subdl") bin)
+                       (patch-shebang (string-append bin "/subdl")
+                                      (list (string-append python "/bin")))))))
+      (inputs `(("python" ,python)))
+      (synopsis "Command-line tool for downloading subtitles from opensubtitles.org")
+      (description "Subdl is a command-line tool for downloading subtitles from
+opensubtitles.org.  By default, it will search for English subtitles, display
+the results, download the highest-rated result in the requested language and
+save it to the appropriate filename.")
+      (license license:gpl3+)
+      (home-page "https://github.com/alexanderwink/subdl"))))
