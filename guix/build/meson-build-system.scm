@@ -53,7 +53,8 @@
     ;; * <https://github.com/mesonbuild/meson/issues/314>
     ;; * <https://github.com/mesonbuild/meson/issues/3038>
     ;; * <https://github.com/NixOS/nixpkgs/issues/31222>
-    (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
+    (unless (getenv "LDFLAGS")
+      (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib")))
 
     (mkdir build-dir)
     (chdir build-dir)
