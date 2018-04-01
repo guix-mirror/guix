@@ -855,7 +855,7 @@ UTS#46.")
                       ;; source tree.
                       (copy-recursively "build/gnuauto" ".")
                       (setenv "AUTOMAKE" "automake --foreign")
-                      (zero? (system* "autoreconf" "-vfi")))))))
+                      (invoke "autoreconf" "-vfi"))))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
