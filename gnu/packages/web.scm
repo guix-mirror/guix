@@ -1236,11 +1236,9 @@ minimum to provide high performance operation.")
            (delete 'configure)
            (add-after 'unpack 'unpack-libsass-and-set-path
              (lambda* (#:key inputs #:allow-other-keys)
-               (and (zero? (system* "tar" "xvf" (assoc-ref inputs "libsass")))
-                    (begin
-                      (setenv "SASS_LIBSASS_PATH"
-                              (string-append (getcwd) "/libsass-" ,version))
-                      #t)))))))
+               (invoke "tar" "xvf" (assoc-ref inputs "libsass"))
+               (setenv "SASS_LIBSASS_PATH"
+                       (string-append (getcwd) "/libsass-" ,version)))))))
       (inputs
        `(("libsass" ,libsass)))
       (synopsis "CSS pre-processor")
