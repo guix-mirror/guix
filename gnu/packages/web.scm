@@ -4034,7 +4034,8 @@ and vice-versa.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'bootstrap
-          (lambda _ (zero? (system* "sh" "autogen.sh")))))))
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
     ;; The release tarball lacks the generated files.
     (native-inputs
      `(("autoconf" ,autoconf)
