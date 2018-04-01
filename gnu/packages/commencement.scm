@@ -913,14 +913,13 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define grep-final
   ;; The final grep.  Gzip holds a reference to it (via zgrep), so it must be
   ;; built before gzip.
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs (package
-                                   (inherit grep)
-                                   (inputs '())   ;no PCRE support
-                                   (native-inputs `(("perl" ,perl-boot0))))
-                                 %boot5-inputs
-                                 (current-source-location)
-                                 #:guile guile-final)))
+  (let ((grep (package-with-bootstrap-guile
+               (package-with-explicit-inputs grep %boot5-inputs
+                                             (current-source-location)
+                                             #:guile guile-final))))
+    (package/inherit grep
+                     (inputs (alist-delete "pcre" (package-inputs grep)))
+                     (native-inputs `(("perl" ,perl-boot0))))))
 
 (define %boot6-inputs
   ;; Now use the final Coreutils.
