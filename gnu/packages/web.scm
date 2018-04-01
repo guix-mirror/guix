@@ -413,13 +413,13 @@ APIs.")
          "07y6s4mm86cv7p1ljz94sxnqa89y9amn3vzwsnbq5hrl4vdy0zac"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no tests included
+     `(#:tests? #f                      ; no tests included
        #:make-flags (list "CC=gcc")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'bootstrap
            (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
+             (invoke "autoreconf" "-vif"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
