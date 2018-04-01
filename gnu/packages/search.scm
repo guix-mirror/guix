@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -64,13 +65,13 @@
            ;; getaddrinfo(). This does not work in the build environment,
            ;; so exclude those tests. See HACKING for the list of targets.
            (lambda _
-             (zero? (system* "make"
-                             "check-inmemory"
-                             "check-remoteprog"
-                             ;"check-remotetcp"
-                             "check-multi"
-                             "check-glass"
-                             "check-chert")))))))
+             (invoke "make"
+                     "check-inmemory"
+                     "check-remoteprog"
+                     ;"check-remotetcp"
+                     "check-multi"
+                     "check-glass"
+                     "check-chert"))))))
     (synopsis "Search Engine Library")
     (description
      "Xapian is a highly adaptable toolkit which allows developers to easily
