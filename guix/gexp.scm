@@ -1051,6 +1051,8 @@ last one is created from the given <scheme-file> object."
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other."
+  (define total (length modules))
+
   (mlet %store-monad ((modules (imported-modules modules
                                                  #:system system
                                                  #:guile guile
@@ -1062,32 +1064,42 @@ they can refer to each other."
          (primitive-load (ungexp %utils-module))  ;for 'mkdir-p'
 
          (use-modules (ice-9 ftw)
+                      (ice-9 format)
+                      (srfi srfi-1)
                       (srfi srfi-26)
                       (system base compile))
 
          (define (regular? file)
            (not (member file '("." ".."))))
 
-         (define (process-entry entry output)
+         (define (process-entry entry output processed)
            (if (file-is-directory? entry)
                (let ((output (string-append output "/" (basename entry))))
                  (mkdir-p output)
-                 (process-directory entry output))
+                 (process-directory entry output processed))
                (let* ((base   (basename entry ".scm"))
                       (output (string-append output "/" base ".go")))
+                 (format #t "[~2@a/~2@a] Compiling '~a'...~%"
+                         (+ 1 processed) (ungexp total) entry)
                  (compile-file entry
                                #:output-file output
-                               #:opts %auto-compilation-options))))
+                               #:opts %auto-compilation-options)
+                 (+ 1 processed))))
 
-         (define (process-directory directory output)
+         (define (process-directory directory output processed)
            (let ((entries (map (cut string-append directory "/" <>)
                                (scandir directory regular?))))
-             (for-each (cut process-entry <> output) entries)))
+             (fold (cut process-entry <> output <>)
+                   processed
+                   entries)))
+
+         (setvbuf (current-output-port)
+                  (cond-expand (guile-2.2 'line) (else _IOLBF)))
 
          (set! %load-path (cons (ungexp modules) %load-path))
          (mkdir (ungexp output))
          (chdir (ungexp modules))
-         (process-directory "." (ungexp output)))))
+         (process-directory "." (ungexp output) 0))))
 
     ;; TODO: Pass MODULES as an environment variable.
     (gexp->derivation name build
