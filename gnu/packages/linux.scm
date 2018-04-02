@@ -1146,8 +1146,7 @@ configure the Linux 2.4.x and later IPv4 packet filtering ruleset
 This package also includes @command{ip6tables}, which is used to configure the
 IPv6 packet filter.
 
-Both commands are targeted at system administrators.
-")
+Both commands are targeted at system administrators.")
     (license license:gpl2+)))
 
 (define-public ebtables
