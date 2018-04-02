@@ -3482,7 +3482,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "2.1.0")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3491,7 +3491,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0irwsq6ihfz3y3b943cwqy29g3si7gqbgxdscgw53vwv9vfvi085"))
+                "1qnmmh05z1kzcwa8vddywrxs8g7zvp5vpwz4v7w7c135hjwrb6jy"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3509,7 +3509,9 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       `(,(string-append "PREFIX=" (assoc-ref %outputs "out")))
+       `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
+         "USE_SYSTEM_FREETYPE=ON"
+         "DOWNLOAD_SOUNDFONT=OFF")
        ;; There are tests, but no simple target to run.  The command
        ;; used to run them is:
        ;;
@@ -3521,16 +3523,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'use-system-freetype
-           (lambda _
-             ;; XXX: For the time being, we grossly insert the CMake
-             ;; option needed to ignore bundled freetype.  However,
-             ;; there's a pending PR to have it as a regular make
-             ;; option, in a future release.
-             (substitute* "Makefile"
-               (("cmake -DCMAKE") "cmake -DUSE_SYSTEM_FREETYPE=ON -DCMAKE"))
-             #t)))))
+         (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("freetype" ,freetype)
@@ -3541,6 +3534,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        ("libsndfile" ,libsndfile)
        ("libvorbis" ,libvorbis)
        ("portaudio" ,portaudio)
+       ("portmidi" ,portmidi)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
