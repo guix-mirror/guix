@@ -76,7 +76,8 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0jfsfnh9bxlxiwxws60yah4ybjw2hshmvqp31pri4m4h8ivrbnry"))))
+        "0jfsfnh9bxlxiwxws60yah4ybjw2hshmvqp31pri4m4h8ivrbnry"))
+      (patches (search-patches "libgpg-error-aarch64-logging-fix.patch"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
