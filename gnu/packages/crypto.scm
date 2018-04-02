@@ -717,25 +717,18 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 (define-public botan
   (package
     (name "botan")
-    (version "2.4.0")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://botan.randombit.net/releases/"
                                   "Botan-" version ".tgz"))
               (sha256
                (base32
-                "1988crh5lipmfcd1icldf6hchi9vcy08yymxv79lrvnglpi6957d"))))
+                "06zvwknhwfrkdvq2sybqbqhnd2d4nq2cszlnsddql13z7vh1z8xq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'fix-rst2man-invocation
-           (lambda _
-             ;; XXX Reported upstream:
-             ;; <https://github.com/randombit/botan/issues/1516>
-             (substitute* "src/scripts/build_docs.py"
-               (("'rst2man'")"'rst2man.py'"))
-             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref %outputs "out"))
