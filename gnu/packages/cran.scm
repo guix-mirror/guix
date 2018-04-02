@@ -3654,3 +3654,25 @@ and Eclat.")
 time formats, @code{parse_date} parses dates in unspecified formats,
 and @code{format_iso_8601} formats a date in ISO 8601 format.")
     (license license:gpl2)))
+
+(define-public r-abc-data
+  (package
+    (name "r-abc-data")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abc.data" version))
+       (sha256
+        (base32
+         "1bv1n68ah714ws58cf285n2s2v5vn7382lfjca4jxph57lyg8hmj"))))
+    (properties `((upstream-name . "abc.data")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/abc.data/")
+    (synopsis "Data for Approximate Bayesian Computation (ABC) package")
+    (description
+     "This package contains data which are used by functions of the abc
+package which implements several @dfn{Approximate Bayesian Computation} (ABC)
+algorithms for performing parameter estimation, model selection, and
+goodness-of-fit.")
+    (license license:gpl3+)))
