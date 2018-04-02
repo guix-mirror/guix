@@ -7423,11 +7423,12 @@ directories of plain text notes, inspired by Notational Velocity.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://stable.melpa.org/packages/anzu-"
-                           version ".el"))
+       (uri (string-append "https://github.com/syohex/emacs-anzu/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1h3p1x2h2830n83dzvkh8p2892n34a95x7aavhi10p7vfjk406fd"))))
+         "16cg3897x5znbmgk7sdy0qyd0fbic9dmmz0dchq2vz5z29yhg4cz"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/syohex/emacs-anzu")
     (synopsis "Show number of matches in mode-line while searching")
