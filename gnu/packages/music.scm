@@ -1768,7 +1768,19 @@ projects.")
        #:build-type "Release"           ; needed to have PMALSA set
        #:configure-flags
        (list "-DPORTMIDI_ENABLE_JAVA=Off"
-             "-DPORTMIDI_ENABLE_TEST=Off"))) ; tests fail linking
+             "-DPORTMIDI_ENABLE_TEST=Off") ; tests fail linking
+       #:phases
+       (modify-phases %standard-phases
+         ;; Some packages, e.g., MuseScore, expect "libporttime.so" instead of
+         ;; "libportmidi.so".  Distributions get away with it by creating an
+         ;; appropriate symlink.
+         (add-after 'install 'add-porttime
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (with-directory-excursion lib
+                 (symlink "libportmidi.so" "libporttime.so")))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)))
     (native-inputs
