@@ -150,30 +150,12 @@ in turn be used to build the final Rust.")
     (modules '((guix build utils)))
     (snippet '(begin (delete-file-recursively "src/llvm") #t))))
 
-(define-public rust-1.23
+(define-public rust-1.19
   (package
     (name "rust")
-    (version "1.23.0")
-    (source (rust-source version "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l"))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("bison" ,bison) ; For the tests
-       ("cmake" ,cmake)
-       ("flex" ,flex) ; For the tests
-       ("gdb" ,gdb)   ; For the tests
-       ("git" ,git)
-       ("procps" ,procps) ; For the tests
-       ("python-2" ,python-2)
-       ("rustc-bootstrap" ,rust-bootstrap)
-       ("cargo-bootstrap" ,rust-bootstrap "cargo")
-       ("pkg-config" ,pkg-config) ; For "cargo"
-       ("which" ,which)))
-    (inputs
-     `(("jemalloc" ,jemalloc-4.5.0)
-       ("llvm" ,llvm-3.9.1)
-       ("openssl" ,openssl)
-       ("libcurl" ,curl))) ; For "cargo"
-    (outputs '("out" "doc" "cargo"))
+    (version "1.19.0")
+    (source (rust-source version "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"))
+    (outputs '("out" "cargo"))
     (arguments
      `(#:imported-modules ,%cargo-build-system-modules ;for `generate-checksums'
        #:phases
@@ -204,15 +186,6 @@ in turn be used to build the final Rust.")
                ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
                (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
                #t)))
-         (add-after 'patch-tests 'fix-mtime-bug
-           (lambda* _
-             (substitute* "src/build_helper/lib.rs"
-               ;; Bug in Rust code.
-               ;; Current implementation assume that if dst not exist then it's mtime
-               ;; is 0, but in same time "src" have 0 mtime in guix build!
-               (("let threshold = mtime\\(dst\\);")
-                "if !dst.exists() {\nreturn false\n}\n let threshold = mtime(dst);"))
-             #t))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda* _
              (substitute* "src/Cargo.lock"
@@ -230,20 +203,73 @@ in turn be used to build the final Rust.")
               (find-files "src/vendor" ".cargo-checksum.json"))
              #t))
          (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (assoc-ref outputs "doc"))
-                    (gcc (assoc-ref inputs "gcc"))
-                    (gdb (assoc-ref inputs "gdb"))
-                    (binutils (assoc-ref inputs "binutils"))
-                    (python (assoc-ref inputs "python-2"))
-                    (rustc (assoc-ref inputs "rustc-bootstrap"))
-                    (cargo (assoc-ref inputs "cargo-bootstrap"))
-                    (llvm (assoc-ref inputs "llvm"))
-                    (jemalloc (assoc-ref inputs "jemalloc")))
-               (call-with-output-file "config.toml"
-                 (lambda (port)
-                   (display (string-append "
+           (const #t))
+         (replace 'check
+           (const #t))
+         (replace 'install
+           (const #t)))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("bison" ,bison) ; For the tests
+       ("cmake" ,cmake)
+       ("flex" ,flex) ; For the tests
+       ("gdb" ,gdb)   ; For the tests
+       ("git" ,git)
+       ("procps" ,procps) ; For the tests
+       ("python-2" ,python-2)
+       ("rustc-bootstrap" ,rust-bootstrap)
+       ("cargo-bootstrap" ,rust-bootstrap "cargo")
+       ("pkg-config" ,pkg-config) ; For "cargo"
+       ("which" ,which)))
+    (inputs
+     `(("jemalloc" ,jemalloc-4.5.0)
+       ("llvm" ,llvm-3.9.1)
+       ("openssl" ,openssl)
+       ("libcurl" ,curl))) ; For "cargo"
+    ;; rustc invokes gcc, so we need to set its search paths accordingly.
+    (native-search-paths (package-native-search-paths gcc))
+    (synopsis "Compiler for the Rust progamming language")
+    (description "Rust is a systems programming language that provides memory
+safety and thread safety guarantees.")
+    (home-page "https://www.rust-lang.org")
+    ;; Dual licensed.
+    (license (list license:asl2.0 license:expat))))
+
+(define-public rust-1.23
+  (package
+    (inherit rust-1.19)
+    (name "rust")
+    (version "1.23.0")
+    (source (rust-source version "14fb8vhjzsxlbi6yrn1r6fl5dlbdd1m92dn5zj5gmzfwf4w9ar3l"))
+    (outputs '("out" "doc" "cargo"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments rust-1.19)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'patch-tests 'fix-mtime-bug
+             (lambda* _
+               (substitute* "src/build_helper/lib.rs"
+                 ;; Bug in Rust code.
+                 ;; Current implementation assume that if dst not exist then it's mtime
+                 ;; is 0, but in same time "src" have 0 mtime in guix build!
+                 (("let threshold = mtime\\(dst\\);")
+                  "if !dst.exists() {\nreturn false\n}\n let threshold = mtime(dst);"))
+               #t))
+           (replace 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (doc (assoc-ref outputs "doc"))
+                      (gcc (assoc-ref inputs "gcc"))
+                      (gdb (assoc-ref inputs "gdb"))
+                      (binutils (assoc-ref inputs "binutils"))
+                      (python (assoc-ref inputs "python-2"))
+                      (rustc (assoc-ref inputs "rustc-bootstrap"))
+                      (cargo (assoc-ref inputs "cargo-bootstrap"))
+                      (llvm (assoc-ref inputs "llvm"))
+                      (jemalloc (assoc-ref inputs "jemalloc")))
+                 (call-with-output-file "config.toml"
+                   (lambda (port)
+                     (display (string-append "
 [llvm]
 [build]
 cargo = \"" cargo "/bin/cargo" "\"
@@ -308,15 +334,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                (wrap-program (string-append out "/bin/rustc")
                  `("PATH" ":" prefix (,(string-append ld-wrapper "/bin")))
                  `("LIBRARY_PATH" ":" suffix (,(string-append libc "/lib"))))
-               #t))))))
-    ;; rustc invokes gcc, so we need to set its search paths accordingly.
-    (native-search-paths (package-native-search-paths gcc))
-    (synopsis "Compiler for the Rust progamming language")
-    (description "Rust is a systems programming language that provides memory
-safety and thread safety guarantees.")
-    (home-page "https://www.rust-lang.org")
-    ;; Dual licensed.
-    (license (list license:asl2.0 license:expat))))
+               #t)))))))))
 
 (define-public rust
   (let ((base-rust rust-1.23))
