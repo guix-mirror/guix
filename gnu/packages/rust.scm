@@ -235,6 +235,18 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
+(define (rust-bootstrapped-package base-rust version checksum)
+  "Bootstrap rust VERSION with source checksum CHECKSUM using BASE-RUST."
+  (package
+    (inherit base-rust)
+    (version version)
+    (source
+     (rust-source version checksum))
+    (native-inputs
+     (alist-replace "cargo-bootstrap" (list base-rust "cargo")
+                    (alist-replace "rustc-bootstrap" (list base-rust)
+                                   (package-native-inputs base-rust))))))
+
 (define-public rust-1.23
   (package
     (inherit rust-1.19)
@@ -337,18 +349,13 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                #t)))))))))
 
 (define-public rust
-  (let ((base-rust rust-1.23))
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.23 "1.24.1"
+                                    "1vv10x2h9kq7fxh2v01damdq8pvlp5acyh1kzcda9sfjx12kv99y")))
     (package
       (inherit base-rust)
-      (version "1.24.1")
-      (source
-       (rust-source version
-                    "1vv10x2h9kq7fxh2v01damdq8pvlp5acyh1kzcda9sfjx12kv99y"))
-      (native-inputs
-       (alist-replace "cargo-bootstrap" (list base-rust "cargo")
-                      (alist-replace "rustc-bootstrap" (list base-rust)
-                                     (package-native-inputs base-rust))))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
-         ((#:phases phases) `(modify-phases ,phases
-                               (delete 'fix-mtime-bug))))))))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'fix-mtime-bug))))))))
