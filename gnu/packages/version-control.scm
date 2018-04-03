@@ -139,14 +139,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
    ;; to be updated as well.
-   (version "2.16.3")
+   (version "2.17.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0j1dwvg5llnj3g0fp8hdgpms4hp90qw9f6509vqw30dhwplrjpfn"))))
+              "1ismz7nsz8dgjmk782xr9s0mr2qh06f72pdcgbxfmnw1bvlya5p9"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -159,7 +159,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "15ckcia3bdbn1dpwlh3fifd8fzk38l1pdgxsf2yl8l8xd1z8jqaz"))))))
+            "09rpjj0m97h5lpzpwk47m6xsz9gb8wqf1s3dfqma3mwav2pb3njb"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -215,9 +215,6 @@ as well as the classic centralized workflow.")
               (("/bin/sh") (which "sh"))
               (("/usr/bin/perl") (which "perl"))
               (("/usr/bin/python") (which "python")))
-            (substitute* "perl/Makefile"
-              ;; Don't create timestamped 'perllocal.pod'.
-              (("\\$< PREFIX=") "$< NO_PERLLOCAL=1 PREFIX="))
             #t))
         (add-after 'configure 'add-PM.stamp
           (lambda _
