@@ -223,42 +223,43 @@ as well as the classic centralized workflow.")
             #t))
         (add-before 'check 'patch-tests
           (lambda _
-            ;; These files contain some funny bytes that Guile is unable
-            ;; to decode for shebang patching. Just delete them.
-            (for-each delete-file '("t/t4201-shortlog.sh"
-                                    "t/t7813-grep-icase-iso.sh"))
-            ;; Many tests contain inline shell scripts (hooks etc).
-            (substitute* (find-files "t" "\\.sh$")
-              (("#!/bin/sh") (string-append "#!" (which "sh"))))
-            ;; Un-do shebang patching here to prevent checksum mismatch.
-            (substitute* '("t/t4034/perl/pre" "t/t4034/perl/post")
-              (("^#!.*/bin/perl") "#!/usr/bin/perl"))
-            (substitute* "t/t5003-archive-zip.sh"
-              (("cp /bin/sh") (string-append "cp " (which "sh"))))
-            (substitute* "t/t6030-bisect-porcelain.sh"
-              (("\"/bin/sh\"") (string-append "\"" (which "sh") "\"")))
-            ;; FIXME: This test runs `git commit` with a bogus EDITOR
-            ;; and empty commit message, but does not fail the way it's
-            ;; expected to. The test passes when invoked interactively.
-            (substitute* "t/t7508-status.sh"
-              (("\tcommit_template_commented") "\ttrue"))
-            ;; More checksum mismatches due to odd shebangs.
-            (substitute* "t/t9100-git-svn-basic.sh"
-              (("\"#!/gnu.*/bin/sh") "\"#!/bin/sh"))
-            (substitute* "t/t9300-fast-import.sh"
-              (("\t#!/gnu.*/bin/sh") "\t#!/bin/sh")
-              (("'#!/gnu.*/bin/sh") "'#!/bin/sh"))
-            ;; FIXME: Some hooks fail with "basename: command not found".
-            ;; See 't/trash directory.t9164.../svn-hook.log'.
-            (delete-file "t/t9164-git-svn-dcommit-concurrent.sh")
+            (let ((store-directory (%store-directory)))
+              ;; These files contain some funny bytes that Guile is unable
+              ;; to decode for shebang patching. Just delete them.
+              (for-each delete-file '("t/t4201-shortlog.sh"
+                                      "t/t7813-grep-icase-iso.sh"))
+              ;; Many tests contain inline shell scripts (hooks etc).
+              (substitute* (find-files "t" "\\.sh$")
+                (("#!/bin/sh") (string-append "#!" (which "sh"))))
+              ;; Un-do shebang patching here to prevent checksum mismatch.
+              (substitute* '("t/t4034/perl/pre" "t/t4034/perl/post")
+                (("^#!.*/bin/perl") "#!/usr/bin/perl"))
+              (substitute* "t/t5003-archive-zip.sh"
+                (("cp /bin/sh") (string-append "cp " (which "sh"))))
+              (substitute* "t/t6030-bisect-porcelain.sh"
+                (("\"/bin/sh\"") (string-append "\"" (which "sh") "\"")))
+              ;; FIXME: This test runs `git commit` with a bogus EDITOR
+              ;; and empty commit message, but does not fail the way it's
+              ;; expected to. The test passes when invoked interactively.
+              (substitute* "t/t7508-status.sh"
+                (("\tcommit_template_commented") "\ttrue"))
+              ;; More checksum mismatches due to odd shebangs.
+              (substitute* "t/t9100-git-svn-basic.sh"
+                (((string-append "\"#!" store-directory ".*/bin/sh")) "\"#!/bin/sh") )
+              (substitute* "t/t9300-fast-import.sh"
+                (((string-append "\t#!" store-directory ".*/bin/sh")) "\t#!/bin/sh")
+                (((string-append "'#!" store-directory ".*/bin/sh")) "'#!/bin/sh"))
+              ;; FIXME: Some hooks fail with "basename: command not found".
+              ;; See 't/trash directory.t9164.../svn-hook.log'.
+              (delete-file "t/t9164-git-svn-dcommit-concurrent.sh")
 
-            ;; XXX: These tests fail intermittently for unknown reasons:
-            ;; <https://bugs.gnu.org/29546>.
-            (for-each delete-file
-                      '("t/t9128-git-svn-cmd-branch.sh"
-                        "t/t9167-git-svn-cmd-branch-subproject.sh"
-                        "t/t9141-git-svn-multiple-branches.sh"))
-            #t))
+              ;; XXX: These tests fail intermittently for unknown reasons:
+              ;; <https://bugs.gnu.org/29546>.
+              (for-each delete-file
+                        '("t/t9128-git-svn-cmd-branch.sh"
+                          "t/t9167-git-svn-cmd-branch-subproject.sh"
+                          "t/t9141-git-svn-multiple-branches.sh"))
+              #t)))
         (add-after 'install 'install-shell-completion
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out         (assoc-ref outputs "out"))
