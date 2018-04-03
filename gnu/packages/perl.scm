@@ -6622,6 +6622,33 @@ PerlIO layer.  Unlike Perl's default @code{:utf8} layer it checks the input
 for correctness.")
     (license (package-license perl))))
 
+(define-public perl-pegex
+  (package
+   (name "perl-pegex")
+   (version "0.64")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "mirror://cpan/authors/id/I/IN/INGY/Pegex-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "1kb7y2cc3nibbn8i8y3vrzz1f9h3892nbf8jj88c5fdgpmj05q17"))))
+   (build-system perl-build-system)
+   (native-inputs
+    `(("perl-file-sharedir-install" ,perl-file-sharedir-install)
+      ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+   (home-page "http://search.cpan.org/dist/Pegex/")
+   (synopsis "Acmeist PEG Parser Framework")
+   (description "Pegex is an Acmeist parser framework.  It allows you to easily
+create parsers that will work equivalently in lots of programming languages.
+The inspiration for Pegex comes from the parsing engine upon which the
+postmodern programming language Perl 6 is based on.  Pegex brings this beauty
+to the other justmodern languages that have a normal regular expression engine
+available.")
+   (license (package-license perl))))
+
 (define-public perl-pod-coverage
   (package
     (name "perl-pod-coverage")
