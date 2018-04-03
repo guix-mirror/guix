@@ -4637,7 +4637,7 @@ portions of this module couldn't be compiled on this machine.")
 (define-public perl-mailtools
   (package
     (name "perl-mailtools")
-    (version "2.19")
+    (version "2.20")
     (source
      (origin
        (method url-fetch)
@@ -4647,7 +4647,7 @@ portions of this module couldn't be compiled on this machine.")
              ".tar.gz"))
        (sha256
         (base32
-         "06jykkv8mp484vzkmwd6dkicx029rl3ir5ljzrbap3paxw1dfzn1"))))
+         "15iizg2x1w7ca0r8rn3wwhp7w160ljvf55prspljwd6cm7vhcmpm"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-timedate" ,perl-timedate)))
