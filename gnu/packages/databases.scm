@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -2040,10 +2040,16 @@ implementation for Python.")
         (base32 "12dqam1gc1v93l0bj0vlpvjqppki6y1hqrlznywxnw0rrz9pb002"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; Tests require a network connection.
+     `(#:tests? #f ; Tests require a network connection.
+       ;; TODO: Removing the libsrc/zlib source directory breaks the build.
+       ;; This indicates that the internal zlib code may still be used.
+       #:configure-flags '("--without-internal-zlib"
+                           "--with-readline")))
     (inputs
      `(("openssl" ,openssl)
-       ("net-tools" ,net-tools)))
+       ("net-tools" ,net-tools)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))
     (home-page "http://vos.openlinksw.com/owiki/wiki/VOS/")
     (synopsis "Multi-model database system")
     (description "Virtuoso is a scalable cross-platform server that combines
