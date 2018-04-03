@@ -3975,6 +3975,30 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
      "Indirect warns about using the indirect method call syntax.")
     (license (package-license perl))))
 
+(define-public perl-inline
+  (package
+   (name "perl-inline")
+   (version "0.80")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "mirror://cpan/authors/id/I/IN/INGY/Inline-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "1xnf5hykcr54271x5jsnr61bcv1c7x39cy4kdcrkxm7bn62djavy"))))
+   (build-system perl-build-system)
+   (native-inputs
+    `(("perl-test-warn" ,perl-test-warn)))
+   (home-page "http://search.cpan.org/dist/Inline/")
+   (synopsis "Write Perl subroutines in other programming languages")
+   (description "The @code{Inline} module allows you to put source code
+from other programming languages directly (inline) in a Perl script or
+module.  The code is automatically compiled as needed, and then loaded
+for immediate access from Perl.")
+   (license (package-license perl))))
+
 (define-public perl-io-captureoutput
   (package
     (name "perl-io-captureoutput")
