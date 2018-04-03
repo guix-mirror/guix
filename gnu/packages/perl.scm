@@ -722,6 +722,31 @@ is captured while being passed through to the original file handles.")
 to test the installed perl for compatibility with his modules.")
     (license (package-license perl))))
 
+(define-public perl-carp
+  (package
+    (name "perl-carp")
+    (version "1.38")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/R/RJ/RJBS/Carp-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "00bijwwc0ix27h2ma3lvsf3b56biar96bl9dikxgx7cmpcycxad5"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Carp/")
+    (synopsis "Alternative warn and die for modules")
+    (description "The @code{Carp} routines are useful in your own modules
+because they act like @code{die()} or @code{warn()}, but with a message
+which is more likely to be useful to a user of your module.  In the case
+of @code{cluck}, @code{confess}, and @code{longmess} that context is a
+summary of every call in the call-stack.  For a shorter message you can use
+@code{carp} or @code{croak} which report the error as being from where your
+module was called.  There is no guarantee that that is where the error was,
+but it is a good educated guess.")
+    (license (package-license perl))))
+
 (define-public perl-carp-always
   (package
     (name "perl-carp-always")
