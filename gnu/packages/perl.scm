@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
@@ -3998,6 +3998,38 @@ from other programming languages directly (inline) in a Perl script or
 module.  The code is automatically compiled as needed, and then loaded
 for immediate access from Perl.")
    (license (package-license perl))))
+
+(define-public perl-inline-c
+  (package
+    (name "perl-inline-c")
+    (version "0.78")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/T/TI/TINITA/Inline-C-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1izv7vswd17glffh8h83bi63gdk208mmhxi17l3qd8q1bkc08y4s"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-file-copy-recursive" ,perl-file-copy-recursive)
+       ("perl-file-sharedir-install" ,perl-file-sharedir-install)
+       ("perl-test-warn" ,perl-test-warn)
+       ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+    (propagated-inputs
+     `(("perl-inline" ,perl-inline)
+       ("perl-parse-recdescent" ,perl-parse-recdescent)
+       ("perl-pegex" ,perl-pegex)))
+    (home-page "http://search.cpan.org/dist/Inline-C/")
+    (synopsis "C Language Support for Inline")
+    (description "The @code{Inline::C} module allows you to write Perl
+subroutines in C.  Since version 0.30 the @code{Inline} module supports
+multiple programming languages and each language has its own support module.
+This document describes how to use Inline with the C programming language.
+It also goes a bit into Perl C internals.")
+    (license (package-license perl))))
 
 (define-public perl-io-captureoutput
   (package
