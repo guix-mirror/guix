@@ -25,6 +25,7 @@
   #:use-module (ice-9 match)
   #:export (missing-dependency-error?
             missing-dependency-module
+            missing-dependency-search-path
 
             file-name->module-name
             module-name->file-name
@@ -47,7 +48,8 @@
 ;; The error corresponding to a missing module.
 (define-condition-type &missing-dependency-error &error
   missing-dependency-error?
-  (module  missing-dependency-module))
+  (module      missing-dependency-module)
+  (search-path missing-dependency-search-path))
 
 (define (colon-symbol? obj)
   "Return true if OBJ is a symbol that starts with a colon."
@@ -132,7 +134,8 @@ depends on."
          (module-file-dependencies file))
         (#f
          (raise (condition (&missing-dependency-error
-                            (module module))))))))
+                            (module module)
+                            (search-path load-path))))))))
 
 (define* (module-closure modules
                          #:key
