@@ -6362,6 +6362,30 @@ collector daemon in use at Etsy.com.")
 subroutine, which you can call with a value to be tested against.")
     (license (package-license perl))))
 
+(define-public perl-number-format
+  (package
+    (name "perl-number-format")
+    (version "1.75")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/W/WR/WRW/Number-Format-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1wspw9fybik76jq9w1n1gmvfixd4wvlrq6ni8kyn85s62v5mkml2"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Number-Format/")
+    (synopsis "Convert numbers to strings with pretty formatting")
+    (description "@code{Number::Format} is a library for formatting numbers.
+Functions are provided for converting numbers to strings in a variety of ways,
+and to convert strings that contain numbers back into numeric form.  The
+output formats may include thousands separators - characters inserted between
+each group of three characters counting right to left from the decimal point.
+The characters used for the decimal point and the thousands separator come from
+the locale information or can be specified by the user.")
+    (license perl-license)))
+
 (define-public perl-number-range
   (package
     (name "perl-number-range")
