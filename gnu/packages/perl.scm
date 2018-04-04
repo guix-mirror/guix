@@ -8214,6 +8214,23 @@ letters, the pronunciation expressed by the text in some other writing
 system.")
     (license (package-license perl))))
 
+(define-public perl-threads
+  (package
+    (name "perl-threads")
+    (version "2.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JD/JDHEDDEN/threads-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "047i22mdnf7fa0h9w5jhqrjbg561l5jxk8xqzwh6zbmwlac4qf98"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/threads/")
+    (synopsis "Perl interpreter-based threads")
+    (description "This module exposes interpreter threads to the Perl level.")
+    (license perl-license)))
+
 (define-public perl-throwable
   (package
     (name "perl-throwable")
