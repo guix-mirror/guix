@@ -13101,3 +13101,29 @@ file system events on Linux.")
     (synopsis "Work with LaTeX code in Python")
     (description "Lexer and codec to work with LaTeX code in Python.")
     (license license:expat)))
+
+(define-public python-pybtex
+  (package
+    (name "python-pybtex")
+    (version "0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pybtex" version))
+       (sha256
+        (base32
+         "00300j8dn5pxq4ndxmfmbmycg2znawkqs49val2x6jlmfiy6r2mg"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (inputs
+     `(("python-latexcodec" ,python-latexcodec)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)))
+    (arguments
+     `(#:test-target "nosetests"))
+    (home-page "https://pybtex.org/")
+    (synopsis "BibTeX-compatible bibliography processor")
+    (description "Pybtex is a BibTeX-compatible bibliography processor written
+in Python.  You can simply type pybtex instead of bibtex.")
+    (license license:expat)))
