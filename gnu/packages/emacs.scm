@@ -101,6 +101,7 @@
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages password-utils)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -7458,3 +7459,38 @@ Anzu.zim.")
      "Unfold CSS-selector-like expressions to markup.  It is intended to be
 used with SGML-like languages: XML, HTML, XHTML, XSL, etc.")
     (license license:gpl3+)))
+
+(define-public emacs-password-store
+  (package
+    (name "emacs-password-store")
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://git.zx2c4.com/password-store/snapshot/"
+                              "password-store-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0scqkpll2q8jhzcgcsh9kqz0gwdpvynivqjmmbzax2irjfaiklpn"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'extract-el-file
+           (lambda _
+             (copy-file "contrib/emacs/password-store.el" "password-store.el")
+             (delete-file-recursively "contrib")
+             (delete-file-recursively "man")
+             (delete-file-recursively "src")
+             (delete-file-recursively "tests"))))))
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)
+       ("password-store" ,password-store)))
+    (home-page "https://git.zx2c4.com/password-store/tree/contrib/emacs")
+    (synopsis "Password store (pass) support for Emacs")
+    (description
+     "This package provides functions for working with pass (\"the
+standard Unix password manager\").")
+    (license license:gpl2+)))
+
