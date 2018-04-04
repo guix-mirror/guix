@@ -4760,6 +4760,26 @@ Build a Mail::Internet object, and then send it out using Mail::Mailer.
 @end table")
     (license perl-license)))
 
+(define-public perl-math-bezier
+  (package
+    (name "perl-math-bezier")
+    (version "0.01")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/A/AB/ABW/Math-Bezier-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1f5qwrb7vvf8804myb2pcahyxffqm9zvfal2n6myzw7x8py1ba0i"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Math-Bezier/")
+    (synopsis "Solution of bezier curves")
+    (description "This module implements the algorithm for the solution of Bezier
+curves as presented by Robert D Miller in Graphics Gems V, \"Quick and Simple
+Bezier Curve Drawing\".")
+    (license perl-license)))
+
 (define-public perl-math-round
   (package
     (name "perl-math-round")
