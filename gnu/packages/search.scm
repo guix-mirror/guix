@@ -344,12 +344,9 @@ search the generated indexes.")
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (man1 (string-append out "/share/man/man1")))
-               (install-file "man/man1/xapers.1"
-                             (string-append man1 "/xapers.1"))
-               (install-file "man/man1/xapers-adder.1"
-                             (string-append man1 "/xapers-adder.1"))
-               (install-file "bin/xapers-adder"
-                             (string-append bin "/xapers-adder"))))))))
+               (install-file "man/man1/xapers.1"  man1)
+               (install-file "man/man1/xapers-adder.1" man1)
+               (install-file "bin/xapers-adder" bin)))))))
     (home-page "https://finestructure.net/xapers/")
     (synopsis "Personal document indexing system")
     (description
