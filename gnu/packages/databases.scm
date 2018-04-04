@@ -125,7 +125,8 @@
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32 "004fmcf1w75zhc1x3zc6kc97j4jqn2v5nhk6yb3z3cpfrhzi9j50"))
-      (patches (list (search-patch "4store-fix-buildsystem.patch")))))
+      (patches (search-patches "4store-unset-preprocessor-directive.patch"
+                               "4store-fix-buildsystem.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)

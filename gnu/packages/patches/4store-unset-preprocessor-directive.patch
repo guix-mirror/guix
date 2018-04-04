@@ -1,0 +1,16 @@
+This patch removes the _XOPEN_SOURCE preprocessor directive as it does not seem to be needed.
+Setting it removes the definition of strdup, which is used in filter-datatypes.c.
+
+Patch by Roel Janssen <roel@gnu.org>
+*** a/src/frontend/filter-datatypes.c	1970-01-01 01:00:00.000000000 +0100
+--- b/src/frontend/filter-datatypes.c	2018-04-03 17:39:23.177905592 +0200
+***************
+*** 18,24 ****
+   *  Copyright (C) 2006 Steve Harris for Garlik
+   */
+  
+- #define _XOPEN_SOURCE
+  #include <stdlib.h>
+  #include <string.h>
+  #include <math.h>
+--- 18,23 ----
