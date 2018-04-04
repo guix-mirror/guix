@@ -8473,6 +8473,26 @@ rounded or exact terms.")
 duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
     (license (package-license perl))))
 
+(define-public perl-time-hires
+  (package
+    (name "perl-time-hires")
+    (version "1.9758")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/J/JH/JHI/Time-HiRes-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "07jbydcdzpjm6i4nidci0rlklx4kla210fsl6zishw0yq5di9yjv"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Time-HiRes/")
+    (synopsis "High resolution alarm, sleep, gettimeofday, interval timers")
+    (description "This package implements @code{usleep}, @code{ualarm}, and
+@code{gettimeofday} for Perl, as well as wrappers to implement @code{time},
+@code{sleep}, and @code{alarm} that know about non-integral seconds.")
+    (license perl-license)))
+
 (define-public perl-time-local
   (package
     (name "perl-time-local")
