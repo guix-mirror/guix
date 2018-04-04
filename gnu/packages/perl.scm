@@ -8121,6 +8121,30 @@ faster than shelling out to a system's diff executable for small files, and
 generally slower on larger files.")
     (license (package-license perl))))
 
+(define-public perl-text-format
+  (package
+    (name "perl-text-format")
+    (version "0.60")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SH/SHLOMIF/Text-Format-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1f52jak0a2gwi4qcisp4nfbniq04dmmv5j8zkvzj8ik0f0sk2kv6"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "http://search.cpan.org/dist/Text-Format/")
+    (synopsis "Various subroutines to format text")
+    (description "This package provides functions to format text in various
+ways like centering, paragraphing, and converting tabs to spaces and spaces
+to tabs.")
+    (license perl-license)))
+
 (define-public perl-text-glob
   (package
     (name "perl-text-glob")
