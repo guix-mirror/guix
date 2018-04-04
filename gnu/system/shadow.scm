@@ -195,6 +195,9 @@ set auto-load safe-path /gnu/store/*/lib\n")))
     `((".bash_profile" ,profile)
       (".bashrc" ,bashrc)
       (".zlogin" ,zlogin)
+      (".nanorc" ,(plain-file "nanorc" "\
+# Include all the syntax highlighting modules.
+include /run/current-system/profile/share/nano/*.nanorc\n"))
       (".Xdefaults" ,xdefaults)
       (".guile" ,(plain-file "dot-guile"
                              "(cond ((false-if-exception (resolve-interface '(ice-9 readline)))
