@@ -7139,6 +7139,25 @@ collector.")
     (description "Set::Infinite is a set theory module for infinite sets.")
     (license (package-license perl))))
 
+(define-public perl-set-intspan
+  (package
+    (name "perl-set-intspan")
+    (version "1.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SW/SWMCD/Set-IntSpan-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1l6znd40ylzvfwl02rlqzvakv602rmvwgm2xd768fpgc2fdm9dqi"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Set-IntSpan/")
+    (synopsis "Manage sets of integers")
+    (description "@code{Set::IntSpan} manages sets of integers.  It is
+optimized for sets that have long runs of consecutive integers.")
+    (license perl-license)))
+
 (define-public perl-set-object
   (package
     (name "perl-set-object")
