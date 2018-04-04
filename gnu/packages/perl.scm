@@ -7296,6 +7296,27 @@ straightforward and (perhaps someday) standard way.  Spiffy borrows ideas from
 other OO languages like Python, Ruby, Java and Perl 6.")
     (license (package-license perl))))
 
+(define-public perl-statistics-basic
+  (package
+    (name "perl-statistics-basic")
+    (version "1.6611")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/J/JE/JETTERO/Statistics-Basic-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1ywl398z42hz9w1k0waf1caa6agz8jzsjlf4rzs1lgpx2mbcwmb8"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-number-format" ,perl-number-format)))
+    (home-page "http://search.cpan.org/dist/Statistics-Basic/")
+    (synopsis "Collection of very basic statistics modules")
+    (description "This package provides basic statistics functions like
+@code{median()}, @code{mean()}, @code{variance()} and @code{stddev()}.")
+    (license lgpl2.0)))
+
 (define-public perl-stream-buffered
   (package
     (name "perl-stream-buffered")
