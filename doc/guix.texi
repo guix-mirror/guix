@@ -8335,10 +8335,10 @@ ifconfig @var{interface} up
 To configure wireless networking, you can create a configuration file
 for the @command{wpa_supplicant} configuration tool (its location is not
 important) using one of the available text editors such as
-@command{zile}:
+@command{nano}:
 
 @example
-zile wpa_supplicant.conf
+nano wpa_supplicant.conf
 @end example
 
 As an example, the following stanza can go to this file and will work
@@ -8519,8 +8519,10 @@ builds to @file{/gnu/store} which, initially, is an in-memory file system.
 
 Next, you have to edit a file and
 provide the declaration of the operating system to be installed.  To
-that end, the installation system comes with three text editors: GNU nano
-(@pxref{Top,,, nano, GNU nano Manual}), GNU Zile (an Emacs clone), and
+that end, the installation system comes with three text editors.  We
+recommend GNU nano (@pxref{Top,,, nano, GNU nano Manual}), which
+supports syntax highlighting and parentheses matching; other editors
+include GNU Zile (an Emacs clone), and
 nvi (a clone of the original BSD @command{vi} editor).
 We strongly recommend storing that file on the target root file system, say,
 as @file{/mnt/etc/config.scm}.  Failing to do that, you will have lost your
@@ -8536,7 +8538,7 @@ something along these lines:
 @example
 # mkdir /mnt/etc
 # cp /etc/configuration/desktop.scm /mnt/etc/config.scm
-# zile /mnt/etc/config.scm
+# nano /mnt/etc/config.scm
 @end example
 
 You should pay attention to what your configuration file contains, and
