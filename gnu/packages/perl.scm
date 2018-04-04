@@ -9199,6 +9199,30 @@ File::Find replacement in Perl.")
 interface to File::Find::Object.")
   (license (package-license perl))))
 
+(define-public perl-font-ttf
+  (package
+    (name "perl-font-ttf")
+    (version "1.06")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/B/BH/BHALLISSY/Font-TTF-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "14y29ja3lsa3yw0ll20lj96f3zz5zydjqi1c5nh9wxar8927ssab"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-io-string" ,perl-io-string)))
+    (home-page "http://search.cpan.org/dist/Font-TTF/")
+    (synopsis "TTF font support for Perl")
+    (description "This package provides a Perl module for TrueType/OpenType
+font hacking.  It supports reading, processing and writing of the following
+tables: GDEF, GPOS, GSUB, LTSH, OS/2, PCLT, bsln, cmap, cvt, fdsc, feat,
+fpgm, glyf, hdmx, head, hhea, hmtx, kern, loca, maxp, mort, name, post, prep,
+prop, vhea, vmtx and the reading and writing of all other table types.")
+    (license artistic2.0)))
+
 (define-public perl-libtime-parsedate
   (package
     (name "perl-libtime-parsedate")
