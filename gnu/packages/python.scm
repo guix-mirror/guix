@@ -49,7 +49,8 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
-
+;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
+;;;
 ;;; This file is part of GNU Guix.
 ;;;
 ;;; GNU Guix is free software; you can redistribute it and/or modify it
@@ -13081,3 +13082,22 @@ file system events on Linux.")
         (base32
          "0svc9nla3b9145d6b7fb9dizx412l3difzqw0ilh9lz52nsixw8j"))
        (file-name (string-append name "-" version ".tar.gz"))))))
+
+(define-public python-latexcodec
+  (package
+    (name "python-latexcodec")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "latexcodec" version))
+       (sha256
+        (base32
+         "0zdd1gf24i83ykadx0y30n3001j43scqr2saql3vckk5c39dj1wn"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://readthedocs.org/projects/latexcodec/")
+    (synopsis "Work with LaTeX code in Python")
+    (description "Lexer and codec to work with LaTeX code in Python.")
+    (license license:expat)))
