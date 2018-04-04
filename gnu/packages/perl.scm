@@ -4760,6 +4760,25 @@ Build a Mail::Internet object, and then send it out using Mail::Mailer.
 @end table")
     (license perl-license)))
 
+(define-public perl-memoize
+  (package
+    (name "perl-memoize")
+    (version "1.03")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/M/MJ/MJD/Memoize-"
+                    version".tgz"))
+              (sha256
+               (base32
+                "1wysq3wrmf1s7s3phimzn7n0dswik7x53apykzgb0l2acigwqfaj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Memoize/")
+    (synopsis "Make functions faster by trading space for time")
+    (description "This package transparently speeds up functions by caching
+return values, trading space for time.")
+    (license perl-license)))
+
 (define-public perl-memoize-expirelru
   (package
     (name "perl-memoize-expirelru")
