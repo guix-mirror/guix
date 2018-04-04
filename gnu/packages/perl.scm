@@ -4760,6 +4760,25 @@ Build a Mail::Internet object, and then send it out using Mail::Mailer.
 @end table")
     (license perl-license)))
 
+(define-public perl-math-round
+  (package
+    (name "perl-math-round")
+    (version "0.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/G/GR/GROMMEL/Math-Round-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "09wkvqj4hfq9y0fimri967rmhnq90dc2wf20lhlmqjp5hsd359vk"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Math-Round/")
+    (synopsis "Perl extension for rounding numbers")
+    (description "@code{Math::Round} provides functions to round numbers,
+both positive and negative, in various ways.")
+    (license perl-license)))
+
 (define-public perl-memoize
   (package
     (name "perl-memoize")
