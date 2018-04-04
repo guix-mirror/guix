@@ -6655,6 +6655,36 @@ up inheritance from those modules at the same time.")
 directory specifications in a cross-platform manner.")
     (license (package-license perl))))
 
+(define-public perl-pathtools
+  (package
+    (name "perl-pathtools")
+    (version "3.74")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/X/XS/XSAWYERX/PathTools-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "04bfjdvn5p78hirljcinpxv8djcjn8nyg5gcmnmvz8sr9k2lqwi5"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-pwd-path
+           (lambda* (#:key inputs  #:allow-other-keys)
+             (substitute* "Cwd.pm"
+               (("'/bin/pwd'")
+                (string-append "'" (assoc-ref inputs "coreutils")
+                               "/bin/pwd'"))))))))
+    (inputs
+     `(("coreutils" ,coreutils)))
+    (home-page "http://search.cpan.org/dist/PathTools/")
+    (synopsis "Tools for working with directory and file names")
+    (description "This package provides functions to work with directory and
+file names.")
+    (license perl-license)))
+
 (define-public perl-path-tiny
   (package
     (name "perl-path-tiny")
