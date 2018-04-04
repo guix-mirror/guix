@@ -7494,6 +7494,30 @@ used with SGML-like languages: XML, HTML, XHTML, XSL, etc.")
 standard Unix password manager\").")
     (license license:gpl2+)))
 
+(define-public emacs-pass
+  (package
+    (name "emacs-pass")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/NicolasPetton/pass/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0zlx9v6z0q3w9qhq9bq6vb7sli4c9x7qccm2wq55j0nw7bwy2yvj"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-password-store" ,emacs-password-store)
+       ("emacs-f" ,emacs-f)))
+    (home-page "https://github.com/NicolasPetton/pass")
+    (synopsis "Major mode for @file{password-store.el}")
+    (description "This is a major mode for managing password-store (pass)
+keychains.  The keychain entries are displayed in a directory-like structure
+and can be consulted and modified.")
+    (license license:gpl3+)))
+
 (define-public emacs-evil-anzu
   (package
     (name "emacs-evil-anzu")
