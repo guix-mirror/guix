@@ -2610,7 +2610,7 @@ published results; and a routine for graphical display.")
         (base32
          "1bbkbqkqf1d7irfwh08c13c2pfypir1ssvlqrln83irqns1ikdv0"))))
     (build-system r-build-system)
-    (home-page "http://statnet.org/")
+    (home-page "https://statnet.org/")
     (synopsis "Classes for relational data")
     (description
      "This package provides tools to create and modify network objects.  The
@@ -2632,7 +2632,7 @@ supports arbitrary vertex/edge/graph attributes.")
     (properties
       `((upstream-name . "statnet.common")))
     (build-system r-build-system)
-    (home-page "http://www.statnet.org")
+    (home-page "https://statnet.org")
     (synopsis "R scripts and utilities used by the Statnet software")
     (description "This package provides non-statistical utilities used by the
 software developed by the Statnet Project.")
@@ -2653,7 +2653,7 @@ software developed by the Statnet Project.")
     (propagated-inputs
      `(("r-network" ,r-network)
        ("r-statnet-common" ,r-statnet-common)))
-    (home-page "http://www.statnet.org")
+    (home-page "https://statnet.org")
     (synopsis "Tools for social network analysis")
     (description
      "This package provides a range of tools for social network analysis,
