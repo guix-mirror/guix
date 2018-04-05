@@ -361,14 +361,14 @@ k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
 (define-public r-cluster
   (package
     (name "r-cluster")
-    (version "2.0.6")
+    (version "2.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cluster" version))
        (sha256
         (base32
-         "1z4gbz7chxxi4ly6c0yjlikwgf8aa8dlg05cn5cd6pjr21zvh97l"))))
+         "0nf2hnsv5rhw6399b4gk1rj5c8hfc6ajfnkh3qbwfx3cz4asrg45"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
