@@ -9584,3 +9584,27 @@ Java method invocation.")
 and mappings for a number of commonly used platform functions, including a
 large number of Win32 mappings as well as a set of utility classes that
 simplify native access.")))
+
+(define-public java-jsch-agentproxy-core
+  (package
+    (name "java-jsch-agentproxy-core")
+    (version "0.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ymnk/jsch-agent-proxy/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02iqg6jbc1kxvfzqcg6wy9ygqxfm82bw5rf6vnswqy4y572niz4q"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jsch-agentproxy-core.jar"
+       #:source-dir "jsch-agent-proxy-core/src/main/java"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/ymnk/jsch-agent-proxy")
+    (synopsis "Proxy to ssh-agent and Pageant in Java")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included Putty.  It will be easily integrated into JSch, and users
+will be allowed to use these programs for authentication.")
+    (license license:bsd-3)))
