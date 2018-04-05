@@ -1687,14 +1687,14 @@ database.  Various higher level database abstractions.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.21")
+    (version "0.9.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/LMDB/lmdb/archive/"
                                   "LMDB_" version ".tar.gz"))
               (sha256
                (base32
-                "0ndmj07hkm2ic60z1f4rdscxs7pq45hk9fibjyv5nhfclhsvd1qi"))))
+                "0a7a8535csrvw71mrgx680m5d17bnxmmhcccij30idifi1cpi4pk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
