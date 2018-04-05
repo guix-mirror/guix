@@ -903,7 +903,7 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "5.5")
+    (version "5.6")
     (source
      (origin
        (method url-fetch)
@@ -911,7 +911,7 @@ and search library.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0l43lbnrnyyrq8mlnw37saq6v0mh3nkirdq1dwnsrihykzjjwf70"))))
+         "16nmvj80szr6yvcxxgmxn2lxqpjqqj4xg5a0b66zhvck6j42q3a6"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests
