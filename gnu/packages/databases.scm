@@ -1655,7 +1655,7 @@ database.  Various higher level database abstractions.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.840")
+  (version "1.841")
   (source
     (origin
       (method url-fetch)
@@ -1665,7 +1665,7 @@ database.  Various higher level database abstractions.")
              ".tar.gz"))
       (sha256
         (base32
-          "1i5jz85z4hpx15lw6ix27pyvrf0ziyh4z33lii4d3wnhz83lg1mp"))))
+          "11fks42kgscpia0mxx4lc9krm7q4gv6w7m5h3m2jr3dl7viv36hn"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
