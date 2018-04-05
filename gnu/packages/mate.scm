@@ -154,7 +154,7 @@ from Mint-X-F and Faenza-Fresh icon packs.")
 (define-public mate-themes
   (package
     (name "mate-themes")
-    (version "3.22.15")
+    (version "3.22.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pub.mate-desktop.org/releases/themes/"
@@ -162,7 +162,7 @@ from Mint-X-F and Faenza-Fresh icon packs.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0cmlbj6vlkavdirc5xnsgwmy0m11bj9yrbv1dkq46n1s23rvv6wg"))))
+                "1k8qp2arjv4vj8kyjhjgyj5h46jy0darlfh48l5h25623z1firdj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
