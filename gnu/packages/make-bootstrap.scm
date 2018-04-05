@@ -190,15 +190,17 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                             '()))))
 	(tar (package (inherit tar)
 	       (arguments
-		'(#:phases (modify-phases %standard-phases
-			     (add-before 'build 'set-shell-file-name
-			       (lambda _
-				 ;; Do not use "/bin/sh" to run programs; see
-                                 ;; <http://lists.gnu.org/archive/html/guix-devel/2016-09/msg02272.html>.
-				 (substitute* "src/system.c"
-				   (("/bin/sh") "sh")
-				   (("execv ") "execvp "))
-				 #t)))))))
+                (substitute-keyword-arguments (package-arguments tar)
+                  ((#:phases phases)
+                   `(modify-phases ,phases
+                      (replace 'set-shell-file-name
+                        (lambda _
+                          ;; Do not use "/bin/sh" to run programs; see
+                          ;; <http://lists.gnu.org/archive/html/guix-devel/2016-09/msg02272.html>.
+                          (substitute* "src/system.c"
+                            (("/bin/sh") "sh")
+                            (("execv ") "execvp "))
+                          #t))))))))
         ;; We don't want to retain a reference to /gnu/store in the bootstrap
         ;; versions of egrep/fgrep, so we remove the custom phase added since
         ;; grep@2.25. The effect is 'egrep' and 'fgrep' look for 'grep' in
