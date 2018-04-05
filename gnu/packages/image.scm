@@ -355,7 +355,7 @@ official designation is ISO/IEC 29199-2). This library is an implementation of t
 the Huffman tables) and \"lossy\" optimization based on setting
 maximum quality factor.")
    (license license:gpl2+)
-   (home-page "http://www.kokkonen.net/tjko/projects.html#jpegoptim")))
+   (home-page "https://www.kokkonen.net/tjko/projects.html#jpegoptim")))
 
 (define-public libicns
   (package
