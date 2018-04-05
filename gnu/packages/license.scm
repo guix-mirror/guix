@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -107,7 +108,7 @@ statements and serializes in normalized format.")
 (define-public licensecheck
   (package
     (name "licensecheck")
-    (version "3.0.33")
+    (version "3.0.34")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -115,7 +116,7 @@ statements and serializes in normalized format.")
                     "v" version ".tar.gz"))
               (sha256
                (base32
-                "0wydxb2jks1k3bxkcp7p0pazh5v3awbbcf6haplvwzkkayszhgs4"))))
+                "0k0acybgibdqg1h6xqnba1jb0spmw7hpq0jbrs7n7gfj22wkz0vd"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-regexp-pattern" ,perl-regexp-pattern)
