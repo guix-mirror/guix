@@ -934,14 +934,15 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.21")
+    (version "4.22")
+    (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://github.com/strace/strace/releases/"
-                                 "download/v" version "/strace-" version ".tar.xz"))
+             (uri (string-append home-page "/files/" version
+                                 "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "0dsw6xcfrmygidp1dj2ch8cl8icrar7789snkb2r8gh78kdqhxjw"))))
+               "17dkpnsjxmys1ydidm9wcvc3wscsz44fmlxw3dclspn9cj9d1306"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -952,7 +953,6 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                (("/bin/sh") (which "sh")))
              #t)))))
     (native-inputs `(("perl" ,perl)))
-    (home-page "https://strace.io/")
     (synopsis "System call tracer for Linux")
     (description
      "strace is a system call tracer, i.e. a debugging tool which prints out a
