@@ -191,7 +191,15 @@ implementation offers several extensions over the standard utility.")
       ;; "a/y: Not linked to a/z" and fails, presumably due to differences in
       ;; the order in which 'diff' traverses directories.  That leads to a
       ;; test failure even though conceptually the test passes.  Skip it.
-      #:make-flags '("TESTSUITEFLAGS=-k '!link mismatch'")))
+      ;; Test 117 and 118 are prone to race conditions too, particularly
+      ;; when cross-compiling, so we skip those as well.  All issues have
+      ;; been fixed upstream in these commits:
+      ;; <https://git.savannah.gnu.org/cgit/tar.git/commit/?id=847a36f>
+      ;; <https://git.savannah.gnu.org/cgit/tar.git/commit/?id=64b43fd>
+      #:make-flags (list (string-append
+                          "TESTSUITEFLAGS= -k '!link mismatch,"
+                          "!directory removed before reading,"
+                          "!explicitly named directory removed before reading'"))))
 
    ;; When cross-compiling, the 'set-shell-file-name' phase needs to be able
    ;; to refer to the target Bash.
