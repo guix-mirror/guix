@@ -531,19 +531,28 @@ a C program.")
                "0wsms8narnbhfsa8chdflv2j9hzspvflblnqdn7hw8x5xdzrnq1v"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
-       '("--enable-shared" "--enable-openmp" "--enable-threads")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'no-native
-                 (lambda _
-                   ;; By default '-mtune=native' is used.  However, that may
-                   ;; cause the use of ISA extensions (SSE2, etc.) that are
-                   ;; not necessarily available on the user's machine when
-                   ;; that package is built on a different machine.
-                   (substitute* (find-files "." "Makefile$")
-                     (("-mtune=native") ""))
-                   #t)))))
+     `(#:configure-flags
+       `("--enable-shared" "--enable-openmp" "--enable-threads"
+         ,,@(let ((system (or (%current-target-system) (%current-system))))
+              ;; Enable SIMD extensions for codelets.  See details at:
+              ;; <http://fftw.org/fftw3_doc/Installation-on-Unix.html>.
+              (cond
+               ((string-prefix? "x86_64" system)
+                '("--enable-sse2" "--enable-avx" "--enable-avx2"
+                  "--enable-avx512" "--enable-avx-128-fma"))
+               ((string-prefix? "i686" system)
+                '("--enable-sse2"))
+               ((string-prefix? "aarch64" system)
+                '("--enable-neon" "--enable-armv8-cntvct-el0"))
+               ((string-prefix? "arm" system) ;neon only for single-precision
+                '("--enable-armv7a-cntvct"))  ;on 32-bit arm
+               ((string-prefix? "mips" system)
+                '("--enable-mips-zbus-timer"))))
+         ;; By default '-mtune=native' is used.  However, that may cause the
+         ;; use of ISA extensions (e.g. AVX) that are not necessarily
+         ;; available on the user's machine when that package is built on a
+         ;; different machine.
+         "ax_cv_c_flags__mtune_native=no")))
     (native-inputs `(("perl" ,perl)))
     (home-page "http://fftw.org")
     (synopsis "Computing the discrete Fourier transform")
@@ -560,7 +569,10 @@ cosine/ sine transforms or DCT/DST).")
     (arguments
      (substitute-keyword-arguments (package-arguments fftw)
        ((#:configure-flags cf)
-        `(cons "--enable-float" ,cf))))
+        (if (string-prefix? "arm" (or (%current-target-system)
+                                      (%current-system)))
+            `(cons "--enable-neon" ,cf)
+            cf))))
     (description
      (string-append (package-description fftw)
                     "  Single-precision version."))))
@@ -578,29 +590,6 @@ cosine/ sine transforms or DCT/DST).")
     (description
      (string-append (package-description fftw)
                     "  With OpenMPI parallelism support."))))
-
-(define-public fftw-avx
-  (package
-    (inherit fftw)
-    (name "fftw-avx")
-    (arguments
-     (substitute-keyword-arguments (package-arguments fftw)
-       ((#:configure-flags flags ''())
-        ;; Enable AVX & co.  See details at:
-        ;; <http://fftw.org/fftw3_doc/Installation-on-Unix.html>.
-        `(append '("--enable-avx" "--enable-avx2" "--enable-avx512"
-                   "--enable-avx-128-fma")
-                 ,flags))
-       ((#:substitutable? _ #f)
-        ;; To run the tests, we must have a CPU that supports all these
-        ;; extensions.  Since we cannot be sure that machines in the build
-        ;; farm support them, disable substitutes altogether.
-        #f)
-       ((#:phases _)
-        ;; Since we're not providing binaries, let '-mtune=native' through.
-        '%standard-phases)))
-    (synopsis "Computing the discrete Fourier transform (AVX2-optimized)")
-    (supported-systems '("x86_64-linux"))))
 
 (define-public java-la4j
   (package
