@@ -10987,12 +10987,10 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
           (base32
            "0g38g8s3npr0gjm9fahlbhiskyfws9l5i0x1ml3rakzj7az5l9c9"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments htslib)
-         ((#:phases phases)
-          `(modify-phases  ,phases
-             (add-after 'unpack 'bootstrap
-               (lambda _
-                 (zero? (system* "autoreconf" "-vif"))))))))
+       `(#:phases
+         (modify-phases  %standard-phases
+           (add-after 'unpack 'bootstrap
+             (lambda _ (invoke "autoreconf" "-vif"))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
