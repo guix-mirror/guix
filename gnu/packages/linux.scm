@@ -284,6 +284,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("bc" ,bc)
        ("openssl" ,openssl)
        ("kmod" ,kmod)
+       ("flex" ,flex)
+       ("bison" ,bison)
        ;; On x86, build with GCC-7 for full retpoline support.
        ;; FIXME: Remove this when our default compiler has retpoline support.
        ,@(match (system->linux-architecture
