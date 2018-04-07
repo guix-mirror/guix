@@ -7494,3 +7494,24 @@ used with SGML-like languages: XML, HTML, XHTML, XSL, etc.")
 standard Unix password manager\").")
     (license license:gpl2+)))
 
+(define-public emacs-evil-anzu
+  (package
+    (name "emacs-evil-anzu")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/syohex/emacs-evil-anzu"
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "032hh2946z529cizqsg8pm6cpn5qdj8lfk3qskmx6xv3g2ra56ns"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)
+       ("emacs-anzu" ,emacs-anzu)))
+    (home-page "https://github.com/syohex/emacs-evil-anzu")
+    (synopsis "Anzu for evil-mode")
+    (description "@code{anzu} provides a minor mode that displays the current
+match and total match information in the mode-line in various search modes.")
+    (license license:gpl3+)))
