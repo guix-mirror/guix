@@ -388,10 +388,11 @@ object."
 (define-condition-type &package-cross-build-system-error &package-error
   package-cross-build-system-error?)
 
-
-(define (package-full-name package)
-  "Return the full name of PACKAGE--i.e., `NAME-VERSION'."
-  (string-append (package-name package) "-" (package-version package)))
+(define* (package-full-name package #:optional (delimiter "@"))
+  "Return the full name of PACKAGE--i.e., `NAME@VERSION'.  By specifying
+DELIMITER (a string), you can customize what will appear between the name and
+the version.  By default, DELIMITER is \"@\"."
+  (string-append (package-name package) delimiter (package-version package)))
 
 (define (%standard-patch-inputs)
   (let* ((canonical (module-ref (resolve-interface '(gnu packages base))
@@ -935,6 +936,10 @@ and return it."
               (($ <package> name version source build-system
                             args inputs propagated-inputs native-inputs
                             self-native-input? outputs)
+               ;; Even though we prefer to use "@" to separate the package
+               ;; name from the package version in various user-facing parts
+               ;; of Guix, checkStoreName (in nix/libstore/store-api.cc)
+               ;; prohibits the use of "@", so use "-" instead.
                (or (make-bag build-system (string-append name "-" version)
                              #:system system
                              #:target target

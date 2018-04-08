@@ -242,8 +242,8 @@
                                         #:hooks '()
                                         #:locales? #t
                                         #:target target)))
-    (define (find-input name)
-      (let ((name (string-append name ".drv")))
+    (define (find-input package)
+      (let ((name (string-append (package-full-name package "-") ".drv")))
         (any (lambda (input)
                (let ((input (derivation-input-path input)))
                  (and (string-suffix? name input) input)))
@@ -252,12 +252,11 @@
     ;; The inputs for grep and sed should be cross-build derivations, but that
     ;; for the glibc-utf8-locales should be a native build.
     (return (and (string=? (derivation-system drv) (%current-system))
-                 (string=? (find-input (package-full-name packages:grep))
+                 (string=? (find-input packages:grep)
                            (derivation-file-name grep))
-                 (string=? (find-input (package-full-name packages:sed))
+                 (string=? (find-input packages:sed)
                            (derivation-file-name sed))
-                 (string=? (find-input
-                            (package-full-name packages:glibc-utf8-locales))
+                 (string=? (find-input packages:glibc-utf8-locales)
                            (derivation-file-name locales))))))
 
 (test-assert "package->manifest-entry defaults to \"out\""
