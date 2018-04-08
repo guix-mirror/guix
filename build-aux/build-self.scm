@@ -277,14 +277,16 @@ files."
     (mbegin %store-monad
       (show-what-to-build* (list build))
       (built-derivations (list build))
-      (let ((pipe (begin
-                    (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
-                    (open-pipe* OPEN_READ
-                                (derivation->output-path build)
-                                source system))))
-        (match (get-string-all pipe)
+      (let* ((pipe   (begin
+                       (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
+                       (open-pipe* OPEN_READ
+                                   (derivation->output-path build)
+                                   source system)))
+             (str    (get-string-all pipe))
+             (status (close-pipe pipe)))
+        (match str
           ((? eof-object?)
-           (error "build program failed" build))
+           (error "build program failed" (list build status)))
           ((? derivation-path? drv)
            (mbegin %store-monad
              (return (newline (current-output-port)))
