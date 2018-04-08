@@ -24,7 +24,7 @@
 
 (use-modules (system base compile))
 
-(eval-when (compile load eval)
+(eval-when (expand load eval)
 
   ;; Pre-load the compiler so we don't end up auto-compiling it.
   (compile #t)
