@@ -7822,7 +7822,7 @@ bytestrings and their hexademical representation.")
 (define-public ghc-psqueues
   (package
     (name "ghc-psqueues")
-    (version "0.2.2.3")
+    (version "0.2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -7831,9 +7831,8 @@ bytestrings and their hexademical representation.")
                            "psqueues-" version ".tar.gz"))
        (sha256
         (base32
-         "1dd6xv1wjxj1xinx155b14hijw8fafrg4096srzdzj7xyqq7qxbd"))))
+         "0n39s1i88j6s7vvsdhpbhcr3gpbwlzabwcc3nbd7nqb4kb4i0sls"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; Tests require QuickCheck < 2.10
     (inputs
      `(("ghc-hashable" ,ghc-hashable)))
     (native-inputs
@@ -7843,7 +7842,7 @@ bytestrings and their hexademical representation.")
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
-    (home-page "https://github.com/bttr/psqueues")
+    (home-page "https://github.com/jaspervdj/psqueues")
     (synopsis "Pure priority search queues")
     (description "The psqueues package provides
 @uref{https://en.wikipedia.org/wiki/Priority_queue, Priority Search Queues} in
