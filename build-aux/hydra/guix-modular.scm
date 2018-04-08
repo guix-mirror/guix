@@ -57,14 +57,10 @@ for SYSTEM.  Use VERSION as the version identifier."
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
   (define systems
-    (match (filter-map (match-lambda
-                         (('system . value) value)
-                         (_ #f))
-                       arguments)
-      ((lst ..1)
-       lst)
-      (_
-       (list (%current-system)))))
+    (match (assoc-ref arguments 'systems)
+      (#f              %hydra-supported-systems)
+      ((lst ...)       lst)
+      ((? string? str) (call-with-input-string str read))))
 
   (define guix-checkout
     (or (assq-ref arguments 'guix)                ;Hydra on hydra
@@ -83,4 +79,4 @@ for SYSTEM.  Use VERSION as the version identifier."
                         (string-append "guix." system))))
              `(,name
                . ,(build-job store file version system))))
-         %hydra-supported-systems)))
+         systems)))
