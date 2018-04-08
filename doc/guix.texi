@@ -11737,18 +11737,35 @@ When true, enable connman's vpn plugin.
 @defvr {Scheme Variable} wpa-supplicant-service-type
 This is the service type to run @url{https://w1.fi/wpa_supplicant/,WPA
 supplicant}, an authentication daemon required to authenticate against
-encrypted WiFi or ethernet networks.  It is configured to listen for
-requests on D-Bus.
-
-The value of this service is the @code{wpa-supplicant} package to use.
-Thus, it can be instantiated like this:
-
-@lisp
-(use-modules (gnu services networking))
-
-(service wpa-supplicant-service-type)
-@end lisp
+encrypted WiFi or ethernet networks.
 @end defvr
+
+@deftp {Data Type} wpa-supplicant-configuration
+Data type representing the configuration of WPA Supplicant.
+
+It takes the following parameters:
+
+@table @asis
+@item @code{wpa-supplicant} (default: @code{wpa-supplicant})
+The WPA Supplicant package to use.
+
+@item @code{dbus?} (default: @code{#t})
+Whether to listen for requests on D-Bus.
+
+@item @code{pid-file} (default: @code{"/var/run/wpa_supplicant.pid"})
+Where to store the PID file.
+
+@item @code{interface} (default: @code{#f})
+If this is set, it must specify the name of a network interface that
+WPA supplicant will control.
+
+@item @code{config-file} (default: @code{#f})
+Optional configuration file to use.
+
+@item @code{extra-options} (default: @code{'()})
+List of additional command-line arguments to pass to the daemon.
+@end table
+@end deftp
 
 @cindex iptables
 @defvr {Scheme Variable} iptables-service-type
