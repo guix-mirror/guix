@@ -45,7 +45,8 @@ for SYSTEM.  Use VERSION as the version identifier."
 
     `((derivation . ,(derivation-file-name
                       (run-with-store store
-                        (build source #:version version #:system system))))
+                        (build source #:version version #:system system
+                               #:guile-version "2.2")))) ;the latest 2.2.x
       (description . "Modular Guix")
       (long-description
        . "This is the modular Guix package as produced by 'guix pull'.")
