@@ -3539,7 +3539,11 @@ supports compressed MAT files, as well as newer (version 7.3) MAT files.")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_TESTING=ON")))
+       '("-DBUILD_TESTING=ON"
+         ;; By default, Vc will optimize for the CPU of the build machine.
+         ;; Setting this to "none" makes it create portable binaries.  See
+         ;; "cmake/OptimizeForArchitecture.cmake".
+         "-DTARGET_ARCHITECTURE=none")))
     (synopsis "SIMD vector classes for C++")
     (description "Vc provides portable, zero-overhead C++ types for explicitly
 data-parallel programming.  It is a library designed to ease explicit
