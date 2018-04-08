@@ -25,7 +25,9 @@
   #:use-module (srfi srfi-26)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
-  #:export (union-build))
+  #:export (union-build
+
+            warn-about-collision))
 
 ;;; Commentary:
 ;;;
@@ -76,14 +78,29 @@ identical, #f otherwise."
                                    (or (eof-object? n1)
                                        (loop))))))))))))))
 
+(define (warn-about-collision files)
+  "Handle the collision among FILES by emitting a warning and choosing the
+first one of THEM."
+  (format (current-error-port)
+          "~%warning: collision encountered:~%~{  ~a~%~}"
+          files)
+  (let ((file (first files)))
+    (format (current-error-port) "warning: choosing ~a~%" file)
+    file))
+
 (define* (union-build output inputs
                       #:key (log-port (current-error-port))
                       (create-all-directories? #f)
-                      (symlink symlink))
+                      (symlink symlink)
+                      (resolve-collision warn-about-collision))
   "Build in the OUTPUT directory a symlink tree that is the union of all the
 INPUTS, using SYMLINK to create symlinks.  As a special case, if
 CREATE-ALL-DIRECTORIES?, creates the subdirectories in the output directory to
-make sure the caller can modify them later."
+make sure the caller can modify them later.
+
+When two or more regular files collide, call RESOLVE-COLLISION with the list
+of colliding files and use the one that it returns; or, if RESOLVE-COLLISION
+returns #f, skip the faulty file altogether."
 
   (define (symlink* input output)
     (format log-port "`~a' ~~> `~a'~%" input output)
@@ -92,15 +109,10 @@ make sure the caller can modify them later."
   (define (resolve-collisions output dirs files)
     (cond ((null? dirs)
            ;; The inputs are all files.
-           (format (current-error-port)
-                   "~%warning: collision encountered:~%~{  ~a~%~}"
-                   files)
-
-           (let ((file (first files)))
-             ;; TODO: Implement smarter strategies.
-             (format (current-error-port) "warning: choosing ~a~%" file)
-
-             (symlink* file output)))
+           (match (resolve-collision files)
+             (#f #f)
+             ((? string? file)
+              (symlink* file output))))
 
           (else
            ;; The inputs are a mixture of files and directories
