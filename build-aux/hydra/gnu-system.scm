@@ -32,6 +32,15 @@
   ;; Use our very own Guix modules.
   (set! %fresh-auto-compile #t)
 
+  ;; Ignore .go files except for Guile's.  This is because our checkout in the
+  ;; store has mtime set to the epoch, and thus .go files look newer, even
+  ;; though they may not correspond.  Use 'reverse' so that /gnu/store/…-guile
+  ;; comes before /run/current-system/profile.
+  (set! %load-compiled-path
+    (list
+     (dirname (dirname (search-path (reverse %load-compiled-path)
+                                    "ice-9/boot-9.go")))))
+
   (and=> (assoc-ref (current-source-location) 'filename)
          (lambda (file)
            (let ((dir (string-append (dirname file) "/../..")))
