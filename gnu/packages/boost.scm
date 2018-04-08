@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
@@ -52,7 +52,8 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "1aaw48cmimsskzgiclwn0iifp62a5iw9cbqrhfari876af1828ap"))))
+                "1aaw48cmimsskzgiclwn0iifp62a5iw9cbqrhfari876af1828ap"))
+              (patches (search-patches "boost-fix-icu-build.patch"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)
               ("zlib" ,zlib)))
@@ -81,8 +82,9 @@
        (modify-phases %standard-phases
          (delete 'bootstrap)
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((icu (assoc-ref inputs "icu4c"))
+                   (out (assoc-ref outputs "out")))
                (substitute* '("libs/config/configure"
                               "libs/spirit/classic/phoenix/test/runtest.sh"
                               "tools/build/doc/bjam.qbk"
@@ -96,6 +98,9 @@
 
                (invoke "./bootstrap.sh"
                        (string-append "--prefix=" out)
+                       ;; Auto-detection looks for ICU only in traditional
+                       ;; install locations.
+                       (string-append "--with-icu=" icu)
                        "--with-toolset=gcc"))))
          (replace 'build
            (lambda* (#:key make-flags #:allow-other-keys)
