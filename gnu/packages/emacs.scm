@@ -10380,3 +10380,47 @@ It provides auto-completion for HTTP methods and headers in
 in the manner of @command{flet}, but with access to the original function
 through the symbol: @command{this-fn}.")
       (license license:gpl3+))))
+
+(define-public emacs-dumb-jump
+  (package
+    (name "emacs-dumb-jump")
+    (version "0.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/jacktasia/dumb-jump/archive/v"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07n0xjgpxjpf3vp9gxchkjpydyj0zm166930as0kwiwkhjlsirsf"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #f ; FIXME: Tests freeze when run.
+       #:test-command '("ert-runner")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-shell
+           (lambda _
+             ;; Setting the SHELL environment variable is required for the
+             ;; tests to find sh.
+             (setenv "SHELL" (which "sh"))
+             #t)))))
+    (native-inputs
+     `(("emacs-el-mock" ,emacs-el-mock)
+       ("emacs-noflet" ,emacs-noflet)
+       ("emacs-undercover" ,emacs-undercover)
+       ("ert-runner" ,ert-runner)))
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)
+       ("emacs-popup" ,emacs-popup)))
+    (home-page "https://github.com/jacktasia/dumb-jump")
+    (synopsis "Jump to definition for multiple languages without configuration")
+    (description "Dumb Jump is an Emacs \"jump to definition\" package with
+support for multiple programming languages that favors \"just working\" over
+speed or accuracy.  This means minimal --- and ideally zero --- configuration
+with absolutely no stored indexes (tags) or persistent background processes.
+Dumb Jump performs best with The Silver Searcher @command{ag} or ripgrep
+@command{rg} installed.")
+    (license license:gpl3+)))
