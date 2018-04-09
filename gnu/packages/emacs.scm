@@ -3593,6 +3593,35 @@ S-expression editing when point is at the beginning or end of an
 S-expression.")
       (license license:gpl3+))))
 
+(define-public emacs-lispyville
+  ;; Later versions need a more recent Evil, with an evil-define-key*
+  ;; supporting nil for the state.
+  (let ((commit "b4291857ed6a49a67c4ea77522889ce51fb171ab")
+        (revision "0"))
+    (package
+      (name "emacs-lispyville")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/noctuid/lispyville")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "095zibzc3naknahdrnb59g9rbljy8wz9rkc7rf8avb3wxlwvxhm3"))
+                (file-name (git-file-name name version))))
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)
+         ("emacs-lispy" ,emacs-lispy)))
+      (build-system emacs-build-system)
+      (synopsis "Minor mode for integrating Evil with lispy")
+      (description
+       "LispyVille's main purpose is to provide a Lisp editing environment
+suited towards Evil users.  It can serve as a minimal layer on top of lispy
+for better integration with Evil, but it does not require the use of lispy’s
+keybinding style.  The provided commands allow for editing Lisp in normal
+state and will work even without lispy being enabled.")
+      (license license:gpl3+))))
+
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
