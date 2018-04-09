@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -3538,6 +3538,27 @@ You can also use Iedit mode as a quick way to temporarily show only the buffer
 lines that match the current text being edited.  This gives you the effect of
 a temporary @code{keep-lines} or @code{occur}.")
     (license license:gpl3+)))
+
+(define-public emacs-zoutline
+  (let ((commit "b3ee0f0e0b916838c2d2c249beba74ffdb8d5699")
+        (revision "0"))
+    (package
+      (name "emacs-zoutline")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/abo-abo/zoutline")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "0sd0017piw0dis6dhpq5dkqd3acisxqgipl7dj8gmc1vnswhdwr8"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Simple outline library")
+      (description
+       "This library provides helpers for outlines.  Outlines allow users to
+navigate code in a tree-like fashion.")
+      (license license:gpl3+))))
 
 (define-public emacs-lispy
   (package
