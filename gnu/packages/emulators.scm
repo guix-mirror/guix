@@ -1058,7 +1058,7 @@ emulation community.  It provides highly accurate emulation.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0fdribjfc5zz9brzhqcxw6m76kvyg13l67aiigszv4wsjd5j3gpz"))))
+        (base32 "1wykv0w0kdlh7lh0k1ig0lpk5vh4c7r19jlfa9103jmjlryrq679"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
