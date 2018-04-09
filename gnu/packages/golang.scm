@@ -214,7 +214,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.9.4")
+    (version "1.9.5")
     (source
      (origin
        (method url-fetch)
@@ -222,7 +222,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "01nw8rfvf10naja0wq0kabsm012sbqq76hd4b8c7g28n6ggshwq5"))))
+         "1g4zqhbh1yw3gnb400szzwrdz0k5s3h0h5nc35xgmn5v69zvphpi"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -292,6 +292,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                     ("syscall/syscall_unix_test.go" "(.+)(TestPassFD\\(.+)")
                     ("os/exec/exec_test.go" "(.+)(TestExtraFiles/areturn.+)")
                     ("cmd/go/go_test.go" "(.+)(TestCoverageWithCgo.+)")
+                    ("cmd/go/go_test.go" "(.+)(TestTwoPkgConfigs.+)")
                     ("os/exec/exec_test.go" "(.+)(TestOutputStderrCapture.+)")
                     ("os/exec/exec_test.go" "(.+)(TestExtraFiles.+)")
                     ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
