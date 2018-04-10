@@ -88,7 +88,11 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
       ("guix"       (ref '(gnu packages package-management)
-                         'guix-register)))))
+                         'guix-register))
+      ("guile2.0-json" (ref '(gnu packages guile) 'guile2.0-json))
+      ("guile2.0-ssh"  (ref '(gnu packages ssh) 'guile2.0-ssh))
+      ("guile2.0-git"  (ref '(gnu packages guile) 'guile2.0-git))
+      (_               #f))))                     ;no such package
 
 
 ;;;
@@ -576,7 +580,8 @@ running Guile."
      (canonical-package (module-ref (resolve-interface '(gnu packages guile))
                                     'guile-2.2/fixed)))
     ("2.0"
-     (canonical-package (specification->package "guile@2.0")))))
+     (module-ref (resolve-interface '(gnu packages guile))
+                 'guile-2.0))))
 
 (define* (guix-derivation source version
                           #:optional (guile-version (effective-version)))
