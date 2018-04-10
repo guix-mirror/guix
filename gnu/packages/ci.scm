@@ -187,8 +187,8 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "f090c0f4786c789070e2eae740914e06ab0ab989")
-        (revision "15"))
+  (let ((commit "238f856e48ee333ed3e19fa32ce5e1742c650c67")
+        (revision "16"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -200,7 +200,7 @@ their dependencies.")
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "0aj1z9svsjvjlb6gas6032ygwhv7ld4iw7g3as852x9nfd2zck98"))))
+                  "15iwdgy561gnsr224rs5z8qn7nrsh1wdlsxr8gwxyk0v4zp6yvbf"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
