@@ -12,6 +12,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
 (define-module (gnu packages perl-check)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages valgrind)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system perl)
@@ -1000,6 +1002,33 @@ reported, and the tests skipped.")
     (synopsis "Composable, reusable tests with roles and Moo")
     (description "Test::Roo provides composable, reusable tests with roles.")
     (license asl2.0)))
+
+(define-public perl-test-runvalgrind
+  (package
+    (name "perl-test-runvalgrind")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/S/SH/SHLOMIF/Test-RunValgrind-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0cfndkn2k9pcx290wcblwmrwh1ybs0grxjlsrp8fbqqbmmjpb53h"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-path-tiny" ,perl-path-tiny)
+       ("perl-test-trap" ,perl-test-trap)
+       ("valgrind" ,valgrind)))
+    (home-page "http://search.cpan.org/dist/Test-RunValgrind/")
+    (synopsis "Tests that an external program is valgrind-clean")
+    (description "Test::RunValgind checks weather Valgrind does not detect
+errors (such as memory leaks) in an arbitrary binary executable.")
+    (license x11)))
 
 (define-public perl-test-script
   (package
