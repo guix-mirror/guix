@@ -194,15 +194,18 @@ denote ranges as interpreted by 'matching-generations'."
 
 (define* (build-and-use-profile store profile manifest
                                 #:key
+                                allow-collisions?
                                 bootstrap? use-substitutes?
                                 dry-run?)
   "Build a new generation of PROFILE, a file name, using the packages
-specified in MANIFEST, a manifest object."
+specified in MANIFEST, a manifest object.  When ALLOW-COLLISIONS? is true,
+do not treat collisions in MANIFEST as an error."
   (when (equal? profile %current-profile)
     (ensure-default-profile))
 
   (let* ((prof-drv (run-with-store store
                      (profile-derivation manifest
+                                         #:allow-collisions? allow-collisions?
                                          #:hooks (if bootstrap?
                                                      '()
                                                      %default-profile-hooks)
@@ -408,6 +411,8 @@ Install, remove, or upgrade packages in a single transaction.\n"))
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
   (newline)
   (display (G_ "
+      --allow-collisions do not treat collisions in the profile as an error"))
+  (display (G_ "
       --bootstrap        use the bootstrap Guile to build the profile"))
   (display (G_ "
       --verbose          produce verbose output"))
@@ -543,6 +548,10 @@ kind of search path~%")
          (option '("verbose") #f #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'verbose? #t result)
+                           #f)))
+         (option '("allow-collisions") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'allow-collisions? #t result)
                            #f)))
          (option '(#\s "search") #t #f
                  (lambda (opt name arg result arg-handler)
@@ -831,13 +840,15 @@ processed, #f otherwise."
   (let* ((user-module  (make-user-module '((guix profiles) (gnu))))
          (manifest     (load* file user-module))
          (bootstrap?   (assoc-ref opts 'bootstrap?))
-         (substitutes? (assoc-ref opts 'substitutes?)))
+         (substitutes? (assoc-ref opts 'substitutes?))
+         (allow-collisions? (assoc-ref opts 'allow-collisions?)))
     (if dry-run?
         (format #t (G_ "would install new manifest from '~a' with ~d entries~%")
                 file (length (manifest-entries manifest)))
         (format #t (G_ "installing new manifest from '~a' with ~d entries~%")
                 file (length (manifest-entries manifest))))
     (build-and-use-profile store profile manifest
+                           #:allow-collisions? allow-collisions?
                            #:bootstrap? bootstrap?
                            #:use-substitutes? substitutes?
                            #:dry-run? dry-run?)))
@@ -856,6 +867,7 @@ processed, #f otherwise."
   (define dry-run? (assoc-ref opts 'dry-run?))
   (define bootstrap? (assoc-ref opts 'bootstrap?))
   (define substitutes? (assoc-ref opts 'substitutes?))
+  (define allow-collisions? (assoc-ref opts 'allow-collisions?))
   (define profile  (or (assoc-ref opts 'profile) %current-profile))
   (define transform (options->transformation opts))
 
@@ -894,6 +906,7 @@ processed, #f otherwise."
       (show-manifest-transaction store manifest step3
                                  #:dry-run? dry-run?)
       (build-and-use-profile store profile new
+                             #:allow-collisions? allow-collisions?
                              #:bootstrap? bootstrap?
                              #:use-substitutes? substitutes?
                              #:dry-run? dry-run?))))

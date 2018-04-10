@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix discovery)
-  #:use-module (guix ui)
+  #:use-module (guix i18n)
   #:use-module (guix modules)
   #:use-module (guix combinators)
   #:use-module (guix build syscalls)
@@ -25,7 +25,8 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 ftw)
-  #:export (scheme-modules
+  #:export (scheme-files
+            scheme-modules
             fold-modules
             all-modules
             fold-module-public-variables))
@@ -85,13 +86,18 @@ DIRECTORY is not accessible."
                 (lambda args
                   (let ((errno (system-error-errno args)))
                     (unless (= errno ENOENT)
-                      (warning (G_ "cannot access `~a': ~a~%")
-                               directory (strerror errno)))
+                      (format (current-error-port) ;XXX
+                              (G_ "cannot access `~a': ~a~%")
+                              directory (strerror errno)))
                     '())))))
 
-(define* (scheme-modules directory #:optional sub-directory)
+(define* (scheme-modules directory #:optional sub-directory
+                         #:key (warn (const #f)))
   "Return the list of Scheme modules available under DIRECTORY.
-Optionally, narrow the search to SUB-DIRECTORY."
+Optionally, narrow the search to SUB-DIRECTORY.
+
+WARN is called when a module could not be loaded.  It is passed the module
+name and the exception key and arguments."
   (define prefix-len
     (string-length directory))
 
@@ -103,31 +109,32 @@ Optionally, narrow the search to SUB-DIRECTORY."
                       (resolve-interface module))
                     (lambda args
                       ;; Report the error, but keep going.
-                      (warn-about-load-error module args)
+                      (warn module args)
                       #f))))
               (scheme-files (if sub-directory
                                 (string-append directory "/" sub-directory)
                                 directory))))
 
-(define (fold-modules proc init path)
+(define* (fold-modules proc init path #:key (warn (const #f)))
   "Fold over all the Scheme modules present in PATH, a list of directories.
 Call (PROC MODULE RESULT) for each module that is found."
   (fold (lambda (spec result)
           (match spec
             ((? string? directory)
-             (fold proc result (scheme-modules directory)))
+             (fold proc result (scheme-modules directory #:warn warn)))
             ((directory . sub-directory)
              (fold proc result
-                   (scheme-modules directory sub-directory)))))
+                   (scheme-modules directory sub-directory
+                                   #:warn warn)))))
         '()
         path))
 
-(define (all-modules path)
+(define* (all-modules path #:key (warn (const #f)))
   "Return the list of package modules found in PATH, a list of directories to
 search.  Entries in PATH can be directory names (strings) or (DIRECTORY
 . SUB-DIRECTORY) pairs, in which case modules are searched for beneath
 SUB-DIRECTORY."
-  (fold-modules cons '() path))
+  (fold-modules cons '() path #:warn warn))
 
 (define (fold-module-public-variables proc init modules)
   "Call (PROC OBJECT RESULT) for each variable exported by one of MODULES,

@@ -544,6 +544,7 @@ MODULES_NOT_COMPILED +=				\
 patchdir = $(guilemoduledir)/%D%/packages/patches
 dist_patch_DATA =						\
   %D%/packages/patches/4store-fix-buildsystem.patch		\
+  %D%/packages/patches/4store-unset-preprocessor-directive.patch	\
   %D%/packages/patches/a2ps-CVE-2001-1593.patch	\
   %D%/packages/patches/a2ps-CVE-2014-0466.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
@@ -589,8 +590,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
   %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
   %D%/packages/patches/chmlib-inttypes.patch			\
-  %D%/packages/patches/clang-libc-search-path.patch		\
+  %D%/packages/patches/clang-3.5-libc-search-path.patch		\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
+  %D%/packages/patches/clang-6.0-libc-search-path.patch		\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
   %D%/packages/patches/classpath-aarch64-support.patch		\
@@ -619,6 +621,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
+  %D%/packages/patches/delly-use-system-libraries.patch		\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/diffutils-getopt.patch			\

@@ -26,6 +26,7 @@
   #:use-module (gnu services web)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages tls)
+  #:use-module (guix i18n)
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
@@ -113,14 +114,19 @@
           #$(certbot-command config))))
 
 (define (certbot-activation config)
-  (match config
-    (($ <certbot-configuration> package webroot certificates email
-                                rsa-key-size default-location)
-     (with-imported-modules '((guix build utils))
-       #~(begin
-           (use-modules (guix build utils))
-           (mkdir-p #$webroot)
-           (zero? (system* #$(certbot-command config))))))))
+  (let* ((certbot-directory "/var/lib/certbot")
+         (script (in-vicinity certbot-directory "renew-certificates"))
+         (message (format #f (G_ "~a may need to be run~%") script)))
+    (match config
+      (($ <certbot-configuration> package webroot certificates email
+                                  rsa-key-size default-location)
+       (with-imported-modules '((guix build utils))
+         #~(begin
+             (use-modules (guix build utils))
+             (mkdir-p #$webroot)
+             (mkdir-p #$certbot-directory)
+             (copy-file #$(certbot-command config) #$script)
+             (display #$message)))))))
 
 (define certbot-nginx-server-configurations
   (match-lambda

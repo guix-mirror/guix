@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -110,8 +110,25 @@ for system '~a'")
                         file-name system)))))))
 
 (define %distro-root-directory
-  ;; Absolute file name of the module hierarchy.
-  (dirname (search-path %load-path "guix.scm")))
+  ;; Absolute file name of the module hierarchy.  Since (gnu packages …) might
+  ;; live in a directory different from (guix), try to get the best match.
+  (letrec-syntax ((dirname* (syntax-rules ()
+                              ((_ file)
+                               (dirname file))
+                              ((_ file head tail ...)
+                               (dirname (dirname* file tail ...)))))
+                  (try      (syntax-rules ()
+                              ((_ (file things ...) rest ...)
+                               (match (search-path %load-path file)
+                                 (#f
+                                  (try rest ...))
+                                 (absolute
+                                  (dirname* absolute things ...))))
+                              ((_)
+                               #f))))
+    (try ("gnu/packages/base.scm" gnu/ packages/)
+         ("gnu/packages.scm"      gnu/)
+         ("guix.scm"))))
 
 (define %package-module-path
   ;; Search path for package modules.  Each item must be either a directory
@@ -142,7 +159,9 @@ for system '~a'")
 
 (define* (fold-packages proc init
                         #:optional
-                        (modules (all-modules (%package-module-path)))
+                        (modules (all-modules (%package-module-path)
+                                              #:warn
+                                              warn-about-load-error))
                         #:key (select? (negate hidden-package?)))
   "Call (PROC PACKAGE RESULT) for each available package defined in one of
 MODULES that matches SELECT?, using INIT as the initial value of RESULT.  It

@@ -1,4 +1,5 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
@@ -111,7 +112,7 @@ contains the archive keys used for that.")
 (define-public debootstrap
   (package
     (name "debootstrap")
-    (version "1.0.93")
+    (version "1.0.95")
     (source
       (origin
         (method url-fetch)
@@ -119,7 +120,7 @@ contains the archive keys used for that.")
                             name "_" version ".tar.gz"))
         (sha256
          (base32
-          "1nyp9fwb7xrk1vin81dmgx2g9rb52yg4gwz4rcx97gamw4mlvbfd"))))
+          "1xpd1yblcgwhri64hzgxhalpf5j8gqbmkrsm1fs0pbwiy0wdz0ry"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

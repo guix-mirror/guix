@@ -21,29 +21,5 @@
 ;;; tool.
 ;;;
 
-(include-from-path "build-aux/hydra/gnu-system.scm")
-
-(use-modules ((guix licenses)
-              #:select (license? license-name license-uri license-comment)))
-
-(define (cuirass-jobs store arguments)
-  "Return Cuirass jobs."
-  (map hydra-job->cuirass-job (hydra-jobs store arguments)))
-
-(define (hydra-job->cuirass-job hydra-job)
-  (let ((name (car hydra-job))
-        (job ((cdr hydra-job))))
-    (lambda _ (acons #:job-name (symbol->string name)
-                     (map symbol-alist-entry->keyword-alist-entry job)))))
-
-(define (symbol-alist-entry->keyword-alist-entry entry)
-  (cons (symbol->keyword (car entry)) (entry->sexp-entry (cdr entry))))
-
-(define (entry->sexp-entry o)
-  (match o
-    ((? license?) `((name . (license-name o))
-                    (uri . ,(license-uri o))
-                    (comment . ,(license-comment o))))
-    ((lst ...)
-     (map entry->sexp-entry lst))
-    (_ o)))
+(include "../hydra/gnu-system.scm")
+(include "hydra-to-cuirass.scm")

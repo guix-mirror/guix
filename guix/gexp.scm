@@ -1258,13 +1258,18 @@ This yields an 'etc' directory containing these two files."
                           files))))))
 
 (define* (directory-union name things
-                          #:key (copy? #f) (quiet? #f))
+                          #:key (copy? #f) (quiet? #f)
+                          (resolve-collision 'warn-about-collision))
   "Return a directory that is the union of THINGS, where THINGS is a list of
 file-like objects denoting directories.  For example:
 
   (directory-union \"guile+emacs\" (list guile emacs))
 
 yields a directory that is the union of the 'guile' and 'emacs' packages.
+
+Call RESOLVE-COLLISION when several files collide, passing it the list of
+colliding files.  RESOLVE-COLLISION must return the chosen file or #f, in
+which case the colliding entry is skipped altogether.
 
 When HARD-LINKS? is true, create hard links instead of symlinks.  When QUIET?
 is true, the derivation will not print anything."
@@ -1289,12 +1294,16 @@ is true, the derivation will not print anything."
      (computed-file name
                     (with-imported-modules '((guix build union))
                       (gexp (begin
-                              (use-modules (guix build union))
+                              (use-modules (guix build union)
+                                           (srfi srfi-1)) ;for 'first' and 'last'
+
                               (union-build (ungexp output)
                                            '(ungexp things)
 
                                            #:log-port (ungexp log-port)
-                                           #:symlink (ungexp symlink)))))))))
+                                           #:symlink (ungexp symlink)
+                                           #:resolve-collision
+                                           (ungexp resolve-collision)))))))))
 
 
 ;;;

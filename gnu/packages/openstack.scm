@@ -646,14 +646,14 @@ from the OpenStack project.")
 (define-public python-oslotest
   (package
     (name "python-oslotest")
-    (version "3.3.0")
+    (version "3.4.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "oslotest" version))
         (sha256
           (base32
-            "006i73w8kbc9s0av2v5mbni6mnkb91c2nq17wa0lz7bwk5zss992"))))
+            "1pp8lq61d548cxcqi451czvrz5i5b3hyi2ry00wmngdgiswcqj1h"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-fixtures" ,python-fixtures)

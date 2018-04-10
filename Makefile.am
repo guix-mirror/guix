@@ -81,6 +81,7 @@ MODULES =					\
   guix/derivations.scm				\
   guix/grafts.scm				\
   guix/gnu-maintenance.scm			\
+  guix/self.scm					\
   guix/upstream.scm				\
   guix/licenses.scm				\
   guix/glob.scm					\
@@ -459,7 +460,7 @@ EXTRA_DIST =						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
-  bin/guix.in						\
+  scripts/guix.in					\
   etc/guix-install.sh					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
@@ -467,8 +468,12 @@ EXTRA_DIST =						\
   build-aux/hydra/gnu-system.scm			\
   build-aux/hydra/guix.scm				\
   build-aux/hydra/guix-modular.scm			\
+  build-aux/cuirass/gnu-system.scm			\
+  build-aux/cuirass/guix-modular.scm			\
+  build-aux/cuirass/hydra-to-cuirass.scm		\
   build-aux/check-available-binaries.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
+  build-aux/compile-as-derivation.scm			\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
   build-aux/update-guix-package.scm			\
@@ -534,6 +539,13 @@ $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 install-data-hook: set-bootstrap-executable-permissions
 	touch "$(DESTDIR)$(guileobjectdir)/guix/config.go"
 
+# Assuming Guix is already installed and the daemon is up and running, this
+# rule builds from $(srcdir), creating and building derivations.
+as-derivation:
+	$(AM_V_at)echo "Building Guix in Guix..." ;		\
+	$(GUILE) --no-auto-compile				\
+	  "$(top_srcdir)/build-aux/compile-as-derivation.scm"	\
+	  "$(abs_top_srcdir)"
 
 SUBDIRS = po/guix po/packages
 BUILT_SOURCES =
@@ -762,7 +774,7 @@ cuirass-jobs.scm: $(GOBJECTS)
 .PHONY: gen-ChangeLog gen-AUTHORS gen-tarball-version
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained
-.PHONY: clean-go make-go
+.PHONY: clean-go make-go as-derivation
 .PHONY: update-guix-package update-NEWS release
 
 ## -------------- ##

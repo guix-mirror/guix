@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2018 Sahithi Yarlagadda <sahi@swecha.net>
@@ -1027,14 +1027,14 @@ or excesses over a high threshold.")
 (define-public r-lmtest
   (package
     (name "r-lmtest")
-    (version "0.9-35")
+    (version "0.9-36")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lmtest" version))
        (sha256
         (base32
-         "107br1l7p52wxvazs031f4h5ryply97qywg9dzrkw4ydnvqq4j9g"))))
+         "0sym9sm1vl6bbgq01jhz1plxqmgh8hrgrn7rw0mwvsalcn6id7xy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-zoo" ,r-zoo)))
@@ -1619,14 +1619,14 @@ created using basic graphics.")
 (define-public r-broom
   (package
     (name "r-broom")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "broom" version))
        (sha256
         (base32
-         "119pc2jnxvm13cvd77c7d14p3bn68f4jm310vj3yfck40101n9if"))))
+         "081x87sy6dmfvkgwfjrl5ax51k77ciyzg9x3xql25vdi92rmwj3m"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -2601,16 +2601,16 @@ published results; and a routine for graphical display.")
 (define-public r-network
   (package
     (name "r-network")
-    (version "1.13.0")
+    (version "1.13.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "network" version))
        (sha256
         (base32
-         "11sg330xb7gcnl3f6lwhhjdabz6mk43828i2np635pqw4s4yl13s"))))
+         "1bbkbqkqf1d7irfwh08c13c2pfypir1ssvlqrln83irqns1ikdv0"))))
     (build-system r-build-system)
-    (home-page "http://statnet.org/")
+    (home-page "https://statnet.org/")
     (synopsis "Classes for relational data")
     (description
      "This package provides tools to create and modify network objects.  The
@@ -2632,7 +2632,7 @@ supports arbitrary vertex/edge/graph attributes.")
     (properties
       `((upstream-name . "statnet.common")))
     (build-system r-build-system)
-    (home-page "http://www.statnet.org")
+    (home-page "https://statnet.org")
     (synopsis "R scripts and utilities used by the Statnet software")
     (description "This package provides non-statistical utilities used by the
 software developed by the Statnet Project.")
@@ -2653,7 +2653,7 @@ software developed by the Statnet Project.")
     (propagated-inputs
      `(("r-network" ,r-network)
        ("r-statnet-common" ,r-statnet-common)))
-    (home-page "http://www.statnet.org")
+    (home-page "https://statnet.org")
     (synopsis "Tools for social network analysis")
     (description
      "This package provides a range of tools for social network analysis,
@@ -3654,3 +3654,53 @@ and Eclat.")
 time formats, @code{parse_date} parses dates in unspecified formats,
 and @code{format_iso_8601} formats a date in ISO 8601 format.")
     (license license:gpl2)))
+
+(define-public r-abc-data
+  (package
+    (name "r-abc-data")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abc.data" version))
+       (sha256
+        (base32
+         "1bv1n68ah714ws58cf285n2s2v5vn7382lfjca4jxph57lyg8hmj"))))
+    (properties `((upstream-name . "abc.data")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/abc.data/")
+    (synopsis "Data for Approximate Bayesian Computation (ABC) package")
+    (description
+     "This package contains data which are used by functions of the abc
+package which implements several @dfn{Approximate Bayesian Computation} (ABC)
+algorithms for performing parameter estimation, model selection, and
+goodness-of-fit.")
+    (license license:gpl3+)))
+
+(define-public r-abc
+  (package
+    (name "r-abc")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abc" version))
+       (sha256
+        (base32
+         "0ngzaaz2y2s03fhngvwipmy4kq38xrmyddaz6a6l858rxvadrlhb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abc-data" ,r-abc-data)
+       ("r-locfit" ,r-locfit)
+       ("r-mass" ,r-mass)
+       ("r-nnet" ,r-nnet)
+       ("r-quantreg" ,r-quantreg)))
+    (home-page "https://cran.r-project.org/web/packages/abc/")
+    (synopsis "Tools for Approximate Bayesian Computation (ABC)")
+    (description
+     "This package implements several @dfn{Approximate Bayesian
+Computation} (ABC) algorithms for performing parameter estimation, model
+selection, and goodness-of-fit.  Cross-validation tools are also available for
+measuring the accuracy of ABC estimates, and to calculate the
+misclassification probabilities of different models.")
+    (license license:gpl3+)))

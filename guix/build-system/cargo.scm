@@ -43,17 +43,11 @@
 to NAME and VERSION."
   (string-append crate-url name "/" version "/download"))
 
-(define (default-cargo)
-  "Return the default Cargo package."
+(define (default-rust)
+  "Return the default Rust package."
   ;; Lazily resolve the binding to avoid a circular dependency.
   (let ((rust (resolve-interface '(gnu packages rust))))
-    (module-ref rust 'cargo)))
-
-(define (default-rustc)
-  "Return the default Rustc package."
-  ;; Lazily resolve the binding to avoid a circular dependency.
-  (let ((rust (resolve-interface '(gnu packages rust))))
-    (module-ref rust 'rustc)))
+    (module-ref rust 'rust)))
 
 (define %cargo-build-system-modules
   ;; Build-side modules imported by default.
@@ -115,14 +109,13 @@ to NAME and VERSION."
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
-                (cargo (default-cargo))
-                (rustc (default-rustc))
+                (rust (default-rust))
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
 
   (define private-keywords
-    '(#:source #:target #:cargo #:rustc #:inputs #:native-inputs #:outputs))
+    '(#:source #:target #:rust #:inputs #:native-inputs #:outputs))
 
   (and (not target) ;; TODO: support cross-compilation
        (bag
@@ -136,8 +129,8 @@ to NAME and VERSION."
 
                         ;; Keep the standard inputs of 'gnu-build-system'
                         ,@(standard-packages)))
-         (build-inputs `(("cargo" ,cargo)
-                         ("rustc" ,rustc)
+         (build-inputs `(("cargo" ,rust "cargo")
+                         ("rustc" ,rust)
                          ,@native-inputs))
          (outputs outputs)
          (build cargo-build)

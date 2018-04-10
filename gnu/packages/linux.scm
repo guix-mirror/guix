@@ -284,6 +284,9 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("bc" ,bc)
        ("openssl" ,openssl)
        ("kmod" ,kmod)
+       ("elfutils" ,elfutils)  ; Needed to enable CONFIG_STACK_VALIDATION
+       ("flex" ,flex)
+       ("bison" ,bison)
        ;; On x86, build with GCC-7 for full retpoline support.
        ;; FIXME: Remove this when our default compiler has retpoline support.
        ,@(match (system->linux-architecture
@@ -383,8 +386,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.15.13")
-(define %linux-libre-hash "1z9f3m44n5w9ayad08h6nvx4nihc28h2jplk4jvyaj0460v8d11f")
+(define %linux-libre-version "4.15.16")
+(define %linux-libre-hash "1nzdaypvw8abas6xr6ijk2wc9f0b6q72xw6ypalwx33p7sdqwrzq")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -392,8 +395,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.30")
-(define %linux-libre-4.14-hash "1j1vnr4397y4js7i24jdpfq85mc50b7kjz7gz1bbbrmda6cflwig")
+(define %linux-libre-4.14-version "4.14.33")
+(define %linux-libre-4.14-hash "0ps9whsxc20gw5ags18rgkwgy6fzg66by70g8xjds7nijpzgl69m")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -402,20 +405,20 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.90"
-                    "0mzy6wcxp9m9icb8mvsbywp1lrbvbv6n8rs3xszqm43dxy9zj1jd"
+  (make-linux-libre "4.9.93"
+                    "0flmsh4xy7ymyzwm8y4x4id798mx6vy3d6ala7x1bq41hf00075p"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.124"
-                    "1368x0wki8zhk0hwz36hrkp2lr2kbm9i0fwzws201h3y85mldgh4"
+  (make-linux-libre "4.4.127"
+                    "1av536sp6ancx0fy71wpmqv4r66pksrcjbnrcjggard6im4c8pjy"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.50"
-                    "1hl1pk724v2waa55bhxfmxyz9nl6pkcj4dc3l80jfvqdfgr55mm2"
+  (make-linux-libre "4.1.51"
+                    "0l8lpwjpckp44hjyx5qrxqdwwi97gyyc1n6pmk66cr3fpdhnk540"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -910,14 +913,15 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.21")
+    (version "4.22")
+    (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://github.com/strace/strace/releases/"
-                                 "download/v" version "/strace-" version ".tar.xz"))
+             (uri (string-append home-page "/files/" version
+                                 "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "0dsw6xcfrmygidp1dj2ch8cl8icrar7789snkb2r8gh78kdqhxjw"))))
+               "17dkpnsjxmys1ydidm9wcvc3wscsz44fmlxw3dclspn9cj9d1306"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -928,7 +932,6 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                (("/bin/sh") (which "sh")))
              #t)))))
     (native-inputs `(("perl" ,perl)))
-    (home-page "https://strace.io/")
     (synopsis "System call tracer for Linux")
     (description
      "strace is a system call tracer, i.e. a debugging tool which prints out a
@@ -1122,8 +1125,7 @@ configure the Linux 2.4.x and later IPv4 packet filtering ruleset
 This package also includes @command{ip6tables}, which is used to configure the
 IPv6 packet filter.
 
-Both commands are targeted at system administrators.
-")
+Both commands are targeted at system administrators.")
     (license license:gpl2+)))
 
 (define-public ebtables
@@ -1184,7 +1186,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.15.0")
+    (version "4.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1192,7 +1194,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0mc3g4kj7h3jhwz2b2gdf41gp6bhqn7axh4mnyvhkdnpk5m63m28"))))
+                "02pfalg319jpbjz273ph725br8dnkzpfvi98azi9yd6p1w128p0c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite

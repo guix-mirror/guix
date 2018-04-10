@@ -259,14 +259,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.9.3")
+    (version "1.9.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "1qbngck1pq1jkpnbpcwcb2q2zqrkgp0nd68wwp57bprxjgb8a6j3"))
+               "1pxmw5yyizb9bqbai6lihv6zxmw0znjfb60zaldwh6hc6lkbzlgl"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -747,14 +747,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.26")
+    (version "0.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1pvn1n7giv8n3xlazi3wpscdqhd2yak0fgv68aj23myr5bnr9s6k"))))
+                "0dx8nhdmkaqabxcgxfa757m99fi395y76h9ynx8539yh9m7y9xyk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -906,7 +906,7 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "5.5")
+    (version "5.6")
     (source
      (origin
        (method url-fetch)
@@ -914,7 +914,7 @@ and search library.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0l43lbnrnyyrq8mlnw37saq6v0mh3nkirdq1dwnsrihykzjjwf70"))))
+         "16nmvj80szr6yvcxxgmxn2lxqpjqqj4xg5a0b66zhvck6j42q3a6"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests

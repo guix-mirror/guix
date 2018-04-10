@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -914,16 +914,17 @@ connect with friends and family without anyone else listening in.")
 (define-public pybitmessage
   (package
     (name "pybitmessage")
-    (version "0.6.2")
+    (version "0.6.3.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Bitmessage/"
-                           "PyBitmessage/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Bitmessage/PyBitmessage.git")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "1in2mhaxkp2sx8pgvifq9dk1z8b2x3imf1anr0z926vwxwjrf85w"))))
+         "1lmhbpwsqh1v93krlqqhafw2pc3y0qp8zby186yllbph6s8kdp35"))))
     (propagated-inputs
      ;; TODO:
      ;; Package "pyopencl", required in addition to numpy for OpenCL support.

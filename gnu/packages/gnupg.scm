@@ -38,6 +38,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -739,6 +740,16 @@ including tools for signing keys, keyring analysis, and party preparation.
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/pinentry")
                   (upstream-name . "pinentry")))))
+
+(define-public pinentry-emacs
+  (package
+    (inherit pinentry-tty)
+    (name "pinentry-emacs")
+    (arguments
+     `(#:configure-flags '("--enable-pinentry-emacs")))
+    (description
+     "Pinentry provides a console and an Emacs interface that allows users to
+enter a passphrase when required by @code{gpg} or other software.")))
 
 (define-public pinentry-gtk2
   (package

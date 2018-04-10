@@ -1,0 +1,63 @@
+050cdb59839896b41431791f8ee0ef2564231b8f
+Author:     Matthew Flatt <mflatt@racket-lang.org>
+AuthorDate: Tue Mar 6 09:05:08 2018 -0700
+Commit:     Matthew Flatt <mflatt@racket-lang.org>
+CommitDate: Tue Mar 6 09:05:08 2018 -0700
+
+Parent:     efb9a919fc ffi docs: clarification on `unsafe-socket->port`
+Containing: master
+Follows:    v5.0.1 (21612)
+
+xform: avoid problems with `__signbitf128`
+
+Closes #1962 and uses the suggested patch there, among other changes.
+
+2 files changed, 6 insertions(+), 3 deletions(-)
+racket/collects/compiler/private/xform.rkt | 2 +-
+racket/src/racket/src/number.c             | 7 +++++--
+
+diff --git a/racket/collects/compiler/private/xform.rkt b/racket/collects/compiler/private/xform.rkt
+index 28a425c057..89ae848f9c 100644
+--- a/collects/compiler/private/xform.rkt
++++ b/collects/compiler/private/xform.rkt
+@@ -904,7 +904,7 @@
+ 
+                strlen cos cosl sin sinl exp expl pow powl log logl sqrt sqrtl atan2 atan2l frexp
+                isnan isinf fpclass signbit _signbit _fpclass __fpclassify __fpclassifyf __fpclassifyl
+-	       _isnan __isfinited __isnanl __isnan __signbit __signbitf __signbitd __signbitl
++	       _isnan __isfinited __isnanl __isnan __signbit __signbitf __signbitd __signbitl __signbitf128
+                __isinff __isinfl isnanf isinff __isinfd __isnanf __isnand __isinf __isinff128
+                __inline_isnanl __inline_isnan __inline_signbit __inline_signbitf __inline_signbitd __inline_signbitl
+                __builtin_popcount __builtin_clz __builtin_isnan __builtin_isinf __builtin_signbit
+diff --git a/racket/src/racket/src/number.c b/racket/src/racket/src/number.c
+index 71f42aaf3c..3bbad3ba83 100644
+--- a/src/racket/src/number.c
++++ b/src/racket/src/number.c
+@@ -1796,6 +1796,7 @@ double scheme_real_to_double(Scheme_Object *r)
+ }
+ 
+ XFORM_NONGCING static MZ_INLINE int minus_zero_p(double d)
++  XFORM_SKIP_PROC
+ {
+ #ifdef MZ_IS_NEG_ZERO
+   return MZ_IS_NEG_ZERO(d);
+@@ -1809,7 +1810,9 @@ int scheme_minus_zero_p(double d)
+   return minus_zero_p(d);
+ }
+ 
+-static int rational_dbl_p(double f) {
++XFORM_NONGCING static int rational_dbl_p(double f)
++  XFORM_SKIP_PROC
++{
+   return !(MZ_IS_NAN(f)
+            || MZ_IS_INFINITY(f));
+ }
+@@ -1955,7 +1958,7 @@ real_p(int argc, Scheme_Object *argv[])
+   return (SCHEME_REALP(o) ? scheme_true : scheme_false);
+ }
+ 
+-static int is_rational(const Scheme_Object *o)
++XFORM_NONGCING static int is_rational(const Scheme_Object *o)
+ {
+   if (SCHEME_FLOATP(o))
+     return rational_dbl_p(SCHEME_FLOAT_VAL(o));

@@ -25,13 +25,6 @@ void computeFSClosure(StoreAPI & store, const Path & path,
    given derivation. */
 Path findOutput(const Derivation & drv, string id);
 
-/* Given a set of paths that are to be built, return the set of
-   derivations that will be built, and the set of output paths that
-   will be substituted. */
-void queryMissing(StoreAPI & store, const PathSet & targets,
-    PathSet & willBuild, PathSet & willSubstitute, PathSet & unknown,
-    unsigned long long & downloadSize, unsigned long long & narSize);
-
 bool willBuildLocally(const Derivation & drv);
 
 bool substitutesAllowed(const Derivation & drv);

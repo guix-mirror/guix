@@ -186,14 +186,14 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.13.10")
+    (version "1.13.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "11a8m4lhy6h8mmrsakn73pd5gcyvhxpz1xvlr103rglh9l884q9k"))))
+                "01bgld6pv9sms9bsmx863yqw2hnivxhn91xs6imqklj48sbrqy9m"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -317,13 +317,13 @@ documentation.")
       (license l:bsd-2))))
 
 (define-public nginx-documentation
-  ;; This documentation should be relevant for nginx@1.13.8.
-  (let ((revision 2100)
-        (changeset "cfb7bd672d77"))
+  ;; This documentation should be relevant for nginx@1.13.11.
+  (let ((revision 2131)
+        (changeset "dbaf3950f8e9"))
     (package
       (name "nginx-documentation")
       (version
-       (simple-format #f "2018-01-22-~A-~A" revision changeset))
+       (simple-format #f "2018-04-04-~A-~A" revision changeset))
       (source
        (origin (method hg-fetch)
                (uri (hg-reference
@@ -332,7 +332,7 @@ documentation.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "096fcsc0wnfr847m7dwp17rivd3alxq7v9hq9s5lkfbhylmh18vm"))))
+                 "0acdjsdaqixzh9g9s6db552v4pan4nqrllyqapay9ns9yzh1hrp7"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -3948,13 +3948,13 @@ LaTeX.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "3.1")
+    (version "3.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "15fbjya2xrf2k9hhvg3frisrram4yk5wlfz67zj1z8ahpsb2a3r7"))))
+                "15hmy71310hnf9yqvz0icx4cq939gv6iqaifzlfdh2ia8akawdhn"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -5121,7 +5121,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
 (define-public http-parser
   (package
     (name "http-parser")
-    (version "2.8.0")
+    (version "2.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nodejs/http-parser/"
@@ -5129,7 +5129,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17a7k3nxv2p1sp2x5d89wr51vk770753vz6qnlp2gz7nkgwwcxvj"))))
+                "15ids8k2f0xhnnxh4m85w2f78pg5ndiwrpl24kyssznnp1l5yqai"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -5524,7 +5524,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2017-08-03")
+    (version "2018-03-11")
     (source
      (origin
        (method url-fetch)
@@ -5533,7 +5533,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "05s16y552hbyj91s7bnlkx1bi64s6aw0fjy29az8via3i3b21yhl"))))
+         "1ix15ck45yb659k63mhwxwia6qnm9nn8jw0bga85abrvk1rchjdn"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("gzip" ,gzip)

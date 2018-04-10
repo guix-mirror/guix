@@ -337,13 +337,13 @@ official designation is ISO/IEC 29199-2). This library is an implementation of t
 (define-public jpegoptim
   (package
    (name "jpegoptim")
-   (version "1.4.4")
+   (version "1.4.5")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.kokkonen.net/tjko/src/jpegoptim-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "1cn1i0g1xjdwa12w0ifbnzgb1vqbpr8ji6h05vxksj79vyi3x849"))))
+                     "1mngi8c4mhzwa7i4wqrqq6i80cqj4adbacblfvk6dy573wywyxmi"))))
    (build-system gnu-build-system)
    (inputs `(("libjpeg" ,libjpeg)))
    (arguments
@@ -355,7 +355,7 @@ official designation is ISO/IEC 29199-2). This library is an implementation of t
 the Huffman tables) and \"lossy\" optimization based on setting
 maximum quality factor.")
    (license license:gpl2+)
-   (home-page "http://www.kokkonen.net/tjko/projects.html#jpegoptim")))
+   (home-page "https://www.kokkonen.net/tjko/projects.html#jpegoptim")))
 
 (define-public libicns
   (package

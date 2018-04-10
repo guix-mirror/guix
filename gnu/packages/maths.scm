@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -56,6 +56,7 @@
   #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -79,6 +80,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages less)
   #:use-module (gnu packages lisp)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages gnome)
@@ -95,6 +97,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
@@ -1345,7 +1348,11 @@ can solve two kinds of problems:
        ("zlib" ,zlib)
        ("curl" ,curl)
        ("texinfo" ,texinfo)
-       ("graphicsmagick" ,graphicsmagick)))
+       ("graphicsmagick" ,graphicsmagick)
+       ("suitesparse" ,suitesparse)
+       ("libsndfile" ,libsndfile)
+       ("portaudio" ,portaudio)
+       ("alsa-lib" ,alsa-lib)))
     (native-inputs
      `(("lzip" ,lzip)
        ("gfortran" ,gfortran)
@@ -1384,6 +1391,31 @@ non-linear applications and it provides great support for visualizing results.
 Work may be performed both at the interactive command-line as well as via
 script files.")
     (license license:gpl3+)))
+
+(define-public qtoctave
+  (package (inherit octave)
+    (name "qtoctave")
+    (inputs
+     `(("qscintilla" ,qscintilla)
+       ("qt" ,qtbase)
+       ,@(package-inputs octave)))
+    (native-inputs
+     `(("qttools" , qttools) ;for lrelease
+       ,@(package-native-inputs octave)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments octave)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'patch-qscintilla-library-name
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; The QScintilla library that the Octave configure script tries
+               ;; to link with should be named libqscintilla-qt5.so, but the
+               ;; QScintilla input provides the shared library as
+               ;; libqscintilla2_qt5.so.
+               (substitute* "configure"
+                 (("qscintilla2-qt5")
+                  "qscintilla2_qt5"))
+               #t))))))))
 
 (define-public opencascade-oce
   (package
@@ -3522,7 +3554,11 @@ supports compressed MAT files, as well as newer (version 7.3) MAT files.")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_TESTING=ON")))
+       '("-DBUILD_TESTING=ON"
+         ;; By default, Vc will optimize for the CPU of the build machine.
+         ;; Setting this to "none" makes it create portable binaries.  See
+         ;; "cmake/OptimizeForArchitecture.cmake".
+         "-DTARGET_ARCHITECTURE=none")))
     (synopsis "SIMD vector classes for C++")
     (description "Vc provides portable, zero-overhead C++ types for explicitly
 data-parallel programming.  It is a library designed to ease explicit

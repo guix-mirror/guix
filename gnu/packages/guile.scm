@@ -1951,8 +1951,8 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "5")
-        (commit "2bb9fbbf93cf93496718efc85ad9394aefa21029"))
+  (let ((revision "6")
+        (commit "36f93c174adc396c90ec3a6923487f0444fe5d69"))
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
@@ -1962,14 +1962,15 @@ is not available for Guile 2.0.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "0z3v0v89dyp35zx2h2gsq6v29lba3wbzabc5n2g4hx2fcb6q5qqy"))
+                  "0z1dvn0scx59pbgjkpacam7p5n7630z4qm8fazim7ixq9xv3s8wx"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
                     ;; FIXME: On i686, bytestructures miscalculates the offset
                     ;; of the 'old-file' and 'new-file' fields within the
-                    ;; '%diff-delta' structure.
+                    ;; '%diff-delta' structure.  See
+                    ;; <https://github.com/TaylanUB/scheme-bytestructures/issues/30>.
                     ,@(if (string=? (%current-system) "x86_64-linux")
                           '()
                           '((add-before 'check 'skip-tests

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system r)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages)
+  #:use-module (gnu packages statistics)
+  #:use-module (gnu packages bioinformatics))
 
 (define-public r-hpar
   (package
@@ -39,4 +42,31 @@
     (synopsis "Human Protein Atlas in R")
     (description "This package provides a simple interface to and data from
 the Human Protein Atlas project.")
+    (license license:artistic2.0)))
+
+(define-public r-regioner
+  (package
+    (name "r-regioner")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "regioneR" version))
+       (sha256
+        (base32
+         "1vprp3l929hwzmvgskbhawfgnrymwc9n2rxd16rgagnv1dxnjxfp"))))
+    (properties `((upstream-name . "regioneR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-memoise" ,r-memoise)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-iranges" ,r-iranges)))
+    (home-page "https://bioconductor.org/packages/regioneR/")
+    (synopsis "Association analysis of genomic regions")
+    (description "This package offers a statistical framework based on
+customizable permutation tests to assess the association between genomic
+region sets and other genomic features.")
     (license license:artistic2.0)))

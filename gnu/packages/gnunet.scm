@@ -186,13 +186,16 @@ authentication and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.58.0")
+   (version "7.59.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://gnu/gnunet/" name "-" version ".tar.xz"))
+            (uri (list (string-append "mirror://gnu/gnunet/" name "-" version ".tar.xz")
+                       ;; TODO: Remove once gnurl-7.59.0 release has synced to ftp.gnu.org
+                       (string-append "https://ftp.n0.is/pub/releases/gnurl/"
+                                       name "-" version ".tar.xz")))
             (sha256
              (base32
-              "1yyswsz0csplqi8hlhqaxlafqn5kh5016j8k2gaxziv4cb343znx"))))
+              "0fdwqxs4crzj1nbq3lz0xbqjiiqpq16vpll09gryyq4c1y6lbyib"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.5 MiB of man3 pages

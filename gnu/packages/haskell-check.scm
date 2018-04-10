@@ -27,6 +27,7 @@
 (define-module (gnu packages haskell-check)
   #:use-module (gnu packages)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-crypto)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -793,3 +794,33 @@ Haskell, inspired by the Ruby library RSpec.")
      "Nanospec is a lightweight implementation of a subset of Hspec's API with
 minimal dependencies.")
     (license license:expat)))
+
+(define-public ghc-crypto-cipher-tests
+  (package
+    (name "ghc-crypto-cipher-tests")
+    (version "0.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "crypto-cipher-tests-" version "/"
+                           "crypto-cipher-tests-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19wqignlq90qwpam01hnmmrxaxh5lkax9l1l6rlbi4a07nvp1dnz"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)
+              ("ghc-mtl" ,ghc-mtl)
+              ("ghc-hunit" ,ghc-hunit)
+              ("ghc-test-framework" ,ghc-test-framework)
+              ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+              ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+              ("ghc-byteable" ,ghc-byteable)
+              ("ghc-securemem" ,ghc-securemem)
+              ("ghc-crypto-cipher-types" ,ghc-crypto-cipher-types)))
+    (home-page "https://github.com/vincenthz/hs-crypto-cipher")
+    (synopsis "Generic cryptography cipher tests for Haskell")
+    (description " This Haskell package contains generic tests for
+cryptographic ciphers, and is used by the test runners of various Haskell
+implementations of cryptographic ciphers.")
+    (license license:bsd-3)))

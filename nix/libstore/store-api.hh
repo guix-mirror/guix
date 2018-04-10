@@ -311,15 +311,6 @@ void checkStoreName(const string & name);
 Path toStorePath(const Path & path);
 
 
-/* Follow symlinks until we end up with a path in the Nix store. */
-Path followLinksToStore(const Path & path);
-
-
-/* Same as followLinksToStore(), but apply toStorePath() to the
-   result. */
-Path followLinksToStorePath(const Path & path);
-
-
 /* Constructs a unique store path name. */
 Path makeStorePath(const string & type,
     const Hash & hash, const string & name);
@@ -330,14 +321,6 @@ Path makeOutputPath(const string & id,
 Path makeFixedOutputPath(bool recursive,
     HashType hashAlgo, Hash hash, string name);
 
-
-/* This is the preparatory part of addToStore() and addToStoreFixed();
-   it computes the store path to which srcPath is to be copied.
-   Returns the store path and the cryptographic hash of the
-   contents of srcPath. */
-std::pair<Path, Hash> computeStorePathForPath(const Path & srcPath,
-    bool recursive = true, HashType hashAlgo = htSHA256,
-    PathFilter & filter = defaultPathFilter);
 
 /* Preparatory part of addTextToStore().
 

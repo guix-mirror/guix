@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
@@ -34,10 +34,10 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
@@ -45,6 +45,8 @@
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages search)
   #:use-module (gnu packages serialization)
@@ -711,3 +713,49 @@ of magnet links and a wide range of hash sums like CRC32, MD4, MD5, SHA1,
 SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 34.11-94, RIPEMD-160, HAS-160, EDON-R, Whirlpool and Snefru.")
     (license (license:non-copyleft "file://COPYING"))))
+
+(define-public botan
+  (package
+    (name "botan")
+    (version "2.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://botan.randombit.net/releases/"
+                                  "Botan-" version ".tgz"))
+              (sha256
+               (base32
+                "06zvwknhwfrkdvq2sybqbqhnd2d4nq2cszlnsddql13z7vh1z8xq"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (lib (string-append out "/lib")))
+               (invoke "python" "./configure.py"
+                       (string-append "--prefix=" out)
+                       ;; Otherwise, the `botan` executable cannot find
+                       ;; libbotan.
+                       (string-append "--ldflags=-Wl,-rpath=" lib)
+                       "--with-rst2man"
+                       ;; Recommended by upstream
+                       "--with-zlib" "--with-bzip2" "--with-sqlite3"))))
+         (replace 'check
+           (lambda _ (invoke "./botan-test"))))))
+    (native-inputs
+     `(("python" ,python-minimal-wrapper)
+       ("python-docutils" ,python-docutils)))
+    (inputs
+     `(("sqlite" ,sqlite)
+       ("bzip2" ,bzip2)
+       ("zlib" ,zlib)))
+    (synopsis "Cryptographic library in C++11")
+    (description "Botan is a cryptography library, written in C++11, offering
+the tools necessary to implement a range of practical systems, such as TLS/DTLS,
+PKIX certificate handling, PKCS#11 and TPM hardware support, password hashing,
+and post-quantum crypto schemes.  In addition to the C++, botan has a C89 API
+specifically designed to be easy to call from other languages.  A Python binding
+using ctypes is included, and several other language bindings are available.")
+    (home-page "https://botan.randombit.net")
+    (license license:bsd-2)))

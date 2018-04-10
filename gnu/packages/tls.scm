@@ -449,14 +449,14 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.7.1")
+    (version "2.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0w3hdgcr4cq84cv7wkkg2clz9s6l2m2l92d6mfn70wxs6vi0fxck"))))
+                "1589f0kg7kj51j9hid542s4isb96s1azjaqsfprpy5s2qdwqfyli"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
@@ -493,13 +493,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.22.2")
+    (version "0.23.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1d5d4w88aj1i8fyrs44dapmiqbmgz4bjgryn8k3mnggmd6ihxk8f"))))
+                "0l257dq1i2gka6ynldidpwaz1aa726643crqqckga1w5awsndh88"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -548,7 +548,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1vsb8qqghxrwxr3d2l0d5cgdk0pz7b3f76bx3zrrg0z7jf967qz6"))))
+                "0gh5fr61c3mj5vdkn68k17wcvri9rdj506cmmz6631i2l5flrzvc"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -768,7 +768,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.7.0")
+    (version "2.7.2")
     (source
      (origin
        (method url-fetch)
@@ -778,16 +778,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1vsmgxnw7dpvma51896n63yaf9sncmf885ax2jfcg89ssin6vdmf"))
-       ;; An RFC 5114 constant was accidentally renamed in version 2.7.0.
-       ;; See https://github.com/ARMmbed/mbedtls/pull/1362.
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "include/mbedtls/dhm.h"
-             (("#define MBEDTLS_DHM_RFC5114_MODP_P")
-              "#define MBEDTLS_DHM_RFC5114_MODP_2048_P"))
-           #t))))
+         "1mvkqlxxvl6yp1g5g9dk4l7h3wl6149p3pfwgwzgs7xybyxw4f7x"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

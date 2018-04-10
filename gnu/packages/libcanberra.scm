@@ -139,7 +139,7 @@ sounds for various system events.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://files.crash.cx/releases/"
+       (uri (string-append "http://ftp.n0.is/pub/releases/"
                            "pycanberra-" version ".tar.xz"))
        (sha256
         (base32
@@ -152,5 +152,5 @@ sounds for various system events.")
     (synopsis "Ctypes wrapper for the libcanberra API")
     (description
      "Pycanberra is a basic Python wrapper for libcanberra.")
-    (home-page "https://code.crash.cx/pycanberra/log.html")
+    (home-page "http://c.n0.is/ng0/pycanberra/")
     (license lgpl2.1+)))

@@ -901,3 +901,281 @@ of a JSON value into a @code{Data.Aeson.Value}.")
     (synopsis "Unicode aware uri-encoding")
     (description "Unicode aware uri-encoding for Haskell.")
     (license license:bsd-3)))
+
+(define-public ghc-path-pieces
+  (package
+    (name "ghc-path-pieces")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "path-pieces-" version "/"
+                           "path-pieces-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vx3sivcsld76058925hym2j6hm3g71f0qjr7v59f1g2afgx82q8"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-text" ,ghc-text)))
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)
+                     ("ghc-hspec" ,ghc-hspec)
+                     ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/yesodweb/path-pieces")
+    (synopsis "Used in Yesod to automatically marshall data in the request path")
+    (description  "This Haskell package provides two typeclasses for converting
+Haskell data types to and from route pieces.")
+    (license license:bsd-3)))
+
+(define-public ghc-skein
+  (package
+    (name "ghc-skein")
+    (version "1.0.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "skein-" version "/"
+                           "skein-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1jdqdk0rz2wnvw735clnj8jh0a9rkrbqjg7vk3w6wczdql6cm0pq"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-cereal" ,ghc-cereal)
+              ("ghc-tagged" ,ghc-tagged)
+              ("ghc-crpto-api" ,ghc-crypto-api)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/yesodweb/path-pieces")
+    (synopsis "Skein family of cryptographic hash functions for Haskell")
+    (description "@uref{(http://www.skein-hash.info, Skein} is a family of
+fast secure cryptographic hash functions designed by Niels Ferguson, Stefan
+Lucks, Bruce Schneier, Doug Whiting, Mihir Bellare, Tadayoshi Kohno, Jon
+Callas and Jesse Walker.
+
+This Haskell package uses bindings to the optimized C implementation of Skein.")
+    (license license:bsd-3)))
+
+(define-public ghc-clientsession
+  (package
+    (name "ghc-clientsession")
+    (version "0.9.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "clientsession-" version "/"
+                           "clientsession-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0s6h4ykj16mpf7nlw2iqn2ji0p8g1fn5ni0s7yqaili6vv2as5ar"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-cereal" ,ghc-cereal)
+              ("ghc-tagged" ,ghc-tagged)
+              ("ghc-crypto-api" ,ghc-crypto-api)
+              ("ghc-skein" ,ghc-skein)
+              ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+              ("ghc-entropy" ,ghc-entropy)
+              ("ghc-cprng-aes" ,ghc-cprng-aes)
+              ("ghc-cipher-aes" ,ghc-cipher-aes)
+              ("ghc-crypto-random" ,ghc-crypto-random)
+              ("ghc-setenv" ,ghc-setenv)))
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)
+                     ("ghc-hspec" ,ghc-hspec)
+                     ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/yesodweb/clientsession/tree/master")
+    (synopsis "Haskell library for securely store session data in a
+client-side cookie")
+    (description "This Haskell package achieves security through AES-CTR
+encryption and Skein-MAC-512-256 authentication.  Uses Base64 encoding to
+avoid any issues with characters.")
+    (license license:expat)))
+
+(define-public ghc-yesod-core
+  (package
+    (name "ghc-yesod-core")
+    (version "1.4.37")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "yesod-core-" version "/"
+                           "yesod-core-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ww8hl0cx2g58zrdx3j6d5m2xwhssbajdqws1xk6rzl7rpfm1b9j"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-wai" ,ghc-wai)
+              ("ghc-extra" ,ghc-extra)
+              ("ghc-text" ,ghc-text)
+              ("ghc-shakespeare" ,ghc-shakespeare)
+              ("ghc-blaze-builder" ,ghc-blaze-builder)
+              ("ghc-mtl" ,ghc-mtl)
+              ("ghc-clientsession" ,ghc-clientsession)
+              ("ghc-random" ,ghc-random)
+              ("ghc-cereal" ,ghc-cereal)
+              ("ghc-old-locale" ,ghc-old-locale)
+              ("ghc-unordered-containers" ,ghc-unordered-containers)
+              ("ghc-monad-control" ,ghc-monad-control)
+              ("ghc-transformers-base" ,ghc-transformers-base)
+              ("ghc-cookie" ,ghc-cookie)
+              ("ghc-http-types" ,ghc-http-types)
+              ("ghc-case-insensitive" ,ghc-case-insensitive)
+              ("ghc-parsec" ,ghc-parsec)
+              ("ghc-vector" ,ghc-vector)
+              ("ghc-aeson" ,ghc-aeson)
+              ("ghc-fast-logger" ,ghc-fast-logger)
+              ("ghc-wai-logger" ,ghc-wai-logger)
+              ("ghc-monad-logger" ,ghc-monad-logger)
+              ("ghc-conduit" ,ghc-conduit)
+              ("ghc-resourcet" ,ghc-resourcet)
+              ("ghc-lifted-base" ,ghc-lifted-base)
+              ("ghc-blaze-html" ,ghc-blaze-html)
+              ("ghc-blaze-markup" ,ghc-blaze-markup)
+              ("ghc-data-default" ,ghc-data-default)
+              ("ghc-safe" ,ghc-safe)
+              ("ghc-warp" ,ghc-warp)
+              ("ghc-unix-compat" ,ghc-unix-compat)
+              ("ghc-conduit-extra" ,ghc-conduit-extra)
+              ("ghc-exceptions" ,ghc-exceptions)
+              ("ghc-deepseq-generics" ,ghc-deepseq-generics)
+              ("ghc-mwc-random" ,ghc-mwc-random)
+              ("ghc-primitive" ,ghc-primitive)
+              ("ghc-word8" ,ghc-word8)
+              ("ghc-auto-update" ,ghc-auto-update)
+              ("ghc-semigroups" ,ghc-semigroups)
+              ("ghc-byteable" ,ghc-byteable)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)
+                     ("ghc-path-pieces" ,ghc-path-pieces)
+                     ("ghc-hunit" ,ghc-hunit)
+                     ("ghc-hspec-expectations" ,ghc-hspec-expectations)
+                     ("ghc-quickcheck" ,ghc-quickcheck)
+                     ("ghc-network" ,ghc-network)
+                     ("ghc-async" ,ghc-async)
+                     ("ghc-streaming-commons" ,ghc-streaming-commons)
+                     ("ghc-wai-extra" ,ghc-wai-extra)))
+    (home-page "https://www.yesodweb.com")
+    (synopsis "Core package for the Yesod web framework")
+    (description "This Haskell package provides all core functionality, for
+Yesod, on which other packages can be built.  It provides dispatch, handler
+functions, widgets, etc.")
+    (license license:expat)))
+
+(define-public ghc-yesod-persistent
+  (package
+    (name "ghc-yesod-persistent")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "yesod-persistent-" version "/"
+                           "yesod-persistent-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kiksw46c8ww9yiwl28pkrppx8d6fhsasr0hvmsliqbrp16likj8"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: hspec-discover not available in PATH.
+    (inputs `(("ghc-yesod-core" ,ghc-yesod-core)
+              ("ghc-persistent" ,ghc-persistent)
+              ("ghc-persistent-template" ,ghc-persistent-template)
+              ("ghc-blaze-builder" ,ghc-blaze-builder)
+              ("ghc-conduit" ,ghc-conduit)
+              ("ghc-resourcet" ,ghc-resourcet)
+              ("ghc-resource-pool" ,ghc-resource-pool)))
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)
+                     ("ghc-wai-extra" ,ghc-wai-extra)
+                     ("ghc-yesod-core" ,ghc-yesod-core)
+                     ("ghc-persistent-sqlite" ,ghc-persistent-sqlite)
+                     ("ghc-text" ,ghc-text)))
+    (home-page "http://www.yesodweb.com/")
+    (synopsis "Helpers for using Persistent from Yesod")
+    (description "This Haskell package provides helpers for using Persistent
+from Yesod.")
+    (license license:expat)))
+
+(define-public ghc-yesod-form
+    (package
+    (name "ghc-yesod-form")
+    (version "1.4.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/yesod-form/yesod-form-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0lij3m5vn8nvh6y88r1dhk03xmmjwmjzazm307nc2wvc5fmx9p2j"))))
+    (build-system haskell-build-system)
+    (inputs
+      `(("ghc-yesod-core" ,ghc-yesod-core)
+        ("ghc-yesod-persistent" ,ghc-yesod-persistent)
+        ("ghc-shakespeare" ,ghc-shakespeare)
+        ("ghc-persistent" ,ghc-persistent)
+        ("ghc-data-default" ,ghc-data-default)
+        ("ghc-xss-sanitize" ,ghc-xss-sanitize)
+        ("ghc-blaze-builder" ,ghc-blaze-builder)
+        ("ghc-email-validate" ,ghc-email-validate)
+        ("ghc-text" ,ghc-text)
+        ("ghc-wai" ,ghc-wai)
+        ("ghc-blaze-html" ,ghc-blaze-html)
+        ("ghc-blaze-markup" ,ghc-blaze-markup)
+        ("ghc-attoparsec" ,ghc-attoparsec)
+        ("ghc-byteable" ,ghc-byteable)
+        ("ghc-aeson" ,ghc-aeson)
+        ("ghc-resourcet" ,ghc-resourcet)
+        ("ghc-semigroups" ,ghc-semigroups)
+        ("ghc-network-uri" ,ghc-network-uri)
+        ("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://www.yesodweb.com")
+    (synopsis "Form handling support for Yesod Web Framework")
+    (description "This Haskell package provies a set of basic form inputs such
+as text, number, time, checkbox, select, textarea, etc through the
+@code{Yesod.Form.Fields} module.  Also, there is @code{Yesod.Form.Nic} module
+providing richtext field using Nic editor. ")
+    (license license:expat)))
+
+(define-public ghc-yesod
+  (package
+    (name "ghc-yesod")
+    (version "1.4.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/yesod/yesod-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1sg66nq8yaas2m5nqsdrxricvcizd1ik02zqk60sxh3wna08fz16"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-yesod-core" ,ghc-yesod-core)
+       ("ghc-yesod-persistent" ,ghc-yesod-persistent)
+       ("ghc-yesod-form" ,ghc-yesod-form)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-text" ,ghc-text)
+       ("ghc-monad-logger" ,ghc-monad-logger)
+       ("ghc-fast-logger" ,ghc-fast-logger)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-shakespeare" ,ghc-shakespeare)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-wai-logger" ,ghc-wai-logger)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (home-page "https://www.yesodweb.com")
+    (synopsis "Framework for creating type-safe, RESTful web applications")
+    (description "The Haskell package package groups together the various
+Yesod related packages into one cohesive whole.  This is the version of Yesod,
+whereas most of the core code lives in @code{ghc-yesod-core}.")
+    (license license:expat)))

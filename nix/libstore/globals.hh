@@ -26,8 +26,6 @@ struct Settings {
 
     void processEnvironment();
 
-    void loadConfFile();
-
     void set(const string & name, const string & value);
 
     string get(const string & name, const string & def);
@@ -41,8 +39,6 @@ struct Settings {
     void update();
 
     string pack();
-
-    void unpack(const string & pack);
 
     SettingsMap getOverrides();
 
