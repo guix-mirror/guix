@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
@@ -168,22 +168,23 @@ to be read using the GNOME Yelp program.")
 (define-public gwenhywfar
   (package
     (name "gwenhywfar")
-    (version "4.15.3")
+    (version "4.20.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.aquamaniac.de/sites/download/download.php?"
-                           "package=01&release=201&file=01"))
+       (uri (string-append "https://www.aquamaniac.de/sites/download/"
+                           "download.php?package=01&release=208&file=02&"
+                           "dummy=gwenhywfar-" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0fp67s932x66xfljb26zbrn8ambbc5y5c3hllr6l284nr63qf3ka"))))
+         "1c0g3f8jk6j693774ifslx2ds4ksabgbbalhhm9gk20kpamxm22s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--disable-network-checks"
-             ;; Both GTK+2 and QT4 are supported.
-             "--with-guis=gtk2"
+             ;; GTK+3, GTK+2 and QT4 are supported.
+             "--with-guis=gtk3"
              (string-append "--with-openssl-includes="
                             (assoc-ref %build-inputs "openssl") "/include")
              (string-append "--with-openssl-libs="
@@ -192,7 +193,7 @@ to be read using the GNOME Yelp program.")
      `(("libgcrypt" ,libgcrypt)
        ("gnutls" ,gnutls)
        ("openssl" ,openssl)
-       ("gtk+" ,gtk+-2)))
+       ("gtk+" ,gtk+)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.aquamaniac.de/sites/aqbanking/index.php")
