@@ -463,7 +463,10 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                        (copy-file store-path final-path)))
                     '#$files))))
 
-  (computed-file name build))
+  ;; We're just copying files around, no need to substitute or offload it.
+  (computed-file name build
+                 #:options '(#:local-build? #t
+                             #:substitutable? #f)))
 
 (define* (compiled-modules name module-tree modules
                            #:optional
