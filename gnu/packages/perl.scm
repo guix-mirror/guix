@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3514,6 +3515,33 @@ lists of files")
 provided base directory and can return files (and/or directories if desired)
 matching a regular expression.")
     (home-page "http://search.cpan.org/~dopacki/File-List//")))
+
+(define-public perl-file-readbackwards
+  (package
+    (name "perl-file-readbackwards")
+    (version "1.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/U/UR/URI/File-ReadBackwards-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0vldy5q0zyf1cwzwb1gv14f8vg2f21bw96b8wvkw6z2hhypn3cl2"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-ReadBackwards/")
+    (synopsis "Read a file backwards by lines")
+    (description "This module reads a file backwards line by line. It is
+simple to use, memory efficient and fast.  It supports both an object and a
+tied handle interface.
+
+It is intended for processing log and other similar text files which typically
+have their newest entries appended to them.  By default files are assumed to
+be plain text and have a line ending appropriate to the OS.  But you can set
+the input record separator string on a per file basis.")
+    (license perl-license)))
 
 (define-public perl-file-remove
   (package
