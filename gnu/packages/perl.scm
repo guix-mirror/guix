@@ -46,6 +46,7 @@
   #:use-module (guix build-system perl)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config))
@@ -4097,6 +4098,32 @@ multiple programming languages and each language has its own support module.
 This document describes how to use Inline with the C programming language.
 It also goes a bit into Perl C internals.")
     (license (package-license perl))))
+
+(define-public perl-io-all
+  (package
+    (name "perl-io-all")
+    (version "0.87")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/F/FR/FREW/IO-All-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0nsd9knlbd7if2v6zwj4q978axq0w5hk8ymp61z14a821hjivqjl"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-mimeinfo" ,perl-file-mimeinfo)
+       ("perl-file-readbackwards" ,perl-file-readbackwards)))
+    (home-page "http://search.cpan.org/dist/IO-All/")
+    (synopsis "@code{IO::All} to Larry Wall!")
+    (description "@code{IO::All} combines all of the best Perl IO modules into
+a single nifty object oriented interface to greatly simplify your everyday
+Perl IO idioms.  It exports a single function called io, which returns a new
+@code{IO::All} object.  And that object can do it all!")
+    (license perl-license)))
 
 (define-public perl-io-captureoutput
   (package
