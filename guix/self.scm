@@ -69,7 +69,7 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
          (#f
           (loop rest))
          ((? package? package)
-          (or (false-if-wrong-guile package)
+          (or (false-if-wrong-guile package guile-version)
               (loop rest))))))))
 
 (define specification->package
