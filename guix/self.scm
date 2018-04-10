@@ -393,6 +393,7 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                                %guix-bug-report-address
                                %guix-home-page-url
                                %sbindir
+                               %guix-register-program
                                %libgcrypt
                                %libz
                                %gzip
