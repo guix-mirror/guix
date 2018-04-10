@@ -203,13 +203,11 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
   (define guile-json
     (package-for-guile guile-version
                        "guile-json"
-                       "guile2.2-json"
                        "guile2.0-json"))
 
   (define guile-ssh
     (package-for-guile guile-version
                        "guile-ssh"
-                       "guile2.2-ssh"
                        "guile2.0-ssh"))
 
   (define guile-git
