@@ -543,7 +543,8 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
 
           (mkdir #$output)
           (chdir #+module-tree)
-          (process-directory "." #$output))))
+          (process-directory "." #$output)
+          (newline))))
 
   (computed-file name build
                  #:guile guile-for-build
