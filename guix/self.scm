@@ -399,45 +399,43 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                                %xz
                                %nix-instantiate))
 
-                   ;; XXX: Work around <http://bugs.gnu.org/15602>.
-                   (eval-when (expand load eval)
-                     #$@(map (match-lambda
-                               ((name . value)
-                                #~(define-public #$name #$value)))
-                             %config-variables)
+                   #$@(map (match-lambda
+                             ((name . value)
+                              #~(define-public #$name #$value)))
+                           %config-variables)
 
-                     (define %guix-package-name #$package-name)
-                     (define %guix-version #$package-version)
-                     (define %guix-bug-report-address #$bug-report-address)
-                     (define %guix-home-page-url #$home-page-url)
+                   (define %guix-package-name #$package-name)
+                   (define %guix-version #$package-version)
+                   (define %guix-bug-report-address #$bug-report-address)
+                   (define %guix-home-page-url #$home-page-url)
 
-                     (define %sbindir
-                       ;; This is used to define '%guix-register-program'.
-                       ;; TODO: Use a derivation that builds nothing but the
-                       ;; C++ part.
-                       #+(and guix (file-append guix "/sbin")))
+                   (define %sbindir
+                     ;; This is used to define '%guix-register-program'.
+                     ;; TODO: Use a derivation that builds nothing but the
+                     ;; C++ part.
+                     #+(and guix (file-append guix "/sbin")))
 
-                     (define %guix-register-program
-                       (or (getenv "GUIX_REGISTER")
-                           (and %sbindir
-                                (string-append %sbindir "/guix-register"))))
+                   (define %guix-register-program
+                     (or (getenv "GUIX_REGISTER")
+                         (and %sbindir
+                              (string-append %sbindir "/guix-register"))))
 
-                     (define %gzip
-                       #+(and gzip (file-append gzip "/bin/gzip")))
-                     (define %bzip2
-                       #+(and bzip2 (file-append bzip2 "/bin/bzip2")))
-                     (define %xz
-                       #+(and xz (file-append xz "/bin/xz")))
+                   (define %gzip
+                     #+(and gzip (file-append gzip "/bin/gzip")))
+                   (define %bzip2
+                     #+(and bzip2 (file-append bzip2 "/bin/bzip2")))
+                   (define %xz
+                     #+(and xz (file-append xz "/bin/xz")))
 
-                     (define %libgcrypt
-                       #+(and libgcrypt
-                              (file-append libgcrypt "/lib/libgcrypt")))
-                     (define %libz
-                       #+(and zlib
-                              (file-append zlib "/lib/libz")))
+                   (define %libgcrypt
+                     #+(and libgcrypt
+                            (file-append libgcrypt "/lib/libgcrypt")))
+                   (define %libz
+                     #+(and zlib
+                            (file-append zlib "/lib/libz")))
 
-                     (define %nix-instantiate     ;for (guix import snix)
-                       "nix-instantiate")))))
+                   (define %nix-instantiate       ;for (guix import snix)
+                     "nix-instantiate"))))
 
 
 
