@@ -406,23 +406,24 @@ This is the declarative counterpart of 'gexp->script'."
                    #:guile (or guile (default-guile))))))
 
 (define-record-type <scheme-file>
-  (%scheme-file name gexp)
+  (%scheme-file name gexp splice?)
   scheme-file?
   (name       scheme-file-name)                  ;string
-  (gexp       scheme-file-gexp))                 ;gexp
+  (gexp       scheme-file-gexp)                  ;gexp
+  (splice?    scheme-file-splice?))              ;Boolean
 
-(define* (scheme-file name gexp)
+(define* (scheme-file name gexp #:key splice?)
   "Return an object representing the Scheme file NAME that contains GEXP.
 
 This is the declarative counterpart of 'gexp->file'."
-  (%scheme-file name gexp))
+  (%scheme-file name gexp splice?))
 
 (define-gexp-compiler (scheme-file-compiler (file <scheme-file>)
                                             system target)
   ;; Compile FILE by returning a derivation that builds the file.
   (match file
-    (($ <scheme-file> name gexp)
-     (gexp->file name gexp))))
+    (($ <scheme-file> name gexp splice?)
+     (gexp->file name gexp #:splice? splice?))))
 
 ;; Appending SUFFIX to BASE's output file name.
 (define-record-type <file-append>
@@ -1162,18 +1163,26 @@ imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
 
 (define* (gexp->file name exp #:key
                      (set-load-path? #t)
-                     (module-path %load-path))
-  "Return a derivation that builds a file NAME containing EXP.  When
-SET-LOAD-PATH? is true, emit code in the resulting file to set '%load-path'
-and '%load-compiled-path' to honor EXP's imported modules.  Lookup EXP's
-modules in MODULE-PATH."
+                     (module-path %load-path)
+                     (splice? #f))
+  "Return a derivation that builds a file NAME containing EXP.  When SPLICE?
+is true, EXP is considered to be a list of expressions that will be spliced in
+the resulting file.
+
+When SET-LOAD-PATH? is true, emit code in the resulting file to set
+'%load-path' and '%load-compiled-path' to honor EXP's imported modules.
+Lookup EXP's modules in MODULE-PATH."
   (match (if set-load-path? (gexp-modules exp) '())
     (()                                           ;zero modules
      (gexp->derivation name
                        (gexp
                         (call-with-output-file (ungexp output)
                           (lambda (port)
-                            (write '(ungexp exp) port))))
+                            (for-each (lambda (exp)
+                                        (write exp port))
+                                      '(ungexp (if splice?
+                                                   exp
+                                                   (gexp ((ungexp exp)))))))))
                        #:local-build? #t
                        #:substitutable? #f))
     ((modules ...)
@@ -1184,7 +1193,11 @@ modules in MODULE-PATH."
                           (call-with-output-file (ungexp output)
                             (lambda (port)
                               (write '(ungexp set-load-path) port)
-                              (write '(ungexp exp) port))))
+                              (for-each (lambda (exp)
+                                          (write exp port))
+                                        '(ungexp (if splice?
+                                                     exp
+                                                     (gexp ((ungexp exp)))))))))
                          #:module-path module-path
                          #:local-build? #t
                          #:substitutable? #f)))))

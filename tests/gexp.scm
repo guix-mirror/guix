@@ -419,6 +419,24 @@
                          (call-with-input-file out read))
                  (equal? (list guile) refs)))))
 
+(test-assertm "gexp->file + #:splice?"
+  (mlet* %store-monad ((exp -> (list
+                                #~(define foo 'bar)
+                                #~(define guile #$%bootstrap-guile)))
+                       (guile  (package-file %bootstrap-guile))
+                       (drv    (gexp->file "splice" exp #:splice? #t))
+                       (out -> (derivation->output-path drv))
+                       (done   (built-derivations (list drv)))
+                       (refs   (references* out)))
+    (pk 'splice out)
+    (return (and (equal? `((define foo 'bar)
+                           (define guile ,guile)
+                           ,(call-with-input-string "" read))
+                         (call-with-input-file out
+                           (lambda (port)
+                             (list (read port) (read port) (read port)))))
+                 (equal? (list guile) refs)))))
+
 (test-assertm "gexp->derivation"
   (mlet* %store-monad ((file    (text-file "foo" "Hello, world!"))
                        (exp ->  (gexp
@@ -700,11 +718,12 @@
 
 (test-assertm "gexp->derivation & with-imported-module & computed module"
   (mlet* %store-monad
-      ((module -> (scheme-file "x" #~(begin
+      ((module -> (scheme-file "x" #~(;; splice!
                                        (define-module (foo bar)
                                          #:export (the-answer))
 
-                                       (define the-answer 42))))
+                                       (define the-answer 42))
+                               #:splice? #t))
        (build -> (with-imported-modules `(((foo bar) => ,module)
                                           (guix build utils))
                    #~(begin

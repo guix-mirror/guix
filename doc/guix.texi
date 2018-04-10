@@ -5221,8 +5221,12 @@ This is the declarative counterpart of @code{gexp->script}.
 
 @deffn {Monadic Procedure} gexp->file @var{name} @var{exp} @
             [#:set-load-path? #t] [#:module-path %load-path] @
+            [#:splice? #f] @
             [#:guile (default-guile)]
 Return a derivation that builds a file @var{name} containing @var{exp}.
+When @var{splice?}  is true, @var{exp} is considered to be a list of
+expressions that will be spliced in the resulting file.
+
 When @var{set-load-path?} is true, emit code in the resulting file to
 set @code{%load-path} and @code{%load-compiled-path} to honor
 @var{exp}'s imported modules.  Look up @var{exp}'s modules in
@@ -5232,7 +5236,7 @@ The resulting file holds references to all the dependencies of @var{exp}
 or a subset thereof.
 @end deffn
 
-@deffn {Scheme Procedure} scheme-file @var{name} @var{exp}
+@deffn {Scheme Procedure} scheme-file @var{name} @var{exp} [#:splice? #f]
 Return an object representing the Scheme file @var{name} that contains
 @var{exp}.
 
