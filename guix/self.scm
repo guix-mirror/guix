@@ -384,7 +384,7 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
   (define defmod 'define-module)
 
   (scheme-file "config.scm"
-               #~(begin
+               #~(;; The following expressions get spliced.
                    (#$defmod (guix config)
                      #:export (%guix-package-name
                                %guix-version
@@ -435,7 +435,12 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                             (file-append zlib "/lib/libz")))
 
                    (define %nix-instantiate       ;for (guix import snix)
-                     "nix-instantiate"))))
+                     "nix-instantiate"))
+
+               ;; Guile 2.0 *requires* the 'define-module' to be at the
+               ;; top-level or it 'toplevel-ref' in the resulting .go file are
+               ;; made relative to a nonexistent anonymous module.
+               #:splice? #t))
 
 
 
