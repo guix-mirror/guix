@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -145,7 +145,18 @@ minimalist than ntpd.")
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(;; Disable seccomp when it's not supported--e.g., on aarch64.  See
+       ;; 'src/seccomp.c' for the list of supported systems.
+       #:configure-flags ,(if (any (lambda (system)
+                                     (string-contains (or
+                                                       (%current-target-system)
+                                                       (%current-system))
+                                                      system))
+                                   '("x86_64" "i686" "arm"))
+                              ''()
+                              ''("--disable-seccomp-filter"))
+
+       #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'autogen
                     (lambda _
                       ;; The ancestor of 'SOURCE_DATE_EPOCH'; it contains the
