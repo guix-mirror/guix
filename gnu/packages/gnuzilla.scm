@@ -648,19 +648,6 @@ security standards.")
                          #t))
               #t)))
          (add-after
-          'unpack 'use-skia-by-default
-          (lambda _
-            ;; Use the bundled Skia library by default, since IceCat appears
-            ;; to be far more stable when using it than when using our system
-            ;; Cairo.
-            (let ((out (open "browser/app/profile/icecat.js"
-                              (logior O_WRONLY O_APPEND))))
-              (format out "~%// Use Skia by default~%")
-              (format out "pref(~s, ~s);~%" "gfx.canvas.azure.backends" "skia")
-              (format out "pref(~s, ~s);~%" "gfx.content.azure.backends" "skia")
-              (close-port out))
-            #t))
-         (add-after
           'unpack 'link-libxul-with-libraries
           (lambda _
             ;; libxul.so dynamically opens libraries, so here we explicitly
