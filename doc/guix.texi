@@ -5221,8 +5221,12 @@ This is the declarative counterpart of @code{gexp->script}.
 
 @deffn {Monadic Procedure} gexp->file @var{name} @var{exp} @
             [#:set-load-path? #t] [#:module-path %load-path] @
+            [#:splice? #f] @
             [#:guile (default-guile)]
 Return a derivation that builds a file @var{name} containing @var{exp}.
+When @var{splice?}  is true, @var{exp} is considered to be a list of
+expressions that will be spliced in the resulting file.
+
 When @var{set-load-path?} is true, emit code in the resulting file to
 set @code{%load-path} and @code{%load-compiled-path} to honor
 @var{exp}'s imported modules.  Look up @var{exp}'s modules in
@@ -5232,7 +5236,7 @@ The resulting file holds references to all the dependencies of @var{exp}
 or a subset thereof.
 @end deffn
 
-@deffn {Scheme Procedure} scheme-file @var{name} @var{exp}
+@deffn {Scheme Procedure} scheme-file @var{name} @var{exp} [#:splice? #f]
 Return an object representing the Scheme file @var{name} that contains
 @var{exp}.
 
@@ -18538,6 +18542,9 @@ By default, Cgit can be accessed on port 80 (@code{http://localhost:80}).
 (service cgit-service-type)
 @end example
 
+The @code{file-object} type designates either a file-like object
+(@pxref{G-Expressions, file-like objects}) or a string.
+
 @c %start of fragment
 
 Available @code{cgit-configuration} fields are:
@@ -18552,7 +18559,7 @@ NGINX configuration.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string about-filter
+@deftypevr {@code{cgit-configuration} parameter} file-object about-filter
 Specifies a command which will be invoked to format the content of about
 pages (both top-level and for each repository).
 
@@ -18568,7 +18575,7 @@ Defaults to @samp{""}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string auth-filter
+@deftypevr {@code{cgit-configuration} parameter} file-object auth-filter
 Specifies a command that will be invoked for authenticating repository
 access.
 
@@ -18677,7 +18684,7 @@ Defaults to @samp{()}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string commit-filter
+@deftypevr {@code{cgit-configuration} parameter} file-object commit-filter
 Command which will be invoked to format commit messages.
 
 Defaults to @samp{""}.
@@ -18693,14 +18700,14 @@ Defaults to @samp{"git log"}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string css
+@deftypevr {@code{cgit-configuration} parameter} file-object css
 URL which specifies the css document to include in all cgit pages.
 
 Defaults to @samp{"/share/cgit/cgit.css"}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string email-filter
+@deftypevr {@code{cgit-configuration} parameter} file-object email-filter
 Specifies a command which will be invoked to format names and email
 address of committers, authors, and taggers, as represented in various
 places throughout the cgit interface.
@@ -18824,7 +18831,7 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string favicon
+@deftypevr {@code{cgit-configuration} parameter} file-object favicon
 URL used as link to a shortcut icon for cgit.
 
 Defaults to @samp{"/favicon.ico"}.
@@ -18856,7 +18863,7 @@ Defaults to @samp{""}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string include
+@deftypevr {@code{cgit-configuration} parameter} file-object include
 Name of a configfile to include before the rest of the current config-
 file is parsed.
 
@@ -18888,7 +18895,7 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string logo
+@deftypevr {@code{cgit-configuration} parameter} file-object logo
 URL which specifies the source of an image which will be used as a logo
 on all cgit pages.
 
@@ -18903,7 +18910,7 @@ Defaults to @samp{""}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string owner-filter
+@deftypevr {@code{cgit-configuration} parameter} file-object owner-filter
 Command which will be invoked to format the Owner column of the main
 page.
 
@@ -18972,7 +18979,7 @@ Defaults to @samp{((gif "image/gif") (html "text/html") (jpg
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string mimetype-file
+@deftypevr {@code{cgit-configuration} parameter} file-object mimetype-file
 Specifies the file to use for automatic mimetype lookup.
 
 Defaults to @samp{""}.
@@ -19010,7 +19017,16 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string readme
+@deftypevr {@code{cgit-configuration} parameter} list project-list
+A list of subdirectories inside of @code{repository-directory}, relative
+to it, that should loaded as Git repositories.  An empty list means that
+all subdirectories will be loaded.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{cgit-configuration} parameter} file-object readme
 Text which will be used as default value for @code{cgit-repo-readme}.
 
 Defaults to @samp{""}.
@@ -19128,7 +19144,7 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} string source-filter
+@deftypevr {@code{cgit-configuration} parameter} file-object source-filter
 Specifies a command which will be invoked to format plaintext blobs in
 the tree view.
 
@@ -19190,7 +19206,7 @@ Defaults to @samp{()}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-string source-filter
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-file-object source-filter
 Override the default @code{source-filter}.
 
 Defaults to @samp{""}.
@@ -19204,7 +19220,7 @@ Defaults to @samp{""}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-string about-filter
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-file-object about-filter
 Override the default @code{about-filter}.
 
 Defaults to @samp{""}.
@@ -19226,7 +19242,7 @@ Defaults to @samp{()}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-string commit-filter
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-file-object commit-filter
 Override the default @code{commit-filter}.
 
 Defaults to @samp{""}.
@@ -19266,7 +19282,7 @@ Defaults to @samp{""}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-string email-filter
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-file-object email-filter
 Override the default @code{email-filter}.
 
 Defaults to @samp{""}.
@@ -19336,7 +19352,7 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-string logo
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-file-object logo
 URL which specifies the source of an image which will be used as a logo
 on this repo’s pages.
 
@@ -19351,7 +19367,7 @@ Defaults to @samp{""}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-string owner-filter
+@deftypevr {@code{repository-cgit-configuration} parameter} repo-file-object owner-filter
 Override the default @code{owner-filter}.
 
 Defaults to @samp{""}.
@@ -19435,6 +19451,7 @@ Extra options will be appended to cgitrc file.
 Defaults to @samp{()}.
 
 @end deftypevr
+
 
 @c %end of fragment
 

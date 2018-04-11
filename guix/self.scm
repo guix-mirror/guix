@@ -69,7 +69,7 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
          (#f
           (loop rest))
          ((? package? package)
-          (or (false-if-wrong-guile package)
+          (or (false-if-wrong-guile package guile-version)
               (loop rest))))))))
 
 (define specification->package
@@ -88,7 +88,11 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
       ("guix"       (ref '(gnu packages package-management)
-                         'guix-register)))))
+                         'guix-register))
+      ("guile2.0-json" (ref '(gnu packages guile) 'guile2.0-json))
+      ("guile2.0-ssh"  (ref '(gnu packages ssh) 'guile2.0-ssh))
+      ("guile2.0-git"  (ref '(gnu packages guile) 'guile2.0-git))
+      (_               #f))))                     ;no such package
 
 
 ;;;
@@ -199,13 +203,11 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
   (define guile-json
     (package-for-guile guile-version
                        "guile-json"
-                       "guile2.2-json"
                        "guile2.0-json"))
 
   (define guile-ssh
     (package-for-guile guile-version
                        "guile-ssh"
-                       "guile2.2-ssh"
                        "guile2.0-ssh"))
 
   (define guile-git
@@ -382,13 +384,14 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
   (define defmod 'define-module)
 
   (scheme-file "config.scm"
-               #~(begin
+               #~(;; The following expressions get spliced.
                    (#$defmod (guix config)
                      #:export (%guix-package-name
                                %guix-version
                                %guix-bug-report-address
                                %guix-home-page-url
                                %sbindir
+                               %guix-register-program
                                %libgcrypt
                                %libz
                                %gzip
@@ -396,45 +399,48 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                                %xz
                                %nix-instantiate))
 
-                   ;; XXX: Work around <http://bugs.gnu.org/15602>.
-                   (eval-when (expand load eval)
-                     #$@(map (match-lambda
-                               ((name . value)
-                                #~(define-public #$name #$value)))
-                             %config-variables)
+                   #$@(map (match-lambda
+                             ((name . value)
+                              #~(define-public #$name #$value)))
+                           %config-variables)
 
-                     (define %guix-package-name #$package-name)
-                     (define %guix-version #$package-version)
-                     (define %guix-bug-report-address #$bug-report-address)
-                     (define %guix-home-page-url #$home-page-url)
+                   (define %guix-package-name #$package-name)
+                   (define %guix-version #$package-version)
+                   (define %guix-bug-report-address #$bug-report-address)
+                   (define %guix-home-page-url #$home-page-url)
 
-                     (define %sbindir
-                       ;; This is used to define '%guix-register-program'.
-                       ;; TODO: Use a derivation that builds nothing but the
-                       ;; C++ part.
-                       #+(and guix (file-append guix "/sbin")))
+                   (define %sbindir
+                     ;; This is used to define '%guix-register-program'.
+                     ;; TODO: Use a derivation that builds nothing but the
+                     ;; C++ part.
+                     #+(and guix (file-append guix "/sbin")))
 
-                     (define %guix-register-program
-                       (or (getenv "GUIX_REGISTER")
-                           (and %sbindir
-                                (string-append %sbindir "/guix-register"))))
+                   (define %guix-register-program
+                     (or (getenv "GUIX_REGISTER")
+                         (and %sbindir
+                              (string-append %sbindir "/guix-register"))))
 
-                     (define %gzip
-                       #+(and gzip (file-append gzip "/bin/gzip")))
-                     (define %bzip2
-                       #+(and bzip2 (file-append bzip2 "/bin/bzip2")))
-                     (define %xz
-                       #+(and xz (file-append xz "/bin/xz")))
+                   (define %gzip
+                     #+(and gzip (file-append gzip "/bin/gzip")))
+                   (define %bzip2
+                     #+(and bzip2 (file-append bzip2 "/bin/bzip2")))
+                   (define %xz
+                     #+(and xz (file-append xz "/bin/xz")))
 
-                     (define %libgcrypt
-                       #+(and libgcrypt
-                              (file-append libgcrypt "/lib/libgcrypt")))
-                     (define %libz
-                       #+(and zlib
-                              (file-append zlib "/lib/libz")))
+                   (define %libgcrypt
+                     #+(and libgcrypt
+                            (file-append libgcrypt "/lib/libgcrypt")))
+                   (define %libz
+                     #+(and zlib
+                            (file-append zlib "/lib/libz")))
 
-                     (define %nix-instantiate     ;for (guix import snix)
-                       "nix-instantiate")))))
+                   (define %nix-instantiate       ;for (guix import snix)
+                     "nix-instantiate"))
+
+               ;; Guile 2.0 *requires* the 'define-module' to be at the
+               ;; top-level or it 'toplevel-ref' in the resulting .go file are
+               ;; made relative to a nonexistent anonymous module.
+               #:splice? #t))
 
 
 
@@ -463,7 +469,10 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                        (copy-file store-path final-path)))
                     '#$files))))
 
-  (computed-file name build))
+  ;; We're just copying files around, no need to substitute or offload it.
+  (computed-file name build
+                 #:options '(#:local-build? #t
+                             #:substitutable? #f)))
 
 (define* (compiled-modules name module-tree modules
                            #:optional
@@ -540,7 +549,8 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
 
           (mkdir #$output)
           (chdir #+module-tree)
-          (process-directory "." #$output))))
+          (process-directory "." #$output)
+          (newline))))
 
   (computed-file name build
                  #:guile guile-for-build
@@ -572,7 +582,8 @@ running Guile."
      (canonical-package (module-ref (resolve-interface '(gnu packages guile))
                                     'guile-2.2/fixed)))
     ("2.0"
-     (canonical-package (specification->package "guile@2.0")))))
+     (module-ref (resolve-interface '(gnu packages guile))
+                 'guile-2.0))))
 
 (define* (guix-derivation source version
                           #:optional (guile-version (effective-version)))

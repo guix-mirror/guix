@@ -79,6 +79,14 @@
      `(#:configure-flags '("--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'skip-linux-libnuma-test
+           (lambda _
+             ;; Arrange to skip 'tests/linux-libnuma', which fails on some
+             ;; machines: <https://github.com/open-mpi/hwloc/issues/213>.
+             (substitute* "tests/linux-libnuma.c"
+               (("numa_available\\(\\)")
+                "-1"))
+             #t))
          (add-after 'install 'refine-libnuma
            ;; Give -L arguments for libraries to avoid propagation
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -128,7 +136,19 @@ bind processes, and much more.")
                 "0jf0krj1h95flmb784ifv9vnkdnajjz00p4zbhmja7vm4v67axdr"))))
 
     ;; libnuma is no longer needed.
-    (inputs (alist-delete "numactl" (package-inputs hwloc)))))
+    (inputs (alist-delete "numactl" (package-inputs hwloc)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments hwloc)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'skip-linux-libnuma-test
+             (lambda _
+               ;; Arrange to skip 'tests/hwloc/linux-libnuma', which fails on
+               ;; some machines: <https://github.com/open-mpi/hwloc/issues/213>.
+               (substitute* "tests/hwloc/linux-libnuma.c"
+                 (("numa_available\\(\\)")
+                  "-1"))
+               #t))))))))
 
 (define-public openmpi
   (package

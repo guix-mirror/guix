@@ -458,7 +458,21 @@ security standards.")
         (mozilla-patch "icecat-bug-1426603.patch"        "ca0b92ecedee" "0dc3mdl4a3hrq4j384zjavf3splj6blv4masign710hk7svlgbhq")
         (mozilla-patch "icecat-CVE-2018-5146.patch"      "494e5d5278ba" "1yb4lxjw499ppwhk31vz0vzl0cfqvj9d4jwqag7ayj53ybwsqgjr")
         (mozilla-patch "icecat-CVE-2018-5147.patch"      "5cd5586a2f48" "10s774pwvj6xfk3kk6ivnhp2acc8x9sqq6na8z47nkhgwl2712i5")
-        (mozilla-patch "icecat-CVE-2018-5148.patch"      "c3e447e07077" "0gmwy631f8ip4gr1mpbjk8bx1n1748wdls5zq4y8hpmpnq5g1wyx")))
+        (mozilla-patch "icecat-CVE-2018-5148.patch"      "c3e447e07077" "0gmwy631f8ip4gr1mpbjk8bx1n1748wdls5zq4y8hpmpnq5g1wyx")
+        (mozilla-patch "icecat-bug-1443891.patch"        "17201199b18d" "1d0hcim1fwh0bklwpmnal1mv9d9kmyif1m15aj1nqkf1n3x4xc37")
+        (mozilla-patch "icecat-bug-1361699.patch"        "a07d6c3ff262" "1z8mjg2487r8pxi0x951v6fwwr696q84f6hlzimc3r7bn5ds9r83")
+        (mozilla-patch "icecat-bug-1433609.patch"        "7127ccf8f88c" "0m4my7aflpp0wlqilr2m4axd7k2fyrs7jqdcz2rrz5pwivz1anvd")
+        (mozilla-patch "icecat-bug-1444231.patch"        "57bd35fa8618" "0pl6x5amc5x6nhwl7qnmnff3jjjxmbs8r365bfzj58g7q5ihqwvf")
+        (mozilla-patch "icecat-bug-1409440.patch"        "2f3e1ccf1661" "0azl8g81kpc0w2xpjpgm1154ll12g0a8n6i7bl3s9nnrk2i26n74")
+        (mozilla-patch "icecat-bug-1441941.patch"        "8ff2c4d68e36" "0kz1rqhnz8ca4z20hnpcafidhsrwhnm0h2gmlgchni33h8pisr1f")
+        (mozilla-patch "icecat-bug-1443092.patch"        "b8c430253efd" "1arjcaps9axhxh5ff84n9bydhhzrihn7hbq7v69nvqwqrjp3lgg9")
+        (mozilla-patch "icecat-bug-1448774.patch"        "05cadfa3ac39" "0q0vh7vy7x0l8jp6376fn10qljfp4mnp4m9zfn90j4m19pfl86a0")
+        (mozilla-patch "icecat-bug-1449548.patch"        "48a678d7cb81" "1yfh7kxxxvqck2hpn98pwag4splyc6c9brc5haq28fp8x9r9qvlk")
+        (mozilla-patch "icecat-bug-1448705.patch"        "112032576872" "1x1hxyggbxlnlj0n9cbp03hjnfvm6cq8nqj0jizrd8cfyd5aig8p")
+        (mozilla-patch "icecat-bug-1388020.patch"        "ad9a885b0df4" "1hrk1q9mk59jww55g4lqmaflznk87x3vvjn2mxfgfbbjs8l1cyz4")
+        (mozilla-patch "icecat-bug-1452416.patch"        "f89ab96a2532" "1dqchxdyznhgyxhfq0hm0vg1p597hjqflfzigc7j3s5vxf9rg2nv")
+        (mozilla-patch "icecat-bug-1451376.patch"        "af885a1bd293" "1wfpqhm2dp4fsx6zbrncngsqz7g2x09b625zcighixrbpvybyww3")
+        (mozilla-patch "icecat-bug-1444668.patch"        "666fc84ec72d" "0lml2wqd4yqidhi364x8r90f78397k2y0kq5z5bv8l8j4bhcnb9v")))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -563,10 +577,18 @@ security standards.")
        #:validate-runpath? #f
 
        #:configure-flags '("--enable-default-toolkit=cairo-gtk3"
+
+                           "--with-distribution-id=org.gnu"
+
                            "--enable-gio"
                            "--enable-startup-notification"
                            "--enable-pulseaudio"
 
+                           "--disable-tests"
+                           "--disable-updater"
+                           "--disable-crashreporter"
+                           "--disable-maintenance-service"
+                           "--disable-eme"
                            "--disable-gconf"
                            "--disable-gnomeui"
 
@@ -639,7 +661,7 @@ security standards.")
               (close-port out))
             #t))
          (add-after
-          'unpack 'arrange-to-link-libxul-with-libraries-it-might-dlopen
+          'unpack 'link-libxul-with-libraries
           (lambda _
             ;; libxul.so dynamically opens libraries, so here we explicitly
             ;; link them into libxul.so instead.

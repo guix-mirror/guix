@@ -311,6 +311,11 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/pwd
+           (lambda _
+             (substitute* (find-files "." "^Makefile(\\.include)?$")
+               (("/bin/pwd") "pwd"))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
              ;; Avoid introducing timestamps
@@ -386,8 +391,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.15.16")
-(define %linux-libre-hash "1nzdaypvw8abas6xr6ijk2wc9f0b6q72xw6ypalwx33p7sdqwrzq")
+(define %linux-libre-version "4.16.1")
+(define %linux-libre-hash "1zqbg7ivf79nzw0lw18bbld2wq16880k83526bwqh1nsydayp6k0")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -4560,3 +4565,30 @@ text-mode or graphical applications that don't use a display server.
 Also included is @command{fbgrab}, a wrapper around @command{fbcat} that
 emulates the behaviour of Gunnar Monell's older fbgrab utility.")
     (license license:gpl2)))
+
+(define-public libcgroup
+  (package
+    (name "libcgroup")
+    (version "0.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/libcg/" name "/"
+             version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0lgvyq37gq84sk30sg18admxaj0j0p5dq3bl6g74a1ppgvf8pqz4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("linux-pam" ,linux-pam)))
+    (home-page "https://sourceforge.net/projects/libcg/")
+    (synopsis "Control groups management tools")
+    (description "Control groups is Linux kernel method for process resource
+restriction, permission handling and more.  This package provides userspace
+interface to this kernel feature.")
+    (license license:lgpl2.1)))
