@@ -206,7 +206,13 @@
                (with-directory-excursion "texlive-extra"
                  (apply unpack (list #:source texlive-extra))
                  (apply patch-source-shebangs (list #:source texlive-extra))
-                 (invoke "mv" "tlpkg" share))))))))
+                 (invoke "mv" "tlpkg" share))
+               ;; texlua shebangs are not patched by the patch-source-shebangs
+               ;; phase because the texlua executable does not exist at that
+               ;; time.
+               (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))
+               (with-directory-excursion out
+                 (patch-source-shebangs))))))))
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
