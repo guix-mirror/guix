@@ -1290,18 +1290,29 @@ interface for reading articles in any format.")
 (define-public guile-config
   (package
     (name "guile-config")
-    (version "0.1.1")
+    (version "0.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://alex.pompo.co/software/" name "-" version
-                    ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/a-sassmannshausen/guile-config")
+                    (commit "guile-config-0.2")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1b719bn192f9wg24rr0zx8jpmygsvyhfi35iy778pb5p392snrn8"))))
+                "07q86vqdwmm81wwxz1d1ah27hbhs6qbn8kiizrfpj0s4bf95w3r9"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'autoreconf
+                    (lambda _
+                      (zero? (system* "autoreconf" "-fi")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (synopsis "Guile application configuration parsing library")
     (description
      "Guile Config is a library providing a declarative approach to
@@ -1312,7 +1323,7 @@ parameter parsing using getopt-long; basic GNU command-line parameter
 generation (--help, --usage, --version); automatic output generation for the
 above command-line parameters.")
     (home-page "https://github.com/a-sassmannshausen/guile-config")
-    (license license:agpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-redis
   (package
