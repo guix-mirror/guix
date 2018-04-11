@@ -558,10 +558,18 @@ security standards.")
        #:validate-runpath? #f
 
        #:configure-flags '("--enable-default-toolkit=cairo-gtk3"
+
+                           "--with-distribution-id=org.gnu"
+
                            "--enable-gio"
                            "--enable-startup-notification"
                            "--enable-pulseaudio"
 
+                           "--disable-tests"
+                           "--disable-updater"
+                           "--disable-crashreporter"
+                           "--disable-maintenance-service"
+                           "--disable-eme"
                            "--disable-gconf"
                            "--disable-gnomeui"
 
@@ -634,7 +642,7 @@ security standards.")
               (close-port out))
             #t))
          (add-after
-          'unpack 'arrange-to-link-libxul-with-libraries-it-might-dlopen
+          'unpack 'link-libxul-with-libraries
           (lambda _
             ;; libxul.so dynamically opens libraries, so here we explicitly
             ;; link them into libxul.so instead.
