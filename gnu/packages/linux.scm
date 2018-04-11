@@ -311,6 +311,11 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/pwd
+           (lambda _
+             (substitute* (find-files "." "^Makefile(\\.include)?$")
+               (("/bin/pwd") "pwd"))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
              ;; Avoid introducing timestamps
