@@ -664,16 +664,16 @@ connection alive.")
                                      sh " SHELL=" sh))))
 
                  (let ((bind-directory (string-append "bind-" ,bind-version)))
-                   (system* "tar" "xf" "bind.tar.gz")
+                   (invoke "tar" "xf" "bind.tar.gz")
                    (for-each patch-shebang
                              (find-files bind-directory ".*"))
-                   (zero? (system* "tar" "cf" "bind.tar.gz"
-                                   bind-directory
-                                   ;; avoid non-determinism in the archive
-                                   "--sort=name"
-                                   "--mtime=@0"
-                                   "--owner=root:0"
-                                   "--group=root:0"))))))
+                   (invoke "tar" "cf" "bind.tar.gz"
+                           bind-directory
+                           ;; avoid non-determinism in the archive
+                           "--sort=name"
+                           "--mtime=@0"
+                           "--owner=root:0"
+                           "--group=root:0")))))
            (add-after 'install 'post-install
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Install the dhclient script for GNU/Linux and make sure
@@ -699,7 +699,8 @@ connection alive.")
                      ,(map (lambda (dir)
                              (string-append dir "/bin:"
                                             dir "/sbin"))
-                           (list inetutils net-tools coreutils sed))))))))))
+                           (list inetutils net-tools coreutils sed))))
+                 #t))))))
 
       (native-inputs `(("perl" ,perl)))
 
