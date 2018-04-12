@@ -3556,7 +3556,8 @@ as possible!")
                           (("@INTROSPECTION_GIRDIR@")
                            (string-append out "/share/gir-1.0/"))
                           (("@INTROSPECTION_TYPELIBDIR@")
-                           (string-append out "/lib/girepository-1.0/")))))))))
+                           (string-append out "/lib/girepository-1.0/")))
+                        #t))))))
     (native-search-paths
      (list (search-path-specification
             (variable "GRL_PLUGIN_PATH")
