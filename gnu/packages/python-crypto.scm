@@ -122,21 +122,18 @@ John the Ripper).")
 (define-public python-paramiko
   (package
     (name "python-paramiko")
-    (version "2.1.5")
+    (version "2.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "paramiko" version))
        (sha256
         (base32
-         "1pf0zxzhgyy4avby3ajg5hp18b0d8iirbkdfw53z0h6w611bp0wk"))))
+         "1wx4s95i2cdh8hhi1c3jb8lzk71jifa3z9wjfsx905y7lrsngqrk"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (zero? (system* "python" "test.py")))))))
+     `(;; FIXME: Tests require many unpackaged libraries, see dev-requirements.txt.
+       #:tests? #f))
     (propagated-inputs
      `(("python-pyasn1" ,python-pyasn1)
        ("python-cryptography" ,python-cryptography)))
