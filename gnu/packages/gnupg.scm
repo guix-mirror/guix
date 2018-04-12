@@ -216,21 +216,19 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.5")
+    (version "2.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0mzgibq4dpxh3i9anmwg12xdjry28y83icafhx3j3djg5niqk89z"))))
+                "110rf476l3cgn52gh9ia5y0y06y2ialq9dqc12jkhnfhl9gqqkg6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("curl" ,curl)
-       ("gnutls" ,gnutls)
+     `(("gnutls" ,gnutls)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)
        ("libgpg-error" ,libgpg-error)

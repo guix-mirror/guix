@@ -570,7 +570,16 @@ This is the GNU system.  Welcome.\n")
 (define* (operating-system-etc-service os)
   "Return a <service> that builds containing the static part of the /etc
 directory."
-  (let ((login.defs (plain-file "login.defs" "# Empty for now.\n"))
+  (let ((login.defs
+          (plain-file "login.defs"
+                      (string-append
+                        "# Default paths for non-login shells started by su(1).\n"
+                        "ENV_PATH    /run/setuid-programs:"
+                        "/run/current-system/profile/bin:"
+                        "/run/current-system/profile/sbin\n"
+                        "ENV_SUPATH  /run/setuid-programs:"
+                        "/run/current-system/profile/bin:"
+                        "/run/current-system/profile/sbin\n")))
 
         (issue      (plain-file "issue" (operating-system-issue os)))
         (nsswitch   (plain-file "nsswitch.conf"
