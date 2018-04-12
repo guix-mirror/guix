@@ -227,9 +227,7 @@ compatible to GNU Pth.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("curl" ,curl)
-       ("gnutls" ,gnutls)
+     `(("gnutls" ,gnutls)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)
        ("libgpg-error" ,libgpg-error)
