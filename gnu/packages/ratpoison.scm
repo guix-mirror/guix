@@ -64,7 +64,8 @@
                                                 "/share/xsessions/")))
                         (mkdir-p dst)
                         (copy-file (assoc-ref inputs rpd)
-                                   (string-append dst rpd))))))))
+                                   (string-append dst rpd))
+                        #t))))))
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
