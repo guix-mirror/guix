@@ -3936,7 +3936,7 @@ directly generate PDF documents instead of DVI.")
             (lambda* (#:key outputs #:allow-other-keys)
               (let ((share (string-append (assoc-ref outputs "out") "/share")))
                 (mkdir-p share)
-                (system* "mv" "texmf-dist" share))))
+                (invoke "mv" "texmf-dist" share))))
           (add-after 'install 'texmf-config
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
@@ -3964,9 +3964,10 @@ directly generate PDF documents instead of DVI.")
                 ;; http://slackbuilds.org/repository/13.37/office/texlive/
                 (setenv "PATH" (string-append (getenv "PATH") ":" texbin))
                 (setenv "TEXMFCNF" texmfroot)
-                (system* "updmap-sys" "--nohash" "--syncwithtrees")
-                (system* "mktexlsr")
-                (system* "fmtutil-sys" "--all")))))))
+                (invoke "updmap-sys" "--nohash" "--syncwithtrees")
+                (invoke "mktexlsr")
+                (invoke "fmtutil-sys" "--all")
+                #t))))))
    (properties `((max-silent-time . 9600))) ; don't time out while grafting
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
