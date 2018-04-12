@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,7 +91,10 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages elf)
+  #:use-module (gnu packages mpi))
 
 (define-public aide
   (package
@@ -2533,3 +2537,33 @@ printed instead of after the entire file has been read, which is often too
 late.")
     (home-page "https://jwilk.net/software/hungrycat")
     (license license:expat)))
+
+(define-public launchmon
+  (package
+    (name "launchmon")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/LLNL/LaunchMON/releases/download/v"
+                    version "/" name "-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0fm3nd9mydm9v2bf7bh01dbgrfnpwkapxa3dsvy3x1z0rz61qc0x"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mpi" ,openmpi)
+       ("munge" ,munge)
+       ("boost" ,boost)
+       ("libelf" ,libelf)
+       ("libgcrypt" ,libgcrypt)
+       ("libgpg-error" ,libgpg-error)))
+    (synopsis "Infrastructue for large scale tool daemon launching")
+    (description
+     "LaunchMON is a software infrastructure that enables HPC run-time
+tools to co-locate tool daemons with a parallel job.  Its API allows a
+tool to identify all the remote processes of a job and to scalably
+launch daemons into the relevant nodes.")
+    (home-page "https://github.com/LLNL/LaunchMON")
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (license license:lgpl2.1)))
