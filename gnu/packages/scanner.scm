@@ -83,7 +83,8 @@
                (copy-file "tools/udev/libsane.rules"
                           (string-append out
                                          "/lib/udev/rules.d/"
-                                         "60-libsane.rules"))))))))
+                                         "60-libsane.rules"))
+               #t))))))
     (home-page "http://www.sane-project.org")
     (synopsis
      "Raster image scanner library and drivers, without scanner support")
