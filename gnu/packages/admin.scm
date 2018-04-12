@@ -2567,3 +2567,33 @@ launch daemons into the relevant nodes.")
     (home-page "https://github.com/LLNL/LaunchMON")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:lgpl2.1)))
+
+(define-public spindle
+  (package
+    (name "spindle")
+    (version "0.10")
+    (source (origin
+              ;; We use git checkout to avoid github auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hpc/Spindle.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15n3ay0qq81r5v7fif61q1vdjcq44pp2nynkh3fvbzc9fj3c39wd"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--enable-sec-launchmon"
+                                     "--enable-sec-munge"
+                                     "--enable-sec-none")))
+    (inputs
+     `(("mpi" ,openmpi)
+       ("munge" ,munge)
+       ("launchmon" ,launchmon)
+       ("libgcrypt" ,libgcrypt)))
+    (synopsis "Scalable library loading in HPC environments")
+    (description
+     "Spindle is a tool for improving the performance of dynamic library and
+Python loading in HPC environments.")
+    (home-page "https://github.com/hpc/Spindle")
+    (license license:lgpl2.1)))
