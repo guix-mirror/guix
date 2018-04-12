@@ -5403,13 +5403,14 @@ so it might be a tiny bit slower.")
        (modify-phases %standard-phases
          (replace 'build
            (lambda _
-             (zero? (system* "python" "waf-light" "configure" "build"))))
+             (invoke "python" "waf-light" "configure" "build")))
          (replace 'check
            (lambda _
-             (zero? (system* "python" "waf" "--version"))))
+             (invoke "python" "waf" "--version")))
          (replace 'install
            (lambda _
-             (copy-file "waf" %output))))))
+             (copy-file "waf" %output)
+             #t)))))
     (home-page "https://waf.io/")
     (synopsis "Python-based build system")
     (description
