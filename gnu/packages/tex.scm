@@ -3966,8 +3966,7 @@ directly generate PDF documents instead of DVI.")
                 (setenv "TEXMFCNF" texmfroot)
                 (invoke "updmap-sys" "--nohash" "--syncwithtrees")
                 (invoke "mktexlsr")
-                (invoke "fmtutil-sys" "--all")
-                #t))))))
+                (invoke "fmtutil-sys" "--all")))))))
    (properties `((max-silent-time . 9600))) ; don't time out while grafting
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
