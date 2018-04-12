@@ -550,7 +550,8 @@ definitions.")
                           "libxml2" "zlib" "libspiro" "freetype"
                           "pango" "cairo" "fontconfig")))
                 ;; Checks for potrace program at runtime
-                `("PATH" ":" prefix (,potrace)))))))
+                `("PATH" ":" prefix (,potrace)))
+              #t))))
 
       ;; Skip test 40 "FontForge .sfd file open check" to work around
       ;; <https://github.com/fontforge/fontforge/issues/3246>.
