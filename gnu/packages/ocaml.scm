@@ -876,7 +876,7 @@ to the other.")
                    'configure
                    (lambda* (#:key inputs outputs #:allow-other-keys)
                      (let ((out (assoc-ref outputs "out")))
-                       (system*
+                       (invoke
                         "./configure"
                         "-bindir" (string-append out "/bin")
                         "-config" (string-append out "/etc/ocamfind.conf")
@@ -886,14 +886,15 @@ to the other.")
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
-                        (zero? (system* "make" "install"
-                                        (string-append "OCAML_CORE_STDLIB="
-                                                       out "/lib/ocaml/site-lib"))))))
+                        (invoke "make" "install"
+                                (string-append "OCAML_CORE_STDLIB="
+                                               out "/lib/ocaml/site-lib")))))
                   (add-after 'install 'remove-camlp4
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out")))
                         (delete-file-recursively
-                          (string-append out "/lib/ocaml/site-lib/camlp4"))))))))
+                         (string-append out "/lib/ocaml/site-lib/camlp4"))
+                        #t))))))
     (home-page "http://projects.camlcity.org/projects/findlib.html")
     (synopsis "Management tool for OCaml libraries")
     (description
