@@ -10343,3 +10343,40 @@ It provides auto-completion for HTTP methods and headers in
 @code{restclient-mode}.  Completion source is given by
 @code{know-your-http-well}.")
     (license license:gpl3+)))
+
+(define-public emacs-noflet
+  (let ((version "20170629")
+        (revision "1")
+        (commit "7ae84dc3257637af7334101456dafe1759c6b68a"))
+    (package
+      (name "emacs-noflet")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nicferrier/emacs-noflet")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0g70gnmfi8n24jzfci9nrj0n9bn1qig7b8f9f325rin8h7x32ypf"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'require-dash
+             ;; noflet.el uses -map from dash, but (require 'dash) is
+             ;; missing. So, add it.
+             (lambda _
+               (substitute* "noflet.el"
+                 ((";;; Code:") ";;; Code:\n(require 'dash)"))
+               #t)))))
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/nicferrier/emacs-noflet")
+      (synopsis "Locally override functions")
+      (description "@code{emacs-noflet} let's you locally override functions,
+in the manner of @command{flet}, but with access to the original function
+through the symbol: @command{this-fn}.")
+      (license license:gpl3+))))
