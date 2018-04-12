@@ -57,7 +57,8 @@
                    'configure 'post-configure
                    (lambda _
                      (for-each patch-makefile-SHELL
-                               (find-files "." "Makefile\\.in"))))
+                               (find-files "." "Makefile\\.in"))
+                     #t))
                   (add-after
                    'install 'remove-libs-already-in-binutils
                    (lambda* (#:key inputs outputs #:allow-other-keys)
