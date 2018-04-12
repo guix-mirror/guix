@@ -125,7 +125,8 @@ controlling terminal and attach to it later.")
           (lambda* (#:key inputs #:allow-other-keys)
             (let ((libc   (assoc-ref inputs "libc"))) ;implicit input
               (substitute* "usr/bin/byobu.in"
-                (("locale") (string-append libc "/bin/locale"))))))
+                (("locale") (string-append libc "/bin/locale")))
+              #t)))
          (add-after
           'install 'wrap-python-scripts
           (lambda* (#:key inputs outputs #:allow-other-keys)
