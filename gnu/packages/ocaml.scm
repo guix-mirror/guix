@@ -399,19 +399,20 @@ syntax of OCaml.")
                            (mandir (string-append out "/share/man")))
                       ;; Custom configure script doesn't recognize
                       ;; --prefix=<PREFIX> syntax (with equals sign).
-                      (zero? (system* "./configure"
-                                      "--prefix" out
-                                      "--mandir" mandir)))))
+                      (invoke "./configure"
+                              "--prefix" out
+                              "--mandir" mandir))))
          (replace 'build
                   (lambda _
-                    (zero? (system* "make" "-j" (number->string
-                                                 (parallel-job-count))
-                                    "world.opt"))))
+                    (invoke "make" "-j" (number->string
+                                         (parallel-job-count))
+                            "world.opt")))
          ;; Required for findlib to find camlp5's libraries
          (add-after 'install 'install-meta
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "etc/META" (string-append (assoc-ref outputs "out")
-                                                     "/lib/ocaml/camlp5/")))))))
+                                                     "/lib/ocaml/camlp5/"))
+             #t)))))
     (home-page "http://camlp5.gforge.inria.fr/")
     (synopsis "Pre-processor Pretty Printer for OCaml")
     (description
