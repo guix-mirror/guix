@@ -1733,7 +1733,8 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
           (lambda* (#:key outputs #:allow-other-keys)
             (setenv "LDFLAGS"
                     (string-append "-Wl,-rpath="
-                                   (assoc-ref outputs "out") "/lib")))))))
+                                   (assoc-ref outputs "out") "/lib"))
+            #t)))))
     ;; required by lilv-0.pc
     (propagated-inputs
      `(("serd" ,serd)
