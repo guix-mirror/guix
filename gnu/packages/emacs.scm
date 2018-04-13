@@ -1936,7 +1936,7 @@ port of @code{cl-spark} to Emacs Lisp.")
 (define-public emacs-es-mode
   (package
     (name "emacs-es-mode")
-    (version "4.2.0")
+    (version "4.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1945,7 +1945,7 @@ port of @code{cl-spark} to Emacs Lisp.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02as82clm553yss7jfjac888308zr1h2229cch4z1yij70j25c8y"))))
+                "0y86qdcb3g7fkcb4pzsjh3syzql6w3314hg1wqxq4a8bbk3y0cgr"))))
     (build-system emacs-build-system)
     (propagated-inputs
      ;; The version of org in Emacs 24.5 is not sufficient, and causes tables
