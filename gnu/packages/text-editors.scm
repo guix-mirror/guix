@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
@@ -155,7 +155,7 @@ competitive (as in keystroke count) with Vim.")
 (define-public joe
   (package
     (name "joe")
-    (version "4.4")
+    (version "4.6")
     (source
      (origin
        (method url-fetch)
@@ -164,7 +164,7 @@ competitive (as in keystroke count) with Vim.")
                            "joe-" version ".tar.gz"))
        (sha256
         (base32
-         "0y898r1xlrv75m00y598rvwwsricabplyh80wawsqafapcl4hw55"))))
+         "1pmr598xxxm9j9dl93kq4dv36zyw0q2dh6d7x07hf134y9hhlnj9"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://joe-editor.sourceforge.net/")
