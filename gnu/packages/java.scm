@@ -6082,7 +6082,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
                  (lambda _
                    (display
                      (string-append "#!" (which "sh") "\n"
-                                    "java -cp " jar "/antlr3-3.1-3.1.jar:"
+                                    "java -cp " jar "/antlr3-3.1.jar:"
                                     (string-concatenate
                                       (find-files (assoc-ref inputs "stringtemplate")
                                                   ".*\\.jar"))
