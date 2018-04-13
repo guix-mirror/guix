@@ -7045,7 +7045,7 @@ Feautures:
 (define-public emacs-evil-matchit
   (package
     (name "emacs-evil-matchit")
-    (version "2.2.5")
+    (version "2.2.6")
     (source
      (origin
        (method url-fetch)
@@ -7055,7 +7055,7 @@ Feautures:
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1hm0k53m7d8zv2pk4p93k5mmilsv1mz7y2z6dqf7r6f0zmncs31a"))))
+         "1yp9sl6542317mn1060ri90zyf6bs6qylagndhqy02p368q31rhi"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
