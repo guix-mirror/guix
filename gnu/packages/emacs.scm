@@ -7932,3 +7932,25 @@ name and password.  To skip it press a @key{Return} key.
 You could get a Epkg package list by invoking @code{epkg-list-packages} in
 Emacs.")
       (license license:gpl3+))))
+
+(define-public emacs-elisp-slime-nav
+  (package
+    (name "emacs-elisp-slime-nav")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/purcell/elisp-slime-nav/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vq7ym1q47p97gxrv45c9gm96d23xbp237vkmakikj6grngxjfb2"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/elisp-slime-nav")
+    (synopsis "Make @code{M-.} and @code{M-,} work for elisp like they do in SLIME")
+    (description
+     "This package provides SLIME's convenient @code{M-.}and @code{M-,} navigation
+in @code{emacs-lisp-mode}, together with an elisp equivalent of
+@code{slime-describe-symbol}.")
+    (license license:gpl3+)))
