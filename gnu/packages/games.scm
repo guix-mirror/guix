@@ -4607,15 +4607,16 @@ elements to achieve a simple goal in the most complex way possible.")
 (define-public pioneer
   (package
     (name "pioneer")
-    (version "20171001")
+    (version "20180203")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/pioneerspacesim/pioneer/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pioneerspacesim/pioneer.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nxhx22swfqq6lfvcnpfm31wig3sjv5pp0rslj79nbxc7nyihh8m"))))
+                "0hp2mf36kj2v93hka8m8lxw2qhmnjc62wjlpw7c7ix0r8xa01i6h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
