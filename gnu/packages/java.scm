@@ -5640,6 +5640,15 @@ allowing the end user to plug in the desired logging framework at deployment
 time.")
     (license license:expat)))
 
+(define java-slf4j-api-bootstrap
+  (package
+    (inherit java-slf4j-api)
+    (name "java-slf4j-api-bootstrap")
+    (inputs `())
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-slf4j-api)
+       ((#:tests? _ #f) #f)))))
+
 (define-public java-slf4j-simple
   (package
     (name "java-slf4j-simple")
