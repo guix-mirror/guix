@@ -38,9 +38,11 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libbsd)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages terminals)
@@ -290,3 +292,55 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
 compatible.  This is a portable version of the mg maintained by the OpenBSD
 team.")
     (license license:public-domain)))
+
+(define-public ghostwriter
+  (package
+    (name "ghostwriter")
+    (version "1.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wereturtle/ghostwriter.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ihdr4xk0j83q83xknbikxb7yf9qhlkgvc89w33lhj090cv376gd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))           ;for lrelease
+    (inputs
+     `(("hunspell" ,hunspell)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("qtwebkit" ,qtwebkit)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "qmake" (string-append "PREFIX=" out)))))
+         (add-after 'configure 'create-translations
+           (lambda _
+             ;; `lrelease` will not overwrite, so delete existing .qm files
+             (for-each delete-file (find-files "translations" ".*\\.qm"))
+             (apply invoke "lrelease" (find-files "translations" ".*\\.ts"))))
+         ;; Ensure that icons are found at runtime.
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/ghostwriter")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins/"))
+                         '("qtsvg" "qtmultimedia"))))))))))
+    (home-page "https://wereturtle.github.io/ghostwriter/")
+    (synopsis "Write without distractions")
+    (description
+     "@code{ghostwriter} provides a relaxing, distraction-free writing
+environment with Markdown markup.")
+    (license license:gpl3+)))           ;icons/* under CC-BY-SA3
