@@ -4881,7 +4881,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.26.6")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4889,7 +4889,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1v0hwlrlm23bz5dmamdavm771f4gs64fyq82argrc0nwgn2a2fp4"))))
+                "12b9lfgwd57rzn9394xrbvl9ym5aqldpz9v7c9a421dsv8dgq13b"))))
     (build-system cmake-build-system)
     (arguments
      '(;; XXX FIXME: 11/85 tests are failing.
@@ -4951,9 +4951,11 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
      `(("bdb" ,bdb)
        ("gcr" ,gcr)
        ("gnome-online-accounts" ,gnome-online-accounts)
+       ("json-glib" ,json-glib)
        ("libgweather" ,libgweather)
        ("mit-krb5" ,mit-krb5)
-       ("openldap" ,openldap)))
+       ("openldap" ,openldap)
+       ("webkitgtk" ,webkitgtk)))
     (synopsis "Store address books and calendars")
     (home-page "https://wiki.gnome.org/Apps/Evolution")
     (description
