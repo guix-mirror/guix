@@ -3526,6 +3526,21 @@ transformations and analysis algorithms allow to easily assemble custom
 complex transformations and code analysis tools.")
     (license license:bsd-3)))
 
+(define java-asm-bootstrap
+  (package
+    (inherit java-asm)
+    (name "java-asm-bootstrap")
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-asm)
+       ((#:tests? _) #f)))
+    (native-inputs `())
+    (propagated-inputs
+     `(("java-aqute-bndlib" ,java-aqute-bndlib-bootstrap)
+       ("java-aqute-libg" ,java-aqute-libg-bootstrap)
+       ,@(delete `("java-aqute-bndlib" ,java-aqute-bndlib)
+                 (delete `("java-aqute-libg", java-aqute-libg)
+                         (package-inputs java-asm)))))))
+
 (define-public java-cglib
   (package
     (name "java-cglib")
