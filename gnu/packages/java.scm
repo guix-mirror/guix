@@ -6890,6 +6890,15 @@ it manages project dependencies, gives diffs jars, and much more.")
        ("java-osgi-cmpn" ,java-osgi-cmpn)
        ("osgi" ,java-osgi-core)))))
 
+(define java-aqute-libg-bootstrap
+  (package
+    (inherit java-aqute-libg)
+    (name "java-aqute-libg-bootstrap")
+    (inputs
+     `(("slf4j-bootstrap" ,java-slf4j-api-bootstrap)
+       ,@(delete `("slf4j" ,java-slf4j-api)
+                 (package-inputs java-aqute-libg))))))
+
 (define-public java-aqute-bndlib
   (package
     (inherit java-aqute-bnd-annotation)
