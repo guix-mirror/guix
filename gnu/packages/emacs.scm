@@ -2978,7 +2978,7 @@ started with 20 minutes.  All values are customizable.")
 (define-public emacs-org-trello
   (package
     (name "emacs-org-trello")
-    (version "0.7.9")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2987,7 +2987,7 @@ started with 20 minutes.  All values are customizable.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "074dka8g673bj1ck5vavbjaij5jyniygdlw51mdds005wd2br9wf"))))
+                "0549mnf5cgwn8b8jbl38fljbaxmh1605sv9j8f3lsa95jhs1zpa0"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
