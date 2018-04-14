@@ -1929,13 +1929,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.44")
+    (version "4.46")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0803lp8kd3mp1jcm17i019xiqxdy85hhs6xk67zib8gmvg500gcn"))))
+        (base32 "0cskiqywiqkw44zdg4q78bjns6jjp1dz5lzdxrhpnpldc6075irw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Obscure test failures.
