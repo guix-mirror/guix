@@ -4907,8 +4907,12 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                "-DENABLE_GOOGLE_AUTH=OFF"     ;disable Google authentication
                "-DENABLE_VALA_BINDINGS=ON"
                ;; FIXME: Building against ICU 60 requires C++11 or higher.  Remove
-               ;; this when our default compiler is >= GCC6.
-               "-DCMAKE_CXX_FLAGS=-std=gnu++11"
+               ;; "-std=gnu++11" when our default compiler is >= GCC6.
+               ;; FIXME: Temporarily use "-DU_USING_ICU_NAMESPACE=1" until
+               ;; evolution-data-server has been updated to qualify ICU types
+               ;; explicitly, as required by ICU 61 and later.  See:
+               ;; <https://ssl.icu-project.org/repos/icu/trunk/icu4c/readme.html#RecBuild>
+               "-DCMAKE_CXX_FLAGS=-std=gnu++11 -DU_USING_ICU_NAMESPACE=1"
                (string-append "-DCMAKE_INSTALL_RPATH=" lib ";"
                               (string-append lib "/evolution-data-server;")
                               (string-join runpaths ";"))
