@@ -6661,22 +6661,31 @@ is suitable as a default application in a Desktop environment.")
 (define-public xpad
   (package
     (name "xpad")
-    (version "4.8.0")
+    (version "5.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://launchpad.net/xpad/trunk/4.8.0/+download/"
+       (uri (string-append "https://launchpad.net/xpad/trunk/"
+                           version "/+download/"
                            name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "17f915yyvfa2fsavq6wh0q0dfhib28b4k1gc0292b9xdlrvy7f22"))))
+         "02yikxg6z9bwla09ka001ppjlpbv5kbza3za9asazm5aiz376mkb"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'run-autogen
+           (lambda _
+             (system* "sh" "autogen.sh"))))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
+     `(("gtksourceview" ,gtksourceview)
        ("libsm" ,libsm)))
     (home-page "https://wiki.gnome.org/Apps/Xpad")
     (synopsis "Virtual sticky note")
