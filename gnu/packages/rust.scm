@@ -186,8 +186,8 @@ in turn be used to build the final Rust.")
                   "#[ignore]\nfn connect_timeout_unroutable"))
                ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
                (substitute* "src/libstd/sys/unix/process/process_common.rs"
-                (("#\\[cfg_attr\\(target_arch = \"arm\", ignore\\)\\]
-    fn test_process_mask") "#[ignore]
+                (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
     fn test_process_mask"))
                ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
                ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
