@@ -362,7 +362,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  `("LIBRARY_PATH" ":" suffix (,(string-append libc "/lib"))))
                #t)))))))))
 
-(define-public rust
+(define-public rust-1.24
   (let ((base-rust
          (rust-bootstrapped-package rust-1.23 "1.24.1"
                                     "1vv10x2h9kq7fxh2v01damdq8pvlp5acyh1kzcda9sfjx12kv99y")))
@@ -373,3 +373,25 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
          ((#:phases phases)
           `(modify-phases ,phases
              (delete 'fix-mtime-bug))))))))
+
+(define-public rust
+  (let ((base-rust rust-1.24))
+    (package
+      (inherit base-rust)
+      (version "1.25.0")
+      (source
+       (rust-source version
+                    "0baxjr99311lvwdq0s38bipbnj72pn6fgbk6lcq7j555xq53mxpf"))
+      (native-inputs
+       (alist-replace "cargo-bootstrap" (list base-rust "cargo")
+                      (alist-replace "rustc-bootstrap" (list base-rust)
+                                     (package-native-inputs base-rust))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'patch-cargo-tests 'patch-cargo-index-update
+               (lambda* _
+                 (substitute* "src/tools/cargo/tests/generate-lockfile.rs"
+                   ;; This test wants to update the crate index.
+                   (("fn no_index_update") "#[ignore]\nfn no_index_update")))))))))))
