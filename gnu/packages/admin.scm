@@ -261,15 +261,14 @@ graphs and can export its output to different formats.")
 (define-public htop
   (package
    (name "htop")
-   (version "2.1.0")
+   (version "2.2.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://hisham.hm/htop/releases/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "0j07z0xm2gj1vzvbgh4323k4db9mr7drd7gw95mmpqi61ncvwq1j"))
-            (patches (search-patches "htop-fix-process-tree.patch"))))
+              "0mrwpb3cpn3ai7ar33m31yklj64c3pp576vh1naqff6f21pq5mnr"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
