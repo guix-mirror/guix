@@ -186,14 +186,14 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.13.11")
+    (version "1.13.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "01bgld6pv9sms9bsmx863yqw2hnivxhn91xs6imqklj48sbrqy9m"))))
+                "1pl5ii1w2ycxprxk8zdnxlpdd1dia6hyrns7mnqkm3fv5ihgb4pv"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
