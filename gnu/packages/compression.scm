@@ -2111,14 +2111,14 @@ non-Windows systems without running the actual installer using wine.")
 (define-public google-brotli
   (package
     (name "google-brotli")
-    (version "1.0.2")
+    (version "1.0.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/google/brotli/archive/v"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "08kl9gww2058p1p7j9xqmcmrabcfihhj3fq984d7fi3bchb2mky2"))))
+               "1hrpmz162k4x3xm6vmbpm443jlfr1kp536p8962y2dncy7gs6s12"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
