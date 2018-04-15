@@ -1053,14 +1053,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.1.5")
+    (version "1.1.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "073zpgvj4pldmzqq97l40wngvbqnvrkc8yw153mgny9kypwaazbr"))))
+               "04qcwkisbh0d6lnh0rw1k6n869fbs6zbfq6yvb41rymiwgmk27bg"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
