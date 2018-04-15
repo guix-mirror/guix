@@ -216,7 +216,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.42.0")
+   (version "1.42.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -224,7 +224,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0illn78nfwpa8y5knh9ir74wa1skc2hi8f3ny19zgpyf7n5dh94r"))))
+              "0cnfgcya3wbs9m8g44cl5ww6wbp6qbw96qvsgkr8ymwqn9b6fnli"))))
    (build-system gnu-build-system)
    (propagated-inputs
     ;; These are all in Requires or Requires.private of the '.pc' files.
