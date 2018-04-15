@@ -533,6 +533,7 @@ decompressors when faced with corrupted input.")
       (method url-fetch)
       (uri (string-append "mirror://gnu/sharutils/sharutils-"
                           version ".tar.xz"))
+      (patches (search-patches "sharutils-CVE-2018-1000097.patch"))
       (sha256
        (base32
         "16isapn8f39lnffc3dp4dan05b7x6mnc76v6q5nn8ysxvvvwy19b"))))
