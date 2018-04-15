@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
@@ -4593,3 +4593,39 @@ emulates the behaviour of Gunnar Monell's older fbgrab utility.")
 restriction, permission handling and more.  This package provides userspace
 interface to this kernel feature.")
     (license license:lgpl2.1)))
+
+(define-public mbpfan
+  (package
+    (name "mbpfan")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dgraziotin/mbpfan/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wifsws9icki95hhfh4zw1hmk07ddmkcz9mg5a9jr7q2kkrk01cx"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "DESTDIR=" out)
+                            "CC=gcc"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda _
+             (substitute* "Makefile"
+               (("/usr") ""))
+             #t))
+         (delete 'configure)))) ; There's no configure phase.
+    (home-page "https://github.com/dgraziotin/mbpfan")
+    (synopsis "Control fan speed on Macbooks")
+    (description
+     "mbpfan is a fan control daemon for Apple Macbooks.  It uses input from
+the @code{coretemp} module and sets the fan speed using the @code{applesmc}
+module.  It can be executed as a daemon or in the foreground with root
+privileges.")
+    (license license:gpl3+)))
