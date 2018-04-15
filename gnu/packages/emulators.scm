@@ -398,7 +398,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.6.2")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mgba-emu/mgba/archive/"
@@ -406,7 +406,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0x7a9i1jdic3haf5fkd7x16vwqpf4jqdiw56a5fc4gx4jhn9yhi2"))
+                "16hgs6r5iym3lp2cjcnv9955333976yc5sgy2kkxlsi005n91j1m"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
