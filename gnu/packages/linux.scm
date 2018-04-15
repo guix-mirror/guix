@@ -2121,6 +2121,7 @@ time.")
                                               "/etc/lvm")
                                "--enable-udev_sync"
                                "--enable-udev_rules"
+                               "--enable-pkgconfig"
 
                                ;; Make sure programs such as 'dmsetup' can
                                ;; find libdevmapper.so.
