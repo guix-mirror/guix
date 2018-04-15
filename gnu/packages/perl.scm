@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -59,6 +59,7 @@
   (package
     (name "perl")
     (version "5.26.1")
+    (replacement perl-5.26.2)
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/src/5.0/perl-"
@@ -154,6 +155,19 @@
 24 years of development.")
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
+
+;; Fixes CVE-2018-6797, CVE-2018-6798, and CVE-2018-6913.
+;; See <https://metacpan.org/changes/release/SHAY/perl-5.26.2>.
+(define-public perl-5.26.2
+  (package/inherit perl
+    (version "5.26.2")
+    (source (origin
+              (inherit (package-source perl))
+              (uri (string-append "mirror://cpan/src/5.0/perl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))))
 
 (define-public perl-algorithm-c3
   (package
