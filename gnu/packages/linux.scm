@@ -3850,7 +3850,7 @@ interface to the variable facility of UEFI boot firmware.")
 (define-public efibootmgr
   (package
     (name "efibootmgr")
-    (version "14")
+    (version "16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rhinstaller/" name
@@ -3858,26 +3858,23 @@ interface to the variable facility of UEFI boot firmware.")
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1n3sydvpr6yl040hhf460k7mrxby7laqd9dqs6pq0js1hijc2zip"))))
+                "0pzn67vxxaf7jna4cd0i4kqm60h04kb21hckksv9z82q9gxra1wm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.
        #:make-flags (list (string-append "prefix=" %output)
                           (string-append "libdir=" %output "/lib")
+                          ;; EFIDIR denotes a subdirectory relative to the
+                          ;; EFI System Partition where the loader will be
+                          ;; installed (known as OS_VENDOR in the code).
+                          ;; GRUB overrides this, as such it's only used if
+                          ;; nothing else is specified on the command line.
+                          "EFIDIR=gnu"
                           ;; Override CFLAGS to add efivar include directory.
                           (string-append "CFLAGS=-O2 -g -flto -I"
                                          (assoc-ref %build-inputs "efivar")
                                          "/include/efivar"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'branding
-           ;; Replace default loader path with something more familiar.
-           (lambda _
-             (substitute* "src/efibootmgr.c"
-               (("EFI\\\\\\\\redhat") ; Matches 'EFI\\redhat'.
-                "EFI\\\\gnu"))
-             #t))
-         (delete 'configure))))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
