@@ -161,9 +161,12 @@ in turn be used to build the final Rust.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Disable test for cross compilation support.
+             (setenv "CFG_DISABLE_CROSS_TESTS" "1")
              (setenv "SHELL" (which "sh"))
              (setenv "CONFIG_SHELL" (which "sh"))
+             (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
              ;; guix llvm-3.9.1 package installs only shared libraries
              (setenv "LLVM_LINK_SHARED" "1")
              #t))
@@ -258,7 +261,17 @@ safety and thread safety guarantees.")
      (substitute-keyword-arguments (package-arguments rust-1.19)
        ((#:phases phases)
         `(modify-phases ,phases
-           (add-after 'patch-tests 'fix-mtime-bug
+           (add-after 'patch-tests 'patch-cargo-tests
+             (lambda _
+               (substitute* "src/tools/cargo/tests/build.rs"
+                (("/usr/bin/env") (which "env"))
+                ;; Guix llvm is compiled without asmjs-unknown-emscripten.
+                (("fn wasm32_final_outputs") "#[ignore]\nfn wasm32_final_outputs"))
+               (substitute* "src/tools/cargo/tests/death.rs"
+                ;; This is stuck when built in container.
+                (("fn ctrl_c_kills_everyone") "#[ignore]\nfn ctrl_c_kills_everyone"))
+               #t))
+           (add-after 'patch-cargo-tests 'fix-mtime-bug
              (lambda* _
                (substitute* "src/build_helper/lib.rs"
                  ;; Bug in Rust code.
@@ -327,7 +340,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              (invoke "./x.py" "build" "src/tools/cargo")))
          (replace 'check
            (lambda* _
-             (invoke "./x.py" "test")))
+             (invoke "./x.py" "test")
+             (invoke "./x.py" "test" "src/tools/cargo")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "./x.py" "install")
