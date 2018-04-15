@@ -935,6 +935,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupdf-CVE-2018-6544.patch		\
   %D%/packages/patches/mupdf-CVE-2018-1000051.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
+  %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
