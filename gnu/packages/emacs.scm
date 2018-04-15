@@ -7567,6 +7567,32 @@ Anzu.zim.")
 used with SGML-like languages: XML, HTML, XHTML, XSL, etc.")
     (license license:gpl3+)))
 
+(define-public emacs-ergoemacs-mode
+  (let ((commit "3ce23bba3cb50562693860f87f3528c471d603ba")
+        (revision "1"))
+    (package
+      (name "emacs-ergoemacs-mode")
+      (version (git-version "5.16.10.12" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ergoemacs/ergoemacs-mode.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "1s3b9bridl78hh1mxmdk9nqlmqhibbaxk0a1cixmsf23s06w8w6l"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-undo-tree" ,emacs-undo-tree)))
+      (home-page "https://ergoemacs.github.io/")
+      (synopsis "Emacs mode based on common modern interface and ergonomics")
+      (description
+       "This package provides an efficient Emacs keybinding set based on
+statistics of command frequency, and supports common shortcuts for open,
+close, copy, cut, paste, undo, redo.")
+      (license license:gpl3+))))
+
 (define-public emacs-password-store
   (package
     (name "emacs-password-store")
