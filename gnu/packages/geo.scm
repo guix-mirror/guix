@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages statistics)
@@ -611,3 +613,95 @@ spatial data and models on top of static maps from various online sources (e.g
 Google Maps and Stamen Maps).  It includes tools common to those tasks,
 including functions for geolocation and routing.")
    (license license:gpl2)))
+
+(define-public gdal
+  (package
+    (name "gdal")
+    (version "2.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "http://download.osgeo.org/gdal/" version "/gdal-"
+                     version ".tar.gz"))
+              (sha256
+               (base32
+                "1951f7b69x3d1vic0rmq92q8f4bj3hbxnxmj5jl0cc3zg0isgmdr"))
+              (modules '((guix build utils)))
+              (snippet
+                `(begin
+                   ;; TODO: frmts contains a lot more bundled code.
+                   (for-each delete-file-recursively
+                     ;; bundled code
+                     '("frmts/png/libpng"
+                       "frmts/gif/giflib"
+                       "frmts/jpeg/libjpeg"
+                       "frmts/jpeg/libjpeg12"
+                       "frmts/gtiff/libtiff"
+                       "frmts/gtiff/libgeotiff"
+                       "frmts/zlib"
+                       "ogr/ogrsf_frmts/geojson/libjson"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:configure-flags
+       (let-syntax ((with (syntax-rules ()
+                            ((_ option input)
+                             (string-append option "="
+                                            (assoc-ref %build-inputs input))))))
+         (list
+           ;; TODO: --with-pcidsk, --with-pcraster
+           (with "--with-freexl" "freexl")
+           (with "--with-libjson-c" "json-c")
+           (with "--with-png" "libpng")
+           (with "--with-webp" "libwebp")
+           (with "--with-gif" "giflib")
+           (with "--with-jpeg" "libjpeg")
+           (with "--with-libtiff" "libtiff")
+           (with "--with-geotiff" "libgeotiff")
+           (with "--with-libz" "zlib")
+           "--with-pcre"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-path
+           (lambda _
+             (substitute* "frmts/mrf/mrf_band.cpp"
+               (("\"../zlib/zlib.h\"") "<zlib.h>")))))))
+    (inputs
+     `(("freexl" ,freexl)
+       ("geos" ,geos)
+       ("giflib" ,giflib)
+       ("json-c" ,json-c)
+       ("libgeotiff" ,libgeotiff)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("pcre" ,pcre)
+       ("zlib" ,zlib)))
+    (home-page "http://www.gdal.org/")
+    (synopsis "Raster and vector geospatial data format library")
+    (description "GDAL is a translator library for raster and vector geospatial
+data formats.  As a library, it presents a single raster abstract data model
+and single vector abstract data model to the calling application for all
+supported formats.  It also comes with a variety of useful command line
+utilities for data translation and processing.")
+    (license (list
+               ;; general license
+               license:expat
+               ;; frmts/gtiff/tif_float.c, frmts/pcraster/libcsf,
+               ;; ogr/ogrsf_frmts/dxf/intronurbs.cpp, frmts/pdf/pdfdataset.cpp
+               ;; frmts/mrf/
+               license:bsd-3
+               ;; frmts/hdf4/hdf-eos/*
+               ;; similar to the expat license, but without guarantee exclusion
+               (license:non-copyleft "file://frmts/hdf4/hdf-eos/README")
+               ;; frmts/grib/degrib/
+               license:public-domain ; with guarantee exclusion
+               ;; port/cpl_minizip*
+               ;; Some bsd-inspired license
+               (license:non-copyleft "file://port/LICENCE_minizip")
+               ;; alg/internal_libqhull
+               ;; Some 5-clause license
+               (license:non-copyleft "file://alg/internal_libqhull/COPYING.txt")
+               ;; frmts/mrf/libLERC
+               license:asl2.0))))
