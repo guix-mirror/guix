@@ -343,7 +343,7 @@ prompt.")
 (define-public i3lock-color
   (package
     (name "i3lock-color")
-    (version "2.10.1c")
+    (version "2.11-c")
     (source
      (origin
        (method url-fetch)
@@ -352,7 +352,7 @@ prompt.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "119xvdm4r6irqk0mar80hx6s8ydw26y35h7712rd7nbg7pb7i053"))))
+         "0zh7il2y6dmzym3w6r9xii5dma8pjjjlq4dm5iby7m3gvplj4q9p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
@@ -365,6 +365,7 @@ prompt.")
     (inputs
      `(("cairo" ,cairo)
        ("libev" ,libev)
+       ("libjpeg" ,libjpeg-turbo)
        ("libxcb" ,libxcb)
        ("libxkbcommon" ,libxkbcommon)
        ("linux-pam" ,linux-pam)
