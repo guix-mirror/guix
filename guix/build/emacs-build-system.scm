@@ -228,8 +228,7 @@ store in '.el' files."
          (elpa-name (package-name->name+version elpa-name-ver))
          (el-dir (string-append out %install-suffix "/" elpa-name-ver)))
     (parameterize ((%emacs emacs))
-      (emacs-generate-autoloads elpa-name el-dir))
-    #t))
+      (emacs-generate-autoloads elpa-name el-dir))))
 
 (define (emacs-package? name)
   "Check if NAME correspond to the name of an Emacs package."
