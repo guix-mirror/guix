@@ -504,15 +504,18 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.25")
+    (version "0.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0382r4vzqkz76jlp2069rdbwf4gh1a22r9w4rkphcn5qflw0dlb6"))))
+                "19g40vqj3cs94i27f66194k7d5cazrv1lx54bz9kc0qy2npxjzgz"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (inputs
      `(("ghc-hinotify" ,ghc-hinotify)
        ("ghc-http" ,ghc-http)
