@@ -51,7 +51,7 @@
                (base32
                 "17ajlwgvyyrap8z7f16zcs59pksvncwbmd3mzf98wj7zqgczjaja"))))
     (build-system gnu-build-system)
-    (home-page "http://sigrok.org/wiki/Libserialport")
+    (home-page "https://sigrok.org/wiki/Libserialport")
     (synopsis "Library for using serial ports")
     (description "Libserialport is a minimal shared library written in C that is intended
 to take care of the OS-specific details when writing software that uses serial ports.")
@@ -249,7 +249,7 @@ format support.")
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
     (build-system cmake-build-system)
-    (home-page "http://www.sigrok.org/wiki/PulseView")
+    (home-page "https://www.sigrok.org/wiki/PulseView")
     (synopsis "Qt based logic analyzer, oscilloscope and MSO GUI for sigrok")
     (description "PulseView is a Qt based logic analyzer, oscilloscope and MSO GUI
 for sigrok.")
