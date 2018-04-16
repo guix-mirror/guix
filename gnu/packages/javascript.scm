@@ -371,7 +371,7 @@ means that these shams cause many ES5 methods to silently fail.")
 (define-public mujs
   (package
     (name "mujs")
-    (version "1.0.2")
+    (version "1.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -380,7 +380,7 @@ means that these shams cause many ES5 methods to silently fail.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1angy1higk8bvh69frjhq1m6znhd75fzalaydz5rfzkdfyw52jgy"))))
+                "15ml3rzjl44lqdb1yxipdh8bhh0rvk2g6w6sjv667q8xywijwqv8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

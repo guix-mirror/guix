@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +22,7 @@
 ;;;
 
 ;; Attempt to use our very own Guix modules.
-(eval-when (compile load eval)
+(eval-when (expand load eval)
 
   ;; Ignore any available .go, and force recompilation.  This is because our
   ;; checkout in the store has mtime set to the epoch, and thus .go files look

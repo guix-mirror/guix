@@ -288,14 +288,6 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
                (("/bin/sh") "sh"))
              (substitute* '("src/clisp-link.in")
                (("/bin/pwd") "pwd"))
-             #t))
-         (add-after 'unpack 'remove-timestamps
-           (lambda _
-             (substitute* "src/constobj.d"
-               (("__DATE__ __TIME__") "\"1\""))
-             (substitute* "src/genclisph.d"
-               (("__DATE__") "\"1\"")
-               (("__TIME__") "\"1\""))
              #t)))
        ;; Makefiles seem to have race conditions.
        #:parallel-build? #f))
@@ -305,10 +297,7 @@ supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
      "GNU CLISP is an implementation of ANSI Common Lisp.  Common Lisp is a
 high-level, object-oriented functional programming language.  CLISP includes
 an interpreter, a compiler, a debugger, and much more.")
-    ;; Website says gpl2+, COPYRIGHT file says gpl2; actual source files have
-    ;; a lot of gpl3+.  (Also some parts are under non-copyleft licenses, such
-    ;; as CLX by Texas Instruments.)  In that case gpl3+ wins out.
-    (license license:gpl3+)))
+    (license license:gpl2+)))
 
 (define-public sbcl
   (package

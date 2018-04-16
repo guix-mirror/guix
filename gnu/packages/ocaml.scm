@@ -3494,13 +3494,13 @@ XML and Protocol Buffers formats.")
    (build-system ocaml-build-system)
    (native-inputs
     `(("oasis" ,ocaml-oasis)
-      ("clang" ,clang)
+      ("clang" ,clang-3.8)
       ("ounit" ,ocaml-ounit)))
    (propagated-inputs
     `(("core-kernel" ,ocaml-core-kernel)
       ("ppx-driver" ,ocaml-ppx-driver)
       ("uri" ,ocaml-uri)
-      ("llvm" ,llvm)
+      ("llvm" ,llvm-3.8)
       ("gmp" ,gmp)
       ("clang-runtime" ,clang-runtime)
       ("fileutils" ,ocaml-fileutils)
@@ -3516,7 +3516,7 @@ XML and Protocol Buffers formats.")
       ("bitstring" ,ocaml-bitstring)
       ("ppx-jane" ,ocaml-ppx-jane)
       ("re" ,ocaml-re)))
-   (inputs `(("llvm" ,llvm)))
+   (inputs `(("llvm" ,llvm-3.8)))
    (arguments
     `(#:use-make? #t
       #:phases
@@ -3871,8 +3871,9 @@ cross-platform SDL C library.")
     (version "2.6.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/file"
-                                  "/37054/flocq-" version ".tar.gz"))
+              ;; Use the ‘Latest version’ link for a stable URI across releases.
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                  "latestfile/2228/flocq-" version ".tar.gz"))
               (sha256
                (base32
                 "13fv150dcwnjrk00d7zj2c5x9jwmxgrq0ay440gkr730l8mvk3l3"))))

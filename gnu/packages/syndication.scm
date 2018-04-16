@@ -32,7 +32,7 @@
 (define-public newsboat
   (package
     (name "newsboat")
-    (version "2.10.2")
+    (version "2.11.1")
     (source
      (origin
        (method url-fetch)
@@ -40,7 +40,7 @@
                            "/newsboat-" version ".tar.xz"))
        (sha256
         (base32
-         "1x4nxx1kvmrcm8jy73dvg56h4z15y3sach2vr13cw8rsbi7v99px"))))
+         "1krpxl854h5dwmpr81m1s84cwk8zivdzvw0s5s0i4dba736pvdma"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -49,7 +49,7 @@
        ("asciidoc" ,asciidoc)))
     (inputs
      `(("curl" ,curl)
-       ("json-c" ,json-c-0.12)      ; check whether json-c-0.12 can be removed
+       ("json-c" ,json-c)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
        ("stfl" ,stfl)
@@ -64,6 +64,9 @@
        #:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))
+    (native-search-paths
+     ;; Newsboat respects CURL_CA_BUNDLE.
+     (package-native-search-paths curl))
     (home-page "https://newsboat.org/")
     (synopsis "Text-mode RSS and Atom feed reader with podcast support")
     (description "Newsboat is a feed reader for @dfn{RSS} and @dfn{Atom}, XML

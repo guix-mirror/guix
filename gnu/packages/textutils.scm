@@ -294,16 +294,16 @@ input bits thoroughly but are not suitable for cryptography.")
 (define-public libconfig
   (package
     (name "libconfig")
-    (version "1.5")
+    (version "1.7.2")
+    (home-page "https://hyperrealm.github.io/libconfig/")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.hyperrealm.com/libconfig/"
-                                  "libconfig-" version ".tar.gz"))
+              (uri (string-append home-page "/dist/libconfig-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1xh3hzk63v4y8815lc5209m3s6ms2cpgw4h5hg462i4f1lwsl7g3"))))
+                "1ngs2qx3cx5cbwinc5mvadly0b5n7s86zsc68c404czzfff7lg3w"))))
     (build-system gnu-build-system)
-    (home-page "http://www.hyperrealm.com/libconfig/")
     (synopsis "C/C++ configuration file library")
     (description
      "Libconfig is a simple library for manipulating structured configuration

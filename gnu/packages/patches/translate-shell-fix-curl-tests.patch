@@ -1,0 +1,60 @@
+This patch fixes Curl related tests for 'translate-shell'.
+
+Upstream bug URL:
+
+https://github.com/soimort/translate-shell/issues/221
+
+From bb9f32d3145125ba664b6b05bf0a2fd34108e9d2 Mon Sep 17 00:00:00 2001
+From: Mort Yao <soi@mort.ninja>
+Date: Sun, 25 Mar 2018 03:14:33 +0200
+Subject: [PATCH] TestUtils: perform curl-related tests only if NETWORK_ACCESS
+ is set to yes (#221)
+
+---
+ test/TestUtils.awk | 32 +++++++++++++++++---------------
+ 1 file changed, 17 insertions(+), 15 deletions(-)
+
+diff --git a/test/TestUtils.awk b/test/TestUtils.awk
+index 08bb2e9..1c141e5 100644
+--- a/test/TestUtils.awk
++++ b/test/TestUtils.awk
+@@ -30,22 +30,24 @@ BEGIN {
+         assertTrue(newerVersion("2", "1.9.9999"))
+     }
+ 
+-    T("curl()", 1)
+-    {
+-        delete tokens; delete ast
+-        tokenize(tokens, curl("https://httpbin.org/get"))
+-        parseJson(ast, tokens)
+-        assertEqual(unparameterize(ast[0 SUBSEP "url"]),
+-                    "https://httpbin.org/get")
+-    }
++    if (yn(ENVIRON["NETWORK_ACCESS"])) { # if network access enabled
++        T("curl()", 1)
++        {
++            delete tokens; delete ast
++            tokenize(tokens, curl("https://httpbin.org/get"))
++            parseJson(ast, tokens)
++            assertEqual(unparameterize(ast[0 SUBSEP "url"]),
++                        "https://httpbin.org/get")
++        }
+ 
+-    T("curlPost()", 1)
+-    {
+-        delete tokens; delete ast
+-        tokenize(tokens, curlPost("https://httpbin.org/post", "fizz=buzz"))
+-        parseJson(ast, tokens)
+-        assertEqual(unparameterize(ast[0 SUBSEP "url"]),
+-                    "https://httpbin.org/post")
++        T("curlPost()", 1)
++        {
++            delete tokens; delete ast
++            tokenize(tokens, curlPost("https://httpbin.org/post", "fizz=buzz"))
++            parseJson(ast, tokens)
++            assertEqual(unparameterize(ast[0 SUBSEP "url"]),
++                        "https://httpbin.org/post")
++        }
+     }
+ 
+     T("dump()", 3)

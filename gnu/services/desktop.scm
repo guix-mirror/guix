@@ -94,6 +94,8 @@
             xfce-desktop-service
             xfce-desktop-service-type
 
+            x11-socket-directory-service
+
             %desktop-services))
 
 ;;; Commentary:
@@ -882,6 +884,24 @@ with the administrator's password."
 
 
 ;;;
+;;; X11 socket directory service
+;;;
+
+(define x11-socket-directory-service
+  ;; Return a service that creates /tmp/.X11-unix.  When using X11, libxcb
+  ;; takes care of creating that directory.  However, when using XWayland, we
+  ;; need to create beforehand.  Thus, create it unconditionally here.
+  (simple-service 'x11-socket-directory
+                  activation-service-type
+                  (with-imported-modules '((guix build utils))
+                    #~(begin
+                        (use-modules (guix build utils))
+                        (let ((directory "/tmp/.X11-unix"))
+                          (mkdir-p directory)
+                          (chmod directory #o777))))))
+
+
+;;;
 ;;; The default set of desktop services.
 ;;;
 
@@ -911,6 +931,8 @@ with the administrator's password."
          (dbus-service)
 
          (ntp-service)
+
+         x11-socket-directory-service
 
          %base-services))
 

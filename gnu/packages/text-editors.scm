@@ -1,11 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,9 +38,11 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libbsd)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages terminals)
@@ -49,7 +51,7 @@
 (define-public vis
   (package
     (name "vis")
-    (version "0.4")
+    (version "0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martanne/"
@@ -57,7 +59,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1iclfsc9vn40fqfiz56vrw6dmr4x8q9gvav0b53kkpc6zcfa86zi"))))
+                "1xbxb3q963s6sav63yw0x30lm0wvxsrzb7hr6a7dh4f8r7mp1skp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -155,7 +157,7 @@ competitive (as in keystroke count) with Vim.")
 (define-public joe
   (package
     (name "joe")
-    (version "4.4")
+    (version "4.6")
     (source
      (origin
        (method url-fetch)
@@ -164,7 +166,7 @@ competitive (as in keystroke count) with Vim.")
                            "joe-" version ".tar.gz"))
        (sha256
         (base32
-         "0y898r1xlrv75m00y598rvwwsricabplyh80wawsqafapcl4hw55"))))
+         "1pmr598xxxm9j9dl93kq4dv36zyw0q2dh6d7x07hf134y9hhlnj9"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://joe-editor.sourceforge.net/")
@@ -290,3 +292,55 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
 compatible.  This is a portable version of the mg maintained by the OpenBSD
 team.")
     (license license:public-domain)))
+
+(define-public ghostwriter
+  (package
+    (name "ghostwriter")
+    (version "1.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wereturtle/ghostwriter.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ihdr4xk0j83q83xknbikxb7yf9qhlkgvc89w33lhj090cv376gd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))           ;for lrelease
+    (inputs
+     `(("hunspell" ,hunspell)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("qtwebkit" ,qtwebkit)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "qmake" (string-append "PREFIX=" out)))))
+         (add-after 'configure 'create-translations
+           (lambda _
+             ;; `lrelease` will not overwrite, so delete existing .qm files
+             (for-each delete-file (find-files "translations" ".*\\.qm"))
+             (apply invoke "lrelease" (find-files "translations" ".*\\.ts"))))
+         ;; Ensure that icons are found at runtime.
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/ghostwriter")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins/"))
+                         '("qtsvg" "qtmultimedia"))))))))))
+    (home-page "https://wereturtle.github.io/ghostwriter/")
+    (synopsis "Write without distractions")
+    (description
+     "@code{ghostwriter} provides a relaxing, distraction-free writing
+environment with Markdown markup.")
+    (license license:gpl3+)))           ;icons/* under CC-BY-SA3

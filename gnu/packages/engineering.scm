@@ -566,42 +566,24 @@ image, etc.  Besides viewing Gerbers, you may also view Excellon drill files
 as well as pick-place files.")
     (license license:gpl2+)))
 
-(define-public ao
-  (let ((commit "fb288c945aa7e30d9be10a564edad7e1b6a6c1ae")
-        (revision "1"))
+(define-public libfive
+  (let ((commit "9d857d1923abecb0e5935b9287d22661f6efaac5")
+        (revision "2"))
     (package
-      (name "ao-cad")            ;XXX: really "ao", but it collides with libao
+      (name "libfive")
       (version (git-version "0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/mkeeter/ao")
+                      (url "https://github.com/libfive/libfive")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0syplfqiq7ng7md44yriq5cz41jp8q9z3pl2iwkkllds6p9ylyal"))
-                (file-name (git-file-name name version))
-                (patches (search-patches "ao-cad-aarch64-support.patch"))
-                (modules '((guix build utils)))
-                (snippet
-                 ;; Remove bundled libraries: Eigen, glm, and catch.  TODO:
-                 ;; Unbundle efsw <https://github.com/diegostamigni/efsw>.
-                 '(begin
-                    (delete-file-recursively "vendor")
-
-                    ;; Use #include <catch.hpp>.
-                    (substitute* (find-files "." "\\.[ch]pp$")
-                      (("catch/catch\\.hpp")
-                       "catch.hpp"))))))
+                  "1r40kyx30wz31cwwlfvfh7fgqkxq3n8dxhswpi9qpf4r5h3l8wsn"))
+                (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
-       `(;; Have the RUNPATH of libao.so point to $libdir, where libefsw.so
-         ;; lives.
-         #:configure-flags (list (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
-                                                "-Wl,-rpath="
-                                                (assoc-ref %outputs "out")
-                                                "/lib"))
-
+       `(#:tests? #f ; no "test" target
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'remove-native-compilation
@@ -615,64 +597,29 @@ as well as pick-place files.")
                  (setenv "CPLUS_INCLUDE_PATH"
                          (string-append eigen "/include/eigen3:"
                                         (getenv "CPLUS_INCLUDE_PATH")))
-                 #t)))
-           (add-after 'install 'install-guile-bindings
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               ;; Install the Guile bindings (the build system only installs
-               ;; libao.so.)
-               (let* ((out    (assoc-ref outputs "out"))
-                      (moddir (string-append out "/share/guile/site/2.0")))
-                 (install-file "bind/libao.so"
-                               (string-append out "/lib"))
-
-                 ;; Go to the source directory.
-                 (with-directory-excursion ,(string-append "../"
-                                                           name "-" version
-                                                           "-checkout")
-                   (substitute* "bind/guile/ao/sys/libao.scm"
-                     (("\\(define libao \\(dynamic-link .*$")
-                      (string-append "(define libao (dynamic-link \""
-                                     out "/lib/libao\")) ;")))
-
-                   (copy-recursively "bind/guile/ao" (string-append moddir "/ao"))
-
-                   (substitute* "bin/ao-guile"
-                     (("\\(add-to-load-path .*")
-                      (string-append "(add-to-load-path \"" moddir "\")")))
-
-                   (install-file "bin/ao-guile"
-                                 (string-append out "/bin"))
-
-                   ;; Allow Ao to dlopen the relevant GL libraries.  Otherwise
-                   ;; it fails with:
-                   ;;   Couldn't find current GLX or EGL context.
-                   (let ((mesa (assoc-ref inputs "mesa")))
-                     (wrap-program (string-append out "/bin/ao-guile")
-                       `("LD_LIBRARY_PATH" ":" prefix
-                         (,(string-append mesa "/lib")))))
-                   #t)))))))
+                 #t))))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs
        `(("boost" ,boost)
          ("catch" ,catch-framework)
          ("libpng" ,libpng)
-         ("glfw" ,glfw)
-         ("libepoxy" ,libepoxy)
-         ("mesa" ,mesa)
+         ("qtbase" ,qtbase)
          ("eigen" ,eigen)
-         ("glm" ,glm)
-         ("guile" ,guile-2.0)))
-      (home-page "http://www.mattkeeter.com/projects/ao/")
+         ("guile" ,guile-2.2)))
+      (home-page "https://libfive.com")
       (synopsis "Tool for programmatic computer-aided design")
       (description
-       "Ao is a tool for programmatic computer-aided design (CAD).  In Ao,
-solid models are defined as Scheme scripts, and there are no opaque function
-calls into the geometry kernel: everything is visible to the user.  Even
-fundamental, primitive shapes are represented as code in the user-level
+       "Libfive is a tool for programmatic computer-aided design (CAD).  In
+libfive, solid models are defined as Scheme scripts, and there are no opaque
+function calls into the geometry kernel: everything is visible to the user.
+Even fundamental, primitive shapes are represented as code in the user-level
 language.")
       (license (list license:lgpl2.1+             ;library
-                     license:gpl2+)))))           ;Guile bindings
+                     license:gpl2+)))))           ;Guile bindings and GUI
+
+(define-public ao
+  (deprecated-package "ao-cad" libfive))
 
 ;; We use kicad from a git commit, because support for boost 1.61.0 has been
 ;; recently added.

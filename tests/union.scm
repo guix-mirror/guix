@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -123,6 +123,46 @@
                 ;; unifying it requires traversing them all, and creating a
                 ;; new 'bin' sub-directory in the profile.
                 (eq? 'directory (stat:type (lstat "bin"))))))))
+
+(test-assert "union-build collision first & last"
+  (let* ((guile   (package-derivation %store %bootstrap-guile))
+         (fake    (build-expression->derivation
+                   %store "fake-guile"
+                   '(begin
+                      (use-modules (guix build utils))
+                      (let ((out (assoc-ref %outputs "out")))
+                        (mkdir-p (string-append out "/bin"))
+                        (call-with-output-file (string-append out "/bin/guile")
+                          (const #t))))
+                   #:modules '((guix build utils))))
+         (builder (lambda (policy)
+                    `(begin
+                       (use-modules (guix build union)
+                                    (srfi srfi-1))
+                       (union-build (assoc-ref %outputs "out")
+                                    (map cdr %build-inputs)
+                                    #:resolve-collision ,policy))))
+         (drv1
+          (build-expression->derivation %store "union-first"
+                                        (builder 'first)
+                                        #:inputs `(("guile" ,guile)
+                                                   ("fake" ,fake))
+                                        #:modules '((guix build union))))
+         (drv2
+          (build-expression->derivation %store "union-last"
+                                        (builder 'last)
+                                        #:inputs `(("guile" ,guile)
+                                                   ("fake" ,fake))
+                                        #:modules '((guix build union)))))
+    (and (build-derivations %store (list drv1 drv2))
+         (with-directory-excursion (derivation->output-path drv1)
+           (string=? (readlink "bin/guile")
+                     (string-append (derivation->output-path guile)
+                                    "/bin/guile")))
+         (with-directory-excursion (derivation->output-path drv2)
+           (string=? (readlink "bin/guile")
+                     (string-append (derivation->output-path fake)
+                                    "/bin/guile"))))))
 
 (test-assert "union-build #:create-all-directories? #t"
   (let* ((build  `(begin

@@ -139,14 +139,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
    ;; to be updated as well.
-   (version "2.16.2")
+   (version "2.17.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "05y7480f2p7fkncbhf08zz56jbykcp0ia5gl6y3djs0lsa5mfq2m"))))
+              "1ismz7nsz8dgjmk782xr9s0mr2qh06f72pdcgbxfmnw1bvlya5p9"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -159,7 +159,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "01fbmfsqcv7jmyh80yg3fv5jwv78zvxys9b0fd6bdcy89h9ybvj2"))))))
+            "09rpjj0m97h5lpzpwk47m6xsz9gb8wqf1s3dfqma3mwav2pb3njb"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -215,9 +215,6 @@ as well as the classic centralized workflow.")
               (("/bin/sh") (which "sh"))
               (("/usr/bin/perl") (which "perl"))
               (("/usr/bin/python") (which "python")))
-            (substitute* "perl/Makefile"
-              ;; Don't create timestamped 'perllocal.pod'.
-              (("\\$< PREFIX=") "$< NO_PERLLOCAL=1 PREFIX="))
             #t))
         (add-after 'configure 'add-PM.stamp
           (lambda _
@@ -226,42 +223,43 @@ as well as the classic centralized workflow.")
             #t))
         (add-before 'check 'patch-tests
           (lambda _
-            ;; These files contain some funny bytes that Guile is unable
-            ;; to decode for shebang patching. Just delete them.
-            (for-each delete-file '("t/t4201-shortlog.sh"
-                                    "t/t7813-grep-icase-iso.sh"))
-            ;; Many tests contain inline shell scripts (hooks etc).
-            (substitute* (find-files "t" "\\.sh$")
-              (("#!/bin/sh") (string-append "#!" (which "sh"))))
-            ;; Un-do shebang patching here to prevent checksum mismatch.
-            (substitute* '("t/t4034/perl/pre" "t/t4034/perl/post")
-              (("^#!.*/bin/perl") "#!/usr/bin/perl"))
-            (substitute* "t/t5003-archive-zip.sh"
-              (("cp /bin/sh") (string-append "cp " (which "sh"))))
-            (substitute* "t/t6030-bisect-porcelain.sh"
-              (("\"/bin/sh\"") (string-append "\"" (which "sh") "\"")))
-            ;; FIXME: This test runs `git commit` with a bogus EDITOR
-            ;; and empty commit message, but does not fail the way it's
-            ;; expected to. The test passes when invoked interactively.
-            (substitute* "t/t7508-status.sh"
-              (("\tcommit_template_commented") "\ttrue"))
-            ;; More checksum mismatches due to odd shebangs.
-            (substitute* "t/t9100-git-svn-basic.sh"
-              (("\"#!/gnu.*/bin/sh") "\"#!/bin/sh"))
-            (substitute* "t/t9300-fast-import.sh"
-              (("\t#!/gnu.*/bin/sh") "\t#!/bin/sh")
-              (("'#!/gnu.*/bin/sh") "'#!/bin/sh"))
-            ;; FIXME: Some hooks fail with "basename: command not found".
-            ;; See 't/trash directory.t9164.../svn-hook.log'.
-            (delete-file "t/t9164-git-svn-dcommit-concurrent.sh")
+            (let ((store-directory (%store-directory)))
+              ;; These files contain some funny bytes that Guile is unable
+              ;; to decode for shebang patching. Just delete them.
+              (for-each delete-file '("t/t4201-shortlog.sh"
+                                      "t/t7813-grep-icase-iso.sh"))
+              ;; Many tests contain inline shell scripts (hooks etc).
+              (substitute* (find-files "t" "\\.sh$")
+                (("#!/bin/sh") (string-append "#!" (which "sh"))))
+              ;; Un-do shebang patching here to prevent checksum mismatch.
+              (substitute* '("t/t4034/perl/pre" "t/t4034/perl/post")
+                (("^#!.*/bin/perl") "#!/usr/bin/perl"))
+              (substitute* "t/t5003-archive-zip.sh"
+                (("cp /bin/sh") (string-append "cp " (which "sh"))))
+              (substitute* "t/t6030-bisect-porcelain.sh"
+                (("\"/bin/sh\"") (string-append "\"" (which "sh") "\"")))
+              ;; FIXME: This test runs `git commit` with a bogus EDITOR
+              ;; and empty commit message, but does not fail the way it's
+              ;; expected to. The test passes when invoked interactively.
+              (substitute* "t/t7508-status.sh"
+                (("\tcommit_template_commented") "\ttrue"))
+              ;; More checksum mismatches due to odd shebangs.
+              (substitute* "t/t9100-git-svn-basic.sh"
+                (((string-append "\"#!" store-directory ".*/bin/sh")) "\"#!/bin/sh") )
+              (substitute* "t/t9300-fast-import.sh"
+                (((string-append "\t#!" store-directory ".*/bin/sh")) "\t#!/bin/sh")
+                (((string-append "'#!" store-directory ".*/bin/sh")) "'#!/bin/sh"))
+              ;; FIXME: Some hooks fail with "basename: command not found".
+              ;; See 't/trash directory.t9164.../svn-hook.log'.
+              (delete-file "t/t9164-git-svn-dcommit-concurrent.sh")
 
-            ;; XXX: These tests fail intermittently for unknown reasons:
-            ;; <https://bugs.gnu.org/29546>.
-            (for-each delete-file
-                      '("t/t9128-git-svn-cmd-branch.sh"
-                        "t/t9167-git-svn-cmd-branch-subproject.sh"
-                        "t/t9141-git-svn-multiple-branches.sh"))
-            #t))
+              ;; XXX: These tests fail intermittently for unknown reasons:
+              ;; <https://bugs.gnu.org/29546>.
+              (for-each delete-file
+                        '("t/t9128-git-svn-cmd-branch.sh"
+                          "t/t9167-git-svn-cmd-branch-subproject.sh"
+                          "t/t9141-git-svn-multiple-branches.sh"))
+              #t)))
         (add-after 'install 'install-shell-completion
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out         (assoc-ref outputs "out"))
@@ -694,13 +692,13 @@ allowing to handle large objects with a small memory footprint.")
 (define-public python-gitpython
   (package
     (name "python-gitpython")
-    (version "2.1.8")
+    (version "2.1.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "GitPython" version))
               (sha256
                (base32
-                "1sbn018mn3y2r58ix5z12na1s02ccprhckb88yq3bdddvqjvqqdd"))))
+                "0a9in1jfv9ssxhckl6sasw45bhm762y2r5ikgb2pk2g8yqdc6z64"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;XXX: Tests can only be run within the GitPython repository.
@@ -1739,11 +1737,9 @@ be served with a HTTP file server of your choice.")
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-findbin" ,ghc-findbin)
        ("ghc-hunit" ,ghc-hunit)
-       ("ghc-array" ,ghc-array)
        ("ghc-async" ,ghc-async)
        ("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-base16-bytestring" ,ghc-base16-bytestring)
-       ("ghc-binary" ,ghc-binary)
        ("ghc-bytestring-builder" ,ghc-bytestring-builder)
        ("ghc-cryptohash" ,ghc-cryptohash)
        ("ghc-data-ordlist" ,ghc-data-ordlist)
@@ -1751,7 +1747,6 @@ be served with a HTTP file server of your choice.")
        ("ghc-system-filepath" ,ghc-system-filepath)
        ("ghc-graphviz" ,ghc-graphviz)
        ("ghc-hashable" ,ghc-hashable)
-       ("ghc-haskeline" ,ghc-haskeline)
        ("ghc-html" ,ghc-html)
        ("ghc-mmap" ,ghc-mmap)
        ("ghc-mtl" ,ghc-mtl)

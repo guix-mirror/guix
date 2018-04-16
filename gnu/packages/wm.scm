@@ -102,7 +102,7 @@ nested include statements).")
 (define-public bspwm
   (package
     (name "bspwm")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -112,7 +112,7 @@ nested include statements).")
              version ".tar.gz"))
        (sha256
         (base32
-         "17dwj7w16cdj7g4s2y2f96lgj5msq1s4543dnfa3rijlazzy6mmk"))))
+         "0yjr0vzbj3ar8qfr6gvpvjd82ay8iy1sg2fkw2swghlqiy6ix4kw"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
@@ -471,7 +471,6 @@ desktop environment.")
        ("ghc-quickcheck"            ,ghc-quickcheck)
        ("ghc-setlocale"             ,ghc-setlocale)
        ("ghc-utf8-string"           ,ghc-utf8-string)
-       ("ghc-directory"             ,ghc-directory)
        ("ghc-x11"                   ,ghc-x11)))
     (arguments
      `(#:phases
@@ -676,18 +675,6 @@ experience.")
              (sha256
               (base32
                "0kwpbls9h1alxcmvxh5g9qb995fds5b2ngcr44w0ibazkyls2pdc"))
-             (modules '((guix build utils)
-                        (srfi srfi-19)))
-             (snippet
-              ;; Remove non-reproducible timestamp and use the date of the
-              ;; source file instead.
-              '(substitute* "common/version.c"
-                 (("__DATE__ \" \" __TIME__")
-                  (date->string
-                   (time-utc->date
-                    (make-time time-utc 0
-                               (stat:mtime (stat "awesome.c"))))
-                   "\"~c\""))))
              (patches (search-patches "awesome-reproducible-png.patch"))))
     (build-system cmake-build-system)
     (native-inputs `(("asciidoc" ,asciidoc)

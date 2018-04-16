@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -179,7 +179,8 @@ properties.  Return #t on success."
                       `("-G" ,(string-join supplementary-groups ","))
                       '())
                 ,@(if comment `("-c" ,comment) '())
-                ;; Don't use '--move-home', so ignore HOME.
+                ;; Don't use '--move-home'.
+                ,@(if home `("-d" ,home) '())
                 ,@(if shell `("-s" ,shell) '())
                 ,name)))
     (zero? (apply system* "usermod" args))))

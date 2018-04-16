@@ -48,7 +48,7 @@
 (define-public libusb
   (package
     (name "libusb")
-    (version "1.0.21")
+    (version "1.0.22")
     (source
      (origin
       (method url-fetch)
@@ -56,7 +56,7 @@
                           "libusb-" version "/libusb-" version ".tar.bz2"))
       (sha256
        (base32
-        "0jw2n5kdnrqvp7zh792fd6mypzzfap6jp4gfcmq4n6c1kb79rkkx"))))
+        "0mw1a5ss4alg37m6bd4k44v35xwrcwp5qm4s686q1nsgkbavkbkm"))))
     (build-system gnu-build-system)
 
     ;; XXX: Enabling udev is now recommended, but eudev indirectly depends on
@@ -133,6 +133,13 @@ version of libusb to run with newer libusb.")
        `(#:tests? #f                    ; there are no tests
          #:phases
          (modify-phases %standard-phases
+           ;; FIXME: libusb 1.0.22 deprecated libusb_set_debug, so the build
+           ;; fails because libusb4java uses a deprecated procedure.
+           (add-after 'unpack 'disable-Werror
+             (lambda _
+               (substitute* "CMakeLists.txt"
+                 (("-Werror") ""))
+               #t))
            (add-before 'configure 'set-JAVA_HOME
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
@@ -252,14 +259,14 @@ implementing @code{javax.usb} (JSR-80).")
 (define-public libmtp
   (package
     (name "libmtp")
-    (version "1.1.14")
+    (version "1.1.15")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/libmtp/libmtp/" version
                                  "/libmtp-" version ".tar.gz"))
              (sha256
               (base32
-               "1s0jyhypxmj0j8s003ba1n74x63h1rw8am9q4z2ip3xyjvid65rq"))))
+               "089h79nkz7wcr3lbqi7025l8p75hbp0aigxk3wdk2zkm8q5r0h6h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

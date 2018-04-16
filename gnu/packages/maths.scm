@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -24,6 +24,7 @@
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -78,6 +80,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages less)
   #:use-module (gnu packages lisp)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages gnome)
@@ -94,6 +97,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
@@ -1260,7 +1264,7 @@ interfaces.")
 (define-public ceres
   (package
     (name "ceres-solver")
-    (version "1.13.0")
+    (version "1.14.0")
     (home-page "http://ceres-solver.org/")
     (source (origin
               (method url-fetch)
@@ -1268,7 +1272,7 @@ interfaces.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1kbxgab3q1vgyq7hjqasr1lji4b2sgn7ss351amklkb3jyhr1x0x"))))
+                "13lfxy8x58w8vprr0nkbzziaijlh0vvqshgahvcgw0mrqdgh0i27"))))
     (build-system cmake-build-system)
     (arguments
      ;; TODO: Build HTML user documentation and install separately.
@@ -1339,7 +1343,11 @@ can solve two kinds of problems:
        ("zlib" ,zlib)
        ("curl" ,curl)
        ("texinfo" ,texinfo)
-       ("graphicsmagick" ,graphicsmagick)))
+       ("graphicsmagick" ,graphicsmagick)
+       ("suitesparse" ,suitesparse)
+       ("libsndfile" ,libsndfile)
+       ("portaudio" ,portaudio)
+       ("alsa-lib" ,alsa-lib)))
     (native-inputs
      `(("lzip" ,lzip)
        ("gfortran" ,gfortran)
@@ -1378,6 +1386,31 @@ non-linear applications and it provides great support for visualizing results.
 Work may be performed both at the interactive command-line as well as via
 script files.")
     (license license:gpl3+)))
+
+(define-public qtoctave
+  (package (inherit octave)
+    (name "qtoctave")
+    (inputs
+     `(("qscintilla" ,qscintilla)
+       ("qt" ,qtbase)
+       ,@(package-inputs octave)))
+    (native-inputs
+     `(("qttools" , qttools) ;for lrelease
+       ,@(package-native-inputs octave)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments octave)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'patch-qscintilla-library-name
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; The QScintilla library that the Octave configure script tries
+               ;; to link with should be named libqscintilla-qt5.so, but the
+               ;; QScintilla input provides the shared library as
+               ;; libqscintilla2_qt5.so.
+               (substitute* "configure"
+                 (("qscintilla2-qt5")
+                  "qscintilla2_qt5"))
+               #t))))))))
 
 (define-public opencascade-oce
   (package
@@ -2170,8 +2203,8 @@ implemented in ANSI C, and MPI for communications.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://gforge.inria.fr/frs/download.php/34618/"
-                          "scotch_" version ".tar.gz"))
+      (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                          "latestfile/298/scotch_" version ".tar.gz"))
       (sha256
        (base32 "1ir088mvrqggyqdkx9qfynmiaffqbyih5qfl5mga2nrlm1qlsgzm"))
       (patches (search-patches "scotch-test-threading.patch"
@@ -2832,7 +2865,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
 (define-public openlibm
   (package
     (name "openlibm")
-    (version "0.5.1")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
@@ -2841,7 +2874,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "11czx2z7nh6dfpz45s3xl7v38hw36jxzxfvny454bk3if14pfakq"))))
+         "1z8cj5q8ca8kmrakwkpjxf8svi81waw0c568cx8v8pv9kvswbp07"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -3506,7 +3539,11 @@ supports compressed MAT files, as well as newer (version 7.3) MAT files.")
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       '("-DBUILD_TESTING=ON")))
+       '("-DBUILD_TESTING=ON"
+         ;; By default, Vc will optimize for the CPU of the build machine.
+         ;; Setting this to "none" makes it create portable binaries.  See
+         ;; "cmake/OptimizeForArchitecture.cmake".
+         "-DTARGET_ARCHITECTURE=none")))
     (synopsis "SIMD vector classes for C++")
     (description "Vc provides portable, zero-overhead C++ types for explicitly
 data-parallel programming.  It is a library designed to ease explicit
@@ -3840,3 +3877,24 @@ routines designed for solving ODEs resulting from 1-D, 2-D and 3-D partial
 differential equations (PDE) that have been converted to ODEs by numerical
 differencing.")
     (license license:gpl2+)))
+
+(define-public tcalc
+  (package
+  (name "tcalc")
+  (version "2.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://sites.google.com/site/mohammedisam2000/tcalc/tcalc-"
+                            version ".tar.gz"))
+      (sha256
+        (base32
+          "0jq806m4dqfia85nppfm75mml9w57g0cgv4cdw9bp3zymda83s0m"))))
+  (build-system gnu-build-system)
+  (synopsis "The terminal calculator")
+  (description
+    "The terminal calculator is a small program to help users of the GNU/Linux
+terminal do calculations simply and quickly.  The formula to be calculated can
+be fed to @command{tcalc} through the command line.")
+  (home-page "https://sites.google.com/site/mohammedisam2000/tcalc")
+  (license license:gpl3+)))

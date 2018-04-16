@@ -405,7 +405,7 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "6.11")
+    (version "6.12")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://mirror.racket-lang.org/installers/"
@@ -415,7 +415,11 @@ implementation techniques and as an expository tool.")
                          version "/racket-" version "-src.tgz")))
              (sha256
               (base32
-               "1nk7705x24jjlbqqhj8yvbgqkfscxx3m81bry1g56kjxysjmf3sw"))))
+               "0cwcypzjfl9py1s695mhqkiapff7c1w29llsmdj7qgn58wl0apk5"))
+             (patches (search-patches
+                       ;; See: https://github.com/racket/racket/issues/1962
+                       ;; This can be removed in whatever Racket release comes after 6.12
+                       "racket-fix-xform-issue.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

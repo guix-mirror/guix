@@ -2425,7 +2425,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.26.0")
+    (version "0.27.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2433,7 +2433,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0yrqs88b7yn9nljwlxzn76jfmvf0sh939kzij5b2jvr2qa7mbjmb"))))
+                "1riflw6dc8fp5d74i7zfgsss0zz3z3lsj6zn2lzjm5kgmp2qvbfl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2653,7 +2653,7 @@ as USB mice.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "7.10.0")
+    (version "18.0.1")
     (source
       (origin
         (method url-fetch)
@@ -2663,7 +2663,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0yafix56vkqglw243cwb94nv91vbjv12sqh29x1bap0hwd1dclgf"))))
+            "180l2yw8c63cbcs3zk729vx439aig1d7yicpyxj0nmfl4y0kpskj"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
@@ -5944,7 +5944,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.2.5")
+    (version "2.2.6")
     (source
      (origin
        (method url-fetch)
@@ -5952,7 +5952,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1q2l00nc3bgwlhjzkbk4a8x2l8z9w1799yn31icsx5hrgh98a1js"))))
+         "1zyynghhzjbgnmzcibm17wpj9f7jy31d7dr373li8cwg2yl2swyz"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)

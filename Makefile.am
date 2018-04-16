@@ -81,6 +81,7 @@ MODULES =					\
   guix/derivations.scm				\
   guix/grafts.scm				\
   guix/gnu-maintenance.scm			\
+  guix/self.scm					\
   guix/upstream.scm				\
   guix/licenses.scm				\
   guix/glob.scm					\
@@ -204,7 +205,6 @@ MODULES =					\
   guix/scripts/import/texlive.scm  		\
   guix/scripts/environment.scm			\
   guix/scripts/publish.scm			\
-  guix/scripts/weather.scm			\
   guix/scripts/edit.scm				\
   guix/scripts/size.scm				\
   guix/scripts/graph.scm			\
@@ -216,6 +216,7 @@ MODULES =					\
 if HAVE_GUILE_JSON
 
 MODULES +=					\
+  guix/ci.scm					\
   guix/docker.scm	   			\
   guix/import/cpan.scm				\
   guix/import/crate.scm				\
@@ -229,7 +230,8 @@ MODULES +=					\
   guix/scripts/import/gem.scm			\
   guix/scripts/import/json.scm  		\
   guix/scripts/import/pypi.scm			\
-  guix/scripts/import/stackage.scm
+  guix/scripts/import/stackage.scm		\
+  guix/scripts/weather.scm
 
 endif
 
@@ -255,9 +257,9 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/4.15-arm.conf	\
-  gnu/packages/aux-files/linux-libre/4.15-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.15-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.16-arm.conf	\
+  gnu/packages/aux-files/linux-libre/4.16-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.16-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.14-arm.conf	\
   gnu/packages/aux-files/linux-libre/4.14-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.14-x86_64.conf	\
@@ -374,6 +376,7 @@ SH_TESTS =					\
   tests/guix-download.sh			\
   tests/guix-gc.sh				\
   tests/guix-hash.sh				\
+  tests/guix-pack.sh				\
   tests/guix-package.sh				\
   tests/guix-package-net.sh			\
   tests/guix-system.sh				\
@@ -457,7 +460,7 @@ EXTRA_DIST =						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
-  bin/guix.in						\
+  scripts/guix.in					\
   etc/guix-install.sh					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
@@ -465,8 +468,12 @@ EXTRA_DIST =						\
   build-aux/hydra/gnu-system.scm			\
   build-aux/hydra/guix.scm				\
   build-aux/hydra/guix-modular.scm			\
+  build-aux/cuirass/gnu-system.scm			\
+  build-aux/cuirass/guix-modular.scm			\
+  build-aux/cuirass/hydra-to-cuirass.scm		\
   build-aux/check-available-binaries.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
+  build-aux/compile-as-derivation.scm			\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
   build-aux/update-guix-package.scm			\
@@ -532,6 +539,13 @@ $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 install-data-hook: set-bootstrap-executable-permissions
 	touch "$(DESTDIR)$(guileobjectdir)/guix/config.go"
 
+# Assuming Guix is already installed and the daemon is up and running, this
+# rule builds from $(srcdir), creating and building derivations.
+as-derivation:
+	$(AM_V_at)echo "Building Guix in Guix..." ;		\
+	$(GUILE) --no-auto-compile				\
+	  "$(top_srcdir)/build-aux/compile-as-derivation.scm"	\
+	  "$(abs_top_srcdir)"
 
 SUBDIRS = po/guix po/packages
 BUILT_SOURCES =
@@ -760,7 +774,7 @@ cuirass-jobs.scm: $(GOBJECTS)
 .PHONY: gen-ChangeLog gen-AUTHORS gen-tarball-version
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained
-.PHONY: clean-go make-go
+.PHONY: clean-go make-go as-derivation
 .PHONY: update-guix-package update-NEWS release
 
 ## -------------- ##

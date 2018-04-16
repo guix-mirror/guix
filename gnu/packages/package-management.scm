@@ -92,8 +92,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.14.0")
-        (commit "bdf0c644dafbce2a532161f04e9bf88c9310e081")
-        (revision 9))
+        (commit "486de7377f25438b0f44fd93f97e9ef822d558b8")
+        (revision 10))
     (package
       (name "guix")
 
@@ -109,7 +109,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1lmkgg4c38jkd1dk9cbh3zamyrh5vml8w8445hn8wq5c3mjj2n01"))
+                  "12ghbby83w335g7vbg7h52hjaal5l6mc6qmldlx8029340br8h1w"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -257,6 +257,8 @@
          ;; Many tests rely on the 'guile-bootstrap' package, which is why we
          ;; have it here.
          ("boot-guile" ,(bootstrap-guile-origin (%current-system)))
+         ;; Some of the tests use "unshare" when it is available.
+         ("util-linux" ,util-linux)
          ,@(if (and (not (%current-target-system))
                     (string=? (%current-system) "x86_64-linux"))
                `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))
@@ -280,6 +282,33 @@ the Nix package manager.")
 
 ;; Alias for backward compatibility.
 (define-public guix-devel guix)
+
+(define-public guix-register
+  ;; This package is for internal consumption: it allows us to quickly build
+  ;; the 'guix-register' program, which is referred to by (guix config).
+  ;; TODO: Remove this hack when 'guix-register' has been superseded by Scheme
+  ;; code.
+  (package
+    (inherit guix)
+    (properties `((hidden? . #t)))
+    (name "guix-register")
+    (arguments
+     (substitute-keyword-arguments (package-arguments guix)
+       ((#:tests? #f #f)
+        #f)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'build
+             (lambda _
+               (invoke "make" "nix/libstore/schema.sql.hh")
+               (invoke "make" "-j" (number->string
+                                    (parallel-job-count))
+                       "guix-register")))
+           (delete 'copy-bootstrap-guile)
+           (replace 'install
+             (lambda _
+               (invoke "make" "install-sbinPROGRAMS")))
+           (delete 'wrap-program)))))))
 
 (define-public guile2.0-guix
   (package

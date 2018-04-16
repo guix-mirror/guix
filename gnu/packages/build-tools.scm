@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages python)
@@ -67,6 +69,28 @@ describe the build process.  It takes its inspiration for the script files
 from scons.  While scons focuses on being 100% correct when building, bam
 makes a few sacrifices to acquire fast full and incremental build times.")
     (license license:bsd-3)))
+
+(define-public bear
+  (package
+    (name "bear")
+    (version "2.3.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rizsotto/Bear/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1m0w0wqnz983l7fpp5p9pdsqr7n3ybrzp8ywjcvn0rihsrzj65j6"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/rizsotto/Bear")
+    (synopsis "Tool for generating a compilation database")
+    (description "A JSON compilation database is used in the Clang project to
+provide information on how a given compilation unit is processed.  With this,
+it is easy to re-run the compilation with alternate programs.  Bear is used to
+generate such a compilation database.")
+    (license license:gpl3+)))
 
 (define-public meson
   (package

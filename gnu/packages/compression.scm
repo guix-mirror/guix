@@ -533,6 +533,7 @@ decompressors when faced with corrupted input.")
       (method url-fetch)
       (uri (string-append "mirror://gnu/sharutils/sharutils-"
                           version ".tar.xz"))
+      (patches (search-patches "sharutils-CVE-2018-1000097.patch"))
       (sha256
        (base32
         "16isapn8f39lnffc3dp4dan05b7x6mnc76v6q5nn8ysxvvvwy19b"))))
@@ -1611,7 +1612,7 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.3")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/zstd/archive/v"
@@ -1619,7 +1620,7 @@ or junctions, and always follows hard links.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0yr91gwi380632w9y7p6idl72svq0mq0jajvdii05pp77qalfz57"))))
+                "1a85sqk4z5b2jfp7fqkr38ibql8mdzca32lf4i3bssyjimp1pr4j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2111,14 +2112,14 @@ non-Windows systems without running the actual installer using wine.")
 (define-public google-brotli
   (package
     (name "google-brotli")
-    (version "1.0.2")
+    (version "1.0.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/google/brotli/archive/v"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "08kl9gww2058p1p7j9xqmcmrabcfihhj3fq984d7fi3bchb2mky2"))))
+               "1hrpmz162k4x3xm6vmbpm443jlfr1kp536p8962y2dncy7gs6s12"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases

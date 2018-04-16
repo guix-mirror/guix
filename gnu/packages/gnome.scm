@@ -725,7 +725,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.26.0")
+    (version "3.28.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -733,7 +733,7 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1n69lkiagx2x8lrdbvdlz6c051cvzhma73b3ggnw7w1wfkdpnmkr"))))
+               "1a3kcls18dcz1lj8hrx8skcli9xxfyi71c17xjwayh71cm5jc8zs"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -772,6 +772,11 @@ forgotten when the session ends.")
        ("dconf" ,dconf)
        ("libcanberra" ,libcanberra)
        ("libsecret" ,libsecret)
+
+       ;; XXX: 'libarchive.pc' adds '-lnettle' so Nettle should really be
+       ;; propagated from there.
+       ("nettle" ,nettle)
+
        ;; For tests.
        ("dogtail" ,python2-dogtail)))
     (native-inputs
@@ -2450,7 +2455,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.62.0")
+    (version "2.62.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2458,7 +2463,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1b5aff1igbsx1h4v3wmkffvzgiy8rscibqka7fmjf2lxs7l7lz5b"))))
+                "1mw3b3j4f4ln7hl03jd296rx78dy35hzlq005a21r6qg5sndsdzh"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -2574,7 +2579,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsecret
   (package
     (name "libsecret")
-    (version "0.18.5")
+    (version "0.18.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2583,7 +2588,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1cychxc3ff8fp857iikw0n2s13s2mhw2dn1mr632f7w3sn6vvrww"))))
+                "0vynag97a9bnnb8ipah45av8xg8jzmhd572rw3zj78s1pa8ciysy"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -2840,7 +2845,7 @@ output devices.")
 (define-public geoclue
   (package
     (name "geoclue")
-    (version "2.4.7")
+    (version "2.4.8")
     (source
      (origin
        (method url-fetch)
@@ -2849,7 +2854,7 @@ output devices.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "19hfmr8fa1js8ynazdyjxlyrqpjn6m1719ay70ilga4rayxrcyyi"))
+         "08yg1r7m0n9hwyvcy769qkmkf8lslqwv69cjfffwnc3zm5km25qj"))
        (patches (search-patches "geoclue-config.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -3127,7 +3132,7 @@ playlists in a variety of formats.")
 (define-public aisleriot
   (package
     (name "aisleriot")
-    (version "3.22.4")
+    (version "3.22.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3135,7 +3140,7 @@ playlists in a variety of formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1yrldsf73rd5p51dsxgbx1hmrakq0x0jc2kl6y6pgaviswxfx3gy"))))
+                "0rl39psr5xi584310pyrgw36ini4wn7yr2m1q5118w3a3v1dkhzh"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -3347,7 +3352,7 @@ presentations, kiosk style applications and so on.")
 (define-public clutter-gst
   (package
     (name "clutter-gst")
-    (version "3.0.24")
+    (version "3.0.26")
     (source
      (origin
        (method url-fetch)
@@ -3356,7 +3361,7 @@ presentations, kiosk style applications and so on.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0v6cg0syh4vx7y7ni47jsvr2r57q0j3h1f1gjlp0ciscixywiwg9"))))
+         "0fnblqm4igdx4rn3681bp1gm1y2i00if3iblhlm0zv6ck9nqlqfq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")     ; for glib-mkenums
@@ -3482,7 +3487,7 @@ GNOME Games, but it may be used by others.")
 (define-public gnome-klotski
   (package
     (name "gnome-klotski")
-    (version "3.22.2")
+    (version "3.22.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3490,7 +3495,7 @@ GNOME Games, but it may be used by others.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "16hd6yk01rhb4pj8m01fyn72wykf41d72gsms81q0n4zm5bm1a4h"))))
+                "0prc0s28pdflgzyvk1g0yfx982q2grivmz3858nwpqmbkha81r7f"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -4357,7 +4362,7 @@ wraps things up in a developer-friendly way.")
 (define-public libgee
   (package
     (name "libgee")
-    (version "0.20.0")
+    (version "0.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4365,7 +4370,7 @@ wraps things up in a developer-friendly way.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1fy24dr8imrjlmsqj1syn0gi139gba6hwk3j5vd6sr3pxniqnc11"))))
+                "0c26x8gi3ivmhlbqcmiag4jwrkvcy28ld24j55nqr3jikb904a5v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4394,7 +4399,7 @@ classes for commonly used data structures.")
 (define-public gexiv2
   (package
     (name "gexiv2")
-    (version "0.10.7")
+    (version "0.10.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4402,7 +4407,7 @@ classes for commonly used data structures.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1f7312zygw77ml37i5qilhfvmjm59dn753ax71rcb2jm1p76vgcb"))))
+                "0088m7p044n741ly1m6i7w25z513h9wpgyw0rmx5f0sy3vyjiic1"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib" ,glib "bin")
@@ -5658,7 +5663,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
 (define-public gnome-autoar
   (package
     (name "gnome-autoar")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5666,7 +5671,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qnafiwgajsaryh669lfclb4f6z5n1r9r4zhig1ha0ykxq32rzp1"))))
+                "02i4zgqqqj56h7bcys6dz7n78m4nj2x4dv1ggjmnrk98n06xpsax"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gnome-common" ,gnome-common)

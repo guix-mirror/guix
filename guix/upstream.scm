@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -153,7 +153,8 @@ correspond to the same version."
   (cons (resolve-interface '(guix gnu-maintenance))
         (all-modules (map (lambda (entry)
                             `(,entry . "guix/import"))
-                          %load-path))))
+                          %load-path)
+                     #:warn warn-about-load-error)))
 
 (define %updaters
   ;; The list of publically-known updaters.

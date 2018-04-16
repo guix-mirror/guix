@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -255,6 +255,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
+   (replacement openssl-1.0.2o)
    (version "1.0.2n")
    (source (origin
              (method url-fetch)
@@ -399,11 +400,32 @@ required structures.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
 
+(define openssl-1.0.2o
+  (package
+    (inherit openssl)
+    (name "openssl")
+    (version "1.0.2o")
+    (source (origin
+              (inherit (package-source openssl))
+              (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/"
+                                        name "-" version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/" name "-" version ".tar.gz")))
+              (sha256
+               (base32
+                "0kcy13l701054nhpbd901mz32v1kn4g311z0nifd83xs2jbmqgzc"))
+              ;; Erase the inherited snippet, which isn't applicable to
+              ;; OpenSSL 1.0.2o.
+              (snippet #f)))))
+
 (define-public openssl-next
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.0g")
+    (version "1.1.0h")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -416,7 +438,7 @@ required structures.")
               (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
               (sha256
                (base32
-                "1bvka2wf33w2vxv7yw578nnjqyhz2b3chvfb0l4k2ffscw950kfy"))))
+                "05x509lccqjscgyi935z809pwfm708islypwhmjnb6cyvrn64daq"))))
     (outputs '("out"
                "doc"        ;1.3MiB of man3 pages
                "static"))   ; 5.5MiB of .a files
@@ -468,14 +490,14 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.6.4")
+    (version "2.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "07yi37a2ghsgj2b4w30q1s4d2inqnix7ika1m21y57p9z71212k3"))))
+                "1589f0kg7kj51j9hid542s4isb96s1azjaqsfprpy5s2qdwqfyli"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
@@ -512,13 +534,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.22.2")
+    (version "0.23.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1d5d4w88aj1i8fyrs44dapmiqbmgz4bjgryn8k3mnggmd6ihxk8f"))))
+                "0l257dq1i2gka6ynldidpwaz1aa726643crqqckga1w5awsndh88"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -567,7 +589,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1vsb8qqghxrwxr3d2l0d5cgdk0pz7b3f76bx3zrrg0z7jf967qz6"))))
+                "0gh5fr61c3mj5vdkn68k17wcvri9rdj506cmmz6631i2l5flrzvc"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -787,7 +809,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.7.0")
+    (version "2.7.2")
     (source
      (origin
        (method url-fetch)
@@ -797,15 +819,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1vsmgxnw7dpvma51896n63yaf9sncmf885ax2jfcg89ssin6vdmf"))
-       ;; An RFC 5114 constant was accidentally renamed in version 2.7.0.
-       ;; See https://github.com/ARMmbed/mbedtls/pull/1362.
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "include/mbedtls/dhm.h"
-             (("#define MBEDTLS_DHM_RFC5114_MODP_P")
-              "#define MBEDTLS_DHM_RFC5114_MODP_2048_P"))))))
+         "1mvkqlxxvl6yp1g5g9dk4l7h3wl6149p3pfwgwzgs7xybyxw4f7x"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

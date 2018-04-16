@@ -47,7 +47,7 @@
   ;; to migrate to 2.0.
   (package
     (name "hwloc")
-    (version "1.11.8")
+    (version "1.11.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
@@ -55,7 +55,7 @@
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0karxv4r1r8sa7ki5aamlxdvyvz0bvzq4gdhq0yi5nc4a0k11vzc"))))
+                "1ryibcng40xcq22lsj85fn2vcvrksdx9rr3wwxpq8dw37lw0is1b"))))
     (build-system gnu-build-system)
     (outputs '("out"           ;'lstopo' & co., depends on Cairo, libx11, etc.
                "lib"           ;small closure
@@ -79,6 +79,14 @@
      `(#:configure-flags '("--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'check 'skip-linux-libnuma-test
+           (lambda _
+             ;; Arrange to skip 'tests/linux-libnuma', which fails on some
+             ;; machines: <https://github.com/open-mpi/hwloc/issues/213>.
+             (substitute* "tests/linux-libnuma.c"
+               (("numa_available\\(\\)")
+                "-1"))
+             #t))
          (add-after 'install 'refine-libnuma
            ;; Give -L arguments for libraries to avoid propagation
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -117,7 +125,7 @@ bind processes, and much more.")
   ;; Note: 2.0 isn't the default yet, see above.
   (package
     (inherit hwloc)
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
@@ -125,11 +133,22 @@ bind processes, and much more.")
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "021765f9y6pxcxrvfpzzwaig16ypfbph5xjpkd29qkhzs9r6zrcr"))
-              (patches (search-patches "hwloc-tests-without-sysfs.patch"))))
+                "0jf0krj1h95flmb784ifv9vnkdnajjz00p4zbhmja7vm4v67axdr"))))
 
     ;; libnuma is no longer needed.
-    (inputs (alist-delete "numactl" (package-inputs hwloc)))))
+    (inputs (alist-delete "numactl" (package-inputs hwloc)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments hwloc)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'skip-linux-libnuma-test
+             (lambda _
+               ;; Arrange to skip 'tests/hwloc/linux-libnuma', which fails on
+               ;; some machines: <https://github.com/open-mpi/hwloc/issues/213>.
+               (substitute* "tests/hwloc/linux-libnuma.c"
+                 (("numa_available\\(\\)")
+                  "-1"))
+               #t))))))))
 
 (define-public openmpi
   (package

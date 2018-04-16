@@ -153,13 +153,13 @@ conversions for values passed between the two languages.")
 (define-public ruby-ffi
   (package
     (name "ruby-ffi")
-    (version "1.9.22")
+    (version "1.9.23")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "ffi" version))
               (sha256
                (base32
-                "17lvnpmllg4mlzf25lxbmfzk4l6rsddlxwwdkbs4d9v5gv154529"))))
+                "0zw6pbyvmj8wafdc7l5h7w20zkp1vbr2805ql5d941g2b20pk4zr"))))
     (build-system ruby-build-system)
     ;; FIXME: Before running tests the build system attempts to build libffi
     ;; from sources.

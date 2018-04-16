@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -701,7 +701,9 @@ checking this by themselves in their 'check' procedure."
                                  ("iso9660" "image.iso")
                                  (_         "disk-image"))
                         #:disk-image-size image-size
-                        #:file-system-type file-system-type))))
+                        #:file-system-type file-system-type))
+    ((docker-image)
+     (system-docker-image os #:register-closures? #t))))
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
@@ -904,6 +906,8 @@ Some ACTIONS support additional ARGS.\n"))
    vm-image         build a freestanding virtual machine image\n"))
   (display (G_ "\
    disk-image       build a disk image, suitable for a USB stick\n"))
+  (display (G_ "\
+   docker-image     build a Docker image\n"))
   (display (G_ "\
    init             initialize a root file system to run GNU\n"))
   (display (G_ "\
@@ -1142,7 +1146,7 @@ argument list and OPTS is the option alist."
           (case action
             ((build container vm vm-image disk-image reconfigure init
               extension-graph shepherd-graph list-generations roll-back
-              switch-generation search)
+              switch-generation search docker-image)
              (alist-cons 'action action result))
             (else (leave (G_ "~a: unknown action~%") action))))))
 
@@ -1171,7 +1175,7 @@ argument list and OPTS is the option alist."
         (exit 1))
 
       (case action
-        ((build container vm vm-image disk-image reconfigure)
+        ((build container vm vm-image disk-image docker-image reconfigure)
          (unless (or (= count 1)
                      (and expr (= count 0)))
            (fail)))

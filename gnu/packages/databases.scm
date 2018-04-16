@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -125,7 +125,8 @@
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32 "004fmcf1w75zhc1x3zc6kc97j4jqn2v5nhk6yb3z3cpfrhzi9j50"))
-      (patches (list (search-patch "4store-fix-buildsystem.patch")))))
+      (patches (search-patches "4store-unset-preprocessor-directive.patch"
+                               "4store-fix-buildsystem.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -1654,7 +1655,7 @@ database.  Various higher level database abstractions.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.840")
+  (version "1.841")
   (source
     (origin
       (method url-fetch)
@@ -1664,7 +1665,7 @@ database.  Various higher level database abstractions.")
              ".tar.gz"))
       (sha256
         (base32
-          "1i5jz85z4hpx15lw6ix27pyvrf0ziyh4z33lii4d3wnhz83lg1mp"))))
+          "11fks42kgscpia0mxx4lc9krm7q4gv6w7m5h3m2jr3dl7viv36hn"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
@@ -1686,14 +1687,14 @@ database.  Various higher level database abstractions.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.21")
+    (version "0.9.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/LMDB/lmdb/archive/"
                                   "LMDB_" version ".tar.gz"))
               (sha256
                (base32
-                "0ndmj07hkm2ic60z1f4rdscxs7pq45hk9fibjyv5nhfclhsvd1qi"))))
+                "0a7a8535csrvw71mrgx680m5d17bnxmmhcccij30idifi1cpi4pk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -2040,10 +2041,16 @@ implementation for Python.")
         (base32 "12dqam1gc1v93l0bj0vlpvjqppki6y1hqrlznywxnw0rrz9pb002"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; Tests require a network connection.
+     `(#:tests? #f ; Tests require a network connection.
+       ;; TODO: Removing the libsrc/zlib source directory breaks the build.
+       ;; This indicates that the internal zlib code may still be used.
+       #:configure-flags '("--without-internal-zlib"
+                           "--with-readline")))
     (inputs
      `(("openssl" ,openssl)
-       ("net-tools" ,net-tools)))
+       ("net-tools" ,net-tools)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))
     (home-page "http://vos.openlinksw.com/owiki/wiki/VOS/")
     (synopsis "Multi-model database system")
     (description "Virtuoso is a scalable cross-platform server that combines

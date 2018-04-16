@@ -435,19 +435,28 @@ background while you work.")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "0.9.7")
+    (version "1.0.0-beta1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/hydrogen-music/hydrogen/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hydrogen-music/hydrogen.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1dy2jfkdw0nchars4xi4isrz66fqn53a9qk13bqza7lhmsg3s3qy"))))
+                "0nv83l70j5bjz2wd6n3a8cq3bmgrvdvg6g2hjhc1g5h6xnbqsh9x"))))
     (build-system cmake-build-system)
     (arguments
-    `(#:test-target "tests"))
+     `(#:test-target "tests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-data-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("/usr/share/pixmaps")
+                (string-append (assoc-ref outputs "out")
+                               "/share/pixmaps")))
+             #t)))))
     (native-inputs
      `(("cppunit" ,cppunit)
        ("pkg-config" ,pkg-config)))
@@ -460,7 +469,8 @@ background while you work.")
        ("libsndfile" ,libsndfile)
        ("libtar" ,libtar)
        ("lrdf" ,lrdf)
-       ("qt" ,qt-4)
+       ("qtbase" ,qtbase)
+       ("qtxmlpatterns" ,qtxmlpatterns)
        ("zlib" ,zlib)))
     (home-page "http://www.hydrogen-music.org")
     (synopsis "Drum machine")
@@ -1254,7 +1264,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.8.6")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1262,7 +1272,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "141ah1gnv5r2k846v5ay15q9q90h01p74240a56vlxqh20z43g92"))))
+                "1skynjg6ip0qfbqqkybfjh6xcwxagq89ghl08f7sp7j0sz5qdcwp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1288,7 +1298,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.8.6")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1296,7 +1306,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0fwxrfyp15a4m77mzz4mwj36mhdrj646whlrkvcys33p2w75f8cq"))))
+                "1vm8lrk3lykdic6fyfpl12jx1xg6rcaid242s8sij30p1ix4zdab"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1323,7 +1333,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.8.6")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1331,7 +1341,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "035bq7yfg1yirsqk63zwkzjw9dxl52lrzq9y0w7nga0vb11xdfij"))))
+                "0g67vm9ilmq5nlvk0f3abia9pbinr4ck5v4mll6igni1rxz2n7wk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1358,7 +1368,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.8.6")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1366,7 +1376,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1mikab2f9n5q1sfgnp3sbm1rf3v57k4085lsgh0a5gzga2h4hwxq"))))
+                "0c519qk2g0dk8gqf9ywqfp7dnr4b25lsnxxbf2l1spnnvf8nysvh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -1758,7 +1768,19 @@ projects.")
        #:build-type "Release"           ; needed to have PMALSA set
        #:configure-flags
        (list "-DPORTMIDI_ENABLE_JAVA=Off"
-             "-DPORTMIDI_ENABLE_TEST=Off"))) ; tests fail linking
+             "-DPORTMIDI_ENABLE_TEST=Off") ; tests fail linking
+       #:phases
+       (modify-phases %standard-phases
+         ;; Some packages, e.g., MuseScore, expect "libporttime.so" instead of
+         ;; "libportmidi.so".  Distributions get away with it by creating an
+         ;; appropriate symlink.
+         (add-after 'install 'add-porttime
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (with-directory-excursion lib
+                 (symlink "libportmidi.so" "libporttime.so")))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)))
     (native-inputs
@@ -1952,7 +1974,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.6")
+    (version "1.5.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -1960,7 +1982,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bjfhfslpa2hjrc9h38m7dlr62953w9n4cvkgvfy495cbym12dak"))))
+                "1w916mmi6hh547a7icrgx6qr2kwxlxwlm6ampql427rshcz9r61k"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -2154,14 +2176,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.8.6")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "0qf75bccsyplx6fcaz48k6027yp06zhl8ixhhjdbr30xgpslnjm3"))))
+                "03892177k3jn2bsi366dhq28rcdsc1p9v5qqc0k6hg3cnrkh23na"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; no "check" target
     (inputs
@@ -2270,10 +2292,10 @@ analogue-like user interface.")
     (license license:gpl2+)))
 
 (define-public mod-host
-  ;; The last release was in 2014 but since then more than 140 commits have
+  ;; The last release was in 2014 but since then hundreds of commits have
   ;; been made.
-  (let ((commit "299a3977476e8eb0285837fbd7522cec506a11de")
-        (revision "2"))
+  (let ((commit "1726ad06b11323da7e1aaed690ff8aef91f702b5")
+        (revision "3"))
     (package
       (name "mod-host")
       (version (string-append "0.10.6-" revision "." (string-take commit 9)))
@@ -2284,7 +2306,7 @@ analogue-like user interface.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "128q7p5mph086v954rqnafalfbkyvhgwclaq6ks6swrhj45wnag6"))
+                  "1nrd37c35w6z6ldczgrwmmd9hx1n3zyvcjcgb3mi4cygqdanvspv"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -3460,7 +3482,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "2.1.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3469,7 +3491,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0irwsq6ihfz3y3b943cwqy29g3si7gqbgxdscgw53vwv9vfvi085"))
+                "1ml99ayzpdyd18cypcp0lbsbasfg3abw57i5fl7ph5739vikj6i6"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3487,7 +3509,9 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       `(,(string-append "PREFIX=" (assoc-ref %outputs "out")))
+       `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
+         "USE_SYSTEM_FREETYPE=ON"
+         "DOWNLOAD_SOUNDFONT=OFF")
        ;; There are tests, but no simple target to run.  The command
        ;; used to run them is:
        ;;
@@ -3499,16 +3523,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'use-system-freetype
-           (lambda _
-             ;; XXX: For the time being, we grossly insert the CMake
-             ;; option needed to ignore bundled freetype.  However,
-             ;; there's a pending PR to have it as a regular make
-             ;; option, in a future release.
-             (substitute* "Makefile"
-               (("cmake -DCMAKE") "cmake -DUSE_SYSTEM_FREETYPE=ON -DCMAKE"))
-             #t)))))
+         (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("freetype" ,freetype)
@@ -3519,6 +3534,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        ("libsndfile" ,libsndfile)
        ("libvorbis" ,libvorbis)
        ("portaudio" ,portaudio)
+       ("portmidi" ,portmidi)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)

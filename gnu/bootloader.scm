@@ -146,7 +146,8 @@
   "Return the list of bootloader modules."
   (all-modules (map (lambda (entry)
                       `(,entry . "gnu/bootloader"))
-                    %load-path)))
+                    %load-path)
+               #:warn warn-about-load-error))
 
 (define %bootloaders
   ;; The list of publically-known bootloaders.

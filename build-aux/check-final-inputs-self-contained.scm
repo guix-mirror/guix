@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,23 +33,23 @@
 (define (final-inputs store system)
   "Return the list of outputs directories of the final inputs for SYSTEM."
   (append-map (match-lambda
-               ((name package)
-                (let ((drv (package-derivation store package system)))
-                  ;; Libc's 'debug' output refers to gcc-cross-boot0, but it's
-                  ;; hard to avoid, so we tolerate it.  This should be the
-                  ;; only exception.  Likewise, 'bash:include' depends on
-                  ;; bootstrap-binaries via its 'Makefile.inc' (FIXME).
-                  (filter-map (match-lambda
-                               (("debug" . directory)
-                                (if (string=? "glibc" (package-name package))
-                                    #f
-                                    directory))
-                               (("include" . directory)
-                                (if (string=? "bash" (package-name package))
-                                    #f
-                                    directory))
-                               ((_ . directory) directory))
-                              (derivation->output-paths drv)))))
+                ((or (name package) (name package _))
+                 (let ((drv (package-derivation store package system)))
+                   ;; Libc's 'debug' output refers to gcc-cross-boot0, but it's
+                   ;; hard to avoid, so we tolerate it.  This should be the
+                   ;; only exception.  Likewise, 'bash:include' depends on
+                   ;; bootstrap-binaries via its 'Makefile.inc' (FIXME).
+                   (filter-map (match-lambda
+                                 (("debug" . directory)
+                                  (if (string=? "glibc" (package-name package))
+                                      #f
+                                      directory))
+                                 (("include" . directory)
+                                  (if (string=? "bash" (package-name package))
+                                      #f
+                                      directory))
+                                 ((_ . directory) directory))
+                               (derivation->output-paths drv)))))
               %final-inputs))
 
 (define (assert-valid-substitute substitute)

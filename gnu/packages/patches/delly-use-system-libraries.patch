@@ -1,0 +1,56 @@
+--- a/Makefile	2017-04-09 12:48:15.000000000 +0200
++++ b/Makefile	2017-06-21 14:26:02.749282787 +0200
+@@ -9,8 +9,8 @@
+ 
+ # Flags
+ CXX=g++
+-CXXFLAGS += -isystem ${SEQTK_ROOT} -isystem ${BOOST_ROOT} -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
+-LDFLAGS += -L${SEQTK_ROOT} -L${BOOST_ROOT}/stage/lib -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time 
++CXXFLAGS += -pedantic -W -Wall -Wno-unknown-pragmas -D__STDC_LIMIT_MACROS -fno-strict-aliasing
++LDFLAGS += -lboost_iostreams -lboost_filesystem -lboost_system -lboost_program_options -lboost_date_time 
+ 
+ # Additional flags for release/debug
+ ifeq (${PARALLEL}, 1)
+@@ -23,7 +23,7 @@
+ ifeq (${STATIC}, 1)
+ 	LDFLAGS += -static -static-libgcc -pthread -lhts -lz
+ else
+-	LDFLAGS += -lhts -lz -Wl,-rpath,${SEQTK_ROOT},-rpath,${BOOST_ROOT}/stage/lib
++	LDFLAGS += -lhts -lz
+ endif
+ ifeq (${DEBUG}, 1)
+ 	CXXFLAGS += -g -O0 -fno-inline -DDEBUG
+@@ -41,29 +41,17 @@
+ DELLYSOURCES = $(wildcard src/*.h) $(wildcard src/*.cpp)
+ 
+ # Targets
+-TARGETS = .htslib .bcftools .boost src/delly src/cov src/dpe
++TARGETS = src/delly src/cov src/dpe
+ 
+ all:   	$(TARGETS)
+ 
+-.htslib: $(HTSLIBSOURCES)
+-	cd src/htslib && make && make lib-static && cd ../../ && touch .htslib
+-
+-.bcftools: $(HTSLIBSOURCES)
+-	cd src/bcftools && make && cd ../../ && touch .bcftools
+-
+-.boost: $(BOOSTSOURCES)
+-	cd src/modular-boost && ./bootstrap.sh --prefix=${PWD}/src/modular-boost --without-icu --with-libraries=iostreams,filesystem,system,program_options,date_time && ./b2 && ./b2 headers && cd ../../ && touch .boost
+-
+-src/delly: .htslib .bcftools .boost $(DELLYSOURCES)
+-	$(CXX) $(CXXFLAGS) $@.cpp -o $@ $(LDFLAGS)
+-
+-src/cov: .htslib .bcftools .boost $(DELLYSOURCES)
++src/cov: $(DELLYSOURCES)
+ 	$(CXX) $(CXXFLAGS) $@.cpp -o $@ $(LDFLAGS)
+ 
+-src/dpe: .htslib .bcftools .boost $(DELLYSOURCES)
++src/dpe: $(DELLYSOURCES)
+ 	$(CXX) $(CXXFLAGS) $@.cpp -o $@ $(LDFLAGS)
+ 
+ clean:
+ 	cd src/htslib && make clean
+ 	cd src/modular-boost && ./b2 --clean-all
+-	rm -f $(TARGETS) $(TARGETS:=.o) .htslib .boost .bcftools
++	rm -f $(TARGETS) $(TARGETS:=.o)

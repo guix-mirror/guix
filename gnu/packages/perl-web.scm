@@ -21,6 +21,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (guix packages)
+  #:use-module (gnu packages perl-check)
   #:use-module (guix download)
   #:use-module (guix build-system perl))
 
@@ -46,3 +47,26 @@ keep you going, learning by doing was much fun.  While most of the techniques
 used are outdated now, the idea behind it is not.  Mojolicious is a new
 endeavor to implement this idea using modern technologies.")
     (license license:artistic2.0)))
+
+(define-public perl-uri-escape
+  (package
+    (name "perl-uri-escape")
+    (version "1.73")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/URI-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "04z4xwiryrbxxi48bwbkgq9q9pwfgqry3wp0ramcrwv3dx5ap9yc"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-needs" ,perl-test-needs)))
+    (home-page "https://github.com/libwww-perl/URI")
+    (synopsis "Percent-encode and percent-decode unsafe characters")
+    (description "This module provides functions to percent-encode and
+percent-decode URI strings as defined by RFC 3986.  Percent-encoding URI's is
+informally called URI escaping.  This is the terminology used by this module,
+which predates the formalization of the terms by the RFC by several years.")
+    (license license:perl-license)))

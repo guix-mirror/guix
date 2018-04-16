@@ -120,29 +120,21 @@ Java Lucene text search engine API to C++.")
 (define-public lrdf
   (package
     (name "lrdf")
-    (version "0.5.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/swh/LRDF/archive/"
+              (uri (string-append "https://github.com/swh/LRDF/archive/v"
                                   version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "18p2flb2sv2hq6w2qkd29z9c7knnwqr3f12i2srshlzx6vwkm05s"))))
+                "1vxii4mlcpyi16dizcmnqfl2j9gffgr986yd8ic67hvs8xy42yfm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-out-of-tree-references
            (lambda _
-             ;; remove symlinks to files in /usr/
-             (delete-file-recursively "m4")
-             (for-each delete-file '("config.guess"
-                                     "config.sub"
-                                     "depcomp"
-                                     "install-sh"
-                                     "ltmain.sh"
-                                     "missing"))
              ;; remove_test depends on an out-of-tree RDF file
              (substitute* "examples/Makefile.am"
                (("instances_test remove_test") "instances_test")
@@ -154,7 +146,6 @@ Java Lucene text search engine API to C++.")
     (inputs
      `(("raptor" ,raptor2)
        ("cyrus-sasl" ,cyrus-sasl)
-       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
      `(("autoconf" ,autoconf)

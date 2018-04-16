@@ -1,0 +1,36 @@
+From 21507b3600c616bca7049004eb518cf11f45f299 Mon Sep 17 00:00:00 2001
+From: "Anthony J. Bentley" <anthony@cathet.us>
+Date: Sun, 7 Jun 2015 02:41:28 -0600
+Subject: [PATCH] Correct the path to the GLEW header.
+
+---
+ src/glshader.cpp | 2 +-
+ src/rgl.h        | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/glshader.cpp b/src/glshader.cpp
+index 4729945..a8947ea 100644
+--- a/src/glshader.cpp
++++ b/src/glshader.cpp
+@@ -23,7 +23,7 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include "rgl_assert.h"
+-#include <glew.h>
++#include <GL/glew.h>
+ #if defined(__MACOSX__)
+ #include <OpenGL/gl.h>
+ #include <OpenGL/glext.h>
+diff --git a/src/rgl.h b/src/rgl.h
+index c15f93f..1748406 100644
+--- a/src/rgl.h
++++ b/src/rgl.h
+@@ -26,7 +26,7 @@
+ #include "rgl_assert.h"
+ #include "rdp.h"
+ 
+-#include <glew.h>
++#include <GL/glew.h>
+ #if defined(__MACOSX__)
+ #include <OpenGL/gl.h>
+ #elif defined(__MACOS__)

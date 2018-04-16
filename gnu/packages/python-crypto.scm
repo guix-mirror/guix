@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -122,21 +122,18 @@ John the Ripper).")
 (define-public python-paramiko
   (package
     (name "python-paramiko")
-    (version "2.1.5")
+    (version "2.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "paramiko" version))
        (sha256
         (base32
-         "1pf0zxzhgyy4avby3ajg5hp18b0d8iirbkdfw53z0h6w611bp0wk"))))
+         "1wx4s95i2cdh8hhi1c3jb8lzk71jifa3z9wjfsx905y7lrsngqrk"))))
     (build-system python-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (zero? (system* "python" "test.py")))))))
+     `(;; FIXME: Tests require many unpackaged libraries, see dev-requirements.txt.
+       #:tests? #f))
     (propagated-inputs
      `(("python-pyasn1" ,python-pyasn1)
        ("python-cryptography" ,python-cryptography)))
@@ -281,14 +278,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1zk2shzpa9kw8fgwpsbdm5cgvbjd05vh2q6r0x9jlzq5vvjg4z5y"))))
+         "122na0c6r24ch2ifyr4ccjyih0inpqy7bc5za77699g3pa22rd98"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -303,14 +300,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1lxj3kqp552c715p0hzixpdhnz4ggd3jb7zz15q8dw534b9xknnx"))))
+         "0qrgip8vgcpk7v1jwf67mg50np5iprxrv8qrg8p382hkd6zrbhlz"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))

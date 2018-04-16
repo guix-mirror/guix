@@ -21,6 +21,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
+;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -987,7 +988,7 @@ color temperature should be set to match the lamps in your room.")
 (define-public xscreensaver
   (package
     (name "xscreensaver")
-    (version "5.38")
+    (version "5.39")
     (source
      (origin
        (method url-fetch)
@@ -996,7 +997,7 @@ color temperature should be set to match the lamps in your room.")
                        version ".tar.gz"))
        (sha256
         (base32
-         "1f58h5rgjbxr4hh40m6zkpkzbzg68l7nqzjwal0b17yysafbmsf6"))))
+         "09i47h4hdgwxyqgrsnshl4l5dv5mrsp37h705cc22lwby601ikj8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -1246,7 +1247,7 @@ program for X11.  It was designed to be fast, tiny and scriptable in any languag
 (define-public xcb-util-xrm
   (package
     (name "xcb-util-xrm")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1254,7 +1255,7 @@ program for X11.  It was designed to be fast, tiny and scriptable in any languag
                     "/download/v" version "/xcb-util-xrm-" version ".tar.bz2"))
               (sha256
                (base32
-                "0vbqhag51i0njc8d5fc8c6aa12496cwrc3s6s7sa5kfc17cwhppp"))
+                "118cj1ybw86pgw0l5whn9vbg5n5b0ijcpx295mwahzi004vz671h"))
               (modules '((guix build utils)))
               (snippet
                ;; Drop bundled m4.
@@ -1408,3 +1409,32 @@ or playing a PCM encoded WAVE file.")
 System, and launches a program of your choice if there is no activity after
 a user-configurable period of time.")
     (license license:gpl2)))
+
+(define-public screen-message
+  (package
+    (name "screen-message")
+    (version "0.25")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.joachim-breitner.de/archive/screen-message"
+                    "/screen-message-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lw955qq5pq010lzmaf32ylj2iprgsri9ih4hx672c3f794ilab0"))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk3" ,gtk+)
+              ("gdk" ,gdk-pixbuf)
+              ("pango" ,pango)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     ;; The default configure puts the 'sm' binary in games/ instead of bin/ -
+     ;; this fixes it:
+     `(#:make-flags (list (string-append "execgamesdir=" %output "/bin"))))
+    (synopsis "Print messages on your screen")
+    (description "@code{screen-message} is a tool for displaying text on
+your screen.  It will make the text as large as possible and display it
+with black color on a white background (colors are configurable on the
+commandline).")
+    (home-page "https://www.joachim-breitner.de/projects#screen-message")
+    (license license:gpl2+)))

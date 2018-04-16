@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,13 +27,16 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
@@ -306,5 +310,51 @@ conflict with slocate compatibility.")
 can quickly and easily index directories of files or remote web sites and
 search the generated indexes.")
     (license gpl2+)))                   ;with exception
+
+(define-public xapers
+  (package
+    (name "xapers")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://finestructure.net/xapers/releases/xapers-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0ykz6hn3qj46w3c99d6q0pi5ncq2894simcl7vapv047zm3cylmd"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-urwid" ,python-urwid)))
+    (inputs
+     `(("poppler" ,poppler)
+       ("python" ,python)
+       ("python-latexcodec" ,python-latexcodec)
+       ("python-pybtex" ,python-pybtex)
+       ("python-pycurl" ,python-pycurl)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)
+       ("python-xapian-bindings" ,python-xapian-bindings)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man1 (string-append out "/share/man/man1")))
+               (install-file "man/man1/xapers.1"  man1)
+               (install-file "man/man1/xapers-adder.1" man1)
+               (install-file "bin/xapers-adder" bin)))))))
+    (home-page "https://finestructure.net/xapers/")
+    (synopsis "Personal document indexing system")
+    (description
+     "Xapers is a personal document indexing system,
+geared towards academic journal articles build on the Xapian search engine.
+Think of it as your own personal document search engine, or a local cache of
+online libraries.  It provides fast search of document text and
+bibliographic data and simple document and bibtex retrieval.")
+    (license gpl3+)))
 
 ;;; search.scm ends here

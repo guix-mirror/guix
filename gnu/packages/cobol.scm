@@ -59,7 +59,7 @@
        ("ncurses" ,ncurses)
        ("newcob" ,(origin
                     (method url-fetch)
-                    (uri "http://www.itl.nist.gov/div897/ctg/suites/newcob.val.Z")
+                    (uri "https://www.itl.nist.gov/div897/ctg/suites/newcob.val.Z")
                     (sha256
                      (base32
                       "1yb1plmv4firfnbb119r2vh1hay221w1ya34nyz0qwsxppfr56hy"))))))

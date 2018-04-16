@@ -28,7 +28,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.45")
+    (version "0.14.46")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -36,7 +36,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0nv5g9ymykl4316l2g3mnac77y2rx9ps4j2kg3pymxlq6qms2dij"))
+                "0h5b2mp0li0qzrz3wggzavdfqfaz9b79hx6wds84ya2i9maw80cl"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet
@@ -1673,23 +1673,23 @@ using sh's word-splitting rules.")
       (license expat))))
 
 (define-public go-github-com-zillode-notify
-  (let ((commit "a8abcfb1ce88ee8d79a300ed65d94b8fb616ddb3")
-        (revision "2"))
+  (let ((commit "53dd6873a851fc377c87d82f994b1fecdf25aadb")
+        (revision "3"))
     (package
       (name "go-github-com-zillode-notify")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/zillode/notify")
+                       (url "https://github.com/calmh/notify")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "031pmbvm0xj4f4fak7im0ywmyn3hns538zlbdj4f23jj69zqdy7k"))))
+                  "0ar6mj6s91y7hc5gdp88lz3i7xi29cqkx9f090xj899ir21a8djn"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/zillode/notify"))
+       '(#:import-path "github.com/Zillode/notify"))
       (propagated-inputs
        `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (synopsis "File system event notification library")

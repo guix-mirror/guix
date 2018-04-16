@@ -2,8 +2,9 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -788,14 +789,14 @@ provides features like a web browseable API and authentication policies.")
 (define-public python-django-crispy-forms
   (package
     (name "python-django-crispy-forms")
-    (version "1.7.0")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-crispy-forms" version))
        (sha256
         (base32
-         "16s05jx86jmimlvnwpq73kl0mqw1v9lryc8zi61a9qwl25krm6mj"))))
+         "0pv7y648i8iz7mf64gkjizpbx5d01ap2s4vqqa30n38if6wvlljr"))))
     (build-system python-build-system)
     (arguments
      '(;; No included tests
@@ -808,4 +809,26 @@ provides features like a web browseable API and authentication policies.")
     (description
      "@code{django-crispy-forms} lets you easily build, customize and reuse
 forms using your favorite CSS framework, without writing template code.")
+    (license license:expat)))
+
+(define-public python-django-override-storage
+  (package
+    (name "python-django-override-storage")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "django-override-storage" version))
+       (sha256
+        (base32
+         "0sqz1mh0yn8b1bzz2gr2azfiynljigm5gkzavp5n17zd3j2jg57x"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-django" ,python-django)))
+    (home-page
+     "https://github.com/danifus/django-override-storage")
+    (synopsis "Django test helpers to manage file storage side effects")
+    (description
+     "This project provides tools to help reduce the side effects of using
+FileFields during tests.")
     (license license:expat)))

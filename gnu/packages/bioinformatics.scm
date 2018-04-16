@@ -2030,10 +2030,57 @@ normalized and standardized files, multiple visualizations can be created to
 identify enrichments with functional annotations of the genome.")
     (license license:gpl3+)))
 
+(define-public delly
+  (package
+    (name "delly")
+    (version "0.7.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/tobiasrausch/delly/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32 "0dkwy3pyxmi6dhh1lpsr3698ri5sslw9qz67hfys0bz8dgrqwabj"))
+              (patches (search-patches "delly-use-system-libraries.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests to run.
+       #:make-flags '("PARALLEL=1") ; Allow parallel execution at run-time.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; There is no configure phase.
+         (replace 'install
+           (lambda _
+             (let ((bin (string-append (assoc-ref %outputs "out") "/bin"))
+                   (templates (string-append (assoc-ref %outputs "out")
+                                             "/share/delly/templates")))
+               (mkdir-p bin)
+               (mkdir-p templates)
+               (copy-recursively "excludeTemplates" templates)
+               (install-file "src/cov" bin)
+               (install-file "src/delly" bin)
+               (install-file "src/dpe" bin)))))))
+    (native-inputs
+     `(("python" ,python-2)))
+    (inputs
+     `(("boost" ,boost)
+       ("htslib" ,htslib)
+       ("zlib" ,zlib)
+       ("bzip2" ,bzip2)))
+    (home-page "https://github.com/tobiasrausch/delly")
+    (synopsis "Integrated structural variant prediction method")
+    (description "Delly is an integrated structural variant prediction method
+that can discover and genotype deletions, tandem duplications, inversions and
+translocations at single-nucleotide resolution in short-read massively parallel
+sequencing data.  It uses paired-ends and split-reads to sensitively and
+accurately delineate genomic rearrangements throughout the genome.")
+    (license license:gpl3+)))
+
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.18")
+    (version "0.9.19")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2042,7 +2089,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vi2nddmy7knrv8gsprwqp6a40k63n3f2dfvx22ipjhrg9xir96f"))))
+                "0c4y8l90vdxmglb0w37y0413v11qzcwg8sdmy9k0c0gr3bsq7dzs"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -3623,7 +3670,7 @@ data.")
 (define-public kaiju
   (package
     (name "kaiju")
-    (version "1.5.0")
+    (version "1.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3632,7 +3679,7 @@ data.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0afbfalfw9y39bkwnqjrh9bghs118ws1pzj5h8l0nblgn3mbjdks"))))
+                "1kdn4rxs0kr9ibmrgrfcci71aa6j6gr71dbc8pff7731rpab6kj7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.
@@ -3650,7 +3697,8 @@ data.")
                (copy-recursively "util" bin))
              #t)))))
     (inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("zlib" ,zlib)))
     (home-page "http://kaiju.binf.ku.dk/")
     (synopsis "Fast and sensitive taxonomic classification for metagenomics")
     (description "Kaiju is a program for sensitive taxonomic classification
@@ -3688,7 +3736,7 @@ sequencing tag position and orientation.")
 (define-public mafft
   (package
     (name "mafft")
-    (version "7.313")
+    (version "7.394")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3697,7 +3745,7 @@ sequencing tag position and orientation.")
               (file-name (string-append name "-" version ".tgz"))
               (sha256
                (base32
-                "0r83qmg2if8mi6jyx3xdf8ar2gcxl7r9nmj98jr7lxym97v61a2k"))))
+                "0bacjkxfg944p5khhyh5rd4y7wkjc9qk4v2jjj442sqlq0f8ar7b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no automated tests, though there are tests in the read me
@@ -3774,7 +3822,7 @@ sequences).")
 (define-public mash
   (package
     (name "mash")
-    (version "1.1.1")
+    (version "2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3783,7 +3831,7 @@ sequences).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08znbvqq5xknfhmpp3wcj574zvi4p7i8zifi67c9qw9a6ikp42fj"))
+                "00fx14vpmgsijwxd1xql3if934l82v8ckqgjjyyhnr36qb9qrskv"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled kseq.
@@ -3801,7 +3849,9 @@ sequences).")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-includes
            (lambda _
-             (substitute* '("src/mash/Sketch.cpp" "src/mash/CommandFind.cpp")
+             (substitute* '("src/mash/Sketch.cpp"
+                            "src/mash/CommandFind.cpp"
+                            "src/mash/CommandScreen.cpp")
                (("^#include \"kseq\\.h\"")
                 "#include \"htslib/kseq.h\""))
              #t))
@@ -6062,14 +6112,14 @@ data types as well.")
 (define-public r-annotate
   (package
     (name "r-annotate")
-    (version "1.56.1")
+    (version "1.56.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "annotate" version))
        (sha256
         (base32
-         "14c5xd9kasvcwg5gbjys2c1vizxhlqlzxakqc2kml0kw97hmx0rq"))))
+         "0ybg9k1s289h15nj1kp9821i1rsk1gkn8i8blplmk7gsgpbw1f42"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -6871,8 +6921,7 @@ also known as views, in a controlled vocabulary.")
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-tinytex" ,r-tinytex)
        ("r-yaml" ,r-yaml)
-       ("r-xfun" ,r-xfun)
-       ("ghc-pandoc" ,ghc-pandoc)))
+       ("r-xfun" ,r-xfun)))
     (home-page "https://github.com/rstudio/bookdown")
     (synopsis "Authoring books and technical documents with R markdown")
     (description "This package provides output formats and utilities for
@@ -8511,14 +8560,14 @@ library implementing most of the pipeline's features.")
 (define-public r-mutationalpatterns
   (package
     (name "r-mutationalpatterns")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MutationalPatterns" version))
        (sha256
         (base32
-         "08ay9h5cqsi8ypb6r0g4rfa5l1g06jgfzl64wmhgz134yqbl7vfv"))))
+         "0ml4gsp5dfv23xqrknxh25q8q65hly1xb1215lcwyc8hj9z8f941"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -8528,7 +8577,6 @@ library implementing most of the pipeline's features.")
        ("r-genomicranges" ,r-genomicranges)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-gridextra" ,r-gridextra)
        ("r-iranges" ,r-iranges)
        ("r-nmf" ,r-nmf)
        ("r-plyr" ,r-plyr)
@@ -10939,12 +10987,10 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
           (base32
            "0g38g8s3npr0gjm9fahlbhiskyfws9l5i0x1ml3rakzj7az5l9c9"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments htslib)
-         ((#:phases phases)
-          `(modify-phases  ,phases
-             (add-after 'unpack 'bootstrap
-               (lambda _
-                 (zero? (system* "autoreconf" "-vif"))))))))
+       `(#:phases
+         (modify-phases  %standard-phases
+           (add-after 'unpack 'bootstrap
+             (lambda _ (invoke "autoreconf" "-vif"))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
@@ -10953,34 +10999,41 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
 (define-public sambamba
   (package
     (name "sambamba")
-    (version "0.6.5")
+    (version "0.6.7-10-g223fa20")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/lomereiter/sambamba/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lomereiter/sambamba.git")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "17076gijd65a3f07zns2gvbgahiz5lriwsa6dq353ss3jl85d8vy"))))
+         "1zb9hrxglxqh13ava9wwri30cvf85hjnbn8ccnr8l60a3k5avczn"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; there is no test target
-       #:make-flags
-       '("D_COMPILER=ldc2"
-         ;; Override "--compiler" flag only.
-         "D_FLAGS=--compiler=ldc2 -IBioD -g -d"
-         "sambamba-ldmd2-64")
+     `(#:tests? #f                      ; there is no test target
+       #:parallel-build? #f             ; not supported
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after 'unpack 'place-biod
+         (add-after 'unpack 'fix-ldc-version
+           (lambda _
+             (substitute* "gen_ldc_version_info.py"
+               (("/usr/bin/env.*") (which "python")))
+             (substitute* "Makefile"
+               (("\\$\\(shell which ldmd2\\)") (which "ldmd2")))
+             #t))
+         (add-after 'unpack 'place-biod-and-undead
            (lambda* (#:key inputs #:allow-other-keys)
              (copy-recursively (assoc-ref inputs "biod") "BioD")
+             (copy-recursively (assoc-ref inputs "undead") "undeaD")
              #t))
          (add-after 'unpack 'unbundle-prerequisites
            (lambda _
              (substitute* "Makefile"
+               (("htslib/libhts.a lz4/lib/liblz4.a")
+                "-L-lhts -L-llz4")
                ((" htslib-static lz4-static") ""))
              #t))
          (replace 'install
@@ -10993,8 +11046,9 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
     (native-inputs
      `(("ldc" ,ldc)
        ("rdmd" ,rdmd)
+       ("python" ,python2-minimal)
        ("biod"
-        ,(let ((commit "1248586b54af4bd4dfb28ebfebfc6bf012e7a587"))
+        ,(let ((commit "c778e4f2d8bacea7499283ce39f5577b232732c6"))
            (origin
              (method git-fetch)
              (uri (git-reference
@@ -11005,7 +11059,20 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
                                        "-checkout"))
              (sha256
               (base32
-               "1m8hi1n7x0ri4l6s9i0x6jg4z4v94xrfdzp7mbizdipfag0m17g3")))))))
+               "1z90562hg47i63gx042wb3ak2vqjg5z7hwgn9bp2pdxfg3nxrw37")))))
+       ("undead"
+        ,(let ((commit "92803d25c88657e945511f0976a0c79d8da46e89"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/dlang/undeaD.git")
+                   (commit commit)))
+             (file-name (string-append "undead-"
+                                       (string-take commit 9)
+                                       "-checkout"))
+             (sha256
+              (base32
+               "0vq6n81vzqvgphjw54lz2isc1j8lcxwjdbrhqz1h5gwrvw9w5138")))))))
     (inputs
      `(("lz4" ,lz4)
        ("htslib" ,htslib-for-sambamba)))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,6 +22,7 @@
   #:use-module (guix licenses)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages base))
 
@@ -36,7 +37,8 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "19jpcv4ryvbz0476d6dgpxpbjkpmih4q84wj06nslls338bm5fzf"))))
+        "19jpcv4ryvbz0476d6dgpxpbjkpmih4q84wj06nslls338bm5fzf"))
+      (patches (search-patches "datamash-arm-tests.patch"))))
     (native-inputs
      `(("which" ,which)                 ;for tests
        ("perl" ,perl)))                 ;for help2man

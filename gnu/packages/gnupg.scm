@@ -38,6 +38,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -214,21 +215,19 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.5")
+    (version "2.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0mzgibq4dpxh3i9anmwg12xdjry28y83icafhx3j3djg5niqk89z"))))
+                "110rf476l3cgn52gh9ia5y0y06y2ialq9dqc12jkhnfhl9gqqkg6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("bzip2" ,bzip2)
-       ("curl" ,curl)
-       ("gnutls" ,gnutls)
+     `(("gnutls" ,gnutls)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)
        ("libgpg-error" ,libgpg-error)
@@ -568,7 +567,7 @@ signing, decryption, verification, and key-listing parsing.")
 (define-public pius
   (package
    (name "pius")
-   (version "2.2.4")
+   (version "2.2.6")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -576,7 +575,7 @@ signing, decryption, verification, and key-listing parsing.")
                   version "/pius-" version ".tar.bz2"))
             (sha256
              (base32
-              "0lgc0ipwdfqbq16zax8kn17wbv8xyw4ygc09fawl2yp459z0ql4n"))))
+              "1893hzpx3zv724drqv48csrn0cm98xw4ymb1zmhs2jvjj1778zfj"))))
    (build-system python-build-system)
    (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
              ("gpg" ,gnupg)))
@@ -737,6 +736,16 @@ including tools for signing keys, keyring analysis, and party preparation.
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/pinentry")
                   (upstream-name . "pinentry")))))
+
+(define-public pinentry-emacs
+  (package
+    (inherit pinentry-tty)
+    (name "pinentry-emacs")
+    (arguments
+     `(#:configure-flags '("--enable-pinentry-emacs")))
+    (description
+     "Pinentry provides a console and an Emacs interface that allows users to
+enter a passphrase when required by @code{gpg} or other software.")))
 
 (define-public pinentry-gtk2
   (package
@@ -933,7 +942,7 @@ over.")
 (define-public jetring
   (package
     (name "jetring")
-    (version "0.25")
+    (version "0.27")
     (source
       (origin
         (method url-fetch)
@@ -941,7 +950,7 @@ over.")
                             name "_" version ".tar.xz"))
         (sha256
          (base32
-          "0shcnnw0h31b08vmnvf18ni33dg40w18wv9smb69vkklz3h4jhpw"))))
+          "0jy0x5zj7v87xgyldlsx1knzp0mv10wzamblrw1b61i2m1ii4pxz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

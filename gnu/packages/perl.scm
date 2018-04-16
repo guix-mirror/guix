@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
@@ -720,6 +720,31 @@ is captured while being passed through to the original file handles.")
     (description
      "This module is used by Schmorp's modules during configuration stage
 to test the installed perl for compatibility with his modules.")
+    (license (package-license perl))))
+
+(define-public perl-carp
+  (package
+    (name "perl-carp")
+    (version "1.38")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/R/RJ/RJBS/Carp-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "00bijwwc0ix27h2ma3lvsf3b56biar96bl9dikxgx7cmpcycxad5"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Carp/")
+    (synopsis "Alternative warn and die for modules")
+    (description "The @code{Carp} routines are useful in your own modules
+because they act like @code{die()} or @code{warn()}, but with a message
+which is more likely to be useful to a user of your module.  In the case
+of @code{cluck}, @code{confess}, and @code{longmess} that context is a
+summary of every call in the call-stack.  For a shorter message you can use
+@code{carp} or @code{croak} which report the error as being from where your
+module was called.  There is no guarantee that that is where the error was,
+but it is a good educated guess.")
     (license (package-license perl))))
 
 (define-public perl-carp-always
@@ -3975,6 +4000,62 @@ inc directory within a distribution and are used by Makefile.PL or Build.PL.")
      "Indirect warns about using the indirect method call syntax.")
     (license (package-license perl))))
 
+(define-public perl-inline
+  (package
+   (name "perl-inline")
+   (version "0.80")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "mirror://cpan/authors/id/I/IN/INGY/Inline-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "1xnf5hykcr54271x5jsnr61bcv1c7x39cy4kdcrkxm7bn62djavy"))))
+   (build-system perl-build-system)
+   (native-inputs
+    `(("perl-test-warn" ,perl-test-warn)))
+   (home-page "http://search.cpan.org/dist/Inline/")
+   (synopsis "Write Perl subroutines in other programming languages")
+   (description "The @code{Inline} module allows you to put source code
+from other programming languages directly (inline) in a Perl script or
+module.  The code is automatically compiled as needed, and then loaded
+for immediate access from Perl.")
+   (license (package-license perl))))
+
+(define-public perl-inline-c
+  (package
+    (name "perl-inline-c")
+    (version "0.78")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/T/TI/TINITA/Inline-C-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1izv7vswd17glffh8h83bi63gdk208mmhxi17l3qd8q1bkc08y4s"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-file-copy-recursive" ,perl-file-copy-recursive)
+       ("perl-file-sharedir-install" ,perl-file-sharedir-install)
+       ("perl-test-warn" ,perl-test-warn)
+       ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+    (propagated-inputs
+     `(("perl-inline" ,perl-inline)
+       ("perl-parse-recdescent" ,perl-parse-recdescent)
+       ("perl-pegex" ,perl-pegex)))
+    (home-page "http://search.cpan.org/dist/Inline-C/")
+    (synopsis "C Language Support for Inline")
+    (description "The @code{Inline::C} module allows you to write Perl
+subroutines in C.  Since version 0.30 the @code{Inline} module supports
+multiple programming languages and each language has its own support module.
+This document describes how to use Inline with the C programming language.
+It also goes a bit into Perl C internals.")
+    (license (package-license perl))))
+
 (define-public perl-io-captureoutput
   (package
     (name "perl-io-captureoutput")
@@ -4637,7 +4718,7 @@ portions of this module couldn't be compiled on this machine.")
 (define-public perl-mailtools
   (package
     (name "perl-mailtools")
-    (version "2.19")
+    (version "2.20")
     (source
      (origin
        (method url-fetch)
@@ -4647,7 +4728,7 @@ portions of this module couldn't be compiled on this machine.")
              ".tar.gz"))
        (sha256
         (base32
-         "06jykkv8mp484vzkmwd6dkicx029rl3ir5ljzrbap3paxw1dfzn1"))))
+         "15iizg2x1w7ca0r8rn3wwhp7w160ljvf55prspljwd6cm7vhcmpm"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-timedate" ,perl-timedate)))
@@ -4677,6 +4758,64 @@ Build a Mail::Internet object, and then send it out using Mail::Mailer.
 @item Mail::Util
 \"Smart functions\" you should not depend on.
 @end table")
+    (license perl-license)))
+
+(define-public perl-math-bezier
+  (package
+    (name "perl-math-bezier")
+    (version "0.01")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/A/AB/ABW/Math-Bezier-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1f5qwrb7vvf8804myb2pcahyxffqm9zvfal2n6myzw7x8py1ba0i"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Math-Bezier/")
+    (synopsis "Solution of bezier curves")
+    (description "This module implements the algorithm for the solution of Bezier
+curves as presented by Robert D Miller in Graphics Gems V, \"Quick and Simple
+Bezier Curve Drawing\".")
+    (license perl-license)))
+
+(define-public perl-math-round
+  (package
+    (name "perl-math-round")
+    (version "0.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/G/GR/GROMMEL/Math-Round-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "09wkvqj4hfq9y0fimri967rmhnq90dc2wf20lhlmqjp5hsd359vk"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Math-Round/")
+    (synopsis "Perl extension for rounding numbers")
+    (description "@code{Math::Round} provides functions to round numbers,
+both positive and negative, in various ways.")
+    (license perl-license)))
+
+(define-public perl-memoize
+  (package
+    (name "perl-memoize")
+    (version "1.03")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/M/MJ/MJD/Memoize-"
+                    version".tgz"))
+              (sha256
+               (base32
+                "1wysq3wrmf1s7s3phimzn7n0dswik7x53apykzgb0l2acigwqfaj"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Memoize/")
+    (synopsis "Make functions faster by trading space for time")
+    (description "This package transparently speeds up functions by caching
+return values, trading space for time.")
     (license perl-license)))
 
 (define-public perl-memoize-expirelru
@@ -6223,6 +6362,30 @@ collector daemon in use at Etsy.com.")
 subroutine, which you can call with a value to be tested against.")
     (license (package-license perl))))
 
+(define-public perl-number-format
+  (package
+    (name "perl-number-format")
+    (version "1.75")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/W/WR/WRW/Number-Format-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1wspw9fybik76jq9w1n1gmvfixd4wvlrq6ni8kyn85s62v5mkml2"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Number-Format/")
+    (synopsis "Convert numbers to strings with pretty formatting")
+    (description "@code{Number::Format} is a library for formatting numbers.
+Functions are provided for converting numbers to strings in a variety of ways,
+and to convert strings that contain numbers back into numeric form.  The
+output formats may include thousands separators - characters inserted between
+each group of three characters counting right to left from the decimal point.
+The characters used for the decimal point and the thousands separator come from
+the locale information or can be specified by the user.")
+    (license perl-license)))
+
 (define-public perl-number-range
   (package
     (name "perl-number-range")
@@ -6574,6 +6737,36 @@ up inheritance from those modules at the same time.")
 directory specifications in a cross-platform manner.")
     (license (package-license perl))))
 
+(define-public perl-pathtools
+  (package
+    (name "perl-pathtools")
+    (version "3.74")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/X/XS/XSAWYERX/PathTools-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "04bfjdvn5p78hirljcinpxv8djcjn8nyg5gcmnmvz8sr9k2lqwi5"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-pwd-path
+           (lambda* (#:key inputs  #:allow-other-keys)
+             (substitute* "Cwd.pm"
+               (("'/bin/pwd'")
+                (string-append "'" (assoc-ref inputs "coreutils")
+                               "/bin/pwd'"))))))))
+    (inputs
+     `(("coreutils" ,coreutils)))
+    (home-page "http://search.cpan.org/dist/PathTools/")
+    (synopsis "Tools for working with directory and file names")
+    (description "This package provides functions to work with directory and
+file names.")
+    (license perl-license)))
+
 (define-public perl-path-tiny
   (package
     (name "perl-path-tiny")
@@ -6621,6 +6814,33 @@ with file paths.")
 PerlIO layer.  Unlike Perl's default @code{:utf8} layer it checks the input
 for correctness.")
     (license (package-license perl))))
+
+(define-public perl-pegex
+  (package
+   (name "perl-pegex")
+   (version "0.64")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "mirror://cpan/authors/id/I/IN/INGY/Pegex-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "1kb7y2cc3nibbn8i8y3vrzz1f9h3892nbf8jj88c5fdgpmj05q17"))))
+   (build-system perl-build-system)
+   (native-inputs
+    `(("perl-file-sharedir-install" ,perl-file-sharedir-install)
+      ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+   (home-page "http://search.cpan.org/dist/Pegex/")
+   (synopsis "Acmeist PEG Parser Framework")
+   (description "Pegex is an Acmeist parser framework.  It allows you to easily
+create parsers that will work equivalently in lots of programming languages.
+The inspiration for Pegex comes from the parsing engine upon which the
+postmodern programming language Perl 6 is based on.  Pegex brings this beauty
+to the other justmodern languages that have a normal regular expression engine
+available.")
+   (license (package-license perl))))
 
 (define-public perl-pod-coverage
   (package
@@ -6919,6 +7139,25 @@ collector.")
     (description "Set::Infinite is a set theory module for infinite sets.")
     (license (package-license perl))))
 
+(define-public perl-set-intspan
+  (package
+    (name "perl-set-intspan")
+    (version "1.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SW/SWMCD/Set-IntSpan-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1l6znd40ylzvfwl02rlqzvakv602rmvwgm2xd768fpgc2fdm9dqi"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Set-IntSpan/")
+    (synopsis "Manage sets of integers")
+    (description "@code{Set::IntSpan} manages sets of integers.  It is
+optimized for sets that have long runs of consecutive integers.")
+    (license perl-license)))
+
 (define-public perl-set-object
   (package
     (name "perl-set-object")
@@ -7056,6 +7295,27 @@ It attempts to fix all the nits and warts of traditional Perl OO, in a clean,
 straightforward and (perhaps someday) standard way.  Spiffy borrows ideas from
 other OO languages like Python, Ruby, Java and Perl 6.")
     (license (package-license perl))))
+
+(define-public perl-statistics-basic
+  (package
+    (name "perl-statistics-basic")
+    (version "1.6611")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/J/JE/JETTERO/Statistics-Basic-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1ywl398z42hz9w1k0waf1caa6agz8jzsjlf4rzs1lgpx2mbcwmb8"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-number-format" ,perl-number-format)))
+    (home-page "http://search.cpan.org/dist/Statistics-Basic/")
+    (synopsis "Collection of very basic statistics modules")
+    (description "This package provides basic statistics functions like
+@code{median()}, @code{mean()}, @code{variance()} and @code{stddev()}.")
+    (license lgpl2.0)))
 
 (define-public perl-stream-buffered
   (package
@@ -7882,6 +8142,30 @@ faster than shelling out to a system's diff executable for small files, and
 generally slower on larger files.")
     (license (package-license perl))))
 
+(define-public perl-text-format
+  (package
+    (name "perl-text-format")
+    (version "0.60")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SH/SHLOMIF/Text-Format-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1f52jak0a2gwi4qcisp4nfbniq04dmmv5j8zkvzj8ik0f0sk2kv6"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "http://search.cpan.org/dist/Text-Format/")
+    (synopsis "Various subroutines to format text")
+    (description "This package provides functions to format text in various
+ways like centering, paragraphing, and converting tabs to spaces and spaces
+to tabs.")
+    (license perl-license)))
+
 (define-public perl-text-glob
   (package
     (name "perl-text-glob")
@@ -7952,7 +8236,7 @@ algorism to indicate multiplication by 1000.")
 (define-public perl-text-simpletable
   (package
     (name "perl-text-simpletable")
-    (version "2.03")
+    (version "2.04")
     (source
      (origin
        (method url-fetch)
@@ -7960,7 +8244,7 @@ algorism to indicate multiplication by 1000.")
                            "Text-SimpleTable-" version ".tar.gz"))
        (sha256
         (base32
-         "15hpry9jwrf1vbjyk21s65rllxrdvp2fdzzv9gsvczggby2yyzfs"))))
+         "14sjmdcy7s73sk740g3ccmzmwhwd52x5ay3bjmibjlql1cag70ld"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Text-SimpleTable/")
     (synopsis "Simple ASCII tables")
@@ -8037,6 +8321,23 @@ is almost always an attempt at transliteration-- i.e., conveying, in Roman
 letters, the pronunciation expressed by the text in some other writing
 system.")
     (license (package-license perl))))
+
+(define-public perl-threads
+  (package
+    (name "perl-threads")
+    (version "2.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/J/JD/JDHEDDEN/threads-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "047i22mdnf7fa0h9w5jhqrjbg561l5jxk8xqzwh6zbmwlac4qf98"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/threads/")
+    (synopsis "Perl interpreter-based threads")
+    (description "This module exposes interpreter threads to the Perl level.")
+    (license perl-license)))
 
 (define-public perl-throwable
   (package
@@ -8192,6 +8493,26 @@ rounded or exact terms.")
     (description "Time::Duration::Parse is a module to parse human readable
 duration strings like \"2 minutes\" and \"3 seconds\" to seconds.")
     (license (package-license perl))))
+
+(define-public perl-time-hires
+  (package
+    (name "perl-time-hires")
+    (version "1.9758")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/J/JH/JHI/Time-HiRes-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "07jbydcdzpjm6i4nidci0rlklx4kla210fsl6zishw0yq5di9yjv"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Time-HiRes/")
+    (synopsis "High resolution alarm, sleep, gettimeofday, interval timers")
+    (description "This package implements @code{usleep}, @code{ualarm}, and
+@code{gettimeofday} for Perl, as well as wrappers to implement @code{time},
+@code{sleep}, and @code{alarm} that know about non-integral seconds.")
+    (license perl-license)))
 
 (define-public perl-time-local
   (package
@@ -9060,6 +9381,30 @@ File::Find replacement in Perl.")
   (description "File::Find::Object::Rule is an alternative Perl
 interface to File::Find::Object.")
   (license (package-license perl))))
+
+(define-public perl-font-ttf
+  (package
+    (name "perl-font-ttf")
+    (version "1.06")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/B/BH/BHALLISSY/Font-TTF-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "14y29ja3lsa3yw0ll20lj96f3zz5zydjqi1c5nh9wxar8927ssab"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-io-string" ,perl-io-string)))
+    (home-page "http://search.cpan.org/dist/Font-TTF/")
+    (synopsis "TTF font support for Perl")
+    (description "This package provides a Perl module for TrueType/OpenType
+font hacking.  It supports reading, processing and writing of the following
+tables: GDEF, GPOS, GSUB, LTSH, OS/2, PCLT, bsln, cmap, cvt, fdsc, feat,
+fpgm, glyf, hdmx, head, hhea, hmtx, kern, loca, maxp, mort, name, post, prep,
+prop, vhea, vmtx and the reading and writing of all other table types.")
+    (license artistic2.0)))
 
 (define-public perl-libtime-parsedate
   (package

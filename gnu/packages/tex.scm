@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system trivial)
@@ -38,8 +40,10 @@
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gd)
@@ -47,6 +51,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pdf)
@@ -4263,3 +4268,90 @@ develop documents with LaTeX, in a single application.")
 plain TeX, and Eplain, originally written by Paul Abrahams, Kathryn Hargreaves,
 and Karl Berry.")
     (license license:fdl1.3+)))
+
+(define-public lyx
+  (package
+    (name "lyx")
+    (version "2.2.3")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/2.2.x/"
+                                 name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0xvaz0i371nn2ndinc0d3ywj76ivb62649a4sdgwbivisiahd2fj"))
+             (patches (search-patches "lyx-2.2.3-fix-test.patch"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                (delete-file-recursively "3rdparty")
+                #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags `("-DLYX_USE_QT=QT5"
+                           "-DLYX_EXTERNAL_BOOST=1"
+                           "-DLYX_INSTALL=1"
+                           "-DLYX_RELEASE=1"
+                           ,(string-append "-DLYX_INSTALL_PREFIX="
+                                           (assoc-ref %outputs "out")
+                                           ;; Exact name and level is necessary.
+                                           "/lyx2.2"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-python
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("src/support/os.cpp")
+              (("\"python ")
+               (string-append "\""
+                              (assoc-ref inputs "python-2")
+                              "/bin/python ")))
+             #t))
+         (add-after 'patch-python 'patch-installer
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+              (("/usr/local/man/man1")
+               (string-append (assoc-ref outputs "out")
+                              "/share/man/man1")))
+             #t))
+         (add-after 'patch-python 'patch-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "lib/lyx.desktop.in"
+              (("Exec=")
+               (string-append "Exec="
+                              (assoc-ref outputs "out")
+                              "/")))
+             #t))
+         (add-before 'check 'setenv-check
+           (lambda _
+             (setenv "LYX_DIR_22x" (string-append (getcwd) "/../lyx-"
+                                                  ,version "/lib"))
+             #t))
+         (add-after 'install 'install-symlinks
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/bin"))
+               (symlink "../lyx2.2/bin/lyx2.2"
+                (string-append out "/bin/lyx2.2"))
+               #t))))))
+    (inputs
+     `(("boost" ,boost)
+       ("hunspell" ,hunspell) ; Note: Could also use aspell instead.
+       ("libx11" ,libx11)
+       ("python-2" ,python-2)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("texlive" ,texlive))) ; article.cls is in texmf-dist.
+    (native-inputs
+     `(("python-2" ,python-2)
+       ("pkg-config" ,pkg-config)
+       ("bc" ,bc)))
+    (home-page "https://www.lyx.org/")
+    (synopsis "Document preparation system with GUI")
+    (description "LyX is a document preparation system.  It excels at letting
+you create complex technical and scientific articles with mathematics,
+cross-references, bibliographies, indexes, etc.  It is very good for working
+with documents of any length in which the usual processing abilities are
+required: automatic sectioning and pagination, spell checking and so forth.")
+    (license license:gpl2+)))

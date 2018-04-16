@@ -8,11 +8,11 @@ make[2]: Entering directory '/tmp/guix-build-libgnomeui-2.24.5.drv-0/libgnomeui-
 INFO: Reading ./gnome-marshal.list...
   GEN    gnome-marshal.h
 Traceback (most recent call last):
-  File "/gnu/store/azh1is0xknn4xphwj33iqcb5ic9qhk8l-glib-2.54.2-bin/bin/glib-mkenums", line 688, in <module>
+  File "/gnu/store/...-glib-2.54.2-bin/bin/glib-mkenums", line 688, in <module>
     process_file(fname)
-  File "/gnu/store/azh1is0xknn4xphwj33iqcb5ic9qhk8l-glib-2.54.2-bin/bin/glib-mkenums", line 420, in process_file
+  File "/gnu/store/...-glib-2.54.2-bin/bin/glib-mkenums", line 420, in process_file
     line = curfile.readline()
-  File "/gnu/store/3lkypf5wnsnvkaidhw0pv7k3yjfh1r9g-python-3.6.3/lib/python3.6/codecs.py", line 321, in decode
+  File "/gnu/store/...-python-3.6.3/lib/python3.6/codecs.py", line 321, in decode
     (result, consumed) = self._buffer_decode(data, self.errors, final)
 UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf1 in position 1009: invalid continuation byte
 make[2]: *** [Makefile:1109: stamp-gnometypebuiltins.h] Error 1

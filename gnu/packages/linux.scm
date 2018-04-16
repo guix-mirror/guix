@@ -284,6 +284,9 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("bc" ,bc)
        ("openssl" ,openssl)
        ("kmod" ,kmod)
+       ("elfutils" ,elfutils)  ; Needed to enable CONFIG_STACK_VALIDATION
+       ("flex" ,flex)
+       ("bison" ,bison)
        ;; On x86, build with GCC-7 for full retpoline support.
        ;; FIXME: Remove this when our default compiler has retpoline support.
        ,@(match (system->linux-architecture
@@ -308,6 +311,11 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/pwd
+           (lambda _
+             (substitute* (find-files "." "^Makefile(\\.include)?$")
+               (("/bin/pwd") "pwd"))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
              ;; Avoid introducing timestamps
@@ -383,8 +391,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.15.12")
-(define %linux-libre-hash "01wpxlw70nzdl8nk3xb8z3m93ads55q56ky56wpsci304jlnrd3v")
+(define %linux-libre-version "4.16.2")
+(define %linux-libre-hash "04sma28djhr2llffnd8pmpb1jfwaqcg2sipp0jnnj1llpwj3rah7")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -392,8 +400,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.29")
-(define %linux-libre-4.14-hash "0y8p9pn40jgk96c10i9px2n6pqim788q7zssngp46glmpwfz4gra")
+(define %linux-libre-4.14-version "4.14.34")
+(define %linux-libre-4.14-hash "11gmvxngjfx4w24a1yjc98hhdl8zfh87byrslgy94faybj8dl938")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -402,20 +410,20 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.88"
-                    "0qlhd8xw3g00i7krpfndkwxzjszk067h26qsxxsszvxyx2s6gp4x"
+  (make-linux-libre "4.9.94"
+                    "1ff6g1pq16l95bpw4bfagdg4dd49mgfrg9z7l7s6r9z7qp14cd7m"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.122"
-                    "1ayilv7474vsif3jpb723jbcy4kymv1fpdr96c1g743bad1wkqqq"
+  (make-linux-libre "4.4.128"
+                    "1aqz5skyz534bcpnn6w9madg6kadgyjjypah9dhmqf841rygb6rk"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
-  (make-linux-libre "4.1.50"
-                    "1hl1pk724v2waa55bhxfmxyz9nl6pkcj4dc3l80jfvqdfgr55mm2"
+  (make-linux-libre "4.1.51"
+                    "0l8lpwjpckp44hjyx5qrxqdwwi97gyyc1n6pmk66cr3fpdhnk540"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -934,14 +942,15 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.21")
+    (version "4.22")
+    (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://github.com/strace/strace/releases/"
-                                 "download/v" version "/strace-" version ".tar.xz"))
+             (uri (string-append home-page "/files/" version
+                                 "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "0dsw6xcfrmygidp1dj2ch8cl8icrar7789snkb2r8gh78kdqhxjw"))))
+               "17dkpnsjxmys1ydidm9wcvc3wscsz44fmlxw3dclspn9cj9d1306"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -952,7 +961,6 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                (("/bin/sh") (which "sh")))
              #t)))))
     (native-inputs `(("perl" ,perl)))
-    (home-page "https://strace.io/")
     (synopsis "System call tracer for Linux")
     (description
      "strace is a system call tracer, i.e. a debugging tool which prints out a
@@ -1146,8 +1154,7 @@ configure the Linux 2.4.x and later IPv4 packet filtering ruleset
 This package also includes @command{ip6tables}, which is used to configure the
 IPv6 packet filter.
 
-Both commands are targeted at system administrators.
-")
+Both commands are targeted at system administrators.")
     (license license:gpl2+)))
 
 (define-public ebtables
@@ -1208,7 +1215,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.15.0")
+    (version "4.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1216,7 +1223,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0mc3g4kj7h3jhwz2b2gdf41gp6bhqn7axh4mnyvhkdnpk5m63m28"))))
+                "02pfalg319jpbjz273ph725br8dnkzpfvi98azi9yd6p1w128p0c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -3768,7 +3775,7 @@ developers.")
 (define-public radeontop
   (package
     (name "radeontop")
-    (version "1.0")
+    (version "1.1")
     (home-page "https://github.com/clbr/radeontop/")
     (source (origin
               (method url-fetch)
@@ -3776,7 +3783,7 @@ developers.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1z38nibirqxrbsfyhfcrnzlcw16cqjp4ds6qnjfxalwayf9fm5x9"))))
+                "1fv06j5c99imvzkac3j40lgjhr5b2i77fnyffhlvj92bli1fm1c6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -3810,7 +3817,7 @@ under OpenGL graphics workloads.")
 (define-public efivar
   (package
     (name "efivar")
-    (version "34")
+    (version "35")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rhinstaller/" name
@@ -3818,7 +3825,7 @@ under OpenGL graphics workloads.")
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
-                "09a31y6sl3b33myy42gl9k732k1f440ycd07l6ac5d5l53kk8zhv"))))
+                "153k2ifyl4giz5fkryxhz8z621diqjy7v25hfga4z94rs32ks0qy"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Tests require a UEFI system and is not detected in the chroot.
@@ -3843,7 +3850,7 @@ interface to the variable facility of UEFI boot firmware.")
 (define-public efibootmgr
   (package
     (name "efibootmgr")
-    (version "14")
+    (version "16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rhinstaller/" name
@@ -3851,26 +3858,23 @@ interface to the variable facility of UEFI boot firmware.")
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1n3sydvpr6yl040hhf460k7mrxby7laqd9dqs6pq0js1hijc2zip"))))
+                "0pzn67vxxaf7jna4cd0i4kqm60h04kb21hckksv9z82q9gxra1wm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.
        #:make-flags (list (string-append "prefix=" %output)
                           (string-append "libdir=" %output "/lib")
+                          ;; EFIDIR denotes a subdirectory relative to the
+                          ;; EFI System Partition where the loader will be
+                          ;; installed (known as OS_VENDOR in the code).
+                          ;; GRUB overrides this, as such it's only used if
+                          ;; nothing else is specified on the command line.
+                          "EFIDIR=gnu"
                           ;; Override CFLAGS to add efivar include directory.
                           (string-append "CFLAGS=-O2 -g -flto -I"
                                          (assoc-ref %build-inputs "efivar")
                                          "/include/efivar"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'branding
-           ;; Replace default loader path with something more familiar.
-           (lambda _
-             (substitute* "src/efibootmgr.c"
-               (("EFI\\\\\\\\redhat") ; Matches 'EFI\\redhat'.
-                "EFI\\\\gnu"))
-             #t))
-         (delete 'configure))))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -4562,3 +4566,30 @@ text-mode or graphical applications that don't use a display server.
 Also included is @command{fbgrab}, a wrapper around @command{fbcat} that
 emulates the behaviour of Gunnar Monell's older fbgrab utility.")
     (license license:gpl2)))
+
+(define-public libcgroup
+  (package
+    (name "libcgroup")
+    (version "0.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/libcg/" name "/"
+             version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0lgvyq37gq84sk30sg18admxaj0j0p5dq3bl6g74a1ppgvf8pqz4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("linux-pam" ,linux-pam)))
+    (home-page "https://sourceforge.net/projects/libcg/")
+    (synopsis "Control groups management tools")
+    (description "Control groups is Linux kernel method for process resource
+restriction, permission handling and more.  This package provides userspace
+interface to this kernel feature.")
+    (license license:lgpl2.1)))

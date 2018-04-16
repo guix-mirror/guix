@@ -361,14 +361,14 @@ k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
 (define-public r-cluster
   (package
     (name "r-cluster")
-    (version "2.0.6")
+    (version "2.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cluster" version))
        (sha256
         (base32
-         "1z4gbz7chxxi4ly6c0yjlikwgf8aa8dlg05cn5cd6pjr21zvh97l"))))
+         "0nf2hnsv5rhw6399b4gk1rj5c8hfc6ajfnkh3qbwfx3cz4asrg45"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
@@ -466,14 +466,14 @@ also flexible enough to handle most nonstandard requirements.")
 (define-public r-matrix
   (package
     (name "r-matrix")
-    (version "1.2-12")
+    (version "1.2-13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Matrix" version))
        (sha256
         (base32
-         "1wm45hg4x5ay15y03k6rmgkd1n9r01da72mszk24vafwd7pimr8n"))))
+         "1j4fyn2r3ds51hrxch738gn7d9qvpi4b01n0rxzw5jpv28rnpyvx"))))
     (properties `((upstream-name . "Matrix")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2672,16 +2672,17 @@ that package, other packages are unaffected.")
 (define-public r-blob
   (package
     (name "r-blob")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "blob" version))
               (sha256
                (base32
-                "05pazzcyz3c3vd2l70zq9cf172cgjff4dnf419zigfnxycyn1mhn"))))
+                "0lsg91hk508dd95ivig2lwg62qafwnarjw68110kx63cfk4zkjxc"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-tibble" ,r-tibble)))
+     `(("r-prettyunits" ,r-prettyunits)
+       ("r-tibble" ,r-tibble)))
     (home-page "https://github.com/hadley/blob")
     (synopsis "Simple S3 Class for representing vectors of binary data")
     (description "Raw vectors in R are useful for storing a single binary
@@ -3120,14 +3121,14 @@ analysis of large sparse or dense matrices.")
 (define-public r-glmnet
   (package
    (name "r-glmnet")
-   (version "2.0-13")
+   (version "2.0-16")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "glmnet" version))
      (sha256
       (base32
-       "1zdqp6wnqxzp5qn2ky47phbkrxv3cpgbwmdp896h3xxjvp58sa7k"))))
+       "1brr51z1fzbpyj6myyir4g6dhbp6xwl7nx4xnvrjarnf5y0csk55"))))
    (build-system r-build-system)
    (inputs
     `(("gfortran" ,gfortran)))
@@ -3543,13 +3544,13 @@ memory usage.")
 (define-public r-viridis
   (package
     (name "r-viridis")
-    (version "0.5.0")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "viridis" version))
               (sha256
                (base32
-                "1ka6amybgzqkg3cbwfxwwqzzzpfn6q5jcia5am0bw48y5hbpg97y"))))
+                "060rf1jn29dq53y3nhb0hykvcap6rqsk04rq544ypiiqb18ngwnx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -4311,13 +4312,13 @@ data at that region, and avoids over-plotting.")
 (define-public r-ggthemes
   (package
     (name "r-ggthemes")
-    (version "3.4.0")
+    (version "3.4.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ggthemes" version))
               (sha256
                (base32
-                "1jj8lp7jbk3489kpgbw4b5phpn01gkfmksc21c6sn3x6wmzyn6hs"))))
+                "0i7ygpizs00acizixc29bhbrci523ys7vzxbii9b3bcmfa3pj7i3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -4526,14 +4527,14 @@ perform @dfn{independent component analysis} (ICA) and projection pursuit.")
 (define-public r-randomforest
   (package
     (name "r-randomforest")
-    (version "4.6-12")
+    (version "4.6-14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "randomForest" version))
        (sha256
         (base32
-         "1i43idaihhl6nwqw42v9dqpl6f8z3ykcn2in32lh2755i27jylbf"))))
+         "0kbmm0l42fc2d1rdq0l7k09d34kd87q4lx651ffsic4y84h8kf7l"))))
     (properties `((upstream-name . "randomForest")))
     (build-system r-build-system)
     (home-page "https://www.stat.berkeley.edu/~breiman/RandomForests/")
@@ -5058,14 +5059,14 @@ algorithms.")
 (define-public r-lme4
   (package
     (name "r-lme4")
-    (version "1.1-15")
+    (version "1.1-16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lme4" version))
        (sha256
         (base32
-         "0sc6rvhiizxxpkdc3wps200wg3pqc0d89crn29lzm75fk8qdd7vx"))))
+         "0p5x9ki4dq8058mc7k9wdnlh60z1xa3wk2nmf71wl7w59m4szh92"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
@@ -5138,14 +5139,14 @@ to Applied regression, Second Edition, Sage, 2011.")
 (define-public r-caret
   (package
     (name "r-caret")
-    (version "6.0-78")
+    (version "6.0-79")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "caret" version))
        (sha256
         (base32
-         "0h1nxzii2h80aslp1zsjczrlfmaks44sskabk4yq9c5rafc7ka6y"))))
+         "1i6sjw279g6mj83vz5gv99x0nljcbpy7v0nbl72lmd80sf7rjshl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreach" ,r-foreach)

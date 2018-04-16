@@ -115,14 +115,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.29")
+    (version "2.4.33")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "003z3yckkdihfv69rgqsik1w2jsnh14j3ci8fjia4s2mlajm6xvp"))))
+               "01bghiq4pbgjbgd6gic0nb8bbk6mfpwx3gcsbf21f3dhb4c520ny"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -186,14 +186,14 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.13.10")
+    (version "1.13.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "11a8m4lhy6h8mmrsakn73pd5gcyvhxpz1xvlr103rglh9l884q9k"))))
+                "1pl5ii1w2ycxprxk8zdnxlpdd1dia6hyrns7mnqkm3fv5ihgb4pv"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -317,13 +317,13 @@ documentation.")
       (license l:bsd-2))))
 
 (define-public nginx-documentation
-  ;; This documentation should be relevant for nginx@1.13.8.
-  (let ((revision 2100)
-        (changeset "cfb7bd672d77"))
+  ;; This documentation should be relevant for nginx@1.13.11.
+  (let ((revision 2131)
+        (changeset "dbaf3950f8e9"))
     (package
       (name "nginx-documentation")
       (version
-       (simple-format #f "2018-01-22-~A-~A" revision changeset))
+       (simple-format #f "2018-04-04-~A-~A" revision changeset))
       (source
        (origin (method hg-fetch)
                (uri (hg-reference
@@ -332,7 +332,7 @@ documentation.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "096fcsc0wnfr847m7dwp17rivd3alxq7v9hq9s5lkfbhylmh18vm"))))
+                 "0acdjsdaqixzh9g9s6db552v4pan4nqrllyqapay9ns9yzh1hrp7"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -3662,7 +3662,7 @@ library.")
 (define-public perl-www-mechanize
   (package
     (name "perl-www-mechanize")
-    (version "1.87")
+    (version "1.88")
     (source
      (origin
        (method url-fetch)
@@ -3670,7 +3670,7 @@ library.")
                            "WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "1kxrydhl7nxlyjv0xvyiyj4igdv4fwnggv0ihlp79bysbjjl54w1"))))
+         "0yd8a1zsfpbv5wr79x3iqmik9gvcd10iam9dfrdan4dri9vpxn9n"))))
     (build-system perl-build-system)
     (native-inputs                      ;only for tests
      `(("perl-cgi" ,perl-cgi)
@@ -3833,18 +3833,19 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "05pz4ychqp4cqywcdavdi8jj3y09gmam097d2idjnlcg9x61h2s9"))))
+                "0bs0i5mjfzxfshqz8i30nhn7kvgwly4fqn5bfq6dqfdrn7biai2x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
        ("r-jsonlite" ,r-jsonlite)
-       ("r-mime" ,r-mime)))
+       ("r-mime" ,r-mime)
+       ("r-xfun" ,r-xfun)))
     (native-inputs
      `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/yihui/servr")
@@ -3948,13 +3949,13 @@ LaTeX.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "3.1")
+    (version "3.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "15fbjya2xrf2k9hhvg3frisrram4yk5wlfz67zj1z8ahpsb2a3r7"))))
+                "15hmy71310hnf9yqvz0icx4cq939gv6iqaifzlfdh2ia8akawdhn"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -5122,7 +5123,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
 (define-public http-parser
   (package
     (name "http-parser")
-    (version "2.7.1")
+    (version "2.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nodejs/http-parser/"
@@ -5130,7 +5131,7 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1cw6nf8xy4jhib1w0jd2y0gpqjbdasg8b7pkl2k2vpp54k9rlh3h"))))
+                "15ids8k2f0xhnnxh4m85w2f78pg5ndiwrpl24kyssznnp1l5yqai"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -5525,7 +5526,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2017-08-03")
+    (version "2018-03-11")
     (source
      (origin
        (method url-fetch)
@@ -5534,7 +5535,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "05s16y552hbyj91s7bnlkx1bi64s6aw0fjy29az8via3i3b21yhl"))))
+         "1ix15ck45yb659k63mhwxwia6qnm9nn8jw0bga85abrvk1rchjdn"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("gzip" ,gzip)
@@ -6355,7 +6356,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 (define-public nghttp2
   (package
     (name "nghttp2")
-    (version "1.31.0")
+    (version "1.31.1")
     (source
      (origin
        (method url-fetch)
@@ -6364,7 +6365,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1ivs74v9sa2sds3dq0s7vn9bkmhr2hgwyg1an1rah3agqwnkqmrn"))))
+         "00z1687m4wi2gbgkijbv099l9hs1sjlyzbhh8jhn0xssx4xcifb5"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "lib"))              ; only libnghttp2

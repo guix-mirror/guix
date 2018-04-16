@@ -300,14 +300,14 @@ private network between hosts on the internet.")
 (define-public sshuttle
   (package
     (name "sshuttle")
-    (version "0.78.3")
+    (version "0.78.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
         (base32
-         "12xyq5h77b57cnkljdk8qyjxzys512b73019s20x6ck5brj1m8wa"))))
+         "0pqk43kd7crqhg6qgnl8kapncwgw1xgaf02zarzypcw64kvdih9h"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)

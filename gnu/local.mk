@@ -349,6 +349,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pumpio.scm			\
   %D%/packages/pretty-print.scm			\
   %D%/packages/protobuf.scm			\
+  %D%/packages/pure.scm				\
   %D%/packages/pv.scm				\
   %D%/packages/python.scm			\
   %D%/packages/python-crypto.scm		\
@@ -543,6 +544,7 @@ MODULES_NOT_COMPILED +=				\
 patchdir = $(guilemoduledir)/%D%/packages/patches
 dist_patch_DATA =						\
   %D%/packages/patches/4store-fix-buildsystem.patch		\
+  %D%/packages/patches/4store-unset-preprocessor-directive.patch	\
   %D%/packages/patches/a2ps-CVE-2001-1593.patch	\
   %D%/packages/patches/a2ps-CVE-2014-0466.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
@@ -589,10 +591,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/ceph-skip-collect-sys-info-test.patch	\
   %D%/packages/patches/ceph-skip-unittest_blockdev.patch	\
   %D%/packages/patches/chmlib-inttypes.patch			\
-  %D%/packages/patches/clang-libc-search-path.patch		\
+  %D%/packages/patches/clang-3.5-libc-search-path.patch		\
   %D%/packages/patches/clang-3.8-libc-search-path.patch		\
+  %D%/packages/patches/clang-6.0-libc-search-path.patch		\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
+  %D%/packages/patches/classpath-aarch64-support.patch		\
   %D%/packages/patches/clementine-remove-crypto++-dependency.patch	\
   %D%/packages/patches/clementine-use-openssl.patch		\
   %D%/packages/patches/clisp-glibc-2.26.patch			\
@@ -604,7 +608,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/cool-retro-term-dont-check-uninit-member.patch	\
   %D%/packages/patches/cool-retro-term-fix-array-size.patch	\
   %D%/packages/patches/cool-retro-term-memory-leak-1.patch	\
-  %D%/packages/patches/cool-retro-term-remove-non-free-fonts.patch	\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
@@ -617,8 +620,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-2017-12836.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
+  %D%/packages/patches/datamash-arm-tests.patch			\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
+  %D%/packages/patches/delly-use-system-libraries.patch		\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/diffutils-getopt.patch			\
@@ -664,6 +669,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
   %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
   %D%/packages/patches/freeimage-fix-build-with-gcc-5.patch	\
+  %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/freetype-CVE-2018-6942.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
   %D%/packages/patches/gawk-shell.patch				\
@@ -776,10 +782,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/heimdal-CVE-2017-11103.patch		\
   %D%/packages/patches/hmmer-remove-cpu-specificity.patch	\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
-  %D%/packages/patches/htop-fix-process-tree.patch		\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
-  %D%/packages/patches/hwloc-tests-without-sysfs.patch		\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-use-system-graphite2.patch	\
@@ -884,7 +888,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-newer-libconfig.patch		\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
-  %D%/packages/patches/links-CVE-2017-11114.patch		\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
@@ -901,6 +904,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
+  %D%/packages/patches/lyx-2.2.3-fix-test.patch			\
   %D%/packages/patches/mailutils-uninitialized-memory.patch	\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mars-install.patch			\
@@ -928,7 +932,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupdf-build-with-latest-openjpeg.patch	\
   %D%/packages/patches/mupdf-CVE-2017-17858.patch		\
+  %D%/packages/patches/mupdf-CVE-2018-6544.patch		\
+  %D%/packages/patches/mupdf-CVE-2018-1000051.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
+  %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
@@ -1086,6 +1093,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/shadow-CVE-2018-7169.patch		\
+  %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
   %D%/packages/patches/shishi-fix-libgcrypt-detection.patch	\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\
@@ -1116,6 +1124,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tipp10-fix-compiling.patch		\
   %D%/packages/patches/tipp10-remove-license-code.patch		\
   %D%/packages/patches/tk-find-library.patch			\
+  %D%/packages/patches/translate-shell-fix-curl-tests.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\

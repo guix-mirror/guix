@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,9 @@
   #:use-module (guix derivations)
   #:use-module (guix scripts build)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages guile)
   #:autoload   (gnu packages base) (tar)
   #:autoload   (gnu packages package-management) (guix)
   #:autoload   (gnu packages gnupg) (libgcrypt)
@@ -66,6 +69,11 @@
         (compressor "bzip2" ".bz2"
                     #~(#+(file-append bzip2 "/bin/bzip2") "-9"))
         (compressor "none" "" #f)))
+
+;; This one is only for use in this module, so don't put it in %compressors.
+(define bootstrap-xz
+  (compressor "bootstrap-xz" ".xz"
+              #~(#+(file-append %bootstrap-coreutils&co "/bin/xz") "-e -T0")))
 
 (define (lookup-compressor name)
   "Return the compressor object called NAME.  Error out if it could not be
@@ -230,6 +238,7 @@ the image."
   (define build
     (with-imported-modules `(,@(source-module-closure '((guix docker))
                                                       #:select? not-config?)
+                             (guix build store-copy)
                              ((guix config) => ,config))
       #~(begin
           ;; Guile-JSON is required by (guix docker).
@@ -237,13 +246,15 @@ the image."
            (string-append #+json "/share/guile/site/"
                           (effective-version)))
 
-          (use-modules (guix docker) (srfi srfi-19))
+          (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
 
           (setenv "PATH" (string-append #$tar "/bin"))
 
-          (build-docker-image #$output #$profile
+          (build-docker-image #$output
+                              (call-with-input-file "profile"
+                                read-reference-graph)
+                              #$profile
                               #:system (or #$target (utsname:machine (uname)))
-                              #:closure "profile"
                               #:symlinks '#$symlinks
                               #:compressor '#$(compressor-command compressor)
                               #:creation-time (make-time time-utc 0 1)))))
@@ -325,6 +336,9 @@ the image."
          (option '("localstatedir") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'localstatedir? #t result)))
+         (option '("bootstrap") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'bootstrap? #t result)))
 
          (append %transformation-options
                  %standard-build-options)))
@@ -352,6 +366,8 @@ Create a bundle of PACKAGE.\n"))
   -m, --manifest=FILE    create a pack with the manifest from FILE"))
   (display (G_ "
       --localstatedir    include /var/guix in the resulting pack"))
+  (display (G_ "
+      --bootstrap        use the bootstrap binaries to build the pack"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -393,28 +409,43 @@ Create a bundle of PACKAGE.\n"))
        (else (packages->manifest packages)))))
 
   (with-error-handling
-    (parameterize ((%graft? (assoc-ref opts 'graft?)))
-      (let* ((dry-run?    (assoc-ref opts 'dry-run?))
-             (manifest    (manifest-from-args opts))
-             (pack-format (assoc-ref opts 'format))
-             (name        (string-append (symbol->string pack-format)
-                                         "-pack"))
-             (target      (assoc-ref opts 'target))
-             (compressor  (assoc-ref opts 'compressor))
-             (symlinks    (assoc-ref opts 'symlinks))
-             (build-image (match (assq-ref %formats pack-format)
-                            ((? procedure? proc) proc)
-                            (#f
-                             (leave (G_ "~a: unknown pack format")
-                                    format))))
-             (localstatedir? (assoc-ref opts 'localstatedir?)))
-        (with-store store
+    (let* ((dry-run?    (assoc-ref opts 'dry-run?))
+           (manifest    (manifest-from-args opts))
+           (pack-format (assoc-ref opts 'format))
+           (name        (string-append (symbol->string pack-format)
+                                       "-pack"))
+           (target      (assoc-ref opts 'target))
+           (bootstrap?  (assoc-ref opts 'bootstrap?))
+           (compressor  (if bootstrap?
+                            bootstrap-xz
+                            (assoc-ref opts 'compressor)))
+           (tar         (if bootstrap?
+                            %bootstrap-coreutils&co
+                            tar))
+           (symlinks    (assoc-ref opts 'symlinks))
+           (build-image (match (assq-ref %formats pack-format)
+                          ((? procedure? proc) proc)
+                          (#f
+                           (leave (G_ "~a: unknown pack format")
+                                  format))))
+           (localstatedir? (assoc-ref opts 'localstatedir?)))
+      (with-store store
+        (parameterize ((%graft? (assoc-ref opts 'graft?))
+                       (%guile-for-build (package-derivation
+                                          store
+                                          (if (assoc-ref opts 'bootstrap?)
+                                              %bootstrap-guile
+                                              (canonical-package guile-2.2)))))
           ;; Set the build options before we do anything else.
           (set-build-options-from-command-line store opts)
 
           (run-with-store store
             (mlet* %store-monad ((profile (profile-derivation
                                            manifest
+                                           #:hooks (if bootstrap?
+                                                       '()
+                                                       %default-profile-hooks)
+                                           #:locales? (not bootstrap?)
                                            #:target target))
                                  (drv (build-image name profile
                                                    #:target
@@ -424,7 +455,9 @@ Create a bundle of PACKAGE.\n"))
                                                    #:symlinks
                                                    symlinks
                                                    #:localstatedir?
-                                                   localstatedir?)))
+                                                   localstatedir?
+                                                   #:tar
+                                                   tar)))
               (mbegin %store-monad
                 (show-what-to-build* (list drv)
                                      #:use-substitutes?

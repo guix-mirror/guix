@@ -181,7 +181,8 @@
 (define (all-service-modules)
   "Return the default set of service modules."
   (cons (resolve-interface '(gnu services))
-        (all-modules (%service-type-path))))
+        (all-modules (%service-type-path)
+                     #:warn warn-about-load-error)))
 
 (define* (fold-service-types proc seed
                              #:optional
@@ -352,7 +353,7 @@ directory."
                 (extensions
                  (list (service-extension system-service-type
                                           boot-script-entry)))
-                (compose append)
+                (compose identity)
                 (extend compute-boot-script)))
 
 (define %boot-service
@@ -457,7 +458,7 @@ ACTIVATION-SCRIPT-TYPE."
                 (extensions
                  (list (service-extension boot-service-type
                                           gexps->activation-gexp)))
-                (compose append)
+                (compose identity)
                 (extend second-argument)))
 
 (define %activation-service

@@ -48,26 +48,6 @@ Path toStorePath(const Path & path)
 }
 
 
-Path followLinksToStore(const Path & _path)
-{
-    Path path = absPath(_path);
-    while (!isInStore(path)) {
-        if (!isLink(path)) break;
-        string target = readLink(path);
-        path = absPath(target, dirOf(path));
-    }
-    if (!isInStore(path))
-        throw Error(format("path `%1%' is not in the Nix store") % path);
-    return path;
-}
-
-
-Path followLinksToStorePath(const Path & path)
-{
-    return toStorePath(followLinksToStore(path));
-}
-
-
 string storePathToName(const Path & path)
 {
     assertStorePath(path);
@@ -197,17 +177,6 @@ Path makeFixedOutputPath(bool recursive,
                 "fixed:out:" + (recursive ? (string) "r:" : "") +
                 printHashType(hashAlgo) + ":" + printHash(hash) + ":"),
             name);
-}
-
-
-std::pair<Path, Hash> computeStorePathForPath(const Path & srcPath,
-    bool recursive, HashType hashAlgo, PathFilter & filter)
-{
-    HashType ht(hashAlgo);
-    Hash h = recursive ? hashPath(ht, srcPath, filter).first : hashFile(ht, srcPath);
-    string name = baseNameOf(srcPath);
-    Path dstPath = makeFixedOutputPath(recursive, hashAlgo, h, name);
-    return std::pair<Path, Hash>(dstPath, h);
 }
 
 

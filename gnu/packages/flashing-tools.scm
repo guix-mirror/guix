@@ -48,6 +48,7 @@
 (define-public flashrom
   (package
     (name "flashrom")
+    ;; XXX: The CFLAGS=... line below can probably be removed when updating.
     (version "1.0")
     (source (origin
               (method url-fetch)
@@ -64,9 +65,13 @@
               ("libftdi" ,libftdi)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output)
-                          "CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no")
+     '(#:make-flags
+       (list "CC=gcc"
+             ;; The default includes ‘-Wall -Werror’, causing the build to fail
+             ;; with deprecation warnings against libusb versions >= 1.0.22.
+             "CFLAGS=-Os -Wshadow"
+             (string-append "PREFIX=" %output)
+             "CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no")
        #:tests? #f                      ; no 'check' target
        #:phases
        (modify-phases %standard-phases
@@ -440,3 +445,35 @@ ME as far as possible (it only edits ME firmware image files).")
 
     ;; This is an Intel thing.
     (supported-systems '("x86_64-linux" "i686-linux"))))
+
+(define-public uefitool
+  (package
+    (name "uefitool")
+    (version "0.22.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/LongSoft/UEFITool/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "05jmhv7jpq08kqbd1477y1lgyjvcic3njrd0bmzdy7v7b7lnhl82"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (invoke "qmake" "-makefile")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "UEFITool" (string-append (assoc-ref outputs "out")
+                                                     "/bin"))
+             #t)))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://github.com/LongSoft/UEFITool/")
+    (synopsis "UEFI image editor")
+    (description "@code{uefitool} is a graphical image file editor for
+Unifinished Extensible Firmware Interface (UEFI) images.")
+    (license license:bsd-2)))

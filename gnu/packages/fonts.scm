@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;;
@@ -197,32 +197,12 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
     (name "font-lato")
     (version "2.010")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/zipbomb)
               (uri (string-append "http://www.latofonts.com/download/Lato2OFL.zip"))
               (sha256
                (base32
                 "1f5540g0ja1nx3ddd3ywn77xc81ssrxpq8n3gyb9sabyq2b4xda2"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((PATH     (string-append (assoc-ref %build-inputs
-                                                             "unzip")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype")))
-                     (setenv "PATH" PATH)
-                     (system* "unzip" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (for-each (lambda (ttf)
-                                 (install-file ttf font-dir))
-                               (find-files "." "\\.ttf$"))))))
-
-    (native-inputs `(("unzip" ,unzip)))
+    (build-system font-build-system)
     (home-page "http://www.latofonts.com/lato-free-fonts/")
     (synopsis "Lato sans-serif typeface")
     (description
@@ -325,37 +305,24 @@ The Liberation Fonts are sponsored by Red Hat.")
               (sha256
                (base32
                 "0x7cz6hvhpil1rh03rax9zsfzm54bh7r4bbrq8rz673gl9h47v0v"))))
-    (build-system gnu-build-system)
+    (build-system font-build-system)
     (arguments
-     `(#:tests? #f ; there are no tests
-       #:modules ((guix build utils)
-                  (guix build gnu-build-system)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
+         (add-before 'install 'build
            (lambda _
              (let ((compile
                     (lambda (name ext)
-                      (zero? (system*
-                              "fontforge" "-lang=ff"
-                              "-c" (string-append "Open('" name "');"
-                                                  "Generate('"
-                                                  (basename name "sfd") ext
-                                                  "')"))))))
-               (every (lambda (name)
-                        (and (compile name "ttf")
-                             (compile name "otf")))
-                      (find-files "." "\\.sfd$")))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((font-dir (string-append (assoc-ref outputs "out")
-                                            "/share/fonts/truetype")))
-               (mkdir-p font-dir)
-               (for-each (cut install-file <> font-dir)
-                         (find-files "." "\\.(otf|ttf)$"))
+                      (invoke
+                       "fontforge" "-lang=ff"
+                       "-c" (string-append "Open('" name "');"
+                                           "Generate('"
+                                           (basename name "sfd") ext
+                                           "')")))))
+               (for-each (lambda (name)
+                           (and (compile name "ttf")
+                                (compile name "otf")))
+                         (find-files "." "\\.sfd$"))
                #t))))))
     (native-inputs
      `(("fontforge" ,fontforge)))
@@ -1222,62 +1189,40 @@ It comes in 7 incremental weights:
 ExtraLight, Light, Book, Medium, Semibold, Bold & ExtraBold")
     (license license:silofl1.1)))
 
-(define-public culmus
+(define-public font-culmus
   (package
-    (name "culmus")
+    (name "font-culmus")
     (version "0.132")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://sourceforge.net/projects/"
-                            "culmus/files/culmus/" version "/culmus-src-"
-                            version ".tar.gz"))
-        (sha256
-         (base32
-          "1djxalm26r7bcq33ckmfa15xfs6pmqzvcl64d5lqa1dl01bl4j4z"))))
-    (build-system gnu-build-system)
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://sourceforge.net/projects/"
+                           "culmus/files/culmus/" version "/culmus-src-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1djxalm26r7bcq33ckmfa15xfs6pmqzvcl64d5lqa1dl01bl4j4z"))))
+    (build-system font-build-system)
     (arguments
-     `(#:tests? #f ; no tests
-       #:modules ((guix build utils)
-                  (guix build gnu-build-system)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
+         (add-before 'install 'build
            (lambda _
              (let ((compile
                     (lambda (name ext)
-                      (zero? (system*
-                              "fontforge" "-lang=ff"
-                              "-c" (string-append "Open('" name "');"
-                                                  "Generate('"
-                                                  (basename name "sfd") ext
-                                                  "')"))))))
+                      (invoke
+                       "fontforge" "-lang=ff"
+                       "-c" (string-append "Open('" name "');"
+                                           "Generate('"
+                                           (basename name "sfd") ext
+                                           "')")))))
                ;; This part based on the fonts shipped in the non-source package.
-               (every (lambda (name)
-                        (compile name "ttf"))
-                      (find-files "." "^[^Nachlieli].*\\.sfd$"))
-               (every (lambda (name)
-                        (compile name "otf"))
-                      (find-files "." "^Nachlieli.*\\.sfd$"))
-               #t)))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out     (assoc-ref %outputs "out"))
-                    (ttf     (string-append out "/share/fonts/truetype"))
-                    (otf     (string-append out "/share/fonts/opentype"))
-                    (license (string-append out "/share/doc/" ,name)))
-               (for-each (lambda (file)
-                           (install-file file ttf))
-                         (find-files "." "\\.ttf$"))
-               (for-each (lambda (file)
-                           (install-file file otf))
-                         (find-files "." "\\.otf$"))
-               (for-each (lambda (file)
-                           (install-file file license))
-                         '("GNU-GPL" "LICENSE" "LICENSE-BITSTREAM"))
+               (for-each (lambda (name)
+                           (compile name "ttf"))
+                         (find-files "." "^[^Nachlieli].*\\.sfd$"))
+               (for-each (lambda (name)
+                           (compile name "otf"))
+                         (find-files "." "^Nachlieli.*\\.sfd$"))
                #t))))))
     (native-inputs
      `(("fontforge" ,fontforge)))
@@ -1289,3 +1234,24 @@ serif (Nachlieli) and monospaced (Miriam Mono) trivials.  Also included Miriam,
 Drugulin, Aharoni, David, Hadasim etc.  Cantillation marks support is
 available in Keter YG.")
     (license license:gpl2))) ; consult the LICENSE file included
+
+(define-public font-lohit
+  (package
+    (name "font-lohit")
+    (version "20140220")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://releases.pagure.org/lohit/lohit-ttf-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1rmgr445hw1n851ywy28csfvswz1i6hnc8mzp88qw2xk9j4dn32d"))))
+    (build-system font-build-system)
+    (home-page "https://pagure.io/lohit")
+    (synopsis "Lohit TrueType Indic fonts")
+    (description "Lohit is a font family designed to cover Indic scripts.
+Lohit supports the Assamese, Bengali, Devanagari (Hindi, Kashmiri, Konkani,
+Maithili, Marathi, Nepali, Sindhi, Santali, Bodo, Dogri languages), Gujarati,
+Kannada, Malayalam, Manipuri, Oriya, Punjabi, Tamil and Telugu scripts.")
+    (license license:silofl1.1)))

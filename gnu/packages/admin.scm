@@ -261,15 +261,14 @@ graphs and can export its output to different formats.")
 (define-public htop
   (package
    (name "htop")
-   (version "2.1.0")
+   (version "2.2.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://hisham.hm/htop/releases/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "0j07z0xm2gj1vzvbgh4323k4db9mr7drd7gw95mmpqi61ncvwq1j"))
-            (patches (search-patches "htop-fix-process-tree.patch"))))
+              "0mrwpb3cpn3ai7ar33m31yklj64c3pp576vh1naqff6f21pq5mnr"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
@@ -1646,6 +1645,35 @@ you use the most from the command line and allows you to \"jump\" to
 frequently used directories by typing only a small pattern.")
     (license license:gpl3+)))
 
+(define-public fasd
+  (package
+    (name "fasd")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/clvv/fasd.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1awi71jdv3mhjrmar2d4z1i90kn7apd7aq1w31sh6w4yibz9kiyj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))  ;no configuration
+       #:tests? #f                      ;no tests
+       #:make-flags (list (string-append "PREFIX=" %output))))
+    (home-page "https://github.com/clvv/fasd")
+    (synopsis "Quick access to files and directories for shells")
+    (description
+     "Fasd (pronounced similar to \"fast\") is a command-line productivity
+booster.  Fasd offers quick access to files and directories for POSIX shells.
+It is inspired by tools like autojump, z, and v.  Fasd keeps track of files
+and directories you have accessed so that you can quickly reference them in
+the command line.")
+    (license license:x11)))
+
 (define-public iftop
   (package
     (name "iftop")
@@ -1901,13 +1929,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.44")
+    (version "4.46")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0803lp8kd3mp1jcm17i019xiqxdy85hhs6xk67zib8gmvg500gcn"))))
+        (base32 "0cskiqywiqkw44zdg4q78bjns6jjp1dz5lzdxrhpnpldc6075irw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Obscure test failures.

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix tests)
   #:use-module ((guix build utils) #:select (with-directory-excursion))
+  #:use-module ((guix utils) #:select (call-with-temporary-directory))
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
@@ -418,6 +419,24 @@
                          (call-with-input-file out read))
                  (equal? (list guile) refs)))))
 
+(test-assertm "gexp->file + #:splice?"
+  (mlet* %store-monad ((exp -> (list
+                                #~(define foo 'bar)
+                                #~(define guile #$%bootstrap-guile)))
+                       (guile  (package-file %bootstrap-guile))
+                       (drv    (gexp->file "splice" exp #:splice? #t))
+                       (out -> (derivation->output-path drv))
+                       (done   (built-derivations (list drv)))
+                       (refs   (references* out)))
+    (pk 'splice out)
+    (return (and (equal? `((define foo 'bar)
+                           (define guile ,guile)
+                           ,(call-with-input-string "" read))
+                         (call-with-input-file out
+                           (lambda (port)
+                             (list (read port) (read port) (read port)))))
+                 (equal? (list guile) refs)))))
+
 (test-assertm "gexp->derivation"
   (mlet* %store-monad ((file    (text-file "foo" "Hello, world!"))
                        (exp ->  (gexp
@@ -699,11 +718,12 @@
 
 (test-assertm "gexp->derivation & with-imported-module & computed module"
   (mlet* %store-monad
-      ((module -> (scheme-file "x" #~(begin
+      ((module -> (scheme-file "x" #~(;; splice!
                                        (define-module (foo bar)
                                          #:export (the-answer))
 
-                                       (define the-answer 42))))
+                                       (define the-answer 42))
+                               #:splice? #t))
        (build -> (with-imported-modules `(((foo bar) => ,module)
                                           (guix build utils))
                    #~(begin
@@ -853,6 +873,37 @@
       (return (and (zero? (close-pipe pipe))
                    (= (expt n 2) (string->number str)))))))
 
+(test-assertm "gexp->script #:module-path"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (define str
+       "Fake (guix base32) module!")
+
+     (mkdir (string-append directory "/guix"))
+     (call-with-output-file (string-append directory "/guix/base32.scm")
+       (lambda (port)
+         (write `(begin (define-module (guix base32))
+                        (define-public %fake! ,str))
+                port)))
+
+     (mlet* %store-monad ((exp -> (with-imported-modules '((guix base32))
+                                    (gexp (begin
+                                            (use-modules (guix base32))
+                                            (write (list %load-path
+                                                         %fake!))))))
+                          (drv    (gexp->script "guile-thing" exp
+                                                #:guile %bootstrap-guile
+                                                #:module-path (list directory)))
+                          (out -> (derivation->output-path drv))
+                          (done   (built-derivations (list drv))))
+       (let* ((pipe  (open-input-pipe out))
+              (data  (read pipe)))
+         (return (and (zero? (close-pipe pipe))
+                      (match data
+                        ((load-path str*)
+                         (and (string=? str* str)
+                              (not (member directory load-path))))))))))))
+
 (test-assertm "program-file"
   (let* ((n      (random (expt 2 50)))
          (exp    (with-imported-modules '((guix build utils))
@@ -869,6 +920,33 @@
                (str   (get-string-all pipe)))
           (return (and (zero? (close-pipe pipe))
                        (= n (string->number str)))))))))
+
+(test-assertm "program-file #:module-path"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (define text (random-text))
+
+     (call-with-output-file (string-append directory "/stupid-module.scm")
+       (lambda (port)
+         (write `(begin (define-module (stupid-module))
+                        (define-public %stupid-thing ,text))
+                port)))
+
+     (let* ((exp    (with-imported-modules '((stupid-module))
+                      (gexp (begin
+                              (use-modules (stupid-module))
+                              (display %stupid-thing)))))
+            (file   (program-file "program" exp
+                                  #:guile %bootstrap-guile
+                                  #:module-path (list directory))))
+       (mlet* %store-monad ((drv (lower-object file))
+                            (out -> (derivation->output-path drv)))
+         (mbegin %store-monad
+           (built-derivations (list drv))
+           (let* ((pipe  (open-input-pipe out))
+                  (str   (get-string-all pipe)))
+             (return (and (zero? (close-pipe pipe))
+                          (string=? text str))))))))))
 
 (test-assertm "scheme-file"
   (let* ((text   (plain-file "foo" "Hello, world!"))

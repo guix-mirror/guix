@@ -135,14 +135,14 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "7.6p1")
+   (version "7.7p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "08qpsb8mrzcx8wgvz9insiyvq7sbg26yj5nvl2m5n57yvppcl8x3"))))
+               "13vbbrvj3mmfhj83qyrg5c0ipr6bzw5s65dy4k8gr7p9hkkfffyp"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)))
    (inputs `(("openssl" ,openssl)
@@ -152,6 +152,9 @@ a server that supports the SSH-2 protocol.")
              ("xauth" ,xauth)))                   ;for 'ssh -X' and 'ssh -Y'
    (arguments
     `(#:test-target "tests"
+      ;; Otherwise, the test scripts try to use a nonexistent directory and
+      ;; fail.
+      #:make-flags '("REGRESSTMP=\"$${BUILDDIR}/regress\"")
       #:configure-flags  `("--sysconfdir=/etc/ssh"
 
                            ;; Default value of 'PATH' used by sshd.
@@ -589,7 +592,7 @@ authentication}.")
 (define-public autossh
   (package
     (name "autossh")
-    (version "1.4e")
+    (version "1.4f")
     (source
      (origin
        (method url-fetch)
@@ -597,7 +600,7 @@ authentication}.")
              "http://www.harding.motd.ca/autossh/autossh-"
              version ".tgz"))
        (sha256
-        (base32 "0mlicw28vq2jxa0jf0dys5ja75v0fxpjavlq9dpif6bnknji13ly"))))
+        (base32 "1wpqwa2872nqgqbhnb6nnkrlzpdawd5k69gh1qp68354pvhyawh1"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; There is no "make check" or anything similar
     (inputs `(("openssh" ,openssh)))

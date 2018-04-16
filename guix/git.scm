@@ -28,9 +28,11 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (%repository-cache-directory
+            update-cached-checkout
             latest-repository-commit))
 
 (define %repository-cache-directory
@@ -68,11 +70,6 @@ make sure no empty directory is left behind."
     (lambda _
       (false-if-exception (rmdir directory)))))
 
-(define (repository->head-sha1 repo)
-  "Return the sha1 of the HEAD commit in REPOSITORY as a string."
-  (let ((oid (reference-target (repository-head repo))))
-    (oid->string (commit-id (commit-lookup repo oid)))))
-
 (define (url+commit->name url sha1)
   "Return the string \"<REPO-NAME>-<SHA1:7>\" where REPO-NAME is the name of
 the git repository, extracted from URL and SHA1:7 the seven first digits
@@ -82,21 +79,9 @@ of SHA1 string."
     (last (string-split url #\/)) ".git" "")
    "-" (string-take sha1 7)))
 
-(define* (copy-to-store store cache-directory #:key url repository)
-  "Copy CACHE-DIRECTORY recursively to STORE.  URL and REPOSITORY are used to
-create the store directory name."
-  (define (dot-git? file stat)
-    (and (string=? (basename file) ".git")
-         (eq? 'directory (stat:type stat))))
-
-  (let* ((commit (repository->head-sha1 repository))
-         (name   (url+commit->name url commit)))
-    (values (add-to-store store name #t "sha256" cache-directory
-                          #:select? (negate dot-git?))
-            commit)))
-
 (define (switch-to-ref repository ref)
-  "Switch to REPOSITORY's branch, commit or tag specified by REF."
+  "Switch to REPOSITORY's branch, commit or tag specified by REF.  Return the
+OID (roughly the commit hash) corresponding to REF."
   (define obj
     (match ref
       (('branch . branch)
@@ -122,7 +107,38 @@ create the store directory name."
                                        (string-append "refs/tags/" tag))))
          (object-lookup repository oid)))))
 
-  (reset repository obj RESET_HARD))
+  (reset repository obj RESET_HARD)
+  (object-id obj))
+
+(define* (update-cached-checkout url
+                                 #:key
+                                 (ref '(branch . "origin/master"))
+                                 (cache-directory
+                                  (%repository-cache-directory)))
+  "Update the cached checkout of URL to REF in CACHE-DIRECTORY.  Return two
+values: the cache directory name, and the SHA1 commit (a string) corresponding
+to REF.
+
+REF is pair whose key is [branch | commit | tag] and value the associated
+data, respectively [<branch name> | <sha1> | <tag name>]."
+  (with-libgit2
+   (let* ((cache-dir     (url-cache-directory url cache-directory))
+          (cache-exists? (openable-repository? cache-dir))
+          (repository    (if cache-exists?
+                             (repository-open cache-dir)
+                             (clone* url cache-dir))))
+     ;; Only fetch remote if it has not been cloned just before.
+     (when cache-exists?
+       (remote-fetch (remote-lookup repository "origin")))
+     (let ((oid (switch-to-ref repository ref)))
+
+       ;; Reclaim file descriptors and memory mappings associated with
+       ;; REPOSITORY as soon as possible.
+       (when (module-defined? (resolve-interface '(git repository))
+                              'repository-close!)
+         (repository-close! repository))
+
+       (values cache-dir (oid->string oid))))))
 
 (define* (latest-repository-commit store url
                                    #:key
@@ -137,16 +153,16 @@ data, respectively [<branch name> | <sha1> | <tag name>].
 
 Git repositories are kept in the cache directory specified by
 %repository-cache-directory parameter."
-  (with-libgit2
-   (let* ((cache-dir     (url-cache-directory url cache-directory))
-          (cache-exists? (openable-repository? cache-dir))
-          (repository    (if cache-exists?
-                             (repository-open cache-dir)
-                             (clone* url cache-dir))))
-     ;; Only fetch remote if it has not been cloned just before.
-     (when cache-exists?
-       (remote-fetch (remote-lookup repository "origin")))
-     (switch-to-ref repository ref)
-     (copy-to-store store cache-dir
-                    #:url url
-                    #:repository repository))))
+  (define (dot-git? file stat)
+    (and (string=? (basename file) ".git")
+         (eq? 'directory (stat:type stat))))
+
+  (let*-values (((checkout commit)
+                 (update-cached-checkout url
+                                         #:ref ref
+                                         #:cache-directory cache-directory))
+                ((name)
+                 (url+commit->name url commit)))
+    (values (add-to-store store name #t "sha256" checkout
+                          #:select? (negate dot-git?))
+            commit)))

@@ -275,7 +275,7 @@ more.")
 (define-public czmq
   (package
     (name "czmq")
-    (version "4.1.0")
+    (version "4.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -284,7 +284,7 @@ more.")
                     "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04gwf61rijwm6b2wblwv8gky1gdrbfmg1d19hf72kdc691ds7vrv"))))
+                "1h5hrcsc30fcwb032vy5gxkq4j4vv1y4dj460rfs1hhxi0cz83zh"))))
     (build-system gnu-build-system)
     (arguments
      '(;; TODO Tests fail for some reason:
@@ -1317,6 +1317,9 @@ IPFIX, RSPAN, CLI, LACP, 802.1ag).")
 handling for most notations in use for IPv4 and IPv6 addresses and
 networks.")
     (license license:bsd-3)))
+
+(define-public python2-ipy
+  (package-with-python2 python-ipy))
 
 (define-public speedtest-cli
   (package

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -151,7 +151,13 @@
 ;; XXX: Skip this test when running Linux > 4.7.5 to work around
 ;; <https://bugzilla.kernel.org/show_bug.cgi?id=183461>.
 (when (or (not perform-container-tests?)
-          (version>? (utsname:release (uname)) "4.7.5"))
+          (version>? (utsname:release (uname)) "4.7.5")
+
+          ;; Skip on Ubuntu's 4.4 kernels, which contain a backport of the
+          ;; faulty code: <https://bugs.gnu.org/25476>.
+          (member (utsname:release (uname))
+                  '("4.4.0-21-generic" "4.4.0-59-generic"
+                    "4.4.0-116-generic")))
   (test-skip 1))
 (test-equal "pivot-root"
   #t

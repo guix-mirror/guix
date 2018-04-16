@@ -36,7 +36,6 @@
 (define-module (gnu packages guile)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
-  #:use-module (gnu packages admin) ;;for tree
   #:use-module (gnu packages aspell)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
@@ -1291,18 +1290,29 @@ interface for reading articles in any format.")
 (define-public guile-config
   (package
     (name "guile-config")
-    (version "0.1.1")
+    (version "0.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://alex.pompo.co/software/" name "-" version
-                    ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/a-sassmannshausen/guile-config")
+                    (commit "guile-config-0.2")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1b719bn192f9wg24rr0zx8jpmygsvyhfi35iy778pb5p392snrn8"))))
+                "07q86vqdwmm81wwxz1d1ah27hbhs6qbn8kiizrfpj0s4bf95w3r9"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'autoreconf
+                    (lambda _
+                      (zero? (system* "autoreconf" "-fi")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (synopsis "Guile application configuration parsing library")
     (description
      "Guile Config is a library providing a declarative approach to
@@ -1313,7 +1323,7 @@ parameter parsing using getopt-long; basic GNU command-line parameter
 generation (--help, --usage, --version); automatic output generation for the
 above command-line parameters.")
     (home-page "https://github.com/a-sassmannshausen/guile-config")
-    (license license:agpl3+)))
+    (license license:gpl3+)))
 
 (define-public guile-redis
   (package
@@ -1934,8 +1944,8 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "5")
-        (commit "2bb9fbbf93cf93496718efc85ad9394aefa21029"))
+  (let ((revision "6")
+        (commit "36f93c174adc396c90ec3a6923487f0444fe5d69"))
     (package
       (name "guile-git")
       (version (string-append "0.0-" revision "." (string-take commit 7)))
@@ -1945,7 +1955,7 @@ is not available for Guile 2.0.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "0z3v0v89dyp35zx2h2gsq6v29lba3wbzabc5n2g4hx2fcb6q5qqy"))
+                  "0z1dvn0scx59pbgjkpacam7p5n7630z4qm8fazim7ixq9xv3s8wx"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -1956,7 +1966,8 @@ is not available for Guile 2.0.")
 
                     ;; FIXME: On i686, bytestructures miscalculates the offset
                     ;; of the 'old-file' and 'new-file' fields within the
-                    ;; '%diff-delta' structure.
+                    ;; '%diff-delta' structure.  See
+                    ;; <https://github.com/TaylanUB/scheme-bytestructures/issues/30>.
                     ,@(if (string=? (%current-system) "x86_64-linux")
                           '()
                           '((add-before 'check 'skip-tests

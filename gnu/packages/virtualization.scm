@@ -347,14 +347,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "4.0.0")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1j6zzajh4j3zzsaqn5f5mrchm0590xcf6rzkfajvqw3bd4dcms79"))))
+                "0nq1iz5iic466qahp0i8dlvyd6li0b0pdrvvrz9286l12x2fm61s"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -420,7 +420,7 @@ manage system or application containers.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("polkit" ,polkit)
-       ("python" ,python-2)))
+       ("python" ,python)))
     (home-page "https://libvirt.org")
     (synopsis "Simple API for virtualization")
     (description "Libvirt is a C toolkit to interact with the virtualization
@@ -480,13 +480,13 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "3.7.0")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libvirt-python" version))
               (sha256
                (base32
-                "0vy0ai8z88yhzqfk1n08z1gda5flrqxcw9lg1012b3zg125qljhy"))))
+                "1ixqhxjkczl8vk9wjx4cknw4374cw5nnsacbd2s755kpd0ys7hny"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

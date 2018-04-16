@@ -48,7 +48,9 @@
 ;;; Copyright © 2018 Ethan R. Jones <ethanrjones97@gmail.com
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
-
+;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
+;;;
 ;;; This file is part of GNU Guix.
 ;;;
 ;;; GNU Guix is free software; you can redistribute it and/or modify it
@@ -400,6 +402,24 @@ data types.")
     (inputs `(("libffi" ,libffi)
               ("openssl" ,openssl)
               ("zlib" ,zlib)))))
+
+(define-public python-debug
+  (package
+    (inherit python)
+    (name "python-debug")
+    (outputs '("out" "debug"))
+    (build-system gnu-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments python)
+       ((#:configure-flags flags '())
+        `(cons "--with-pydebug" ,flags))))
+    (synopsis
+     "High-level, dynamically-typed programming language (for debugging)")
+    (description
+     "This variant of Python provides an interpreter built with
+@code{--with-pydebug} to help develop and debug extensions.  See
+@url{https://pythonextensionpatterns.readthedocs.io/en/latest/debugging/debug.html},
+for more information.")))
 
 (define* (wrap-python3 python
                        #:optional
@@ -1286,9 +1306,9 @@ applications. dogtail scripts are written in Python and executed like any
 other Python program.")
     (license license:gpl2+)))
 
-(define-public python2-empy
+(define-public python-empy
   (package
-    (name "python2-empy")
+    (name "python-empy")
     (version "3.3")
     (source (origin
              (method url-fetch)
@@ -1299,12 +1319,7 @@ other Python program.")
                "01g8mmkfnvjdmlhsihwyx56lrg7r5m5d2fg6mnxsvy6g0dnl69f6"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (zero? (system* "./test.sh")))))))
+     `(#:tests? #f))                    ;python2 only
     (home-page "http://www.alcyone.com/software/empy/")
     (synopsis "Templating system for Python")
     (description
@@ -1320,6 +1335,9 @@ recording and playback via diversions, and dynamic, chainable filters.  The
 system is highly configurable via command line options and embedded
 commands.")
     (license license:lgpl2.1+)))
+
+(define-public python2-empy
+  (package-with-python2 python-empy))
 
 (define-public python2-element-tree
   (package
@@ -1767,15 +1785,14 @@ files.")
 (define-public python-pyld
   (package
     (name "python-pyld")
-    (version "0.7.1")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyLD" version))
               (sha256
                (base32
-                "1m0fs6897vxfkf7awah5i66i7b7smm5fnywf1w50fpzyfbfhr156"))))
+                "12i2g6xdj30k7xxcibg3sc5y76snwq8l6n8fy9lyi577kgy0h2pm"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f)) ; no tests
     (home-page "https://github.com/digitalbazaar/pyld")
     (synopsis "Python implementation of the JSON-LD specification")
     (description
@@ -5797,9 +5814,7 @@ from an XML-based format.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/57/4f/"
-                           "889579244947368f28eda66b782331b1e75f83fd72e63f9ece93cd7a18f9"
-                           "/python-ly-" version ".tar.gz"))
+       (uri (pypi-uri name version))
        (sha256
         (base32
          "0x98dv7p8mg26p4816yy8hz4f34zf6hpnnfmr56msgh9jnsm2qfl"))))
@@ -8602,14 +8617,14 @@ to occurrences in strings and comments.")
 (define-public python-py3status
   (package
     (name "python-py3status")
-    (version "3.1")
+    (version "3.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py3status" version))
        (sha256
         (base32
-         "0i283z1pivmir61z8kbiycigc94l61v33ygzkhczf1ifq7cppyds"))))
+         "0shxcfz4wcczj0mhwp4w0dvwd2fdd9bgprq8slim1519iiqzgwhq"))))
     (build-system python-build-system)
     (inputs
      `(("file" ,file)))
@@ -8622,8 +8637,8 @@ to occurrences in strings and comments.")
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((file-path (assoc-ref inputs "file")))
                (substitute* "py3status/parse_config.py"
-                 (("check_output\\(\\['file'")
-                  (string-append "check_output(['" file-path "/bin/file'")))
+                 (("\\['file', '-b'")
+                  (string-append "['" file-path "/bin/file', '-b'")))
                #t))))
        #:tests? #f)) ; TODO: Requires many libraries not in Guix.
     (home-page "https://github.com/ultrabug/py3status")
@@ -13067,3 +13082,48 @@ file system events on Linux.")
         (base32
          "0svc9nla3b9145d6b7fb9dizx412l3difzqw0ilh9lz52nsixw8j"))
        (file-name (string-append name "-" version ".tar.gz"))))))
+
+(define-public python-latexcodec
+  (package
+    (name "python-latexcodec")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "latexcodec" version))
+       (sha256
+        (base32
+         "0zdd1gf24i83ykadx0y30n3001j43scqr2saql3vckk5c39dj1wn"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://readthedocs.org/projects/latexcodec/")
+    (synopsis "Work with LaTeX code in Python")
+    (description "Lexer and codec to work with LaTeX code in Python.")
+    (license license:expat)))
+
+(define-public python-pybtex
+  (package
+    (name "python-pybtex")
+    (version "0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pybtex" version))
+       (sha256
+        (base32
+         "00300j8dn5pxq4ndxmfmbmycg2znawkqs49val2x6jlmfiy6r2mg"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (inputs
+     `(("python-latexcodec" ,python-latexcodec)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)))
+    (arguments
+     `(#:test-target "nosetests"))
+    (home-page "https://pybtex.org/")
+    (synopsis "BibTeX-compatible bibliography processor")
+    (description "Pybtex is a BibTeX-compatible bibliography processor written
+in Python.  You can simply type pybtex instead of bibtex.")
+    (license license:expat)))

@@ -257,7 +257,7 @@ the C implementation.")
 (define-public ghc-cryptonite
   (package
     (name "ghc-cryptonite")
-    (version "0.20")
+    (version "0.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -265,10 +265,11 @@ the C implementation.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0m63np0affci7ba9mrkvw2flzxn0s2mk930xldc4dwijw32gl6r6"))))
+                "131wbbdr5yavs5k1ah9sz6fqx1ffyvaxf66pwjzsfc47mwc1mgl9"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-memory" ,ghc-memory)
+     `(("ghc-basement" ,ghc-basement)
+       ("ghc-memory" ,ghc-memory)
        ("ghc-byteable" ,ghc-byteable)))
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
@@ -528,4 +529,134 @@ list validation.")
     (description
      "This package provides a library to handle system accessors and storage
 for X.509 certificates.")
+    (license license:bsd-3)))
+
+(define-public ghc-crypto-cipher-types
+  (package
+    (name "ghc-crypto-cipher-types")
+    (version "0.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "crypto-cipher-types-" version "/"
+                           "crypto-cipher-types-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03qa1i1kj07pfrxsi7fiaqnnd0vi94jd4jfswbmnm4gp1nvzcwr0"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-byteable" ,ghc-byteable)
+              ("ghc-securemem" ,ghc-securemem)))
+    (home-page "https://github.com/vincenthz/hs-crypto-cipher")
+    (synopsis "Generic cryptography cipher types for Haskell")
+    (description "This Haskell package provides basic typeclasses and types
+for symmetric ciphers.")
+    (license license:bsd-3)))
+
+(define-public ghc-cipher-aes
+  (package
+    (name "ghc-cipher-aes")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cipher-aes-" version "/"
+                           "cipher-aes-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05ahz6kjq0fl1w66gpiqy0vndli5yx1pbsbw9ni3viwqas4p3cfk"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-byteable" ,ghc-byteable)
+              ("ghc-securemem" ,ghc-securemem)
+              ("ghc-crypto-cipher-types" ,ghc-crypto-cipher-types)))
+    (native-inputs `(("ghc-quickcheck" ,ghc-quickcheck)
+                     ("ghc-test-framework" ,ghc-test-framework)
+                     ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+                     ("ghc-crypto-cipher-tests" ,ghc-crypto-cipher-tests)))
+    (home-page "https://github.com/vincenthz/hs-cipher-aes")
+    (synopsis "AES cipher implementation with advanced mode of operations for
+Haskell")
+    (description "This Haskell package provides AES cipher implementation.
+
+The modes of operations available are ECB (Electronic code book), CBC (Cipher
+block chaining), CTR (Counter), XTS (XEX with ciphertext stealing),
+GCM (Galois Counter Mode).
+
+The AES implementation uses AES-NI when available (on x86 and x86-64
+architecture), but fallback gracefully to a software C implementation.
+
+The software implementation uses S-Boxes, which might suffer for cache timing
+issues.  However do notes that most other known software implementations,
+including very popular one (openssl, gnutls) also uses similar
+implementation.  If it matters for your case, you should make sure you have
+AES-NI available, or you'll need to use a different implementation.")
+    (license license:bsd-3)))
+
+(define-public ghc-crypto-random
+  (package
+    (name "ghc-crypto-random")
+    (version "0.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "crypto-random-" version "/"
+                           "crypto-random-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0139kbbb2h7vshf68y3fvjda29lhj7jjwl4vq78w4y8k8hc7l2hp"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-securemem" ,ghc-securemem)
+              ("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/vincenthz/hs-crypto-random")
+    (synopsis "Simple cryptographic random related types for Haskell")
+    (description "Simple cryptographic random related types: a safe
+abstraction for CPRNGs.")
+    (license license:bsd-3)))
+
+(define-public ghc-cprng-aes
+  (package
+    (name "ghc-cprng-aes")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "cprng-aes-" version "/"
+                           "cprng-aes-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wr15kbmk1g3l8a75n0iwbzqg24ixv78slwzwb2q6rlcvq0jlnb4"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-byteable" ,ghc-byteable)
+              ("ghc-crypto-random" ,ghc-crypto-random)
+              ("ghc-cipher-aes" ,ghc-cipher-aes)))
+    (home-page "https://github.com/vincenthz/hs-cprng-aes")
+    (synopsis "Crypto Pseudo Random Number Generator using AES in counter mode
+in Haskell")
+    (description "Simple crypto pseudo-random-number-generator with really
+good randomness property.
+
+Using ent, a randomness property maker on one 1Mb sample:
+
+@itemize
+@item Entropy = 7.999837 bits per byte.
+@item Optimum compression would reduce the size of this 1048576 byte file by 0
+percent.
+@item Chi square distribution for 1048576 samples is 237.02.
+@item Arithmbetic mean value of data bytes is 127.3422 (127.5 = random).
+@item Monte Carlo value for Pi is 3.143589568 (error 0.06 percent).
+@end itemize
+
+Compared to urandom with the same sampling:
+
+@itemize
+@item Entropy = 7.999831 bits per byte.
+@item Optimum compression would reduce the size of this 1048576 byte file by 0
+percent.
+@item Chi square distribution for 1048576 samples is 246.63.
+@item Arithmetic mean value of data bytes is 127.6347 (127.5 = random).
+@item Monte Carlo value for Pi is 3.132465868 (error 0.29 percent).
+@end itemize")
     (license license:bsd-3)))

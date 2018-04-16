@@ -398,7 +398,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.6.1")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mgba-emu/mgba/archive/"
@@ -406,7 +406,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xmq1q1j71hnpd49wm91cqq8w5zdhb921cm17jchp4qjmaqgwy3w"))
+                "16hgs6r5iym3lp2cjcnv9955333976yc5sgy2kkxlsi005n91j1m"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -882,7 +882,8 @@ Rice Video plugin.")
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1x7wsjs5gx2iwx20p4cjcbf696zsjlh31qxmghwv0ifrq8x58s1b"))))
+        (base32 "1x7wsjs5gx2iwx20p4cjcbf696zsjlh31qxmghwv0ifrq8x58s1b"))
+       (patches (search-patches "mupen64plus-video-z64-glew-correct-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1058,7 +1059,7 @@ emulation community.  It provides highly accurate emulation.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0fdribjfc5zz9brzhqcxw6m76kvyg13l67aiigszv4wsjd5j3gpz"))))
+        (base32 "1wykv0w0kdlh7lh0k1ig0lpk5vh4c7r19jlfa9103jmjlryrq679"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests

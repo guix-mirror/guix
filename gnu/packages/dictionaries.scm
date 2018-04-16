@@ -27,6 +27,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages emacs)
@@ -212,7 +213,7 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
 (define-public grammalecte
   (package
     (name "grammalecte")
-    (version "0.6.2")
+    (version "0.6.3.1")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -220,8 +221,21 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
                            "Grammalecte-fr-v" version ".zip"))
        (sha256
         (base32
-         "0pvblclvbxbfgmq0cvmpmzpf6bi6r41arndwprl7ab9kci9hi8j2"))))
+         "0jlzrhpx9qvjdq679w188p86x09yfjf3l0h4scjl9w26yyp53gr8"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-setup
+           ;; Fix typos in "setup.py".  In particular, add the new
+           ;; "graphspell" module introduced in 0.6.2.  Reported upstream:
+           ;; <https://www.dicollecte.org/thread.php?prj=fr&t=709>
+           (lambda _
+             (substitute* "setup.py"
+               (("packages=\\['grammalecte', 'grammalecte.fr'\\],")
+                "packages=['grammalecte', 'grammalecte.fr', 'grammalecte.graphspell'],")
+               (("_dictionaries/French.bdic") "graphspell/_dictionaries/fr.bdic"))
+             #t)))))
     (home-page "https://www.dicollecte.org")
     (synopsis  "French spelling and grammar checker")
     (description "Grammalecte is a grammar checker dedicated to the French
@@ -239,7 +253,7 @@ and a Python library.")
 (define-public translate-shell
   (package
     (name "translate-shell")
-    (version "0.9.6.4")
+    (version "0.9.6.7")
     (source
       (origin
         (method url-fetch)
@@ -247,7 +261,8 @@ and a Python library.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "1fg6nf1plvgimc57fsdr9rcjbf7jvmk5jrlj5ya509vpdcdgvj2s"))
+          "0inv6r3qbihn2ff1sgcly89r04k4vgcbvvyl50ln0mxlapbhpy95"))
+        (patches (search-patches "translate-shell-fix-curl-tests.patch"))
         (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
@@ -261,7 +276,8 @@ and a Python library.")
                     (emacs (string-append (assoc-ref inputs "emacs") "/bin/emacs")))
                (install-file "google-translate-mode.el" dest)
                (emacs-generate-autoloads ,name dest)))))
-       #:make-flags (list (string-append "PREFIX=" %output))
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          "NETWORK_ACCESS=no test")
        #:imported-modules (,@%gnu-build-system-modules (guix build emacs-utils))
        #:modules ((guix build gnu-build-system)
                   (guix build emacs-utils)
@@ -274,7 +290,7 @@ and a Python library.")
     (native-inputs
      `(("emacs" ,emacs-minimal)
        ("util-linux" ,util-linux))) ; hexdump, for the test
-    (home-page "https://www.soimort.org/translate-shell")
+    (home-page "https://www.soimort.org/translate-shell/")
     (synopsis "Translations from the command line")
     (description
      "Translate Shell (formerly Google Translate CLI) is a command-line
