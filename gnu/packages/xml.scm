@@ -838,7 +838,7 @@ the form of functions.")
      `(#:configure-flags '("-DCMAKE_CXX_FLAGS=-shared -fPIC"
                            "-DCMAKE_C_FLAGS=-shared -fPIC")
        #:tests? #f))                    ; no tests
-    (home-page "http://pugixml.org")
+    (home-page "https://pugixml.org")
     (synopsis "Light-weight, simple and fast XML parser for C++ with XPath support")
     (description
      "pugixml is a C++ XML processing library, which consists of a DOM-like
