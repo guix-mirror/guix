@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,7 +60,7 @@ to take care of the OS-specific details when writing software that uses serial p
 (define-public libsigrokdecode
   (package
     (name "libsigrokdecode")
-    (version "0.5.0")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -67,7 +68,7 @@ to take care of the OS-specific details when writing software that uses serial p
                     version ".tar.gz"))
               (sha256
                (base32
-                "1hfigfj1976qk11kfsgj75l20qvyq8c9p2h4mjw23d59rsg5ga2a"))))
+                "07mmb6s62ncqqgsc6szilj2yxixf6gg99ggbzsjlbhp4b9aqnga9"))))
     (outputs '("out" "doc"))
     (arguments
      `(#:phases
