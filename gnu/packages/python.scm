@@ -50,6 +50,7 @@
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
+;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13125,4 +13126,22 @@ file system events on Linux.")
     (synopsis "BibTeX-compatible bibliography processor")
     (description "Pybtex is a BibTeX-compatible bibliography processor written
 in Python.  You can simply type pybtex instead of bibtex.")
+    (license license:expat)))
+
+(define-public python-onetimepass
+  (package
+    (name "python-onetimepass")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "onetimepass" version))
+       (sha256
+        (base32 "09vagxgbq78wvq4xbikmn2hpqqsa2i96kqsmphf7dqynfv0dlsd5"))))
+    (build-system python-build-system)
+    (inputs `(("python-six" ,python-six)))
+    (home-page "https://github.com/tadeck/onetimepass/")
+    (synopsis "One-time password library")
+    (description "Python one-time password library for HMAC-based (HOTP) and
+time-based (TOTP) passwords.")
     (license license:expat)))
