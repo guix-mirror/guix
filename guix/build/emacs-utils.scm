@@ -60,7 +60,9 @@
 
 (define* (emacs-byte-compile-directory dir)
   "Byte compile all files in DIR and its sub-directories."
-  (let ((expr `(byte-recompile-directory (file-name-as-directory ,dir) 0)))
+  (let ((expr `(progn
+                (setq byte-compile-debug t) ; for proper exit status
+                (byte-recompile-directory (file-name-as-directory ,dir) 0 1))))
     (emacs-batch-eval expr)))
 
 (define-syntax emacs-substitute-sexps
