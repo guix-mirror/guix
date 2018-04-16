@@ -91,7 +91,7 @@ to take care of the OS-specific details when writing software that uses serial p
      `(("glib" ,glib)
        ("python" ,python)))
     (build-system gnu-build-system)
-    (home-page "http://www.sigrok.org/wiki/Libsigrokdecode")
+    (home-page "https://www.sigrok.org/wiki/Libsigrokdecode")
     (synopsis "Library providing (streaming) protocol decoding functionality")
     (description "Libsigrokdecode is a shared library written in C, which provides
 (streaming) protocol decoding functionality.")
@@ -112,7 +112,7 @@ to take care of the OS-specific details when writing software that uses serial p
     (native-inputs
      `(("sdcc" ,sdcc)))
     (build-system gnu-build-system)
-    (home-page "http://www.sigrok.org/wiki/Fx2lafw")
+    (home-page "https://www.sigrok.org/wiki/Fx2lafw")
     (synopsis "Firmware for Cypress FX2 chips")
     (description "Fx2lafw is free firmware for Cypress FX2 chips which makes them usable
 as simple logic analyzer and/or oscilloscope hardware.")
@@ -190,7 +190,7 @@ as simple logic analyzer and/or oscilloscope hardware.")
        ("libftdi" ,libftdi)
        ("libzip" ,libzip)))
     (build-system gnu-build-system)
-    (home-page "http://www.sigrok.org/wiki/Libsigrok")
+    (home-page "https://www.sigrok.org/wiki/Libsigrok")
     (synopsis "Library which provides the basic hardware access drivers for logic
 analyzers")
     (description "@code{libsigrok} is a shared library written in C which provides the basic hardware
@@ -217,7 +217,7 @@ format support.")
        ("libsigrok" ,libsigrok)
        ("libsigrokdecode" ,libsigrokdecode)))
     (build-system gnu-build-system)
-    (home-page "http://sigrok.org/wiki/Sigrok-cli")
+    (home-page "https://sigrok.org/wiki/Sigrok-cli")
     (synopsis "Command-line frontend for sigrok")
     (description "Sigrok-cli is a command-line frontend for sigrok.")
     (license license:gpl3+)))
