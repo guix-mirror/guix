@@ -75,7 +75,8 @@ to take care of the OS-specific details when writing software that uses serial p
        (modify-phases %standard-phases
          (add-after 'build 'build-doc
            (lambda _
-             (zero? (system* "doxygen"))))
+             (invoke "doxygen")
+             #t))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (copy-recursively "doxy/html-api"
