@@ -100,59 +100,55 @@ based command language.")
                    license:expat))))         ; lexers and libutf.[ch]
 
 (define-public kakoune
-  (let ((commit "125c8b7e80995732e0d8c87b82040025748f1b4f")
-        (revision "1"))
-    (package
-      (name "kakoune")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
-      (source
-       (origin
-         (file-name (string-append "kakoune-" version "-checkout"))
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/mawww/kakoune.git")
-               (commit commit)))
-         (sha256
-          (base32
-           "19qs99l8r9p1vi5pxxx9an22fvi7xx40qw3jh2cnh2mbacawvdyb"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch-source
-             (lambda _
-               ;; kakoune uses confstr with _CS_PATH to find out where to find
-               ;; a posix shell, but this doesn't work in the build
-               ;; environment. This substitution just replaces that result
-               ;; with the "sh" path.
-               (substitute* "src/shell_manager.cc"
-                 (("if \\(m_shell.empty\\(\\)\\)" line)
-                  (string-append "m_shell = \"" (which "sh")
-                                 "\";\n        " line)))
-               #t))
-           (delete 'configure)
-           ;; kakoune requires us to be in the src/ directory to build
-           (add-before 'build 'chdir
-             (lambda _ (chdir "src") #t))
-           (add-before 'check 'fix-test-permissions
-             (lambda _
-               ;; Out git downloader doesn't give us write permissions, but
-               ;; without them the tests fail.
-               (zero? (system* "chmod" "-R" "u+w" "../test")))))))
-      (native-inputs `(("asciidoc" ,asciidoc)
-                       ("ruby" ,ruby)))
-      (inputs `(("ncurses" ,ncurses)
-                ("boost" ,boost)))
-      (synopsis "Vim-inspired code editor")
-      (description
-       "Kakoune is a code editor heavily inspired by Vim, as such most of its
+  (package
+    (name "kakoune")
+    (version "2018.04.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mawww/kakoune/"
+                           "releases/download/v" version "/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1kkzs5nrjxzd1jq7a4k7qfb5kg05871z0r3d9c0yhz9shf6wz36d"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             ;; kakoune uses confstr with _CS_PATH to find out where to find
+             ;; a posix shell, but this doesn't work in the build
+             ;; environment. This substitution just replaces that result
+             ;; with the "sh" path.
+             (substitute* "src/shell_manager.cc"
+               (("if \\(m_shell.empty\\(\\)\\)" line)
+                (string-append "m_shell = \"" (which "sh")
+                               "\";\n        " line)))
+             #t))
+         (delete 'configure)            ; no configure script
+         ;; kakoune requires us to be in the src/ directory to build
+         (add-before 'build 'chdir
+           (lambda _ (chdir "src") #t)))))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("pkg-config" ,pkg-config)
+       ("ruby" ,ruby)))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("boost" ,boost)))
+    (synopsis "Vim-inspired code editor")
+    (description
+     "Kakoune is a code editor heavily inspired by Vim, as such most of its
 commands are similar to Vi's ones, and it shares Vi's \"keystrokes as a text
 editing language\" model.  Kakoune has a strong focus on interactivity, most
 commands provide immediate and incremental results, while still being
 competitive (as in keystroke count) with Vim.")
-      (home-page "http://kakoune.org/")
-      (license license:unlicense))))
+    (home-page "http://kakoune.org/")
+    (license license:unlicense)))
 
 (define-public joe
   (package
