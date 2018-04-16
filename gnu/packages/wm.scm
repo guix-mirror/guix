@@ -355,24 +355,25 @@ prompt.")
          "119xvdm4r6irqk0mar80hx6s8ydw26y35h7712rd7nbg7pb7i053"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;No tests included.
+     `(#:tests? #f                      ; no tests included
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'bootstrap
            (lambda _
-             (zero? (system* "autoreconf" "-vfi")))))))
+             (invoke "autoreconf" "-vfi")
+             #t)))))
     (inputs
-     `(("xcb-util-image" ,xcb-util-image)
-       ("xcb-util" ,xcb-util)
-       ("libxcb" ,libxcb)
-       ("linux-pam" ,linux-pam)
-       ("libxkbcommon" ,libxkbcommon)
+     `(("cairo" ,cairo)
        ("libev" ,libev)
-       ("cairo" ,cairo)))
+       ("libxcb" ,libxcb)
+       ("libxkbcommon" ,libxkbcommon)
+       ("linux-pam" ,linux-pam)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-image" ,xcb-util-image)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-        ("automake" ,automake)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/PandorasFox/i3lock-color")
     (synopsis "Screen locker with color configuration support")
     (description
