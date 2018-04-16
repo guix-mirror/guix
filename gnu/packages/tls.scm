@@ -761,7 +761,7 @@ correct OpenSSL include path.  It is intended for use in your
 (define-public perl-crypt-openssl-random
  (package
   (name "perl-crypt-openssl-random")
-  (version "0.11")
+  (version "0.13")
   (source
     (origin
       (method url-fetch)
@@ -771,9 +771,12 @@ correct OpenSSL include path.  It is intended for use in your
              ".tar.gz"))
       (sha256
         (base32
-          "0yjcabkibrkafywvdkmd1xpi6br48skyk3l15ni176wvlg38335v"))))
+          "0vmvrb3shrzjzri3qn524dzdasbq8zhhbpc1vmq8sx68n4jhizb0"))))
   (build-system perl-build-system)
-  (inputs `(("openssl" ,openssl)))
+  (native-inputs
+   `(("perl-crypt-openssl-guess" ,perl-crypt-openssl-guess)))
+  (inputs
+   `(("openssl" ,openssl)))
   (arguments perl-crypt-arguments)
   (home-page
     "http://search.cpan.org/dist/Crypt-OpenSSL-Random")
