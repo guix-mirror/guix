@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1256,4 +1257,44 @@ functions for normalizing Unicode strings.")
       (description "This package provides @{rate}, which implements rate
 limiting in Go.")
       (home-page "https://godoc.org/golang.org/x/time/rate")
+      (license license:bsd-3))))
+
+(define-public go-golang-org-x-crypto-ssh-terminal
+  (let ((commit "95a4943f35d008beabde8c11e5075a1b714e6419")
+        (revision "1"))
+    (package
+      (name "go-golang-org-x-crypto-ssh-terminal")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/crypto")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-crypto-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "0bkm0jx9mxmi1liabb9c04kf765n7d0062zdp3zmvzyamsq00lcx"))))
+      (build-system go-build-system)
+      (inputs
+       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+      (arguments
+       `(#:import-path "golang.org/x/crypto/ssh/terminal"
+         #:unpack-path "golang.org/x/crypto"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map (lambda (file)
+                      (make-file-writable file))
+                    (find-files
+                      (string-append (assoc-ref outputs "out")
+                                     "/src/golang.org/x/crypto/ed25519/testdata")
+                      ".*\\.gz$"))
+               #t)))))
+      (synopsis "Terminal functions for Go")
+      (description "This package provides @{terminal}, which implements
+support functions for dealing with terminals, as commonly found on UNIX
+systems.")
+      (home-page "https://go.googlesource.com/crypto/")
       (license license:bsd-3))))
