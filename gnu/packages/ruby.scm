@@ -2998,13 +2998,13 @@ multibyte strings, internationalization, time zones, and testing.")
 (define-public ruby-crass
   (package
     (name "ruby-crass")
-    (version "1.0.3")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "crass" version))
               (sha256
                (base32
-                "1czijxlagzpzwchr2ldrgfi7kywg08idjpq37ndcmwh4fmz72c4l"))))
+                "0bpxzy6gjw9ggjynlxschbfsgmx8lv3zw1azkjvnb8b9i895dqfi"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)
