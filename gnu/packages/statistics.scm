@@ -2734,6 +2734,18 @@ engine (version 3.8.8.2) is included.")
                 "0l7qi45jxlf898n0jazabnam1yyczvqfdknd00bdirhhiplpd1sc"))))
     (properties `((upstream-name . "RCurl")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'respect-CURL_CA_BUNDLE
+           (lambda _
+             (substitute* "R/options.S"
+               (("\\.els = rev\\(merge\\(list\\(\\.\\.\\.\\), \\.opts\\)\\)" m)
+                (string-append "\
+certs = Sys.getenv(\"CURL_CA_BUNDLE\")
+if (certs != \"\") { .opts = merge.list(.opts, list(cainfo=certs)) }
+" m)))
+             #t)))))
     (inputs
      `(("libcurl" ,curl)))
     (propagated-inputs
