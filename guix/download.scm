@@ -510,12 +510,14 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
                                       #:guile guile)))
     ;; Take the tar bomb, and simply unpack it as a directory.
     (gexp->derivation (or name file-name)
-                      #~(begin
-                          (mkdir #$output)
-                          (setenv "PATH" (string-append #$gzip "/bin"))
-                          (chdir #$output)
-                          (invoke (string-append #$tar "/bin/tar")
-                                  "xf" #$drv))
+                      (with-imported-modules '((guix build utils))
+                        #~(begin
+                            (use-modules (guix build utils))
+                            (mkdir #$output)
+                            (setenv "PATH" (string-append #$gzip "/bin"))
+                            (chdir #$output)
+                            (invoke (string-append #$tar "/bin/tar")
+                                    "xf" #$drv)))
                       #:local-build? #t)))
 
 (define* (url-fetch/zipbomb url hash-algo hash
@@ -540,11 +542,13 @@ own.  This helper makes it easier to deal with \"zip bombs\"."
                                       #:guile guile)))
     ;; Take the zip bomb, and simply unpack it as a directory.
     (gexp->derivation (or name file-name)
-                      #~(begin
-                          (mkdir #$output)
-                          (chdir #$output)
-                          (invoke (string-append #$unzip "/bin/unzip")
-                                  #$drv))
+                      (with-imported-modules '((guix build utils))
+                        #~(begin
+                            (use-modules (guix build utils))
+                            (mkdir #$output)
+                            (chdir #$output)
+                            (invoke (string-append #$unzip "/bin/unzip")
+                                    #$drv)))
                       #:local-build? #t)))
 
 (define* (download-to-store store url #:optional (name (basename url))
