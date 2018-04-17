@@ -6253,7 +6253,7 @@ specification.")
 (define-public python-pretend
   (package
     (name "python-pretend")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
      (origin
        (method url-fetch)
@@ -6261,7 +6261,7 @@ specification.")
                            "pretend/pretend-" version ".tar.gz"))
        (sha256
         (base32
-         "0r5r7ygz9m6d2bklflbl84cqhjkc2q12xgis8268ygjh30g2q3wk"))))
+         "040vm94lcbscg5p81g1icmwwwa2jm7wrd1ybmxnv1sz8rl8bh3n9"))))
     (build-system python-build-system)
     (home-page "https://github.com/alex/pretend")
     (synopsis "Library for stubbing in Python")
