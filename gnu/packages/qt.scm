@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1018,7 +1018,7 @@ interacting with serial ports from within Qt.")))
 (define-public qtserialbus
   (package (inherit qtsvg)
     (name "qtserialbus")
-    (version "5.9.4")
+    (version "5.9.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1027,7 +1027,7 @@ interacting with serial ports from within Qt.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1i6b7w9z30mzzi0dcmrxx1scpzpnnw2fag1igvrnzvw1jwp414ff"))))
+               "0gz5xsskv02yy078yffxyn8rdlklf4rsgnqrziyz5ywxwdh96gn5"))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtserialport" ,qtserialport)))
