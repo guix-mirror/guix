@@ -1617,13 +1617,13 @@ irb's last-word approach.")
 (define-public ruby-instantiator
   (package
     (name "ruby-instantiator")
-    (version "0.0.6")
+    (version "0.0.7")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "instantiator" version))
               (sha256
                (base32
-                "0mfmqhg9xrv9i8i1kmphf15ywddhivyh2z3ccl0xjw8qy54zr21i"))))
+                "0w07w3gkyqr7m0vz5h13vm8b411660qywjm2xxxgdjv4wb3fazbr"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
