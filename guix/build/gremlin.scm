@@ -99,10 +99,16 @@ dynamic linking information."
 ;;     } d_un;
 ;; } Elf64_Dyn;
 
+(define-record-type <dynamic-entry>
+  (dynamic-entry type value offset)
+  dynamic-entry?
+  (type   dynamic-entry-type)                     ;DT_*
+  (value  dynamic-entry-value)                    ;string | number | ...
+  (offset dynamic-entry-offset))                  ;integer
+
 (define (raw-dynamic-entries elf segment)
-  "Return as a list of type/value pairs all the dynamic entries found in
-SEGMENT, the 'PT_DYNAMIC' segment of ELF.  In the result, each car is a DT_
-value, and the interpretation of the cdr depends on the type."
+  "Return as a list of <dynamic-entry> for the dynamic entries found in
+SEGMENT, the 'PT_DYNAMIC' segment of ELF."
   (define start
     (elf-segment-offset segment))
   (define bytes
@@ -123,7 +129,9 @@ value, and the interpretation of the cdr depends on the type."
           (if (= type DT_NULL)                    ;finished?
               (reverse result)
               (loop (+ offset (* 2 word-size))
-                    (alist-cons type value result)))))))
+                    (cons (dynamic-entry type value
+                                         (+ start offset word-size))
+                          result)))))))
 
 (define (vma->offset elf vma)
   "Convert VMA, a virtual memory address, to an offset within ELF.
@@ -148,35 +156,33 @@ offset."
 
 (define (dynamic-entries elf segment)
   "Return all the dynamic entries found in SEGMENT, the 'PT_DYNAMIC' segment
-of ELF, as a list of type/value pairs.  The type is a DT_ value, and the value
-may be a string or an integer depending on the entry type (for instance, the
-value of DT_NEEDED entries is a string.)"
+of ELF, as a list of <dynamic-entry>.  The value of each entry may be a string
+or an integer depending on the entry type (for instance, the value of
+DT_NEEDED entries is a string.)  Likewise the offset is the offset within the
+string table if the type is a string."
   (define entries
     (raw-dynamic-entries elf segment))
 
   (define string-table-offset
-    (any (match-lambda
-            ((type . value)
-             (and (= type DT_STRTAB) value))
-            (_ #f))
+    (any (lambda (entry)
+           (and (= (dynamic-entry-type entry) DT_STRTAB)
+                (dynamic-entry-value entry)))
          entries))
 
-  (define (interpret-dynamic-entry type value)
-    (cond ((memv type (list DT_NEEDED DT_SONAME DT_RPATH DT_RUNPATH))
-           (if string-table-offset
-               (pointer->string
-                (bytevector->pointer (elf-bytes elf)
-                                     (vma->offset
-                                      elf
-                                      (+ string-table-offset value))))
-               value))
-          (else
-           value)))
+  (define (interpret-dynamic-entry entry)
+    (let ((type  (dynamic-entry-type entry))
+          (value (dynamic-entry-value entry)))
+      (cond ((memv type (list DT_NEEDED DT_SONAME DT_RPATH DT_RUNPATH))
+             (if string-table-offset
+                 (let* ((offset (vma->offset elf (+ string-table-offset value)))
+                        (value  (pointer->string
+                                 (bytevector->pointer (elf-bytes elf) offset))))
+                   (dynamic-entry type value offset))
+                 (dynamic-entry type value (dynamic-entry-offset entry))))
+            (else
+             (dynamic-entry type value (dynamic-entry-offset entry))))))
 
-  (map (match-lambda
-         ((type . value)
-          (cons type (interpret-dynamic-entry type value))))
-       entries))
+  (map interpret-dynamic-entry entries))
 
 
 ;;;
@@ -200,21 +206,29 @@ value of DT_NEEDED entries is a string.)"
 (define (elf-dynamic-info elf)
   "Return dynamic-link information for ELF as an <elf-dynamic-info> object, or
 #f if ELF lacks dynamic-link information."
+  (define (matching-entry type)
+    (lambda (entry)
+      (= type (dynamic-entry-type entry))))
+
   (match (dynamic-link-segment elf)
     (#f #f)
     ((? elf-segment? dynamic)
      (let ((entries (dynamic-entries elf dynamic)))
-       (%elf-dynamic-info (assv-ref entries DT_SONAME)
-                          (filter-map (match-lambda
-                                        ((type . value)
-                                         (and (= type DT_NEEDED) value))
-                                        (_ #f))
+       (%elf-dynamic-info (find (matching-entry DT_SONAME) entries)
+                          (filter-map (lambda (entry)
+                                        (and (= (dynamic-entry-type entry)
+                                                DT_NEEDED)
+                                             (dynamic-entry-value entry)))
                                       entries)
-                          (or (and=> (assv-ref entries DT_RPATH)
-                                     search-path->list)
+                          (or (and=> (find (matching-entry DT_RPATH)
+                                           entries)
+                                     (compose search-path->list
+                                              dynamic-entry-value))
                               '())
-                          (or (and=> (assv-ref entries DT_RUNPATH)
-                                     search-path->list)
+                          (or (and=> (find (matching-entry DT_RUNPATH)
+                                           entries)
+                                     (compose search-path->list
+                                              dynamic-entry-value))
                               '()))))))
 
 (define %libc-libraries
