@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -789,3 +790,30 @@ in userspace)
 
 (define-public python2-pycryptodome
   (package-with-python2 python-pycryptodome))
+
+(define-public python-m2crypto
+  (package
+    (name "python-m2crypto")
+    (version "0.29.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "M2Crypto" version))
+       (sha256
+        (base32 "1h16gpilrnlzc0iyj1mnd1iqh8wchzjsxjqw9n344glimg2s5zm0"))))
+    (build-system python-build-system)
+    (inputs `(("openssl" ,openssl)))
+    (propagated-inputs `(("python-typing" ,python-typing)))
+    (home-page "https://gitlab.com/m2crypto/m2crypto")
+    (synopsis "Python crypto and TLS toolkit")
+    (description "@code{M2Crypto} is a complete Python wrapper for OpenSSL
+featuring RSA, DSA, DH, EC, HMACs, message digests, symmetric ciphers
+(including AES); TLS functionality to implement clients and servers; HTTPS
+extensions to Python's httplib, urllib, and xmlrpclib; unforgeable HMAC'ing
+AuthCookies for web session management; FTP/TLS client and server; S/MIME;
+M2Crypto can also be used to provide TLS for Twisted.  Smartcards supported
+through the Engine interface.")
+    (license license:expat)))
+
+(define-public python2-m2crypto
+  (package-with-python2 python-m2crypto))
