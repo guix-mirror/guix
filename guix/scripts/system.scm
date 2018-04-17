@@ -393,9 +393,11 @@ it atomically, and then run OS's activation script."
                   "~Y-~m-~d ~H:~M")))
 
 (define* (profile-boot-parameters #:optional (profile %system-profile)
-                                  (numbers (generation-numbers profile)))
-  "Return a list of 'boot-parameters' for the generations of PROFILE specified by
-NUMBERS, which is a list of generation numbers."
+                                  (numbers
+                                   (reverse (generation-numbers profile))))
+  "Return a list of 'boot-parameters' for the generations of PROFILE specified
+by NUMBERS, which is a list of generation numbers. The list is ordered from
+the most recent to the oldest profiles."
   (define (system->boot-parameters system number time)
     (unless-file-not-found
      (let* ((params           (read-boot-parameters-file system))
