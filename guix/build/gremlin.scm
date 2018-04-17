@@ -41,7 +41,8 @@
             elf-dynamic-info-runpath
             expand-origin
 
-            validate-needed-in-runpath))
+            validate-needed-in-runpath
+            strip-runpath))
 
 ;;; Commentary:
 ;;;
@@ -319,5 +320,48 @@ be found in RUNPATH ~s~%"
           ;; (when (null? not-found)
           ;;   (format (current-error-port) "~a is OK~%" file))
           (null? not-found))))))
+
+(define (strip-runpath file)
+  "Remove from the DT_RUNPATH of FILE any entries that are not necessary
+according to DT_NEEDED."
+  (define (minimal-runpath needed runpath)
+    (filter (lambda (directory)
+              (and (string-prefix? "/" directory)
+                   (any (lambda (lib)
+                          (file-exists? (string-append directory "/" lib)))
+                        needed)))
+            runpath))
+
+  (define port
+    (open-file file "r+b"))
+
+  (catch #t
+    (lambda ()
+      (let* ((elf      (parse-elf (get-bytevector-all port)))
+             (entries  (dynamic-entries elf (dynamic-link-segment elf)))
+             (needed   (filter-map (lambda (entry)
+                                     (and (= (dynamic-entry-type entry)
+                                             DT_NEEDED)
+                                          (dynamic-entry-value entry)))
+                                   entries))
+             (runpath  (find (lambda (entry)
+                               (= DT_RUNPATH (dynamic-entry-type entry)))
+                             entries))
+             (old      (search-path->list
+                        (dynamic-entry-value runpath)))
+             (new      (minimal-runpath needed old)))
+        (unless (equal? old new)
+          (format (current-error-port)
+                  "~a: stripping RUNPATH to ~s (removed ~s)~%"
+                  file new
+                  (lset-difference string=? old new))
+          (seek port (dynamic-entry-offset runpath) SEEK_SET)
+          (put-bytevector port (string->utf8 (string-join new ":")))
+          (put-u8 port 0))
+        (close-port port)
+        new))
+    (lambda (key . args)
+      (false-if-exception (close-port port))
+      (apply throw key args))))
 
 ;;; gremlin.scm ends here
