@@ -1390,7 +1390,7 @@ selecting one of the charts themes.")
 (define-public qtdatavis3d
   (package (inherit qtsvg)
     (name "qtdatavis3d")
-    (version "5.9.4")
+    (version "5.9.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1399,7 +1399,7 @@ selecting one of the charts themes.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ggwfnqf17mp5dkfr82q1qrimkb6wv3304vl8mjv1nq0zisckhjv"))))
+               "0i1zd7lcakhicfpqj7dlw8hzk8x5i4ddk1427jhxcpja48l4jxy5"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests
