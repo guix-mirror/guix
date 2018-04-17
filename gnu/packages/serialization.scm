@@ -420,7 +420,7 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
 (define-public flatbuffers
   (package
     (name "flatbuffers")
-    (version "1.8.0")
+    (version "1.9.0")
     (source
       (origin
         (method url-fetch)
@@ -428,7 +428,7 @@ to generate and parse.  The two primary functions are @code{cbor.loads} and
                             version ".tar.gz"))
         (sha256
          (base32
-          "0blc978wc5h91662vai24xj92c3bx56y6hzid90qva7il302jl64"))))
+          "1qs7sa9q4q6hs12yp875lvrv6393178qcmqs1ziwmjk088g4k9aw"))))
     (build-system cmake-build-system)
     (arguments
      '(#:build-type "Release"
