@@ -619,6 +619,9 @@ Networking and Cryptography library.  These libraries have a stated goal
 of improving usability, security and speed.")
     (license license:asl2.0)))
 
+(define-public python2-pynacl
+  (package-with-python2 python-pynacl))
+
 (define-public python2-pgpdump
   (package
     (name "python2-pgpdump")
