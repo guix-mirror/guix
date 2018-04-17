@@ -1276,7 +1276,7 @@ and mobile applications targeting TV-like form factors.")))
 (define-public qtscxml
   (package (inherit qtsvg)
     (name "qtscxml")
-    (version "5.9.4")
+    (version "5.9.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1285,7 +1285,7 @@ and mobile applications targeting TV-like form factors.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0x8bjp9jzib4kfn7rbricw4qr259qqsdbrz0dw39453s2m7cbv0x"))
+               "0knp328cinawz6xbhf9wd6h6gbwp74rb5cpmlr8gv3g5a7fjlsh1"))
              (modules '((guix build utils)))
              (snippet
               '(begin
