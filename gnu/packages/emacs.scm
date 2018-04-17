@@ -958,7 +958,7 @@ light user interface.")
 (define-public emacs-emms-player-mpv
   (package
     (name "emacs-emms-player-mpv")
-    (version "0.0.13")
+    (version "0.1.0")
     (source
      (origin
        (method url-fetch)
@@ -967,7 +967,7 @@ light user interface.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "01i0bz7wdqzcnv5r63m9xgl07yf1nmn86dwy00rcfsn5za46y3r3"))))
+         "05qwbagc4i7yn7i94r1hdgj6wc5xijy1pxqv08pwsmli9rqj51n9"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emms" ,emms)))
