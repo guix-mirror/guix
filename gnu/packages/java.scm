@@ -9639,3 +9639,20 @@ ssh-agent.")))
     (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
 and Pageant included in Putty. This component contains an implementation of
 USocketFactory using @dfn{JNA} (Java Native Access).")))
+
+(define-public java-jsch-agentproxy-pageant
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-pageant")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-pageant.jar"
+       #:source-dir "jsch-agent-proxy-pageant/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)
+       ("java-native-access" ,java-native-access)
+       ("java-native-access-platform" ,java-native-access-platform)))
+    (synopsis "Proxy to pageant")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains the code for a proxy to
+pageant.")))
