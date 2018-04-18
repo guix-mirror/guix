@@ -1,13 +1,17 @@
-# French translation of guix. 
-# Copyright (C) 2016 Free Software Foundation, Inc.
+# French translation of guix.
+# Copyright (C) 2013-2018 the authors of Guix (msgids)
 # This file is distributed under the same license as the guix package.
 # Rémy Chevalier <remychevalier@laposte.net>, 2013, 2014.
-# Frédéric Marchal <fmarchal@perso.be>, 2017
-# Julien Lepiller <julien@lepiller.eu>, 2017
+# Frédéric Marchal <fmarchal@perso.be>, 2017.
+# Julien Lepiller <julien@lepiller.eu>, 2017, 2018.
 #
 # Note de Frédéric Marchal: Le nom « shepherd » est le nom d'un démon (voir
 # https://www.gnu.org/software/shepherd/). Je ne l'ai pas traduit dans les
 # messages. Je l'ai traité comme le nom d'un logiciel.
+#
+# Note de Julien Lepiller : Le nom « shepherd » est bien le nom d'un logiciel,
+# mais il est traité un peu différemment : on dit « le shepherd » (« the
+# shepherd » en anglais) avec l'article.
 #
 msgid ""
 msgstr ""
@@ -21,8 +25,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
 "X-Generator: Poedit 2.0.3\n"
 
 #: gnu.scm:82
@@ -336,7 +340,7 @@ msgid ""
 "      --verbosity=LEVEL  use the given verbosity LEVEL"
 msgstr ""
 "\n"
-"      --verbosity=NIVEAU  utiliser le NIVEAU de verbosité donné"
+"      --verbosity=NIVEAU utiliser le NIVEAU de verbosité donné"
 
 #: guix/scripts/build.scm:338
 msgid ""
@@ -1205,7 +1209,7 @@ msgid ""
 "      --branch=BRANCH    download the tip of the specified BRANCH"
 msgstr ""
 "\n"
-"      --branch=BRANCHE    télécharger le bout de la BRANCHE indiquée"
+"      --branch=BRANCHE   télécharger le bout de la BRANCHE indiquée"
 
 #: guix/scripts/pull.scm:106
 msgid ""
@@ -1476,7 +1480,7 @@ msgstr "n'est pas exécuté en tant que « root » donc le propriétaire de «
 #: guix/scripts/system.scm:253
 #, scheme-format
 msgid "while talking to shepherd: ~a~%"
-msgstr "en parlant à shepherd : ~a~%"
+msgstr "en parlant au shepherd : ~a~%"
 
 #: guix/scripts/system.scm:260
 #, scheme-format
@@ -1501,12 +1505,12 @@ msgstr "quelque chose s'est mal passé : ~s~%"
 #: guix/scripts/system.scm:278
 #, scheme-format
 msgid "shepherd error~%"
-msgstr "erreur de shepherd~%"
+msgstr "erreur du shepherd~%"
 
 #: guix/scripts/system.scm:295
 #, scheme-format
 msgid "failed to obtain list of shepherd services~%"
-msgstr "erreur en essayant d'obtenir la liste des services de shepherd~%"
+msgstr "erreur en essayant d'obtenir la liste des services du shepherd~%"
 
 #: guix/scripts/system.scm:315
 #, scheme-format
@@ -1534,7 +1538,7 @@ msgstr "le graphe orienté acyclique (DAG) des services"
 
 #: guix/scripts/system.scm:507
 msgid "the dependency graph of shepherd services"
-msgstr "le graphique des dépendances des services de shepherd"
+msgstr "le graphique des dépendances des services du shepherd"
 
 #: guix/scripts/system.scm:531
 #, scheme-format
@@ -1661,7 +1665,7 @@ msgstr "   extension-graph  produire le graphique des extensions de service au f
 
 #: guix/scripts/system.scm:842
 msgid "   shepherd-graph   emit the graph of shepherd services in Dot format\n"
-msgstr "   shepherd-graph   produire le graphique des services de shepherd au format Dot\n"
+msgstr "   shepherd-graph   produire le graphique des services du shepherd au format Dot\n"
 
 #: guix/scripts/system.scm:846
 msgid ""
@@ -2185,7 +2189,8 @@ msgid ""
 "      --public-key=FILE  use FILE as the public key for signatures"
 msgstr ""
 "\n"
-"      --public-key=FICHIER utiliser le FICHIER comme clé publique pour les signatures"
+"      --public-key=FICHIER\n"
+"                         utiliser le FICHIER comme clé publique pour les signatures"
 
 #: guix/scripts/publish.scm:89
 msgid ""
@@ -2193,7 +2198,8 @@ msgid ""
 "      --private-key=FILE use FILE as the private key for signatures"
 msgstr ""
 "\n"
-"      --private-key=FICHIER utiliser le FICHIER comme clé privée pour les signatures"
+"      --private-key=FICHIER\n"
+"                         utiliser le FICHIER comme clé privée pour les signatures"
 
 #: guix/scripts/publish.scm:91
 msgid ""
@@ -2598,7 +2604,8 @@ msgid ""
 "  -C, --compression=TOOL compress using TOOL--e.g., \"lzip\""
 msgstr ""
 "\n"
-"  -C, --compression=OUTIL compresser en utilisant l'OUTIL, par ex, « lzip »"
+"  -C, --compression=OUTIL\n"
+"                         compresser en utilisant l'OUTIL, par ex, « lzip »"
 
 #: guix/scripts/pack.scm:344
 msgid ""
