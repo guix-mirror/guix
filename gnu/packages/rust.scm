@@ -192,6 +192,10 @@ in turn be used to build the final Rust.")
                ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
                ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
                (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
+               (substitute* "src/librustc_back/dynamic_lib.rs"
+                 ;; This test is known to fail on aarch64 and powerpc64le:
+                 ;; https://github.com/rust-lang/rust/issues/45410
+                 (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
                #t)))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda* _
@@ -468,6 +472,31 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
           `(modify-phases ,phases
+             (replace 'patch-tests
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref inputs "bash")))
+                   (substitute* "src/libstd/process.rs"
+                     ;; The newline is intentional.
+                     ;; There's a line length "tidy" check in Rust which would
+                     ;; fail otherwise.
+                     (("\"/bin/sh\"") (string-append "\n\"" bash "/bin/sh\"")))
+                   (substitute* "src/libstd/net/tcp.rs"
+                     ;; There is no network in build environment
+                     (("fn connect_timeout_unroutable")
+                      "#[ignore]\nfn connect_timeout_unroutable"))
+                   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
+                   (substitute* "src/libstd/sys/unix/process/process_common.rs"
+                    (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
+    fn test_process_mask"))
+                   ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
+                   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
+                   (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
+                   (substitute* "src/librustc_metadata/dynamic_lib.rs"
+                     ;; This test is known to fail on aarch64 and powerpc64le:
+                     ;; https://github.com/rust-lang/rust/issues/45410
+                     (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
+                   #t)))
              (delete 'fix-mtime-bug))))))))
 
 (define-public rust
