@@ -8789,7 +8789,7 @@ variable conform.")
 (define-public perl-type-tiny
   (package
     (name "perl-type-tiny")
-    (version "1.002001")
+    (version "1.002002")
     (source
      (origin
        (method url-fetch)
@@ -8797,7 +8797,7 @@ variable conform.")
                            "Type-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "1p8krim8kvw123nady96fagi8sk2pj1z8jkr4r8n45ihyamfxjck"))))
+         "0b48v28rvl20969gyr62yg6gr6a2nj9qik0bixavbjdmk67hqnx8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-warnings" ,perl-test-warnings)))
