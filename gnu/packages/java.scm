@@ -9705,3 +9705,104 @@ and Pageant included in Putty. This component contains a connector factory.")))
     (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
 and Pageant included in Putty. This component contains a library to use
 jsch-agent-proxy with JSch.")))
+
+(define-public java-apache-ivy
+  (package
+    (name "java-apache-ivy")
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache//ant/ivy/" version
+                                  "/apache-ivy-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1xkfn57g2m7l6y0xdq75x5rnrgk52m9jx2xah70g3ggl8750hbr0"))
+              (patches
+                (search-patches
+                  "java-apache-ivy-port-to-latest-bouncycastle.patch"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "ivy.jar"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-example
+           (lambda _
+             (delete-file-recursively "src/example")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (with-directory-excursion "src/java"
+               (for-each (lambda (file)
+                           (install-file file (string-append "../../build/classes/" (dirname file))))
+                 (append
+                   (find-files "." ".*.css")
+                   (find-files "." ".*.ent")
+                   (find-files "." ".*.html")
+                   (find-files "." ".*.properties")
+                   (find-files "." ".*.xsd")
+                   (find-files "." ".*.xsl")
+                   (find-files "." ".*.xml"))))))
+         (add-before 'build 'fix-vfs
+           (lambda _
+             (substitute*
+               '("src/java/org/apache/ivy/plugins/repository/vfs/VfsRepository.java"
+                 "src/java/org/apache/ivy/plugins/repository/vfs/VfsResource.java")
+               (("import org.apache.commons.vfs") "import org.apache.commons.vfs2"))
+             #t))
+         (add-before 'install 'copy-manifest
+           (lambda _
+             (install-file "META-INF/MANIFEST.MF" "build/classes/META-INF")
+             #t))
+         (add-before 'install 'repack
+           (lambda _
+             (invoke "jar" "-cmf" "build/classes/META-INF/MANIFEST.MF" "build/jar/ivy.jar"
+                     "-C" "build/classes" ".")
+             #t))
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                    (ivy (string-append bin "/ivy"))
+                    (jar (string-append (assoc-ref outputs "out") "/share/java/ivy.jar")))
+               (mkdir-p bin)
+               (with-output-to-file ivy
+                 (lambda _
+                   (display (string-append
+                              "#!" (which "sh") "\n"
+                              "if [[ -z $CLASSPATH ]]; then\n"
+                              "  cp=\"" (getenv "CLASSPATH") ":" jar "\"\n"
+                              "else\n"
+                              "  cp=\"" (getenv "CLASSPATH") ":" jar ":$CLASSPATH\"\n"
+                              "fi\n"
+                              (which "java") " -cp $cp org.apache.ivy.Main $@\n"))))
+               (chmod ivy #o755)
+               #t))))))
+    (inputs
+     `(("java-bouncycastle" ,java-bouncycastle)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-commons-collections" ,java-commons-collections)
+       ("java-commons-httpclient" ,java-commons-httpclient)
+       ("java-commons-lang" ,java-commons-lang)
+       ("java-commons-vfs" ,java-commons-vfs)
+       ("java-jakarta-oro" ,java-jakarta-oro)
+       ("java-jsch" ,java-jsch)
+       ("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)
+       ("java-jsch-agentproxy-connector-factory" ,java-jsch-agentproxy-connector-factory)
+       ("java-jsch-agentproxy-jsch" ,java-jsch-agentproxy-jsch)
+       ("java-junit" ,java-junit)))
+    (home-page "https://ant.apache.org/ivy")
+    (synopsis "Dependency manager for the Java programming language")
+    (description "Ivy is a tool for managing (recording, tracking, resolving
+and reporting) project dependencies.  It is characterized by the following:
+
+@itemize
+@item flexibility and configurability - Ivy is essentially process agnostic
+      and is not tied to any methodology or structure.  Instead it provides the
+      necessary flexibility and configurability to be adapted to a broad range
+      of dependency management and build processes.
+@item tight integration with Apache Ant - while available as a standalone tool,
+      Ivy works particularly well with Apache Ant providing a number of
+      powerful Ant tasks ranging from dependency resolution to dependency
+      reporting and publication.
+@end itemize")
+    (license license:asl2.0)))
