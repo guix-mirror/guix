@@ -9656,3 +9656,18 @@ USocketFactory using @dfn{JNA} (Java Native Access).")))
     (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
 and Pageant included in Putty. This component contains the code for a proxy to
 pageant.")))
+
+(define-public java-jsch-agentproxy-usocket-nc
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-usocket-nc")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-usocket-nc.jar"
+       #:source-dir "jsch-agent-proxy-usocket-nc/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)))
+    (synopsis "USocketFactory implementation using netcat")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains an implementation of
+USocketFactory using netcat.")))
