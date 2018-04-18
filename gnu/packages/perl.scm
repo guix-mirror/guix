@@ -610,7 +610,7 @@ Agency.")
 (define-public perl-business-isbn
   (package
     (name "perl-business-isbn")
-    (version "3.003")
+    (version "3.004")
     (source
      (origin
        (method url-fetch)
@@ -618,7 +618,7 @@ Agency.")
                            "Business-ISBN-" version ".tar.gz"))
        (sha256
         (base32
-         "1i2bxzqkki257rqbswa4ryj1grmwa5s47wrxln2ff5mha1ry31gm"))))
+         "07l3zfv8hagv37i3clvj5a1zc2jarr5phg80c93ks35zaz6llx9i"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-business-isbn-data" ,perl-business-isbn-data)
