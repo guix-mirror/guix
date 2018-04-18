@@ -9671,3 +9671,21 @@ pageant.")))
     (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
 and Pageant included in Putty. This component contains an implementation of
 USocketFactory using netcat.")))
+
+(define-public java-jsch-agentproxy-connector-factory
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-connector-factory")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-connector-factory.jar"
+       #:source-dir "jsch-agent-proxy-connector-factory/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)
+       ("java-jsch-agentproxy-sshagent" ,java-jsch-agentproxy-sshagent)
+       ("java-jsch-agentproxy-usocket-jna" ,java-jsch-agentproxy-usocket-jna)
+       ("java-jsch-agentproxy-pageant" ,java-jsch-agentproxy-pageant)
+       ("java-jsch-agentproxy-usocket-nc" ,java-jsch-agentproxy-usocket-nc)))
+    (synopsis "Connector factory for jsch agent proxy")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains a connector factory.")))
