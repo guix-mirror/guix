@@ -4585,14 +4585,14 @@ files and use the data therein.")
 (define-public ruby-ascii85
   (package
     (name "ruby-ascii85")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "Ascii85" version))
        (sha256
         (base32
-         "0j95sbxd18kc8rhcnvl1w37kflqpax1r12h1x47gh4xxn3mz4m7q"))))
+         "0658m37jjjn6drzqg1gk4p6c205mgp7g1jh2d00n4ngghgmz5qvs"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
