@@ -9623,3 +9623,19 @@ will be allowed to use these programs for authentication.")
     (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
 and Pageant included in Putty. This component contains the code for a proxy to
 ssh-agent.")))
+
+(define-public java-jsch-agentproxy-usocket-jna
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-usocket-jna")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-usocket-jna.jar"
+       #:source-dir "jsch-agent-proxy-usocket-jna/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)
+       ("java-native-access" ,java-native-access)))
+    (synopsis "USocketFactory implementation using JNA")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains an implementation of
+USocketFactory using @dfn{JNA} (Java Native Access).")))
