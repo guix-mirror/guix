@@ -9603,8 +9603,23 @@ simplify native access.")))
        #:source-dir "jsch-agent-proxy-core/src/main/java"
        #:tests? #f)); no tests
     (home-page "https://github.com/ymnk/jsch-agent-proxy")
-    (synopsis "Proxy to ssh-agent and Pageant in Java")
+    (synopsis "Core component of the proxy to ssh-agent and Pageant in Java")
     (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
 and Pageant included Putty.  It will be easily integrated into JSch, and users
 will be allowed to use these programs for authentication.")
     (license license:bsd-3)))
+
+(define-public java-jsch-agentproxy-sshagent
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-sshagent")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-sshagent.jar"
+       #:source-dir "jsch-agent-proxy-sshagent/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)))
+    (synopsis "Proxy to ssh-agent")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains the code for a proxy to
+ssh-agent.")))
