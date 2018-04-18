@@ -44,6 +44,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix utils) ;substitute-keyword-arguments for perl-5.26.2
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
@@ -161,7 +162,8 @@
 ;; Fixes CVE-2018-6797, CVE-2018-6798, and CVE-2018-6913.
 ;; See <https://metacpan.org/changes/release/SHAY/perl-5.26.2>.
 (define-public perl-5.26.2
-  (package/inherit perl
+  (package
+    (inherit perl)
     (version "5.26.2")
     (source (origin
               (inherit (package-source perl))
@@ -169,7 +171,22 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))))
+                "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments perl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; The path to libperl.so includes the Perl version number, and this
+           ;; is not handled by grafting. See <https://bugs.gnu.org/31210>.
+           (add-after 'install 'workaround-grafting-version-bug
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (dir (string-append out "/lib/perl5"))
+                      (new "5.26.2")
+                      (old "5.26.1"))
+                 (with-directory-excursion dir
+                   (symlink new old))
+                 #t)))))))))
 
 (define-public perl-algorithm-c3
   (package
