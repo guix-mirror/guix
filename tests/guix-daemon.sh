@@ -194,6 +194,20 @@ do
     kill "$daemon_pid"
 done
 
+# Make sure garbage collection from a TCP connection does not work.
+
+tcp_socket="127.0.0.1:9999"
+guix-daemon --listen="$tcp_socket" &
+daemon_pid=$!
+
+GUIX_DAEMON_SOCKET="guix://$tcp_socket"
+export GUIX_DAEMON_SOCKET
+
+if guix gc; then false; else true; fi
+
+unset GUIX_DAEMON_SOCKET
+kill "$daemon_pid"
+
 # Log compression.
 
 guix-daemon --listen="$socket" --disable-chroot --debug --log-compression=gzip &
