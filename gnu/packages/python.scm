@@ -102,7 +102,6 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openstack)
-  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
