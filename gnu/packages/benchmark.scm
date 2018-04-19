@@ -67,8 +67,9 @@
              ;; The configure script doesn't understand some of the
              ;; GNU options, so we can't use #:configure-flags.
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))
+               #t)))
          ;; The main `fio` executable is fairly small and self contained.
          ;; Moving the auxiliary python and gnuplot scripts to a separate
          ;; output saves almost 400 MiB on the closure.
