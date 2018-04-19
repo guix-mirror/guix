@@ -400,8 +400,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.34")
-(define %linux-libre-4.14-hash "11gmvxngjfx4w24a1yjc98hhdl8zfh87byrslgy94faybj8dl938")
+(define %linux-libre-4.14-version "4.14.35")
+(define %linux-libre-4.14-hash "0dfzc2290zks1a63zld8ac0xarc8gxwwh4wsr71y8mas7gfmyqzj")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
