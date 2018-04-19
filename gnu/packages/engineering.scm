@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -583,7 +583,9 @@ as well as pick-place files.")
                 (file-name (git-file-name name version))
                 (snippet
                  ;; Remove bundled catch since we provide our own.
-                 '(delete-file "libfive/test/catch.hpp"))))
+                 '(begin
+                    (delete-file "libfive/test/catch.hpp")
+                    #t))))
       (build-system cmake-build-system)
       (arguments
        `(#:test-target "libfive-test"
