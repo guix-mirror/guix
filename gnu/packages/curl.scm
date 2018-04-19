@@ -232,8 +232,7 @@ not offer a replacement for libcurl.")
                (substitute* curl.scm (("libguile-curl") ext))
                ;; The build system does not actually compile the Scheme module.
                ;; So we can compile it and put it in the right place in one go.
-               (system* "guild" "compile" curl.scm "-o" curl.go))
-               #t)))))
+               (invoke "guild" "compile" curl.scm "-o" curl.go)))))))
    (native-inputs `(("pkg-config" ,pkg-config)))
    (inputs
     `(("curl" ,curl)
