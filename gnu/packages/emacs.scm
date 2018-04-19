@@ -5170,30 +5170,29 @@ Yasnippet.")
 
 (define-public emacs-memoize
   (package
-   (name "emacs-memoize")
-   (version "20130421.b55eab0")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/skeeto/emacs-memoize")
-           (commit "b55eab0cb6ab05d941e07b8c01f1655c0cf1dd75")))
-     (file-name (string-append name "-" version ".tar.gz"))
-     (sha256
-      (base32
-       "0fjwlrdm270qcrqffvarw5yhijk656q4lam79ybhaznzj0dq3xpw"))))
-   (build-system emacs-build-system)
-   (arguments
-    `(#:tests? #t
-      #:test-command '("emacs" "-batch"
-                       "-l" "memoize.el"
-                       "-l" "memoize-test.el"
-                       "-f" "ert-run-tests-batch-and-exit")))
-   (home-page "https://github.com/skeeto/emacs-memoize")
-   (synopsis "Emacs lisp memoization library")
-   (description "@code{emacs-memoize} is an Emacs library for
+    (name "emacs-memoize")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/skeeto/emacs-memoize/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05ijgwi4ymxx31vpjm2pn356j85cykknajn14lrzz8pn5sh0vrg4"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "memoize-test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
+    (home-page "https://github.com/skeeto/emacs-memoize")
+    (synopsis "Emacs lisp memoization library")
+    (description "@code{emacs-memoize} is an Emacs library for
 memoizing functions.")
-   (license license:unlicense)))
+    (license license:unlicense)))
 
 (define-public emacs-linum-relative
   (package
