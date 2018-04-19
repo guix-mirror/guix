@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -63,6 +63,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -94,6 +95,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages iso-codes)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
@@ -110,7 +112,9 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
@@ -118,6 +122,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages upnp)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
@@ -810,7 +815,7 @@ audio/video codec library.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "2.2.8")
+    (version "3.0.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -818,55 +823,90 @@ audio/video codec library.")
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "1v32snw46rkgbdqdy3dssl2y13i8p2cr1cw1i18r6vdmiy24dw4v"))))
+               "0lavzly8l0ll1d9iris9cnirgcs77g48lxj14058dxqkvd5v1a4v"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("git" ,git) ; needed for a test
+     `(("flex" ,flex)
+       ("bison" ,bison)
+       ("gettext" ,gettext-minimal)
+       ("git" ,git) ; needed for a test
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add optional inputs once available.
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("avahi" ,avahi)
        ("dbus" ,dbus)
+       ("eudev" ,eudev)
        ("flac" ,flac)
-       ("ffmpeg" ,ffmpeg-2.8)               ;fails to build against ffmpeg 3.0
+       ("ffmpeg" ,ffmpeg)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
        ("gnutls" ,gnutls)
        ("liba52" ,liba52)
+       ("libarchive" ,libarchive)
+       ("libass" ,libass)
+       ("libavc1394" ,libavc1394)
+       ("libbluray" ,libbluray)
+       ("libcaca" ,libcaca)
        ("libcddb" ,libcddb)
+       ("libdca" ,libdca)
        ("libdvbpsi" ,libdvbpsi)
+       ("libdvdnav" ,libdvdnav)
+       ("libdvdread" ,libdvdread)
+       ("libebml" ,libebml)
        ("libgcrypt" ,libgcrypt)
+       ("libidn" ,libidn)
        ("libkate" ,libkate)
        ("libmad" ,libmad)
+       ("libmatroska" ,libmatroska)
+       ("libmodplug" ,libmodplug)
+       ("libmpeg2" ,libmpeg2)
        ("libogg" ,libogg)
        ("libpng" ,libpng)
+       ("libraw1394" ,libraw1394)
+       ("librsvg" ,librsvg)
        ("libsamplerate" ,libsamplerate)
+       ("libsecret" ,libsecret)
        ("libssh2" ,libssh2)
+       ("libupnp" ,libupnp)
+       ("libva" ,libva)
+       ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
+       ("libvpx" ,libvpx)
        ("libtheora" ,libtheora)
+       ("libx264" ,libx264)
        ("libxext" ,libxext)
        ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
        ("libxml2" ,libxml2)
        ("libxpm" ,libxpm)
        ("livemedia-utils" ,livemedia-utils)
-       ("lua" ,lua-5.1)
+       ("lua" ,lua-5.2)
        ("mesa" ,mesa)
        ("opus" ,opus)
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-wrapper)
        ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
+       ("samba" ,samba)
        ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
+       ("taglib" ,taglib)
+       ("twolame" ,twolame)
+       ("unzip" ,unzip)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ("x265" ,x265)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (arguments
      `(#:configure-flags
        `("CXXFLAGS=-std=gnu++11"
+         "BUILDCC=gcc"
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
                          "/lib"))                 ;needed for the tests
@@ -883,18 +923,24 @@ audio/video codec library.")
                ;; which fails in our sandboxed build system
                (substitute* "test/run_vlc.sh"
                  (("./vlc --ignore-config") "echo"))
-               ;; XXX Likely not needed for >2.2.6.
-               (substitute* "modules/gui/qt4/components/interface_widgets.cpp"
-                 (("<qx11info_x11.h>") "<QtX11Extras/qx11info_x11.h>"))
+
+               ;; modules/text_renderer/freetype/text_layout.c uses a
+               ;; now-deprecated interface 'fribidi_get_par_embedding_levels'
+               ;; from fribidi.h, so for now we enable the use of deprecated
+               ;; fribidi interfaces from this file.
+               ;; FIXME: Try removing this for vlc >= 3.0.3.
+               (substitute* "modules/text_renderer/freetype/text_layout.c"
+                 (("# define FRIBIDI_NO_DEPRECATED 1") ""))
+
                ;; Fix build against Qt 5.11.
-               (substitute* "modules/gui/qt4/actions_manager.cpp"
+               (substitute* "modules/gui/qt/actions_manager.cpp"
                  (("#include <vlc_keys.h>") "#include <vlc_keys.h>
 #include <QAction>"))
-               (substitute* "modules/gui/qt4/components/simple_preferences.cpp"
+               (substitute* "modules/gui/qt/components/simple_preferences.cpp"
                  (("#include <QFont>") "#include <QFont>
 #include <QButtonGroup>"))
                #t)))
-         (add-after 'install 'regenerate-plugin-cache
+         (add-after 'strip 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)
              ;; The 'install-exec-hook' rule in the top-level Makefile.am
              ;; generates 'lib/vlc/plugins/plugins.dat', a plugin cache, using
@@ -911,9 +957,16 @@ audio/video codec library.")
                (for-each (lambda (file)
                            (let ((s (lstat file)))
                              (unless (eq? (stat:type s) 'symlink)
-                               (utime file 0 0 0 0))))
+                               (utime file 1 1))))
                          (find-files plugindir))
-               (zero? (system* cachegen plugindir))))))))
+               (invoke cachegen plugindir))))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (plugin-path (getenv "QT_PLUGIN_PATH")))
+              (wrap-program (string-append out "/bin/vlc")
+                `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
+            #t)))))
     (home-page "https://www.videolan.org/")
     (synopsis "Audio and video framework")
     (description "VLC is a cross-platform multimedia player and framework
