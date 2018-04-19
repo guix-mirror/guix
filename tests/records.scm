@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -287,6 +287,30 @@
     (lambda (key proc message location form . args)
       (and (string-match "extra.*initializer.*baz" message)
            (eq? proc 'foo)))))
+
+(test-assert "define-record-type* & duplicate initializers"
+  (let ((exp '(begin
+                (define-record-type* <foo> foo make-foo
+                  foo?
+                  (bar foo-bar (default 42)))
+
+                (foo (bar 1)
+                     (bar 2))))
+        (loc         (current-source-location)))  ;keep this alignment!
+    (catch 'syntax-error
+      (lambda ()
+        (eval exp (test-module))
+        #f)
+      (lambda (key proc message location form . args)
+        (and (string-match "duplicate.*initializer" message)
+             (eq? proc 'foo)
+
+             ;; Make sure the location is that of the field specifier.
+             (lset= equal?
+                    (pk 'expected-loc
+                        `((line . ,(- (assq-ref loc 'line) 1))
+                          ,@(alist-delete 'line loc)))
+                    (pk 'actual-loc location)))))))
 
 (test-assert "ABI checks"
   (let ((module (test-module)))

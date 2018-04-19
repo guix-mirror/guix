@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,22 @@
        (loop #'(rest ...)))
       ((weird _ ...)                              ;weird!
        (syntax-violation name "invalid field specifier" #'weird)))))
+
+(define (report-duplicate-field-specifier name ctor)
+  "Report the first duplicate identifier among the bindings in CTOR."
+  (syntax-case ctor ()
+    ((_ bindings ...)
+     (let loop ((bindings #'(bindings ...))
+                (seen   '()))
+       (syntax-case bindings ()
+         (((field value) rest ...)
+          (not (memq (syntax->datum #'field) seen))
+          (loop #'(rest ...) (cons (syntax->datum #'field) seen)))
+         ((duplicate rest ...)
+          (syntax-violation name "duplicate field initializer"
+                            #'duplicate))
+         (()
+          #t))))))
 
 (eval-when (expand load eval)
   ;; The procedures below are needed both at run time and at expansion time.
@@ -168,6 +185,9 @@ of TYPE matches the expansion-time ABI."
                             (eq? f (syntax->datum x)))
                           #'(field (... ...)))
                     (wrap-field-value f (field-default-value f))))
+
+              ;; Pass S to make sure source location info is preserved.
+              (report-duplicate-field-specifier 'name s)
 
               (let ((fields (append fields (map car default-values))))
                 (cond ((lset= eq? fields '(expected ...))
