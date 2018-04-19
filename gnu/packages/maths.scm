@@ -3517,7 +3517,7 @@ set.")
 (define-public hypre
   (package
     (name "hypre")
-    (version "2.11.0")
+    (version "2.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/LLNL/hypre/archive/"
@@ -3525,7 +3525,7 @@ set.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0q69ia0jivzcr8p049dn3mg8yjpn6nwq4sw9iqac8vr63vi54l6m"))
+                "0v515i73bvaz378h5465b1dy9v2gf924zy2q94cpq4qqarawvkqh"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3533,7 +3533,7 @@ set.")
                   ;; substitute the tarball creation time.
                   (substitute* "src/utilities/HYPRE_utilities.h"
                     (("Date Compiled: .*$")
-                     "Date Compiled: Mar 28 2016 20:19:59 +0000\"\n"))
+                     "Date Compiled: Apr 11 2018 16:24:59 +0000\"\n"))
                   #t))))
     (build-system gnu-build-system)
     (outputs '("out"                    ;6.1 MiB of headers and libraries
