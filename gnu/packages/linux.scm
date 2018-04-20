@@ -4680,3 +4680,50 @@ high-speed networking devices.")
     ;; Only the x86_64 architecure is supported.
     (supported-systems '("x86_64-linux"))
     (license (list license:bsd-3 license:gpl2)))) ; dual
+
+(define-public libpfm4
+  (package
+    (name "libpfm4")
+    (version "4.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/perfmon2/"
+                                  name "/libpfm-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1qp4g4n6dw42p2w5rkwzdb7ynk8h7g5vg01ybpmvxncgwa7bw3yv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:modules ((guix build utils)
+                  (guix build gnu-build-system))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'check)
+                  (replace 'build
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (setenv "CC" "gcc")
+                        (invoke "make")
+                        #t)))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (invoke "make"
+                                (string-append "PREFIX=" out)
+                                "install")
+                        #t))))))
+    (synopsis "Performance event monitoring library")
+    (description
+     "This package provides a library called libpfm4, which is used to develop
+monitoring tools exploiting the performance monitoring events such as those
+provided by the Performance Monitoring Unit (PMU) of modern processors.
+
+Libpfm4 helps convert from an event name, expressed as a string, to the event
+encoding that is either the raw event as documented by the hardware vendor or
+the OS-specific encoding.  In the latter case, the library is able to prepare
+the OS-specific data structures needed by the kernel to setup the event.
+
+libpfm4 provides support for the @code{perf_events} interface, which was
+introduced in Linux 2.6.31.")
+    (home-page "http://perfmon2.sourceforge.net/")
+    (license license:expat)))
