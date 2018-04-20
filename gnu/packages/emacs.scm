@@ -3302,7 +3302,7 @@ after buffer changes.")
 (define-public emacs-realgud
   (package
     (name "emacs-realgud")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method url-fetch)
@@ -3310,7 +3310,7 @@ after buffer changes.")
                            version ".tar"))
        (sha256
         (base32
-         "1nc8km339ip90h1j55ahfga03v7x7rh4iycmw6yrxyzir68vwn7c"))))
+         "108wgxg7fb4byaiasgvbxv2hq7b00biq9f0mh9hy6vw4160y5w24"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
