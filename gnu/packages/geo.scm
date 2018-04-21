@@ -499,14 +499,14 @@ development.")
 (define-public r-maps
   (package
    (name "r-maps")
-   (version "3.2.0")
+   (version "3.3.0")
    (source
      (origin
        (method url-fetch)
        (uri (cran-uri "maps" version))
        (sha256
         (base32
-         "0577f3b5d3a7djl7r0miy9mzr6xq6jb32p8nyrma7m2azasbwyj3"))))
+         "05i2ppl5z4p8rawgqmy3z4ia05fcblpq1vvrmrkgkkpdlhczx6hr"))))
    (build-system r-build-system)
    (home-page "https://cran.r-project.org/web/packages/maps")
    (synopsis "Draw geographical maps")
