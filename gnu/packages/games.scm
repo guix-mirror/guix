@@ -112,6 +112,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pulseaudio)
@@ -4623,15 +4624,16 @@ elements to achieve a simple goal in the most complex way possible.")
 (define-public pioneer
   (package
     (name "pioneer")
-    (version "20171001")
+    (version "20180203")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/pioneerspacesim/pioneer/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pioneerspacesim/pioneer.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nxhx22swfqq6lfvcnpfm31wig3sjv5pp0rslj79nbxc7nyihh8m"))))
+                "0hp2mf36kj2v93hka8m8lxw2qhmnjc62wjlpw7c7ix0r8xa01i6h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -4866,3 +4868,56 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
                    (license:non-copyleft ; modified dumb
                     "file://dumb/licence.txt"
                     "Dumb license, explicitly GPL compatible.")))))
+
+(define-public fortune-mod
+  (package
+    (name "fortune-mod")
+    (version "2.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/shlomif/fortune-mod/"
+                                  "archive/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hnqpkassh7fwg2jgvybr8mw7vzfikbrhb5r22367ilfwxnl9yd2"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:test-target "check"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-env
+           (lambda* (#:key inputs #:allow-other-keys)
+             (use-modules (guix build utils))
+             (let* ((cmake-rules (assoc-ref inputs "cmake-rules")))
+               (copy-file cmake-rules
+                          (string-append "fortune-mod/cmake/"
+                                         (strip-store-file-name cmake-rules)))
+               (chdir "fortune-mod"))))
+         (add-after 'install 'fix-install-directory
+           ;; Move binary from "games/" to "bin/".
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (rename-file (string-append out "/games/fortune")
+                            (string-append out "/bin/fortune"))
+               #t))))))
+    (inputs `(("recode" ,recode)))
+    (native-inputs
+     `(("perl" ,perl)
+       ;; The following is only needed for tests.
+       ("perl-file-find-object" ,perl-file-find-object)
+       ("perl-test-differences" ,perl-test-differences)
+       ("perl-class-xsaccessor" ,perl-class-xsaccessor)
+       ("perl-io-all" ,perl-io-all)
+       ("perl-test-runvalgrind" ,perl-test-runvalgrind)
+       ("cmake-rules"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://bitbucket.org/shlomif/shlomif-cmake-modules/"
+                               "raw/default/shlomif-cmake-modules/Shlomif_Common.cmake"))
+           (sha256
+            (base32 "0kx9s1qqhhzprp1w3b67xmsns0n0v506bg5hgrshxaxpy6lqiwb2"))))))
+    (home-page "http://www.shlomifish.org/open-source/projects/fortune-mod/")
+    (synopsis "The Fortune Cookie program from BSD games")
+    (description "Fortune is a command-line utility which displays a random
+quotation from a collection of quotes.")
+    (license license:bsd-4)))

@@ -466,14 +466,14 @@ also flexible enough to handle most nonstandard requirements.")
 (define-public r-matrix
   (package
     (name "r-matrix")
-    (version "1.2-13")
+    (version "1.2-14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Matrix" version))
        (sha256
         (base32
-         "1j4fyn2r3ds51hrxch738gn7d9qvpi4b01n0rxzw5jpv28rnpyvx"))))
+         "15hknim84nj3f54vkchca5ac0c3ip15v1by18k5parmn8wsl19j9"))))
     (properties `((upstream-name . "Matrix")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1331,13 +1331,13 @@ syntax that can be converted to XHTML or other formats.")
 (define-public r-yaml
   (package
     (name "r-yaml")
-    (version "2.1.17")
+    (version "2.1.18")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "yaml" version))
               (sha256
                (base32
-                "10y6wnv2v8k396far29haqv2s82p4zm04rrsxk183wg19gb51was"))))
+                "15m4q5krfqg0avvqg9i2g6ns4757lk6zbyrwbx5c5bgh51glvd8v"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/yaml/")
     (synopsis "Methods to convert R data to YAML and back")
@@ -1904,14 +1904,14 @@ chain.")
 (define-public r-ade4
   (package
     (name "r-ade4")
-    (version "1.7-10")
+    (version "1.7-11")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "ade4" version))
         (sha256
           (base32
-            "0zk81x0yn30gbyc0jpzyw1nxd08ccihl6vyk0ijvj3aw3nr5flc6"))))
+            "0wm54wcpn87rdh6vyw04cr8vgba899y6jsl61f22bmlvx6d7kkac"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)))
@@ -2377,14 +2377,14 @@ were originally a part of the r-devtools package.")
 (define-public r-hms
   (package
     (name "r-hms")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hms" version))
        (sha256
         (base32
-         "0vr7k3a7k52a5yf67bwzl88lkjz09v1avw5axdk1y9v3nz33zl2h"))))
+         "1g6hslk3z0xga38r71irxq802wskg6nv804mp8y9f7i2wfrj0y55"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rlang" ,r-rlang)
@@ -2734,6 +2734,18 @@ engine (version 3.8.8.2) is included.")
                 "0l7qi45jxlf898n0jazabnam1yyczvqfdknd00bdirhhiplpd1sc"))))
     (properties `((upstream-name . "RCurl")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'respect-CURL_CA_BUNDLE
+           (lambda _
+             (substitute* "R/options.S"
+               (("\\.els = rev\\(merge\\(list\\(\\.\\.\\.\\), \\.opts\\)\\)" m)
+                (string-append "\
+certs = Sys.getenv(\"CURL_CA_BUNDLE\")
+if (certs != \"\") { .opts = merge.list(.opts, list(cainfo=certs)) }
+" m)))
+             #t)))))
     (inputs
      `(("libcurl" ,curl)))
     (propagated-inputs
@@ -5363,14 +5375,14 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.7.3")
+    (version "1.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "1pzkqfiahnsdm3zx46asgn8fw43vlxvbh7r4cn70c7ffmxabzzrc"))))
+         "14a823il77w3wmmnzr89vwrqp50y56dh5raycnaw6c8nv5xsh32i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)

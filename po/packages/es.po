@@ -8,21 +8,21 @@ msgstr ""
 "Project-Id-Version: guix-packages 0.14.0\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2017-11-28 08:56+0100\n"
-"PO-Revision-Date: 2018-04-09 14:50+0200\n"
+"PO-Revision-Date: 2018-04-17 10:57+0200\n"
 "Last-Translator: Francisco Javier Serrador <fserrador@gmail.com>\n"
 "Language-Team: Spanish <es@tp.org.es>\n"
 "Language: es\n"
-"X-Bugs: Report translation errors to the Language-Team address.\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
 "X-Generator: Poedit 2.0.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #: gnu/packages/abiword.scm:114
 msgid "Word processing program"
-msgstr ""
+msgstr "Programa de procesado de palabras"
 
 #. TRANSLATORS: Dear translator, We would like to inform you that package
 #. descriptions may occasionally include Texinfo markup.  Texinfo markup
@@ -34,6 +34,10 @@ msgid ""
 "becoming a state of the art word processor, with lots of features useful for\n"
 "your daily work, personal needs, or for just some good old typing fun."
 msgstr ""
+"Abiword es un programa de procesado de palabras.  Es\n"
+"rápidamente convirtiéndose en un estado de arte del proceso de palabras,\n"
+"con muchas características útiles para su trabajo diario, necesidades\n"
+"personales, o para tan solo algo bueno de tecleo a la usanza."
 
 #: gnu/packages/aspell.scm:70 gnu/packages/libreoffice.scm:715
 msgid "Spell checker"
@@ -46,16 +50,23 @@ msgid ""
 "documents written in the UTF-8 encoding and its ability to use multiple\n"
 "dictionaries, including personal ones."
 msgstr ""
+"Aspell es un comprobador de palabras las cuales pueden ser usadas o\n"
+"como una biblioteca o como un programa por sí mismo.  Características\n"
+"notables de Aspell es compatibilidad completa de documentos escritos\n"
+"en codificación UTF-8 y sus capacidades para utilizar múltiples diccionarios,\n"
+"incluyendo unos personales."
 
 #: gnu/packages/aspell.scm:114
 msgid "This package provides a dictionary for the GNU Aspell spell checker."
-msgstr ""
+msgstr "Este paquete proporciona un diccionario para el comprobador ortográfico GNU Aspell."
 
 #: gnu/packages/aspell.scm:285 gnu/packages/libreoffice.scm:765
 msgid ""
 "This package provides a dictionary for the Hunspell spell-checking\n"
 "library."
 msgstr ""
+"Este paquete proporciona un diccionario para la biblioteca de\n"
+"ortografía Hunspell"
 
 #: gnu/packages/aspell.scm:303
 msgid "Hunspell dictionary for English"
@@ -96,7 +107,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:167
 msgid "Library for audio labelling"
-msgstr ""
+msgstr "Biblioteca para etiquetado de sonido"
 
 #: gnu/packages/audio.scm:169
 msgid ""
@@ -107,8 +118,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/audio.scm:270
+#, fuzzy
 msgid "Digital audio workstation"
-msgstr ""
+msgstr "Ampliación Digital"
 
 #: gnu/packages/audio.scm:272
 msgid ""
@@ -129,8 +141,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/audio.scm:444
+#, fuzzy
 msgid "Tonewheel organ synthesizer"
-msgstr ""
+msgstr "Sintentizado SoundFont"
 
 #: gnu/packages/audio.scm:446
 msgid ""
@@ -155,8 +168,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/audio.scm:537
+#, fuzzy
 msgid "Software speech synthesizer"
-msgstr ""
+msgstr "Sintentizado SoundFont"
 
 #: gnu/packages/audio.scm:538
 msgid ""
@@ -192,7 +206,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:664
 msgid "Sound and music computing system"
-msgstr ""
+msgstr "Sistema de computación de música y sonido"
 
 #: gnu/packages/audio.scm:666
 msgid ""
@@ -211,8 +225,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/audio.scm:746
+#, fuzzy
 msgid "LADSPA ambisonics plugins"
-msgstr ""
+msgstr "Complementos"
 
 #: gnu/packages/audio.scm:748
 msgid ""
@@ -237,7 +252,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:823
 msgid "LADSPA reverb plugin"
-msgstr ""
+msgstr "LADSPA reverbera complemento>"
 
 #: gnu/packages/audio.scm:825
 msgid ""
@@ -335,7 +350,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:1125
 msgid "Signal processing language"
-msgstr ""
+msgstr "Señal procesando lenguaje"
 
 #: gnu/packages/audio.scm:1127
 msgid "Faust is a programming language for realtime audio signal processing."
@@ -353,7 +368,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:1261
 msgid "Virtual guitar amplifier"
-msgstr ""
+msgstr "Amplificador virtual guitarra"
 
 #: gnu/packages/audio.scm:1262
 msgid ""
@@ -367,8 +382,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/audio.scm:1316
+#, fuzzy
 msgid "Audio effects processor"
-msgstr ""
+msgstr "Efectos"
 
 #: gnu/packages/audio.scm:1318
 msgid ""
@@ -430,7 +446,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:1602
 msgid "Audio application session manager"
-msgstr ""
+msgstr "Gestor aplicando sonido de sesión"
 
 #: gnu/packages/audio.scm:1604
 msgid ""
@@ -463,8 +479,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/audio.scm:1674
+#, fuzzy
 msgid "Python bindings for liblo"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/audio.scm:1676
 msgid ""
@@ -526,7 +543,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:1900
 msgid "3D audio API"
-msgstr ""
+msgstr "API sonido3D"
 
 #: gnu/packages/audio.scm:1902
 msgid ""
@@ -670,7 +687,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:2351
 msgid "Mod file playing library"
-msgstr ""
+msgstr "Fichero Mod reproduciendo biblioteca"
 
 #: gnu/packages/audio.scm:2353
 msgid ""
@@ -681,8 +698,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/audio.scm:2372
+#, fuzzy
 msgid "Module player library"
-msgstr ""
+msgstr "Jugador"
 
 #: gnu/packages/audio.scm:2374
 msgid ""
@@ -692,8 +710,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/audio.scm:2397
+#, fuzzy
 msgid "Extended module player"
-msgstr ""
+msgstr "Jugador"
 
 #: gnu/packages/audio.scm:2399
 msgid ""
@@ -716,7 +735,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:2469
 msgid "Sound processing utility"
-msgstr ""
+msgstr "Utilidad de sonido procesado"
 
 #: gnu/packages/audio.scm:2471
 msgid ""
@@ -749,7 +768,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:2567
 msgid "Audio I/O library"
-msgstr ""
+msgstr "Biblioteca E/S del sonido"
 
 #: gnu/packages/audio.scm:2569
 msgid ""
@@ -759,8 +778,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/audio.scm:2599
+#, fuzzy
 msgid "Graphical user interface for FluidSynth"
-msgstr ""
+msgstr "Interfaz de usuario"
 
 #: gnu/packages/audio.scm:2601
 msgid ""
@@ -770,7 +790,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:2638
 msgid "Networked audio system"
-msgstr ""
+msgstr "Sistema de sonido por red"
 
 #: gnu/packages/audio.scm:2640
 msgid ""
@@ -887,7 +907,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:3022
 msgid "ALSA wrappers for Python"
-msgstr ""
+msgstr "Cubiertas ALSA para Python"
 
 #: gnu/packages/audio.scm:3024
 msgid ""
@@ -898,7 +918,7 @@ msgstr ""
 
 #: gnu/packages/audio.scm:3083
 msgid "Sound editor"
-msgstr ""
+msgstr "Editor de sonido"
 
 #: gnu/packages/audio.scm:3086
 msgid ""
@@ -966,7 +986,7 @@ msgstr ""
 
 #: gnu/packages/backup.scm:315
 msgid "Provide a list of files to backup"
-msgstr ""
+msgstr "Proporciona una lista de fichero para respaldo"
 
 #: gnu/packages/backup.scm:317
 msgid ""
@@ -978,7 +998,7 @@ msgstr ""
 
 #: gnu/packages/backup.scm:347
 msgid "Tar-compatible archiver"
-msgstr ""
+msgstr "Archivador compatible con tar"
 
 #: gnu/packages/backup.scm:349
 msgid ""
@@ -1050,7 +1070,7 @@ msgstr ""
 
 #: gnu/packages/backup.scm:603
 msgid "Deduplicating backup program"
-msgstr ""
+msgstr "Deduplicando programa de respaldo"
 
 #: gnu/packages/backup.scm:604
 msgid ""
@@ -1109,7 +1129,7 @@ msgstr ""
 
 #: gnu/packages/base.scm:110
 msgid "Print lines matching a pattern"
-msgstr ""
+msgstr "Escribe líneas coincidiendo un patrón"
 
 #: gnu/packages/base.scm:112
 msgid ""
@@ -1124,7 +1144,7 @@ msgstr ""
 
 #: gnu/packages/base.scm:134
 msgid "Stream editor"
-msgstr ""
+msgstr "Editorde flujo"
 
 #: gnu/packages/base.scm:156
 msgid ""
@@ -1136,8 +1156,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/base.scm:196
+#, fuzzy
 msgid "Managing tar archives"
-msgstr ""
+msgstr "Depurar archivos tar"
 
 #: gnu/packages/base.scm:198
 msgid ""
@@ -1164,7 +1185,7 @@ msgstr ""
 
 #: gnu/packages/base.scm:243
 msgid "Comparing and merging files"
-msgstr ""
+msgstr "Comparando y uniendo ficheros"
 
 #: gnu/packages/base.scm:245
 msgid ""
@@ -1202,8 +1223,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/base.scm:384
+#, fuzzy
 msgid "Remake files automatically"
-msgstr ""
+msgstr "(rellenado automáticamente)"
 
 #: gnu/packages/base.scm:386
 msgid ""
@@ -1231,7 +1253,7 @@ msgstr ""
 
 #: gnu/packages/base.scm:517
 msgid "The linker wrapper"
-msgstr ""
+msgstr "La cubierta del enlazador"
 
 #: gnu/packages/base.scm:519
 msgid ""
@@ -1241,8 +1263,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/base.scm:695
+#, fuzzy
 msgid "The GNU C Library"
-msgstr ""
+msgstr "Biblioteca común C++ de GNU"
 
 #: gnu/packages/base.scm:697
 msgid ""
@@ -1255,8 +1278,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/base.scm:775
+#, fuzzy
 msgid "The GNU C Library (GNU Hurd variant)"
-msgstr ""
+msgstr "Biblioteca común C++ de GNU"
 
 #: gnu/packages/base.scm:887
 msgid "All the locales supported by the GNU C Library"
@@ -1305,7 +1329,7 @@ msgstr ""
 
 #: gnu/packages/base.scm:1136
 msgid "Character set conversion library"
-msgstr ""
+msgstr "Biblioteca de conversión de conjunto de caracteres"
 
 #: gnu/packages/base.scm:1138
 msgid ""
@@ -1328,7 +1352,7 @@ msgstr ""
 
 #: gnu/packages/bittorrent.scm:142
 msgid "BitTorrent library of rtorrent"
-msgstr ""
+msgstr "Biblioteca BitTorrent de rtorrent"
 
 #: gnu/packages/bittorrent.scm:144
 msgid ""
@@ -1366,8 +1390,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/bittorrent.scm:307
+#, fuzzy
 msgid "Utility for parallel downloading files"
-msgstr ""
+msgstr "Descargando, subiendo y manipulando ficheros"
 
 #: gnu/packages/bittorrent.scm:309
 msgid ""
@@ -1445,8 +1470,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:100
+#, fuzzy
 msgid "Compression library"
-msgstr ""
+msgstr "Biblioteca Zip de compresión"
 
 #: gnu/packages/compression.scm:102
 msgid ""
@@ -1463,7 +1489,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:133
 msgid "Zip Compression library"
-msgstr ""
+msgstr "Biblioteca Zip de compresión"
 
 #: gnu/packages/compression.scm:135
 msgid ""
@@ -1519,7 +1545,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:307
 msgid "Parallel bzip2 compression utility"
-msgstr ""
+msgstr "Utilidad de compresión bzip2 paralela"
 
 #: gnu/packages/compression.scm:309
 msgid ""
@@ -1532,8 +1558,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:339
+#, fuzzy
 msgid "Parallel bzip2 implementation"
-msgstr ""
+msgstr "Sin Implementación"
 
 #: gnu/packages/compression.scm:341
 msgid ""
@@ -1545,7 +1572,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:362
 msgid "General-purpose data compression"
-msgstr ""
+msgstr "Propósito general de compresión de datos"
 
 #: gnu/packages/compression.scm:364
 msgid ""
@@ -1587,7 +1614,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:455
 msgid "Compress or expand files"
-msgstr ""
+msgstr "Comprime o expande ficheros"
 
 #: gnu/packages/compression.scm:457
 msgid ""
@@ -1642,8 +1669,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:573
+#, fuzzy
 msgid "Library for SoundFont decompression"
-msgstr ""
+msgstr "Biblioteca descompresora GIF"
 
 #: gnu/packages/compression.scm:575
 msgid ""
@@ -1653,7 +1681,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:608
 msgid "Basic sfArk decompressor"
-msgstr ""
+msgstr "Descompresor básico sfArk"
 
 #: gnu/packages/compression.scm:609
 msgid ""
@@ -1703,7 +1731,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:732
 msgid "Compression algorithm focused on speed"
-msgstr ""
+msgstr "Compresión algorítmica dedicada a velocidad"
 
 #: gnu/packages/compression.scm:733
 msgid ""
@@ -1715,8 +1743,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:758
+#, fuzzy
 msgid "LZ4 bindings for Python"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/compression.scm:760
 msgid ""
@@ -1726,8 +1755,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:783
+#, fuzzy
 msgid "String compression"
-msgstr ""
+msgstr "Compresión"
 
 #: gnu/packages/compression.scm:784
 msgid "Lz-string is a string compressor library for Python."
@@ -1748,8 +1778,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:861
+#, fuzzy
 msgid "Parallel implementation of gzip"
-msgstr ""
+msgstr "Sin Implementación"
 
 #: gnu/packages/compression.scm:863
 msgid ""
@@ -1771,8 +1802,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:930
+#, fuzzy
 msgid "Implementation of the Brotli compression algorithm"
-msgstr ""
+msgstr "Compresión algorítmica dedicada a velocidad"
 
 #: gnu/packages/compression.scm:932
 msgid ""
@@ -1792,7 +1824,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:989
 msgid "Delta encoder for binary files"
-msgstr ""
+msgstr "Codificador delta para ficheros binarios"
 
 #: gnu/packages/compression.scm:990
 msgid ""
@@ -1831,7 +1863,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:1079
 msgid "Fast compressor/decompressor"
-msgstr ""
+msgstr "Compresor/descompresor rápido"
 
 #: gnu/packages/compression.scm:1080
 msgid ""
@@ -1844,8 +1876,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:1204
+#, fuzzy
 msgid "Compression/decompression algorithm in Java"
-msgstr ""
+msgstr "Compresión algorítmica dedicada a velocidad"
 
 #: gnu/packages/compression.scm:1205
 msgid ""
@@ -1854,8 +1887,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:1311
+#, fuzzy
 msgid "Java port of snappy"
-msgstr ""
+msgstr "Puerto Java de (...)"
 
 #: gnu/packages/compression.scm:1312
 msgid ""
@@ -1887,7 +1921,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:1457
 msgid "Compressed C++ iostream"
-msgstr ""
+msgstr "Flujo E/S C++ comprimido"
 
 #: gnu/packages/compression.scm:1458
 msgid ""
@@ -1897,7 +1931,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:1505
 msgid "Incremental journaling archiver"
-msgstr ""
+msgstr "Archivador diario incremental"
 
 #: gnu/packages/compression.scm:1506
 msgid ""
@@ -1955,8 +1989,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:1700
+#, fuzzy
 msgid "Compression and file packing utility"
-msgstr ""
+msgstr "Compresión del fichero"
 
 #: gnu/packages/compression.scm:1702
 msgid ""
@@ -1989,8 +2024,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/compression.scm:1800
+#, fuzzy
 msgid "Library for accessing zip files"
-msgstr ""
+msgstr "Biblioteca Zip de compresión"
 
 #: gnu/packages/compression.scm:1802
 msgid "ZZipLib is a library based on zlib for accessing zip files."
@@ -2046,7 +2082,7 @@ msgstr ""
 
 #: gnu/packages/compression.scm:1936
 msgid "XZ in Java"
-msgstr ""
+msgstr "XZ en Java"
 
 #: gnu/packages/compression.scm:1937
 msgid ""
@@ -2076,8 +2112,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:219
+#, fuzzy
 msgid "Berkeley database"
-msgstr ""
+msgstr "DB Berkeley"
 
 #: gnu/packages/databases.scm:221
 msgid ""
@@ -2107,8 +2144,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:372
+#, fuzzy
 msgid "In memory caching service"
-msgstr ""
+msgstr "SERVICIO"
 
 #: gnu/packages/databases.scm:373
 msgid ""
@@ -2141,8 +2179,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:634
+#, fuzzy
 msgid "SQL database server"
-msgstr ""
+msgstr "Insertar la información en una base de datos SQL"
 
 #: gnu/packages/databases.scm:636
 msgid ""
@@ -2166,7 +2205,7 @@ msgstr ""
 
 #: gnu/packages/databases.scm:715
 msgid "Key-value database"
-msgstr ""
+msgstr "Valor-clave de BD"
 
 #: gnu/packages/databases.scm:716
 msgid ""
@@ -2223,7 +2262,7 @@ msgstr ""
 
 #: gnu/packages/databases.scm:964
 msgid "The SQLite database management system"
-msgstr ""
+msgstr "El sistema gestor de BBDD SQLite"
 
 #: gnu/packages/databases.scm:966
 msgid ""
@@ -2235,7 +2274,7 @@ msgstr ""
 
 #: gnu/packages/databases.scm:1015
 msgid "Trivial database"
-msgstr ""
+msgstr "BD trivial"
 
 #: gnu/packages/databases.scm:1017
 msgid ""
@@ -2281,7 +2320,7 @@ msgstr ""
 
 #: gnu/packages/databases.scm:1140
 msgid "Introspect many-to-many relationships"
-msgstr ""
+msgstr "Introspección relaciones muchos-a-muchos"
 
 #: gnu/packages/databases.scm:1141
 msgid ""
@@ -2306,7 +2345,7 @@ msgstr ""
 
 #: gnu/packages/databases.scm:1224
 msgid "DBI PostgreSQL interface"
-msgstr ""
+msgstr "Interfaz PostgreSQL DBI"
 
 #: gnu/packages/databases.scm:1225
 msgid ""
@@ -2315,8 +2354,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:1249
+#, fuzzy
 msgid "DBI MySQL interface"
-msgstr ""
+msgstr "Interfaz: "
 
 #: gnu/packages/databases.scm:1250
 msgid ""
@@ -2325,8 +2365,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:1269
+#, fuzzy
 msgid "SQlite interface for Perl"
-msgstr ""
+msgstr "Generando varias BD sqlite"
 
 #: gnu/packages/databases.scm:1270
 msgid ""
@@ -2361,8 +2402,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:1350
+#, fuzzy
 msgid "SQL tokenizer"
-msgstr ""
+msgstr "incompletado SQL: %s"
 
 #: gnu/packages/databases.scm:1351
 msgid ""
@@ -2384,7 +2426,7 @@ msgstr ""
 
 #: gnu/packages/databases.scm:1394
 msgid "In-memory key/value and document store"
-msgstr ""
+msgstr "Almacén en memoria de clave/valor y documento"
 
 #: gnu/packages/databases.scm:1396
 msgid ""
@@ -2397,7 +2439,7 @@ msgstr ""
 
 #: gnu/packages/databases.scm:1424
 msgid "Key-value cache and store"
-msgstr ""
+msgstr "Caché de valor-llave y almacenaje"
 
 #: gnu/packages/databases.scm:1425
 msgid ""
@@ -2432,8 +2474,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:1517
+#, fuzzy
 msgid "NoSQL data engine"
-msgstr ""
+msgstr "Activar Motor de Busqueda"
 
 #: gnu/packages/databases.scm:1519
 msgid ""
@@ -2481,7 +2524,7 @@ msgstr ""
 
 #: gnu/packages/databases.scm:1672
 msgid "C++ connector for PostgreSQL"
-msgstr ""
+msgstr "Conector C++ para PostgreSQL"
 
 #: gnu/packages/databases.scm:1674
 msgid ""
@@ -2517,8 +2560,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:1779 gnu/packages/databases.scm:1806
+#, fuzzy
 msgid "Python ODBC Library"
-msgstr ""
+msgstr "ORM ActiceRecord  para python"
 
 #: gnu/packages/databases.scm:1780
 msgid ""
@@ -2533,8 +2577,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:1844
+#, fuzzy
 msgid "Read Microsoft Access databases"
-msgstr ""
+msgstr "Técnico (sin acceso lectura, sin envío)"
 
 #: gnu/packages/databases.scm:1845
 msgid ""
@@ -2557,7 +2602,7 @@ msgstr ""
 
 #: gnu/packages/databases.scm:1942
 msgid "ActiveRecord ORM for Python"
-msgstr ""
+msgstr "ORM ActiceRecord para Python"
 
 #: gnu/packages/databases.scm:1944
 msgid ""
@@ -2602,8 +2647,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:2055
+#, fuzzy
 msgid "SQLite bindings for Python"
-msgstr ""
+msgstr "Generando varias BD sqlite"
 
 #: gnu/packages/databases.scm:2057
 msgid ""
@@ -2612,8 +2658,11 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:2084
+#, fuzzy
 msgid "Database abstraction library"
 msgstr ""
+"\t-l biblioteca\t\t--load=biblioteca\n"
+"\n"
 
 #: gnu/packages/databases.scm:2086
 msgid ""
@@ -2646,8 +2695,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:2168
+#, fuzzy
 msgid "Database migration tool for SQLAlchemy"
-msgstr ""
+msgstr "mfdbtool -- Herramienta de gestión de base de datos Mailfromd"
 
 #: gnu/packages/databases.scm:2170
 msgid ""
@@ -2706,16 +2756,18 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:2310
+#, fuzzy
 msgid "Python PostgreSQL adapter"
-msgstr ""
+msgstr "Cubiertas ALSA para Python"
 
 #: gnu/packages/databases.scm:2312
 msgid "psycopg2 is a thread-safe PostgreSQL adapter that implements DB-API 2.0. "
 msgstr ""
 
 #: gnu/packages/databases.scm:2335
+#, fuzzy
 msgid "SQLAlchemy schema displayer"
-msgstr ""
+msgstr "consultando información esquemática"
 
 #: gnu/packages/databases.scm:2336
 msgid ""
@@ -2764,8 +2816,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/databases.scm:2448
+#, fuzzy
 msgid "Redis Python client"
-msgstr ""
+msgstr "Cliente"
 
 #: gnu/packages/databases.scm:2450
 msgid "This package provides a Python interface to the Redis key-value store."
@@ -2814,8 +2867,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/debug.scm:80
+#, fuzzy
 msgid "Heuristical file minimizer"
-msgstr ""
+msgstr "[FICHERO]..."
 
 #: gnu/packages/debug.scm:82
 msgid ""
@@ -2826,8 +2880,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/debug.scm:137
+#, fuzzy
 msgid "Reducer for interesting code"
-msgstr ""
+msgstr "Tu familia tiene un linaje interesante."
 
 #: gnu/packages/debug.scm:139
 msgid ""
@@ -2839,8 +2894,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/debug.scm:268
+#, fuzzy
 msgid "Security-oriented fuzzer"
-msgstr ""
+msgstr "Página Principal de Proyecto orientada a Widgets"
 
 #: gnu/packages/debug.scm:270
 msgid ""
@@ -2890,8 +2946,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:164
+#, fuzzy
 msgid "Tron clone in 3D"
-msgstr ""
+msgstr "Seguimiento 3D"
 
 #: gnu/packages/games.scm:165
 msgid ""
@@ -2945,7 +3002,7 @@ msgstr ""
 
 #: gnu/packages/games.scm:381
 msgid "Backgammon game"
-msgstr ""
+msgstr "Juego backgammon"
 
 #: gnu/packages/games.scm:382
 msgid ""
@@ -3006,8 +3063,9 @@ msgid "PrBoom+ is a Doom source port developed from the original PrBoom project.
 msgstr ""
 
 #: gnu/packages/games.scm:569
+#, fuzzy
 msgid "Action platformer game"
-msgstr ""
+msgstr "Operación"
 
 #: gnu/packages/games.scm:571
 msgid ""
@@ -3017,7 +3075,7 @@ msgstr ""
 
 #: gnu/packages/games.scm:600
 msgid "User interface for gnushogi"
-msgstr ""
+msgstr "Interfaz de usuario para gnushogi"
 
 #: gnu/packages/games.scm:601
 msgid "A graphical user interface for the package @code{gnushogi}."
@@ -3037,8 +3095,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:703
+#, fuzzy
 msgid "Dungeon exploration roguelike"
-msgstr ""
+msgstr "Hay un tipo atrapado en una mazmorra cerca de aquí."
 
 #: gnu/packages/games.scm:704
 msgid ""
@@ -3048,8 +3107,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:744
+#, fuzzy
 msgid "Lemmings clone"
-msgstr ""
+msgstr "Clonar"
 
 #: gnu/packages/games.scm:746
 msgid ""
@@ -3073,8 +3133,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:801
+#, fuzzy
 msgid "Simulate the display from \"The Matrix\""
-msgstr ""
+msgstr " Enseña información desde objeto <fichero(s)>.\n"
 
 #: gnu/packages/games.scm:802
 msgid ""
@@ -3085,8 +3146,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:822
+#, fuzzy
 msgid "Full chess implementation"
-msgstr ""
+msgstr "Sin Implementación"
 
 #: gnu/packages/games.scm:823
 msgid ""
@@ -3129,8 +3191,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:986
+#, fuzzy
 msgid "Ball and paddle game"
-msgstr ""
+msgstr "_Juego"
 
 #: gnu/packages/games.scm:987
 msgid ""
@@ -3166,8 +3229,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:1122
+#, fuzzy
 msgid "2D space shooter"
-msgstr ""
+msgstr "Biblioteca de dibujo 2D"
 
 #: gnu/packages/games.scm:1124
 msgid ""
@@ -3212,8 +3276,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:1300
+#, fuzzy
 msgid "Interpreter for Glulx VM"
-msgstr ""
+msgstr " programa intérprete"
 
 #: gnu/packages/games.scm:1302
 msgid ""
@@ -3225,7 +3290,7 @@ msgstr ""
 
 #: gnu/packages/games.scm:1339
 msgid "Z-machine interpreter"
-msgstr ""
+msgstr "Interpretador Z-machine"
 
 #: gnu/packages/games.scm:1341
 msgid ""
@@ -3248,8 +3313,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:1417
+#, fuzzy
 msgid "Play the game of Go"
-msgstr ""
+msgstr "Anímate y juega"
 
 #: gnu/packages/games.scm:1419
 msgid ""
@@ -3304,8 +3370,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:1609
+#, fuzzy
 msgid "Turn-based strategy game"
-msgstr ""
+msgstr "juego;interestelar;trasporte;estrategia;"
 
 #: gnu/packages/games.scm:1611
 msgid ""
@@ -3489,8 +3556,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:2459
+#, fuzzy
 msgid "Transportation economics simulator"
-msgstr ""
+msgstr "mtasím -- MTA simulador para mailfromd"
 
 #: gnu/packages/games.scm:2460
 msgid ""
@@ -3504,7 +3572,7 @@ msgstr ""
 
 #: gnu/packages/games.scm:2517
 msgid "Base graphics set for OpenTTD"
-msgstr ""
+msgstr "Gráficos básicos establecidos para OpenTTD"
 
 #: gnu/packages/games.scm:2519
 msgid ""
@@ -3522,8 +3590,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:2564
+#, fuzzy
 msgid "Base sounds for OpenTTD"
-msgstr ""
+msgstr "Caray, suena bastante siniestro."
 
 #: gnu/packages/games.scm:2565
 msgid ""
@@ -3533,8 +3602,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:2602
+#, fuzzy
 msgid "Music set for OpenTTD"
-msgstr ""
+msgstr "música por:"
 
 #: gnu/packages/games.scm:2603
 msgid ""
@@ -3558,8 +3628,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:2724
+#, fuzzy
 msgid "Pinball simulator"
-msgstr ""
+msgstr "mtasím -- MTA simulador para mailfromd"
 
 #: gnu/packages/games.scm:2725
 msgid ""
@@ -3579,16 +3650,18 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:2781
+#, fuzzy
 msgid "Nintendo DS emulator"
-msgstr ""
+msgstr "Depurar TPM emulado"
 
 #: gnu/packages/games.scm:2783
 msgid "DeSmuME is an emulator for the Nintendo DS handheld gaming console."
 msgstr ""
 
 #: gnu/packages/games.scm:2821 gnu/packages/gnome.scm:2617
+#, fuzzy
 msgid "Logic puzzle game"
-msgstr ""
+msgstr "Un puzzle de cubo mágico de tres dimensiones"
 
 #: gnu/packages/games.scm:2822
 msgid ""
@@ -3598,8 +3671,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:2851
+#, fuzzy
 msgid "MUD and telnet client"
-msgstr ""
+msgstr "Cliente MUD"
 
 #: gnu/packages/games.scm:2853
 msgid ""
@@ -3647,7 +3721,7 @@ msgstr ""
 
 #: gnu/packages/games.scm:3237
 msgid "Text adventure game"
-msgstr ""
+msgstr "Juego textual de aventura"
 
 #: gnu/packages/games.scm:3239
 msgid ""
@@ -3723,8 +3797,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:3503
+#, fuzzy
 msgid "Drawing software for children"
-msgstr ""
+msgstr "Biblioteca de dibujo 2D"
 
 #: gnu/packages/games.scm:3505
 msgid ""
@@ -3746,16 +3821,18 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:3592
+#, fuzzy
 msgid "Configure Tux Paint"
-msgstr ""
+msgstr "Configurar"
 
 #: gnu/packages/games.scm:3594
 msgid "Tux Paint Config is a graphical configuration editor for Tux Paint."
 msgstr ""
 
 #: gnu/packages/games.scm:3626
+#, fuzzy
 msgid "2D platformer game"
-msgstr ""
+msgstr "_Juego"
 
 #: gnu/packages/games.scm:3627
 msgid ""
@@ -3766,7 +3843,7 @@ msgstr ""
 
 #: gnu/packages/games.scm:3661
 msgid "MUD client"
-msgstr ""
+msgstr "Cliente MUD"
 
 #: gnu/packages/games.scm:3663
 msgid ""
@@ -3777,8 +3854,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:3700
+#, fuzzy
 msgid "Programming game"
-msgstr ""
+msgstr "error de programación"
 
 #: gnu/packages/games.scm:3701
 msgid ""
@@ -3867,8 +3945,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:4038
+#, fuzzy
 msgid "Data files for MegaGlest"
-msgstr ""
+msgstr "NT_PROCSTAT_FILES (datos ficheros)"
 
 #: gnu/packages/games.scm:4039
 msgid "This package contains the data files required for MegaGlest."
@@ -3909,8 +3988,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:4280
+#, fuzzy
 msgid "3D puzzle game"
-msgstr ""
+msgstr "Un puzzle de cubo mágico de tres dimensiones"
 
 #: gnu/packages/games.scm:4281
 msgid ""
@@ -3947,8 +4027,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:4497
+#, fuzzy
 msgid "Puzzle game"
-msgstr ""
+msgstr "_Juego"
 
 #: gnu/packages/games.scm:4498
 msgid ""
@@ -3989,8 +4070,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:4691
+#, fuzzy
 msgid "Data files for 0ad"
-msgstr ""
+msgstr "Indexado y búsqueda de meta-datos de ficheros."
 
 #: gnu/packages/games.scm:4692
 msgid "0ad-data provides the data files required by the game 0ad."
@@ -4011,8 +4093,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/games.scm:4891
+#, fuzzy
 msgid "Colossal Cave Adventure"
-msgstr ""
+msgstr "Esta cueva apesta, salgamos..."
 
 #: gnu/packages/games.scm:4892
 msgid ""
@@ -4040,7 +4123,7 @@ msgstr ""
 
 #: gnu/packages/gcc.scm:336
 msgid "GNU Compiler Collection"
-msgstr ""
+msgstr "Colección de compiladores GNU"
 
 #: gnu/packages/gcc.scm:338
 msgid ""
@@ -4058,15 +4141,16 @@ msgstr ""
 
 #: gnu/packages/gcc.scm:462
 msgid "GNU C++ standard library"
-msgstr ""
+msgstr "Biblioteca común C++ de GNU"
 
 #: gnu/packages/gcc.scm:497
 msgid "Collection of subroutines used by various GNU programs"
 msgstr ""
 
 #: gnu/packages/gcc.scm:682
+#, fuzzy
 msgid "GNU libstdc++ documentation"
-msgstr ""
+msgstr "Gestor Documental"
 
 #: gnu/packages/gcc.scm:750
 msgid "Manipulating sets and relations of integer points bounded by linear constraints"
@@ -4128,8 +4212,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gettext.scm:130
+#, fuzzy
 msgid "Tools and documentation for translation"
-msgstr ""
+msgstr "Herramientas documentales Yelp"
 
 #: gnu/packages/gettext.scm:195
 msgid "Scripts to ease maintenance of translations"
@@ -4169,8 +4254,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gimp.scm:180
+#, fuzzy
 msgid "GNU Image Manipulation Program"
-msgstr ""
+msgstr "Programa de descarga de imágenes"
 
 #: gnu/packages/gimp.scm:182
 msgid ""
@@ -4215,8 +4301,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:325
+#, fuzzy
 msgid "Diagram creation for GNOME"
-msgstr ""
+msgstr "(Kit de herramientas de accesibilidad GNOME"
 
 #: gnu/packages/gnome.scm:326
 msgid ""
@@ -4286,12 +4373,14 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:564
+#, fuzzy
 msgid "Disk management utility for GNOME"
-msgstr ""
+msgstr "Gestión de cuota del disco"
 
 #: gnu/packages/gnome.scm:565
+#, fuzzy
 msgid "Disk management utility for GNOME."
-msgstr ""
+msgstr "Gestión de cuota del disco"
 
 #: gnu/packages/gnome.scm:608
 msgid "Libraries for displaying certificates and accessing key stores"
@@ -4329,7 +4418,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:774
 msgid "GNOME's document viewer"
-msgstr ""
+msgstr "Visor documental de GNOME"
 
 #: gnu/packages/gnome.scm:776
 msgid ""
@@ -4361,16 +4450,17 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:874
+#, fuzzy
 msgid "GNOME icon theme"
-msgstr ""
+msgstr "Tema icónico Tango"
 
 #: gnu/packages/gnome.scm:876
 msgid "Icons for the GNOME desktop."
-msgstr ""
+msgstr "Iconos para el escritorio GNOME."
 
 #: gnu/packages/gnome.scm:913
 msgid "Tango icon theme"
-msgstr ""
+msgstr "Tema icónico Tango"
 
 #: gnu/packages/gnome.scm:914
 msgid ""
@@ -4392,16 +4482,19 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:966
+#, fuzzy
 msgid "Freedesktop icon theme"
-msgstr ""
+msgstr "Tema icónico Tango"
 
 #: gnu/packages/gnome.scm:968
+#, fuzzy
 msgid "Freedesktop icon theme."
-msgstr ""
+msgstr "Tema icónico Tango"
 
 #: gnu/packages/gnome.scm:996
+#, fuzzy
 msgid "GNOME desktop notification library"
-msgstr ""
+msgstr "Iconos para el escritorio GNOME."
 
 #: gnu/packages/gnome.scm:998
 msgid ""
@@ -4412,8 +4505,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:1032
+#, fuzzy
 msgid "GObject plugin system"
-msgstr ""
+msgstr "Colección bibliotecaria de GObject"
 
 #: gnu/packages/gnome.scm:1034
 msgid ""
@@ -4425,8 +4519,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:1063
+#, fuzzy
 msgid "OpenGL extension to GTK+"
-msgstr ""
+msgstr " Compatibilidad Gtk+ desactivada.\n"
 
 #: gnu/packages/gnome.scm:1064
 msgid ""
@@ -4447,8 +4542,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:1136
+#, fuzzy
 msgid "CSS2 parsing and manipulation library"
-msgstr ""
+msgstr "Biblioteca para interpreción del formato CorelDraw"
 
 #: gnu/packages/gnome.scm:1138
 msgid ""
@@ -4459,8 +4555,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:1171
+#, fuzzy
 msgid "GNOME's Structured File Library"
-msgstr ""
+msgstr "Se crea el fichero de biblioteca: %s\n"
 
 #: gnu/packages/gnome.scm:1173
 msgid ""
@@ -4513,7 +4610,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:1371
 msgid "Store application preferences"
-msgstr ""
+msgstr "Almacena preferencias de aplicación"
 
 #: gnu/packages/gnome.scm:1372
 msgid ""
@@ -4556,7 +4653,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:1520
 msgid "2D drawing library"
-msgstr ""
+msgstr "Biblioteca de dibujo 2D"
 
 #: gnu/packages/gnome.scm:1521
 msgid ""
@@ -4583,8 +4680,9 @@ msgid "C++ bindings to the GNOME Canvas library."
 msgstr ""
 
 #: gnu/packages/gnome.scm:1605
+#, fuzzy
 msgid "Additional widgets for applications"
-msgstr ""
+msgstr "Aplicaciones configuradas para la delegación"
 
 #: gnu/packages/gnome.scm:1606
 msgid ""
@@ -4605,8 +4703,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:1663 gnu/packages/gnome.scm:1695
+#, fuzzy
 msgid "Printing framework for GNOME"
-msgstr ""
+msgstr "Iconos para el escritorio GNOME."
 
 #: gnu/packages/gnome.scm:1665
 msgid ""
@@ -4645,8 +4744,9 @@ msgid "A GLib/GTK+ set of document-centric objects and utilities."
 msgstr ""
 
 #: gnu/packages/gnome.scm:1905
+#, fuzzy
 msgid "Spreadsheet application"
-msgstr ""
+msgstr "Aplicación\n"
 
 #: gnu/packages/gnome.scm:1907
 msgid ""
@@ -4676,8 +4776,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:2022 gnu/packages/gnome.scm:2258
+#, fuzzy
 msgid "Compiler for the GObject type system"
-msgstr ""
+msgstr "asume SISTEMA como la actual tipo de sistema"
 
 #: gnu/packages/gnome.scm:2024
 msgid ""
@@ -4689,7 +4790,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:2056
 msgid "Virtual Terminal Emulator"
-msgstr ""
+msgstr "Emulador de Terminal Virtual"
 
 #: gnu/packages/gnome.scm:2058
 msgid ""
@@ -4711,8 +4812,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:2179
+#, fuzzy
 msgid "Remote desktop viewer for GNOME"
-msgstr ""
+msgstr "Iconos para el escritorio GNOME."
 
 #: gnu/packages/gnome.scm:2180
 msgid ""
@@ -4754,7 +4856,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:2329
 msgid "Python bindings to librsvg"
-msgstr ""
+msgstr "Enlazando Python para librsvg"
 
 #: gnu/packages/gnome.scm:2331
 msgid ""
@@ -4812,8 +4914,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:2656
+#, fuzzy
 msgid "Minesweeper game"
-msgstr ""
+msgstr "Buscaminas"
 
 #: gnu/packages/gnome.scm:2658
 msgid ""
@@ -4823,7 +4926,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:2689
 msgid "Japanese logic game"
-msgstr ""
+msgstr "Juego lógico japonés"
 
 #: gnu/packages/gnome.scm:2691
 msgid ""
@@ -4835,7 +4938,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:2737
 msgid "Terminal emulator"
-msgstr ""
+msgstr "Emulador de terminal"
 
 #: gnu/packages/gnome.scm:2739
 msgid ""
@@ -4849,7 +4952,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:2805
 msgid "Color management service"
-msgstr ""
+msgstr "Servicio de gestión de color"
 
 #: gnu/packages/gnome.scm:2806
 msgid ""
@@ -4859,8 +4962,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:2850
+#, fuzzy
 msgid "Geolocation service"
-msgstr ""
+msgstr "SERVICIO"
 
 #: gnu/packages/gnome.scm:2851
 msgid ""
@@ -4906,8 +5010,11 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:3054
+#, fuzzy
 msgid "GNOME settings daemon"
 msgstr ""
+"-- \n"
+"El demonio de Fetchmail"
 
 #: gnu/packages/gnome.scm:3056
 msgid ""
@@ -4929,7 +5036,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:3128
 msgid "Solitaire card games"
-msgstr ""
+msgstr "Juegos de cartas solitatias"
 
 #: gnu/packages/gnome.scm:3130
 msgid ""
@@ -4938,8 +5045,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:3154
+#, fuzzy
 msgid "API documentation browser for GNOME"
-msgstr ""
+msgstr "Explorador web para GNOME"
 
 #: gnu/packages/gnome.scm:3156
 msgid ""
@@ -5021,8 +5129,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:3477
+#, fuzzy
 msgid "Sliding block puzzles"
-msgstr ""
+msgstr "Bloque Guardado"
 
 #: gnu/packages/gnome.scm:3479
 msgid ""
@@ -5057,8 +5166,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:3774
+#, fuzzy
 msgid "Music player for GNOME"
-msgstr ""
+msgstr "música por:"
 
 #: gnu/packages/gnome.scm:3775
 msgid ""
@@ -5067,8 +5177,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:3825
+#, fuzzy
 msgid "GNOME image viewer"
-msgstr ""
+msgstr "/Ver con…/Visualizador incorporado"
 
 #: gnu/packages/gnome.scm:3826
 msgid ""
@@ -5094,8 +5205,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:3896
+#, fuzzy
 msgid "GObject bindings for libudev"
-msgstr ""
+msgstr "Colección bibliotecaria de GObject"
 
 #: gnu/packages/gnome.scm:3898
 msgid ""
@@ -5119,8 +5231,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:3994
+#, fuzzy
 msgid "GLib binding for libusb1"
-msgstr ""
+msgstr "no admitió enlace simbólico %d"
 
 #: gnu/packages/gnome.scm:3996
 msgid ""
@@ -5131,8 +5244,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:4047
+#, fuzzy
 msgid "Document and image scanner"
-msgstr ""
+msgstr "  opciones del analizador: -"
 
 #: gnu/packages/gnome.scm:4048
 msgid ""
@@ -5145,7 +5259,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:4121
 msgid "Web browser for GNOME"
-msgstr ""
+msgstr "Explorador web para GNOME"
 
 #: gnu/packages/gnome.scm:4123
 msgid ""
@@ -5155,7 +5269,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:4170
 msgid "GNOME web browser"
-msgstr ""
+msgstr "Explorador web GNOME"
 
 #: gnu/packages/gnome.scm:4172
 msgid ""
@@ -5164,8 +5278,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:4228
+#, fuzzy
 msgid "D-Bus debugger"
-msgstr ""
+msgstr "Error de bus"
 
 #: gnu/packages/gnome.scm:4230
 msgid ""
@@ -5175,7 +5290,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:4252
 msgid "XSL stylesheets for Yelp"
-msgstr ""
+msgstr "Hojas de estilos XSL para Yelp"
 
 #: gnu/packages/gnome.scm:4254
 msgid ""
@@ -5184,8 +5299,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:4285
+#, fuzzy
 msgid "GNOME help browser"
-msgstr ""
+msgstr "Explorador web GNOME"
 
 #: gnu/packages/gnome.scm:4287
 msgid ""
@@ -5196,7 +5312,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:4315
 msgid "Yelp documentation tools"
-msgstr ""
+msgstr "Herramientas documentales Yelp"
 
 #: gnu/packages/gnome.scm:4317
 msgid ""
@@ -5208,7 +5324,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:4354
 msgid "GObject collection library"
-msgstr ""
+msgstr "Colección bibliotecaria de GObject"
 
 #: gnu/packages/gnome.scm:4356
 msgid ""
@@ -5228,8 +5344,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:4429
+#, fuzzy
 msgid "Photo manager for GNOME 3"
-msgstr ""
+msgstr "Gestor de sesión para GNOME"
 
 #: gnu/packages/gnome.scm:4431
 msgid ""
@@ -5240,8 +5357,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:4472
+#, fuzzy
 msgid "Graphical archive manager for GNOME"
-msgstr ""
+msgstr "Gestor de sesión para GNOME"
 
 #: gnu/packages/gnome.scm:4473
 msgid ""
@@ -5252,7 +5370,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:4551
 msgid "Session manager for GNOME"
-msgstr ""
+msgstr "Gestor de sesión para GNOME"
 
 #: gnu/packages/gnome.scm:4553
 msgid ""
@@ -5261,8 +5379,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:4606
+#, fuzzy
 msgid "Javascript bindings for GNOME"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/gnome.scm:4609
 msgid ""
@@ -5272,7 +5391,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:4668
 msgid "GNOME text editor"
-msgstr ""
+msgstr "Editor textual de GNOME"
 
 #: gnu/packages/gnome.scm:4669
 msgid ""
@@ -5292,7 +5411,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:4790
 msgid "Window and compositing manager"
-msgstr ""
+msgstr "Ventana y composicion de gestor"
 
 #: gnu/packages/gnome.scm:4793
 msgid ""
@@ -5315,8 +5434,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:4889
+#, fuzzy
 msgid "Store address books and calendars"
-msgstr ""
+msgstr "STO_CA (almacena direcc código) %.*s\n"
 
 #: gnu/packages/gnome.scm:4892
 msgid ""
@@ -5336,8 +5456,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:5075
+#, fuzzy
 msgid "Network connection manager"
-msgstr ""
+msgstr "Gestor"
 
 #: gnu/packages/gnome.scm:5078
 msgid ""
@@ -5359,12 +5480,14 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:5136
+#, fuzzy
 msgid "Database of broadband connection configuration"
-msgstr ""
+msgstr "<b>Conexión a Base de Datos</b>"
 
 #: gnu/packages/gnome.scm:5137
+#, fuzzy
 msgid "Database of broadband connection configuration."
-msgstr ""
+msgstr "<b>Conexión a Base de Datos</b>"
 
 #: gnu/packages/gnome.scm:5171
 msgid "Applet for managing network connections"
@@ -5387,8 +5510,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:5337
+#, fuzzy
 msgid "Display manager for GNOME"
-msgstr ""
+msgstr "Gestor de sesión para GNOME"
 
 #: gnu/packages/gnome.scm:5340
 msgid ""
@@ -5407,8 +5531,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:5397
+#, fuzzy
 msgid "GNOME Bluetooth subsystem"
-msgstr ""
+msgstr "Gestor de sesión para GNOME"
 
 #: gnu/packages/gnome.scm:5400
 msgid ""
@@ -5418,7 +5543,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:5466
 msgid "Utilities to configure the GNOME desktop"
-msgstr ""
+msgstr "Utilidades para configurar el escritorio de GNOME"
 
 #: gnu/packages/gnome.scm:5469
 msgid ""
@@ -5429,8 +5554,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:5554
+#, fuzzy
 msgid "Desktop shell for GNOME"
-msgstr ""
+msgstr "Iconos para el escritorio GNOME."
 
 #: gnu/packages/gnome.scm:5557
 msgid ""
@@ -5472,8 +5598,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:5728
+#, fuzzy
 msgid "File manager for GNOME"
-msgstr ""
+msgstr "Gestor de sesión para GNOME"
 
 #: gnu/packages/gnome.scm:5731
 msgid ""
@@ -5495,8 +5622,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:5785
+#, fuzzy
 msgid "Background images for the GNOME desktop"
-msgstr ""
+msgstr "Iconos para el escritorio GNOME."
 
 #: gnu/packages/gnome.scm:5787
 msgid ""
@@ -5508,7 +5636,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:5820
 msgid "Take pictures of your screen"
-msgstr ""
+msgstr "Toma cuadros en su pantalla"
 
 #: gnu/packages/gnome.scm:5822
 msgid ""
@@ -5542,8 +5670,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:5948
+#, fuzzy
 msgid "The GNU desktop environment"
-msgstr ""
+msgstr "Iconos para el escritorio GNOME."
 
 #: gnu/packages/gnome.scm:5951
 msgid ""
@@ -5553,8 +5682,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6003
+#, fuzzy
 msgid "Desktop recording program"
-msgstr ""
+msgstr "Iconos para el escritorio GNOME."
 
 #: gnu/packages/gnome.scm:6004
 msgid ""
@@ -5565,7 +5695,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:6031
 msgid "GObject wrapper for libcanberra"
-msgstr ""
+msgstr "Envoltura GObject para libcanberra"
 
 #: gnu/packages/gnome.scm:6033
 msgid ""
@@ -5585,8 +5715,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6098
+#, fuzzy
 msgid "GNOME's clock application"
-msgstr ""
+msgstr "Aplicación ToDo de GNOME"
 
 #: gnu/packages/gnome.scm:6100
 msgid ""
@@ -5595,8 +5726,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6132
+#, fuzzy
 msgid "GNOME's calendar application"
-msgstr ""
+msgstr "Aplicación ToDo de GNOME"
 
 #: gnu/packages/gnome.scm:6134
 msgid ""
@@ -5606,7 +5738,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:6183
 msgid "GNOME's ToDo Application"
-msgstr ""
+msgstr "Aplicación ToDo de GNOME"
 
 #: gnu/packages/gnome.scm:6185
 msgid ""
@@ -5637,8 +5769,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6291
+#, fuzzy
 msgid "Extensions for GNOME Shell"
-msgstr ""
+msgstr "Shell: "
 
 #: gnu/packages/gnome.scm:6292
 msgid ""
@@ -5658,8 +5791,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6359
+#, fuzzy
 msgid "Faba icon theme"
-msgstr ""
+msgstr "Tema icónico Tango"
 
 #: gnu/packages/gnome.scm:6361
 msgid ""
@@ -5668,8 +5802,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6385
+#, fuzzy
 msgid "Moka icon theme"
-msgstr ""
+msgstr "Tema icónico Tango"
 
 #: gnu/packages/gnome.scm:6386
 msgid ""
@@ -5678,8 +5813,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6416
+#, fuzzy
 msgid "Arc icon theme"
-msgstr ""
+msgstr "Tema icónico Tango"
 
 #: gnu/packages/gnome.scm:6417
 msgid ""
@@ -5712,8 +5848,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6514
+#, fuzzy
 msgid "GNOME keyboard configuration library"
-msgstr ""
+msgstr "Biblioteca de fichero de configuración C/C++"
 
 #: gnu/packages/gnome.scm:6516
 msgid ""
@@ -5736,8 +5873,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6585
+#, fuzzy
 msgid "Desktop calculator"
-msgstr ""
+msgstr "Iconos para el escritorio GNOME."
 
 #: gnu/packages/gnome.scm:6587
 msgid ""
@@ -5747,7 +5885,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:6612
 msgid "Virtual sticky note"
-msgstr ""
+msgstr "Anotación chincheta virtual"
 
 #: gnu/packages/gnome.scm:6614
 msgid ""
@@ -5769,8 +5907,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6676
+#, fuzzy
 msgid "Web development studio"
-msgstr ""
+msgstr "Web:"
 
 #: gnu/packages/gnome.scm:6678
 msgid ""
@@ -5815,7 +5954,7 @@ msgstr ""
 
 #: gnu/packages/gnome.scm:6856
 msgid "GNOME's alternative spell checker"
-msgstr ""
+msgstr "Comprobador ortográfico alternativo de GNOME"
 
 #: gnu/packages/gnome.scm:6858
 msgid ""
@@ -5841,8 +5980,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnome.scm:6980
+#, fuzzy
 msgid "GNOME music playing application"
-msgstr ""
+msgstr "Aplicación ToDo de GNOME"
 
 #: gnu/packages/gnome.scm:6982
 msgid ""
@@ -5873,8 +6013,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnuzilla.scm:118
+#, fuzzy
 msgid "Mozilla javascript engine"
-msgstr ""
+msgstr "scripts internos empotrados en JavaScript."
 
 #: gnu/packages/gnuzilla.scm:119
 msgid ""
@@ -5894,8 +6035,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gnuzilla.scm:383
+#, fuzzy
 msgid "Network Security Services"
-msgstr ""
+msgstr "Máscara de red"
 
 #: gnu/packages/gnuzilla.scm:385
 msgid ""
@@ -5919,7 +6061,7 @@ msgstr ""
 
 #: gnu/packages/gtk.scm:97
 msgid "GNOME accessibility toolkit"
-msgstr ""
+msgstr "(Kit de herramientas de accesibilidad GNOME"
 
 #: gnu/packages/gtk.scm:99
 msgid ""
@@ -5929,8 +6071,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gtk.scm:139
+#, fuzzy
 msgid "2D graphics library"
-msgstr ""
+msgstr "Biblioteca de dibujo 2D"
 
 #: gnu/packages/gtk.scm:141
 msgid ""
@@ -5974,8 +6117,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gtk.scm:263
+#, fuzzy
 msgid "Obsolete pango functions"
-msgstr ""
+msgstr "reubicación obsoleta "
 
 #: gnu/packages/gtk.scm:264
 msgid ""
@@ -6008,8 +6152,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gtk.scm:422
+#, fuzzy
 msgid "GNOME source code widget"
-msgstr ""
+msgstr "Activar repositorios de código fuente"
 
 #: gnu/packages/gtk.scm:423
 msgid ""
@@ -6065,8 +6210,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gtk.scm:805
+#, fuzzy
 msgid "Cairo bindings for GNU Guile"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/gtk.scm:807
 msgid ""
@@ -6155,16 +6301,18 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/gtk.scm:1143
+#, fuzzy
 msgid "Python bindings for cairo"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/gtk.scm:1145
 msgid "Pycairo is a set of Python bindings for the Cairo graphics library."
 msgstr ""
 
 #: gnu/packages/gtk.scm:1229
+#, fuzzy
 msgid "Python bindings for GTK+"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/gtk.scm:1231
 msgid ""
@@ -6267,7 +6415,7 @@ msgstr ""
 
 #: gnu/packages/guile.scm:379
 msgid "Package manager for Guile"
-msgstr ""
+msgstr "Gestor de Paquetes para Guile"
 
 #: gnu/packages/guile.scm:381
 msgid ""
@@ -6319,8 +6467,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/guile.scm:556
+#, fuzzy
 msgid "Guile bindings to ncurses"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/guile.scm:558
 msgid ""
@@ -6366,7 +6515,7 @@ msgstr ""
 
 #: gnu/packages/guile.scm:754
 msgid "JSON module for Guile"
-msgstr ""
+msgstr "JSON modular para Guile"
 
 #: gnu/packages/guile.scm:756
 msgid ""
@@ -6416,8 +6565,11 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/guile.scm:1002
+#, fuzzy
 msgid "S-expression based regular expressions"
 msgstr ""
+"Error en la expresión regular «%s»:\n"
+"%s"
 
 #: gnu/packages/guile.scm:1004
 msgid ""
@@ -6503,8 +6655,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/guile.scm:1418
+#, fuzzy
 msgid "Generate C bindings for Guile"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/guile.scm:1419
 msgid ""
@@ -6539,7 +6692,7 @@ msgstr ""
 
 #: gnu/packages/guile.scm:1534
 msgid "DSV module for Guile"
-msgstr ""
+msgstr "Módulo DSV para Guile"
 
 #: gnu/packages/guile.scm:1536
 msgid ""
@@ -6550,7 +6703,7 @@ msgstr ""
 
 #: gnu/packages/guile.scm:1563
 msgid "XOSD bindings for Guile"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/guile.scm:1565
 msgid ""
@@ -6571,8 +6724,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/guile.scm:1621
+#, fuzzy
 msgid "CommonMark parser for Guile"
-msgstr ""
+msgstr "Gestor de Paquetes para Guile"
 
 #: gnu/packages/guile.scm:1623
 msgid ""
@@ -6667,7 +6821,7 @@ msgstr ""
 
 #: gnu/packages/guile.scm:1959
 msgid "Guile bindings for libgit2"
-msgstr ""
+msgstr "Enlazando Guile para libgit2"
 
 #: gnu/packages/guile.scm:1961
 msgid ""
@@ -6698,8 +6852,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/guile.scm:2073
+#, fuzzy
 msgid "Colorized REPL for Guile"
-msgstr ""
+msgstr "Gestor de Paquetes para Guile"
 
 #: gnu/packages/guile.scm:2075
 msgid "Guile-colorized provides you with a colorized REPL for GNU Guile."
@@ -6720,8 +6875,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/imagemagick.scm:156
+#, fuzzy
 msgid "Perl interface to ImageMagick"
-msgstr ""
+msgstr "scripts internos empotrados en perl."
 
 #: gnu/packages/imagemagick.scm:157
 msgid ""
@@ -6739,8 +6895,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image.scm:94
+#, fuzzy
 msgid "Library for handling PNG files"
-msgstr ""
+msgstr "Biblioteca descodificante para ficheros GIF"
 
 #: gnu/packages/image.scm:96
 msgid ""
@@ -6750,7 +6907,7 @@ msgstr ""
 
 #: gnu/packages/image.scm:160
 msgid "APNG patch for libpng"
-msgstr ""
+msgstr "Parche APNG para libpng"
 
 #: gnu/packages/image.scm:162
 msgid ""
@@ -6760,8 +6917,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image.scm:202
+#, fuzzy
 msgid "Read and write PNG images"
-msgstr ""
+msgstr "Lectura-Escritura"
 
 #: gnu/packages/image.scm:204
 msgid ""
@@ -6771,8 +6929,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image.scm:239
+#, fuzzy
 msgid "Utility to compress PNG files"
-msgstr ""
+msgstr "Comprime o expande ficheros"
 
 #: gnu/packages/image.scm:240
 msgid ""
@@ -6781,8 +6940,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image.scm:259
+#, fuzzy
 msgid "Library for handling JPEG files"
-msgstr ""
+msgstr "Biblioteca descodificante para ficheros GIF"
 
 #: gnu/packages/image.scm:261
 msgid ""
@@ -6805,7 +6965,7 @@ msgstr ""
 
 #: gnu/packages/image.scm:350
 msgid "Optimize JPEG images"
-msgstr ""
+msgstr "Optimiza imágenes JPEG"
 
 #: gnu/packages/image.scm:352
 msgid ""
@@ -6829,8 +6989,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image.scm:418
+#, fuzzy
 msgid "Library for handling TIFF files"
-msgstr ""
+msgstr "Biblioteca descodificante para ficheros GIF"
 
 #: gnu/packages/image.scm:420
 msgid ""
@@ -6873,7 +7034,7 @@ msgstr ""
 
 #: gnu/packages/image.scm:537
 msgid "JPEG 2000 codec"
-msgstr ""
+msgstr "Código JPEG 2000"
 
 #: gnu/packages/image.scm:539
 msgid ""
@@ -6927,7 +7088,7 @@ msgstr ""
 
 #: gnu/packages/image.scm:691
 msgid "Wrapper library for imlib2"
-msgstr ""
+msgstr "Biblioteca cubierta para imlib2"
 
 #: gnu/packages/image.scm:693
 msgid ""
@@ -6947,8 +7108,11 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image.scm:792
+#, fuzzy
 msgid "Computer vision library"
 msgstr ""
+"\t-l biblioteca\t\t--load=biblioteca\n"
+"\n"
 
 #: gnu/packages/image.scm:794
 msgid ""
@@ -6959,8 +7123,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image.scm:826
+#, fuzzy
 msgid "Lossless and lossy image compression"
-msgstr ""
+msgstr "Compresión de Imagen"
 
 #: gnu/packages/image.scm:828
 msgid ""
@@ -6975,8 +7140,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image.scm:856
+#, fuzzy
 msgid "Library for handling MNG files"
-msgstr ""
+msgstr "Biblioteca descodificante para ficheros GIF"
 
 #: gnu/packages/image.scm:858
 msgid "Libmng is the MNG (Multiple-image Network Graphics) reference library."
@@ -7006,7 +7172,7 @@ msgstr ""
 
 #: gnu/packages/image.scm:949
 msgid "JPEG-2000 library"
-msgstr ""
+msgstr "Biblioteca JPEG-2000"
 
 #: gnu/packages/image.scm:950
 msgid ""
@@ -7040,8 +7206,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image.scm:1055
+#, fuzzy
 msgid "Image and audio steganography"
-msgstr ""
+msgstr "                                        : Audio\n"
 
 #: gnu/packages/image.scm:1057
 msgid ""
@@ -7051,8 +7218,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image.scm:1082
+#, fuzzy
 msgid "Image library for Extempore"
-msgstr ""
+msgstr "                                        : Imagen\n"
 
 #: gnu/packages/image.scm:1084
 msgid ""
@@ -7185,8 +7353,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/image-viewers.scm:320
+#, fuzzy
 msgid "Render images in the terminal"
-msgstr ""
+msgstr "fallo al establecer la salida estándar como no utilizable"
 
 #: gnu/packages/image-viewers.scm:322
 msgid ""
@@ -7216,7 +7385,7 @@ msgstr ""
 
 #: gnu/packages/image-viewers.scm:422
 msgid "Image viewer for comics"
-msgstr ""
+msgstr "Visor imagen para comics"
 
 #: gnu/packages/image-viewers.scm:423
 msgid ""
@@ -7247,8 +7416,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/key-mon.scm:50
+#, fuzzy
 msgid "Show keyboard and mouse status"
-msgstr ""
+msgstr "Muestra el estado del árbol de trabajo."
 
 #: gnu/packages/key-mon.scm:52
 msgid ""
@@ -7351,7 +7521,7 @@ msgstr ""
 
 #: gnu/packages/libreoffice.scm:288
 msgid "CMIS client library"
-msgstr ""
+msgstr "Cliente biblioteca CMIS"
 
 #: gnu/packages/libreoffice.scm:289
 msgid ""
@@ -7361,8 +7531,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/libreoffice.scm:320
+#, fuzzy
 msgid "Library for parsing the AbiWord format"
-msgstr ""
+msgstr "Biblioteca para interpreción del formato CorelDraw"
 
 #: gnu/packages/libreoffice.scm:321
 msgid ""
@@ -7372,7 +7543,7 @@ msgstr ""
 
 #: gnu/packages/libreoffice.scm:352
 msgid "Library for parsing the CorelDRAW format"
-msgstr ""
+msgstr "Biblioteca para interpreción del formato CorelDraw"
 
 #: gnu/packages/libreoffice.scm:353
 msgid ""
@@ -7381,8 +7552,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/libreoffice.scm:385
+#, fuzzy
 msgid "Library for parsing the Apple Keynote format"
-msgstr ""
+msgstr "Biblioteca para interpreción del formato CorelDraw"
 
 #: gnu/packages/libreoffice.scm:386
 msgid ""
@@ -7405,7 +7577,7 @@ msgstr ""
 
 #: gnu/packages/libreoffice.scm:430
 msgid "Text Categorization library"
-msgstr ""
+msgstr "Biblioteca de Categoría Textual"
 
 #: gnu/packages/libreoffice.scm:431
 msgid ""
@@ -7414,8 +7586,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/libreoffice.scm:461
+#, fuzzy
 msgid "Library for parsing the FreeHand format"
-msgstr ""
+msgstr "Biblioteca para interpreción del formato CorelDraw"
 
 #: gnu/packages/libreoffice.scm:462
 msgid ""
@@ -7424,8 +7597,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/libreoffice.scm:488
+#, fuzzy
 msgid "Library for parsing the Microsoft Publisher format"
-msgstr ""
+msgstr "Biblioteca para interpreción del formato CorelDraw"
 
 #: gnu/packages/libreoffice.scm:489
 msgid ""
@@ -7434,8 +7608,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/libreoffice.scm:514
+#, fuzzy
 msgid "Library for parsing the PageMaker format"
-msgstr ""
+msgstr "Biblioteca para interpreción del formato CorelDraw"
 
 #: gnu/packages/libreoffice.scm:515
 msgid ""
@@ -7445,8 +7620,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/libreoffice.scm:545
+#, fuzzy
 msgid "Library for parsing the Microsoft Visio format"
-msgstr ""
+msgstr "Biblioteca para interpreción del formato CorelDraw"
 
 #: gnu/packages/libreoffice.scm:546
 msgid ""
@@ -7530,8 +7706,9 @@ msgid "Hunspell dictionary for the post @dfn{1990 réforme} French"
 msgstr "Diccionario Hunspell para francés posterior @dfn{1990 réforme}"
 
 #: gnu/packages/libreoffice.scm:792
+#, fuzzy
 msgid "Hunspell dictionary for all variants of French"
-msgstr ""
+msgstr "Diccionario Hunspell para francés ``moderno''"
 
 #: gnu/packages/libreoffice.scm:810
 msgid "Hyphenation library"
@@ -7556,7 +7733,7 @@ msgstr ""
 
 #: gnu/packages/libreoffice.scm:1042
 msgid "Office suite"
-msgstr ""
+msgstr "Suite oficina"
 
 #: gnu/packages/libreoffice.scm:1043
 msgid ""
@@ -7691,8 +7868,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:895
+#, fuzzy
 msgid "System call tracer for Linux"
-msgstr ""
+msgstr "fallado la llamada al sistema `fork'"
 
 #: gnu/packages/linux.scm:897
 msgid ""
@@ -7804,8 +7982,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:1460
+#, fuzzy
 msgid "Manipulate Ethernet bridges"
-msgstr ""
+msgstr "Dispositivo Ethernet sobre ATA"
 
 #: gnu/packages/linux.scm:1462
 msgid ""
@@ -7945,8 +8124,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:1921
+#, fuzzy
 msgid "Neo2 console layout"
-msgstr ""
+msgstr "Personalizar Diseño"
 
 #: gnu/packages/linux.scm:1923
 msgid ""
@@ -7967,7 +8147,7 @@ msgstr ""
 
 #: gnu/packages/linux.scm:2007
 msgid "Monitor file accesses"
-msgstr ""
+msgstr "Monitor de acceso a fichero"
 
 #: gnu/packages/linux.scm:2009
 msgid ""
@@ -7976,8 +8156,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:2047
+#, fuzzy
 msgid "Kernel module tools"
-msgstr ""
+msgstr "  núcleo: ~a~%"
 
 #: gnu/packages/linux.scm:2048
 msgid ""
@@ -7991,8 +8172,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:2092
+#, fuzzy
 msgid "Userspace device management"
-msgstr ""
+msgstr "Gestionar Proyecto"
 
 #: gnu/packages/linux.scm:2093
 msgid ""
@@ -8041,8 +8223,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:2343
+#, fuzzy
 msgid "Wireless regulatory database"
-msgstr ""
+msgstr "base de datos"
 
 #: gnu/packages/linux.scm:2345
 msgid ""
@@ -8063,8 +8246,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:2451
+#, fuzzy
 msgid "I2C tools for Linux"
-msgstr ""
+msgstr "Herramientas contenedoras Linux"
 
 #: gnu/packages/linux.scm:2453
 msgid ""
@@ -8141,8 +8325,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:2651
+#, fuzzy
 msgid "Display information on ACPI devices"
-msgstr ""
+msgstr "  dispositivos   : enseña todas los dispositivos de bloques activos\n"
 
 #: gnu/packages/linux.scm:2652
 msgid ""
@@ -8288,8 +8473,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:3122
+#, fuzzy
 msgid "Mount exFAT file systems"
-msgstr ""
+msgstr "no se ha procesado ningún sistema de ficheros"
 
 #: gnu/packages/linux.scm:3124
 msgid ""
@@ -8331,7 +8517,7 @@ msgstr ""
 
 #: gnu/packages/linux.scm:3290
 msgid "Userland tools for f2fs"
-msgstr ""
+msgstr "Herramientas de usuario para f2fs"
 
 #: gnu/packages/linux.scm:3292
 msgid ""
@@ -8355,8 +8541,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:3377
+#, fuzzy
 msgid "Simple fan control program"
-msgstr ""
+msgstr "Terminal controladora simple"
 
 #: gnu/packages/linux.scm:3379
 msgid ""
@@ -8549,8 +8736,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:3922
+#, fuzzy
 msgid "Performance monitoring tools for Linux"
-msgstr ""
+msgstr "Herramientas contenedoras Linux"
 
 #: gnu/packages/linux.scm:3923
 msgid ""
@@ -8582,7 +8770,7 @@ msgstr ""
 
 #: gnu/packages/linux.scm:4059
 msgid "Power management tool for Linux"
-msgstr ""
+msgstr "Herramienta de gestor de energía para Linux"
 
 #: gnu/packages/linux.scm:4060
 msgid ""
@@ -8593,8 +8781,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:4087
+#, fuzzy
 msgid "List hardware information"
-msgstr ""
+msgstr "Información de paquete: lista de versiones"
 
 #: gnu/packages/linux.scm:4089
 msgid ""
@@ -8607,8 +8796,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:4112
+#, fuzzy
 msgid "Netlink utility library"
-msgstr ""
+msgstr "Biblioteca utilitaria para NetSurf"
 
 #: gnu/packages/linux.scm:4113
 msgid ""
@@ -8690,8 +8880,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:4380
+#, fuzzy
 msgid "Utility to show process environment"
-msgstr ""
+msgstr "Muestra anillos de procesos"
 
 #: gnu/packages/linux.scm:4381
 msgid ""
@@ -8702,8 +8893,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/linux.scm:4408
+#, fuzzy
 msgid "Open Fabric Interfaces"
-msgstr ""
+msgstr "_Abrir…"
 
 #: gnu/packages/linux.scm:4410
 msgid ""
@@ -8732,8 +8924,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/lout.scm:109
+#, fuzzy
 msgid "Document layout system"
-msgstr ""
+msgstr "Personalizar Diseño"
 
 #: gnu/packages/lout.scm:111
 msgid ""
@@ -8798,8 +8991,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/messaging.scm:252
+#, fuzzy
 msgid "Graphical IRC Client"
-msgstr ""
+msgstr "Unir discursiones IRC"
 
 #: gnu/packages/messaging.scm:254
 msgid ""
@@ -8852,8 +9046,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/messaging.scm:486
+#, fuzzy
 msgid "IRC network bouncer"
-msgstr ""
+msgstr "Unir discursiones IRC"
 
 #: gnu/packages/messaging.scm:487
 msgid ""
@@ -8876,7 +9071,7 @@ msgstr ""
 
 #: gnu/packages/messaging.scm:560
 msgid "Jabber (XMPP) client"
-msgstr ""
+msgstr "Cliente Jabber (XMPP)"
 
 #: gnu/packages/messaging.scm:561
 msgid ""
@@ -8889,7 +9084,7 @@ msgstr ""
 
 #: gnu/packages/messaging.scm:630
 msgid "Graphical Jabber (XMPP) client"
-msgstr ""
+msgstr "Cliente Jabber gráfico (XMPP)"
 
 #: gnu/packages/messaging.scm:631
 msgid ""
@@ -8899,7 +9094,7 @@ msgstr ""
 
 #: gnu/packages/messaging.scm:720
 msgid "Jabber (XMPP) server"
-msgstr ""
+msgstr "Servidor Jabber (XMPP)"
 
 #: gnu/packages/messaging.scm:721
 msgid ""
@@ -8926,7 +9121,7 @@ msgstr ""
 
 #: gnu/packages/messaging.scm:847
 msgid "Lightweight Tox client"
-msgstr ""
+msgstr "Cliente Tox ligero"
 
 #: gnu/packages/messaging.scm:849
 msgid ""
@@ -8952,8 +9147,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/messaging.scm:993
+#, fuzzy
 msgid "Distributed peer-to-peer communication"
-msgstr ""
+msgstr "verificando parte certificado: %s"
 
 #: gnu/packages/messaging.scm:1012
 msgid "Multi-user chat program"
@@ -9000,7 +9196,7 @@ msgstr ""
 
 #: gnu/packages/messaging.scm:1159
 msgid "PSYC library in C"
-msgstr ""
+msgstr "Biblioteca PSYC en C"
 
 #: gnu/packages/messaging.scm:1226
 msgid "psycLPC is a multi-user network server programming language"
@@ -9025,7 +9221,7 @@ msgstr ""
 
 #: gnu/packages/messaging.scm:1263
 msgid "Asynchronous XMPP library"
-msgstr ""
+msgstr "Biblioteca XMPP asíncrona)"
 
 #: gnu/packages/messaging.scm:1295
 msgid ""
@@ -9037,7 +9233,7 @@ msgstr ""
 
 #: gnu/packages/messaging.scm:1299
 msgid "Small XMPP console client"
-msgstr ""
+msgstr "Cliente pequeño de consola XMPP"
 
 #: gnu/packages/messaging.scm:1345
 msgid "Extensible console-based Jabber client"
@@ -9070,8 +9266,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/messaging.scm:1453
+#, fuzzy
 msgid "Console-based XMPP client"
-msgstr ""
+msgstr "Cliente Jabber (XMPP)"
 
 #: gnu/packages/messaging.scm:1454
 msgid ""
@@ -9113,8 +9310,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/mpd.scm:142
+#, fuzzy
 msgid "Music Player Daemon"
-msgstr ""
+msgstr "música por:"
 
 #: gnu/packages/mpd.scm:143
 msgid ""
@@ -9188,8 +9386,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/netpbm.scm:178
+#, fuzzy
 msgid "Toolkit for manipulation of images"
-msgstr ""
+msgstr "(Kit de herramientas de accesibilidad GNOME"
 
 #: gnu/packages/netpbm.scm:180
 msgid ""
@@ -9298,8 +9497,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/networking.scm:336
+#, fuzzy
 msgid "Display or change Ethernet device settings"
-msgstr ""
+msgstr "Modifica o enseña opciones del paginador."
 
 #: gnu/packages/networking.scm:338
 msgid ""
@@ -9346,7 +9546,7 @@ msgstr ""
 
 #: gnu/packages/networking.scm:481
 msgid "Improved whois client"
-msgstr ""
+msgstr "Cliente whois mejorado"
 
 #: gnu/packages/networking.scm:482
 msgid ""
@@ -9397,7 +9597,7 @@ msgstr ""
 
 #: gnu/packages/networking.scm:625
 msgid "Visualize curl statistics"
-msgstr ""
+msgstr "Visualizar estadísticas curl"
 
 #: gnu/packages/networking.scm:627
 msgid ""
@@ -9582,8 +9782,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/networking.scm:1183
+#, fuzzy
 msgid "Usenet binary file downloader"
-msgstr ""
+msgstr "%s: no se puede ejecutar el fichero binario"
 
 #: gnu/packages/networking.scm:1185
 msgid ""
@@ -9596,8 +9797,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/networking.scm:1239
+#, fuzzy
 msgid "Virtual network switch"
-msgstr ""
+msgstr "Máscara de red"
 
 #: gnu/packages/networking.scm:1242
 msgid ""
@@ -9619,8 +9821,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/networking.scm:1285
+#, fuzzy
 msgid "Internet bandwidth tester"
-msgstr ""
+msgstr "Demonio de servicios de Internet"
 
 #: gnu/packages/networking.scm:1287
 msgid ""
@@ -9630,7 +9833,7 @@ msgstr ""
 
 #: gnu/packages/networking.scm:1305
 msgid "HPA's tftp client"
-msgstr ""
+msgstr "Cliente tftp de HPA"
 
 #: gnu/packages/networking.scm:1307
 msgid ""
@@ -9640,8 +9843,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/networking.scm:1335
+#, fuzzy
 msgid "Small Ident Daemon"
-msgstr ""
+msgstr "ident"
 
 #: gnu/packages/networking.scm:1337
 msgid ""
@@ -9665,8 +9869,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/networking.scm:1412
+#, fuzzy
 msgid "Routing Software Suite"
-msgstr ""
+msgstr "Enrutando Suite Software"
 
 #: gnu/packages/networking.scm:1413
 msgid ""
@@ -9693,7 +9898,7 @@ msgstr ""
 
 #: gnu/packages/networking.scm:1488
 msgid "Bandwidth monitor"
-msgstr ""
+msgstr "Monitor ancho de banda"
 
 #: gnu/packages/networking.scm:1489
 msgid ""
@@ -9717,8 +9922,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/pdf.scm:127
+#, fuzzy
 msgid "PDF rendering library"
-msgstr ""
+msgstr "Renderizando boletín «~a»…"
 
 #: gnu/packages/pdf.scm:129
 msgid "Poppler is a PDF rendering library based on the xpdf-3.0 code base."
@@ -9733,8 +9939,9 @@ msgid "Qt5 frontend for the Poppler PDF rendering library"
 msgstr ""
 
 #: gnu/packages/pdf.scm:182
+#, fuzzy
 msgid "Python bindings for Poppler-Qt4"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/pdf.scm:184
 msgid ""
@@ -9743,8 +9950,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/pdf.scm:229
+#, fuzzy
 msgid "Python bindings for Poppler-Qt5"
-msgstr ""
+msgstr "Enlazando XOSD para Guile"
 
 #: gnu/packages/pdf.scm:231
 msgid ""
@@ -9754,7 +9962,7 @@ msgstr ""
 
 #: gnu/packages/pdf.scm:268
 msgid "Library for generating PDF files"
-msgstr ""
+msgstr "Biblioteca para generación de ficheros PDF"
 
 #: gnu/packages/pdf.scm:270
 msgid ""
@@ -9832,8 +10040,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/pdf.scm:558
+#, fuzzy
 msgid "Tools to work with the PDF file format"
-msgstr ""
+msgstr "Elección del nombre del formato de exportación en PDF"
 
 #: gnu/packages/pdf.scm:560
 msgid ""
@@ -9874,8 +10083,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/pdf.scm:695
+#, fuzzy
 msgid "Notetaking using a stylus"
-msgstr ""
+msgstr "  empleando "
 
 #: gnu/packages/pdf.scm:697
 msgid ""
@@ -9917,8 +10127,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/pdf.scm:850
+#, fuzzy
 msgid "PDF to SVG converter"
-msgstr ""
+msgstr "Exporta al fichero PDF"
 
 #: gnu/packages/pdf.scm:851
 msgid ""
@@ -9989,7 +10200,7 @@ msgstr ""
 
 #: gnu/packages/pem.scm:41
 msgid "Personal expenses manager"
-msgstr ""
+msgstr "Gestor de gastos personales"
 
 #: gnu/packages/pem.scm:43
 msgid ""
@@ -10059,8 +10270,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:259
+#, fuzzy
 msgid "Configuration files and command line parsing"
-msgstr ""
+msgstr "línea %d: Error al procesar %%files: %s\n"
 
 #: gnu/packages/perl.scm:260
 msgid ""
@@ -10069,8 +10281,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:278
+#, fuzzy
 msgid "Perl API to zip files"
-msgstr ""
+msgstr "Configuración del API (ficheros *.ini)"
 
 #: gnu/packages/perl.scm:300
 msgid "Small utils for array manipulation"
@@ -10106,7 +10319,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:352
 msgid "Lexically disable autovivification"
-msgstr ""
+msgstr "Léxicamente desactiva autovivificación"
 
 #: gnu/packages/perl.scm:353
 msgid ""
@@ -10135,8 +10348,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:400
+#, fuzzy
 msgid "Open a browser in a given URL"
-msgstr ""
+msgstr "Escuchando el url dado."
 
 #: gnu/packages/perl.scm:401
 msgid ""
@@ -10170,7 +10384,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:469
 msgid "Benchmarking with statistical confidence"
-msgstr ""
+msgstr "Medición con confianza estadísticas"
 
 #: gnu/packages/perl.scm:471
 msgid ""
@@ -10182,8 +10396,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:496
+#, fuzzy
 msgid "Bit vector library"
-msgstr ""
+msgstr "no se admite el registro de índice de vector"
 
 #: gnu/packages/perl.scm:497
 msgid ""
@@ -10197,7 +10412,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:519
 msgid "Boolean support for Perl"
-msgstr ""
+msgstr "Apoyo booleano para Perl"
 
 #: gnu/packages/perl.scm:520
 msgid ""
@@ -10206,8 +10421,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:538
+#, fuzzy
 msgid "Data files for Business::ISBN"
-msgstr ""
+msgstr "NT_PROCSTAT_FILES (datos ficheros)"
 
 #: gnu/packages/perl.scm:539
 msgid ""
@@ -10247,8 +10463,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:623
+#, fuzzy
 msgid "Cache interface for Perl"
-msgstr ""
+msgstr ", sin-caché"
 
 #: gnu/packages/perl.scm:624
 msgid ""
@@ -10307,8 +10524,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:732
+#, fuzzy
 msgid "Executable comments for Perl"
-msgstr ""
+msgstr "ejecutable"
 
 #: gnu/packages/perl.scm:733
 msgid ""
@@ -10348,7 +10566,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:820
 msgid "Automated accessor generation"
-msgstr ""
+msgstr "Generación accesor automático"
 
 #: gnu/packages/perl.scm:821
 msgid ""
@@ -10369,8 +10587,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:871
+#, fuzzy
 msgid "Build groups of accessors"
-msgstr ""
+msgstr "compilar"
 
 #: gnu/packages/perl.scm:872
 msgid ""
@@ -10390,8 +10609,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:917
+#, fuzzy
 msgid "Drop-in replacement for NEXT"
-msgstr ""
+msgstr "cadenas de reemplazo de campos vacíos conflictivas"
 
 #: gnu/packages/perl.scm:918
 msgid ""
@@ -10432,8 +10652,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:1002
+#, fuzzy
 msgid "Base class for error handling"
-msgstr ""
+msgstr "Clase base C++ no definida"
 
 #: gnu/packages/perl.scm:1004
 msgid ""
@@ -10445,7 +10666,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:1025
 msgid "Utility methods for factory classes"
-msgstr ""
+msgstr "Métodos utilizados para clases factoriales"
 
 #: gnu/packages/perl.scm:1026
 msgid "This module exports methods useful for factory classes."
@@ -10517,8 +10738,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:1180
+#, fuzzy
 msgid "Minimalist class construction"
-msgstr ""
+msgstr "(dentro de clase)"
 
 #: gnu/packages/perl.scm:1181
 msgid ""
@@ -10528,7 +10750,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:1201
 msgid "Unload a class"
-msgstr ""
+msgstr "Descarga una clase"
 
 #: gnu/packages/perl.scm:1202
 msgid ""
@@ -10552,7 +10774,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:1241 gnu/packages/perl.scm:1264
 msgid "Recursively copy Perl datatypes"
-msgstr ""
+msgstr "Copiar recursivamente tipos de datos Perl"
 
 #: gnu/packages/perl.scm:1243
 msgid ""
@@ -10602,7 +10824,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:1347
 msgid "Generic Config Module"
-msgstr ""
+msgstr "Módulo Configurable Genérico"
 
 #: gnu/packages/perl.scm:1348
 msgid ""
@@ -10660,7 +10882,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:1468
 msgid "JSON::XS for Cpanel"
-msgstr ""
+msgstr "JSON::XS para Cpanel"
 
 #: gnu/packages/perl.scm:1469 gnu/packages/perl.scm:4193
 msgid ""
@@ -10670,7 +10892,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:1487
 msgid "Random password generator"
-msgstr ""
+msgstr "Generador de contraseñas aleatorias"
 
 #: gnu/packages/perl.scm:1488
 msgid ""
@@ -10692,8 +10914,9 @@ msgid "A pure Perl implementation of the RC4 algorithm."
 msgstr ""
 
 #: gnu/packages/perl.scm:1533
+#, fuzzy
 msgid "Temporarily change working directory"
-msgstr ""
+msgstr "no se puede obtener directorio ocupado"
 
 #: gnu/packages/perl.scm:1535
 msgid ""
@@ -10702,8 +10925,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:1573
+#, fuzzy
 msgid "Library for genomic analysis"
-msgstr ""
+msgstr "Análisis de señal…"
 
 #: gnu/packages/perl.scm:1574
 msgid ""
@@ -10726,8 +10950,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:1627
+#, fuzzy
 msgid "Compare Perl data structures"
-msgstr ""
+msgstr "Construye estructuras desde datos CGI"
 
 #: gnu/packages/perl.scm:1628
 msgid ""
@@ -10747,8 +10972,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:1666
+#, fuzzy
 msgid "Pretty printing of data structures"
-msgstr ""
+msgstr "Pretty-printing:\n"
 
 #: gnu/packages/perl.scm:1667
 msgid ""
@@ -10759,7 +10985,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:1686
 msgid "Concise data dumper"
-msgstr ""
+msgstr "Volcador de fechas concisas"
 
 #: gnu/packages/perl.scm:1687
 msgid ""
@@ -10825,8 +11051,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:1850
+#, fuzzy
 msgid "Structured tags datastructures"
-msgstr ""
+msgstr "Etiquetas EXIF:"
 
 #: gnu/packages/perl.scm:1852
 msgid ""
@@ -10896,8 +11123,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:2008
+#, fuzzy
 msgid "Date manipulation routines"
-msgstr ""
+msgstr "Manipulación de Base de Datos"
 
 #: gnu/packages/perl.scm:2009
 msgid ""
@@ -10908,7 +11136,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2028
 msgid "Simple date handling"
-msgstr ""
+msgstr "Manipular fecha simple"
 
 #: gnu/packages/perl.scm:2029
 msgid ""
@@ -10920,7 +11148,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2061
 msgid "Date and time object for Perl"
-msgstr ""
+msgstr "Objetos de fecha y hora para Perl"
 
 #: gnu/packages/perl.scm:2062
 msgid ""
@@ -10931,7 +11159,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2084
 msgid "Dates in the Julian calendar"
-msgstr ""
+msgstr "Fechas en el calendario juliano"
 
 #: gnu/packages/perl.scm:2085
 msgid ""
@@ -10943,7 +11171,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2111
 msgid "DateTime set objects"
-msgstr ""
+msgstr "Objetos establecen FechaHora"
 
 #: gnu/packages/perl.scm:2112
 msgid ""
@@ -10955,7 +11183,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2135
 msgid "DateTime rfc2445 recurrences"
-msgstr ""
+msgstr "Recurrencia FechaHora rfc2445"
 
 #: gnu/packages/perl.scm:2136
 msgid ""
@@ -10988,8 +11216,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:2211
+#, fuzzy
 msgid "Parse data/time strings"
-msgstr ""
+msgstr "No se han podido analizar los datos EXIF."
 
 #: gnu/packages/perl.scm:2212
 msgid ""
@@ -11033,7 +11262,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2332
 msgid "Localization support for DateTime.pm"
-msgstr ""
+msgstr "Apoyo a localización para  DateTime.pm"
 
 #: gnu/packages/perl.scm:2333
 msgid ""
@@ -11042,8 +11271,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:2361
+#, fuzzy
 msgid "Time zone object for Perl"
-msgstr ""
+msgstr "_Zona horaria:"
 
 #: gnu/packages/perl.scm:2362
 msgid ""
@@ -11057,7 +11287,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2392
 msgid "Parse date/time strings"
-msgstr ""
+msgstr "Interpretar cadenas textuales de fecha/hora"
 
 #: gnu/packages/perl.scm:2393
 msgid ""
@@ -11089,8 +11319,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:2461
+#, fuzzy
 msgid "Meatier version of caller"
-msgstr ""
+msgstr "Llamador del marco: "
 
 #: gnu/packages/perl.scm:2462
 msgid "Devel::Caller provides meatier version of caller."
@@ -11098,7 +11329,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2480
 msgid "Check that a command is available"
-msgstr ""
+msgstr "Marcar que una función está disponible"
 
 #: gnu/packages/perl.scm:2481
 msgid ""
@@ -11107,8 +11338,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:2500
+#, fuzzy
 msgid "Check compiler availability"
-msgstr ""
+msgstr "   compilador : %.*s\n"
 
 #: gnu/packages/perl.scm:2501
 msgid ""
@@ -11151,7 +11383,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2590
 msgid "Alias lexical variables"
-msgstr ""
+msgstr "Variables léxicas alias"
 
 #: gnu/packages/perl.scm:2591
 msgid ""
@@ -11160,8 +11392,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:2615
+#, fuzzy
 msgid "Introspect overloaded operators"
-msgstr ""
+msgstr "Operadores de sufijo `#' redundantes"
 
 #: gnu/packages/perl.scm:2616
 msgid ""
@@ -11172,7 +11405,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2643
 msgid "Partial dumping of data structures"
-msgstr ""
+msgstr "Volcado parcial de estructuras de datos"
 
 #: gnu/packages/perl.scm:2644
 msgid ""
@@ -11181,8 +11414,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:2662
+#, fuzzy
 msgid "Object representing a stack trace"
-msgstr ""
+msgstr "traza de pila finalizada"
 
 #: gnu/packages/perl.scm:2663
 msgid ""
@@ -11193,8 +11427,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:2685
+#, fuzzy
 msgid "Displays stack trace in HTML"
-msgstr ""
+msgstr "traza de pila finalizada"
 
 #: gnu/packages/perl.scm:2686
 msgid ""
@@ -11207,7 +11442,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2707
 msgid "Dump symbol names or the symbol table"
-msgstr ""
+msgstr "Volcar nombres de símbolos o la distribución simbólica"
 
 #: gnu/packages/perl.scm:2708
 msgid "Devel::Symdump provides access to the perl symbol table."
@@ -11257,7 +11492,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2816
 msgid "Detect the encoding of data"
-msgstr ""
+msgstr "Detecta la codificación de datos"
 
 #: gnu/packages/perl.scm:2817
 msgid ""
@@ -11287,7 +11522,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:2878
 msgid "Additional Chinese encodings"
-msgstr ""
+msgstr "Codificación china adicional"
 
 #: gnu/packages/perl.scm:2879
 msgid ""
@@ -11384,8 +11619,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:3060
+#, fuzzy
 msgid "Wrapper for perl's configuration"
-msgstr ""
+msgstr "La cubierta del enlazador"
 
 #: gnu/packages/perl.scm:3061
 msgid ""
@@ -11442,7 +11678,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:3180
 msgid "Watch for changes to files"
-msgstr ""
+msgstr "Vigile modificaciones a ficheros"
 
 #: gnu/packages/perl.scm:3181
 msgid ""
@@ -11451,8 +11687,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:3202
+#, fuzzy
 msgid "Get directories of configuration files"
-msgstr ""
+msgstr "los dos ficheros que hay que comparar son directorios"
 
 #: gnu/packages/perl.scm:3203
 msgid ""
@@ -11463,8 +11700,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:3223
+#, fuzzy
 msgid "Recursively copy files and directories"
-msgstr ""
+msgstr "Copia directorios recursivamente"
 
 #: gnu/packages/perl.scm:3224
 msgid ""
@@ -11475,7 +11713,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:3246
 msgid "Alternative interface to File::Find"
-msgstr ""
+msgstr "Interfaz alternativo para Fichero::Encontrar"
 
 #: gnu/packages/perl.scm:3247
 msgid ""
@@ -11521,7 +11759,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:3339
 msgid "Create or remove directory trees"
-msgstr ""
+msgstr "Crear o quitar árboles directóricos"
 
 #: gnu/packages/perl.scm:3340
 msgid ""
@@ -11559,8 +11797,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:3414
+#, fuzzy
 msgid "Remove files and directories in Perl"
-msgstr ""
+msgstr "los dos ficheros que hay que comparar son directorios"
 
 #: gnu/packages/perl.scm:3415
 msgid ""
@@ -11595,8 +11834,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:3483
+#, fuzzy
 msgid "Install shared files"
-msgstr ""
+msgstr "no instalar ficheros de configuración"
 
 #: gnu/packages/perl.scm:3484
 msgid ""
@@ -11627,8 +11867,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:3545
+#, fuzzy
 msgid "Simple file reader and writer"
-msgstr ""
+msgstr "copias de seguridad simples para cada fichero"
 
 #: gnu/packages/perl.scm:3547
 msgid "This module provides functions for fast reading and writing of files."
@@ -11667,8 +11908,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:3629
+#, fuzzy
 msgid "Module to handle parsing command line options"
-msgstr ""
+msgstr "Error interno durante el análisis de las opciones de línea de órdenes.\n"
 
 #: gnu/packages/perl.scm:3630
 msgid ""
@@ -11708,7 +11950,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:3707
 msgid "Graph data structures and algorithms"
-msgstr ""
+msgstr "Estructuras y algoritmos de datos gráficos"
 
 #: gnu/packages/perl.scm:3708
 msgid ""
@@ -11782,8 +12024,11 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:3850
+#, fuzzy
 msgid "Import packages into other packages"
 msgstr ""
+"Paquetes a ser reinstalados\n"
+" Estos paquetes serán reinstalados."
 
 #: gnu/packages/perl.scm:3851
 msgid ""
@@ -11821,8 +12066,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:3918
+#, fuzzy
 msgid "Utilities for interactive I/O"
-msgstr ""
+msgstr "fuerza E/S interactiva"
 
 #: gnu/packages/perl.scm:3919
 msgid ""
@@ -11863,8 +12109,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:3996
+#, fuzzy
 msgid "Run interactive command-line programs"
-msgstr ""
+msgstr "¡Este guión debe ser ejecutado desde la línea de órdenes!"
 
 #: gnu/packages/perl.scm:3997
 msgid ""
@@ -11898,8 +12145,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:4071
+#, fuzzy
 msgid "Lightweight interface to shared memory"
-msgstr ""
+msgstr "objeto de memoria compartido"
 
 #: gnu/packages/perl.scm:4072
 msgid ""
@@ -11994,7 +12242,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:4270
 msgid "Log4j implementation for Perl"
-msgstr ""
+msgstr "Implementación Log4j para Perl"
 
 #: gnu/packages/perl.scm:4271
 msgid ""
@@ -12004,8 +12252,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:4291
+#, fuzzy
 msgid "Log::Report in the lightest form"
-msgstr ""
+msgstr "informe de registro"
 
 #: gnu/packages/perl.scm:4293
 msgid ""
@@ -12146,8 +12395,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:4593
+#, fuzzy
 msgid "Charset information for MIME messages"
-msgstr ""
+msgstr "depura mensajes incluido información fuente"
 
 #: gnu/packages/perl.scm:4595
 msgid ""
@@ -12167,8 +12417,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:4643
+#, fuzzy
 msgid "Definition of MIME types"
-msgstr ""
+msgstr "  Tipo MIME:   «%s»\n"
 
 #: gnu/packages/perl.scm:4644
 msgid ""
@@ -12201,8 +12452,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:4722
+#, fuzzy
 msgid "Tiny replacement for Module::Build"
-msgstr ""
+msgstr " -m                       construye un módulo de carga dinámicamente (predeterminado)"
 
 #: gnu/packages/perl.scm:4723
 msgid ""
@@ -12321,8 +12573,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:4964
+#, fuzzy
 msgid "Module name tools and transformations"
-msgstr ""
+msgstr "nombre de módulo inválido: %s"
 
 #: gnu/packages/perl.scm:4965
 msgid ""
@@ -12397,7 +12650,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:5189
 msgid "Code attribute introspection"
-msgstr ""
+msgstr "Interprospección código atributado"
 
 #: gnu/packages/perl.scm:5190
 msgid ""
@@ -12626,8 +12879,11 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:5792
+#, fuzzy
 msgid "Moosish types and type builder"
 msgstr ""
+"tipo de compactación inválido:  %s\n"
+"los tipos conocidos son:\n"
 
 #: gnu/packages/perl.scm:5793
 msgid ""
@@ -12735,7 +12991,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:6019
 msgid "Numeric comparisons"
-msgstr ""
+msgstr "Comparaciones numéricas"
 
 #: gnu/packages/perl.scm:6020
 msgid ""
@@ -12767,8 +13023,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:6086
+#, fuzzy
 msgid "Anonymous packages"
-msgstr ""
+msgstr "Usuario anónimo"
 
 #: gnu/packages/perl.scm:6087
 msgid ""
@@ -12788,8 +13045,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:6143
+#, fuzzy
 msgid "Routines for manipulating stashes"
-msgstr ""
+msgstr "Rutinas para manipular estadísticas"
 
 #: gnu/packages/perl.scm:6144
 msgid ""
@@ -12844,8 +13102,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:6260
+#, fuzzy
 msgid "Validate method/function parameters"
-msgstr ""
+msgstr "tipo equivocado para la función del método C++"
 
 #: gnu/packages/perl.scm:6261
 msgid ""
@@ -12884,7 +13143,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:6348
 msgid "Path specification manipulation"
-msgstr ""
+msgstr "Manipulación especificante de ruta"
 
 #: gnu/packages/perl.scm:6349
 msgid ""
@@ -12894,7 +13153,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:6373
 msgid "File path utility"
-msgstr ""
+msgstr "Ruta de fichero de utilidad"
 
 #: gnu/packages/perl.scm:6374
 msgid ""
@@ -12925,7 +13184,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:6435
 msgid "Parsing library for text in Pod format"
-msgstr ""
+msgstr "Interpreta biblioteca para texto en formato Pod"
 
 #: gnu/packages/perl.scm:6436
 msgid ""
@@ -12947,8 +13206,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:6476
+#, fuzzy
 msgid "Information about the currently running perl"
-msgstr ""
+msgstr "Muestra información sobre los usuarios que están actualmente conectados.\n"
 
 #: gnu/packages/perl.scm:6478
 msgid ""
@@ -13019,7 +13279,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:6619
 msgid "Roles, as a slice of Moose"
-msgstr ""
+msgstr "Actores, como una rodaja de Moose"
 
 #: gnu/packages/perl.scm:6620
 msgid "Role::Tiny is a minimalist role composition tool."
@@ -13051,8 +13311,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:6680
+#, fuzzy
 msgid "Infinite sets"
-msgstr ""
+msgstr "infinito"
 
 #: gnu/packages/perl.scm:6681
 msgid "Set::Infinite is a set theory module for infinite sets."
@@ -13069,8 +13330,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:6720
+#, fuzzy
 msgid "Set operations for Perl"
-msgstr ""
+msgstr "escribir conjunto dependiente perl(...)"
 
 #: gnu/packages/perl.scm:6721
 msgid ""
@@ -13220,7 +13482,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7017
 msgid "Tool to inspect subroutines"
-msgstr ""
+msgstr "Herramienta para inspeccionar subrutinas"
 
 #: gnu/packages/perl.scm:7018
 msgid ""
@@ -13229,8 +13491,12 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7037
+#, fuzzy
 msgid "Install subroutines into packages easily"
 msgstr ""
+"\n"
+"  -i, --install PAQUETE ...\n"
+"                         install PAQUETEs"
 
 #: gnu/packages/perl.scm:7039
 msgid ""
@@ -13241,7 +13507,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7060
 msgid "(Re)name a sub"
-msgstr ""
+msgstr "(Re)nombrar un sub"
 
 #: gnu/packages/perl.scm:7061
 msgid ""
@@ -13275,8 +13541,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7122
+#, fuzzy
 msgid "Switch statement for Perl"
-msgstr ""
+msgstr "scripts internos empotrados en perl."
 
 #: gnu/packages/perl.scm:7123
 msgid ""
@@ -13320,8 +13587,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7246
+#, fuzzy
 msgid "Template processing system for Perl"
-msgstr ""
+msgstr "Ocurrió un error al procesar la plantilla:"
 
 #: gnu/packages/perl.scm:7247
 msgid ""
@@ -13334,7 +13602,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7270
 msgid "Profiling for Template Toolkit"
-msgstr ""
+msgstr "Perfilando para Plantillas de Kit de Herramientas"
 
 #: gnu/packages/perl.scm:7271
 msgid ""
@@ -13343,8 +13611,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7291
+#, fuzzy
 msgid "Detect encoding of the current terminal"
-msgstr ""
+msgstr "Localización actual emplea codificación %s.\n"
 
 #: gnu/packages/perl.scm:7292
 msgid ""
@@ -13376,8 +13645,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7363
+#, fuzzy
 msgid "Simple progress bars"
-msgstr ""
+msgstr "En progreso"
 
 #: gnu/packages/perl.scm:7364
 msgid ""
@@ -13387,7 +13657,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7382
 msgid "Simple terminal control"
-msgstr ""
+msgstr "Terminal controladora simple"
 
 #: gnu/packages/perl.scm:7383
 msgid ""
@@ -13399,8 +13669,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7408
+#, fuzzy
 msgid "Retrieve terminal size"
-msgstr ""
+msgstr "Ningún dato a obtener."
 
 #: gnu/packages/perl.scm:7409
 msgid ""
@@ -13422,7 +13693,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7450
 msgid "Format a header and rows into a table"
-msgstr ""
+msgstr "Formatear una cabecera y filas dentro de una tabla"
 
 #: gnu/packages/perl.scm:7451
 msgid ""
@@ -13452,7 +13723,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7508
 msgid "Manipulate comma-separated values"
-msgstr ""
+msgstr "Manipula valorer separados por coma"
 
 #: gnu/packages/perl.scm:7509
 msgid ""
@@ -13462,8 +13733,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7528
+#, fuzzy
 msgid "Rountines for manipulating CSV files"
-msgstr ""
+msgstr "Descargando, subiendo y manipulando ficheros"
 
 #: gnu/packages/perl.scm:7529
 msgid ""
@@ -13524,7 +13796,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7642
 msgid "Simple ASCII tables"
-msgstr ""
+msgstr "Distribución simple ASCII"
 
 #: gnu/packages/perl.scm:7643
 msgid "Text::SimpleTable draws simple ASCII tables."
@@ -13532,7 +13804,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7664
 msgid "Organize Data in Tables"
-msgstr ""
+msgstr "Organizar Datos en Tablas"
 
 #: gnu/packages/perl.scm:7665
 msgid "Text::Table renders plaintext tables."
@@ -13565,8 +13837,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7737
+#, fuzzy
 msgid "Role for classes that can be thrown"
-msgstr ""
+msgstr "Cargo para clases que puedan ser referenciads"
 
 #: gnu/packages/perl.scm:7738
 msgid ""
@@ -13576,7 +13849,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7755
 msgid "Perl script tidier"
-msgstr ""
+msgstr "Guiones Perl tipado"
 
 #: gnu/packages/perl.scm:7756
 msgid ""
@@ -13610,8 +13883,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7820
+#, fuzzy
 msgid "Tie to an existing Perl object"
-msgstr ""
+msgstr "No se puede borrar un objeto que no existe."
 
 #: gnu/packages/perl.scm:7821
 msgid ""
@@ -13622,7 +13896,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7844
 msgid "English expression of durations"
-msgstr ""
+msgstr "Expresión inglesa de duraciones"
 
 #: gnu/packages/perl.scm:7845
 msgid ""
@@ -13631,8 +13905,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7867
+#, fuzzy
 msgid "Parse time duration strings"
-msgstr ""
+msgstr "%s error:  '%s' no es una duración temporal reconocible\n"
 
 #: gnu/packages/perl.scm:7868
 msgid ""
@@ -13664,7 +13939,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:7930
 msgid "Shift and scale time"
-msgstr ""
+msgstr "Mayúsculas y escala temporal"
 
 #: gnu/packages/perl.scm:7931
 msgid ""
@@ -13673,8 +13948,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:7954
+#, fuzzy
 msgid "Simple tree object"
-msgstr ""
+msgstr "Lista los contenidos de un árbol de objeto."
 
 #: gnu/packages/perl.scm:7955
 msgid ""
@@ -13704,8 +13980,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:8024
+#, fuzzy
 msgid "Tie a variable to a type constraint"
-msgstr ""
+msgstr "no puede definir variable de tipo inespecificado"
 
 #: gnu/packages/perl.scm:8025
 msgid ""
@@ -13764,8 +14041,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:8157
+#, fuzzy
 msgid "Unicode normalization forms"
-msgstr ""
+msgstr "Con normalización Unicode.\n"
 
 #: gnu/packages/perl.scm:8158
 msgid "This Perl module provides Unicode normalization forms."
@@ -13773,7 +14051,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:8187
 msgid "Unicode collation algorithm"
-msgstr ""
+msgstr "Algoritmo adoptado Unicode"
 
 #: gnu/packages/perl.scm:8188
 msgid ""
@@ -13783,7 +14061,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:8209
 msgid "Unicode line breaking algorithm"
-msgstr ""
+msgstr "Línea Unicode dividiendo algoritmo"
 
 #: gnu/packages/perl.scm:8211
 msgid ""
@@ -13794,7 +14072,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:8234
 msgid "Encoding and decoding of UTF-8 encoding form"
-msgstr ""
+msgstr "Codificación y decodificación de relleno en UTF-8"
 
 #: gnu/packages/perl.scm:8236
 msgid ""
@@ -13804,7 +14082,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:8254
 msgid "UNIVERSAL::can() reimplementation"
-msgstr ""
+msgstr "UNIVERSAL::can() reimplementación"
 
 #: gnu/packages/perl.scm:8255
 msgid ""
@@ -13814,7 +14092,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:8275
 msgid "UNIVERSAL::isa() reimplementation"
-msgstr ""
+msgstr "UNIVERSAL::isa() reimplementación"
 
 #: gnu/packages/perl.scm:8276
 msgid ""
@@ -13862,8 +14140,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/perl.scm:8370
+#, fuzzy
 msgid "YAML for Perl"
-msgstr ""
+msgstr "scripts internos empotrados en perl."
 
 #: gnu/packages/perl.scm:8371
 msgid ""
@@ -13883,7 +14162,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:8418
 msgid "Read/Write YAML files"
-msgstr ""
+msgstr "Ficheros Lectura/Escritura YAML"
 
 #: gnu/packages/perl.scm:8419
 msgid ""
@@ -14008,7 +14287,7 @@ msgstr ""
 
 #: gnu/packages/perl.scm:8692
 msgid "Alternative interface to File::Find::Object"
-msgstr ""
+msgstr "Interfaz alternativo para Fichero::Encontrar::Objeto"
 
 #: gnu/packages/perl.scm:8693
 msgid ""
@@ -14042,8 +14321,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/photo.scm:78
+#, fuzzy
 msgid "Raw image decoder"
-msgstr ""
+msgstr "                                        : Imagen\n"
 
 #: gnu/packages/photo.scm:80
 msgid ""
@@ -14063,7 +14343,7 @@ msgstr ""
 
 #: gnu/packages/photo.scm:125
 msgid "Accessing digital cameras"
-msgstr ""
+msgstr "Accediendo cámaras digitales"
 
 #: gnu/packages/photo.scm:127
 msgid ""
@@ -14096,7 +14376,7 @@ msgstr ""
 
 #: gnu/packages/photo.scm:229
 msgid "Library for panoramic images"
-msgstr ""
+msgstr "Biblioteca para imágenes panorámicas"
 
 #: gnu/packages/photo.scm:231
 msgid ""
@@ -14147,8 +14427,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/photo.scm:457
+#, fuzzy
 msgid "Panorama photo stitcher"
-msgstr ""
+msgstr "Foto panorámica"
 
 #: gnu/packages/photo.scm:459
 msgid ""
@@ -14239,8 +14520,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/scheme.scm:276
+#, fuzzy
 msgid "Efficient Scheme compiler"
-msgstr ""
+msgstr "no puede obtener esquema URL: %s"
 
 #: gnu/packages/scheme.scm:278
 msgid ""
@@ -14367,7 +14649,7 @@ msgstr ""
 
 #: gnu/packages/scheme.scm:884
 msgid "Compatibility and utility library for Scheme"
-msgstr ""
+msgstr "Compatibilizar y utilidad bibliotecaria para Scheme"
 
 #: gnu/packages/scheme.scm:885
 msgid ""
@@ -14389,7 +14671,7 @@ msgstr ""
 
 #: gnu/packages/search.scm:66
 msgid "Search Engine Library"
-msgstr ""
+msgstr "Biblioteca de Motor de Búsqueda"
 
 #: gnu/packages/search.scm:68
 msgid ""
@@ -14416,8 +14698,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/search.scm:161
+#, fuzzy
 msgid "Command-line interface to libtocc"
-msgstr ""
+msgstr "línea de órdenes"
 
 #: gnu/packages/search.scm:163
 msgid ""
@@ -14441,8 +14724,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/search.scm:213
+#, fuzzy
 msgid "Full-text search system"
-msgstr ""
+msgstr "busca para texto dentro de todas las páginas"
 
 #: gnu/packages/search.scm:214
 msgid ""
@@ -14453,7 +14737,7 @@ msgstr ""
 
 #: gnu/packages/search.scm:232
 msgid "Locate files on the file system"
-msgstr ""
+msgstr "Localiza ficheros en el sistema del fichero"
 
 #: gnu/packages/search.scm:234
 msgid ""
@@ -14466,8 +14750,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/search.scm:299
+#, fuzzy
 msgid "Web indexing system"
-msgstr ""
+msgstr "Web:"
 
 #: gnu/packages/search.scm:301
 msgid ""
@@ -14504,8 +14789,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/shells.scm:136
+#, fuzzy
 msgid "The friendly interactive shell"
-msgstr ""
+msgstr "Shell: "
 
 #: gnu/packages/shells.scm:138
 msgid ""
@@ -14521,7 +14807,7 @@ msgstr ""
 
 #: gnu/packages/shells.scm:170
 msgid "Fish completions for Guix"
-msgstr ""
+msgstr "Complementaciones de pez para Guix"
 
 #: gnu/packages/shells.scm:172
 msgid "Fish-guix provides completions for Guix for users of the fish shell."
@@ -14551,8 +14837,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/shells.scm:308
+#, fuzzy
 msgid "Unix shell based on csh"
-msgstr ""
+msgstr "Unix Shell:"
 
 #: gnu/packages/shells.scm:310
 msgid ""
@@ -14577,8 +14864,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/shells.scm:399
+#, fuzzy
 msgid "Python-ish shell"
-msgstr ""
+msgstr "SHELL            "
 
 #: gnu/packages/shells.scm:401
 msgid ""
@@ -14590,8 +14878,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/shells.scm:448
+#, fuzzy
 msgid "Unix shell embedded in Scheme"
-msgstr ""
+msgstr "Unix Shell:"
 
 #: gnu/packages/shells.scm:450
 msgid ""
@@ -14717,8 +15006,11 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/telephony.scm:153
+#, fuzzy
 msgid "Sip abstraction library"
 msgstr ""
+"\t-l biblioteca\t\t--load=biblioteca\n"
+"\n"
 
 #: gnu/packages/telephony.scm:154
 msgid ""
@@ -14805,8 +15097,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:259
+#, fuzzy
 msgid "DVI to PostScript drivers"
-msgstr ""
+msgstr "PostScript:\n"
 
 #: gnu/packages/tex.scm:260
 msgid ""
@@ -14832,8 +15125,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:331
+#, fuzzy
 msgid "Hyphenation patterns for German"
-msgstr ""
+msgstr "Patrones hipernacionales para Alemán"
 
 #: gnu/packages/tex.scm:332
 msgid ""
@@ -14875,7 +15169,7 @@ msgstr ""
 
 #: gnu/packages/tex.scm:476
 msgid "Metafont base files"
-msgstr ""
+msgstr "Ficheros Metafont base"
 
 #: gnu/packages/tex.scm:477
 msgid ""
@@ -14908,8 +15202,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:640
+#, fuzzy
 msgid "Small library of METAFONT sources"
-msgstr ""
+msgstr "Biblioteca de Herramientas. Pequeños consejos de codificación."
 
 #: gnu/packages/tex.scm:641
 msgid ""
@@ -14968,7 +15263,7 @@ msgstr ""
 
 #: gnu/packages/tex.scm:1004
 msgid "Base sources of LaTeX"
-msgstr ""
+msgstr "Orígenes base de LaTeX"
 
 #: gnu/packages/tex.scm:1006
 msgid ""
@@ -15019,8 +15314,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:1113
+#, fuzzy
 msgid "Sophisticated verbatim text"
-msgstr ""
+msgstr "vuelca resultados obtenidos tal cual"
 
 #: gnu/packages/tex.scm:1115
 msgid ""
@@ -15117,8 +15413,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:1348
+#, fuzzy
 msgid "LaTeX3 programmers’ interface"
-msgstr ""
+msgstr "Interfaz: "
 
 #: gnu/packages/tex.scm:1350
 msgid ""
@@ -15222,7 +15519,7 @@ msgstr ""
 
 #: gnu/packages/tex.scm:1565
 msgid "Babel support for English"
-msgstr ""
+msgstr "Capacidad Babel para inglés"
 
 #: gnu/packages/tex.scm:1567
 msgid ""
@@ -15381,8 +15678,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:1925
+#, fuzzy
 msgid "Expanded description environments"
-msgstr ""
+msgstr "Descripción:"
 
 #: gnu/packages/tex.scm:1927
 msgid ""
@@ -15426,7 +15724,7 @@ msgstr ""
 
 #: gnu/packages/tex.scm:2010
 msgid "Flexible bibliography support"
-msgstr ""
+msgstr "Compatibilidad bibliográfica flexible"
 
 #: gnu/packages/tex.scm:2012
 msgid ""
@@ -15466,8 +15764,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:2097
+#, fuzzy
 msgid "Make overhead slides"
-msgstr ""
+msgstr "no se reconoce la especificación de adelanto de objeto C++"
 
 #: gnu/packages/tex.scm:2100
 msgid ""
@@ -15491,8 +15790,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:2167
+#, fuzzy
 msgid "Captions on more than floats"
-msgstr ""
+msgstr "se ha especificado más de un elemento de formato"
 
 #: gnu/packages/tex.scm:2169
 msgid ""
@@ -15543,8 +15843,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:2307
+#, fuzzy
 msgid "Letter document class"
-msgstr ""
+msgstr "Ahí está esa carta."
 
 #: gnu/packages/tex.scm:2309
 msgid ""
@@ -15555,8 +15856,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:2329
+#, fuzzy
 msgid "Typeset Galois connections"
-msgstr ""
+msgstr "escucha conexiones en SOCKET"
 
 #: gnu/packages/tex.scm:2331
 msgid ""
@@ -15673,7 +15975,7 @@ msgstr ""
 
 #: gnu/packages/tex.scm:2559
 msgid "Extra control of appendices"
-msgstr ""
+msgstr "Control adicional de adyacencias"
 
 #: gnu/packages/tex.scm:2561
 msgid ""
@@ -15698,8 +16000,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:2618
+#, fuzzy
 msgid "CMap support for PDF files"
-msgstr ""
+msgstr "Este sistema de ficheros no soporta el envío de ficheros."
 
 #: gnu/packages/tex.scm:2620
 msgid ""
@@ -15755,8 +16058,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:2746
+#, fuzzy
 msgid "Range of footnote options"
-msgstr ""
+msgstr " Las opciones son:\n"
 
 #: gnu/packages/tex.scm:2748
 msgid ""
@@ -15857,8 +16161,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:3054
+#, fuzzy
 msgid "Customize basic list environments"
-msgstr ""
+msgstr "Personalize la lista"
 
 #: gnu/packages/tex.scm:3056
 msgid ""
@@ -15933,7 +16238,7 @@ msgstr ""
 
 #: gnu/packages/tex.scm:3220
 msgid "Figures divided into subfigures"
-msgstr ""
+msgstr "Figuras divididas dentro de subfiguras"
 
 #: gnu/packages/tex.scm:3222
 msgid ""
@@ -15949,8 +16254,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:3247
+#, fuzzy
 msgid "Tabular with variable width columns balanced"
-msgstr ""
+msgstr "se descarta el ancho inválido de la variable de entorno COLUMNS: %s"
 
 #: gnu/packages/tex.scm:3249
 msgid ""
@@ -16047,7 +16353,7 @@ msgstr ""
 
 #: gnu/packages/tex.scm:3540
 msgid "Create scalable illustrations"
-msgstr ""
+msgstr "Crea ilustraciones escalables"
 
 #: gnu/packages/tex.scm:3542
 msgid ""
@@ -16067,8 +16373,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/tex.scm:3594
+#, fuzzy
 msgid "Variable-width minipage"
-msgstr ""
+msgstr "A_nchura:"
 
 #: gnu/packages/tex.scm:3596
 msgid ""
@@ -16200,7 +16507,7 @@ msgstr ""
 
 #: gnu/packages/tex.scm:4059
 msgid "Wrapper for LaTeX and friends"
-msgstr ""
+msgstr "Recubridor para LaTeX y similares"
 
 #: gnu/packages/tex.scm:4061
 msgid ""
@@ -16214,7 +16521,7 @@ msgstr ""
 
 #: gnu/packages/tex.scm:4103
 msgid "LaTeX editor"
-msgstr ""
+msgstr "Editor LaTeX"
 
 #: gnu/packages/tex.scm:4104
 msgid ""
@@ -16235,7 +16542,7 @@ msgstr ""
 
 #: gnu/packages/texinfo.scm:56
 msgid "The GNU documentation format"
-msgstr ""
+msgstr "El formato de documentación GNU"
 
 #: gnu/packages/texinfo.scm:58
 msgid ""
@@ -16253,7 +16560,7 @@ msgstr ""
 
 #: gnu/packages/texinfo.scm:169
 msgid "Convert Texinfo to HTML"
-msgstr ""
+msgstr "Convierte Texinfo a HTML"
 
 #: gnu/packages/texinfo.scm:171
 msgid ""
@@ -16282,7 +16589,7 @@ msgstr ""
 
 #: gnu/packages/textutils.scm:111
 msgid "Text encoding converter"
-msgstr ""
+msgstr "Texto codificando conversor"
 
 #: gnu/packages/textutils.scm:112
 msgid ""
@@ -16318,7 +16625,7 @@ msgstr ""
 
 #: gnu/packages/textutils.scm:220
 msgid "Gordon's text utils library"
-msgstr ""
+msgstr "Biblioteca de utilidades textuales de Gordon"
 
 #: gnu/packages/textutils.scm:222
 msgid ""
@@ -16346,7 +16653,7 @@ msgstr ""
 
 #: gnu/packages/textutils.scm:317
 msgid "C/C++ configuration file library"
-msgstr ""
+msgstr "Biblioteca de fichero de configuración C/C++"
 
 #: gnu/packages/textutils.scm:319
 msgid ""
@@ -16371,7 +16678,7 @@ msgstr ""
 
 #: gnu/packages/textutils.scm:362
 msgid "Regular expression library"
-msgstr ""
+msgstr "Biblioteca de expresión regular"
 
 #: gnu/packages/textutils.scm:363
 msgid ""
@@ -16382,7 +16689,7 @@ msgstr ""
 
 #: gnu/packages/textutils.scm:396
 msgid "Microsoft Word document reader"
-msgstr ""
+msgstr "Lector de documento Word Microsoft"
 
 #: gnu/packages/textutils.scm:397
 msgid ""
@@ -16438,7 +16745,7 @@ msgstr ""
 
 #: gnu/packages/textutils.scm:590
 msgid "Configuration file parser library"
-msgstr ""
+msgstr "Biblioteca interpreta fichero de configuración"
 
 #: gnu/packages/textutils.scm:592
 msgid "C library for creating and parsing configuration files."
@@ -16480,7 +16787,7 @@ msgstr ""
 
 #: gnu/packages/version-control.scm:354
 msgid "Distributed version control system"
-msgstr ""
+msgstr "Sistema de control de versión distribuída"
 
 #: gnu/packages/version-control.scm:356
 msgid ""
@@ -16516,8 +16823,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/version-control.scm:476
+#, fuzzy
 msgid "Whole remote repository encryption"
-msgstr ""
+msgstr "Listado referencial dentro de un repositorio remoto."
 
 #: gnu/packages/version-control.scm:477
 msgid ""
@@ -16540,7 +16848,7 @@ msgstr ""
 
 #: gnu/packages/version-control.scm:556
 msgid "Web frontend for git repositories"
-msgstr ""
+msgstr "Web frontal para repositorios git"
 
 #: gnu/packages/version-control.scm:558
 msgid ""
@@ -16588,7 +16896,7 @@ msgstr ""
 
 #: gnu/packages/version-control.scm:713
 msgid "Stacked Git"
-msgstr ""
+msgstr "Apilados Git"
 
 #: gnu/packages/version-control.scm:715
 msgid ""
@@ -16625,7 +16933,7 @@ msgstr ""
 
 #: gnu/packages/version-control.scm:851
 msgid "Git access control layer"
-msgstr ""
+msgstr "Placa de control de acceso Git"
 
 #: gnu/packages/version-control.scm:853
 msgid ""
@@ -16635,7 +16943,7 @@ msgstr ""
 
 #: gnu/packages/version-control.scm:877
 msgid "Decentralized version control system"
-msgstr ""
+msgstr "Sistema de control de versión descentralizado"
 
 #: gnu/packages/version-control.scm:879
 msgid ""
@@ -16672,7 +16980,7 @@ msgstr ""
 
 #: gnu/packages/version-control.scm:999
 msgid "Revision control system"
-msgstr ""
+msgstr "Sistema de control de revisión"
 
 #: gnu/packages/version-control.scm:1001
 msgid ""
@@ -16763,7 +17071,7 @@ msgstr ""
 
 #: gnu/packages/version-control.scm:1272
 msgid "Project change supervisor"
-msgstr ""
+msgstr "Supervisor de modificación de proyecto"
 
 #: gnu/packages/version-control.scm:1273
 msgid ""
@@ -16814,7 +17122,7 @@ msgstr ""
 
 #: gnu/packages/version-control.scm:1417
 msgid "Multiple repository management tool"
-msgstr ""
+msgstr "Herramienta gestora de múltiples repositorios"
 
 #: gnu/packages/version-control.scm:1419
 msgid ""
@@ -16836,7 +17144,7 @@ msgstr ""
 
 #: gnu/packages/version-control.scm:1503
 msgid "Software configuration management system"
-msgstr ""
+msgstr "Sistema de gestión de configuración de software"
 
 #: gnu/packages/version-control.scm:1505
 msgid ""
@@ -16857,7 +17165,7 @@ msgstr ""
 
 #: gnu/packages/version-control.scm:1622
 msgid "Distributed Revision Control System"
-msgstr ""
+msgstr "Sistema de Control de Revisión Distribuido"
 
 #: gnu/packages/version-control.scm:1624
 msgid ""
@@ -16889,7 +17197,7 @@ msgstr ""
 
 #: gnu/packages/virtualization.scm:177
 msgid "Machine emulator and virtualizer"
-msgstr ""
+msgstr "Máquina emuladora y virtualizadora"
 
 #: gnu/packages/virtualization.scm:179
 msgid ""
@@ -16911,8 +17219,9 @@ msgid "Machine emulator and virtualizer (without GUI)"
 msgstr ""
 
 #: gnu/packages/virtualization.scm:268
+#, fuzzy
 msgid "Operating system information database"
-msgstr ""
+msgstr "inicializando sistema operativo bajo '~a'...~%"
 
 #: gnu/packages/virtualization.scm:269
 msgid ""
@@ -16926,7 +17235,7 @@ msgstr ""
 
 #: gnu/packages/virtualization.scm:317
 msgid "Linux container tools"
-msgstr ""
+msgstr "Herramientas contenedoras Linux"
 
 #: gnu/packages/virtualization.scm:320
 msgid ""
@@ -16937,7 +17246,7 @@ msgstr ""
 
 #: gnu/packages/virtualization.scm:404
 msgid "Simple API for virtualization"
-msgstr ""
+msgstr "API simple para virtualización"
 
 #: gnu/packages/virtualization.scm:405
 msgid ""
@@ -16966,7 +17275,7 @@ msgstr ""
 
 #: gnu/packages/virtualization.scm:489
 msgid "Python bindings to libvirt"
-msgstr ""
+msgstr "Enlazando Python para libvirt"
 
 #: gnu/packages/virtualization.scm:490
 msgid ""
@@ -16976,7 +17285,7 @@ msgstr ""
 
 #: gnu/packages/virtualization.scm:585
 msgid "Manage virtual machines"
-msgstr ""
+msgstr "Gestionar máquinas virtuales"
 
 #: gnu/packages/virtualization.scm:587
 msgid ""
@@ -17012,7 +17321,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:136
 msgid "Featureful HTTP server"
-msgstr ""
+msgstr "Característica completa servidor HTTP"
 
 #: gnu/packages/web.scm:138
 msgid ""
@@ -17026,7 +17335,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:226
 msgid "HTTP and reverse proxy server"
-msgstr ""
+msgstr "HTTP y servidor proxy reverso"
 
 #: gnu/packages/web.scm:228
 msgid ""
@@ -17047,8 +17356,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:328
+#, fuzzy
 msgid "Documentation for nginx web server"
-msgstr ""
+msgstr "Especifica la URL completa del Servidor Web MantisBT."
 
 #: gnu/packages/web.scm:330
 msgid "This package provides HTML documentation for the nginx web server."
@@ -17077,8 +17387,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:422
+#, fuzzy
 msgid "PSGI/Plack web server"
-msgstr ""
+msgstr "Especifica la URL completa del Servidor Web MantisBT."
 
 #: gnu/packages/web.scm:423
 msgid ""
@@ -17088,8 +17399,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:455
+#, fuzzy
 msgid "Java Web Start"
-msgstr ""
+msgstr "escribir conjunto dependiente java(...)"
 
 #: gnu/packages/web.scm:457
 msgid ""
@@ -17100,7 +17412,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:478
 msgid "JSON C library"
-msgstr ""
+msgstr "Biblioteca C JSON"
 
 #: gnu/packages/web.scm:480
 msgid ""
@@ -17110,7 +17422,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:512
 msgid "JSON implementation in C"
-msgstr ""
+msgstr "Implementación JSON en C"
 
 #: gnu/packages/web.scm:514
 msgid ""
@@ -17155,7 +17467,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:692
 msgid "C library for parsing JSON"
-msgstr ""
+msgstr "Biblioteca en C para interpretar JSON"
 
 #: gnu/packages/web.scm:694
 msgid ""
@@ -17165,7 +17477,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:724
 msgid "WebSockets library written in C"
-msgstr ""
+msgstr "Biblioteca WebSockets escrita en C"
 
 #: gnu/packages/web.scm:726
 msgid ""
@@ -17198,7 +17510,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:801
 msgid "HTML validator and tidier"
-msgstr ""
+msgstr "Validador y tipado HTML"
 
 #: gnu/packages/web.scm:802
 msgid ""
@@ -17313,7 +17625,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:1202
 msgid "CSS pre-processor"
-msgstr ""
+msgstr "CSS pre-procesador"
 
 #: gnu/packages/web.scm:1203
 msgid ""
@@ -17333,7 +17645,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:1261
 msgid "SASL authentication framework"
-msgstr ""
+msgstr "Marco de trabajo para autenticación SASL"
 
 #: gnu/packages/web.scm:1262
 msgid "Authen::SASL provides an SASL authentication framework."
@@ -17385,7 +17697,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:1423
 msgid "Catalyst Development Tools"
-msgstr ""
+msgstr "Herramientas Desarrollo Catalyst"
 
 #: gnu/packages/web.scm:1424
 msgid ""
@@ -17399,7 +17711,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:1453
 msgid "Regex DispatchType for Catalyst"
-msgstr ""
+msgstr "Exreg DispatchType para Catalyst"
 
 #: gnu/packages/web.scm:1454
 msgid ""
@@ -17536,8 +17848,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:1863
+#, fuzzy
 msgid "The Catalyst Framework Runtime"
-msgstr ""
+msgstr "configuración de tiempo de ejecución"
 
 #: gnu/packages/web.scm:1864
 msgid ""
@@ -17560,8 +17873,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:1923
+#, fuzzy
 msgid "Download data in many formats"
-msgstr ""
+msgstr "Demasiados sufijos de descarga\n"
 
 #: gnu/packages/web.scm:1924
 msgid ""
@@ -17572,7 +17886,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:1950
 msgid "Catalyst JSON view"
-msgstr ""
+msgstr "Vista catalyst JSON"
 
 #: gnu/packages/web.scm:1951
 msgid ""
@@ -17582,7 +17896,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:1977
 msgid "Template View Class"
-msgstr ""
+msgstr "Plantilla Vista Clase"
 
 #: gnu/packages/web.scm:1978
 msgid ""
@@ -17659,7 +17973,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:2160
 msgid "Build structures from CGI data"
-msgstr ""
+msgstr "Construye estructuras desde datos CGI"
 
 #: gnu/packages/web.scm:2161
 msgid ""
@@ -17669,7 +17983,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:2184
 msgid "Date conversion routines"
-msgstr ""
+msgstr "Fecha del conversión de rutinas"
 
 #: gnu/packages/web.scm:2185
 msgid ""
@@ -17688,8 +18002,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:2224
+#, fuzzy
 msgid "Perl locale encoding determination"
-msgstr ""
+msgstr "Localización actual emplea codificación %s.\n"
 
 #: gnu/packages/web.scm:2226
 msgid ""
@@ -17715,8 +18030,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:2283
+#, fuzzy
 msgid "Perl directory listing parser"
-msgstr ""
+msgstr "%s: no se muestra el directorio ya mostrado"
 
 #: gnu/packages/web.scm:2285
 msgid ""
@@ -17726,7 +18042,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:2317
 msgid "Stock and mutual fund quotes"
-msgstr ""
+msgstr "Acciones y fondos de inversión"
 
 #: gnu/packages/web.scm:2319
 msgid ""
@@ -17826,7 +18142,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:2556
 msgid "HTML-like templates"
-msgstr ""
+msgstr "Plantillas parecidas a HTML"
 
 #: gnu/packages/web.scm:2558
 msgid ""
@@ -17841,7 +18157,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:2586
 msgid "HTTP Body Parser"
-msgstr ""
+msgstr "Interpretador Cuerpo HTTP"
 
 #: gnu/packages/web.scm:2587
 msgid ""
@@ -17883,8 +18199,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:2680
+#, fuzzy
 msgid "Perl date conversion routines"
-msgstr ""
+msgstr "Fecha del cambio de monedas"
 
 #: gnu/packages/web.scm:2682
 msgid ""
@@ -17916,7 +18233,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:2754
 msgid "Parse HTTP/1.1 requests"
-msgstr ""
+msgstr "Interpretar peticiones HTTP/1.1"
 
 #: gnu/packages/web.scm:2755
 msgid ""
@@ -17928,7 +18245,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:2777
 msgid "Fast HTTP request parser"
-msgstr ""
+msgstr "Intérprete de peticiones HTTP rápida"
 
 #: gnu/packages/web.scm:2778
 msgid ""
@@ -17948,7 +18265,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:2833
 msgid "Lightweight HTTP server"
-msgstr ""
+msgstr "Servidor HTTP ligero"
 
 #: gnu/packages/web.scm:2834
 msgid ""
@@ -17959,7 +18276,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:2859
 msgid "HTTP/1.1 client"
-msgstr ""
+msgstr "HTTP/1.1 cliente"
 
 #: gnu/packages/web.scm:2860
 msgid ""
@@ -18003,8 +18320,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:2960
+#, fuzzy
 msgid "Perl modules for the WWW"
-msgstr ""
+msgstr "scripts internos empotrados en perl."
 
 #: gnu/packages/web.scm:2962
 msgid ""
@@ -18104,12 +18422,14 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:3180
+#, fuzzy
 msgid "SSL support for Net::SMTP"
-msgstr ""
+msgstr "El soporte de SSL no se compiló.\n"
 
 #: gnu/packages/web.scm:3181
+#, fuzzy
 msgid "SSL support for Net::SMTP."
-msgstr ""
+msgstr "El soporte de SSL no se compiló.\n"
 
 #: gnu/packages/web.scm:3215
 msgid "Perl Superglue for Web frameworks and servers (PSGI toolkit)"
@@ -18179,7 +18499,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:3360
 msgid "Testing TCP programs"
-msgstr ""
+msgstr "Probando programa TCP"
 
 #: gnu/packages/web.scm:3361
 msgid "Test::TCP is test utilities for TCP/IP programs."
@@ -18242,8 +18562,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:3522
+#, fuzzy
 msgid "Find URIs in arbitrary text"
-msgstr ""
+msgstr "%s: no se puede encontrar la sección .text en %s\n"
 
 #: gnu/packages/web.scm:3523
 msgid ""
@@ -18318,7 +18639,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:3723
 msgid "Parse feeds in Python"
-msgstr ""
+msgstr "Interpreta novedades para Python"
 
 #: gnu/packages/web.scm:3725
 msgid ""
@@ -18367,7 +18688,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:3835
 msgid "R tools for HTML"
-msgstr ""
+msgstr "Herramientas R para HTML"
 
 #: gnu/packages/web.scm:3837
 msgid "This package provides tools for HTML generation and output in R."
@@ -18375,7 +18696,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:3856
 msgid "HTML Widgets for R"
-msgstr ""
+msgstr "Cubiertas HTML para R"
 
 #: gnu/packages/web.scm:3858
 msgid ""
@@ -18401,7 +18722,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:3922
 msgid "HTTP client for R"
-msgstr ""
+msgstr "Cliente HTTP para R"
 
 #: gnu/packages/web.scm:3924
 msgid ""
@@ -18415,8 +18736,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:3946
+#, fuzzy
 msgid "Output R objects in HTML format"
-msgstr ""
+msgstr "el formato de salida binario no es compatible con -shared o -pie o -r"
 
 #: gnu/packages/web.scm:3948
 msgid ""
@@ -18426,7 +18748,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:3965
 msgid "JSON library for R"
-msgstr ""
+msgstr "Biblioteca JSON para R"
 
 #: gnu/packages/web.scm:3967
 msgid ""
@@ -18436,7 +18758,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:3996
 msgid "HTML5 parsing library"
-msgstr ""
+msgstr "Biblioteca interpretando HTML5"
 
 #: gnu/packages/web.scm:3998
 msgid ""
@@ -18445,8 +18767,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:4069
+#, fuzzy
 msgid "Application container server"
-msgstr ""
+msgstr "Aplicación\n"
 
 #: gnu/packages/web.scm:4071
 msgid ""
@@ -18456,8 +18779,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:4101
+#, fuzzy
 msgid "Command-line JSON processor"
-msgstr ""
+msgstr "línea de comando demasiado corta"
 
 #: gnu/packages/web.scm:4102
 msgid ""
@@ -18481,8 +18805,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:4178
+#, fuzzy
 msgid "Single file web server"
-msgstr ""
+msgstr "Especifica la URL completa del Servidor Web MantisBT."
 
 #: gnu/packages/web.scm:4179
 msgid ""
@@ -18503,7 +18828,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4242
 msgid "Parser building library"
-msgstr ""
+msgstr "Interpretador construyendo biblioteca"
 
 #: gnu/packages/web.scm:4244
 msgid ""
@@ -18513,7 +18838,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4272
 msgid "HTML5 compliant parsing library"
-msgstr ""
+msgstr "Biblioteca interpretando HTML5 completo"
 
 #: gnu/packages/web.scm:4274
 msgid ""
@@ -18535,7 +18860,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4375
 msgid "String internment library"
-msgstr ""
+msgstr "Biblioteca de cadena interna"
 
 #: gnu/packages/web.scm:4377
 msgid ""
@@ -18556,7 +18881,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4440
 msgid "Implementation of the W3C DOM"
-msgstr ""
+msgstr "Implementación de DOM W3C"
 
 #: gnu/packages/web.scm:4442
 msgid ""
@@ -18566,7 +18891,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4469
 msgid "Library for parsing SVG files"
-msgstr ""
+msgstr "Biblioteca para interpretar ficheros SVG"
 
 #: gnu/packages/web.scm:4471
 msgid ""
@@ -18578,7 +18903,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4494
 msgid "Decoding library for BMP and ICO files"
-msgstr ""
+msgstr "Descodificando biblioteca para ficheros BMP e ICO"
 
 #: gnu/packages/web.scm:4496
 msgid ""
@@ -18588,7 +18913,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4517
 msgid "Decoding library for GIF files"
-msgstr ""
+msgstr "Biblioteca descodificante para ficheros GIF"
 
 #: gnu/packages/web.scm:4519
 msgid ""
@@ -18598,7 +18923,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4540
 msgid "Utility library for NetSurf"
-msgstr ""
+msgstr "Biblioteca utilitaria para NetSurf"
 
 #: gnu/packages/web.scm:4542
 msgid ""
@@ -18628,7 +18953,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4704
 msgid "Web browser"
-msgstr ""
+msgstr "Explorador web"
 
 #: gnu/packages/web.scm:4706
 msgid ""
@@ -18649,8 +18974,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:4771
+#, fuzzy
 msgid "Simple static web server"
-msgstr ""
+msgstr "Especifica la URL completa del Servidor Web MantisBT."
 
 #: gnu/packages/web.scm:4772
 msgid ""
@@ -18699,7 +19025,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4890
 msgid "Internet services daemon"
-msgstr ""
+msgstr "Demonio de servicios de Internet"
 
 #: gnu/packages/web.scm:4891
 msgid ""
@@ -18727,7 +19053,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:4993
 msgid "Webserver with focus on security"
-msgstr ""
+msgstr "Servidor web centrado en seguridad"
 
 #: gnu/packages/web.scm:4995
 msgid ""
@@ -18738,7 +19064,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:5019
 msgid "HTTP request and response service"
-msgstr ""
+msgstr "Petición HTTP y respuesta de servicio"
 
 #: gnu/packages/web.scm:5020
 msgid ""
@@ -18761,7 +19087,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:5081
 msgid "HTTP request/response parser for C"
-msgstr ""
+msgstr "Petición/respuestas HTTP interpretadas para C"
 
 #: gnu/packages/web.scm:5082
 msgid ""
@@ -18784,8 +19110,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:5153
+#, fuzzy
 msgid "Output JSON from a shell"
-msgstr ""
+msgstr "Salida desde servidor:\n"
 
 #: gnu/packages/web.scm:5154
 msgid ""
@@ -18795,8 +19122,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:5203
+#, fuzzy
 msgid "Command-line interface to archive.org"
-msgstr ""
+msgstr "línea de órdenes"
 
 #: gnu/packages/web.scm:5204
 msgid ""
@@ -18839,8 +19167,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:5412
+#, fuzzy
 msgid "Web server interface for R"
-msgstr ""
+msgstr "  -R, --remove       Utiliza control interfaz remoto\n"
 
 #: gnu/packages/web.scm:5414
 msgid ""
@@ -18876,8 +19205,9 @@ msgid ""
 msgstr ""
 
 #: gnu/packages/web.scm:5529
+#, fuzzy
 msgid "Command-line WebDAV client"
-msgstr ""
+msgstr "Respuesta inesperada a orrden de CLIENTE: `%s'"
 
 #: gnu/packages/web.scm:5531
 msgid ""
@@ -18911,7 +19241,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:5651
 msgid "Helper classes for jetty tests"
-msgstr ""
+msgstr "Clases ayudante para pruebas Jetty"
 
 #: gnu/packages/web.scm:5652
 msgid ""
@@ -18921,7 +19251,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:5714
 msgid "Utility classes for Jetty"
-msgstr ""
+msgstr "Clases utilidad para Jetty"
 
 #: gnu/packages/web.scm:5715
 msgid ""
@@ -18932,7 +19262,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:5786
 msgid "Jetty :: IO Utility"
-msgstr ""
+msgstr "Utilidad Jetty :: E/S"
 
 #: gnu/packages/web.scm:5787
 msgid ""
@@ -18943,7 +19273,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:5830
 msgid "Jetty :: Http Utility"
-msgstr ""
+msgstr "Utilidad Jetty :: Http"
 
 #: gnu/packages/web.scm:5831
 msgid ""
@@ -18954,7 +19284,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:5864
 msgid "Jetty :: JMX Management"
-msgstr ""
+msgstr "Gestión Jetty :: JMX"
 
 #: gnu/packages/web.scm:5865
 msgid ""
@@ -18977,7 +19307,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:5995
 msgid "Jetty security infrastructure"
-msgstr ""
+msgstr "Infraestructura segura Jetty"
 
 #: gnu/packages/web.scm:5996
 msgid ""
@@ -18989,7 +19319,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:6039
 msgid "Jetty Servlet Container"
-msgstr ""
+msgstr "Contenedor Servicios Jetty"
 
 #: gnu/packages/web.scm:6040
 msgid ""
@@ -19001,7 +19331,7 @@ msgstr ""
 
 #: gnu/packages/web.scm:6087
 msgid "Validate HTML"
-msgstr ""
+msgstr "Validar HTML"
 
 #: gnu/packages/web.scm:6088
 msgid ""
@@ -19091,7 +19421,7 @@ msgstr ""
 
 #: gnu/packages/xiph.scm:176
 msgid "Speex processing library"
-msgstr ""
+msgstr "Biblioteca de procesamiento Speex"
 
 #: gnu/packages/xiph.scm:178
 msgid ""
@@ -19160,7 +19490,7 @@ msgstr ""
 
 #: gnu/packages/xiph.scm:317
 msgid "Ogg vorbis tools"
-msgstr ""
+msgstr "Herramientas Ogg Vorbis"
 
 #: gnu/packages/xiph.scm:319
 msgid ""
@@ -19177,7 +19507,7 @@ msgstr ""
 
 #: gnu/packages/xiph.scm:343 gnu/packages/xiph.scm:406
 msgid "Versatile audio codec"
-msgstr ""
+msgstr "Código de sonido versátil"
 
 #: gnu/packages/xiph.scm:345
 msgid ""
@@ -19208,7 +19538,7 @@ msgstr ""
 
 #: gnu/packages/xiph.scm:438
 msgid "Streaming media server"
-msgstr ""
+msgstr "Medio por flujo del servidor"
 
 #: gnu/packages/xiph.scm:439
 msgid ""

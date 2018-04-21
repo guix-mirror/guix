@@ -303,7 +303,7 @@ This package contains the binary.")
 (define-public mpg123
   (package
     (name "mpg123")
-    (version "1.25.8")
+    (version "1.25.10")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "mirror://sourceforge/mpg123/mpg123/"
@@ -313,7 +313,7 @@ This package contains the binary.")
                           version ".tar.bz2")))
               (sha256
                (base32
-                "16s9z1xc5kv1p90g42vsr9m4gq3dwjsmrj873x4i8601mvpm3nkr"))))
+                "08vhp8lz7d9ybhxcmkq3adwfryhivfvp0745k4r9kgz4wap3f4vc"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-default-audio=pulse")))
     (native-inputs `(("pkg-config" ,pkg-config)))

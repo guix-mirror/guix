@@ -13,12 +13,13 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,8 +44,10 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix utils) ;substitute-keyword-arguments for perl-5.26.2
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config))
@@ -59,6 +62,7 @@
   (package
     (name "perl")
     (version "5.26.1")
+    (replacement perl/fixed)
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/src/5.0/perl-"
@@ -155,6 +159,39 @@
 24 years of development.")
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
+
+;; Fixes CVE-2018-6797, CVE-2018-6798, and CVE-2018-6913.
+;; See <https://metacpan.org/changes/release/SHAY/perl-5.26.2>.
+(define-public perl-5.26.2
+  (package
+    (inherit perl)
+    (version "5.26.2")
+    (source (origin
+              (inherit (package-source perl))
+              (uri (string-append "mirror://cpan/src/5.0/perl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))))
+
+;; When grafting perl, complications arise when the replacement perl has a
+;; different version number than the original.  So, here we create a version
+;; of perl-5.26.2 that thinks it is version 5.26.1.  See
+;; <https://bugs.gnu.org/31210> and <https://bugs.gnu.org/31216>.
+(define perl/fixed
+  (package
+    (inherit perl-5.26.2)
+    (version "5.26.1")
+    (arguments
+     (substitute-keyword-arguments (package-arguments perl-5.26.2)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'revert-perl-subversion
+             (lambda _
+               (substitute* "patchlevel.h"
+                 (("^#define PERL_SUBVERSION	2")
+                  "#define PERL_SUBVERSION	1"))
+               #t))))))))
 
 (define-public perl-algorithm-c3
   (package
@@ -3502,6 +3539,33 @@ provided base directory and can return files (and/or directories if desired)
 matching a regular expression.")
     (home-page "http://search.cpan.org/~dopacki/File-List//")))
 
+(define-public perl-file-readbackwards
+  (package
+    (name "perl-file-readbackwards")
+    (version "1.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/U/UR/URI/File-ReadBackwards-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0vldy5q0zyf1cwzwb1gv14f8vg2f21bw96b8wvkw6z2hhypn3cl2"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-ReadBackwards/")
+    (synopsis "Read a file backwards by lines")
+    (description "This module reads a file backwards line by line. It is
+simple to use, memory efficient and fast.  It supports both an object and a
+tied handle interface.
+
+It is intended for processing log and other similar text files which typically
+have their newest entries appended to them.  By default files are assumed to
+be plain text and have a line ending appropriate to the OS.  But you can set
+the input record separator string on a per file basis.")
+    (license perl-license)))
+
 (define-public perl-file-remove
   (package
     (name "perl-file-remove")
@@ -4056,6 +4120,32 @@ multiple programming languages and each language has its own support module.
 This document describes how to use Inline with the C programming language.
 It also goes a bit into Perl C internals.")
     (license (package-license perl))))
+
+(define-public perl-io-all
+  (package
+    (name "perl-io-all")
+    (version "0.87")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/F/FR/FREW/IO-All-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0nsd9knlbd7if2v6zwj4q978axq0w5hk8ymp61z14a821hjivqjl"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-mimeinfo" ,perl-file-mimeinfo)
+       ("perl-file-readbackwards" ,perl-file-readbackwards)))
+    (home-page "http://search.cpan.org/dist/IO-All/")
+    (synopsis "@code{IO::All} to Larry Wall!")
+    (description "@code{IO::All} combines all of the best Perl IO modules into
+a single nifty object oriented interface to greatly simplify your everyday
+Perl IO idioms.  It exports a single function called io, which returns a new
+@code{IO::All} object.  And that object can do it all!")
+    (license perl-license)))
 
 (define-public perl-io-captureoutput
   (package

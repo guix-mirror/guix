@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +32,7 @@
 (define-public xfig
   (package
     (name "xfig")
-    (version "3.2.6a")
+    (version "3.2.7")
     (source
      (origin
        (method url-fetch)
@@ -40,7 +40,7 @@
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0z1636w27hvgjpq98z40k8h535b4x2xr2whkvr7bibaa89fynym8"))))
+         "0anlrr68knr401j7z76k6hx33w16l02dzb7szdkrc4rb2gj1rs2z"))))
     (build-system gnu-build-system)
     (native-inputs
      ;; For tests.

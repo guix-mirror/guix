@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -244,7 +245,8 @@
                        ("gettext" ,gettext-minimal)
                        ("texinfo" ,texinfo)
                        ("graphviz" ,graphviz)
-                       ("help2man" ,help2man)))
+                       ("help2man" ,help2man)
+                       ("po4a" ,po4a)))
       (inputs
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)

@@ -664,48 +664,46 @@ library.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.1")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mcron/mcron-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1f547sqqfbp0k02sqk4ivwx8y9mx8l0rrx1c9rrj033av073h6xq"))))
+                "1i9mcp6r6my61zfiydsm3n6my41mwvl7dfala4q29qx0zn1ynlm4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-before 'check 'set-timezone
                     (lambda* (#:key inputs #:allow-other-keys)
-                      ;; 'tests/schedule.sh' expects to be running in UTC+1.
+                      ;; 'tests/job-specifier.scm' expects to be running in
+                      ;; UTC-2 or something.
+                      ;; FIXME: This issue is being investigated upstream, for
+                      ;; now we'll just skip the tests (see below):
+                      ;; <https://lists.gnu.org/archive/html/bug-mcron/2018-04/msg00005.html>.
                       (let ((tzdata (assoc-ref inputs "tzdata")))
                         (setenv "TZDIR"
                                 (string-append tzdata
                                                "/share/zoneinfo"))
-                        (setenv "TZ" "UTC+1")
+                        (setenv "TZ" "UTC-2")
                         #t)))
-                  (add-before 'check 'disable-schedule-test
+                  (add-before 'check 'adjust-tests
                     (lambda _
-                      ;; But!  As it turns out, that test additionally relies
-                      ;; on non-deterministic behavior; see
-                      ;; <https://lists.gnu.org/archive/html/bug-mcron/2018-03/msg00001.html>.
-                      (substitute* "tests/schedule.sh"
-                        (("mkdir cron") "exit 77\n"))
-                      #t))
-                  (add-after 'install 'wrap-programs
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; By default mcron doesn't have its own modules in the
-                      ;; search path, so the 'mcron' command fails to start.
-                      (let* ((output  (assoc-ref outputs "out"))
-                             (modules (string-append output
-                                                     "/share/guile/site/2.2"))
-                             (go      (string-append output
-                                                     "/lib/guile/2.2/site-ccache")))
-                        (wrap-program (string-append output "/bin/mcron")
-                          `("GUILE_LOAD_PATH" ":" prefix
-                            (,modules))
-                          `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,go)))
-                        #t))))))
+                      (substitute* "tests/job-specifier.scm"
+                        ;; (getpw) fails with "entry not found" in the build
+                        ;; environment, so pass an argument.
+                        (("\\(getpw\\)")
+                         "(getpwnam (getuid))")
+                        ;; The build environment lacks an entry for root in
+                        ;; /etc/passwd.
+                        (("\\(getpw 0\\)")
+                         "(getpwnam \"nobody\")")
+
+                        ;; FIXME: Skip the 4 faulty tests (see above).
+                        (("\\(test-equal \"next-year\"" all)
+                         (string-append "(test-skip 4)\n" all)))
+                      #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("tzdata" ,tzdata-for-tests)))
     (inputs `(("ed" ,ed) ("which" ,which) ("guile" ,guile-2.2)))

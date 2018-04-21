@@ -398,7 +398,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.6.2")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mgba-emu/mgba/archive/"
@@ -406,7 +406,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0x7a9i1jdic3haf5fkd7x16vwqpf4jqdiw56a5fc4gx4jhn9yhi2"))
+                "16hgs6r5iym3lp2cjcnv9955333976yc5sgy2kkxlsi005n91j1m"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -884,7 +884,8 @@ Rice Video plugin.")
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1x7wsjs5gx2iwx20p4cjcbf696zsjlh31qxmghwv0ifrq8x58s1b"))))
+        (base32 "1x7wsjs5gx2iwx20p4cjcbf696zsjlh31qxmghwv0ifrq8x58s1b"))
+       (patches (search-patches "mupen64plus-video-z64-glew-correct-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -994,7 +995,7 @@ towards a working Mupen64Plus for casual users.")
 (define-public nestopia-ue
   (package
     (name "nestopia-ue")
-    (version "1.47")
+    (version "1.48")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1003,43 +1004,35 @@ towards a working Mupen64Plus for casual users.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1dzrrjmvyqks64q5l5pfly80jb6qcsbj5b3dm40fijd5xnpbapci"))
+                "184y05z4k4a4m4022niy625kan0rklh8gcxyynxli1fss2sjjrpv"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; We don't need libretro for the GNU/Linux build.
                   (delete-file-recursively "libretro")
-                  ;; Use system zlib.
-                  (delete-file-recursively "source/zlib")
-                  (substitute* "source/core/NstZlib.cpp"
-                    (("#include \"../zlib/zlib.h\"") "#include <zlib.h>"))
                   #t))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("ao" ,ao)
-       ("glu" ,glu)
        ("gtk+" ,gtk+)
        ("libarchive" ,libarchive)
-       ("mesa" ,mesa)
+       ("libepoxy" ,libepoxy)
        ("sdl2" ,sdl2)
        ("zlib" ,zlib)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         ;; The Nestopia build system consists solely of a Makefile.
-         (delete 'configure)
-         (add-before 'build 'remove-xdg-desktop-menu-call
-           (lambda _
-             (substitute* "Makefile"
-               (("xdg-desktop-menu install .*") ""))))
-         (add-before 'build 'remove-gdkwayland-include
-           (lambda _
-             (substitute* "source/unix/gtkui/gtkui.h"
-               (("#include <gdk/gdkwayland\\.h>") "")))))
-       #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list "CC=gcc" "CXX=g++" (string-append "PREFIX=" out)))
+         ;; This fixes the file chooser crash that happens with GTK 3.
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (nestopia (string-append out "/bin/nestopia"))
+                    (gtk (assoc-ref inputs "gtk+"))
+                    (gtk-share (string-append gtk "/share")))
+               (wrap-program nestopia
+                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))))))
        ;; There are no tests.
        #:tests? #f))
     (home-page "http://0ldsk00l.ca/nestopia/")

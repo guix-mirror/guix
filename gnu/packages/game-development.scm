@@ -298,7 +298,7 @@ files) into @file{.grf} and/or @file{.nfo} files.")
     (synopsis "2D game engine for Python")
     (description
      "The SGE Game Engine (\"SGE\", pronounced like \"Sage\") is a
-general-purpose 2D game engine.  It takes care of several details fro you so
+general-purpose 2D game engine.  It takes care of several details for you so
 you can focus on the game itself.  This makes more rapid game development
 possible, and it also makes the SGE easy to learn.")
     (license license:lgpl3+)))

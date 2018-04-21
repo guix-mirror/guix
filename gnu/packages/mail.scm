@@ -259,14 +259,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.9.4")
+    (version "1.9.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "1pxmw5yyizb9bqbai6lihv6zxmw0znjfb60zaldwh6hc6lkbzlgl"))
+               "0lsp72lm3cw490x7lhzia7h8f591bab2mr7qpscaj22fmrj7wqdz"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -475,7 +475,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.1.5")
+    (version "7.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -483,7 +483,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1qa3km3s3yhmpgzh76dnzwn22aa8fh39814zgnlyhs07l23ffa4f"))))
+                "1i7pzm1vrj98jcyn1ygsg1yp0gqlsssnc25451icvivysvdwdj5n"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))

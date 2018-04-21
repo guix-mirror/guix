@@ -84,8 +84,7 @@
                       #:key source
                       (tests? #f)
                       (parallel-tests? #t)
-                      (test-target "test")
-                      (configure-flags ''())
+                      (test-command ''("make" "check"))
                       (phases '(@ (guix build emacs-build-system)
                                   %standard-phases))
                       (outputs '("out"))
@@ -110,9 +109,8 @@
                                  source)
                                 (source
                                  source))
-                    #:configure-flags ,configure-flags
                     #:system ,system
-                    #:test-target ,test-target
+                    #:test-command ,test-command
                     #:tests? ,tests?
                     #:phases ,phases
                     #:outputs %outputs

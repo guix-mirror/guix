@@ -90,6 +90,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages)
@@ -1073,7 +1074,7 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.8.19")
+    (version "1.10.0")
     (source (origin
              (method url-fetch)
              (uri
@@ -1084,7 +1085,7 @@ following features:
                                 "subversion-" version ".tar.bz2")))
              (sha256
               (base32
-               "1gp6426gkdza6ni2whgifjcmjb4nq34ljy07yxkrhlarvfq6ks2n"))))
+               "115mlvmf663w16mc3xyypnaizq401vbypc56hl2ylzc3pcx3zwic"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1100,6 +1101,11 @@ following features:
                (substitute* "libtool"
                  (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls")))
                #t)))
+         (add-before 'build 'patch-test-sh
+           (lambda _
+             (substitute* "subversion/tests/libsvn_repos/repos-test.c"
+               (("#!/bin/sh") (string-append "#!" (which "sh"))))
+             #t))
          (add-after 'install 'install-perl-bindings
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Follow the instructions from 'subversion/bindings/swig/INSTALL'.
@@ -1126,10 +1132,12 @@ following features:
     (inputs
       `(("apr" ,apr)
         ("apr-util" ,apr-util)
+        ("lz4" ,lz4)
         ("serf" ,serf)
         ("perl" ,perl)
-        ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+        ("python" ,python-wrapper)
         ("sqlite" ,sqlite)
+        ("utf8proc" ,utf8proc)
         ("zlib" ,zlib)))
     (home-page "https://subversion.apache.org/")
     (synopsis "Revision control system")

@@ -445,3 +445,35 @@ ME as far as possible (it only edits ME firmware image files).")
 
     ;; This is an Intel thing.
     (supported-systems '("x86_64-linux" "i686-linux"))))
+
+(define-public uefitool
+  (package
+    (name "uefitool")
+    (version "0.22.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/LongSoft/UEFITool/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "05jmhv7jpq08kqbd1477y1lgyjvcic3njrd0bmzdy7v7b7lnhl82"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (invoke "qmake" "-makefile")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "UEFITool" (string-append (assoc-ref outputs "out")
+                                                     "/bin"))
+             #t)))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://github.com/LongSoft/UEFITool/")
+    (synopsis "UEFI image editor")
+    (description "@code{uefitool} is a graphical image file editor for
+Unifinished Extensible Firmware Interface (UEFI) images.")
+    (license license:bsd-2)))

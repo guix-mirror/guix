@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (gnu packages golang)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gsasl)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -181,3 +183,51 @@ mechanisms particularly within the HTTP(S) realm are to be expected.  kurly does
 not offer a replacement for libcurl.")
     (home-page "https://github.com/davidjpeacock/kurly")
     (license license:asl2.0)))
+
+(define-public guile-curl
+  (package
+   (name "guile-curl")
+   (version "0.5")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://www.lonelycactus.com/tarball/guile-curl-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "1846rxgc0ylh8768lr79irc7nwjichzb7qb7lzs2k42m0i53sc46"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:configure-flags (list (string-append
+                               "--with-guilesitedir="
+                               (assoc-ref %outputs "out")
+                               "/share/guile/site/2.2")
+                              (string-append
+                               "-with-guileextensiondir="
+                               (assoc-ref %outputs "out")
+                               "/lib/guile/2.2/extensions"))
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'patch-extension-path
+          (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out      (assoc-ref outputs "out"))
+                    (curl.scm (string-append
+                               out "/share/guile/site/2.2/curl.scm"))
+                    (curl.go  (string-append
+                               out "/lib/guile/2.2/site-ccache/curl.go"))
+                    (ext      (string-append out "/lib/guile/2.2/"
+                                             "extensions/libguile-curl")))
+               (substitute* curl.scm (("libguile-curl") ext))
+               ;; The build system does not actually compile the Scheme module.
+               ;; So we can compile it and put it in the right place in one go.
+               (invoke "guild" "compile" curl.scm "-o" curl.go)))))))
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs
+    `(("curl" ,curl)
+      ("guile" ,guile-2.2)))
+   (home-page "http://www.lonelycactus.com/guile-curl.html")
+   (synopsis "Curl bindings for Guile")
+   (description "@code{guile-curl} is a project that has procedures that allow
+Guile to do client-side URL transfers, like requesting documents from HTTP or
+FTP servers.  It is based on the curl library.")
+   (license license:gpl3+)))

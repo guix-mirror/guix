@@ -55,6 +55,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
@@ -709,26 +710,63 @@ supplies a generic doubly-linked list and some string functions.")
             (sha256
              (base32
               "12bz57asdcfsz3zr9i9nska0fb6h3z2aizy412qjqkixkginbz7v"))
-            (patches (search-patches "freeimage-CVE-2015-0852.patch"
+            (modules '((guix build utils)))
+            (snippet
+             '(begin
+                (for-each
+                  (lambda (dir)
+                    (delete-file-recursively (string-append "Source/" dir)))
+                  '("LibJPEG" "LibJXR" "LibOpenJPEG" "LibPNG" "LibRawLite"
+                    "LibWebP" "OpenEXR" "ZLib"))))
+            (patches (search-patches "freeimage-unbundle.patch"
+                                     "freeimage-CVE-2015-0852.patch"
                                      "freeimage-CVE-2016-5684.patch"
                                      "freeimage-fix-build-with-gcc-5.patch"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
       (modify-phases %standard-phases
-        (delete 'configure)
+        ;; According to Fedora these files depend on private headers, but their
+        ;; presence is required for building, so we replace them with empty files.
+        (add-after 'unpack 'delete-unbuildable-files
+          (lambda _
+            (for-each (lambda (file)
+                        (delete-file file)
+                        (close (open file O_CREAT)))
+                      '("Source/FreeImage/PluginG3.cpp"
+                        "Source/FreeImageToolkit/JPEGTransform.cpp"))
+            #t))
+        ;; These scripts generate the Makefiles.
+        (replace 'configure
+          (lambda _
+            (invoke "sh" "gensrclist.sh")
+            (invoke "sh" "genfipsrclist.sh")))
         (add-before 'build 'patch-makefile
           (lambda* (#:key outputs #:allow-other-keys)
             (substitute* "Makefile.gnu"
               (("/usr") (assoc-ref outputs "out"))
               (("-o root -g root") ""))
             #t)))
-      #:make-flags '("CC=gcc")
+      #:make-flags
+      (list "CC=gcc"
+            ;; We need '-fpermissive' for Source/FreeImage.h.
+            ;; libjxr doesn't have a pkg-config file.
+            (string-append "CFLAGS+=-O2 -fPIC -fvisibility=hidden -fpermissive "
+                           "-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib"))
       #:tests? #f)) ; no check target
    (native-inputs
-    `(("unzip" ,unzip)))
-   ;; Fails to build on MIPS due to assembly code in the source.
-   (supported-systems (delete "mips64el-linux" %supported-systems))
+    `(("pkg-config" ,pkg-config)
+      ("unzip" ,unzip)))
+   (inputs
+    `(("libjpeg" ,libjpeg)
+      ("libjxr" ,libjxr)
+      ("libpng" ,libpng)
+      ("libraw" ,libraw)
+      ("libtiff" ,libtiff)
+      ("libwebp" ,libwebp)
+      ("openexr" ,openexr)
+      ("openjpeg" ,openjpeg)
+      ("zlib" ,zlib)))
    (synopsis "Library for handling popular graphics image formats")
    (description
     "FreeImage is a library for developers who would like to support popular

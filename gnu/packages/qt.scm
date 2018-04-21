@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1022,7 +1022,7 @@ interacting with serial ports from within Qt.")))
 (define-public qtserialbus
   (package (inherit qtsvg)
     (name "qtserialbus")
-    (version "5.9.4")
+    (version "5.9.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1031,7 +1031,7 @@ interacting with serial ports from within Qt.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1i6b7w9z30mzzi0dcmrxx1scpzpnnw2fag1igvrnzvw1jwp414ff"))))
+               "0gz5xsskv02yy078yffxyn8rdlklf4rsgnqrziyz5ywxwdh96gn5"))))
     (inputs
      `(("qtbase" ,qtbase)
        ("qtserialport" ,qtserialport)))
@@ -1281,7 +1281,7 @@ and mobile applications targeting TV-like form factors.")))
 (define-public qtscxml
   (package (inherit qtsvg)
     (name "qtscxml")
-    (version "5.9.4")
+    (version "5.9.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1290,7 +1290,7 @@ and mobile applications targeting TV-like form factors.")))
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0x8bjp9jzib4kfn7rbricw4qr259qqsdbrz0dw39453s2m7cbv0x"))
+               "0knp328cinawz6xbhf9wd6h6gbwp74rb5cpmlr8gv3g5a7fjlsh1"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -1397,7 +1397,7 @@ selecting one of the charts themes.")
 (define-public qtdatavis3d
   (package (inherit qtsvg)
     (name "qtdatavis3d")
-    (version "5.9.4")
+    (version "5.9.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -1406,7 +1406,7 @@ selecting one of the charts themes.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ggwfnqf17mp5dkfr82q1qrimkb6wv3304vl8mjv1nq0zisckhjv"))))
+               "0i1zd7lcakhicfpqj7dlw8hzk8x5i4ddk1427jhxcpja48l4jxy5"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:tests? _ #f) #f))) ; TODO: Enable the tests

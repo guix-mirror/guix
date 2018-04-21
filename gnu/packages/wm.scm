@@ -343,7 +343,7 @@ prompt.")
 (define-public i3lock-color
   (package
     (name "i3lock-color")
-    (version "2.10.1c")
+    (version "2.11-c")
     (source
      (origin
        (method url-fetch)
@@ -352,22 +352,23 @@ prompt.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "119xvdm4r6irqk0mar80hx6s8ydw26y35h7712rd7nbg7pb7i053"))))
+         "0zh7il2y6dmzym3w6r9xii5dma8pjjjlq4dm5iby7m3gvplj4q9p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                              ;no tests included
     (inputs
-     `(("xcb-util-image" ,xcb-util-image)
-       ("xcb-util" ,xcb-util)
-       ("libxcb" ,libxcb)
-       ("linux-pam" ,linux-pam)
-       ("libxkbcommon" ,libxkbcommon)
+     `(("cairo" ,cairo)
        ("libev" ,libev)
-       ("cairo" ,cairo)))
+       ("libjpeg" ,libjpeg-turbo)
+       ("libxcb" ,libxcb)
+       ("libxkbcommon" ,libxkbcommon)
+       ("linux-pam" ,linux-pam)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-image" ,xcb-util-image)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-        ("automake" ,automake)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/PandorasFox/i3lock-color")
     (synopsis "Screen locker with color configuration support")
     (description
@@ -499,15 +500,18 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.25")
+    (version "0.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0382r4vzqkz76jlp2069rdbwf4gh1a22r9w4rkphcn5qflw0dlb6"))))
+                "19g40vqj3cs94i27f66194k7d5cazrv1lx54bz9kc0qy2npxjzgz"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (inputs
      `(("ghc-hinotify" ,ghc-hinotify)
        ("ghc-http" ,ghc-http)

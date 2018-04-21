@@ -79,14 +79,14 @@
 (define-public blender
   (package
     (name "blender")
-    (version "2.79")
+    (version "2.79b")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.blender.org/source/"
                                   "blender-" version ".tar.gz"))
               (sha256
                (base32
-                "16f84mdzkmwjmqahjj64kbyk4kagdj4mcr8qjazs1952d7kh7pm9"))))
+                "1g4kcdqmf67srzhi3hkdnr4z1ph4h9sza1pahz38mrj998q4r52c"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))

@@ -23,6 +23,7 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
+;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2486,3 +2487,24 @@ layouts.")
 
 (define-public python2-pastescript
   (package-with-python2 python-pastescript))
+
+(define-public python2-urlgrabber
+  (package
+    (name "python2-urlgrabber")
+    (version "3.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "urlgrabber" version))
+       (sha256
+        (base32 "0w1h7hlsq406bxfy2pn4i9bd003bwl0q9b7p03z3g6yl0d21ddq5"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2)) ; urlgrabber supports python2 only
+    (home-page "http://urlgrabber.baseurl.org")
+    (synopsis "High-level cross protocol url-grabber")
+    (description "@code{urlgrabber} is Python2 library that unifies access to
+files available on web, FTP or locally.  It supports HTTP, FTP and file://
+protocols, it supports features like HTTP keep-alive, reget, throttling and
+more.")
+    (license license:lgpl2.1+)))
+

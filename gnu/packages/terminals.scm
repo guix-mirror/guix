@@ -441,11 +441,11 @@ embedded kernel situations.")
     (license license:expat)))
 
 (define-public cool-retro-term
-  (let ((commit "e48719fa44e5307df71dbd0fad234f8a6a53f863")
+  (let ((commit "dd799cf5c0eda92cf44f3938c0c2dcae5651a99e")
         (revision "1"))
     (package
       (name "cool-retro-term")
-      (version (string-append "1.0.0-" revision "." (string-take commit 7)))
+      (version (string-append "1.0.1-" revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (file-name (string-append name "-" version "-checkout"))
@@ -454,35 +454,111 @@ embedded kernel situations.")
                       (commit commit)
                       (recursive? #t)))
                 (sha256
-                 (base32 "1sgqbirninkvgwchr35zgn5vzqvsmrf3cp7lqady1xgrawb8lsz3"))
+                 (base32 "08mrvj8zk9ck15q90ipjzza1acnnsjhprv2rxg8yyck0xl9p40jd"))
                 (patches
-                 (search-patches "cool-retro-term-remove-non-free-fonts.patch"
-                                 "cool-retro-term-fix-array-size.patch"
+                 (search-patches "cool-retro-term-fix-array-size.patch"
                                  "cool-retro-term-dont-check-uninit-member.patch"
                                  "cool-retro-term-memory-leak-1.patch"))
-                (modules '((guix build utils)))
+                (modules '((guix build utils)
+                           (srfi srfi-1)
+                           (srfi srfi-26)
+                           (ice-9 rdelim)
+                           (ice-9 regex)))
                 (snippet
-                 '(begin
+                 '(let* ((fonts '(;"1971-ibm-3278"     ; BSD 3-clause
+                                  ;"1975-knight-tv"    ; GPL
+                                  "1977-apple2"        ; Non-Free
+                                  "1977-commodore-pet" ; Non-Free
+                                  "1979-atari-400-800" ; Non-Free
+                                  "1982-commodore64"   ; Non-Free
+                                  "1985-atari-st"      ; ?
+                                  "1985-ibm-pc-vga"    ; Unclear
+                                  ;"modern-fixedsys-excelsior" ; Redistributable
+                                  ;"modern-hermit"     ; SIL
+                                  ;"modern-inconsolata"; SIL
+                                  ;"modern-pro-font-win-tweaked" ; X11
+                                  ;"modern-proggy-tiny"; X11
+                                  ;"modern-terminus"   ; SIL
+                                  "modern-monaco"))    ; Apple Non-Free
+                         (name-rx (make-regexp " *name: *\"([^\"]*)\""))
+                         (source-rx (make-regexp " *source: \"fonts/([^/]*)[^\"]*\""))
+                         (fontname-rx (make-regexp "\"fontName\":\"([^\"]*).*"))
+                         (names
+                          ;; Gather font names from all Fonts*.qml files.
+                          ;; These will be used to remove items from the
+                          ;; default profiles.
+                          (fold
+                           (lambda (font-file names)
+                             (call-with-input-file font-file
+                               (lambda (port)
+                                 (let loop ((name #f) (names names))
+                                   (let ((line (read-line port)))
+                                     (cond
+                                      ((eof-object? line) (pk 'names names))
+                                      ((regexp-exec name-rx line)
+                                       => (lambda (m)
+                                            (loop (match:substring m 1) names)))
+                                      ((regexp-exec source-rx line)
+                                       => (lambda (m)
+                                            (let ((font (match:substring m 1)))
+                                              (if (member font fonts)
+                                                  (loop #f (lset-adjoin string=?
+                                                                        names name))
+                                                  (loop #f names)))))
+                                      (else (loop name names))))))))
+                           '() (find-files "app/qml" "Font.*\\.qml"))))
+                    ;; Remove the font files themselves
                     (for-each (lambda (font)
                                 (delete-file-recursively
-                                 (string-append "app/qml/fonts/" font))
-                                (substitute* '("app/qml/resources.qrc")
-                                  (((string-append "<file>fonts/" font ".*"))
-                                   "")))
-                              '(;;"1971-ibm-3278"             ; BSD 3-clause
-                                "1977-apple2"                 ; Non-Free
-                                "1977-commodore-pet"          ; Non-Free
-                                "1979-atari-400-800"          ; Non-Free
-                                "1982-commodore64"            ; Non-Free
-                                "1985-atari-st"               ; ?
-                                "1985-ibm-pc-vga"             ; Unclear
-                                ;;"modern-fixedsys-excelsior" ; Redistributable
-                                ;;"modern-hermit"             ; SIL
-                                ;;"modern-inconsolata"        ; SIL
-                                ;;"modern-pro-font-win-tweaked" ; X11
-                                ;;"modern-proggy-tiny"        ; X11
-                                ;;"modern-terminus"           ; SIL
-                                "modern-monaco"))             ; Apple non-free
+                                 (string-append "app/qml/fonts/" font)))
+                              fonts)
+                    ;; Remove mention of those fonts in the source
+                    (substitute* "app/qml/resources.qrc"
+                      (((string-append " *<file>fonts/("
+                                       (string-join fonts "|")
+                                       ").*"))
+                       ""))
+                    (for-each
+                     (lambda (file)
+                       (let ((start-rx (make-regexp " *ListElement\\{"))
+                             (end-rx   (make-regexp " *\\}")))
+                        (with-atomic-file-replacement file
+                          (lambda (in out)
+                            (let loop ((line-buffer '())
+                                       (hold? #f)
+                                       (discard? #f))
+                              (let ((line (read-line in 'concat)))
+                                (cond
+                                 ((eof-object? line) #t) ;done
+                                 ((regexp-exec start-rx line)
+                                  (loop (cons line line-buffer) #t #f))
+                                 ((or (regexp-exec source-rx line)
+                                      (regexp-exec fontname-rx line))
+                                  => (lambda (m)
+                                       (let ((font-or-name (match:substring m 1)))
+                                         (if (or (member font-or-name fonts)
+                                                 (member font-or-name names))
+                                             (loop '() #f #t)
+                                             (loop (cons line line-buffer)
+                                                   hold? #f)))))
+                                 ((regexp-exec end-rx line)
+                                  (unless discard?
+                                          (for-each (cut display <> out)
+                                                    (reverse line-buffer))
+                                          (display line out))
+                                  (loop '() #f #f))
+                                 (hold? (loop (cons line line-buffer)
+                                              hold? discard?))
+                                 (discard? (loop line-buffer #f #t))
+                                 (else (display line out)
+                                       (loop '() #f #f)))))))))
+                     '("app/qml/FontPixels.qml"
+                       "app/qml/FontScanlines.qml"
+                       "app/qml/Fonts.qml"
+                       "app/qml/ApplicationSettings.qml"))
+                    ;; Final substitution for default scanline and pixel fonts
+                    (substitute* "app/qml/ApplicationSettings.qml"
+                      (("COMMODORE_PET") "PROGGY_TINY"))
                     #t))))
       (build-system gnu-build-system)
       (inputs
@@ -495,46 +571,37 @@ embedded kernel situations.")
          (modify-phases %standard-phases
            (replace 'configure
              (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (share (string-append out "/share")))
+               (let ((out (assoc-ref outputs "out")))
                  (substitute* '("qmltermwidget/qmltermwidget.pro")
                    (("INSTALL_DIR = \\$\\$\\[QT_INSTALL_QML\\]")
                     (string-append "INSTALL_DIR = " out "/lib/qt5/qml")))
-                 (substitute* '("app/app.pro")
-                   (("target.path \\+= /usr")
-                    (string-append "target.path += " out))
-                   (("icon32.path = /usr/share")
-                    (string-append "icon32.path = " share))
-                   (("icon64.path = /usr/share")
-                    (string-append "icon64.path = " share))
-                   (("icon128.path = /usr/share")
-                    (string-append "icon128.path = " share))
-                   (("icon256.path = /usr/share")
-                    (string-append "icon256.path = " share)))
-                 (zero? (system* "qmake")))))
-           (add-before 'install 'fix-Makefiles
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out")))
-                 (substitute* '("Makefile")
-                   (("\\$\\(INSTALL_ROOT\\)/usr") out)))))
+                 (substitute* '("cool-retro-term.pro" "app/app.pro")
+                   (("/usr") out))
+                 (invoke "qmake"))))
            (add-after 'install 'wrap-executable
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (qml "/lib/qt5/qml"))
+               (let ((out (assoc-ref outputs "out"))
+                     (qml "/lib/qt5/qml"))
                  (wrap-program (string-append out "/bin/cool-retro-term")
                    `("QML2_IMPORT_PATH" ":" prefix
                      (,(string-append out qml)
-                      ,(string-append
-                        (assoc-ref inputs "qtdeclarative") qml)
-                      ,(string-append
-                        (assoc-ref inputs "qtgraphicaleffects") qml)
-                      ,(string-append
-                        (assoc-ref inputs "qtquickcontrols") qml)))))))
+                      ,@(map (lambda (i)
+                               (string-append (assoc-ref inputs i) qml))
+                             '("qtdeclarative"
+                               "qtgraphicaleffects"
+                               "qtquickcontrols")))))
+                 #t)))
            (add-after 'install 'add-alternate-name
              (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
                  (symlink (string-append bin "/cool-retro-term")
-                          (string-append bin "/crt"))))))))
+                          (string-append bin "/crt")))))
+           (add-after 'install 'install-man
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((mandir (string-append (assoc-ref outputs "out")
+                                            "/share/man/man1")))
+                 (install-file "packaging/debian/cool-retro-term.1" mandir)
+                 #t))))))
       (synopsis "Terminal emulator")
       (description
        "Cool-retro-term (crt) is a terminal emulator which mimics the look and

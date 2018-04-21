@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,7 +91,10 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages elf)
+  #:use-module (gnu packages mpi))
 
 (define-public aide
   (package
@@ -261,15 +265,14 @@ graphs and can export its output to different formats.")
 (define-public htop
   (package
    (name "htop")
-   (version "2.1.0")
+   (version "2.2.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://hisham.hm/htop/releases/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "0j07z0xm2gj1vzvbgh4323k4db9mr7drd7gw95mmpqi61ncvwq1j"))
-            (patches (search-patches "htop-fix-process-tree.patch"))))
+              "0mrwpb3cpn3ai7ar33m31yklj64c3pp576vh1naqff6f21pq5mnr"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
@@ -1654,6 +1657,35 @@ you use the most from the command line and allows you to \"jump\" to
 frequently used directories by typing only a small pattern.")
     (license license:gpl3+)))
 
+(define-public fasd
+  (package
+    (name "fasd")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/clvv/fasd.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1awi71jdv3mhjrmar2d4z1i90kn7apd7aq1w31sh6w4yibz9kiyj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))  ;no configuration
+       #:tests? #f                      ;no tests
+       #:make-flags (list (string-append "PREFIX=" %output))))
+    (home-page "https://github.com/clvv/fasd")
+    (synopsis "Quick access to files and directories for shells")
+    (description
+     "Fasd (pronounced similar to \"fast\") is a command-line productivity
+booster.  Fasd offers quick access to files and directories for POSIX shells.
+It is inspired by tools like autojump, z, and v.  Fasd keeps track of files
+and directories you have accessed so that you can quickly reference them in
+the command line.")
+    (license license:x11)))
+
 (define-public iftop
   (package
     (name "iftop")
@@ -1909,13 +1941,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.44")
+    (version "4.46")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0803lp8kd3mp1jcm17i019xiqxdy85hhs6xk67zib8gmvg500gcn"))))
+        (base32 "0cskiqywiqkw44zdg4q78bjns6jjp1dz5lzdxrhpnpldc6075irw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Obscure test failures.
@@ -1940,14 +1972,14 @@ produce uniform output across heterogeneous networks.")
 (define-public cbatticon
   (package
     (name "cbatticon")
-    (version "1.6.7")
+    (version "1.6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/valr/"
                                   name "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "1s2n49ydh7pznnf02fak4yy0wqkgi9ag7yiw1zg1lhp4m0h37hyh"))
+                "185lzvaijvyq7y8r7dvizhri0rf9lpc1anfgbbn4lznr1fr3z7rn"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
@@ -2294,7 +2326,7 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "3.3.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dylanaraps/neofetch/"
@@ -2302,7 +2334,7 @@ tool for remote execution and deployment.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15p69q0jchfms1fpb4i7kq8b28w2xpgh2zmynln618qxv1myf228"))))
+                "18rhamy910ig03rr55y9x5i6pf78yj9xc6jpm6nfh3gqja7340rb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -2515,3 +2547,63 @@ printed instead of after the entire file has been read, which is often too
 late.")
     (home-page "https://jwilk.net/software/hungrycat")
     (license license:expat)))
+
+(define-public launchmon
+  (package
+    (name "launchmon")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/LLNL/LaunchMON/releases/download/v"
+                    version "/" name "-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0fm3nd9mydm9v2bf7bh01dbgrfnpwkapxa3dsvy3x1z0rz61qc0x"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mpi" ,openmpi)
+       ("munge" ,munge)
+       ("boost" ,boost)
+       ("libelf" ,libelf)
+       ("libgcrypt" ,libgcrypt)
+       ("libgpg-error" ,libgpg-error)))
+    (synopsis "Infrastructue for large scale tool daemon launching")
+    (description
+     "LaunchMON is a software infrastructure that enables HPC run-time
+tools to co-locate tool daemons with a parallel job.  Its API allows a
+tool to identify all the remote processes of a job and to scalably
+launch daemons into the relevant nodes.")
+    (home-page "https://github.com/LLNL/LaunchMON")
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (license license:lgpl2.1)))
+
+(define-public spindle
+  (package
+    (name "spindle")
+    (version "0.10")
+    (source (origin
+              ;; We use git checkout to avoid github auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hpc/Spindle.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15n3ay0qq81r5v7fif61q1vdjcq44pp2nynkh3fvbzc9fj3c39wd"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--enable-sec-launchmon"
+                                     "--enable-sec-munge"
+                                     "--enable-sec-none")))
+    (inputs
+     `(("mpi" ,openmpi)
+       ("munge" ,munge)
+       ("launchmon" ,launchmon)
+       ("libgcrypt" ,libgcrypt)))
+    (synopsis "Scalable library loading in HPC environments")
+    (description
+     "Spindle is a tool for improving the performance of dynamic library and
+Python loading in HPC environments.")
+    (home-page "https://github.com/hpc/Spindle")
+    (license license:lgpl2.1)))

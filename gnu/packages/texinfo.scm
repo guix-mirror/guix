@@ -26,9 +26,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages ncurses))
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl))
 
 (define-public texinfo
   (package

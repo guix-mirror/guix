@@ -478,11 +478,12 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
 (define %mcron-os
   ;; System with an mcron service, with one mcron job for "root" and one mcron
   ;; job for an unprivileged user.
-  (let ((job1 #~(job next-second-from
+  (let ((job1 #~(job '(next-second '(0 5 10 15 20 25 30 35 40 45 50 55))
                      (lambda ()
-                       (call-with-output-file "witness"
-                         (lambda (port)
-                           (display (list (getuid) (getgid)) port))))))
+                       (unless (file-exists? "witness")
+                        (call-with-output-file "witness"
+                          (lambda (port)
+                            (display (list (getuid) (getgid)) port)))))))
         (job2 #~(job next-second-from
                      (lambda ()
                        (call-with-output-file "witness"

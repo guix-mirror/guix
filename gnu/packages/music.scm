@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
@@ -3853,19 +3853,15 @@ by The Echo Nest.")
 (define-public libmygpo-qt
   (package
     (name "libmygpo-qt")
-    (version "1.0.9")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://stefan.derkits.at/files/"
                                   "libmygpo-qt/libmygpo-qt." version ".tar.gz"))
               (sha256
                (base32
-                "1wsgh2vjnd52rkvpncj1ycpbp84sj9hh12ija46b42z9mmqf2jm4"))
-              (patches
-               (search-patches "libmygpo-qt-fix-jsoncreatortest.patch"))))
+                "1kg18qrq2rsswgzhl65r3mlyx7kpqg4wwnbp4yiv6svvmadmlxl2"))))
     (build-system cmake-build-system)
-    (arguments
-     '(#:configure-flags '("-DBUILD_WITH_QT4=OFF")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

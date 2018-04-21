@@ -93,7 +93,8 @@
              (sha256
               (base32
                "11l6cs6mib16rgdrnqrhkqs033fjik316gkgfz3asbmxz38lalca"))
-             (patches (search-patches "qemu-glibc-2.27.patch"))))
+             (patches (search-patches "qemu-glibc-2.27.patch"
+                                      "qemu-CVE-2018-7550.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:

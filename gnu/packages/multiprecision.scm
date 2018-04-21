@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -160,6 +160,33 @@ are both guaranteed, thanks to interval computation, and accurate, thanks to
 multiple-precision arithmetic.")
     (license lgpl2.1+)
     (home-page "https://perso.ens-lyon.fr/nathalie.revol/software.html")))
+
+(define-public irram
+  (package
+    (name "irram")
+    (version "2013_01")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://irram.uni-trier.de/irram-files/iRRAM_"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "1cdmvb4hsa161rfdjqyhd9sb3fcr43p3a6nsj7cb4kn9f94qmjpj"))))
+    (build-system gnu-build-system)
+    (propagated-inputs `(("gmp" ,gmp)   ; <mpfi.h> refers to both
+                         ("mpfr" ,mpfr)))
+    (arguments
+     `(#:parallel-build? #f))
+    (synopsis "C++ package for real arithmetic based on the Real-RAM concept")
+    (description
+     "@dfn{iRRAM} is a C++ package for error-free real arithmetic based on
+the concept of a Real-RAM.  Its capabilities range from ordinary arithmetic
+over trigonometric functions to linear algebra and differential
+equations.  A program using iRRAM is coded in ordinary C++, but may use a
+special class that behaves like real numbers without any
+error.  Additionally, iRRAM uses the concept of multi-valued functions.")
+    (license lgpl2.0+)
+    (home-page "http://irram.uni-trier.de/")))
 
 (define-public qd
   (package

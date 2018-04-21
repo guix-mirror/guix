@@ -608,7 +608,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/cool-retro-term-dont-check-uninit-member.patch	\
   %D%/packages/patches/cool-retro-term-fix-array-size.patch	\
   %D%/packages/patches/cool-retro-term-memory-leak-1.patch	\
-  %D%/packages/patches/cool-retro-term-remove-non-free-fonts.patch	\
   %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/cracklib-CVE-2016-6318.patch		\
@@ -621,6 +620,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-2017-12836.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
+  %D%/packages/patches/datamash-arm-tests.patch			\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
   %D%/packages/patches/delly-use-system-libraries.patch		\
@@ -669,6 +669,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
   %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
   %D%/packages/patches/freeimage-fix-build-with-gcc-5.patch	\
+  %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/freetype-CVE-2018-6942.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
   %D%/packages/patches/gawk-shell.patch				\
@@ -783,7 +784,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/heimdal-CVE-2017-11103.patch		\
   %D%/packages/patches/hmmer-remove-cpu-specificity.patch	\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
-  %D%/packages/patches/htop-fix-process-tree.patch		\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
@@ -862,7 +862,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
   %D%/packages/patches/libmad-frame-length.patch		\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
-  %D%/packages/patches/libmygpo-qt-fix-jsoncreatortest.patch	\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8362.patch		\
@@ -933,6 +932,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mupdf-CVE-2018-6544.patch		\
   %D%/packages/patches/mupdf-CVE-2018-1000051.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
+  %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
@@ -1057,6 +1057,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
+  %D%/packages/patches/qemu-CVE-2018-7550.patch			\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
@@ -1089,6 +1090,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/shadow-CVE-2018-7169.patch		\
+  %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
   %D%/packages/patches/shishi-fix-libgcrypt-detection.patch	\
   %D%/packages/patches/slim-session.patch			\
   %D%/packages/patches/slim-config.patch			\

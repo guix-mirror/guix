@@ -3531,6 +3531,21 @@ transformations and analysis algorithms allow to easily assemble custom
 complex transformations and code analysis tools.")
     (license license:bsd-3)))
 
+(define java-asm-bootstrap
+  (package
+    (inherit java-asm)
+    (name "java-asm-bootstrap")
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-asm)
+       ((#:tests? _) #f)))
+    (native-inputs `())
+    (propagated-inputs
+     `(("java-aqute-bndlib" ,java-aqute-bndlib-bootstrap)
+       ("java-aqute-libg" ,java-aqute-libg-bootstrap)
+       ,@(delete `("java-aqute-bndlib" ,java-aqute-bndlib)
+                 (delete `("java-aqute-libg", java-aqute-libg)
+                         (package-inputs java-asm)))))))
+
 (define-public java-cglib
   (package
     (name "java-cglib")
@@ -5645,6 +5660,15 @@ allowing the end user to plug in the desired logging framework at deployment
 time.")
     (license license:expat)))
 
+(define java-slf4j-api-bootstrap
+  (package
+    (inherit java-slf4j-api)
+    (name "java-slf4j-api-bootstrap")
+    (inputs `())
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-slf4j-api)
+       ((#:tests? _ #f) #f)))))
+
 (define-public java-slf4j-simple
   (package
     (name "java-slf4j-simple")
@@ -6087,7 +6111,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
                  (lambda _
                    (display
                      (string-append "#!" (which "sh") "\n"
-                                    "java -cp " jar "/antlr3-3.1-3.1.jar:"
+                                    "java -cp " jar "/antlr3-3.1.jar:"
                                     (string-concatenate
                                       (find-files (assoc-ref inputs "stringtemplate")
                                                   ".*\\.jar"))
@@ -6886,6 +6910,15 @@ it manages project dependencies, gives diffs jars, and much more.")
        ("java-osgi-cmpn" ,java-osgi-cmpn)
        ("osgi" ,java-osgi-core)))))
 
+(define java-aqute-libg-bootstrap
+  (package
+    (inherit java-aqute-libg)
+    (name "java-aqute-libg-bootstrap")
+    (inputs
+     `(("slf4j-bootstrap" ,java-slf4j-api-bootstrap)
+       ,@(delete `("slf4j" ,java-slf4j-api)
+                 (package-inputs java-aqute-libg))))))
+
 (define-public java-aqute-bndlib
   (package
     (inherit java-aqute-bnd-annotation)
@@ -6908,6 +6941,17 @@ it manages project dependencies, gives diffs jars, and much more.")
        ("java-osgi-namespace-service" ,java-osgi-namespace-service)
        ("promise" ,java-osgi-util-promise)
        ("osgi" ,java-osgi-core)))))
+
+(define java-aqute-bndlib-bootstrap
+  (package
+    (inherit java-aqute-bndlib)
+    (name "java-aqute-bndlib-bootstrap")
+    (inputs
+     `(("slf4j-bootstrap" ,java-slf4j-api-bootstrap)
+       ("java-aqute-libg-bootstrap" ,java-aqute-libg-bootstrap)
+       ,@(delete `("slf4j" ,java-slf4j-api)
+                 (delete `("java-aqute-libg" ,java-aqute-libg)
+                         (package-inputs java-aqute-bndlib)))))))
 
 (define-public java-ops4j-pax-tinybundles
   (package

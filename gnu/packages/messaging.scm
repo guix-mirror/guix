@@ -7,12 +7,13 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
@@ -200,31 +202,17 @@ identi.ca and status.net).")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.12.4")
+    (version "2.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ficrx56knz5y297qb0x5y02339yvyv734z7kpcx1ixvb0qr2dgs"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Delete dangling symlinks to a non-existent ‘/usr’.
-                  (with-directory-excursion "m4"
-                    (for-each (lambda (f) (delete-file f))
-                              '("intltool.m4" "libtool.m4" "lt~obsolete.m4"
-                                "ltoptions.m4" "ltsugar.m4" "ltversion.m4")))
-                  (delete-file-recursively "build-aux")
-                  (delete-file "po/Makefile.in.in")
-                  #t))))
-    (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("autoconf-archive" ,autoconf-archive)
-                     ("automake" ,automake)
-                     ("intltool" ,intltool)
-                     ("libtool" ,libtool)
+                "18h3l34zmazjlfx3irg7k7swppa62ad9ffbl0j3ry8p2xfyf8cmh"))))
+    (build-system meson-build-system)
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("perl" ,perl)
                      ("pkg-config" ,pkg-config)))
     (inputs `(("dbus-glib" ,dbus-glib)
               ("dbus" ,dbus)
@@ -233,6 +221,7 @@ identi.ca and status.net).")
               ("gtk" ,gtk+-2)
               ("libcanberra" ,libcanberra)
               ("libnotify" ,libnotify)
+              ("libproxy" ,libproxy)
               ("openssl" ,openssl)
 
               ;; Bindings for add-on scripts.
@@ -240,16 +229,17 @@ identi.ca and status.net).")
               ("perl-xml-parser" ,perl-xml-parser)
               ("python-2" ,python-2)))
     (arguments
-     `(#:make-flags '("UPDATE_ICON_CACHE=true") ; Disable icon theme generation
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         ;; Release 2.12.4 wasn't properly bootstrapped.  Later ones might be!
-         (add-before 'boostrap 'copy-intltool-makefile
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; This file is still required for autoreconf.
-             (copy-file (string-append (assoc-ref inputs "intltool")
-                                       "/share/intltool/Makefile.in.in")
-                        "po/Makefile.in.in")
+         (add-after 'unpack 'skip-desktop-database-updates
+           (lambda _
+             ;; The build scripts update icon and desktop file databases when
+             ;; DESTDIR is not set.  We can't update these databases from
+             ;; within the build chroot, but we also don't set DESTDIR.  So, we
+             ;; just skip this code.
+             (substitute* "meson_post_install.py"
+               (("if 'DESTDIR' not in os.environ:")
+                 "if False:"))
              #t)))))
     (synopsis "Graphical IRC Client")
     (description
@@ -495,14 +485,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.1")
+    (version "0.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "0qvkiscy42nhzhccszi049ws8cnhpxgc13g8naq1rsa5x9zy163c"))))
+         "12rfmp613alh3mi8f94008sx7x1a8c1izs3icrvw7bf4gnf2pi31"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -520,7 +510,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "0.16.9")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -528,36 +518,74 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "0v08zdvpqaig0wxpxn1l8rsj3wr3fqvnagn8cnvch17vfqv9gcr1"))))
-    (build-system gnu-build-system)
+                "16ynws10vhx6rhjjjmzw6iyb3hc19823xhx4gsb14hrc7l8vzd1c"))))
+    (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure all Python scripts run with the correct PYTHONPATH.
-             (let ((out (assoc-ref outputs "out"))
-                   (path (getenv "PYTHONPATH")))
-               (for-each (lambda (name)
-                           (let ((file (string-append out "/bin/" name)))
-                             ;; Wrapping destroys identification of intended
-                             ;; application, so we need to override "APP".
-                             (substitute* file
-                               (("APP=`basename \\$0`")
-                                (string-append "APP=" name)))
-                             (wrap-program file
-                               `("PYTHONPATH" ":" prefix (,path)))))
-                         '("gajim" "gajim-remote" "gajim-history-manager")))
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (name)
+                  (let ((file (string-append out "/bin/" name))
+                        (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+                    (wrap-program file
+                      `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
+                '("gajim" "gajim-remote" "gajim-history-manager")))
+             #t))
+         (add-before 'check 'remove-test-resolver
+           ;; This test requires network access.
+           (lambda _
+             (substitute* "test/runtests.py"
+               (("'integration.test_resolver',") ""))
+             #t))
+         (add-before 'check 'start-xserver
+           ;; Tests require a running X server.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                   (display ":1"))
+               (setenv "DISPLAY" display)
+               (zero? (system (string-append xorg-server "/bin/Xvfb "
+                                             display " &"))))))
+         (add-after 'install 'install-icons
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (adwaita (string-append
+                              (assoc-ref inputs "adwaita-icon-theme")
+                              "/share/icons/Adwaita"))
+                    (hicolor (string-append
+                              (assoc-ref inputs "hicolor-icon-theme")
+                              "/share/icons/hicolor"))
+                    (icons (string-append
+                            out "/lib/python"
+                            ,(version-major+minor (package-version python))
+                            "/site-packages/gajim/data/icons")))
+               (with-directory-excursion icons
+                 (symlink adwaita "Adwaita")
+                 (copy-recursively hicolor "hicolor")))
              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)))
+     `(("intltool" ,intltool)
+       ("xorg-server" ,xorg-server)))
     (inputs
-     `(("python2-axolotl" ,python2-axolotl)
-       ("python2-nbxmpp" ,python2-nbxmpp)
-       ("python2-pyopenssl" ,python2-pyopenssl)
-       ("python2-gnupg" ,python2-gnupg)
-       ("python2-pygtk" ,python2-pygtk)
-       ("python" ,python-2)))
+     `(("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("gnome-keyring" ,gnome-keyring)
+       ("gtk+" ,gtk+)
+       ("gtkspell3" ,gtkspell3)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("libsecret" ,libsecret)
+       ("python-axolotl" ,python-axolotl)
+       ("python-dbus" ,python-dbus)
+       ("python-docutils" ,python-docutils)
+       ("python-gnupg" ,python-gnupg)
+       ("python-nbxmpp" ,python-nbxmpp)
+       ("python-pillow" ,python-pillow)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-qrcode" ,python-qrcode)))
     (home-page "https://gajim.org/")
     (synopsis "Jabber (XMPP) client")
     (description "Gajim is a feature-rich and easy to use Jabber/XMPP client.

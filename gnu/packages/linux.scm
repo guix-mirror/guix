@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
@@ -391,8 +391,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.16.1")
-(define %linux-libre-hash "1zqbg7ivf79nzw0lw18bbld2wq16880k83526bwqh1nsydayp6k0")
+(define %linux-libre-version "4.16.3")
+(define %linux-libre-hash "1wmx0ph8nbwidlx1dh8bi4p97b84nif9ymv00mafnn6iykdfdin0")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -400,8 +400,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.33")
-(define %linux-libre-4.14-hash "0ps9whsxc20gw5ags18rgkwgy6fzg66by70g8xjds7nijpzgl69m")
+(define %linux-libre-4.14-version "4.14.35")
+(define %linux-libre-4.14-hash "0dfzc2290zks1a63zld8ac0xarc8gxwwh4wsr71y8mas7gfmyqzj")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -410,14 +410,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.93"
-                    "0flmsh4xy7ymyzwm8y4x4id798mx6vy3d6ala7x1bq41hf00075p"
+  (make-linux-libre "4.9.95"
+                    "06i756gbglxa2m4lib4p0fff5m2fm4s6f9aqc58i8lihnjqpkldk"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.127"
-                    "1av536sp6ancx0fy71wpmqv4r66pksrcjbnrcjggard6im4c8pjy"
+  (make-linux-libre "4.4.128"
+                    "1aqz5skyz534bcpnn6w9madg6kadgyjjypah9dhmqf841rygb6rk"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2108,6 +2108,7 @@ time.")
                                               "/etc/lvm")
                                "--enable-udev_sync"
                                "--enable-udev_rules"
+                               "--enable-pkgconfig"
 
                                ;; Make sure programs such as 'dmsetup' can
                                ;; find libdevmapper.so.
@@ -3816,7 +3817,7 @@ under OpenGL graphics workloads.")
 (define-public efivar
   (package
     (name "efivar")
-    (version "34")
+    (version "35")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rhinstaller/" name
@@ -3824,7 +3825,7 @@ under OpenGL graphics workloads.")
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
-                "09a31y6sl3b33myy42gl9k732k1f440ycd07l6ac5d5l53kk8zhv"))))
+                "153k2ifyl4giz5fkryxhz8z621diqjy7v25hfga4z94rs32ks0qy"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Tests require a UEFI system and is not detected in the chroot.
@@ -3849,7 +3850,7 @@ interface to the variable facility of UEFI boot firmware.")
 (define-public efibootmgr
   (package
     (name "efibootmgr")
-    (version "14")
+    (version "16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rhinstaller/" name
@@ -3857,26 +3858,23 @@ interface to the variable facility of UEFI boot firmware.")
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1n3sydvpr6yl040hhf460k7mrxby7laqd9dqs6pq0js1hijc2zip"))))
+                "0pzn67vxxaf7jna4cd0i4kqm60h04kb21hckksv9z82q9gxra1wm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No tests.
        #:make-flags (list (string-append "prefix=" %output)
                           (string-append "libdir=" %output "/lib")
+                          ;; EFIDIR denotes a subdirectory relative to the
+                          ;; EFI System Partition where the loader will be
+                          ;; installed (known as OS_VENDOR in the code).
+                          ;; GRUB overrides this, as such it's only used if
+                          ;; nothing else is specified on the command line.
+                          "EFIDIR=gnu"
                           ;; Override CFLAGS to add efivar include directory.
                           (string-append "CFLAGS=-O2 -g -flto -I"
                                          (assoc-ref %build-inputs "efivar")
                                          "/include/efivar"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'branding
-           ;; Replace default loader path with something more familiar.
-           (lambda _
-             (substitute* "src/efibootmgr.c"
-               (("EFI\\\\\\\\redhat") ; Matches 'EFI\\redhat'.
-                "EFI\\\\gnu"))
-             #t))
-         (delete 'configure))))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -4594,3 +4592,39 @@ emulates the behaviour of Gunnar Monell's older fbgrab utility.")
 restriction, permission handling and more.  This package provides userspace
 interface to this kernel feature.")
     (license license:lgpl2.1)))
+
+(define-public mbpfan
+  (package
+    (name "mbpfan")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dgraziotin/mbpfan/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wifsws9icki95hhfh4zw1hmk07ddmkcz9mg5a9jr7q2kkrk01cx"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "DESTDIR=" out)
+                            "CC=gcc"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda _
+             (substitute* "Makefile"
+               (("/usr") ""))
+             #t))
+         (delete 'configure)))) ; There's no configure phase.
+    (home-page "https://github.com/dgraziotin/mbpfan")
+    (synopsis "Control fan speed on Macbooks")
+    (description
+     "mbpfan is a fan control daemon for Apple Macbooks.  It uses input from
+the @code{coretemp} module and sets the fan speed using the @code{applesmc}
+module.  It can be executed as a daemon or in the foreground with root
+privileges.")
+    (license license:gpl3+)))
