@@ -1415,14 +1415,14 @@ regression using Kernel Ridge Regression.")
 (define-public r-prodlim
   (package
     (name "r-prodlim")
-    (version "1.6.1")
+    (version "2018.04.18")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "prodlim" version))
        (sha256
         (base32
-         "0m51rkivx1zr6whdqwj66jpnkmp4385m06kkha3dp8qqf4jna9iz"))))
+         "1aslq87sqwikh8chxc378r38146y7kv79zz0kcq3j93ivx7va8jb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-kernsmooth" ,r-kernsmooth)
