@@ -2596,4 +2596,6 @@ launch daemons into the relevant nodes.")
      "Spindle is a tool for improving the performance of dynamic library and
 Python loading in HPC environments.")
     (home-page "https://github.com/hpc/Spindle")
+    ;; This package supports x86_64 and PowerPC64
+    (supported-systems '("x86_64-linux"))
     (license license:lgpl2.1)))
