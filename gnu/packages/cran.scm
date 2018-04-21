@@ -1990,14 +1990,14 @@ training models for classification or ranking.")
 (define-public r-xts
   (package
     (name "r-xts")
-    (version "0.10-1")
+    (version "0.10-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xts" version))
        (sha256
         (base32
-         "1j9ddh9v9081zrqlpylsk13fldilhjdyaw6r6pa726fhgnrsf8a2"))))
+         "1i11fczks4lh8rpi6xbm9bm7f3jpcp6xw03kv178g3n3361qhmc1"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-zoo" ,r-zoo)))
     (native-inputs `(("gfortran" ,gfortran)))
