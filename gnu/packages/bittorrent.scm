@@ -315,8 +315,6 @@ Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
                (base32
                 "0919cf7lfk1djdl003cahqjvafdliv7v2l8r5wg95n4isqggdk75"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("intltool" ,intltool)))
     (inputs
      `(("curl" ,curl)
        ("gtk+" ,gtk+)
