@@ -145,11 +145,11 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                (method url-fetch)
                (uri (string-append "mirror://gnu/gcc/gcc-"
                                    version "/gcc-" version ".tar.bz2"))
-               (patches (search-patches "gcc-4-compile-with-gcc-5.patch"))
                (sha256
                 (base32
                  "10k2k71kxgay283ylbbhhs51cl55zn2q38vj5pk4k950qdnirrlj"))
-               (patches (search-patches "gcc-fix-texi2pod.patch"))))
+               (patches (search-patches "gcc-4-compile-with-gcc-5.patch"
+                                        "gcc-fix-texi2pod.patch"))))
       (build-system gnu-build-system)
 
       ;; Separate out the run-time support libraries because all the
