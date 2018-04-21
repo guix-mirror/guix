@@ -321,10 +321,6 @@ dynamic loading, and an object system.")
                        "gobject-introspection-girepository.patch"
                        "gobject-introspection-absolute-shlib-path.patch"))))
     (build-system gnu-build-system)
-    (arguments
-     ;; The build system has at least one race condition involving Gio-2.0.gir
-     ;; which causes intermittent failures, as of 1.56.0.
-     `(#:parallel-build? #f))
     (inputs
      `(("bison" ,bison)
        ("flex" ,flex)
@@ -343,7 +339,10 @@ dynamic loading, and an object system.")
             (files '("lib/girepository-1.0")))))
     (search-paths native-search-paths)
     (arguments
-     `(;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
+     `(;; The build system has at least one race condition involving Gio-2.0.gir
+       ;; which causes intermittent failures, as of 1.56.0.
+       #:parallel-build? #f
+       ;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
        ;; some tests to fail.
        #:tests? #f))
     (home-page "https://wiki.gnome.org/GObjectIntrospection")
