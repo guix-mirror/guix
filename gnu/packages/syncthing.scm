@@ -857,8 +857,6 @@ implements arithmetic over the Galois Field GF(256).")
        `(#:import-path "github.com/vitrun/qart/qr"
          #:unpack-path "github.com/vitrun/qart"))
       (synopsis "Qart component for generating QR codes")
-      (description "This package, a component of @code{qart}, provides
-@code{qr}, for QR code generation.")
       (description "This package provides a library for embedding
 human-meaningful graphics in QR codes.  However, instead of scribbling on
 redundant pieces and relying on error correction to preserve the meaning,
