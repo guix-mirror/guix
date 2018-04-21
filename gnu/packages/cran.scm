@@ -1503,6 +1503,36 @@ a variety of functions for the manipulation and analysis of arbitrarily
 dimensioned arrays.")
     (license license:gpl2)))
 
+(define-public r-geometry
+  (package
+    (name "r-geometry")
+    (version "0.3-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "geometry" version))
+       (sha256
+        (base32
+         "0s09vi0rr0smys3an83mz6fk41bplxyz4myrbiinf4qpk6n33qib"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-magic" ,r-magic)))
+    (home-page "http://geometry.r-forge.r-project.org/")
+    (synopsis "Mesh generation and surface tesselation")
+    (description
+     "This package makes the qhull library available in R, in a similar manner
+as in Octave.  Qhull computes convex hulls, Delaunay triangulations, halfspace
+intersections about a point, Voronoi diagrams, furthest-site Delaunay
+triangulations, and furthest-site Voronoi diagrams.  It runs in 2-d, 3-d, 4-d,
+and higher dimensions.  It implements the Quickhull algorithm for computing
+the convex hull.  Qhull does not support constrained Delaunay triangulations,
+or mesh generation of non-convex objects, but the package does include some R
+functions that allow for this.  Currently the package only gives access to
+Delaunay triangulation and convex hull computation.")
+    ;; The Qhull sources are included and are distributed under a custom
+    ;; non-copyleft license.  The R sources are released under GPL version 2.
+    (license (list license:gpl2
+                   (license:non-copyleft "http://www.qhull.org/COPYING.txt")))))
+
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
