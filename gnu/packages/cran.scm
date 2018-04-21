@@ -3820,3 +3820,31 @@ without explicit decompression, and fast import packages are used where
 appropriate.  An additional convenience function, @code{convert}, provides a
 simple method for converting between file types.")
     (license license:gpl2)))
+
+(define-public r-maptools
+  (package
+    (name "r-maptools")
+    (version "0.9-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "maptools" version))
+       (sha256
+        (base32
+         "075lmb3b62171cw2dg8fv1vwmvfzg39r1ji7jwb8s5k9dz88ry1v"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-foreign" ,r-foreign)
+       ("r-lattice" ,r-lattice)
+       ("r-sp" ,r-sp)))
+    (home-page "http://r-forge.r-project.org/projects/maptools/")
+    (synopsis "Tools for reading and handling spatial objects")
+    (description
+     "This package provides a set of tools for manipulating and reading
+geographic data, in particular ESRI Shapefiles.  It includes binary access to
+GSHHG shoreline files.  The package also provides interface wrappers for
+exchanging spatial objects with other R packages.")
+    ;; The C source files from shapelib are released under the Expat license.
+    ;; The R code is released under GPL version 2 or later.
+    (license (list license:gpl2+
+                   license:expat))))
