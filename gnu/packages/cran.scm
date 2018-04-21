@@ -192,14 +192,14 @@ that.")
 (define-public r-readxl
   (package
     (name "r-readxl")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "readxl" version))
        (sha256
         (base32
-         "1bf7gxw9r11m4llyymplxiaa4gzgyj4bwmwad5in756pzq3jzmpv"))))
+         "05ii8knrg4jji6h7bv6bfpn279b6x52yrskdx5rv7b0hcpy22gdn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cellranger" ,r-cellranger)
