@@ -3763,3 +3763,26 @@ selection, and goodness-of-fit.  Cross-validation tools are also available for
 measuring the accuracy of ABC estimates, and to calculate the
 misclassification probabilities of different models.")
     (license license:gpl3+)))
+
+(define-public r-openxlsx
+  (package
+    (name "r-openxlsx")
+    (version "4.0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "openxlsx" version))
+       (sha256
+        (base32
+         "1mq4lasp12kc30sxcsmz9gskd114l8s7z7wd6svv2nm8qllrhsqi"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/awalker89/openxlsx")
+    (synopsis "Read, write and edit XLSX files")
+    (description
+     "This package simplifies the creation of Excel @code{.xlsx} files by
+providing a high level interface to writing, styling and editing worksheets.
+Through the use of Rcpp, read/write times are comparable to the @code{xlsx}
+and @code{XLConnect} packages with the added benefit of removing the
+dependency on Java.")
+    (license license:gpl3)))
