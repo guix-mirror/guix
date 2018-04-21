@@ -187,20 +187,20 @@ score, keyboard, guitar, drum and controller views.")
 ;; We don't use the latest release because it depends on Qt4.  Instead we
 ;; download the sources from the tip of the "qt5" branch.
 (define-public clementine
-  (let ((commit "0a59257dc334b8df60a4d7d90b04f1766747efcf")
-        (revision "1"))
+  (let ((commit "4619a4c1ab3b17b13d4b2327ad477912917eaf36")
+        (revision "2"))
     (package
       (name "clementine")
-      (version (string-append "1.3.1-" revision "." (string-take commit 7)))
+      (version (git-version "1.3.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/clementine-player/Clementine.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                   "0cdcj7di7j9jgzc1ihjna1a5df64f9hnmx7b9kh8rlg76hc0l0hi"))
+                  "1hximk3q0p8nw8is5w7215xgkb7k4flnfyr0pdz9svfwvcm05w1i"))
                 (modules '((guix build utils)))
                 (snippet
                   '(for-each
