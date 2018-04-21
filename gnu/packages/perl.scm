@@ -3370,7 +3370,7 @@ type.")
 (define-public perl-file-find-rule
   (package
     (name "perl-file-find-rule")
-    (version "0.33")
+    (version "0.34")
     (source
      (origin
        (method url-fetch)
@@ -3378,7 +3378,7 @@ type.")
                            "File-Find-Rule-" version ".tar.gz"))
        (sha256
         (base32
-         "0w73b4jr2fcrd74a1w3b2jryq3mqzc8z5mk7ia9p85xn3qmpa5r4"))))
+         "1znachnhmi1w5pdqx8dzgfa892jb7x8ivrdy4pzjj7zb6g61cvvy"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-text-glob" ,perl-text-glob)
