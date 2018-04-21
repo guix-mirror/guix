@@ -406,14 +406,14 @@ initiative to bring PASSTEC 2000 functionalities to R.")
 (define-public r-plogr
   (package
     (name "r-plogr")
-    (version "0.1-1")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "plogr" version))
        (sha256
         (base32
-         "13zliqlbkl8b04k9ga0sx5jsh7k867gracgl84l2a9kcqy9mqx92"))))
+         "0a8dhzlna79ggyhfr0nncgh15a9n6r0dsz664pz0ah323wpblqqf"))))
     (build-system r-build-system)
     (home-page "https://github.com/krlmlr/plogr")
     (synopsis "R bindings for the plog C++ logging library")
