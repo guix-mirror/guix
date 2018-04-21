@@ -5146,21 +5146,27 @@ Companion to Applied Regression, Third Edition, Sage.")
 (define-public r-car
   (package
     (name "r-car")
-    (version "2.1-6")
+    (version "3.0-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "car" version))
        (sha256
         (base32
-         "14l4d9j87xnb0bz2wgqqbxnlnbcdfb5vx2fw6kdxj91kyrk6lhnj"))))
+         "1ks2jaav8lbxhzw56vpbnysjk3pvpmqh6avd574k0bha1226k81h"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mass" ,r-mass)
+     `(("r-abind" ,r-abind)
+       ("r-cardata" ,r-cardata)
+       ("r-lme4" ,r-lme4)
+       ("r-maptools" ,r-maptools)
+       ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
+       ("r-nlme" ,r-nlme)
        ("r-nnet" ,r-nnet)
        ("r-pbkrtest" ,r-pbkrtest)
-       ("r-quantreg" ,r-quantreg)))
+       ("r-quantreg" ,r-quantreg)
+       ("r-rio" ,r-rio)))
     (home-page "https://r-forge.r-project.org/projects/car/")
     (synopsis "Companion to applied regression")
     (description
