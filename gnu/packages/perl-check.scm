@@ -317,7 +317,7 @@ structures without getting caught in an infinite loop.")
 (define-public perl-test-differences
   (package
     (name "perl-test-differences")
-    (version "0.63")
+    (version "0.64")
     (source
      (origin
        (method url-fetch)
@@ -325,7 +325,7 @@ structures without getting caught in an infinite loop.")
                            "Test-Differences-" version ".tar.gz"))
        (sha256
         (base32
-         "0rhs4q6qn64ji06ns7lwl6iiiw3mggvd9xk9nkiqvx1jihbplrbw"))))
+         "0xmj5vgklq4yqvi7l63ky1k6g7fhww68llpmw9rhlaihqbcrsicz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
