@@ -2779,14 +2779,14 @@ Cambridge University Press, 1993.")
 (define-public r-quantmod
   (package
     (name "r-quantmod")
-    (version "0.4-12")
+    (version "0.4-13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantmod" version))
        (sha256
         (base32
-         "0y7gh0k1s10vdsfch8777avbhf99mc9crikvx7ahqrw0j631vmhq"))))
+         "16aldg96z7amp5mr90nb8127yy04gxsihfr26km5p3cx3j117yv0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
