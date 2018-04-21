@@ -894,7 +894,7 @@ as flexible as possible to the tester.")
 (define-public perl-test-pod
   (package
     (name "perl-test-pod")
-    (version "1.51")
+    (version "1.52")
     (source
      (origin
        (method url-fetch)
@@ -902,7 +902,7 @@ as flexible as possible to the tester.")
                            "Test-Pod-" version ".tar.gz"))
        (sha256
         (base32
-         "1yvy5mc4j3s2h4aizryvark2nm58g2c6zhw9mlx9wmsavz7d78f1"))))
+         "1z75x1pxwp8ajwq9iazlg2c3wd7rdlim08yclpdg32qnc36dpa30"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Test-Pod/")
