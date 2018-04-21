@@ -13139,7 +13139,7 @@ in Python.  You can simply type pybtex instead of bibtex.")
        (sha256
         (base32 "09vagxgbq78wvq4xbikmn2hpqqsa2i96kqsmphf7dqynfv0dlsd5"))))
     (build-system python-build-system)
-    (inputs `(("python-six" ,python-six)))
+    (propagated-inputs `(("python-six" ,python-six)))
     (home-page "https://github.com/tadeck/onetimepass/")
     (synopsis "One-time password library")
     (description "Python one-time password library for HMAC-based (HOTP) and
