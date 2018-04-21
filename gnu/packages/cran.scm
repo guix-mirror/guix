@@ -3899,3 +3899,27 @@ allowing a single R process to orchestrate multiple tasks in the background
 while also attending to something else.  Semantics are similar to JavaScript
 promises, but with a syntax that is idiomatic R.")
     (license license:expat)))
+
+(define-public r-dosnow
+  (package
+    (name "r-dosnow")
+    (version "1.0.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "doSNOW" version))
+       (sha256
+        (base32
+         "13ir4a8252h4yvp5ir9xnwack1kn58i4ny6sf2qdc12zspn3850n"))))
+    (properties `((upstream-name . "doSNOW")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-foreach" ,r-foreach)
+       ("r-iterators" ,r-iterators)
+       ("r-snow" ,r-snow)))
+    (home-page "https://cran.r-project.org/web/packages/doSNOW")
+    (synopsis "Foreach parallel adaptor for the snow package")
+    (description
+     "This package provides a parallel backend for the @code{%dopar%} function
+using the @code{snow} package.")
+    (license license:gpl2)))
