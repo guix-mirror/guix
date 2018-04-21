@@ -2854,13 +2854,13 @@ safety.")
 (define-public r-futile-options
   (package
     (name "r-futile-options")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "futile.options" version))
               (sha256
                (base32
-                "1hp82h6xqq5cck67h7lpf22n3j7mg3v1mla5y5ivnzrrb7iyr17f"))))
+                "0w15agpi88y3qkv6fl72zy2pzyplzgvnj41a4ixhg64mw1sck73s"))))
     (properties
      `((upstream-name . "futile.options")))
     (build-system r-build-system)
