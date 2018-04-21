@@ -3871,3 +3871,31 @@ exchanging spatial objects with other R packages.")
      "This package provides tools to execute arbitrary R or C functions some
 time after the current time, after the R execution stack has emptied.")
     (license license:gpl2+)))
+
+(define-public r-promises
+  (package
+    (name "r-promises")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "promises" version))
+       (sha256
+        (base32
+         "0n2mlv6bvfb4yhgcml696l9vkbw21pz0smqylivr606z99rwgny2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-later" ,r-later)
+       ("r-magrittr" ,r-magrittr)
+       ("r-r6" ,r-r6)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)))
+    (home-page "https://rstudio.github.io/promises")
+    (synopsis "Abstractions for promise-based asynchronous programming")
+    (description
+     "This package provides fundamental abstractions for doing asynchronous
+programming in R using promises.  Asynchronous programming is useful for
+allowing a single R process to orchestrate multiple tasks in the background
+while also attending to something else.  Semantics are similar to JavaScript
+promises, but with a syntax that is idiomatic R.")
+    (license license:expat)))
