@@ -96,7 +96,7 @@ warning content is outputted via diag.")
 (define-public perl-test-base
   (package
     (name "perl-test-base")
-    (version "0.88")
+    (version "0.89")
     (source
      (origin
        (method url-fetch)
@@ -104,7 +104,7 @@ warning content is outputted via diag.")
                            "Test-Base-" version ".tar.gz"))
        (sha256
         (base32
-         "0fch1cvivnszbnwhpfmwv1rin04j5xkj1n1ylfmlxg6bm72qqdjj"))))
+         "056hibgg3i2b89mwr76vyxi6ayb3hqjqcwicvn3s5lximsma3517"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-algorithm-diff" ,perl-algorithm-diff)
