@@ -113,16 +113,18 @@ scraping tasks, inspired by libraries like @code{BeautifulSoup}.")
 (define-public r-selectr
   (package
     (name "r-selectr")
-    (version "0.3-2")
+    (version "0.4-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "selectr" version))
        (sha256
         (base32
-         "0kdrj64rqg4z6hg92y9r2h602a2i73r5rnlpg23ys33d5d32n8jy"))))
+         "1jp27rxks4w29l47k42869hp8hnkzq2rnvsqbr44wd19fqb2zm4b"))))
     (build-system r-build-system)
-    (propagated-inputs `(("r-stringr" ,r-stringr)))
+    (propagated-inputs
+     `(("r-stringr" ,r-stringr)
+       ("r-r6" ,r-r6)))
     (home-page "https://sjp.co.nz/projects/selectr/")
     (synopsis "Translate CSS selectors to XPath expressions")
     (description
