@@ -3358,14 +3358,14 @@ serve as a useful front end for structural equation modeling.")
 (define-public r-gsubfn
   (package
     (name "r-gsubfn")
-    (version "0.6-6")
+    (version "0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gsubfn" version))
        (sha256
         (base32
-         "196x4c3ihf4q3i0v7b1xa6jm8jjld2rsx00qz03n90wfnjdx5idv"))))
+         "00j6b8b6xsx6v370h220x233rpk6asca78165y3d48jpwvwisdc9"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-proto" ,r-proto)))
     (home-page "http://gsubfn.googlecode.com")
