@@ -3830,14 +3830,14 @@ analysed.")
 (define-public r-subplex
   (package
     (name "r-subplex")
-    (version "1.5-2")
+    (version "1.5-4")
     (source
     (origin
       (method url-fetch)
       (uri (cran-uri "subplex" version))
       (sha256
        (base32
-        "1v9xrnkapnq7v1jbhlg32ignklzf2vn8rqpayc8pzk8wvz53r33g"))))
+        "10cbgbx1bgsax5z7gz6716g360xpq4mvq19cf4qqrxv02mmwz57z"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
