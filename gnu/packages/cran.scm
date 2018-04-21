@@ -2230,19 +2230,20 @@ plotting.  a three dimensional point cloud.")
 (define-public r-ggridges
   (package
     (name "r-ggridges")
-    (version "0.4.1")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggridges" version))
        (sha256
         (base32
-         "0kfa3icqdalqdg1klxjrhfl7if35d3wnsiyl86bprw5dyqyh3lh3"))))
+         "1znvsbl3px8dddpjgdrygnpz4s685wizi0jnjvx2hrz58i0chjqj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
        ("r-plyr" ,r-plyr)
-       ("r-scales" ,r-scales)))
+       ("r-scales" ,r-scales)
+       ("r-withr" ,r-withr)))
     (home-page "https://github.com/clauswilke/ggridges")
     (synopsis "Ridgeline plots in ggplot2")
     (description
