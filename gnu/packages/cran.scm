@@ -450,14 +450,14 @@ and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 (define-public r-bindr
   (package
     (name "r-bindr")
-    (version "0.1")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bindr" version))
        (sha256
         (base32
-         "0d95ifm0x4mrfzi20xf39f5pzd7rfzqsld0vjqf6xzga5rhnd8fc"))))
+         "1l05fpk2yql3jka321c0bdgx6mqq9pvfrg2844lbjfpbgjkmqy3w"))))
     (build-system r-build-system)
     (home-page "https://github.com/krlmlr/bindr")
     (synopsis "Parametrized active bindings")
