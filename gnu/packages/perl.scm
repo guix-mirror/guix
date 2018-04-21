@@ -176,16 +176,16 @@
      (substitute-keyword-arguments (package-arguments perl)
        ((#:phases phases)
         `(modify-phases ,phases
-           ;; The path to libperl.so includes the Perl version number, and this
-           ;; is not handled by grafting. See <https://bugs.gnu.org/31210>.
-           (add-after 'install 'workaround-grafting-version-bug
+           ;; The path to several installed components include the Perl
+           ;; version number, and these is not rewritten by grafting.  See
+           ;; <https://bugs.gnu.org/31210> and <https://bugs.gnu.org/31216>.
+           (add-after 'install 'install-compatibility-symlinks
              (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (dir (string-append out "/lib/perl5"))
-                      (new "5.26.2")
-                      (old "5.26.1"))
-                 (with-directory-excursion dir
-                   (symlink new old))
+               (let ((out (assoc-ref outputs "out")))
+                 (symlink "perl5.26.2" (string-append out "/bin/perl5.26.1"))
+                 (symlink "5.26.2" (string-append out "/lib/perl5/5.26.1"))
+                 (symlink "5.26.2"
+                          (string-append out "/lib/perl5/site_perl/5.26.1"))
                  #t)))))))))
 
 (define-public perl-algorithm-c3
