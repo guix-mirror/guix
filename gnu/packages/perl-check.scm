@@ -869,14 +869,14 @@ usually called epsilon.  This module provides such a function for use with
 (define-public perl-test-output
   (package
     (name "perl-test-output")
-    (version "1.03")
+    (version "1.031")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
                                   "Test-Output-" version ".tar.gz"))
               (sha256
                (base32
-                "12991jnzj4cbw9whhprmqvnzd1ayii84g2mh8vxbjngwqrjsy41i"))))
+                "193y1xjvgc1p9pdgdwps2127knvpz9wc1xh6gmr74y3ihmqz7f7q"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)
