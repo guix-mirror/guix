@@ -3786,3 +3786,37 @@ Through the use of Rcpp, read/write times are comparable to the @code{xlsx}
 and @code{XLConnect} packages with the added benefit of removing the
 dependency on Java.")
     (license license:gpl3)))
+
+(define-public r-rio
+  (package
+    (name "r-rio")
+    (version "0.5.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rio" version))
+       (sha256
+        (base32
+         "158xg3vj0glk3fslwi6fywwmfym2b6kn3fdmjligdfy5lf68khix"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-data-table" ,r-data-table)
+       ("r-foreign" ,r-foreign)
+       ("r-haven" ,r-haven)
+       ("r-openxlsx" ,r-openxlsx)
+       ("r-readxl" ,r-readxl)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/leeper/rio")
+    (synopsis "Swiss-army knife for data I/O")
+    (description
+     "This package provides streamlined data import and export infrastructure
+by making assumptions that the user is probably willing to make: @code{import}
+and @code{export} determine the data structure from the file extension,
+reasonable defaults are used for data import and export (e.g.,
+@code{stringsAsFactors=FALSE}), web-based import is natively
+supported (including from SSL/HTTPS), compressed files can be read directly
+without explicit decompression, and fast import packages are used where
+appropriate.  An additional convenience function, @code{convert}, provides a
+simple method for converting between file types.")
+    (license license:gpl2)))
