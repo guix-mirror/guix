@@ -6083,19 +6083,20 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-6")
+    (version "2.5-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "175mqr42mmxy98gpf3rky8alnkw3w1k90ggdw3cispl36841p76w"))))
+         "0pynr02d1xngda6c3va8fc4nxpgfkawhzcnz1ws4dnarp9b1w90r"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
+       ("r-knitr" ,r-knitr)
        ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
