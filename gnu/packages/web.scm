@@ -3893,13 +3893,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "1.0")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "09lkmzh35l1420sg0dyh4vgyishqx3g8xmgs2y9z7lbi09xgwwwr"))))
+                "04c4d0mfcy3dkdlbxnaccpdgxvyxfdwfmmh5djim6v9hyg0j2z8s"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
