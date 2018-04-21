@@ -938,19 +938,21 @@ matrices.")
 (define-public r-rmpi
   (package
     (name "r-rmpi")
-    (version "0.6-6")
+    (version "0.6-7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Rmpi" version))
               (sha256
                (base32
-                "0fm6z049aaq2c9xagm8n64d9560hg9d8hyb0m359fii672nhkz6q"))))
+                "1b62gs7w1xqadqd7ir41jnxlcf14gcqfxd0915kn9ckdlsdrh0sw"))))
     (properties `((upstream-name . "Rmpi")))
     (build-system r-build-system)
     (arguments
      `(#:configure-flags '("--configure-args=\"--with-Rmpi-type=OPENMPI\"")))
     (inputs
      `(("openmpi" ,openmpi)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://www.stats.uwo.ca/faculty/yu/Rmpi")
     (synopsis "R interface to message-passing interface (MPI)")
     (description
