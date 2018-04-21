@@ -3025,14 +3025,14 @@ separator.")
 (define-public perl-error
   (package
     (name "perl-error")
-    (version "0.17023")
+    (version "0.17025")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
                                   "Error-" version ".tar.gz"))
               (sha256
                (base32
-                "0dsxic78mxy30qvbbdzfyp501hbkwhnbmafqfxipr0yqfy8f2j5g"))))
+                "1bzgzmf1v4md02vadm46b4j4ilqxrcrfasvbzymhrznlsd54g7vc"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Error/")
