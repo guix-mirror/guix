@@ -3327,14 +3327,14 @@ It also includes interpolation functions.")
 (define-public r-psych
   (package
     (name "r-psych")
-    (version "1.7.8")
+    (version "1.8.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "psych" version))
        (sha256
         (base32
-         "0daismb8pdk392vdy304hqx0m3jx62gx3a0hygjygc125rhfla7k"))))
+         "1zhp8j81nkzd65168zdw9ylypb9n07ajan21x0wqcn8jdbg970sg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreign" ,r-foreign)
