@@ -62,7 +62,7 @@
   (package
     (name "perl")
     (version "5.26.1")
-    (replacement perl-5.26.2)
+    (replacement perl/fixed)
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/src/5.0/perl-"
@@ -171,22 +171,26 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))
+                "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))))
+
+;; When grafting perl, complications arise when the replacement perl has a
+;; different version number than the original.  So, here we create a version
+;; of perl-5.26.2 that thinks it is version 5.26.1.  See
+;; <https://bugs.gnu.org/31210> and <https://bugs.gnu.org/31216>.
+(define perl/fixed
+  (package
+    (inherit perl-5.26.2)
+    (version "5.26.1")
     (arguments
-     (substitute-keyword-arguments (package-arguments perl)
+     (substitute-keyword-arguments (package-arguments perl-5.26.2)
        ((#:phases phases)
         `(modify-phases ,phases
-           ;; The path to several installed components include the Perl
-           ;; version number, and these is not rewritten by grafting.  See
-           ;; <https://bugs.gnu.org/31210> and <https://bugs.gnu.org/31216>.
-           (add-after 'install 'install-compatibility-symlinks
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (symlink "perl5.26.2" (string-append out "/bin/perl5.26.1"))
-                 (symlink "5.26.2" (string-append out "/lib/perl5/5.26.1"))
-                 (symlink "5.26.2"
-                          (string-append out "/lib/perl5/site_perl/5.26.1"))
-                 #t)))))))))
+           (add-after 'unpack 'revert-perl-subversion
+             (lambda _
+               (substitute* "patchlevel.h"
+                 (("^#define PERL_SUBVERSION	2")
+                  "#define PERL_SUBVERSION	1"))
+               #t))))))))
 
 (define-public perl-algorithm-c3
   (package
