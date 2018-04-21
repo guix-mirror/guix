@@ -426,13 +426,13 @@ error stream.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.15")
+    (version "0.12.16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "1pnv6sl4vdn69ygmgrb1b3gsigfdcfb56wnzikic93l8gkvdsvxv"))))
+        (base32 "1rm8hcy72p1jvxikvmkwg20pjqmvmfvqb45lfghmddp2adp67qfl"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
