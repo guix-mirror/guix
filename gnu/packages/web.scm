@@ -3785,15 +3785,19 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.3.6.2")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "0h3hkw575b211bxma23inbq1565wkhiapgasd539h219apqs534f"))))
+                "076blaj0vzwfgx212lvgscczmiy9n13izdshrm6xb9vpcmklm95m"))))
     (build-system r-build-system)
     (native-inputs `(("r-rcpp" ,r-rcpp)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-later" ,r-later)
+       ("r-promises" ,r-promises)))
     (home-page "https://github.com/rstudio/httpuv")
     (synopsis "HTTP and WebSocket server library for R")
     (description
