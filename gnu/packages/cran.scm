@@ -1480,6 +1480,29 @@ Engineering and Computational Finance\" and for managing chronological and
 calendar objects.")
     (license license:gpl2+)))
 
+(define-public r-magic
+  (package
+    (name "r-magic")
+    (version "1.5-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "magic" version))
+       (sha256
+        (base32
+         "083cgpp3v03li0h8597b3g21pd9lkbmn9pyssblnhc800mpc52vz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)))
+    (home-page "https://github.com/RobinHankin/magic.git")
+    (synopsis "Create and investigate magic squares")
+    (description
+     "This package provides a collection of efficient, vectorized algorithms
+for the creation and investigation of magic squares and hypercubes, including
+a variety of functions for the manipulation and analysis of arbitrarily
+dimensioned arrays.")
+    (license license:gpl2)))
+
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
