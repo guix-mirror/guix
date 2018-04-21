@@ -3848,3 +3848,26 @@ exchanging spatial objects with other R packages.")
     ;; The R code is released under GPL version 2 or later.
     (license (list license:gpl2+
                    license:expat))))
+
+(define-public r-later
+  (package
+    (name "r-later")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "later" version))
+       (sha256
+        (base32
+         "0z9jymmclkq9zcg1fd8p6gsnm5z1sn3n9pfz3bs03qjrkbizgrvz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)))
+    (home-page "https://github.com/r-lib/later")
+    (synopsis "Utilities for delaying function execution")
+    (description
+     "This package provides tools to execute arbitrary R or C functions some
+time after the current time, after the R execution stack has emptied.")
+    (license license:gpl2+)))
