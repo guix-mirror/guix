@@ -3307,7 +3307,8 @@ disks and SD cards.  This package provides the userland utilities.")
                       (substitute* "freefall.c"
                         (("alarm\\(2\\)") "alarm(5)")))))
        #:make-flags (list (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))
+                                         (assoc-ref %outputs "out"))
+                          "CC=gcc")
        #:tests? #f)) ;no tests
     (home-page (package-home-page linux-libre))
     (synopsis "Free-fall protection for spinning laptop hard drives")
