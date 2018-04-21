@@ -98,23 +98,24 @@ more.")
 (define-public r-igraph
   (package
     (name "r-igraph")
-    (version "1.1.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "igraph" version))
        (sha256
         (base32
-         "1v26wyk52snh8z6m5p7yqwcd9dbqifhm57j112i9x53ppi0npcc9"))))
+         "1hcr6b1lz030lgay1bz8y8sxaf2j93ds8n8gsqr6qhssz141hd2m"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
     (inputs
      `(("gmp" ,gmp)
-       ("libxml2" ,libxml2)))
+       ("glpk" ,glpk)
+       ("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
     (propagated-inputs
-     `(("r-irlba" ,r-irlba)
-       ("r-magrittr" ,r-magrittr)
+     `(("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)
        ("r-pkgconfig" ,r-pkgconfig)))
     (home-page "http://igraph.org")
