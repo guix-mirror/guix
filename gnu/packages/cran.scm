@@ -469,14 +469,14 @@ where the bound function accepts additional arguments.")
 (define-public r-bindrcpp
   (package
     (name "r-bindrcpp")
-    (version "0.2")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bindrcpp" version))
        (sha256
         (base32
-         "0l1l22zl87wiyl79m3gj2vlxmkhxvrkl4alhyy08h55q7hqs3vyh"))))
+         "0rz4ibjdjsxl99ff3ha79z7cnjmilx4rx58fk9kk7ld9xc4hf4s8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bindr" ,r-bindr)
