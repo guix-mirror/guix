@@ -3785,6 +3785,27 @@ Python code against some of the style conventions in
 (define-public python2-pycodestyle
   (package-with-python2 python-pycodestyle))
 
+(define-public python-multidict
+  (package
+    (name "python-multidict")
+    (version "4.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "multidict" version))
+       (sha256
+        (base32
+         "1vf5bq8hn5a9rvhr5v4fwbmarfsp35hhr8gs74kqfijy34j2f194"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/aio-libs/multidict/")
+    (synopsis "Multidict implementation")
+    (description "Multidict is dict-like collection of key-value pairs
+where key might be occurred more than once in the container.")
+    (license license:asl2.0)))
+
 (define-public python-orderedmultidict
   (package
     (name "python-orderedmultidict")
