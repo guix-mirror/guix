@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
@@ -178,6 +178,13 @@
               ;; correct RUNPATH.
               ,(list 'unquote '(string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out")
                                               "/lib"))
+
+              ;; Starting from ncurses 6.1, "make install" runs "install -s"
+              ;; by default, which doesn't work for cross-compiled binaries
+              ;; because it invokes 'strip' instead of 'TRIPLET-strip'.  Work
+              ;; around this.
+              ,@(if (%current-target-system) '("--disable-stripping") '())
+
               ;; MinGW: Use term-driver created for the MinGW port.
               ,@(if (target-mingw?) '("--enable-term-driver") '()))))
          #:tests? #f                  ; no "check" target
