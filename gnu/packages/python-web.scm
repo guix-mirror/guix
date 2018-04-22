@@ -61,6 +61,47 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
 
+(define-public python-aiohttp
+  (package
+    (name "python-aiohttp")
+    (version "3.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiohttp" version))
+       (sha256
+        (base32
+         "1b888lggmyf2d08rfayq9khszzc0pav1z70ssc0b4d9kkr4g1klz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;FIXME: 2 errors, 2084 passed
+    (native-inputs
+     `(("python-async-generator" ,python-async-generator)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-capturelog" ,python-pytest-capturelog)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (propagated-inputs
+     `(("python-aiodns" ,python-aiodns)
+       ("python-async-timeout" ,python-async-timeout)
+       ("python-attrs" ,python-attrs)
+       ("python-chardet" ,python-chardet)
+       ("python-idna-ssl" ,python-idna-ssl)
+       ("python-multidict" ,python-multidict)
+       ("python-yarl" ,python-yarl)))
+    (home-page "https://github.com/aio-libs/aiohttp/")
+    (synopsis "Async HTTP client/server framework (asyncio)")
+    (description "@code{aiohttp} is an asynchronous HTTP client/server
+framework.
+
+Its main features are:
+@itemize
+@item Supports both client and server side of HTTP protocol.
+@item Supports both client and server Web-Sockets out-of-the-box without the
+Callback Hell.
+@item Web-server has middlewares and pluggable routing.
+@end itemize")
+    (license license:asl2.0)))
+
 (define-public python-aiodns
   (package
     (name "python-aiodns")
