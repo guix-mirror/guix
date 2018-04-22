@@ -18,7 +18,7 @@
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
@@ -58,6 +58,8 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages inkscape)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -76,6 +78,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
@@ -1135,6 +1138,51 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                 (copy-file "dbus/dbus-wpa_supplicant.conf"
                            (string-append dir "/wpa_supplicant.conf")))
               #t))))))))
+
+(define-public wpa-supplicant-gui
+  (package
+    (inherit wpa-supplicant)
+    (name "wpa-supplicant-gui")
+    (inputs `(("qtbase" ,qtbase)
+              ("qtsvg" ,qtsvg)
+              ,@(package-inputs wpa-supplicant)))
+    (native-inputs
+     ;; For icons.
+     `(("imagemagick" ,imagemagick)
+       ("inkscape" ,inkscape)
+       ,@(package-native-inputs wpa-supplicant)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'chdir
+                    (lambda _
+                      (chdir "wpa_supplicant/wpa_gui-qt4")
+                      #t))
+                  (delete 'configure)
+                  (replace 'build
+                    (lambda _
+                      (invoke "qmake" "wpa_gui.pro")
+                      (invoke "make" "-j" (number->string (parallel-job-count)))
+                      (invoke "make" "-C" "icons")))
+                  (replace 'install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (qt '("qtbase" "qtsvg")))
+                        (substitute* "wpa_gui.desktop"
+                          (("Exec=wpa_gui")
+                           (string-append "Exec=" out "/bin/wpa_gui")))
+                        (install-file "wpa_gui" (string-append out "/bin"))
+                        (install-file "wpa_gui.desktop"
+                                      (string-append out "/share/applications"))
+                        (copy-recursively "icons/hicolor"
+                                          (string-append out "/share/icons/hicolor"))
+                        (wrap-program (string-append out "/bin/wpa_gui")
+                          `("QT_PLUGIN_PATH" ":" prefix
+                            ,(map (lambda (label)
+                                    (string-append (assoc-ref inputs label)
+                                                   "/lib/qt5/plugins/"))
+                                  qt)))
+                        #t))))))
+    (synopsis "Graphical user interface for WPA supplicant")))
 
 (define-public wakelan
   (package
