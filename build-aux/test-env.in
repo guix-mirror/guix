@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -118,6 +118,18 @@ then
     bootstrap_directory="@abs_top_builddir@/gnu/packages/bootstrap/@guix_system@"
     if [ -d "$bootstrap_directory" ]
     then
+	# Make sure 'guix-daemon' is listening before invoking 'guix
+	# download'.
+	"@abs_top_builddir@/pre-inst-env" "@GUILE@" -c \
+	     '(use-modules (guix))
+(let loop ((i 10))
+  (catch #t
+    (lambda () (open-connection))
+    (lambda (key . args)
+      (if (zero? i)
+          (apply throw key args)
+          (begin (usleep 500000) (loop (- i 1)))))))'
+
 	for file in "$bootstrap_directory"/guile-*
 	do
 	    "@abs_top_builddir@/pre-inst-env"			\
