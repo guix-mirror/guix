@@ -16,6 +16,7 @@
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,26 @@
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
+
+(define-public python-base58
+  (package
+    (name "python-base58")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "base58" version))
+       (sha256
+        (base32
+         "0lgnk7ycdxwhk2bkygl30nsks56bvrdj79ix76iv965pz808pzn5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pyhamcrest" ,python-pyhamcrest)))
+    (home-page "https://github.com/keis/base58")
+    (synopsis "Base58 and Base58Check implementation")
+    (description "Base58 and Base58Check implementation compatible
+with what is used by the Bitcoin network.")
+    (license license:expat)))
 
 (define-public python-bcrypt
   (package
