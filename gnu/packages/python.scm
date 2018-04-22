@@ -6285,6 +6285,26 @@ specification.")
 (define-public python2-idna
   (package-with-python2 python-idna))
 
+(define-public python-idna-ssl
+  (package
+    (name "python-idna-ssl")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "idna-ssl" version))
+       (sha256
+        (base32
+         "0ydrc8hpg9mdr5hqq1lqfsfbn6sjq69slwpfrnlrm3k0phqg14qj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))          ;circular dependency with python-aiohttp
+    (home-page "https://github.com/aio-libs/idna-ssl")
+    (synopsis "Patch @code{ssl.match_hostname} for Unicode(idna) domains support")
+    (description "Patch @code{ssl.match_hostname} for Unicode(idna)
+domains support.")
+    (license license:expat)))
+
 (define-public python-pretend
   (package
     (name "python-pretend")
