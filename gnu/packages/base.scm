@@ -177,7 +177,7 @@ implementation offers several extensions over the standard utility.")
    (build-system gnu-build-system)
    ;; Note: test suite requires ~1GiB of disk space.
    (arguments
-    '(#:phases (modify-phases %standard-phases
+    `(#:phases (modify-phases %standard-phases
                  (add-before 'build 'set-shell-file-name
                    (lambda* (#:key inputs #:allow-other-keys)
                      ;; Do not use "/bin/sh" to run programs.
@@ -186,6 +186,12 @@ implementation offers several extensions over the standard utility.")
                          (("/bin/sh")
                           (string-append bash "/bin/sh")))
                        #t))))
+
+      ;; Work around a cross-compilation bug whereby libgnu.a would provide
+      ;; '__mktime_internal', which conflicts with the one in libc.a.
+      ,@(if (%current-target-system)
+            `(#:configure-flags '("gl_cv_func_working_mktime=yes"))
+            '())
 
       ;; Test #92 "link mismatch" expects "a/z: Not linked to a/y" but gets
       ;; "a/y: Not linked to a/z" and fails, presumably due to differences in
