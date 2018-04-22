@@ -24,6 +24,7 @@
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2511,3 +2512,23 @@ protocols, it supports features like HTTP keep-alive, reget, throttling and
 more.")
     (license license:lgpl2.1+)))
 
+(define-public python-pycares
+  (package
+    (name "python-pycares")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pycares" version))
+       (sha256
+        (base32
+         "0h4fxw5drrhfyslzmfpljk0qnnpbhhb20hnnndzahhbwylyw1x1n"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;tests require internet access
+    (home-page "http://github.com/saghul/pycares")
+    (synopsis "Python interface for @code{c-ares}")
+    (description "@code{pycares} is a Python module which provides an
+interface to @code{c-ares}, a C library that performs DNS requests and
+name resolutions asynchronously.")
+    (license license:expat)))
