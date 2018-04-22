@@ -841,3 +841,26 @@ through the Engine interface.")
 
 (define-public python2-m2crypto
   (package-with-python2 python-m2crypto))
+
+(define-public python-pylibscrypt
+  (package
+    (name "python-pylibscrypt")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pylibscrypt" version))
+       (sha256
+        (base32
+         "1b3rgzl6dbzs08vhv41b6y4n5189wv7lr27acxn104hs45745abs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;FIXME: unable to find libraries
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "https://github.com/jvarho/pylibscrypt")
+    (synopsis "Scrypt for Python")
+    (description "There are a lot of different scrypt modules for Python, but
+none of them have everything that I'd like, so here's one more.  It uses
+hashlib.scrypt on Python 3.6 and OpenSSL 1.1.")
+    (license license:isc)))
