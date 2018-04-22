@@ -864,3 +864,38 @@ through the Engine interface.")
 none of them have everything that I'd like, so here's one more.  It uses
 hashlib.scrypt on Python 3.6 and OpenSSL 1.1.")
     (license license:isc)))
+
+(define-public python-libnacl
+  (package
+    (name "python-libnacl")
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "libnacl" version))
+       (sha256
+        (base32
+         "0nv7n8nfswkhl614x5mllrkvaslraa0053q11iylb337cy43vb4v"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'locate-libsodium
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "libnacl/__init__.py"
+               (("(return ctypes.cdll.LoadLibrary\\(')libsodium.so('\\))"
+                 _ pre post)
+                (let ((libsodium (string-append (assoc-ref inputs "libsodium")
+                                                "/lib/libsodium.so")))
+                  (string-append pre libsodium post)))))))))
+    (native-inputs
+     `(("python-pyhamcrest" ,python-pyhamcrest)))
+    (inputs
+     `(("libsodium" ,libsodium)))
+    (home-page "https://libnacl.readthedocs.org/")
+    (synopsis "Python bindings for libsodium based on ctypes")
+    (description "@code{libnacl} is used to gain direct access to the
+functions exposed by @code{NaCl} library via @code{libsodium}.  It has
+been constructed to maintain extensive documentation on how to use
+@code{NaCl} as well as being completely portable.")
+    (license license:asl2.0)))
