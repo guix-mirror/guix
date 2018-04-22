@@ -51,6 +51,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13215,3 +13216,25 @@ Parso is also able to list multiple syntax errors in your Python file.")
 
 (define-public python2-parso
   (package-with-python2 python-parso))
+
+(define-public python-async-generator
+  (package
+    (name "python-async-generator")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "async_generator" version))
+       (sha256
+        (base32
+         "0wc3hidz1q85cja93k5pzybn0fprfnqyrv4qlkdqdzklc5f4dmdp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python-trio/async_generator")
+    (synopsis "Async generators and context managers for Python 3.5+")
+    (description "@code{async_generator} back-ports Python 3.6's native async
+generators and Python 3.7's context managers into Python 3.5.")
+    ;; Dual licensed.
+    (license (list license:expat license:asl2.0))))
+
