@@ -724,7 +724,8 @@ supplies a generic doubly-linked list and some string functions.")
                 (for-each
                   (lambda (dir)
                     (delete-file-recursively (string-append "Source/" dir)))
-                  '("LibJPEG" "LibJXR" "LibOpenJPEG" "LibPNG" "LibRawLite"
+                  '("LibJPEG" "LibOpenJPEG" "LibPNG" "LibRawLite"
+                    ;; "LibJXR"
                     "LibWebP" "OpenEXR" "ZLib"))))
             (patches (search-patches "freeimage-unbundle.patch"
                                      "freeimage-CVE-2015-0852.patch"
@@ -760,14 +761,15 @@ supplies a generic doubly-linked list and some string functions.")
             ;; We need '-fpermissive' for Source/FreeImage.h.
             ;; libjxr doesn't have a pkg-config file.
             (string-append "CFLAGS+=-O2 -fPIC -fvisibility=hidden -fpermissive "
-                           "-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib"))
+                           ;"-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib"
+                           ))
       #:tests? #f)) ; no check target
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("unzip" ,unzip)))
    (inputs
     `(("libjpeg" ,libjpeg)
-      ("libjxr" ,libjxr)
+      ;("libjxr" ,libjxr)
       ("libpng" ,libpng)
       ("libraw" ,libraw)
       ("libtiff" ,libtiff)
