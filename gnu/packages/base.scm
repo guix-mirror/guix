@@ -231,6 +231,12 @@ standard utility.")
                 "1zfqy4rdcy279vwn2z1kbv19dcfw25d2aqy9nzvdkq5bjzd0nqdc"))
               (patches (search-patches "patch-hurd-path-max.patch"))))
    (build-system gnu-build-system)
+   (arguments
+    ;; Work around a cross-compilation bug whereby libpatch.a would provide
+    ;; '__mktime_internal', which conflicts with the one in libc.a.
+    (if (%current-target-system)
+        `(#:configure-flags '("gl_cv_func_working_mktime=yes"))
+        '()))
    (native-inputs `(("ed" ,ed)))
    (synopsis "Apply differences to originals, with optional backups")
    (description
