@@ -913,7 +913,7 @@ instant messenger with audio and video chat capabilities.")
                    ,(list (string-append (assoc-ref inputs "qtsvg")
                                          "/lib/qt5/plugins/"))))))))))
     (inputs
-     `(("ffmpeg" ,ffmpeg)
+     `(("ffmpeg" ,ffmpeg-3.4)
        ("filteraudio" ,filteraudio)
        ("glib" ,glib)
        ("gtk+" ,gtk+-2)
