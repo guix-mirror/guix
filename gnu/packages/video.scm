@@ -1847,7 +1847,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("fftw" ,fftw)
        ("libxml2" ,libxml2)
        ("jack" ,jack-1)
@@ -2082,7 +2082,7 @@ making @dfn{screencasts}.")
     ;; As a result, they are omitted. Please add them back if problems appear.
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("glu" ,glu)
        ("jack" ,jack-1)
        ("libxi" ,libxi)
@@ -2794,7 +2794,7 @@ It counts more than 100 plugins.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libjpeg" ,libjpeg)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("sqlite" ,sqlite)))
     (arguments
      '(#:phases (modify-phases %standard-phases
