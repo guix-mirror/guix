@@ -195,7 +195,7 @@
        ;; https://github.com/golang/go/issues/24046
        ("gcc:lib" ,gcc-6 "lib")))
     (native-inputs
-     `(("pkg-config" ,%pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("which" ,which)
        ("net-base" ,net-base)
        ("perl" ,perl)))
