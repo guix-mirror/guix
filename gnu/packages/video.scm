@@ -391,7 +391,9 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
           "18llni1m8kfvdwy5bp950z6gyd0nijmvi3hzd6gd8vpy5yk5zrym"))
         (modules '((guix build utils)))
         (snippet
-         '(delete-file-recursively "source/compat/getopt"))))
+         '(begin
+            (delete-file-recursively "source/compat/getopt")
+            #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
