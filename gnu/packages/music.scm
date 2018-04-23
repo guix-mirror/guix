@@ -2780,13 +2780,7 @@ available memory.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "026v977kwb0wbmlmf6mnik328plxg8wykfx9ryvqhirac0aq39pk"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Remove use of __DATE__ and __TIME__ for reproducibility.
-               '(substitute* "main.c"
-                  (("printf \\(\"            Built : %s\", __DATE__\\);") "")
-                  (("printf \\(\" %s\", __TIME__\\);") "")))))
+                "026v977kwb0wbmlmf6mnik328plxg8wykfx9ryvqhirac0aq39pk"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
