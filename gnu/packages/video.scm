@@ -380,7 +380,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "2.6")
+    (version "2.7")
     (source
       (origin
         (method url-fetch)
@@ -388,14 +388,14 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "1gyd94jkwdii9308m07nymsbxrmrcl81c0j8i10zhslr2mj07w0v"))
+          "18llni1m8kfvdwy5bp950z6gyd0nijmvi3hzd6gd8vpy5yk5zrym"))
         (modules '((guix build utils)))
         (snippet
          '(delete-file-recursively "source/compat/getopt"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
-       ;; Currently the source code doesn't check for aarch64
+       ;; Currently the source code doesn't check for aarch64.
        ,@(if (string-prefix? "aarch64" (or (%current-target-system) (%current-system)))
            '(#:configure-flags '("-DENABLE_PIC=TRUE"))
            '())
