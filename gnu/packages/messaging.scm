@@ -832,23 +832,26 @@ messenger protocol.")
 (define-public utox
   (package
    (name "utox")
-   (version "0.16.1")
+   (version "0.17.0")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://github.com/uTox/uTox/archive/v"
-                         version ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/uTox/uTox.git")
+           (commit "v0.17.0")
+           (recursive? #t))) ;; Needed for 'minini' git submodule.
+     (file-name (string-append name "-" version "-checkout"))
      (sha256
       (base32
-       "14xl72y4w1x2kk0cvkcr9pmywllm0r9w2grjqiknwn95pw6yxz6q"))))
+       "12wbq883il7ikldayh8hm0cjfrkp45vn05xx9s1jbfz6gmkidyar"))))
    (build-system cmake-build-system)
    (arguments
-    `(#:phases
+    `(#:configure-flags '("-DENABLE_TESTS=on")
+      #:phases
       (modify-phases %standard-phases
         (add-before 'build 'patch-absolute-filename-libgtk-3
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (substitute* "../uTox-0.16.1/src/xlib/gtk.c"
+            (substitute* "../source/src/xlib/gtk.c"
                          (("libgtk-3.so")
                          (string-append (assoc-ref inputs "gtk+")
                                         "/lib/libgtk-3.so")))))
