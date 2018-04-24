@@ -114,3 +114,36 @@ region sets and other genomic features.")
 ChIP-seq experiments using affinity (quantitative) data.  Also enables
 occupancy (overlap) analysis and plotting functions.")
     (license license:artistic2.0)))
+
+(define-public r-ripseeker
+  (package
+    (name "r-ripseeker")
+    (version "1.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "RIPSeeker" version))
+       (sha256
+        (base32
+         "0bqkzwrncww7il36273chkd3gfxmii7p566ycki9qij419pwr35y"))))
+    (properties `((upstream-name . "RIPSeeker")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-s4vectors" ,r-s4vectors)
+       ("r-iranges" ,r-iranges)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-rtracklayer" ,r-rtracklayer)))
+    (home-page "http://bioconductor.org/packages/RIPSeeker")
+    (synopsis
+     "Identifying protein-associated transcripts from RIP-seq experiments")
+    (description
+     "This package infers and discriminates RIP peaks from RIP-seq alignments
+using two-state HMM with negative binomial emission probability.  While
+RIPSeeker is specifically tailored for RIP-seq data analysis, it also provides
+a suite of bioinformatics tools integrated within this self-contained software
+package comprehensively addressing issues ranging from post-alignments
+processing to visualization and annotation.")
+    (license license:gpl2)))
