@@ -275,3 +275,26 @@ normalization and quality checking.")
    (description "This package contains functions and classes that are needed by
 the @code{arrayCGH} packages.")
    (license license:gpl2+)))
+
+(define-public r-cghcall
+  (package
+   (name "r-cghcall")
+   (version "2.40.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "CGHcall" version))
+            (sha256
+             (base32 "11pi6awz3858yb4s0z3qf3kcmsdgp6d4aj41g4lfix1sv5amllch"))))
+   (properties `((upstream-name . "CGHcall")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-biobase" ,r-biobase)
+      ("r-cghbase" ,r-cghbase)
+      ("r-impute" ,r-impute)
+      ("r-dnacopy" ,r-dnacopy)
+      ("r-snowfall" ,r-snowfall)))
+   (home-page "http://bioconductor.org/packages/CGHcall")
+   (synopsis "Base functions and classes for arrayCGH data analysis")
+   (description "This package contains functions and classes that are needed by
+@code{arrayCGH} packages.")
+   (license license:gpl2+)))
