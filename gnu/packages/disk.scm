@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages gettext)
@@ -502,3 +504,32 @@ your data as it changes, without having to re-checksum unchanged data.
 
 Duperemove can also take input from the @command{fdupes} program.")
     (license license:gpl2)))
+
+(define-public ranger
+  (package
+    (name "ranger")
+    (version "1.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ranger.github.io/"
+                                  "ranger-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lnzkrxcnlwnyi3z0v8ybyp8d5rm26qm35rr68kbs2lbs06inha0"))))
+    (build-system python-build-system)
+    (native-inputs                      ;for tests
+     `(("python-pytest" ,python-pytest)
+       ("python-pylint" ,python-pylint)
+       ("python-flake8" ,python-flake8)
+       ("which" ,which)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _ (invoke "make" "test"))))))
+    (home-page "https://ranger.github.io/")
+    (synopsis "Console file manager")
+    (description "@code{ranger} is a console file manager with VI key
+bindings.  It provides a minimalistic and nice curses interface with a view on
+the directory hierarchy.  It ships with @code{rifle}, a file launcher that is
+good at automatically finding out which program to use for what file type.")
+    (license license:gpl3)))
