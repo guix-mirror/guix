@@ -147,3 +147,41 @@ a suite of bioinformatics tools integrated within this self-contained software
 package comprehensively addressing issues ranging from post-alignments
 processing to visualization and annotation.")
     (license license:gpl2)))
+
+(define-public r-multtest
+  (package
+    (name "r-multtest")
+    (version "2.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "multtest" version))
+       (sha256
+        (base32
+         "0n11rd49xl2vn3ldmfips7d3yb70l8npjcqsxyswr9ypjhgzkv9j"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-survival" ,r-survival)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biobase" ,r-biobase)
+       ("r-mass" ,r-mass)))
+    (home-page "http://bioconductor.org/packages/multtest")
+    (synopsis "Resampling-based multiple hypothesis testing")
+    (description
+     "This package can do non-parametric bootstrap and permutation
+resampling-based multiple testing procedures (including empirical Bayes
+methods) for controlling the family-wise error rate (FWER), generalized
+family-wise error rate (gFWER), tail probability of the proportion of
+false positives (TPPFP), and false discovery rate (FDR).  Several choices
+of bootstrap-based null distribution are implemented (centered, centered
+and scaled, quantile-transformed).  Single-step and step-wise methods are
+available.  Tests based on a variety of T- and F-statistics (including
+T-statistics based on regression parameters from linear and survival models
+as well as those based on correlation parameters) are included.  When probing
+hypotheses with T-statistics, users may also select a potentially faster null
+distribution which is multivariate normal with mean zero and variance
+covariance matrix derived from the vector influence function.  Results are
+reported in terms of adjusted P-values, confidence regions and test statistic
+cutoffs.  The procedures are directly applicable to identifying differentially
+expressed genes in DNA microarray experiments.")
+    (license license:lgpl3)))
