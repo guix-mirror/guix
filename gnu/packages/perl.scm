@@ -7871,7 +7871,7 @@ of a system.")
 (define-public perl-task-weaken
   (package
     (name "perl-task-weaken")
-    (version "1.05")
+    (version "1.06")
     (source
      (origin
        (method url-fetch)
@@ -7879,7 +7879,7 @@ of a system.")
                            "Task-Weaken-" version ".tar.gz"))
        (sha256
         (base32
-         "0p5ryr3421p5rqj6dk5dcvxsml5gl9skbn7gv4szk50fimrvzww5"))))
+         "1gk6rmnp4x50lzr0vfng41khf0f8yzxlm0pad1j69vxskpdzx0r3"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
