@@ -185,3 +185,53 @@ reported in terms of adjusted P-values, confidence regions and test statistic
 cutoffs.  The procedures are directly applicable to identifying differentially
 expressed genes in DNA microarray experiments.")
     (license license:lgpl3)))
+
+(define-public r-chippeakanno
+  (package
+    (name "r-chippeakanno")
+    (version "3.12.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ChIPpeakAnno" version))
+       (sha256
+        (base32
+         "1zab489d7a6bh6ylc68x6yn47gdkmr7p3677grx9l2qafrryjr04"))))
+    (properties `((upstream-name . "ChIPpeakAnno")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-go-db" ,r-go-db)
+       ("r-biomart" ,r-biomart)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-limma" ,r-limma)
+       ("r-multtest" ,r-multtest)
+       ("r-rbgl" ,r-rbgl)
+       ("r-graph" ,r-graph)
+       ("r-biocinstaller" ,r-biocinstaller)
+       ("r-regioner" ,r-regioner)
+       ("r-dbi" ,r-dbi)
+       ("r-ensembldb" ,r-ensembldb)
+       ("r-biobase" ,r-biobase)
+       ("r-seqinr" ,r-seqinr)
+       ("r-idr" ,r-idr)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-venndiagram" ,r-venndiagram)))
+    (home-page "http://bioconductor.org/packages/ChIPpeakAnno")
+    (synopsis "Peaks annotation from ChIP-seq and ChIP-chip experiments")
+    (description
+     "The package includes functions to retrieve the sequences around the peak,
+obtain enriched Gene Ontology (GO) terms, find the nearest gene, exon, miRNA or
+custom features such as most conserved elements and other transcription factor
+binding sites supplied by users.  Starting 2.0.5, new functions have been added
+for finding the peaks with bi-directional promoters with summary statistics
+(peaksNearBDP), for summarizing the occurrence of motifs in peaks
+(summarizePatternInPeaks) and for adding other IDs to annotated peaks or
+enrichedGO (addGeneIDs).")
+    (license license:gpl2+)))
