@@ -8259,7 +8259,7 @@ to tabs.")
 (define-public perl-text-glob
   (package
     (name "perl-text-glob")
-    (version "0.09")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
@@ -8267,7 +8267,7 @@ to tabs.")
                            "Text-Glob-" version ".tar.gz"))
        (sha256
         (base32
-         "0lr76wrsj8wcxrq4wi8z1640w4dmdbkznp06q744rg3g0bd238d5"))))
+         "11sj62fynfgwrlgkv5a051cq6yn0pagxqjsz27dxx8phsd4wv706"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Text-Glob/")
