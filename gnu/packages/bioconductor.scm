@@ -298,3 +298,34 @@ the @code{arrayCGH} packages.")
    (description "This package contains functions and classes that are needed by
 @code{arrayCGH} packages.")
    (license license:gpl2+)))
+
+(define-public r-qdnaseq
+  (package
+    (name "r-qdnaseq")
+    (version "1.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "QDNAseq" version))
+              (sha256
+               (base32 "0lgbv4s0xqgrs7q6ynb3c273sf7pyrp51jnc8ravq1z5g0a2zshy"))))
+    (properties `((upstream-name . "QDNAseq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-cghbase" ,r-cghbase)
+       ("r-cghcall" ,r-cghcall)
+       ("r-dnacopy" ,r-dnacopy)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-r-utils" ,r-r-utils)
+       ("r-rsamtools" ,r-rsamtools)))
+    (home-page "http://bioconductor.org/packages/QDNAseq")
+    (synopsis "Quantitative DNA sequencing for chromosomal aberrations")
+    (description "The genome is divided into non-overlapping fixed-sized bins,
+number of sequence reads in each counted, adjusted with a simultaneous
+two-dimensional loess correction for sequence mappability and GC content, and
+filtered to remove spurious regions in the genome.  Downstream steps of
+segmentation and calling are also implemented via packages DNAcopy and CGHcall,
+respectively.")
+    (license license:gpl2+)))
