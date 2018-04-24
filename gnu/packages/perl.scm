@@ -2712,7 +2712,7 @@ variable in a subroutines scope to one of your choosing.")
 (define-public perl-devel-overloadinfo
   (package
     (name "perl-devel-overloadinfo")
-    (version "0.004")
+    (version "0.005")
     (source
      (origin
        (method url-fetch)
@@ -2720,7 +2720,7 @@ variable in a subroutines scope to one of your choosing.")
                            "Devel-OverloadInfo-" version ".tar.gz"))
        (sha256
         (base32
-         "0zckjhzdqa6smpp98y15mqafsyzwjxwrvk10snzhn2sb0r889s43"))))
+         "1rx6g8pyhi7lx6z130b7vlf8syzrq92w9ky8mpw4d6bwlkzy5zcb"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))
