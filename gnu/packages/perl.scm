@@ -5126,7 +5126,7 @@ debug options.
 (define-public perl-module-find
   (package
     (name "perl-module-find")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
@@ -5134,7 +5134,7 @@ debug options.
                            "Module-Find-" version ".tar.gz"))
        (sha256
         (base32
-         "1lc33jdv4pgmm7nkr9bff0lhwjhhw91kaf6iiy2n7i7mw8dfv47l"))))
+         "0s45y5lvd9k89g7lds83c0bn1p29c13hfsbrd7x64jfaf8h8cisa"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Module-Find/")
     (synopsis "Find and use installed modules in a (sub)category")
