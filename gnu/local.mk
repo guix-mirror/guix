@@ -1061,7 +1061,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
-  %D%/packages/patches/qemu-CVE-2018-7550.patch			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
