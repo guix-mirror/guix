@@ -341,7 +341,7 @@ Images.")
 (define-public android-udev-rules
   (package
     (name "android-udev-rules")
-    (version "20171113")
+    (version "20180112")
     (source
      (origin
        (method git-fetch)
@@ -350,7 +350,7 @@ Images.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "11gcnk6wjc2sw05hwi4xphvx9ksmkpvsdziaczymqxkaads3f1dy"))))
+        (base32 "13gj79nnd04szqlrrzzkdr6wi1fky08pi7x8xfbg0jj3d3v0giah"))))
     (build-system trivial-build-system)
     (native-inputs `(("source" ,source)))
     (arguments
