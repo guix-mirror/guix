@@ -255,3 +255,23 @@ enrichedGO (addGeneIDs).")
 microarray data.  It also includes fuctions for data input, diagnostic plots,
 normalization and quality checking.")
     (license license:lgpl2.0+)))
+
+(define-public r-cghbase
+  (package
+   (name "r-cghbase")
+   (version "1.38.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "CGHbase" version))
+            (sha256
+             (base32 "0fynvcsjdbgp69i0nxrc8ni58rhb1kx9k5r3nb91n9i8s43gjqlm"))))
+   (properties `((upstream-name . "CGHbase")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-biobase" ,r-biobase)
+      ("r-marray" ,r-marray)))
+   (home-page "http://bioconductor.org/packages/CGHbase")
+   (synopsis "Base functions and classes for arrayCGH data analysis")
+   (description "This package contains functions and classes that are needed by
+the @code{arrayCGH} packages.")
+   (license license:gpl2+)))
