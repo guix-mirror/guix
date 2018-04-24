@@ -1120,7 +1120,7 @@ to the calling program.")
 (define-public perl-class-inspector
   (package
     (name "perl-class-inspector")
-    (version "1.31")
+    (version "1.32")
     (source
      (origin
        (method url-fetch)
@@ -1128,7 +1128,7 @@ to the calling program.")
                            "Class-Inspector-" version ".tar.gz"))
        (sha256
         (base32
-         "1sqfjgzxx1f951fykc6vgfvys4j8rxaw2zf3jq26yrvs3ygn8pq6"))))
+         "0d85rihxahdvhj8cysqrgg0kbmcqghz5hgy41dbkxr1qaf5xrynf"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Class-Inspector/")
     (synopsis "Get information about a class and its structure")
