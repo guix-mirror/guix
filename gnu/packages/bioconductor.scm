@@ -23,6 +23,8 @@
   #:use-module (guix download)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
+  #:use-module (gnu packages cran)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages bioinformatics))
 
@@ -69,4 +71,46 @@ the Human Protein Atlas project.")
     (description "This package offers a statistical framework based on
 customizable permutation tests to assess the association between genomic
 region sets and other genomic features.")
+    (license license:artistic2.0)))
+
+(define-public r-diffbind
+  (package
+    (name "r-diffbind")
+    (version "2.6.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DiffBind" version))
+       (sha256
+        (base32
+         "1sm5h6nq77hjfis6kr1nqyizcxgfz87dgpqc4fxlfqkmsd9n3vkp"))))
+    (properties `((upstream-name . "DiffBind")))
+    (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-amap" ,r-amap)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-deseq2" ,r-deseq2)
+       ("r-dplyr" ,r-dplyr)
+       ("r-edger" ,r-edger)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-gplots" ,r-gplots)
+       ("r-iranges" ,r-iranges)
+       ("r-lattice" ,r-lattice)
+       ("r-limma" ,r-limma)
+       ("r-locfit" ,r-locfit)
+       ("r-rcolorbrewer" , r-rcolorbrewer)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-systempiper" ,r-systempiper)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (home-page "http://bioconductor.org/packages/DiffBind")
+    (synopsis "Differential binding analysis of ChIP-Seq peak data")
+    (description
+     "This package computes differentially bound sites from multiple
+ChIP-seq experiments using affinity (quantitative) data.  Also enables
+occupancy (overlap) analysis and plotting functions.")
     (license license:artistic2.0)))
