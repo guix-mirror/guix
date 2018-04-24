@@ -235,3 +235,23 @@ for finding the peaks with bi-directional promoters with summary statistics
 (summarizePatternInPeaks) and for adding other IDs to annotated peaks or
 enrichedGO (addGeneIDs).")
     (license license:gpl2+)))
+
+(define-public r-marray
+  (package
+    (name "r-marray")
+    (version "1.56.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "marray" version))
+              (sha256
+               (base32 "14c93i86yc7jn4ax8p4l0z6v9xisw1bv7gzb4a0gbxhxn7mddaic"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-limma" ,r-limma)))
+    (home-page "http://bioconductor.org/packages/marray")
+    (synopsis "Exploratory analysis for two-color spotted microarray data")
+    (description "This package contains class definitions for two-color spotted
+microarray data.  It also includes fuctions for data input, diagnostic plots,
+normalization and quality checking.")
+    (license license:lgpl2.0+)))
