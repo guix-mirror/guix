@@ -3924,3 +3924,25 @@ promises, but with a syntax that is idiomatic R.")
      "This package provides a parallel backend for the @code{%dopar%} function
 using the @code{snow} package.")
     (license license:gpl2)))
+
+(define-public r-snowfall
+  (package
+   (name "r-snowfall")
+   (version "1.84-6.1")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "snowfall" version))
+            (sha256
+             (base32 "13941rlw1jsdjsndp1plzj1cq5aqravizkrqn6l25r9im7rnsi2w"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-snow" ,r-snow)))
+   (home-page "http://cran.r-project.org/web/packages/snowfall/")
+   (synopsis "Easier cluster computing")
+   (description "This package is a usability wrapper around snow for easier
+development of parallel R programs.  This package offers e.g. extended error
+checks, and additional functions.  All functions work in sequential mode, too,
+if no cluster is present or wished.  The package is also designed as connector
+to the cluster management tool @code{sfCluster}, but can also used without
+it.")
+   (license license:gpl2+)))
