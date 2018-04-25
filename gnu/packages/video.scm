@@ -1153,7 +1153,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.04.16")
+    (version "2018.04.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1161,7 +1161,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "046zg8pww2xg1yibh7c1a8jcg8f1znr4hsz1l1da03djcp6na99d"))))
+                "17zxgwfcy7c6gdyxdgh02f5zi52gvmy0zpccfj6zjkhw5iqj1vbw"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
