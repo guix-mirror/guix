@@ -19,6 +19,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -551,6 +552,21 @@ collaboration using typical untrusted file hosts or services.")
                 (quoted-file-name (assoc-ref inputs "bzip2") "/bin/bzip2"))
                (("\"xz\"")
                 (quoted-file-name (assoc-ref inputs "xz") "/bin/xz")))
+
+             (substitute* "filters/about-formatting.sh"
+               (("$\\(dirname $0\\)") (string-append (assoc-ref outputs "out")
+                                                     "/lib/cgit/filters"))
+               (("\\| tr") (string-append "| " (which "tr"))))
+
+             (substitute* "filters/html-converters/txt2html"
+               (("sed") (which "sed")))
+
+             (substitute* "filters/html-converters/man2html"
+               (("groff") (which "groff")))
+
+             (substitute* "filters/html-converters/rst2html"
+               (("rst2html\\.py") (which "rst2html.py")))
+
              #t))
          (delete 'configure) ; no configure script
          (add-after 'build 'build-man
@@ -569,7 +585,17 @@ collaboration using typical untrusted file hosts or services.")
                     ;; to get it stripped.
                     (rename-file (string-append out "/share/cgit/cgit.cgi")
                                  (string-append out "/lib/cgit/cgit.cgi"))
-                    #t)))))))
+                    #t))))
+         (add-after 'install 'wrap-python-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each
+              (lambda (file)
+                (wrap-program (string-append (assoc-ref outputs "out")
+                                             "/lib/cgit/filters/" file)
+                  `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))
+              '("syntax-highlighting.py"
+                "html-converters/md2html"))
+             #t)))))
     (native-inputs
      ;; For building manpage.
      `(("asciidoc" ,asciidoc)
@@ -588,6 +614,11 @@ collaboration using typical untrusted file hosts or services.")
             (base32
              "1r2aa19gnrvm2y4fqcvpw1g9l72n48axqmpgv18s6d0y2p72vhzj"))))
        ("openssl" ,openssl)
+       ("groff" ,groff)
+       ("python" ,python)
+       ("python-docutils" ,python-docutils)
+       ("python-markdown" ,python-markdown)
+       ("python-pygments" ,python-pygments)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
     (synopsis "Web frontend for git repositories")
