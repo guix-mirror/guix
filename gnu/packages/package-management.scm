@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -534,13 +535,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "90")
+    (version "93")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0hhg26vi0z2q4gwklwq4k16hibc4kq16jvyzp6zhr4kspi07wl6i"))))
+                "0g90nf7817jk03hzk36l3hymky4xqs50iynfld3r0in7hffly5nj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
