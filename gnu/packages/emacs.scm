@@ -4527,6 +4527,31 @@ main features of Vim, and provides facilities for writing custom
 extensions.")
     (license license:gpl3+)))
 
+(define-public emacs-evil-collection
+  (let ((commit "f40704a57fd33b4bfad64147a2b771fc8961fdfc")
+        (revision "1"))
+    (package
+      (name "emacs-evil-collection")
+      (version (git-version "20180425" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-evil/evil-collection")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0qn19k0f3isnbi1hkmcf3qjxbyvp23m5ak5ny7623qgwb2nwz1l5"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/emacs-evil/evil-collection")
+      (synopsis "Collection of Evil bindings for many major and minor modes")
+      (description "This is a collection of Evil bindings for the parts of
+Emacs that Evil does not cover properly by default, such as @code{help-mode},
+@code{M-x calendar}, Eshell and more.")
+      (license license:gpl3+))))
+
 (define-public emacs-goto-chg
   (package
     (name "emacs-goto-chg")
