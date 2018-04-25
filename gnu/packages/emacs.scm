@@ -5190,6 +5190,34 @@ To make YASnippet aware of these snippets, add the above directory to
 Yasnippet.")
       (license license:gpl2+))))
 
+(define-public emacs-helm-system-packages
+  (let ((commit "986b7bd360a705053500c4ce2c9bea03dd7b24a6")
+        (revision "1"))
+    (package
+      (name "emacs-helm-system-packages")
+      (version (git-version "1.9.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-helm/helm-system-packages")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "19iklhpxgh5xx6h4dysf58nd46lmyb46xj601lf7kbwl6yq0y61f"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/emacs-helm/helm-system-packages")
+      (synopsis "Helm System Packages is an interface to your package manager")
+      (description "List all available packages in Helm (with installed
+packages displayed in their own respective face).  Fuzzy-search, mark and
+execute the desired action over any selections of packages: Install,
+uninstall, display packages details (in Org Mode) or insert details at point,
+find files owned by packages...  And much more, including performing all the
+above over the network.")
+      (license license:gpl3+))))
+
 (define-public emacs-memoize
   (package
     (name "emacs-memoize")
