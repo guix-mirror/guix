@@ -581,6 +581,37 @@ these arguments.  The prototypical use is for the command to call an external
 process, passing on the arguments as command line arguments.")
     (license license:gpl3+)))
 
+(define-public emacs-ghub
+  (package
+    (name "emacs-ghub")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/magit/ghub/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zrb3xk04a228g2ahx0r02d0d3xskj60q73qavvmm2i56r66cxvc"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-info
+           (lambda _
+             (zero? (system* "make" "info")))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (home-page "https://github.com/magit/ghub")
+    (synopsis "Emacs client library for Github API and Gitlab API")
+    (description
+     "This package provides 2 files: @file{ghub.el} and @file{glab.el},
+which are the libraries that provide basic support for using the Github and
+Gitlab APIs from Emacs packages.  It abstracts access to API resources using
+only a handful of functions that are not resource-specific.")
+    (license license:gpl3+)))
+
 (define-public haskell-mode
   (package
     (name "haskell-mode")
