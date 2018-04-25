@@ -27,6 +27,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4631,3 +4632,51 @@ the @code{coretemp} module and sets the fan speed using the @code{applesmc}
 module.  It can be executed as a daemon or in the foreground with root
 privileges.")
     (license license:gpl3+)))
+
+(define-public psm2
+  (package
+    (name "psm2")
+    (version "10.3-46")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/intel/opa-psm2.git")
+                    (commit (string-append "PSM2_" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0wadphv4rl5p38x6a3dgpbijlzqdvcn02cfafnp72nh9faz0zvlx"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       `(,(string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'unpack 'patch-Makefiles
+                    (lambda _
+                      (substitute* "Makefile"
+                        (("/lib64") "/lib")
+                        (("/usr") ""))
+                      (substitute* "compat/Makefile"
+                        (("/lib64") "/lib")
+                        (("/usr") ""))
+                      #t))
+                  (replace 'install
+                    (lambda _
+                      (setenv "DESTDIR" %output)
+                      (invoke "make" "install")
+                      #t)))))
+    (inputs
+     `(("rdma-core" ,rdma-core)
+       ("numactl" ,numactl)))
+    (synopsis "Intel Performance Scaled Messaging 2 (PSM2) library")
+    (description
+     "This package is low-level user-level Intel's communications interface.
+The PSM2 API is a high-performance vendor-specific protocol that provides a
+low-level communications interface for the Intel Omni-Path family of
+high-speed networking devices.")
+    (home-page "https://github.com/intel/opa-psm2")
+    ;; Only the x86_64 architecure is supported.
+    (supported-systems '("x86_64-linux"))
+    (license (list license:bsd-3 license:gpl2)))) ; dual
