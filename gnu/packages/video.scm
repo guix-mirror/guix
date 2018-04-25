@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
@@ -2852,3 +2852,41 @@ the results, download the highest-rated result in the requested language and
 save it to the appropriate filename.")
       (license license:gpl3+)
       (home-page "https://github.com/alexanderwink/subdl"))))
+
+(define-public l-smash
+  (package
+    (name "l-smash")
+    (version "2.14.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/" name "/" name "/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dary0h65kq6sv93iabv25djlvzr5ckdcp3ywagbix44wqfw7xz6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags
+       (list (string-append "LDFLAGS=-Wl,-L.,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; configure fails if it is followed by CONFIG_SHELL
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "./configure" (string-append "--prefix=" out)
+                       "--disable-static")))))))
+    (native-inputs
+     `(("which" ,which)))
+    (home-page "https://l-smash.github.io/l-smash/")
+    (synopsis "MP4 multiplexer and demultiplexer library")
+    (description
+     "L-SMASH is a cross-platform library that handles the ISO base media file
+format and some of its derived file formats, including MP4.  It operates as a
+multiplexer and demultiplexer, and can mux video and audio in several formats
+using standalone executable files.")
+    (license license:isc)))
