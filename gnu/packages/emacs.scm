@@ -428,7 +428,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.11.0")
+    (version "2.12.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -436,7 +436,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "11xly5bma9jc1jhs8fqbqrci8kz1y26yfq7dqjkqfy956wvfg6hz"))))
+               "1czzknmhzbggcv3bxl5amvfpp0zrkdwl1x05qarsq6qakvc85xy3"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
@@ -445,7 +445,8 @@ on stdout instead of using a socket as the Emacsclient does.")
        ("perl" ,perl)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
-       ;; XXX Add 'magit-popup' dependency for the next release (after 2.11.0).
+       ("ghub" ,emacs-ghub)
+       ("magit-popup" ,emacs-magit-popup)
        ("with-editor" ,emacs-with-editor)))
     (arguments
      `(#:test-target "test"
@@ -459,6 +460,14 @@ on stdout instead of using a socket as the Emacsclient does.")
                             (assoc-ref %build-inputs "dash")
                             "/share/emacs/site-lisp/guix.d/dash-"
                             ,(package-version emacs-dash))
+             (string-append "GHUB_DIR="
+                            (assoc-ref %build-inputs "ghub")
+                            "/share/emacs/site-lisp/guix.d/ghub-"
+                            ,(package-version emacs-ghub))
+             (string-append "MAGIT_POPUP_DIR="
+                            (assoc-ref %build-inputs "magit-popup")
+                            "/share/emacs/site-lisp/guix.d/magit-popup-"
+                            ,(package-version emacs-magit-popup))
              (string-append "WITH_EDITOR_DIR="
                             (assoc-ref %build-inputs "with-editor")
                             "/share/emacs/site-lisp/guix.d/with-editor-"
@@ -474,7 +483,7 @@ on stdout instead of using a socket as the Emacsclient does.")
               (substitute* "lisp/magit-sequence.el"
                 (("perl") (string-append perl "/bin/perl")))
               #t))))))
-    (home-page "http://magit.github.io/")
+    (home-page "https://magit.vc/")
     (synopsis "Emacs interface for the Git version control system")
     (description
      "With Magit, you can inspect and modify your Git repositories with Emacs.
