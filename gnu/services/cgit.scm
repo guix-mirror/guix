@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -168,6 +169,9 @@
       (serialize-field
        'project-list
        (plain-file "project-list" (string-join val "\n")))))
+
+(define (serialize-extra-options extra-options)
+  (string-join extra-options "\n" 'suffix))
 
 (define repository-directory? string?)
 
@@ -641,6 +645,7 @@ for cgit to allow access to that repository.")
   (define (rest? field)
     (not (memq (configuration-field-name field)
                '(project-list
+                 extra-options
                  repository-directory
                  repositories))))
   #~(string-append
@@ -649,6 +654,8 @@ for cgit to allow access to that repository.")
      #$(serialize-project-list
         'project-list
         (cgit-configuration-project-list config))
+     #$(serialize-extra-options
+        (cgit-configuration-extra-options config))
      #$(serialize-repository-directory
         'repository-directory
         (cgit-configuration-repository-directory config))
