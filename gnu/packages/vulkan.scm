@@ -160,7 +160,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-icd-loader
   (package
     (name "vulkan-icd-loader")
-    (version "1.1.70.0")
+    (version "1.1.73.0")
     (source
      (origin
        (method url-fetch)
@@ -169,7 +169,7 @@ interpretation of the specifications for these languages.")
              "archive/sdk-" version ".tar.gz"))
        (sha256
         (base32
-         "15qkh77596v3xivnbb3l0q9zbmmsdglnaza2m1g7f8q7bbigyc5x"))))
+         "1qb34j2zrc04fgs96m3k76vi4nx3sygbdcyg7pbwasr45cbdhsxb"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -182,6 +182,7 @@ interpretation of the specifications for these languages.")
              #t)))
        #:configure-flags (list
                           "-DBUILD_LAYERS=OFF" ; FIXME: Fails to build.
+                          "-DBUILD_TESTS=OFF" ; FIXME: Needs 'googletest' submodule.
                           (string-append "-DCMAKE_INSTALL_LIBDIR="
                                               (assoc-ref %outputs "out") "/lib"))))
     (inputs `(("glslang" ,glslang)
