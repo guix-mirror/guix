@@ -4618,14 +4618,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.1.10")
+    (version "9.1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "01vvq6m7r2ifyflvq5ga241qvl4j62smz0zr6jljk56b6nqi20lm"))))
+                "0i27g5qbkfqbxhgiz917pjwkxg3rwid99d0ickwx43bzq0zi7c1m"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4639,14 +4639,14 @@ reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20180416")
+    (version "20180423")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   version ".tar"))
               (sha256
                (base32
-                "1f5zdfsa1fcf66hk3w57wh5385069yg0b86h57jgkcbmxkcmj6ij"))))
+                "1aggvdy74q8p79xyc19zring5gjvlzp6lbsq8ar319zkmcjrapqd"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
