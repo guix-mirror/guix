@@ -19241,7 +19241,7 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} list project-list
+@deftypevr {@code{cgit-configuration} parameter} project-list project-list
 A list of subdirectories inside of @code{repository-directory}, relative
 to it, that should loaded as Git repositories.  An empty list means that
 all subdirectories will be loaded.

@@ -116,6 +116,10 @@
 (define (serialize-file-object field-name val)
   (serialize-string field-name val))
 
+(define (project-list? val)
+  (or (list? val)
+      (file-object? val)))
+
 
 ;;;
 ;;; Serialize <nginx-server-configuration>
@@ -168,7 +172,9 @@
   (if (null? val) ""
       (serialize-field
        'project-list
-       (plain-file "project-list" (string-join val "\n")))))
+       (if (file-object? val)
+           val
+           (plain-file "project-list" (string-join val "\n"))))))
 
 (define (serialize-extra-options extra-options)
   (string-join extra-options "\n" 'suffix))
@@ -547,7 +553,7 @@ disabled.")
    "Flag which, when set to @samp{#t}, will make cgit omit the standard
 header on all pages.")
   (project-list
-   (list '())
+   (project-list '())
    "A list of subdirectories inside of @code{repository-directory}, relative
 to it, that should loaded as Git repositories.  An empty list means that all
 subdirectories will be loaded.")
