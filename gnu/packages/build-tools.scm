@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages ninja)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
@@ -171,3 +174,43 @@ scripted definition of a software project and outputs @file{Makefile}s or
 other lower-level build files.")
     (home-page "https://premake.github.io")
     (license license:bsd-3)))
+
+(define-public osc
+  (package
+    (name "osc")
+    (version "0.162.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/openSUSE/" name
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0b4kpm96ns4smqyfjysbk2p78d36x44xprpna8zz85q1y5xn57aj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; Module is python2 only.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'fix-filename-and-remove-unused
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               ;; Main osc tool is renamed in spec file, not setup.py, let's
+               ;; do that too.
+               (rename-file
+                (string-append bin "osc-wrapper.py")
+                (string-append bin "osc"))
+               ;; Remove unused and broken script.
+               (delete-file (string-append bin "osc_hotshot.py"))
+             #t))))))
+    (inputs
+     `(("python2-m2crypto" ,python2-m2crypto)
+       ("python2-pycurl" ,python2-pycurl)
+       ("python2-urlgrabber" ,python2-urlgrabber)))
+    (home-page "https://github.com/openSUSE/osc")
+    (synopsis "Open Build Service command line tool")
+    (description "@command{osc} is a command line interface to the Open Build
+Service.  It allows you to checkout, commit, perform reviews etc.  The vast
+majority of the OBS functionality is available via commands and the rest can
+be reached via direct API calls.")
+    (license license:gpl2+)))

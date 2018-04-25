@@ -74,12 +74,37 @@ archive, a directory, or an Emacs Lisp file."
         #t)
       (gnu:unpack #:source source)))
 
-(define* (set-emacs-load-path #:key inputs #:allow-other-keys)
+(define* (set-emacs-load-path #:key source inputs #:allow-other-keys)
+  (define (inputs->directories inputs)
+    "Extract the directory part from INPUTS."
+    (match inputs
+      (((names . directories) ...) directories)))
+
+  (define (input-directory->el-directory input-directory)
+    "Return the correct Emacs Lisp directory in INPUT-DIRECTORY or #f, if there
+is no Emacs Lisp directory."
+    (let ((legacy-elisp-directory (string-append input-directory %legacy-install-suffix))
+          (guix-elisp-directory
+           (string-append
+            input-directory %install-suffix "/"
+            (store-directory->elpa-name-version input-directory))))
+      (cond
+       ((file-exists? guix-elisp-directory) guix-elisp-directory)
+       ((file-exists? legacy-elisp-directory) legacy-elisp-directory)
+       (else #f))))
+
+  (define (input-directories->el-directories input-directories)
+    "Return the list of Emacs Lisp directories in INPUT-DIRECTORIES."
+    (filter-map input-directory->el-directory input-directories))
+
   "Set the EMACSLOADPATH environment variable so that dependencies are found."
-  (let* ((input-elisp-dirs (emacs-inputs-el-directories
-                            (emacs-inputs-directories inputs)))
-         (emacs-load-path-value (string-join
-                                 input-elisp-dirs ":" 'suffix)))
+  (let* ((source-directory (getcwd))
+         (input-elisp-directories (input-directories->el-directories
+                                   (inputs->directories inputs)))
+         (emacs-load-path-value
+          (string-join
+           (append input-elisp-directories (list source-directory))
+           ":" 'suffix)))
     (setenv "EMACSLOADPATH" emacs-load-path-value)
     (format #t "environment variable `EMACSLOADPATH' set to ~a\n"
             emacs-load-path-value)))
@@ -132,6 +157,24 @@ store in '.el' files."
         (with-fluids ((%default-port-encoding "ISO-8859-1"))
           (substitute-program-names))))
     #t))
+
+(define* (check #:key tests? (test-command '("make" "check"))
+                (parallel-tests? #t) #:allow-other-keys)
+  "Run the tests by invoking TEST-COMMAND.
+
+When TEST-COMMAND uses make and PARALLEL-TESTS is #t, the tests are run in
+parallel. PARALLEL-TESTS? is ignored when using a non-make TEST-COMMAND."
+  (match-let (((test-program . args) test-command))
+    (let ((using-make? (string=? test-program "make")))
+      (if tests?
+          (apply invoke test-program
+                 `(,@args
+                   ,@(if (and using-make? parallel-tests?)
+                         `("-j" ,(number->string (parallel-job-count)))
+                         '())))
+          (begin
+            (format #t "test suite not run~%")
+            #t)))))
 
 (define* (install #:key outputs
                   (include %default-include)
@@ -203,46 +246,11 @@ store in '.el' files."
          (elpa-name (package-name->name+version elpa-name-ver))
          (el-dir (string-append out %install-suffix "/" elpa-name-ver)))
     (parameterize ((%emacs emacs))
-      (emacs-generate-autoloads elpa-name el-dir))
-    #t))
+      (emacs-generate-autoloads elpa-name el-dir))))
 
 (define (emacs-package? name)
   "Check if NAME correspond to the name of an Emacs package."
   (string-prefix? "emacs-" name))
-
-(define (emacs-inputs inputs)
-  "Retrieve the list of Emacs packages from INPUTS."
-  (filter (match-lambda
-            ((label . directory)
-             (emacs-package? ((compose package-name->name+version
-                                       strip-store-file-name)
-                              directory)))
-            (_ #f))
-          inputs))
-
-(define (emacs-inputs-directories inputs)
-  "Extract the list of Emacs package directories from INPUTS."
-  (let ((inputs (emacs-inputs inputs)))
-    (match inputs
-      (((names . directories) ...) directories))))
-
-(define (emacs-input->el-directory emacs-input)
-  "Return the correct Elisp directory location of EMACS-INPUT or #f if none."
-  (let ((legacy-elisp-dir (string-append emacs-input %legacy-install-suffix))
-        (guix-elisp-dir (string-append
-                         emacs-input %install-suffix "/"
-                         (store-directory->elpa-name-version emacs-input))))
-    (cond
-     ((file-exists? guix-elisp-dir) guix-elisp-dir)
-     ((file-exists? legacy-elisp-dir) legacy-elisp-dir)
-     (else (format #t "warning: could not locate elisp directory under `~a'\n"
-                   emacs-input)
-           #f))))
-
-(define (emacs-inputs-el-directories dirs)
-  "Build the list of Emacs Lisp directories from the Emacs package directory
-DIRS."
-  (filter-map emacs-input->el-directory dirs))
 
 (define (package-name-version->elpa-name-version name-ver)
   "Convert the Guix package NAME-VER to the corresponding ELPA name-version
@@ -260,12 +268,13 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
-    (add-after 'set-paths 'set-emacs-load-path set-emacs-load-path)
     (replace 'unpack unpack)
+    (add-after 'unpack 'set-emacs-load-path set-emacs-load-path)
     (delete 'configure)
     ;; Move the build phase after install: the .el files are byte compiled
     ;; directly in the store.
     (delete 'build)
+    (replace 'check check)
     (replace 'install install)
     (add-after 'install 'build build)
     (add-after 'install 'make-autoloads make-autoloads)

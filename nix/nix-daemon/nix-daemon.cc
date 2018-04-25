@@ -54,7 +54,9 @@ static FdSink to(STDOUT_FILENO);
 
 bool canSendStderr;
 
-
+/* This variable is used to keep track of whether a connection
+   comes from a host other than the host running guix-daemon. */
+static bool isRemoteConnection;
 
 /* This function is called anytime we want to write something to
    stderr.  If we're in a state where the protocol allows it (i.e.,
@@ -529,6 +531,11 @@ static void performOp(bool trusted, unsigned int clientVersion,
     }
 
     case wopCollectGarbage: {
+        if (isRemoteConnection) {
+            throw Error("Garbage collection is disabled for remote hosts.");
+            break;
+        }
+
         GCOptions options;
         options.action = (GCOptions::GCAction) readInt(from);
         options.pathsToDelete = readStorePaths<PathSet>(from);
@@ -934,6 +941,7 @@ static void acceptConnection(int fdSocket)
                    connection.  Setting these to -1 means: do not change.  */
                 settings.clientUid = clientUid;
 		settings.clientGid = clientGid;
+                isRemoteConnection = (remoteAddr.ss_family != AF_UNIX);
 
                 /* Handle the connection. */
                 from.fd = remote;

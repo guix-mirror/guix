@@ -186,7 +186,7 @@
          ("bluez" ,bluez)
          ("curl" ,curl)
          ("eudev" ,eudev)
-         ("ffmpeg" ,ffmpeg)
+         ("ffmpeg" ,ffmpeg-3.4)
          ("font-wqy-microhei" ,font-wqy-microhei)
          ("freetype" ,freetype)
          ("glew" ,glew)
@@ -993,7 +993,7 @@ towards a working Mupen64Plus for casual users.")
 (define-public nestopia-ue
   (package
     (name "nestopia-ue")
-    (version "1.47")
+    (version "1.48")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1002,42 +1002,34 @@ towards a working Mupen64Plus for casual users.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1dzrrjmvyqks64q5l5pfly80jb6qcsbj5b3dm40fijd5xnpbapci"))
+                "184y05z4k4a4m4022niy625kan0rklh8gcxyynxli1fss2sjjrpv"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; We don't need libretro for the GNU/Linux build.
-                  (delete-file-recursively "libretro")
-                  ;; Use system zlib.
-                  (delete-file-recursively "source/zlib")
-                  (substitute* "source/core/NstZlib.cpp"
-                    (("#include \"../zlib/zlib.h\"") "#include <zlib.h>"))))))
-    (build-system gnu-build-system)
+                  (delete-file-recursively "libretro")))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("ao" ,ao)
-       ("glu" ,glu)
        ("gtk+" ,gtk+)
        ("libarchive" ,libarchive)
-       ("mesa" ,mesa)
+       ("libepoxy" ,libepoxy)
        ("sdl2" ,sdl2)
        ("zlib" ,zlib)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         ;; The Nestopia build system consists solely of a Makefile.
-         (delete 'configure)
-         (add-before 'build 'remove-xdg-desktop-menu-call
-           (lambda _
-             (substitute* "Makefile"
-               (("xdg-desktop-menu install .*") ""))))
-         (add-before 'build 'remove-gdkwayland-include
-           (lambda _
-             (substitute* "source/unix/gtkui/gtkui.h"
-               (("#include <gdk/gdkwayland\\.h>") "")))))
-       #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list "CC=gcc" "CXX=g++" (string-append "PREFIX=" out)))
+         ;; This fixes the file chooser crash that happens with GTK 3.
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (nestopia (string-append out "/bin/nestopia"))
+                    (gtk (assoc-ref inputs "gtk+"))
+                    (gtk-share (string-append gtk "/share")))
+               (wrap-program nestopia
+                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))))))
        ;; There are no tests.
        #:tests? #f))
     (home-page "http://0ldsk00l.ca/nestopia/")
@@ -1051,7 +1043,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
@@ -1059,7 +1051,7 @@ emulation community.  It provides highly accurate emulation.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1wykv0w0kdlh7lh0k1ig0lpk5vh4c7r19jlfa9103jmjlryrq679"))))
+        (base32 "1sk3cp8y4rdiyhk2rgk1asdla5mpmybr778v0zqb5m4iyhrd1m2y"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests

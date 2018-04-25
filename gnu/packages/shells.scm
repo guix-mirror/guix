@@ -357,14 +357,14 @@ ksh, and tcsh.")
 (define-public xonsh
   (package
     (name "xonsh")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xonsh" version))
         (sha256
           (base32
-            "1ikd1xg4iyjqp51y8g8n6c4y39bgx85xnb4bdd3zibkqac3lrahr"))
+            "09rrfcwpirbxmjjqnsbyn7lwm1wyn41z5zhkbnv57i5hcgs72kx6"))
         (modules '((guix build utils)))
         (snippet
          `(begin
@@ -575,7 +575,7 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
 (define-public loksh
   (package
     (name "loksh")
-    (version "6.2")
+    (version "6.3")
     (source
      (origin
        (method url-fetch)
@@ -584,7 +584,7 @@ The OpenBSD Korn Shell is a cleaned up and enhanced ksh.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "16mgxby77wgjg1ybp4fb9cvi7a4a387xmfivdxnhphg0vhyr8qd3"))))
+         "0i1b60g1p19s5cnzz0nmjzjnxywm9szzyp1rcwfcx3gmzvrwr2sc"))))
     (build-system gnu-build-system)
     (inputs
      `(("libbsd" ,libbsd)))

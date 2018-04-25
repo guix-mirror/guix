@@ -10,6 +10,7 @@
 # Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 # Copyright © 2018 Nils Gillmann <ng0@n0.is>
+# Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 #
 # This file is part of GNU Guix.
 #
@@ -25,6 +26,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+MSGMERGE_UPDATE = @MSGMERGE@ --update
 
 bin_SCRIPTS = scripts/guix
 
@@ -51,6 +54,7 @@ MODULES_NOT_COMPILED =				\
   guix/man-db.scm
 
 include gnu/local.mk
+include po/doc/local.mk
 
 MODULES =					\
   guix/base16.scm				\
@@ -454,7 +458,7 @@ dist_fishcompletion_DATA = etc/completion/fish/guix.fish
 # SELinux policy
 dist_selinux_policy_DATA = etc/guix-daemon.cil
 
-EXTRA_DIST =						\
+EXTRA_DIST +=						\
   HACKING						\
   ROADMAP						\
   TODO							\
@@ -792,3 +796,7 @@ AM_V_DOT_0 = @echo "  DOT     " $@;
 AM_V_HELP2MAN = $(AM_V_HELP2MAN_$(V))
 AM_V_HELP2MAN_ = $(AM_V_HELP2MAN_$(AM_DEFAULT_VERBOSITY))
 AM_V_HELP2MAN_0 = @echo "  HELP2MAN" $@;
+
+AM_V_PO4A = $(AM_V_PO4A_$(V))
+AM_V_PO4A_ = $(AM_V_PO4A_$(AM_DEFAULT_VERBOSITY))
+AM_V_PO4A_0 = @echo "  PO4A" $@;

@@ -263,6 +263,10 @@ AM_MISSING_PROG([DOT], [dot])
 dnl Manual pages.
 AM_MISSING_PROG([HELP2MAN], [help2man])
 
+dnl Documentation translation.
+AM_MISSING_PROG([PO4A_TRANSLATE], [po4a-translate])
+AM_MISSING_PROG([PO4A_UPDATEPO], [po4a-updatepo])
+
 dnl Emacs (optional), for 'etc/indent-package.el'.
 AC_PATH_PROG([EMACS], [emacs], [/usr/bin/emacs])
 AC_SUBST([EMACS])

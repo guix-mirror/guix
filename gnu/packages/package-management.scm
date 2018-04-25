@@ -5,6 +5,8 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,8 +94,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.14.0")
-        (commit "486de7377f25438b0f44fd93f97e9ef822d558b8")
-        (revision 10))
+        (commit "ab85cf7185da366da56314c53d8e43276e1cccc4")
+        (revision 11))
     (package
       (name "guix")
 
@@ -109,7 +111,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "12ghbby83w335g7vbg7h52hjaal5l6mc6qmldlx8029340br8h1w"))
+                  "1c00yr2vgsdl3kmlbjppyws47ssahamdx88y0wg26x73px71rd19"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -244,7 +246,8 @@
                        ("gettext" ,gettext-minimal)
                        ("texinfo" ,texinfo)
                        ("graphviz" ,graphviz)
-                       ("help2man" ,help2man)))
+                       ("help2man" ,help2man)
+                       ("po4a" ,po4a)))
       (inputs
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)
@@ -532,13 +535,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "90")
+    (version "93")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0hhg26vi0z2q4gwklwq4k16hibc4kq16jvyzp6zhr4kspi07wl6i"))))
+                "0g90nf7817jk03hzk36l3hymky4xqs50iynfld3r0in7hffly5nj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

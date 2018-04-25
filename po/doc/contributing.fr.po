@@ -1,0 +1,1220 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2018-04-10 21:34+0200\n"
+"PO-Revision-Date: 2018-04-19 18:50+0200\n"
+"Last-Translator: Julien Lepiller <julien@lepiller.eu>\n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.6\n"
+
+#. type: chapter
+#: doc/contributing.texi:1 doc/contributing.texi:2
+#, no-wrap
+msgid "Contributing"
+msgstr "Contribuer"
+
+#. type: Plain text
+#: doc/contributing.texi:9
+msgid ""
+"This project is a cooperative effort, and we need your help to make it grow! "
+"Please get in touch with us on @email{guix-devel@@gnu.org} and @code{#guix} on "
+"the Freenode IRC network.  We welcome ideas, bug reports, patches, and "
+"anything that may be helpful to the project.  We particularly welcome help on "
+"packaging (@pxref{Packaging Guidelines})."
+msgstr ""
+"Ce projet est un effort coopératif et nous avons besoin de votre aide pour le "
+"faire grandir ! Contactez-nous sur @email{guix-devel@@gnu.org} et @code{#guix} "
+"sur le réseau IRC Freenode. Nous accueillons les idées, les rapports de "
+"bogues, les correctifs et tout ce qui pourrait aider le projet. Nous "
+"apprécions particulièrement toute aide sur la création de paquets "
+"(@pxref{Consignes d'empaquetage})."
+
+#. type: cindex
+#: doc/contributing.texi:10
+#, no-wrap
+msgid "code of conduct, of contributors"
+msgstr "code de conduite, des contributeurs"
+
+#. type: cindex
+#: doc/contributing.texi:11
+#, no-wrap
+msgid "contributor covenant"
+msgstr "convention de contribution"
+
+#. type: Plain text
+#: doc/contributing.texi:17
+msgid ""
+"We want to provide a warm, friendly, and harassment-free environment, so that "
+"anyone can contribute to the best of their abilities.  To this end our project "
+"uses a ``Contributor Covenant'', which was adapted from @url{http://"
+"contributor-covenant.org/}.  You can find a local version in the @file{CODE-OF-"
+"CONDUCT} file in the source tree."
+msgstr ""
+"Nous souhaitons fournir un environnement chaleureux, amical et sans "
+"harcèlement pour que tout le monde puisse contribuer au mieux de ses "
+"capacités. Pour cela notre projet a une « Convention de contribution » adaptée "
+"de @url{http://contributor-covenant.org/}. Vous pouvez trouver une version "
+"locale dans le fichier @file{CODE-OF-CONDUCT} dans l'arborescence des sources."
+
+#. type: Plain text
+#: doc/contributing.texi:21
+msgid ""
+"Contributors are not required to use their legal name in patches and on-line "
+"communication; they can use any name or pseudonym of their choice."
+msgstr ""
+"Les contributeurs n'ont pas besoin d'utiliser leur nom légal dans leurs "
+"correctifs et leurs communications en ligne ; ils peuvent utiliser n'importe "
+"quel nom ou pseudonyme de leur choix."
+
+#. type: section
+#: doc/contributing.texi:28 doc/contributing.texi:30 doc/contributing.texi:31
+#, no-wrap
+msgid "Building from Git"
+msgstr "Construire depuis Git"
+
+#. type: menuentry
+#: doc/contributing.texi:28
+msgid "The latest and greatest."
+msgstr ""
+
+#. type: section
+#: doc/contributing.texi:28 doc/contributing.texi:102 doc/contributing.texi:103
+#, no-wrap
+msgid "Running Guix Before It Is Installed"
+msgstr "Lancer Guix avant qu'il ne soit installé"
+
+#. type: menuentry
+#: doc/contributing.texi:28
+msgid "Hacker tricks."
+msgstr "Astuces pour les hackers."
+
+#. type: section
+#: doc/contributing.texi:28 doc/contributing.texi:169 doc/contributing.texi:170
+#, no-wrap
+msgid "The Perfect Setup"
+msgstr "La configuration parfaite"
+
+#. type: menuentry
+#: doc/contributing.texi:28
+msgid "The right tools."
+msgstr "Les bons outils."
+
+#. type: section
+#: doc/contributing.texi:28 doc/contributing.texi:228 doc/contributing.texi:229
+#, no-wrap
+msgid "Coding Style"
+msgstr "Style de code"
+
+#. type: menuentry
+#: doc/contributing.texi:28
+msgid "Hygiene of the contributor."
+msgstr "Hygiène du contributeur."
+
+#. type: section
+#: doc/contributing.texi:28 doc/contributing.texi:319 doc/contributing.texi:320
+#, no-wrap
+msgid "Submitting Patches"
+msgstr "Envoyer des correctifs"
+
+#. type: menuentry
+#: doc/contributing.texi:28
+msgid "Share your work."
+msgstr "Partager votre travail."
+
+#. type: Plain text
+#: doc/contributing.texi:35
+msgid ""
+"If you want to hack Guix itself, it is recommended to use the latest version "
+"from the Git repository:"
+msgstr ""
+"Si vous souhaitez travailler sur Guix lui-même, il est recommandé d'utiliser "
+"la dernière version du dépôt Git :"
+
+#. type: example
+#: doc/contributing.texi:38
+#, no-wrap
+msgid "git clone https://git.savannah.gnu.org/git/guix.git\n"
+msgstr "git clone https://git.savannah.gnu.org/git/guix.git\n"
+
+#. type: Plain text
+#: doc/contributing.texi:43
+msgid ""
+"When building Guix from a checkout, the following packages are required in "
+"addition to those mentioned in the installation instructions "
+"(@pxref{Requirements})."
+msgstr ""
+"Lors de la construction de Guix depuis un extrait, les paquets suivants sont "
+"requis en plus de ceux mentionnés dans les instructions d'installation "
+"(@pxref{Prérequis})."
+
+#. type: item
+#: doc/contributing.texi:45
+#, no-wrap
+msgid "@url{http://gnu.org/software/autoconf/, GNU Autoconf};"
+msgstr "@url{http://gnu.org/software/autoconf/, GNU Autoconf};"
+
+#. type: item
+#: doc/contributing.texi:46
+#, no-wrap
+msgid "@url{http://gnu.org/software/automake/, GNU Automake};"
+msgstr "@url{http://gnu.org/software/automake/, GNU Automake};"
+
+#. type: item
+#: doc/contributing.texi:47
+#, no-wrap
+msgid "@url{http://gnu.org/software/gettext/, GNU Gettext};"
+msgstr "@url{http://gnu.org/software/gettext/, GNU Gettext};"
+
+#. type: item
+#: doc/contributing.texi:48
+#, no-wrap
+msgid "@url{http://gnu.org/software/texinfo/, GNU Texinfo};"
+msgstr "@url{http://gnu.org/software/texinfo/, GNU Texinfo};"
+
+#. type: item
+#: doc/contributing.texi:49
+#, no-wrap
+msgid "@url{http://www.graphviz.org/, Graphviz};"
+msgstr "@url{http://www.graphviz.org/, Graphviz};"
+
+#. type: item
+#: doc/contributing.texi:50
+#, no-wrap
+msgid "@url{http://www.gnu.org/software/help2man/, GNU Help2man (optional)}."
+msgstr "@url{http://www.gnu.org/software/help2man/, GNU Help2man (facultatif)}."
+
+#. type: Plain text
+#: doc/contributing.texi:57
+msgid ""
+"The easiest way to set up a development environment for Guix is, of course, by "
+"using Guix! The following command starts a new shell where all the "
+"dependencies and appropriate environment variables are set up to hack on Guix:"
+msgstr ""
+"La manière la plus simple de configurer un environnement de développement pour "
+"Guix est, bien sûr, d'utiliser Guix ! La commande suivante démarre un nouveau "
+"shell où toutes les dépendances et les variables d'environnements appropriées "
+"sont configurés pour travailler sur Guix :"
+
+#. type: example
+#: doc/contributing.texi:60
+#, no-wrap
+msgid "guix environment guix\n"
+msgstr "guix environment guix\n"
+
+#. type: Plain text
+#: doc/contributing.texi:64
+msgid ""
+"@xref{Invoking guix environment}, for more information on that command.  Extra "
+"dependencies can be added with @option{--ad-hoc}:"
+msgstr ""
+"@xref{Invoquer guix environment}, pour plus d'information sur cette commande. "
+"On peut ajouter des dépendances supplémentaires avec @option{--ad-hoc} :"
+
+#. type: example
+#: doc/contributing.texi:67
+#, no-wrap
+msgid "guix environment guix --ad-hoc help2man git strace\n"
+msgstr "guix environment guix --ad-hoc help2man git strace\n"
+
+#. type: Plain text
+#: doc/contributing.texi:71
+msgid ""
+"Run @command{./bootstrap} to generate the build system infrastructure using "
+"Autoconf and Automake.  If you get an error like this one:"
+msgstr ""
+"Lancez @command{./bootstrap} pour générer l'infrastructure du système de "
+"construction avec Autoconf et Automake. Si vous avez une erreur comme :"
+
+#. type: example
+#: doc/contributing.texi:74
+#, no-wrap
+msgid "configure.ac:46: error: possibly undefined macro: PKG_CHECK_MODULES\n"
+msgstr "configure.ac:46: error: possibly undefined macro: PKG_CHECK_MODULES\n"
+
+#. type: Plain text
+#: doc/contributing.texi:83
+msgid ""
+"it probably means that Autoconf couldn’t find @file{pkg.m4}, which is provided "
+"by pkg-config.  Make sure that @file{pkg.m4} is available.  The same holds for "
+"the @file{guile.m4} set of macros provided by Guile.  For instance, if you "
+"installed Automake in @file{/usr/local}, it wouldn’t look for @file{.m4} files "
+"in @file{/usr/share}.  In that case, you have to invoke the following command:"
+msgstr ""
+"cela signifie probablement qu'Autoconf n'a pas pu trouver @file{pkg.m4} qui "
+"est fournit par pkg-config. Assurez-vous que @file{pkg.m4} est disponible. "
+"C'est aussi vrai pour l'ensemble de macros de @file{guile.m4} fournies par "
+"Guile. Par exemple, si vous avez installé Automake dans @file{/usr/local}, il "
+"ne cherchera pas les fichiers @file{.m4} dans @file{/usr/share}. Dans ce case "
+"vous devez invoquer la commande suivante :"
+
+#. type: example
+#: doc/contributing.texi:86
+#, no-wrap
+msgid "export ACLOCAL_PATH=/usr/share/aclocal\n"
+msgstr "export ACLOCAL_PATH=/usr/share/aclocal\n"
+
+#. type: Plain text
+#: doc/contributing.texi:90
+msgid ""
+"@xref{Macro Search Path,,, automake, The GNU Automake Manual}, for more "
+"information."
+msgstr ""
+"@xref{Macro Search Path,,, automake, The GNU Automake Manual}, pour plus "
+"d'information."
+
+#. type: Plain text
+#: doc/contributing.texi:95
+msgid ""
+"Then, run @command{./configure} as usual.  Make sure to pass @code{--"
+"localstatedir=@var{directory}} where @var{directory} is the "
+"@code{localstatedir} value used by your current installation (@pxref{The "
+"Store}, for information about this)."
+msgstr ""
+"Ensuite, lancez @command{./configure} comme d'habitude. Assurez-vous de passer "
+"@code{--localstatedir=@var{directory}} où @var{directory} est la valeur "
+"@code{localstatedir} utilisée par votre installation actuelle (@pxref{Le "
+"dépôt} pour plus d'informations à ce propos)."
+
+#. type: Plain text
+#: doc/contributing.texi:100
+msgid ""
+"Finally, you have to invoke @code{make check} to run tests (@pxref{Running the "
+"Test Suite}).  If anything fails, take a look at installation instructions "
+"(@pxref{Installation})  or send a message to the @email{guix-devel@@gnu.org, "
+"mailing list}."
+msgstr ""
+"Finalement, vous devez invoquer @code{make check} pour lancer les tests "
+"(@pxref{Lancer la suite de tests}). Si quelque chose échoue, jetez un œil aux "
+"instructions d'installation (@pxref{Installation}) ou envoyez un message à la "
+"list @email{guix-devel@@gnu.org}."
+
+#. type: Plain text
+#: doc/contributing.texi:109
+msgid ""
+"In order to keep a sane working environment, you will find it useful to test "
+"the changes made in your local source tree checkout without actually "
+"installing them.  So that you can distinguish between your ``end-user'' hat "
+"and your ``motley'' costume."
+msgstr ""
+"Pour garder un environnement de travail sain, il est utile de tester les "
+"changement localement sans les installer pour de vrai. Pour pouvoir distinguer "
+"votre rôle « d'utilisateur final » de celui parfois haut en couleur de « "
+"développeur »."
+
+#. type: Plain text
+#: doc/contributing.texi:117
+msgid ""
+"To that end, all the command-line tools can be used even if you have not run "
+"@code{make install}.  To do that, prefix each command with @command{./pre-inst-"
+"env} (the @file{pre-inst-env} script lives in the top build tree of Guix), as "
+"in@footnote{The @option{-E} flag to @command{sudo} guarantees that "
+"@code{GUILE_LOAD_PATH} is correctly set such that @command{guix-daemon} and "
+"the tools it uses can find the Guile modules they need.}:"
+msgstr ""
+"Pour cela, tous les outils en ligne de commande sont utilisables même sans "
+"avoir lancé @code{make install}. Vous devez pour cela préfixer chaque commande "
+"par @command{./pre-inst-env} (le script @file{pre-inst-env} se trouve dans le "
+"répertoire de plus haut niveau de l'arborescence des sources de Guix) comme "
+"cela@footnote{L'option @option{-E} de @command{sudo} garantie que "
+"@code{GUILE_LOAD_PATH} est bien paramétré pour @command{guix-daemon} et les "
+"outils qu'il utilise puissent trouver les modules Guile dont ils ont besoin.} :"
+
+#. type: example
+#: doc/contributing.texi:121
+#, no-wrap
+msgid ""
+"$ sudo -E ./pre-inst-env guix-daemon --build-users-group=guixbuild\n"
+"$ ./pre-inst-env guix build hello\n"
+msgstr ""
+"$ sudo -E ./pre-inst-env guix-daemon --build-users-group=guixbuild\n"
+"$ ./pre-inst-env guix build hello\n"
+
+#. type: Plain text
+#: doc/contributing.texi:125
+msgid "Similarly, for a Guile session using the Guix modules:"
+msgstr "De même, pour une session Guile qui utilise les modules Guix :"
+
+#. type: example
+#: doc/contributing.texi:128
+#, no-wrap
+msgid ""
+"$ ./pre-inst-env guile -c '(use-modules (guix utils)) (pk (%current-system))'\n"
+"\n"
+msgstr ""
+"$ ./pre-inst-env guile -c '(use-modules (guix utils)) (pk (%current-system))'\n"
+"\n"
+
+#. type: example
+#: doc/contributing.texi:130
+#, no-wrap
+msgid ";;; (\"x86_64-linux\")\n"
+msgstr ";;; (\"x86_64-linux\")\n"
+
+#. type: cindex
+#: doc/contributing.texi:133
+#, no-wrap
+msgid "REPL"
+msgstr "REPL"
+
+#. type: cindex
+#: doc/contributing.texi:134
+#, no-wrap
+msgid "read-eval-print loop"
+msgstr "read-eval-print loop"
+
+#. type: Plain text
+#: doc/contributing.texi:137
+msgid ""
+"@dots{} and for a REPL (@pxref{Using Guile Interactively,,, guile, Guile "
+"Reference Manual}):"
+msgstr ""
+"@dots{} et pour un REPL (@pxref{Using Guile Interactively,,, guile, Guile "
+"Reference Manual})"
+
+#. type: example
+#: doc/contributing.texi:152
+#, no-wrap
+msgid ""
+"$ ./pre-inst-env guile\n"
+"scheme@@(guile-user)> ,use(guix)\n"
+"scheme@@(guile-user)> ,use(gnu)\n"
+"scheme@@(guile-user)> (define snakes\n"
+"                       (fold-packages\n"
+"                         (lambda (package lst)\n"
+"                           (if (string-prefix? \"python\"\n"
+"                                               (package-name package))\n"
+"                               (cons package lst)\n"
+"                               lst))\n"
+"                         '()))\n"
+"scheme@@(guile-user)> (length snakes)\n"
+"$1 = 361\n"
+msgstr ""
+"$ ./pre-inst-env guile\n"
+"scheme@@(guile-user)> ,use(guix)\n"
+"scheme@@(guile-user)> ,use(gnu)\n"
+"scheme@@(guile-user)> (define snakes\n"
+"                       (fold-packages\n"
+"                         (lambda (package lst)\n"
+"                           (if (string-prefix? \"python\"\n"
+"                                               (package-name package))\n"
+"                               (cons package lst)\n"
+"                               lst))\n"
+"                         '()))\n"
+"scheme@@(guile-user)> (length snakes)\n"
+"$1 = 361\n"
+
+#. type: Plain text
+#: doc/contributing.texi:156
+msgid ""
+"The @command{pre-inst-env} script sets up all the environment variables "
+"necessary to support this, including @env{PATH} and @env{GUILE_LOAD_PATH}."
+msgstr ""
+"Le script @command{pre-inst-env} paramètre toutes les variables "
+"d'environnement nécessaires, dont @env{PATH} et @env{GUILE_LOAD_PATH}."
+
+#. type: Plain text
+#: doc/contributing.texi:167
+msgid ""
+"Note that @command{./pre-inst-env guix pull} does @emph{not} upgrade the local "
+"source tree; it simply updates the @file{~/.config/guix/latest} symlink "
+"(@pxref{Invoking guix pull}).  Run @command{git pull} instead if you want to "
+"upgrade your local source tree.@footnote{If you would like to set up "
+"@command{guix} to use your Git checkout, you can point the @file{~/.config/"
+"guix/latest} symlink to your Git checkout directory.  If you are the sole user "
+"of your system, you may also consider pointing the @file{/root/.config/guix/"
+"latest} symlink to point to @file{~/.config/guix/latest}; this way it will "
+"always use the same @command{guix} as your user does.}"
+msgstr ""
+"Remarquez que @command{./pre-inst-env guix pull} ne met @emph{pas} à jour "
+"l'arborescence des sources locale ; il met seulement à jour le lien symbolique "
+"@file{~/.config/guix/latest} (@pxref{Invoquer guix pull}). Lancez @command{git "
+"pull} à la place si vous voulez mettre à jour votre arborescence des sources "
+"locale@footnote{Si vous voulez paramétrer @command{guix} pour qu'il utilise "
+"votre dépôt Git, vous pouvez faire pointer le lien symbolique @file{~/.config/"
+"guix/latest} vers le répertoire contenant ce dépôt. Si vous le seul "
+"utilisateur du système, vous pouvez aussi considérer faire pointer le lien "
+"symbolique @file{/root/.config/guix/latest} vers @file{~/.config/guix/"
+"latest} ; comme ça root aura toujours la même commande @command{guix} que "
+"votre utilisateur}."
+
+#. type: Plain text
+#: doc/contributing.texi:177
+msgid ""
+"The Perfect Setup to hack on Guix is basically the perfect setup used for "
+"Guile hacking (@pxref{Using Guile in Emacs,,, guile, Guile Reference "
+"Manual}).  First, you need more than an editor, you need @url{http://www.gnu."
+"org/software/emacs, Emacs}, empowered by the wonderful @url{http://nongnu.org/"
+"geiser/, Geiser}."
+msgstr ""
+"La configuration parfaite pour travailler sur Guix est simplement la "
+"configuration parfaite pour travailler en Guile (@pxref{Using Guile in "
+"Emacs,,, guile, Guile Reference Manual}). Tout d'abord, vous avez besoin de "
+"mieux qu'un éditeur de texte, vous avez besoin de @url{http://www.gnu.org/"
+"software/emacs, Emacs}, amélioré par le superbe @url{http://nongnu.org/"
+"geiser/, Geiser}."
+
+#. type: Plain text
+#: doc/contributing.texi:185
+msgid ""
+"Geiser allows for interactive and incremental development from within Emacs: "
+"code compilation and evaluation from within buffers, access to on-line "
+"documentation (docstrings), context-sensitive completion, @kbd{M-.} to jump to "
+"an object definition, a REPL to try out your code, and more "
+"(@pxref{Introduction,,, geiser, Geiser User Manual}).  For convenient Guix "
+"development, make sure to augment Guile’s load path so that it finds source "
+"files from your checkout:"
+msgstr ""
+"Geiser permet le développement interactif et incrémental depuis Emacs : la "
+"compilation du code et son évaluation depuis les buffers, l'accès à la "
+"documentation en ligne (docstrings), la complétion sensible au contexte, "
+"@kbd{M-.} pour sauter à la définition d'un objet, un REPL pour tester votre "
+"code, et bien plus (@pxref{Introduction,,, geiser, Geiser User Manual}). Pour "
+"travailler confortablement sur Guix, assurez-vous de modifier le chemin de "
+"chargement de Guile pour qu'il trouve les fichiers source de votre dépôt :"
+
+#. type: lisp
+#: doc/contributing.texi:190
+#, no-wrap
+msgid ""
+";; @r{Assuming the Guix checkout is in ~/src/guix.}\n"
+"(with-eval-after-load 'geiser-guile\n"
+"  (add-to-list 'geiser-guile-load-path \"~/src/guix\"))\n"
+msgstr ""
+";; @r{Si l'extrait est dans ~/src/guix.}\n"
+"(with-eval-after-load 'geiser-guile\n"
+"  (add-to-list 'geiser-guile-load-path \"~/src/guix\"))\n"
+
+#. type: Plain text
+#: doc/contributing.texi:198
+msgid ""
+"To actually edit the code, Emacs already has a neat Scheme mode.  But in "
+"addition to that, you must not miss @url{http://www.emacswiki.org/emacs/"
+"ParEdit, Paredit}.  It provides facilities to directly operate on the syntax "
+"tree, such as raising an s-expression or wrapping it, swallowing or rejecting "
+"the following s-expression, etc."
+msgstr ""
+
+#. type: cindex
+#: doc/contributing.texi:199
+#, no-wrap
+msgid "code snippets"
+msgstr "extraits de code"
+
+#. type: cindex
+#: doc/contributing.texi:200
+#, no-wrap
+msgid "templates"
+msgstr "modèles"
+
+#. type: cindex
+#: doc/contributing.texi:201
+#, no-wrap
+msgid "reducing boilerplate"
+msgstr "réduire la quantité de code commun"
+
+#. type: Plain text
+#: doc/contributing.texi:208
+msgid ""
+"We also provide templates for common git commit messages and package "
+"definitions in the @file{etc/snippets} directory.  These templates can be used "
+"with @url{http://joaotavora.github.io/yasnippet/, YASnippet} to expand short "
+"trigger strings to interactive text snippets.  You may want to add the "
+"snippets directory to the @var{yas-snippet-dirs} variable in Emacs."
+msgstr ""
+"Nous fournissons aussi des modèles pour les messages de commit git communs et "
+"les définitions de paquets dans le répertoire @file{etc/snippets}. Ces modèles "
+"s'utilisent avec @url{http://joaotavora.github.io/yasnippet/, YASnippet} pour "
+"développer des chaînes courtes de déclenchement en extraits de texte "
+"interactifs. Vous pouvez ajouter le répertoire des modèles dans la variables "
+"@var{yas-snippet-dirs} d'Emacs."
+
+#. type: lisp
+#: doc/contributing.texi:213
+#, no-wrap
+msgid ""
+";; @r{Assuming the Guix checkout is in ~/src/guix.}\n"
+"(with-eval-after-load 'yasnippet\n"
+"  (add-to-list 'yas-snippet-dirs \"~/src/guix/etc/snippets\"))\n"
+msgstr ""
+";; @r{Si l'extrait est dans ~/src/guix.}\n"
+"(with-eval-after-load 'yasnippet\n"
+"  (add-to-list 'yas-snippet-dirs \"~/src/guix/etc/snippets\"))\n"
+
+#. type: Plain text
+#: doc/contributing.texi:220
+msgid ""
+"The commit message snippets depend on @url{https://magit.vc/, Magit} to "
+"display staged files.  When editing a commit message type @code{add} followed "
+"by @kbd{TAB} to insert a commit message template for adding a package; type "
+"@code{update} followed by @kbd{TAB} to insert a template for updating a "
+"package."
+msgstr ""
+"Les extraits de messages de commit dépendent de @url{https://magit.vc/, Magit} "
+"pour afficher les fichiers sélectionnés. Lors de la modification d'un message "
+"de commit, tapez @code{add} suivi de @kbd{TAB} pour insérer un modèle de "
+"message de commit pour ajouter un paquet ; tapez @code{update} suivi de "
+"@kbd{TAB} pour insérer un modèle pour la mise à jour d'un paquet."
+
+#. type: Plain text
+#: doc/contributing.texi:226
+msgid ""
+"The main snippet for @code{scheme-mode} is triggered by typing "
+"@code{package...} followed by @kbd{TAB}.  This snippet also inserts the "
+"trigger string @code{origin...}, which can be expanded further.  The "
+"@code{origin} snippet in turn may insert other trigger strings ending on "
+"@code{...}, which also can be expanded further."
+msgstr ""
+"L'extrait principal pour @code{scheme-mode} est lancé en tapant "
+"@code{package…} suivi par @kbd{TAB}. Cet extrait insère aussi la chaîne de "
+"déclenchement @code{origin…}, qui peut aussi être étendue. L'extrait "
+"@code{origin} lui-même peut aussi insérer des chaînes de déclenchement qui "
+"finissent sur @code{…}, qui peuvent aussi être étendues."
+
+#. type: Plain text
+#: doc/contributing.texi:234
+msgid ""
+"In general our code follows the GNU Coding Standards (@pxref{Top,,, standards, "
+"GNU Coding Standards}).  However, they do not say much about Scheme, so here "
+"are some additional rules."
+msgstr ""
+"En général notre code suit le Standard de Code GNU (@pxref{Top,,, standards, "
+"GNU Coding Standards}). Cependant, il ne parle pas beaucoup de Scheme, donc "
+"voici quelques règles supplémentaires."
+
+#. type: subsection
+#: doc/contributing.texi:240 doc/contributing.texi:242 doc/contributing.texi:243
+#, no-wrap
+msgid "Programming Paradigm"
+msgstr "Paradigme de programmation"
+
+#. type: menuentry
+#: doc/contributing.texi:240
+msgid "How to compose your elements."
+msgstr "Comment composer vos éléments."
+
+#. type: subsection
+#: doc/contributing.texi:240 doc/contributing.texi:249 doc/contributing.texi:250
+#, no-wrap
+msgid "Modules"
+msgstr "Modules"
+
+#. type: menuentry
+#: doc/contributing.texi:240
+msgid "Where to store your code?"
+msgstr "Où stocker votre code ?"
+
+#. type: subsection
+#: doc/contributing.texi:240 doc/contributing.texi:260 doc/contributing.texi:261
+#, no-wrap
+msgid "Data Types and Pattern Matching"
+msgstr "Types de données et reconnaissance de motif"
+
+#. type: menuentry
+#: doc/contributing.texi:240
+msgid "Implementing data structures."
+msgstr "Implémenter des structures de données."
+
+#. type: subsection
+#: doc/contributing.texi:240 doc/contributing.texi:274 doc/contributing.texi:275
+#, no-wrap
+msgid "Formatting Code"
+msgstr "Formatage du code"
+
+#. type: menuentry
+#: doc/contributing.texi:240
+msgid "Writing conventions."
+msgstr "Conventions d'écriture."
+
+#. type: Plain text
+#: doc/contributing.texi:248
+msgid ""
+"Scheme code in Guix is written in a purely functional style.  One exception is "
+"code that involves input/output, and procedures that implement low-level "
+"concepts, such as the @code{memoize} procedure."
+msgstr ""
+"Le code Scheme dans Guix est écrit dans un style purement fonctionnel. Le code "
+"qui s'occupe des entrées-sorties est une exception ainsi que les procédures "
+"qui implémentent des concepts bas-niveau comme la procédure @code{memoize}."
+
+#. type: Plain text
+#: doc/contributing.texi:256
+msgid ""
+"Guile modules that are meant to be used on the builder side must live in the "
+"@code{(guix build @dots{})} name space.  They must not refer to other Guix or "
+"GNU modules.  However, it is OK for a ``host-side'' module to use a build-side "
+"module."
+msgstr ""
+"Les modules Guile qui sont sensés être utilisés du côté de la construction "
+"doivent se trouver dans l'espace de nom @code{(guix build @dots{})}. Ils ne "
+"doivent pas se référer à d'autres modules Guix ou GNU. Cependant il est "
+"correct pour un module « côté hôte » de dépendre d'un module coté construction."
+
+#. type: Plain text
+#: doc/contributing.texi:259
+msgid ""
+"Modules that deal with the broader GNU system should be in the @code{(gnu "
+"@dots{})} name space rather than @code{(guix @dots{})}."
+msgstr ""
+"Les modules qui s'occupent du système GNU général devraient se trouver dans "
+"l'espace de nom @code{(gnu @dots{})} plutôt que @code{(guix @dots{})}."
+
+#. type: Plain text
+#: doc/contributing.texi:268
+msgid ""
+"The tendency in classical Lisp is to use lists to represent everything, and "
+"then to browse them ``by hand'' using @code{car}, @code{cdr}, @code{cadr}, and "
+"co.  There are several problems with that style, notably the fact that it is "
+"hard to read, error-prone, and a hindrance to proper type error reports."
+msgstr ""
+"La tendance en Lisp classique est d'utiliser des listes pour tout représenter "
+"et de naviguer dedans « à la main ( avec @code{car}, @code{cdr}, @code{cadr} "
+"et compagnie. Il y a plusieurs problèmes avec ce style, notamment le fait "
+"qu'il soit dur à lire, source d'erreur et un obstacle aux rapports d'erreur "
+"bien typés."
+
+#. type: Plain text
+#: doc/contributing.texi:273
+msgid ""
+"Guix code should define appropriate data types (for instance, using "
+"@code{define-record-type*}) rather than abuse lists.  In addition, it should "
+"use pattern matching, via Guile’s @code{(ice-9 match)} module, especially when "
+"matching lists."
+msgstr ""
+"Le code de Guix devrait définir des types de données appropriées (par exemple, "
+"avec @code{define-record-type*}) plutôt que d'abuser des listes. En plus, il "
+"devrait utiliser la recherche de motifs, via le module Guile @code{(ice-9 "
+"match)}, surtout pour rechercher dans des listes."
+
+#. type: cindex
+#: doc/contributing.texi:277
+#, no-wrap
+msgid "formatting code"
+msgstr "formater le code"
+
+#. type: cindex
+#: doc/contributing.texi:278
+#, no-wrap
+msgid "coding style"
+msgstr "style de code"
+
+#. type: Plain text
+#: doc/contributing.texi:285
+msgid ""
+"When writing Scheme code, we follow common wisdom among Scheme programmers.  "
+"In general, we follow the @url{http://mumble.net/~campbell/scheme/style.txt, "
+"Riastradh's Lisp Style Rules}.  This document happens to describe the "
+"conventions mostly used in Guile’s code too.  It is very thoughtful and well "
+"written, so please do read it."
+msgstr ""
+"Lorsque nous écrivons du code Scheme, nous suivons la sagesse commune aux "
+"programmeurs Scheme. En général, nous suivons les @url{http://mumble.net/"
+"~campbell/scheme/style.txt, règles de style de Riastradh}. Ce document décrit "
+"aussi les conventions utilisées dans le code de Guile. Il est bien pensé et "
+"bien écrit, alors n'hésitez pas à le lire."
+
+#. type: Plain text
+#: doc/contributing.texi:292
+msgid ""
+"Some special forms introduced in Guix, such as the @code{substitute*} macro, "
+"have special indentation rules.  These are defined in the @file{.dir-locals."
+"el} file, which Emacs automatically uses.  Also note that Emacs-Guix provides "
+"@code{guix-devel-mode} mode that indents and highlights Guix code properly "
+"(@pxref{Development,,, emacs-guix, The Emacs-Guix Reference Manual})."
+msgstr ""
+"Certaines formes spéciales introduites dans Guix comme la macro "
+"@code{substitute*} ont des règles d'indentation spécifiques. Elles sont "
+"définies dans le fichier @file{.dir-locals.el} qu'Emacs utilise "
+"automatiquement. Remarquez aussi qu'Emacs-Guix fournit le mode @code{guix-"
+"devel-mode} qui indente et colore le code Guix correctement "
+"(@pxref{Development,,, emacs-guix, The Emacs-Guix Reference Manual})."
+
+#. type: cindex
+#: doc/contributing.texi:293
+#, no-wrap
+msgid "indentation, of code"
+msgstr "indentation, du code"
+
+#. type: cindex
+#: doc/contributing.texi:294
+#, no-wrap
+msgid "formatting, of code"
+msgstr "formatage, du code"
+
+#. type: Plain text
+#: doc/contributing.texi:297
+msgid ""
+"If you do not use Emacs, please make sure to let your editor knows these "
+"rules.  To automatically indent a package definition, you can also run:"
+msgstr ""
+"Si vous n'utilisez pas Emacs, assurez-vous que votre éditeur connaisse ces "
+"règles. Pour indenter automatiquement une définition de paquet, vous pouvez "
+"aussi lancer :"
+
+#. type: example
+#: doc/contributing.texi:300
+#, no-wrap
+msgid "./etc/indent-code.el gnu/packages/@var{file}.scm @var{package}\n"
+msgstr "./etc/indent-code.el gnu/packages/@var{file}.scm @var{package}\n"
+
+#. type: Plain text
+#: doc/contributing.texi:306
+msgid ""
+"This automatically indents the definition of @var{package} in @file{gnu/"
+"packages/@var{file}.scm} by running Emacs in batch mode.  To indent a whole "
+"file, omit the second argument:"
+msgstr ""
+"Cela indente automatiquement la définition de @var{package} dans @file{gnu/"
+"packages/@var{file}.scm} en lançant Emacs en mode commande. Pour indenter un "
+"fichier complet, n'indiquez pas de second argument :"
+
+#. type: example
+#: doc/contributing.texi:309
+#, no-wrap
+msgid "./etc/indent-code.el gnu/services/@var{file}.scm\n"
+msgstr "./etc/indent-code.el gnu/services/@var{file}.scm\n"
+
+#. type: Plain text
+#: doc/contributing.texi:314
+msgid ""
+"We require all top-level procedures to carry a docstring.  This requirement "
+"can be relaxed for simple private procedures in the @code{(guix build "
+"@dots{})} name space, though."
+msgstr ""
+"Nous demandons que toutes les procédure de premier niveau contiennent une "
+"chaîne de documentation. Ce pré-requis peut être relâché pour les procédures "
+"privées simples dans l'espace de nom @code{(guix build @dots{})} cependant."
+
+#. type: Plain text
+#: doc/contributing.texi:317
+msgid ""
+"Procedures should not have more than four positional parameters.  Use keyword "
+"parameters for procedures that take more than four parameters."
+msgstr ""
+"Les procédures ne devraient pas avoir plus de quatre paramètres positionnés. "
+"Utilisez des paramètres par mot-clefs pour les procédures qui prennent plus de "
+"quatre paramètres."
+
+#. type: Plain text
+#: doc/contributing.texi:326
+msgid ""
+"Development is done using the Git distributed version control system.  Thus, "
+"access to the repository is not strictly necessary.  We welcome contributions "
+"in the form of patches as produced by @code{git format-patch} sent to the "
+"@email{guix-patches@@gnu.org} mailing list."
+msgstr ""
+"Le développement se fait avec le système de contrôle de version Git. Ainsi, "
+"l'accès au dépôt n'est pas strictement nécessaire. Nous accueillons les "
+"contributions sous forme de correctifs produits par @code{git format-patch} "
+"envoyés sur la liste de diffusion @email{guix-patches@@gnu.org}."
+
+#. type: Plain text
+#: doc/contributing.texi:333
+msgid ""
+"This mailing list is backed by a Debbugs instance accessible at @uref{https://"
+"bugs.gnu.org/guix-patches}, which allows us to keep track of submissions.  "
+"Each message sent to that mailing list gets a new tracking number assigned; "
+"people can then follow up on the submission by sending email to @code{@var{NNN}"
+"@@debbugs.gnu.org}, where @var{NNN} is the tracking number (@pxref{Sending a "
+"Patch Series})."
+msgstr ""
+"Cette liste de diffusion est gérée par une instance Debbugs accessible à "
+"l'adresse @uref{https://bugs.gnu.org/guix-patches}, qui nous permet de suivre "
+"les soumissions. Chaque message envoyé à cette liste se voit attribuer un "
+"numéro de suivi ; les gens peuvent ensuite répondre à cette soumission en "
+"envoyant un courriel à @code{@var{NNN}@@debbugs.gnu.org}, où @var{NNN} est le "
+"numéro de suivi (@pxref{Envoyer une série de correctifs})."
+
+#. type: Plain text
+#: doc/contributing.texi:337
+msgid ""
+"Please write commit logs in the ChangeLog format (@pxref{Change Logs,,, "
+"standards, GNU Coding Standards}); you can check the commit history for "
+"examples."
+msgstr ""
+"Veuillez écrire les messages de commit dans le format ChangeLog (@pxref{Change "
+"Logs,,, standards, GNU Coding Standards}) ; vous pouvez regarder l'historique "
+"des commits pour trouver des exemples."
+
+#. type: Plain text
+#: doc/contributing.texi:340
+msgid ""
+"Before submitting a patch that adds or modifies a package definition, please "
+"run through this check list:"
+msgstr ""
+"Avant de soumettre un correctif qui ajoute ou modifie la définition d'un "
+"paquet, veuillez vérifier cette check-list :"
+
+#. type: enumerate
+#: doc/contributing.texi:347
+msgid ""
+"If the authors of the packaged software provide a cryptographic signature for "
+"the release tarball, make an effort to verify the authenticity of the "
+"archive.  For a detached GPG signature file this would be done with the "
+"@code{gpg --verify} command."
+msgstr ""
+"Si les auteurs du paquet logiciel fournissent une signature cryptographique "
+"pour l'archive, faîtes un effort pour vérifier l'authenticité de l'archive. "
+"Pour un fichier de signature GPG détaché, cela se fait avec la commande "
+"@code{gpg --verify}."
+
+#. type: enumerate
+#: doc/contributing.texi:351
+msgid ""
+"Take some time to provide an adequate synopsis and description for the "
+"package.  @xref{Synopses and Descriptions}, for some guidelines."
+msgstr ""
+"Prenez un peu de temps pour fournir un synopsis et une description adéquats "
+"pour le paquet. Voir @xref{Synopsis et descriptions} pour quelques lignes "
+"directrices."
+
+#. type: enumerate
+#: doc/contributing.texi:356
+msgid ""
+"Run @code{guix lint @var{package}}, where @var{package} is the name of the new "
+"or modified package, and fix any errors it reports (@pxref{Invoking guix "
+"lint})."
+msgstr ""
+"Lancez @code{guix lint @var{paquet}}, où @var{paquet} est le nom du nouveau "
+"paquet ou du paquet modifié, et corrigez les erreurs qu'il rapporte "
+"(@pxref{Invoquer guix lint})."
+
+#. type: enumerate
+#: doc/contributing.texi:360
+msgid ""
+"Make sure the package builds on your platform, using @code{guix build "
+"@var{package}}."
+msgstr ""
+"Assurez-vous que le paquet se construise sur votre plate-forme avec @code{guix "
+"build @var{paquet}}."
+
+#. type: cindex
+#: doc/contributing.texi:362
+#, no-wrap
+msgid "bundling"
+msgstr "construction groupée"
+
+#. type: enumerate
+#: doc/contributing.texi:365
+msgid ""
+"Make sure the package does not use bundled copies of software already "
+"available as separate packages."
+msgstr ""
+"Assurez-vous que le paquet n'utilise pas de copie groupée d'un logiciel déjà "
+"disponible dans un paquet séparé."
+
+#. type: enumerate
+#: doc/contributing.texi:374
+msgid ""
+"Sometimes, packages include copies of the source code of their dependencies as "
+"a convenience for users.  However, as a distribution, we want to make sure "
+"that such packages end up using the copy we already have in the distribution, "
+"if there is one.  This improves resource usage (the dependency is built and "
+"stored only once), and allows the distribution to make transverse changes such "
+"as applying security updates for a given software package in a single place "
+"and have them affect the whole system---something that bundled copies prevent."
+msgstr ""
+"Parfois, les paquets incluent des copie du code source de leurs dépendances "
+"pour le confort de leurs utilisateurs. Cependant, en tant que distribution, "
+"nous voulons nous assurer que ces paquets utilisent bien les copient que nous "
+"avons déjà dans la distribution si elles existent. Cela améliore l'utilisation "
+"des ressources (la dépendance n'est construite et stockée qu'une seule fois) "
+"et permet à la distribution de faire des changements transversaux comme "
+"appliquer des correctifs de sécurité pour un paquet donné depuis un unique "
+"emplacement et qu'ils affectent tout le système, ce qu'empêchent les copies "
+"groupées."
+
+#. type: enumerate
+#: doc/contributing.texi:381
+msgid ""
+"Take a look at the profile reported by @command{guix size} (@pxref{Invoking "
+"guix size}).  This will allow you to notice references to other packages "
+"unwillingly retained.  It may also help determine whether to split the package "
+"(@pxref{Packages with Multiple Outputs}), and which optional dependencies "
+"should be used."
+msgstr ""
+"Regardez le profile rapporté par @command{guix size} (@pxref{Invoking guix "
+"size}). Cela vous permettra de remarquer des références à d'autres paquets qui "
+"ont été retenus. Il peut aussi aider à déterminer s'il faut découper le paquet "
+"(@pxref{Des paquets avec plusieurs résultats}) et quelle dépendance facultative "
+"utiliser."
+
+#. type: enumerate
+#: doc/contributing.texi:386
+msgid ""
+"For important changes, check that dependent package (if applicable) are not "
+"affected by the change; @code{guix refresh --list-dependent @var{package}} "
+"will help you do that (@pxref{Invoking guix refresh})."
+msgstr ""
+"Pour les changements important, vérifiez que les paquets qui en dépendent "
+"(s'ils existent) ne sont pas affectés par le changement ; @code{guix refresh --"
+"list-dependant @var{paquet}} vous aidera (@pxref{Invoquer guix refresh})."
+
+#. type: cindex
+#: doc/contributing.texi:388
+#, no-wrap
+msgid "branching strategy"
+msgstr "stratégie de branche"
+
+#. type: cindex
+#: doc/contributing.texi:389
+#, no-wrap
+msgid "rebuild scheduling strategy"
+msgstr "stratégie de planification des reconstructions"
+
+#. type: enumerate
+#: doc/contributing.texi:392
+msgid ""
+"Depending on the number of dependent packages and thus the amount of "
+"rebuilding induced, commits go to different branches, along these lines:"
+msgstr ""
+"Suivant le nombre de paquets dépendants et donc le nombre de reconstruction "
+"induites, les commits vont vers des branches différentes, suivant ces "
+"principes :"
+
+#. type: item
+#: doc/contributing.texi:394
+#, no-wrap
+msgid "300 dependent packages or less"
+msgstr "300 paquets dépendants ou moins"
+
+#. type: table
+#: doc/contributing.texi:396
+msgid "@code{master} branch (non-disruptive changes)."
+msgstr "branche @code{master} (changements non-disruptifs)."
+
+#. type: item
+#: doc/contributing.texi:397
+#, no-wrap
+msgid "between 300 and 1,200 dependent packages"
+msgstr "entre 300 et 1 200 paquets dépendants"
+
+#. type: table
+#: doc/contributing.texi:402
+msgid ""
+"@code{staging} branch (non-disruptive changes).  This branch is intended to be "
+"merged in @code{master} every 3 weeks or so.  Topical changes (e.g., an update "
+"of the GNOME stack) can instead go to a specific branch (say, @code{gnome-"
+"updates})."
+msgstr ""
+"branche @code{staging} (changemets non-disruptifs). Cette branche devrait être "
+"fusionnées dans @code{master} tous les 3 semaines. Les changements par thèmes "
+"(par exemple une mise à jour de la pile GNOME) peuvent aller dans une branche "
+"spécifique (disons, @code{gnome-updates})."
+
+#. type: item
+#: doc/contributing.texi:403
+#, no-wrap
+msgid "more than 1,200 dependent packages"
+msgstr "plus de 1 200 paquets dépendants"
+
+#. type: table
+#: doc/contributing.texi:407
+msgid ""
+"@code{core-updates} branch (may include major and potentially disruptive "
+"changes).  This branch is intended to be merged in @code{master} every 2.5 "
+"months or so."
+msgstr ""
+"branche @code{core-updates} (peut inclure des changements majeurs et "
+"potentiellement disruptifs). Cette branche devrait être fusionnée dans "
+"@code{master} tous les 2,5 mois environ."
+
+#. type: enumerate
+#: doc/contributing.texi:414
+msgid ""
+"All these branches are tracked by our build farm and merged into @code{master} "
+"once everything has been successfully built.  This allows us to fix issues "
+"before they hit users, and to reduce the window during which pre-built "
+"binaries are not available."
+msgstr ""
+"Toutes ces branches sont gérées par notre ferme de construction et fusionnées "
+"dans @code{master} une fois que tout a été construit correctement. Cela nous "
+"permet de corriger des problèmes avant qu'ils n'atteignent les utilisateurs et "
+"réduit la fenêtre pendant laquelle les binaires pré-construits ne sont pas "
+"disponibles."
+
+#. type: cindex
+#: doc/contributing.texi:416
+#, no-wrap
+msgid "determinism, of build processes"
+msgstr "déterminisme, du processus de construction"
+
+#. type: cindex
+#: doc/contributing.texi:417
+#, no-wrap
+msgid "reproducible builds, checking"
+msgstr "construction reproductibles, vérification"
+
+#. type: enumerate
+#: doc/contributing.texi:421
+msgid ""
+"Check whether the package's build process is deterministic.  This typically "
+"means checking whether an independent build of the package yields the exact "
+"same result that you obtained, bit for bit."
+msgstr ""
+"Vérifiez si le processus de construction du paquet est déterministe. Cela "
+"signifie typiquement vérifier qu'une construction indépendante du paquet "
+"renvoie exactement le même résultat que vous avez obtenu, bit à bit."
+
+#. type: enumerate
+#: doc/contributing.texi:424
+msgid ""
+"A simple way to do that is by building the same package several times in a row "
+"on your machine (@pxref{Invoking guix build}):"
+msgstr ""
+"Une manière simple de le faire est de reconstruire le paquet plusieurs fois à "
+"la suite sur votre machine (@pxref{Invoquer guix build}) :"
+
+#. type: example
+#: doc/contributing.texi:427
+#, no-wrap
+msgid "guix build --rounds=2 my-package\n"
+msgstr "guix build --rounds=2 mon-paquet\n"
+
+#. type: enumerate
+#: doc/contributing.texi:431
+msgid ""
+"This is enough to catch a class of common non-determinism issues, such as "
+"timestamps or randomly-generated output in the build result."
+msgstr ""
+"Cela est suffisant pour trouver une classe de non-déterminisme commune, comme "
+"l'horodatage ou des sorties générées aléatoirement dans le résultat de la "
+"construction."
+
+#. type: enumerate
+#: doc/contributing.texi:441
+msgid ""
+"Another option is to use @command{guix challenge} (@pxref{Invoking guix "
+"challenge}).  You may run it once the package has been committed and built by "
+"@code{hydra.gnu.org} to check whether it obtains the same result as you did.  "
+"Better yet: Find another machine that can build it and run @command{guix "
+"publish}.  Since the remote build machine is likely different from yours, this "
+"can catch non-determinism issues related to the hardware---e.g., use of "
+"different instruction set extensions---or to the operating system kernel---e."
+"g., reliance on @code{uname} or @file{/proc} files."
+msgstr ""
+"Une autre option consiste à utiliser @command{guix challenge} (@pxref{Invoquer "
+"guix challenge}). Vous pouvez lancer la commande une fois que les paquets ont "
+"été commités et construits par @code{hydra.gnu.org} pour vérifier s'il obtient "
+"le même résultat que vous. Mieux encore : trouvez une autre machine qui peut "
+"le construire et lancez @command{guix publish}. Puis la machine distante est "
+"sûrement différente de la vôtre, cela peut trouver des problèmes de non-"
+"déterminisme liés au matériel — par exemple utiliser une extension du jeu "
+"d'instruction — ou du noyau du système d'exploitation — par exemple se reposer "
+"sur @code{uname} ou les fichiers de @file{/proc}."
+
+#. type: enumerate
+#: doc/contributing.texi:447
+msgid ""
+"When writing documentation, please use gender-neutral wording when referring "
+"to people, such as @uref{https://en.wikipedia.org/wiki/Singular_they, singular "
+"``they''@comma{} ``their''@comma{} ``them''}, and so forth."
+msgstr ""
+"Lorsque vous écrivez de la documentation, utilisez une formulation au genre "
+"neutre lorsque vous vous référez à des personnes, comme le @uref{https://fr."
+"wikipedia.org/wiki/They_singulier, ``they''@comma{} ``their''@comma{} ``them'' "
+"singulier} (en anglais)."
+
+#. type: enumerate
+#: doc/contributing.texi:451
+msgid ""
+"Verify that your patch contains only one set of related changes.  Bundling "
+"unrelated changes together makes reviewing harder and slower."
+msgstr ""
+"Vérifiez que votre correctif contienne seulement un ensemble de changements "
+"liés. Grouper des changements non liés ensemble rend la revue plus difficile "
+"et plus lente."
+
+#. type: enumerate
+#: doc/contributing.texi:454
+msgid ""
+"Examples of unrelated changes include the addition of several packages, or a "
+"package update along with fixes to that package."
+msgstr ""
+"Ajouter plusieurs paquet ou une mise à jour d'un paquet avec des corrections "
+"dans ce paquet sont des exemples de changements sans rapport."
+
+#. type: enumerate
+#: doc/contributing.texi:459
+msgid ""
+"Please follow our code formatting rules, possibly running the @command{etc/"
+"indent-code.el} script to do that automatically for you (@pxref{Formatting "
+"Code})."
+msgstr ""
+"Suivez nos règles de formatage de code, éventuellement en lançant le script "
+"@command{et/indent-code.el} pour le faire automatiquement (@pxref{Formatage du "
+"code})."
+
+#. type: Plain text
+#: doc/contributing.texi:469
+msgid ""
+"When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as a "
+"subject.  You may use your email client or the @command{git send-email} "
+"command (@pxref{Sending a Patch Series}).  We prefer to get patches in plain "
+"text messages, either inline or as MIME attachments.  You are advised to pay "
+"attention if your email client changes anything like line breaks or "
+"indentation which could potentially break the patches."
+msgstr ""
+"Lorsque vous envoyez un correctif à la liste de diffusion, utilisez "
+"@samp{[PATCH] @dots{}} comme sujet. Vous pouvez utiliser votre client de "
+"courriel ou la commande @command{git send-email} (@pxref{Envoyer une série de "
+"correctifs}). Nous préférons recevoir des correctifs en texte brut, soit en "
+"ligne, soit en pièce-jointe MIME. Nous vous conseillons de faire attention si "
+"votre client de courriel change par exemple les retours à la ligne ou "
+"l'indentation, ce qui peut casser les correctifs."
+
+#. type: Plain text
+#: doc/contributing.texi:472
+msgid ""
+"When a bug is resolved, please close the thread by sending an email to "
+"@email{@var{NNN}-done@@debbugs.gnu.org}."
+msgstr ""
+"Lorsqu'un bogue est résolu, veuillez fermer le fil en envoyant un courriel à "
+"@email{@var{NNN}-done@@debbugs.gnu.org}."
+
+#. type: anchor{#1}
+#: doc/contributing.texi:473 doc/contributing.texi:475
+#, no-wrap
+msgid "Sending a Patch Series"
+msgstr "Envoyer une série de correctifs"
+
+#. type: cindex
+#: doc/contributing.texi:475
+#, no-wrap
+msgid "patch series"
+msgstr "série de correctifs"
+
+#. type: code{#1}
+#: doc/contributing.texi:476
+#, no-wrap
+msgid "git send-email"
+msgstr "git send-email"
+
+#. type: code{#1}
+#: doc/contributing.texi:477
+#, no-wrap
+msgid "git-send-email"
+msgstr "git-send-email"
+
+#. type: Plain text
+#: doc/contributing.texi:485
+msgid ""
+"When sending a patch series (e.g., using @code{git send-email}), please first "
+"send one message to @email{guix-patches@@gnu.org}, and then send subsequent "
+"patches to @email{@var{NNN}@@debbugs.gnu.org} to make sure they are kept "
+"together.  See @uref{https://debbugs.gnu.org/Advanced.html, the Debbugs "
+"documentation} for more information."
+msgstr ""
+"Lorsque vous envoyez une série de correctifs (p.e. avec @code{git send-"
+"email}), envoyez d'abord une premier message à @email{guix-patches@@gnu.org} "
+"puis envoyez le reste des correctifs à @email{@var{NNN}@@debbugs.gnu.org} pour "
+"vous assurer qu'ils seront groupés ensemble. Voyez @uref{https://debbugs.gnu."
+"org/Advanced.html, la documentation de Debbugs} pour plus d'informations."

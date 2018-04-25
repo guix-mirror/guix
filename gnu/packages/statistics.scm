@@ -115,7 +115,7 @@ be output in text, PostScript, PDF or HTML.")
 (define-public r-minimal
   (package
     (name "r-minimal")
-    (version "3.4.3")
+    (version "3.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -123,7 +123,7 @@ be output in text, PostScript, PDF or HTML.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "09pl0w01fr09bsrwd7nz2r5psysj0z93w4chz3hm2havvqqvhg3s"))))
+                "0dq3jsnwsb5j3fhl0wi3p5ycv8avf8s5j1y4ap3d2mkjmcppvsdk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
@@ -361,14 +361,14 @@ k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
 (define-public r-cluster
   (package
     (name "r-cluster")
-    (version "2.0.7")
+    (version "2.0.7-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cluster" version))
        (sha256
         (base32
-         "0nf2hnsv5rhw6399b4gk1rj5c8hfc6ajfnkh3qbwfx3cz4asrg45"))))
+         "1grxbifbc4nwig25dmjgkympnbzb4al0w6k1c0ibdhpk1h4l20di"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
@@ -466,14 +466,14 @@ also flexible enough to handle most nonstandard requirements.")
 (define-public r-matrix
   (package
     (name "r-matrix")
-    (version "1.2-13")
+    (version "1.2-14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Matrix" version))
        (sha256
         (base32
-         "1j4fyn2r3ds51hrxch738gn7d9qvpi4b01n0rxzw5jpv28rnpyvx"))))
+         "15hknim84nj3f54vkchca5ac0c3ip15v1by18k5parmn8wsl19j9"))))
     (properties `((upstream-name . "Matrix")))
     (build-system r-build-system)
     (propagated-inputs
@@ -488,14 +488,14 @@ and operations on them using LAPACK and SuiteSparse.")
 (define-public r-nlme
   (package
     (name "r-nlme")
-    (version "3.1-131.1")
+    (version "3.1-137")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nlme" version))
        (sha256
         (base32
-         "1xafi670a9jzb52kqxkacxfmy0viac3aql5byfq86kgkgla2sg0y"))))
+         "11vyxxc0n36vb8d8g02zr0402ymicvbifwdsqm7gy9iqqnwrn101"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -593,14 +593,14 @@ analysis.")
 (define-public r-survival
   (package
     (name "r-survival")
-    (version "2.41-3")
+    (version "2.42-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survival" version))
        (sha256
         (base32
-         "07cnr0hnki6ybbjll54l4s5lllhk19vni5f8m0mvsfp99ls7qygk"))))
+         "15pasbfzmg2r5bfpsadp9ia4cpybqz6n1kwm7ma02ykzf7bk4xx0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
@@ -1331,13 +1331,13 @@ syntax that can be converted to XHTML or other formats.")
 (define-public r-yaml
   (package
     (name "r-yaml")
-    (version "2.1.17")
+    (version "2.1.18")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "yaml" version))
               (sha256
                (base32
-                "10y6wnv2v8k396far29haqv2s82p4zm04rrsxk183wg19gb51was"))))
+                "15m4q5krfqg0avvqg9i2g6ns4757lk6zbyrwbx5c5bgh51glvd8v"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/yaml/")
     (synopsis "Methods to convert R data to YAML and back")
@@ -1904,14 +1904,14 @@ chain.")
 (define-public r-ade4
   (package
     (name "r-ade4")
-    (version "1.7-10")
+    (version "1.7-11")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "ade4" version))
         (sha256
           (base32
-            "0zk81x0yn30gbyc0jpzyw1nxd08ccihl6vyk0ijvj3aw3nr5flc6"))))
+            "0wm54wcpn87rdh6vyw04cr8vgba899y6jsl61f22bmlvx6d7kkac"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)))
@@ -2377,14 +2377,14 @@ were originally a part of the r-devtools package.")
 (define-public r-hms
   (package
     (name "r-hms")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hms" version))
        (sha256
         (base32
-         "0vr7k3a7k52a5yf67bwzl88lkjz09v1avw5axdk1y9v3nz33zl2h"))))
+         "1g6hslk3z0xga38r71irxq802wskg6nv804mp8y9f7i2wfrj0y55"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rlang" ,r-rlang)
@@ -2694,13 +2694,13 @@ a column in data frame.")
 (define-public r-rsqlite
   (package
     (name "r-rsqlite")
-    (version "2.0")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RSQLite" version))
               (sha256
                (base32
-                "1xpg1i1jkzkzv44k512k90c2vvl960pl2d4a3spwcha6yclyc3vz"))))
+                "0hknfqcgijdapx1ryy20zy68qmm8wsb1hjx4n4hmkgl552z82q5d"))))
     (properties `((upstream-name . "RSQLite")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2734,6 +2734,18 @@ engine (version 3.8.8.2) is included.")
                 "0l7qi45jxlf898n0jazabnam1yyczvqfdknd00bdirhhiplpd1sc"))))
     (properties `((upstream-name . "RCurl")))
     (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'respect-CURL_CA_BUNDLE
+           (lambda _
+             (substitute* "R/options.S"
+               (("\\.els = rev\\(merge\\(list\\(\\.\\.\\.\\), \\.opts\\)\\)" m)
+                (string-append "\
+certs = Sys.getenv(\"CURL_CA_BUNDLE\")
+if (certs != \"\") { .opts = merge.list(.opts, list(cainfo=certs)) }
+" m)))
+             #t)))))
     (inputs
      `(("libcurl" ,curl)))
     (propagated-inputs
@@ -2754,13 +2766,13 @@ ldap, and also supports cookies, redirects, authentication, etc.")
 (define-public r-xml
   (package
     (name "r-xml")
-    (version "3.98-1.10")
+    (version "3.98-1.11")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "XML" version))
               (sha256
                (base32
-                "1faza9bbllp67lf1yv1sllxc3iv8llz52m9diazhq322iqbh97m1"))))
+                "18izvlg2x9mzr6yb3yf02ghwbyn00frki3av4lpc44r22m4djnsh"))))
     (properties
      `((upstream-name . "XML")))
     (build-system r-build-system)
@@ -2808,28 +2820,17 @@ plotted and compared with the asymptotic curve.")
 (define-public r-lambda-r
   (package
     (name "r-lambda-r")
-    (version "1.2")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lambda.r" version))
               (sha256
                (base32
-                "0vql32np716dpd0kjn7s7wgawd02ysgp2a5il4kb19nlw661ii3x"))))
+                "05cfaq9dbgdnmmj3d6ggmsw300qgiw8k7f6h6k0ylv63cf3v6pkq"))))
     (properties `((upstream-name . "lambda.r")))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'check 'delete-test-log
-           ;; The test report contains time stamps and is not important for
-           ;; the installed package.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (delete-file-recursively
-              (string-append (assoc-ref outputs "out")
-                             "/site-library/lambda.r/unitTests"))
-             #t)))))
-    (native-inputs
-     `(("r-runit" ,r-runit)))
+    (propagated-inputs
+     `(("r-formatr" ,r-formatr)))
     (home-page "https://cran.r-project.org/web/packages/lambda.r")
     (synopsis "Functional programming extension for R")
     (description
@@ -2842,13 +2843,13 @@ safety.")
 (define-public r-futile-options
   (package
     (name "r-futile-options")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "futile.options" version))
               (sha256
                (base32
-                "1hp82h6xqq5cck67h7lpf22n3j7mg3v1mla5y5ivnzrrb7iyr17f"))))
+                "0w15agpi88y3qkv6fl72zy2pzyplzgvnj41a4ixhg64mw1sck73s"))))
     (properties
      `((upstream-name . "futile.options")))
     (build-system r-build-system)
@@ -5059,14 +5060,14 @@ algorithms.")
 (define-public r-lme4
   (package
     (name "r-lme4")
-    (version "1.1-16")
+    (version "1.1-17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lme4" version))
        (sha256
         (base32
-         "0p5x9ki4dq8058mc7k9wdnlh60z1xa3wk2nmf71wl7w59m4szh92"))))
+         "0czwdy1s8h3slaw73pz0h8qmqczf5135fz6i46i2dv1ql2pbq49x"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-rcpp" ,r-rcpp)
@@ -5111,24 +5112,50 @@ modification of F-tests for linear mixed effects models and a parametric
 bootstrap test for generalized linear mixed models.")
     (license license:gpl2+)))
 
+(define-public r-cardata
+  (package
+    (name "r-cardata")
+    (version "3.0-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "carData" version))
+       (sha256
+        (base32
+         "193pdwgw6gk19v7swk1kwphg3vqdmpsgi555g9nyz93sa39j7r8j"))))
+    (properties `((upstream-name . "carData")))
+    (build-system r-build-system)
+    (home-page "https://r-forge.r-project.org/projects/car/")
+    (synopsis "Data Sets for the book Companion to Applied Regression")
+    (description
+     "This package provides datasets to accompany J. Fox and S. Weisberg, An R
+Companion to Applied Regression, Third Edition, Sage.")
+    (license license:gpl2+)))
+
 (define-public r-car
   (package
     (name "r-car")
-    (version "2.1-6")
+    (version "3.0-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "car" version))
        (sha256
         (base32
-         "14l4d9j87xnb0bz2wgqqbxnlnbcdfb5vx2fw6kdxj91kyrk6lhnj"))))
+         "1ks2jaav8lbxhzw56vpbnysjk3pvpmqh6avd574k0bha1226k81h"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mass" ,r-mass)
+     `(("r-abind" ,r-abind)
+       ("r-cardata" ,r-cardata)
+       ("r-lme4" ,r-lme4)
+       ("r-maptools" ,r-maptools)
+       ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
+       ("r-nlme" ,r-nlme)
        ("r-nnet" ,r-nnet)
        ("r-pbkrtest" ,r-pbkrtest)
-       ("r-quantreg" ,r-quantreg)))
+       ("r-quantreg" ,r-quantreg)
+       ("r-rio" ,r-rio)))
     (home-page "https://r-forge.r-project.org/projects/car/")
     (synopsis "Companion to applied regression")
     (description
@@ -5363,14 +5390,14 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.7.3")
+    (version "1.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "1pzkqfiahnsdm3zx46asgn8fw43vlxvbh7r4cn70c7ffmxabzzrc"))))
+         "14a823il77w3wmmnzr89vwrqp50y56dh5raycnaw6c8nv5xsh32i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)

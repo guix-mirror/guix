@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -736,10 +736,32 @@ arithmetic in Perl.")
   ;; At your option either gpl1+ or the Artistic License
   (license license:perl-license)))
 
+(define-public perl-crypt-openssl-guess
+  (package
+    (name "perl-crypt-openssl-guess")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AK/AKIYM/Crypt-OpenSSL-Guess-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0rvi9l4ljcbhwwvspq019nfq2h2v746dk355h2nwnlmqikiihsxa"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Crypt-OpenSSL-Guess/")
+    (synopsis "Guess the OpenSSL include path")
+    (description
+     "The Crypt::OpenSSL::Guess Perl module provides helpers to guess the
+correct OpenSSL include path.  It is intended for use in your
+@file{Makefile.PL}.")
+    (license license:perl-license)))
+
 (define-public perl-crypt-openssl-random
  (package
   (name "perl-crypt-openssl-random")
-  (version "0.11")
+  (version "0.13")
   (source
     (origin
       (method url-fetch)
@@ -749,9 +771,12 @@ arithmetic in Perl.")
              ".tar.gz"))
       (sha256
         (base32
-          "0yjcabkibrkafywvdkmd1xpi6br48skyk3l15ni176wvlg38335v"))))
+          "0vmvrb3shrzjzri3qn524dzdasbq8zhhbpc1vmq8sx68n4jhizb0"))))
   (build-system perl-build-system)
-  (inputs `(("openssl" ,openssl)))
+  (native-inputs
+   `(("perl-crypt-openssl-guess" ,perl-crypt-openssl-guess)))
+  (inputs
+   `(("openssl" ,openssl)))
   (arguments perl-crypt-arguments)
   (home-page
     "http://search.cpan.org/dist/Crypt-OpenSSL-Random")

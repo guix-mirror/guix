@@ -28,6 +28,21 @@
 /configure
 /doc/*.1
 /doc/.dirstamp
+/doc/guix.*.aux
+/doc/guix.*.cp
+/doc/guix.*.cps
+/doc/guix.*.fn
+/doc/guix.*.fns
+/doc/guix.*.html
+/doc/guix.*.info
+/doc/guix.*.info-[0-9]
+/doc/guix.*.ky
+/doc/guix.*.pg
+/doc/guix.*.toc
+/doc/guix.*.t2p
+/doc/guix.*.tp
+/doc/guix.*.vr
+/doc/guix.*.vrs
 /doc/guix.aux
 /doc/guix.cp
 /doc/guix.cps
@@ -47,6 +62,7 @@
 /doc/os-config-desktop.texi
 /doc/stamp-vti
 /doc/version.texi
+/doc/version-*.texi
 /etc/guix-daemon.cil
 /etc/guix-daemon.conf
 /etc/guix-daemon.service
@@ -79,6 +95,7 @@
 /nix/scripts/list-runtime-roots
 /nix/scripts/offload
 /nix/scripts/substitute
+/po/doc/*.mo
 /po/guix/*.gmo
 /po/guix/*.insert-header
 /po/guix/*.mo

@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
@@ -2391,7 +2391,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
        ("curl" ,curl)
        ("libgcrypt" ,libgcrypt)
        ("json-c" ,json-c)
-       ("ffmpeg" ,ffmpeg)))
+       ("ffmpeg" ,ffmpeg-3.4)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://6xq.net/projects/pianobar/")
@@ -2780,19 +2780,13 @@ available memory.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "026v977kwb0wbmlmf6mnik328plxg8wykfx9ryvqhirac0aq39pk"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Remove use of __DATE__ and __TIME__ for reproducibility.
-               '(substitute* "main.c"
-                  (("printf \\(\"            Built : %s\", __DATE__\\);") "")
-                  (("printf \\(\" %s\", __TIME__\\);") "")))))
+                "026v977kwb0wbmlmf6mnik328plxg8wykfx9ryvqhirac0aq39pk"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("curl" ,curl)
        ("faad2" ,faad2)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("file" ,file)
        ("jack" ,jack-1)
        ("libid3tag" ,libid3tag)
@@ -3846,19 +3840,15 @@ by The Echo Nest.")
 (define-public libmygpo-qt
   (package
     (name "libmygpo-qt")
-    (version "1.0.9")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://stefan.derkits.at/files/"
                                   "libmygpo-qt/libmygpo-qt." version ".tar.gz"))
               (sha256
                (base32
-                "1wsgh2vjnd52rkvpncj1ycpbp84sj9hh12ija46b42z9mmqf2jm4"))
-              (patches
-               (search-patches "libmygpo-qt-fix-jsoncreatortest.patch"))))
+                "1kg18qrq2rsswgzhl65r3mlyx7kpqg4wwnbp4yiv6svvmadmlxl2"))))
     (build-system cmake-build-system)
-    (arguments
-     '(#:configure-flags '("-DBUILD_WITH_QT4=OFF")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

@@ -4166,7 +4166,7 @@ a secret password store, an adblocker, and a modern UI.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.24.4")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4174,8 +4174,9 @@ a secret password store, an adblocker, and a modern UI.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jg59s98aljf603w24r5a3cr4fw6z88gc0warqy1946iprjgdw0m"))))
-    (build-system glib-or-gtk-build-system)
+                "0zvxrwlswxadq4zbr4f73ms141d08j0lhi6rzmj83j1s3gan88md"))))
+
+    (build-system meson-build-system)
     (arguments
      ;; FIXME: tests run under Xvfb, but fail with:
      ;;   /src/bookmarks/ephy-bookmarks/create:
@@ -4183,18 +4184,21 @@ a secret password store, an adblocker, and a modern UI.")
      ;;      subsystem
      ;;   FAIL
      '(#:tests? #f
-       #:configure-flags '("CFLAGS=-std=gnu99")))
+       #:glib-or-gtk? #t))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
+       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
     (inputs
      `(("avahi" ,avahi)
        ("gcr" ,gcr)
-       ("gdk-pixbuf" ,gdk-pixbuf) ; for loading SVG files
+       ("gdk-pixbuf+svg" ,gdk-pixbuf+svg) ; for loading SVG files
        ("glib-networking" ,glib-networking)
        ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
@@ -4203,6 +4207,7 @@ a secret password store, an adblocker, and a modern UI.")
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
        ("libxslt" ,libxslt)
+       ("nettle" ,nettle) ; for hogweed
        ("sqlite" ,sqlite)
        ("webkitgtk" ,webkitgtk)))
     (home-page "https://wiki.gnome.org/Apps/Web")
@@ -6661,22 +6666,31 @@ is suitable as a default application in a Desktop environment.")
 (define-public xpad
   (package
     (name "xpad")
-    (version "4.8.0")
+    (version "5.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://launchpad.net/xpad/trunk/4.8.0/+download/"
+       (uri (string-append "https://launchpad.net/xpad/trunk/"
+                           version "/+download/"
                            name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "17f915yyvfa2fsavq6wh0q0dfhib28b4k1gc0292b9xdlrvy7f22"))))
+         "02yikxg6z9bwla09ka001ppjlpbv5kbza3za9asazm5aiz376mkb"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'run-autogen
+           (lambda _
+             (system* "sh" "autogen.sh"))))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
+     `(("gtksourceview" ,gtksourceview)
        ("libsm" ,libsm)))
     (home-page "https://wiki.gnome.org/Apps/Xpad")
     (synopsis "Virtual sticky note")

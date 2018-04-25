@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -958,7 +958,7 @@ light user interface.")
 (define-public emacs-emms-player-mpv
   (package
     (name "emacs-emms-player-mpv")
-    (version "0.0.13")
+    (version "0.1.0")
     (source
      (origin
        (method url-fetch)
@@ -967,7 +967,7 @@ light user interface.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "01i0bz7wdqzcnv5r63m9xgl07yf1nmn86dwy00rcfsn5za46y3r3"))))
+         "05qwbagc4i7yn7i94r1hdgj6wc5xijy1pxqv08pwsmli9rqj51n9"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emms" ,emms)))
@@ -1473,7 +1473,9 @@ filters, new key bindings and faces.  It can be enabled by
              ;; upgrading" that pdf-tools tries to perform.
              (emacs-substitute-variables "pdf-tools.el"
                ("pdf-tools-handle-upgrades" '()))))
-         (add-after 'emacs-patch-variables 'emacs-install
+         (add-after 'emacs-patch-variables 'emacs-set-emacs-load-path
+           (assoc-ref emacs:%standard-phases 'set-emacs-load-path))
+         (add-after 'emacs-set-emacs-load-path 'emacs-install
            (assoc-ref emacs:%standard-phases 'install))
          (add-after 'emacs-install 'emacs-build
            (assoc-ref emacs:%standard-phases 'build))
@@ -1513,11 +1515,8 @@ and stored in memory.")
                 "1pjlkrzr8n45bnp3xs3dybvy0nz3gwamrfc7vsi1nhpkkw99ihhb"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-                     (lambda _
-                       (zero? (system* "./run-tests.sh")))))))
+     `(#:tests? #t
+       #:test-command '("./run-tests.sh")))
     (home-page "https://github.com/magnars/dash.el")
     (synopsis "Modern list library for Emacs")
     (description "This package provides a modern list API library for Emacs.")
@@ -1710,11 +1709,8 @@ allows easily move between them.")
                 "0xbl75863pcm806zg0x1lw7qznzjq2c8320k8js7apyag8q4srvh"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-                     (lambda _
-                       (zero? (system* "./run-tests.sh")))))))
+     `(#:tests? #t
+       #:test-command '("./run-tests.sh")))
     (home-page "https://github.com/magnars/s.el")
     (synopsis "Emacs string manipulation library")
     (description "This package provides an Emacs library for manipulating
@@ -1742,26 +1738,31 @@ strings.")
     (license license:gpl2+)))
 
 (define-public emacs-sx
-  (package
-    (name "emacs-sx")
-    (version "0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/vermiculus/sx.el/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1w0xghfljqg31axcnv8gzlrd8pw25nji6idnrhflq0af9qh1dw03"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-markdown-mode" ,emacs-markdown-mode)))
-    (home-page "https://github.com/vermiculus/sx.el/")
-    (synopsis "Emacs StackExchange client")
-    (description
-     "Emacs StackExchange client.  Ask and answer questions on
+  (let ((version "20180212")
+        (revision "1")
+        (commit "833435fbf90d1c9e927d165b155f3b1ef39271de"))
+    (package
+      (name "emacs-sx")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vermiculus/sx.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1369xaxq1vy3d9yh862ddnhddikdpg2d0wv1ly00pnvdp9v4cqgd"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-markdown-mode" ,emacs-markdown-mode)))
+      (home-page "https://github.com/vermiculus/sx.el")
+      (synopsis "Emacs StackExchange client")
+      (description
+       "Emacs StackExchange client.  Ask and answer questions on
 Stack Overflow, Super User, and other StackExchange sites.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-f
   (package
@@ -2226,11 +2227,8 @@ in Lisp modes.")
     (native-inputs
      `(("ert-runner" ,ert-runner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "ert-runner")))))))
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (home-page "https://github.com/akicho8/string-inflection")
     (synopsis "Convert symbol names between different naming conventions")
     (description
@@ -2494,7 +2492,24 @@ framework for Emacs Lisp to be used with @code{ert}.")
                 "0xy9zb6wwkgwhcxdnslqk52bq3z24chgk6prqi4ks0qcf2bwyh5h"))
               (file-name (string-append name "-" version))))
     (build-system emacs-build-system)
-    ;; FIXME: Would need 'el-expectations' to actually run tests.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("\\$\\(CASK\\) exec ") ""))
+             #t)))
+       #:tests? #t
+       ;; FIXME: Normally we'd run the "test" target but for some reason the
+       ;; test-deferred target fails when run in the Guix build environment
+       ;; with the error: (file-error "Searching for program" "No such file or
+       ;; directory" "/bin/sh").
+       #:test-command '("make" "test-concurrent" "test-concurrent-compiled")))
+    (native-inputs
+     `(("emacs-ert-expectations" ,emacs-ert-expectations)
+       ("emacs-undercover" ,emacs-undercover)
+       ("ert-runner" ,ert-runner)))
     (synopsis "Simple asynchronous functions for Emacs Lisp")
     (description
      "The @code{deferred.el} library provides support for asynchronous tasks.
@@ -2546,7 +2561,7 @@ build jobs.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'install 'check
+         (add-before 'check 'fix-bin-dir
            (lambda _
              ;; The company-files-candidates-normal-root test looks
              ;; for the /bin directory, but the build environment has
@@ -2554,7 +2569,9 @@ build jobs.")
              ;; /tmp directory.
              (substitute* "test/files-tests.el"
                (("/bin/") "/tmp/"))
-             (zero? (system* "make" "test-batch")))))))
+             #t)))
+       #:tests? #t
+       #:test-command '("make" "test-batch")))
     (home-page "http://company-mode.github.io/")
     (synopsis "Modular text completion framework")
     (description
@@ -3290,7 +3307,7 @@ after buffer changes.")
 (define-public emacs-realgud
   (package
     (name "emacs-realgud")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method url-fetch)
@@ -3298,13 +3315,13 @@ after buffer changes.")
                            version ".tar"))
        (sha256
         (base32
-         "1nc8km339ip90h1j55ahfga03v7x7rh4iycmw6yrxyzir68vwn7c"))))
+         "108wgxg7fb4byaiasgvbxv2hq7b00biq9f0mh9hy6vw4160y5w24"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-autogen-script
+         (add-after 'set-emacs-load-path 'fix-autogen-script
            (lambda _
              (substitute* "autogen.sh"
                (("./configure") "sh configure"))))
@@ -3539,35 +3556,88 @@ lines that match the current text being edited.  This gives you the effect of
 a temporary @code{keep-lines} or @code{occur}.")
     (license license:gpl3+)))
 
+(define-public emacs-zoutline
+  (let ((commit "b3ee0f0e0b916838c2d2c249beba74ffdb8d5699")
+        (revision "0"))
+    (package
+      (name "emacs-zoutline")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/abo-abo/zoutline")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "0sd0017piw0dis6dhpq5dkqd3acisxqgipl7dj8gmc1vnswhdwr8"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Simple outline library")
+      (description
+       "This library provides helpers for outlines.  Outlines allow users to
+navigate code in a tree-like fashion.")
+      (license license:gpl3+))))
+
 (define-public emacs-lispy
-  (package
-    (name "emacs-lispy")
-    (version "0.26.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/abo-abo/lispy/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "15gig95cvamw5zlw99cxggd27c18b9scznjj97gvjn2zbljcaqzl"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-ace-window" ,emacs-ace-window)
-       ("emacs-iedit" ,emacs-iedit)
-       ("emacs-ivy" ,emacs-ivy)
-       ("emacs-hydra" ,emacs-hydra)))
-    (home-page "https://github.com/abo-abo/lispy")
-    (synopsis "Modal S-expression editing")
-    (description
-     "Due to the structure of Lisp syntax it's very rare for the programmer to
-want to insert characters right before \"(\" or right after \")\".  Thus
+  ;; Release 0.26.0 was almost 3 years ago, and there have been ~772 commits
+  ;; since.
+  (let ((commit "a7e1cf742e72199cc75aa5e1e686991ba4a23bc4")
+        (revision "0"))
+    (package
+      (name "emacs-lispy")
+      (version (git-version "0.26.0" revision commit))
+      (home-page "https://github.com/abo-abo/lispy")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "0qg85gz5akayvhb5fmn1qx7s9847gry4g20xcnq8llr839lq28dl"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ace-window" ,emacs-ace-window)
+         ("emacs-iedit" ,emacs-iedit)
+         ("emacs-ivy" ,emacs-ivy)
+         ("emacs-hydra" ,emacs-hydra)
+         ("emacs-zoutline" ,emacs-zoutline)))
+      (synopsis "Modal S-expression editing")
+      (description
+       "Due to the structure of Lisp syntax it's very rare for the programmer
+to want to insert characters right before \"(\" or right after \")\".  Thus
 unprefixed printable characters can be used to call commands when the point is
 at one of these special locations.  Lispy provides unprefixed keybindings for
 S-expression editing when point is at the beginning or end of an
 S-expression.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
+
+(define-public emacs-lispyville
+  ;; Later versions need a more recent Evil, with an evil-define-key*
+  ;; supporting nil for the state.
+  (let ((commit "b4291857ed6a49a67c4ea77522889ce51fb171ab")
+        (revision "0"))
+    (package
+      (name "emacs-lispyville")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/noctuid/lispyville")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "095zibzc3naknahdrnb59g9rbljy8wz9rkc7rf8avb3wxlwvxhm3"))
+                (file-name (git-file-name name version))))
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)
+         ("emacs-lispy" ,emacs-lispy)))
+      (build-system emacs-build-system)
+      (synopsis "Minor mode for integrating Evil with lispy")
+      (description
+       "LispyVille's main purpose is to provide a Lisp editing environment
+suited towards Evil users.  It can serve as a minimal layer on top of lispy
+for better integration with Evil, but it does not require the use of lispy’s
+keybinding style.  The provided commands allow for editing Lisp in normal
+state and will work even without lispy being enabled.")
+      (license license:gpl3+))))
 
 (define-public emacs-clojure-mode
   (package
@@ -3588,11 +3658,8 @@ S-expression.")
        ("emacs-s" ,emacs-s)
        ("ert-runner" ,ert-runner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'check
-           (lambda _
-             (zero? (system* "ert-runner")))))))
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
     (description
@@ -3771,14 +3838,10 @@ E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
            "1is4dcv6blslpzbjcg8l2jpxi8xj96q4cm0nxjxsyswpm8bw8ki0"))))
       (build-system emacs-build-system)
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'check
-             (lambda _
-               (zero? (system* "emacs" "-batch"
-                               "-l" "julia-mode.el"
-                               "-l" "julia-mode-tests.el"
-                               "-f" "ert-run-tests-batch-and-exit")))))))
+       `(#:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "julia-mode-tests.el"
+                          "-f" "ert-run-tests-batch-and-exit")))
       (home-page "https://github.com/JuliaEditorSupport/julia-emacs")
       (synopsis "Major mode for Julia")
       (description "This Emacs package provides a mode for the Julia
@@ -3969,11 +4032,8 @@ If you want to mark a folder manually as a project just create an empty
                 "1fd1mx0q1qb9vgdzls5ppxfriyid48blg8smgjspiazp7kxakzxv"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "make" "test")))))))
+     `(#:tests? #t
+       #:test-command '("make" "test")))
     (home-page "https://github.com/skeeto/elfeed")
     (synopsis "Atom/RSS feed reader for Emacs")
     (description
@@ -4558,14 +4618,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.1.9")
+    (version "9.1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "16yr0srfzsrzv2b1f2wjk8gb2pyhsgj2hxbscixirkxqz674c5cl"))))
+                "0i27g5qbkfqbxhgiz917pjwkxg3rwid99d0ickwx43bzq0zi7c1m"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4579,14 +4639,14 @@ reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20180327")
+    (version "20180423")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   version ".tar"))
               (sha256
                (base32
-                "1y1nn0bxnh9y4a3zrqng8n639j5da5387q2314sr3a8ggy1nb93s"))))
+                "1aggvdy74q8p79xyc19zring5gjvlzp6lbsq8ar319zkmcjrapqd"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -5132,32 +5192,29 @@ Yasnippet.")
 
 (define-public emacs-memoize
   (package
-   (name "emacs-memoize")
-   (version "20130421.b55eab0")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/skeeto/emacs-memoize")
-           (commit "b55eab0cb6ab05d941e07b8c01f1655c0cf1dd75")))
-     (file-name (string-append name "-" version ".tar.gz"))
-     (sha256
-      (base32
-       "0fjwlrdm270qcrqffvarw5yhijk656q4lam79ybhaznzj0dq3xpw"))))
-   (build-system emacs-build-system)
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-before 'install 'check
-                    (lambda _
-                      (zero? (system* "emacs" "-batch" "-l" "memoize.el"
-                                      "-l" "memoize-test.el"
-                                      "-f" "ert-run-tests-batch-and-exit")))))))
-   (home-page "https://github.com/skeeto/emacs-memoize")
-   (synopsis "Emacs lisp memoization library")
-   (description "@code{emacs-memoize} is an Emacs library for
+    (name "emacs-memoize")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/skeeto/emacs-memoize/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05ijgwi4ymxx31vpjm2pn356j85cykknajn14lrzz8pn5sh0vrg4"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "memoize-test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
+    (home-page "https://github.com/skeeto/emacs-memoize")
+    (synopsis "Emacs lisp memoization library")
+    (description "@code{emacs-memoize} is an Emacs library for
 memoizing functions.")
-   (license license:unlicense)))
+    (license license:unlicense)))
 
 (define-public emacs-linum-relative
   (package
@@ -5435,16 +5492,12 @@ abbreviation of the mode line displays (lighters) of minor modes.")
     (propagated-inputs
      `(("emacs-diminish" ,emacs-diminish)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-l" "use-package-tests.el"
-                             "-f" "ert-run-tests-batch-and-exit"))
-             ;; Tests fail in this release, but have been fixed in
-             ;; upstream commit 7956d40eed57d6c06bef36ebc174cf57d934e30d
-             #t)))))
+     ;; Tests fail in this release, but have been fixed in
+     ;; upstream commit 7956d40eed57d6c06bef36ebc174cf57d934e30d
+     `(#:tests? #f
+       #:test-command '("emacs" "--batch"
+                        "-l" "use-package-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/jwiegley/use-package")
     (synopsis "Declaration for simplifying your .emacs")
     (description "The use-package macro allows you to isolate package
@@ -5539,13 +5592,10 @@ fonts is supported.")
          "0zay490vjby3f7455r0vydmjg7q1gwc78hilpfb0rg4gwz224z8r"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-l" "xmlgen-test.el"
-                             "-f" "ert-run-tests-batch-and-exit")))))))
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "xmlgen-test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/philjackson/xmlgen")
     (synopsis "S-expression to XML domain specific language (DSL) in
 Emacs Lisp")
@@ -6147,64 +6197,49 @@ Emacs.")
 ;; Tests for ert-runner have a circular dependency with ecukes, and therefore
 ;; cannot be run
 (define-public ert-runner
-  (let ((dependencies
-         `(("emacs-ansi" ,emacs-ansi)
-           ("emacs-commander" ,emacs-commander)
-           ("emacs-dash" ,emacs-dash)
-           ("emacs-f" ,emacs-f)
-           ("emacs-s" ,emacs-s)
-           ("emacs-shut-up" ,emacs-shut-up))))
-    (package
-      (name "ert-runner")
-      (version "0.7.0")
-      (source
-       (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/rejeep/ert-runner.el/archive/v"
-                             version ".tar.gz"))
-         (file-name (string-append name "-" version ".tar.gz"))
-         (sha256
-          (base32
-           "1657nck9i96a4xgl8crfqq0s8gflzp21pkkzwg6m3z5npjxklgwp"))))
-      (build-system emacs-build-system)
-      (inputs dependencies)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'install-executable
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (substitute* "bin/ert-runner"
-                   (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
-                    (string-append "ERT_RUNNER=\"" out
-                                   "/share/emacs/site-lisp/guix.d/"
-                                   ,name "-" ,version)))
-                 (install-file "bin/ert-runner" (string-append out "/bin"))
-                 (wrap-program (string-append out "/bin/ert-runner")
-                   (list "EMACSLOADPATH" ":" '=
-                         (append
-                          ,(match dependencies
-                             (((labels packages) ...)
-                              `(map (lambda (label package version)
-                                      (string-append (assoc-ref inputs label)
-                                                     "/share/emacs/site-lisp/guix.d/"
-                                                     (string-drop package 6)
-                                                     "-" version))
-                                    ',labels
-                                    ',(map package-name packages)
-                                    ',(map package-version packages))))
-                          ;; empty element to include the default load path as
-                          ;; determined by emacs' standard initialization
-                          ;; procedure
-                          (list ""))))
-                 #t))))
-         #:include (cons* "^reporters/.*\\.el$" %default-include)))
-      (home-page "https://github.com/rejeep/ert-runner.el")
-      (synopsis "Opinionated Ert testing workflow")
-      (description "@code{ert-runner} is a tool for Emacs projects tested
+  (package
+    (name "ert-runner")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rejeep/ert-runner.el/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1657nck9i96a4xgl8crfqq0s8gflzp21pkkzwg6m3z5npjxklgwp"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("emacs-ansi" ,emacs-ansi)
+       ("emacs-commander" ,emacs-commander)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)
+       ("emacs-shut-up" ,emacs-shut-up)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "bin/ert-runner"
+                 (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
+                  (string-append "ERT_RUNNER=\"" out
+                                 "/share/emacs/site-lisp/guix.d/"
+                                 ,name "-" ,version)))
+               (install-file "bin/ert-runner" (string-append out "/bin"))
+               (wrap-program (string-append out "/bin/ert-runner")
+                 (list "EMACSLOADPATH" ":" 'prefix
+                       (string-split (getenv "EMACSLOADPATH") #\:)))
+               #t))))
+       #:include (cons* "^reporters/.*\\.el$" %default-include)))
+    (home-page "https://github.com/rejeep/ert-runner.el")
+    (synopsis "Opinionated Ert testing workflow")
+    (description "@code{ert-runner} is a tool for Emacs projects tested
 using ERT.  It assumes a certain test structure setup and can therefore make
 running tests easier.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-disable-mouse
   (package
@@ -6244,32 +6279,15 @@ running a customisable handler command (@code{ignore} by default). ")
          "11fbq4scrgr7m0iwnzcrn2g7xvqwm2gf82sa7zy1l0nil7265p28"))
        (patches (search-patches "emacs-json-reformat-fix-tests.patch"))))
     (build-system emacs-build-system)
-    (propagated-inputs `(("emacs-undercover" ,emacs-undercover)))
-    (inputs
-     `(("emacs-dash" ,emacs-dash)         ; for tests
-       ("emacs-shut-up" ,emacs-shut-up))) ; for tests
+    (propagated-inputs
+     `(("emacs-undercover" ,emacs-undercover)))
+    (native-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-shut-up" ,emacs-shut-up)
+       ("ert-runner" ,ert-runner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-L" (string-append
-                                   (assoc-ref inputs "emacs-undercover")
-                                   "/share/emacs/site-lisp/guix.d/undercover-"
-                                   ,(package-version emacs-undercover))
-                             "-L" (string-append
-                                   (assoc-ref inputs "emacs-dash")
-                                   "/share/emacs/site-lisp/guix.d/dash-"
-                                   ,(package-version emacs-dash))
-                             "-L" (string-append
-                                   (assoc-ref inputs "emacs-shut-up")
-                                   "/share/emacs/site-lisp/guix.d/shut-up-"
-                                   ,(package-version emacs-shut-up))
-                             "-l" "test/test-helper.el"
-                             "-l" "test/json-reformat-test.el"
-                             "-f" "ert-run-tests-batch-and-exit"))
-             #t)))))
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (home-page "https://github.com/gongo/json-reformat")
     (synopsis "Reformatting tool for JSON")
     (description "@code{json-reformat} provides a reformatting tool for
@@ -6445,13 +6463,10 @@ the actual transformations.")
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-l" "which-key-tests.el"
-                             "-f" "ert-run-tests-batch-and-exit")))))))
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "which-key-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/justbur/emacs-which-key")
     (synopsis "Display available key bindings in popup")
     (description
@@ -6480,11 +6495,8 @@ settings).")
     (native-inputs
      `(("ert-runner" ,ert-runner)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda _
-             (zero? (system* "ert-runner" "tests")))))))
+     `(#:tests? #t
+       #:test-command '("ert-runner" "tests")))
     (home-page "https://github.com/lewang/ws-butler")
     (synopsis "Trim spaces from end of lines")
     (description
@@ -6581,17 +6593,9 @@ editing RPM spec files.")
     (propagated-inputs
      `(("emacs-popup" ,emacs-popup)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-L" (string-append
-                                   (assoc-ref inputs "emacs-popup")
-                                   "/share/emacs/site-lisp/guix.d/popup-"
-                                   ,(package-version emacs-popup))
-                             "-l" "test/test.el"
-                             "-f" "ert-run-tests-batch-and-exit")))))))
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch" "-l" "test/test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/syohex/emacs-git-messenger")
     (synopsis "Popup commit message at current line")
     (description "@code{emacs-git-messenger} provides
@@ -6713,7 +6717,7 @@ key.  Optionally, a mouse pop-up can be added by binding
              version ".tar"))
        (sha256
         (base32
-         "0ld4kfwnyyhlsnj5f6cbn4is4mpxdqalk2aifkw02r00mbr9n294"))))
+         "02r1qqsxi6qk7q4cj6a6pygbj856dcw9vcmhfh0ib92j41v77q6y"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-prop-menu" ,emacs-prop-menu)))
@@ -6751,11 +6755,8 @@ Idris.")
       (native-inputs
        `(("ert-runner" ,ert-runner)))
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'check
-             (lambda _
-               (zero? (system* "ert-runner")))))))
+       `(#:tests? #t
+         #:test-command '("ert-runner")))
       (home-page "https://github.com/rmuslimov/browse-at-remote")
       (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
       (description
@@ -7184,16 +7185,10 @@ emulates Vim features and provides Vim-like key bindings.")
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (invoke "emacs" "--batch" "-L"
-                     (string-append (assoc-ref inputs "emacs-evil")
-                                    "/share/emacs/site-lisp/guix.d/evil-"
-                                    ,(package-version emacs-evil))
-                     "-l" "evil-quickscope-tests.el"
-                     "-f" "ert-run-tests-batch-and-exit"))))))
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "evil-quickscope-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/blorbx/evil-quickscope")
     (synopsis "Target highlighting for emacs evil-mode f,F,t and T commands")
     (description "@code{emacs-evil-quickscope} highlights targets for Evil
@@ -7310,6 +7305,32 @@ scratch buffer, and, by virtue of this extension, do so using the Emacs
 formatting rules for that language.")
       (license license:bsd-2))))
 
+(define-public emacs-kv
+  (package
+    (name "emacs-kv")
+    (version "0.0.19")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nicferrier/emacs-kv.git")
+             (commit "721148475bce38a70e0b678ba8aa923652e8900e")))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "0r0lz2s6gvy04fwnafai668jsf4546h4k6zd6isx5wpk0n33pj5m"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch" "-l" "kv-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
+    (home-page "https://github.com/nicferrier/emacs-kv")
+    (synopsis "Key/Value data structures library for Emacs Lisp")
+    (description "@code{emacs-kv} is a collection of tools for dealing with
+key/value data structures such as plists, alists and hash-tables in Emacs
+Lisp.")
+    (license license:gpl3+)))
+
 (define-public emacs-esxml
   (package
     (name "emacs-esxml")
@@ -7324,6 +7345,28 @@ formatting rules for that language.")
                (base32
                 "00vv8a75wdklygdyr4km9mc2ismxak69c45jmcny41xl44rp9x8m"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-sources
+           (lambda _
+             ;; See: https://github.com/tali713/esxml/pull/28.
+             (substitute* "css-lite.el"
+               ((";;; main interface")
+                (string-append ";;; main interface\n"
+                               "(require 'cl-lib)"))
+               (("mapcan")
+                "cl-mapcan")
+               (("',\\(cl-mapcan #'process-css-rule rules\\)")
+                "(cl-mapcan #'process-css-rule ',rules)"))
+             (substitute* "esxml-form.el"
+               ((",esxml-form-field-defn")
+                "#'esxml-form-field-defn"))
+             ;; See: https://github.com/tali713/esxml/issues/25
+             (delete-file "esxpath.el")
+             #t)))))
+    (propagated-inputs
+     `(("emacs-kv" ,emacs-kv)))
     (home-page "https://github.com/tali713/esxml/")
     (synopsis "SXML for EmacsLisp")
     (description "This is XML/XHTML done with S-Expressions in EmacsLisp.
@@ -7566,6 +7609,32 @@ Anzu.zim.")
      "Unfold CSS-selector-like expressions to markup.  It is intended to be
 used with SGML-like languages: XML, HTML, XHTML, XSL, etc.")
     (license license:gpl3+)))
+
+(define-public emacs-ergoemacs-mode
+  (let ((commit "3ce23bba3cb50562693860f87f3528c471d603ba")
+        (revision "1"))
+    (package
+      (name "emacs-ergoemacs-mode")
+      (version (git-version "5.16.10.12" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ergoemacs/ergoemacs-mode.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "1s3b9bridl78hh1mxmdk9nqlmqhibbaxk0a1cixmsf23s06w8w6l"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-undo-tree" ,emacs-undo-tree)))
+      (home-page "https://ergoemacs.github.io/")
+      (synopsis "Emacs mode based on common modern interface and ergonomics")
+      (description
+       "This package provides an efficient Emacs keybinding set based on
+statistics of command frequency, and supports common shortcuts for open,
+close, copy, cut, paste, undo, redo.")
+      (license license:gpl3+))))
 
 (define-public emacs-password-store
   (package
@@ -7863,3 +7932,25 @@ name and password.  To skip it press a @key{Return} key.
 You could get a Epkg package list by invoking @code{epkg-list-packages} in
 Emacs.")
       (license license:gpl3+))))
+
+(define-public emacs-elisp-slime-nav
+  (package
+    (name "emacs-elisp-slime-nav")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/purcell/elisp-slime-nav/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vq7ym1q47p97gxrv45c9gm96d23xbp237vkmakikj6grngxjfb2"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/elisp-slime-nav")
+    (synopsis "Make @code{M-.} and @code{M-,} work for elisp like they do in SLIME")
+    (description
+     "This package provides SLIME's convenient @code{M-.}and @code{M-,} navigation
+in @code{emacs-lisp-mode}, together with an elisp equivalent of
+@code{slime-describe-symbol}.")
+    (license license:gpl3+)))

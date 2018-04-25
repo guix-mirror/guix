@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
@@ -63,9 +65,11 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+
+                                               asl2.0))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
@@ -83,14 +87,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.11.1")
+    (version "2.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "11l6cs6mib16rgdrnqrhkqs033fjik316gkgfz3asbmxz38lalca"))))
+               "1z66spkm1prvhbq7h5mfnp0i6mmamsb938fqmdfvyrgzc7rh34z6"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -771,3 +775,58 @@ monitor/GPU.")
    ;; This package requires SSE instructions.
    (supported-systems '("i686-linux" "x86_64-linux"))
    (license gpl2+)))
+
+(define-public runc
+  (package
+    (name "runc")
+    (version "1.0.0-rc5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/opencontainers/runc/releases/"
+                    "download/v" version "/runc.tar.xz"))
+              (sha256
+               (base32
+                "081avdzwnqpk368wbaihlzsypaxpj42d7699h7jgp0fks14x4103"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/opencontainers/runc"
+       #:install-source? #f
+       #:tests? #f                      ; FIXME: 20/139 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source import-path #:allow-other-keys)
+             ;; Unpack the tarball into 'runc' instead of 'runc-1.0.0-rc5'.
+             (let ((dest (string-append "src/" import-path)))
+               (mkdir-p dest)
+               (invoke "tar" "-C" (string-append "src/" import-path)
+                       "--strip-components=1"
+                       "-xvf" source))))
+         (replace 'build
+           (lambda* (#:key import-path #:allow-other-keys)
+             (chdir (string-append "src/" import-path))
+             ;; XXX: requires 'go-md2man'.
+             ;; (invoke "make" "man")
+             (invoke "make")))
+         ;; (replace 'check
+         ;;   (lambda _
+         ;;     (invoke "make" "localunittest")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+              (invoke "make" "install" "install-bash"
+                      (string-append "PREFIX=" out))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libseccomp" ,libseccomp)))
+    (synopsis "Open container initiative runtime")
+    (home-page "https://www.opencontainers.org/")
+    (description
+     "@command{runc} is a command line client for running applications
+packaged according to the
+@uref{https://github.com/opencontainers/runtime-spec/blob/master/spec.md, Open
+Container Initiative (OCI) format} and is a compliant implementation of the
+Open Container Initiative specification.")
+    (license asl2.0)))

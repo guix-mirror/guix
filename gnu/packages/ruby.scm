@@ -1617,13 +1617,13 @@ irb's last-word approach.")
 (define-public ruby-instantiator
   (package
     (name "ruby-instantiator")
-    (version "0.0.6")
+    (version "0.0.7")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "instantiator" version))
               (sha256
                (base32
-                "0mfmqhg9xrv9i8i1kmphf15ywddhivyh2z3ccl0xjw8qy54zr21i"))))
+                "0w07w3gkyqr7m0vz5h13vm8b411660qywjm2xxxgdjv4wb3fazbr"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -2998,13 +2998,13 @@ multibyte strings, internationalization, time zones, and testing.")
 (define-public ruby-crass
   (package
     (name "ruby-crass")
-    (version "1.0.3")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "crass" version))
               (sha256
                (base32
-                "1czijxlagzpzwchr2ldrgfi7kywg08idjpq37ndcmwh4fmz72c4l"))))
+                "0bpxzy6gjw9ggjynlxschbfsgmx8lv3zw1azkjvnb8b9i895dqfi"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)
@@ -4079,14 +4079,14 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
-    (version "0.5.20170404")
+    (version "0.5.20180417")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "domain_name" version))
        (sha256
         (base32
-         "12hs8yijhak7p2hf1xkh98g0mnp5phq3mrrhywzaxpwz1gw5r3kf"))))
+         "0abdlwb64ns7ssmiqhdwgl27ly40x2l27l8hs8hn0z4kb3zd2x3v"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -4585,14 +4585,14 @@ files and use the data therein.")
 (define-public ruby-ascii85
   (package
     (name "ruby-ascii85")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "Ascii85" version))
        (sha256
         (base32
-         "0j95sbxd18kc8rhcnvl1w37kflqpax1r12h1x47gh4xxn3mz4m7q"))))
+         "0658m37jjjn6drzqg1gk4p6c205mgp7g1jh2d00n4ngghgmz5qvs"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))

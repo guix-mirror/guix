@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -580,24 +580,21 @@ as well as pick-place files.")
                 (sha256
                  (base32
                   "1r40kyx30wz31cwwlfvfh7fgqkxq3n8dxhswpi9qpf4r5h3l8wsn"))
-                (file-name (git-file-name name version))))
+                (file-name (git-file-name name version))
+                (snippet
+                 ;; Remove bundled catch since we provide our own.
+                 '(begin
+                    (delete-file "libfive/test/catch.hpp")
+                    #t))))
       (build-system cmake-build-system)
       (arguments
-       `(#:tests? #f ; no "test" target
+       `(#:test-target "libfive-test"
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'remove-native-compilation
              (lambda _
                (substitute* "CMakeLists.txt" (("-march=native") ""))
-               #t))
-           (add-before 'build 'add-eigen-to-search-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; Allow things to find our own Eigen and Catch.
-               (let ((eigen (assoc-ref inputs "eigen")))
-                 (setenv "CPLUS_INCLUDE_PATH"
-                         (string-append eigen "/include/eigen3:"
-                                        (getenv "CPLUS_INCLUDE_PATH")))
-                 #t))))))
+               #t)))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
       (inputs

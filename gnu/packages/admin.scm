@@ -18,8 +18,9 @@
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,8 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages inkscape)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -75,6 +78,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
@@ -90,7 +94,10 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages elf)
+  #:use-module (gnu packages mpi))
 
 (define-public aide
   (package
@@ -1132,6 +1139,51 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                            (string-append dir "/wpa_supplicant.conf")))
               #t))))))))
 
+(define-public wpa-supplicant-gui
+  (package
+    (inherit wpa-supplicant)
+    (name "wpa-supplicant-gui")
+    (inputs `(("qtbase" ,qtbase)
+              ("qtsvg" ,qtsvg)
+              ,@(package-inputs wpa-supplicant)))
+    (native-inputs
+     ;; For icons.
+     `(("imagemagick" ,imagemagick)
+       ("inkscape" ,inkscape)
+       ,@(package-native-inputs wpa-supplicant)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'chdir
+                    (lambda _
+                      (chdir "wpa_supplicant/wpa_gui-qt4")
+                      #t))
+                  (delete 'configure)
+                  (replace 'build
+                    (lambda _
+                      (invoke "qmake" "wpa_gui.pro")
+                      (invoke "make" "-j" (number->string (parallel-job-count)))
+                      (invoke "make" "-C" "icons")))
+                  (replace 'install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (qt '("qtbase" "qtsvg")))
+                        (substitute* "wpa_gui.desktop"
+                          (("Exec=wpa_gui")
+                           (string-append "Exec=" out "/bin/wpa_gui")))
+                        (install-file "wpa_gui" (string-append out "/bin"))
+                        (install-file "wpa_gui.desktop"
+                                      (string-append out "/share/applications"))
+                        (copy-recursively "icons/hicolor"
+                                          (string-append out "/share/icons/hicolor"))
+                        (wrap-program (string-append out "/bin/wpa_gui")
+                          `("QT_PLUGIN_PATH" ":" prefix
+                            ,(map (lambda (label)
+                                    (string-append (assoc-ref inputs label)
+                                                   "/lib/qt5/plugins/"))
+                                  qt)))
+                        #t))))))
+    (synopsis "Graphical user interface for WPA supplicant")))
+
 (define-public wakelan
   (package
     (name "wakelan")
@@ -1522,7 +1574,9 @@ of supported upstream metrics systems simultaneously.")
        (patches (search-patches "ansible-wrap-program-hack.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-pycrypto" ,python2-pycrypto)
+     `(("python2-bcrypt" ,python2-bcrypt)
+       ("python2-pycrypto" ,python2-pycrypto)
+       ("python2-pynacl" ,python2-pynacl)
        ("python2-httplib2" ,python2-httplib2)
        ("python2-passlib" ,python2-passlib)
        ("python2-nose" ,python2-nose)
@@ -1960,14 +2014,14 @@ produce uniform output across heterogeneous networks.")
 (define-public cbatticon
   (package
     (name "cbatticon")
-    (version "1.6.7")
+    (version "1.6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/valr/"
                                   name "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "1s2n49ydh7pznnf02fak4yy0wqkgi9ag7yiw1zg1lhp4m0h37hyh"))
+                "185lzvaijvyq7y8r7dvizhri0rf9lpc1anfgbbn4lznr1fr3z7rn"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
@@ -2312,7 +2366,7 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "3.3.0")
+    (version "3.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dylanaraps/neofetch/"
@@ -2320,7 +2374,7 @@ tool for remote execution and deployment.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15p69q0jchfms1fpb4i7kq8b28w2xpgh2zmynln618qxv1myf228"))))
+                "18rhamy910ig03rr55y9x5i6pf78yj9xc6jpm6nfh3gqja7340rb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -2533,3 +2587,65 @@ printed instead of after the entire file has been read, which is often too
 late.")
     (home-page "https://jwilk.net/software/hungrycat")
     (license license:expat)))
+
+(define-public launchmon
+  (package
+    (name "launchmon")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/LLNL/LaunchMON/releases/download/v"
+                    version "/" name "-v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0fm3nd9mydm9v2bf7bh01dbgrfnpwkapxa3dsvy3x1z0rz61qc0x"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mpi" ,openmpi)
+       ("munge" ,munge)
+       ("boost" ,boost)
+       ("libelf" ,libelf)
+       ("libgcrypt" ,libgcrypt)
+       ("libgpg-error" ,libgpg-error)))
+    (synopsis "Infrastructue for large scale tool daemon launching")
+    (description
+     "LaunchMON is a software infrastructure that enables HPC run-time
+tools to co-locate tool daemons with a parallel job.  Its API allows a
+tool to identify all the remote processes of a job and to scalably
+launch daemons into the relevant nodes.")
+    (home-page "https://github.com/LLNL/LaunchMON")
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (license license:lgpl2.1)))
+
+(define-public spindle
+  (package
+    (name "spindle")
+    (version "0.10")
+    (source (origin
+              ;; We use git checkout to avoid github auto-generated tarballs
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hpc/Spindle.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "15n3ay0qq81r5v7fif61q1vdjcq44pp2nynkh3fvbzc9fj3c39wd"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--enable-sec-launchmon"
+                                     "--enable-sec-munge"
+                                     "--enable-sec-none")))
+    (inputs
+     `(("mpi" ,openmpi)
+       ("munge" ,munge)
+       ("launchmon" ,launchmon)
+       ("libgcrypt" ,libgcrypt)))
+    (synopsis "Scalable library loading in HPC environments")
+    (description
+     "Spindle is a tool for improving the performance of dynamic library and
+Python loading in HPC environments.")
+    (home-page "https://github.com/hpc/Spindle")
+    ;; This package supports x86_64 and PowerPC64
+    (supported-systems '("x86_64-linux"))
+    (license license:lgpl2.1)))

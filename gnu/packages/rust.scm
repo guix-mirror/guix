@@ -6,6 +6,7 @@
 ;;; Copyright © 2017, 2018 Nikolai Merinov <nikolai.merinov@member.fsf.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module ((guix build utils) #:select (alist-replace))
@@ -161,9 +163,12 @@ in turn be used to build the final Rust.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-env
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Disable test for cross compilation support.
+             (setenv "CFG_DISABLE_CROSS_TESTS" "1")
              (setenv "SHELL" (which "sh"))
              (setenv "CONFIG_SHELL" (which "sh"))
+             (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
              ;; guix llvm-3.9.1 package installs only shared libraries
              (setenv "LLVM_LINK_SHARED" "1")
              #t))
@@ -181,10 +186,16 @@ in turn be used to build the final Rust.")
                   "#[ignore]\nfn connect_timeout_unroutable"))
                ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
                (substitute* "src/libstd/sys/unix/process/process_common.rs"
-                 (("fn test_process_mask") "#[ignore]\nfn test_process_mask"))
+                (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
+    fn test_process_mask"))
                ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
                ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
                (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
+               (substitute* "src/librustc_back/dynamic_lib.rs"
+                 ;; This test is known to fail on aarch64 and powerpc64le:
+                 ;; https://github.com/rust-lang/rust/issues/45410
+                 (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
                #t)))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda* _
@@ -247,6 +258,92 @@ safety and thread safety guarantees.")
                     (alist-replace "rustc-bootstrap" (list base-rust)
                                    (package-native-inputs base-rust))))))
 
+(define-public mrustc
+  (let ((commit "4f98e4322ef7aabd3bbef8cd93c0980cd6eeeed1")
+        (revision "1")
+        (rustc-version "1.19.0"))
+    (package
+      (name "mrustc")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/thepowersgang/mrustc.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1hk1x2iv64il5g2n3z06d6h219hnxg1w84lj7vi1lydqa65qk92p"))))
+      (outputs '("out" "cargo"))
+      (build-system gnu-build-system)
+      (inputs
+       `(("llvm" ,llvm-3.9.1)))
+      (native-inputs
+       `(("bison" ,bison)
+         ("flex" ,flex)
+         ;; Required for the libstd sources.
+         ("rustc"
+          ,(rust-source "1.19.0" "0l8c14qsf42rmkqy92ahij4vf356dbyspxcips1aswpvad81y8qm"))))
+      (arguments
+       `(#:tests? #f
+         #:make-flags (list (string-append "LLVM_CONFIG="
+                                           (assoc-ref %build-inputs "llvm")
+                                           "/bin/llvm-config"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-target-compiler
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (substitute* "minicargo.mk"
+                 ;; Don't try to build LLVM.
+                 (("^[$][(]LLVM_CONFIG[)]:") "xxx:")
+                 ;; Build for the correct target architecture.
+                 (("^RUSTC_TARGET := x86_64-unknown-linux-gnu")
+                  (string-append "RUSTC_TARGET := "
+                                 ,(or (%current-target-system)
+                                      (nix-system->gnu-triplet
+                                       (%current-system))))))
+               (invoke "tar" "xf" (assoc-ref inputs "rustc"))
+               (chdir "rustc-1.19.0-src")
+               (invoke "patch" "-p0" "../rust_src.patch")
+               (chdir "..")
+               #t))
+           (delete 'configure)
+           (add-after 'build 'build-minicargo
+             (lambda _
+               (for-each (lambda (target)
+                           (invoke "make" "-f" "minicargo.mk" target))
+                         '("output/libstd.hir" "output/libpanic_unwind.hir"
+                           "output/libproc_macro.hir" "output/libtest.hir"))
+               ;; Technically the above already does it - but we want to be clear.
+               (invoke "make" "-C" "tools/minicargo")))
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (tools-bin (string-append out "/tools/bin"))
+                      (cargo-out (assoc-ref outputs "cargo"))
+                      (cargo-bin (string-append cargo-out "/bin"))
+                      (lib (string-append out "/lib"))
+                      (lib/rust (string-append lib "/mrust"))
+                      (gcc (assoc-ref inputs "gcc")))
+                 ;; These files are not reproducible.
+                 (for-each delete-file (find-files "output" "\\.txt$"))
+                 (mkdir-p lib)
+                 (copy-recursively "output" lib/rust)
+                 (mkdir-p bin)
+                 (mkdir-p tools-bin)
+                 (install-file "bin/mrustc" bin)
+                 ;; minicargo uses relative paths to resolve mrustc.
+                 (install-file "tools/bin/minicargo" tools-bin)
+                 (install-file "tools/bin/minicargo" cargo-bin)
+                 #t))))))
+      (synopsis "Compiler for the Rust progamming language")
+      (description "Rust is a systems programming language that provides memory
+safety and thread safety guarantees.")
+      (home-page "https://github.com/thepowersgang/mrustc")
+      ;; Dual licensed.
+      (license (list license:asl2.0 license:expat)))))
+
 (define-public rust-1.23
   (package
     (inherit rust-1.19)
@@ -258,7 +355,23 @@ safety and thread safety guarantees.")
      (substitute-keyword-arguments (package-arguments rust-1.19)
        ((#:phases phases)
         `(modify-phases ,phases
-           (add-after 'patch-tests 'fix-mtime-bug
+           (add-after 'unpack 'dont-build-native
+             (lambda _
+               ;; XXX: Revisit this when we use gcc 6.
+               (substitute* "src/binaryen/CMakeLists.txt"
+                 (("ADD_COMPILE_FLAG\\(\\\"-march=native\\\"\\)") ""))
+               #t))
+           (add-after 'patch-tests 'patch-cargo-tests
+             (lambda _
+               (substitute* "src/tools/cargo/tests/build.rs"
+                (("/usr/bin/env") (which "env"))
+                ;; Guix llvm is compiled without asmjs-unknown-emscripten.
+                (("fn wasm32_final_outputs") "#[ignore]\nfn wasm32_final_outputs"))
+               (substitute* "src/tools/cargo/tests/death.rs"
+                ;; This is stuck when built in container.
+                (("fn ctrl_c_kills_everyone") "#[ignore]\nfn ctrl_c_kills_everyone"))
+               #t))
+           (add-after 'patch-cargo-tests 'fix-mtime-bug
              (lambda* _
                (substitute* "src/build_helper/lib.rs"
                  ;; Bug in Rust code.
@@ -327,7 +440,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              (invoke "./x.py" "build" "src/tools/cargo")))
          (replace 'check
            (lambda* _
-             (invoke "./x.py" "test")))
+             (invoke "./x.py" "test")
+             (invoke "./x.py" "test" "src/tools/cargo")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "./x.py" "install")
@@ -348,7 +462,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  `("LIBRARY_PATH" ":" suffix (,(string-append libc "/lib"))))
                #t)))))))))
 
-(define-public rust
+(define-public rust-1.24
   (let ((base-rust
          (rust-bootstrapped-package rust-1.23 "1.24.1"
                                     "1vv10x2h9kq7fxh2v01damdq8pvlp5acyh1kzcda9sfjx12kv99y")))
@@ -358,4 +472,51 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
           `(modify-phases ,phases
+             (replace 'patch-tests
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bash (assoc-ref inputs "bash")))
+                   (substitute* "src/libstd/process.rs"
+                     ;; The newline is intentional.
+                     ;; There's a line length "tidy" check in Rust which would
+                     ;; fail otherwise.
+                     (("\"/bin/sh\"") (string-append "\n\"" bash "/bin/sh\"")))
+                   (substitute* "src/libstd/net/tcp.rs"
+                     ;; There is no network in build environment
+                     (("fn connect_timeout_unroutable")
+                      "#[ignore]\nfn connect_timeout_unroutable"))
+                   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
+                   (substitute* "src/libstd/sys/unix/process/process_common.rs"
+                    (("fn test_process_mask") "#[allow(unused_attributes)]
+    #[ignore]
+    fn test_process_mask"))
+                   ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
+                   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
+                   (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
+                   (substitute* "src/librustc_metadata/dynamic_lib.rs"
+                     ;; This test is known to fail on aarch64 and powerpc64le:
+                     ;; https://github.com/rust-lang/rust/issues/45410
+                     (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
+                   #t)))
              (delete 'fix-mtime-bug))))))))
+
+(define-public rust
+  (let ((base-rust rust-1.24))
+    (package
+      (inherit base-rust)
+      (version "1.25.0")
+      (source
+       (rust-source version
+                    "0baxjr99311lvwdq0s38bipbnj72pn6fgbk6lcq7j555xq53mxpf"))
+      (native-inputs
+       (alist-replace "cargo-bootstrap" (list base-rust "cargo")
+                      (alist-replace "rustc-bootstrap" (list base-rust)
+                                     (package-native-inputs base-rust))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'patch-cargo-tests 'patch-cargo-index-update
+               (lambda* _
+                 (substitute* "src/tools/cargo/tests/generate-lockfile.rs"
+                   ;; This test wants to update the crate index.
+                   (("fn no_index_update") "#[ignore]\nfn no_index_update")))))))))))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,7 +51,7 @@
                (base32
                 "17ajlwgvyyrap8z7f16zcs59pksvncwbmd3mzf98wj7zqgczjaja"))))
     (build-system gnu-build-system)
-    (home-page "http://sigrok.org/wiki/Libserialport")
+    (home-page "https://sigrok.org/wiki/Libserialport")
     (synopsis "Library for using serial ports")
     (description "Libserialport is a minimal shared library written in C that is intended
 to take care of the OS-specific details when writing software that uses serial ports.")
@@ -59,7 +60,7 @@ to take care of the OS-specific details when writing software that uses serial p
 (define-public libsigrokdecode
   (package
     (name "libsigrokdecode")
-    (version "0.5.0")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -67,14 +68,15 @@ to take care of the OS-specific details when writing software that uses serial p
                     version ".tar.gz"))
               (sha256
                (base32
-                "1hfigfj1976qk11kfsgj75l20qvyq8c9p2h4mjw23d59rsg5ga2a"))))
+                "07mmb6s62ncqqgsc6szilj2yxixf6gg99ggbzsjlbhp4b9aqnga9"))))
     (outputs '("out" "doc"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-doc
            (lambda _
-             (zero? (system* "doxygen"))))
+             (invoke "doxygen")
+             #t))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (copy-recursively "doxy/html-api"
@@ -91,7 +93,7 @@ to take care of the OS-specific details when writing software that uses serial p
      `(("glib" ,glib)
        ("python" ,python)))
     (build-system gnu-build-system)
-    (home-page "http://www.sigrok.org/wiki/Libsigrokdecode")
+    (home-page "https://www.sigrok.org/wiki/Libsigrokdecode")
     (synopsis "Library providing (streaming) protocol decoding functionality")
     (description "Libsigrokdecode is a shared library written in C, which provides
 (streaming) protocol decoding functionality.")
@@ -112,7 +114,7 @@ to take care of the OS-specific details when writing software that uses serial p
     (native-inputs
      `(("sdcc" ,sdcc)))
     (build-system gnu-build-system)
-    (home-page "http://www.sigrok.org/wiki/Fx2lafw")
+    (home-page "https://www.sigrok.org/wiki/Fx2lafw")
     (synopsis "Firmware for Cypress FX2 chips")
     (description "Fx2lafw is free firmware for Cypress FX2 chips which makes them usable
 as simple logic analyzer and/or oscilloscope hardware.")
@@ -190,7 +192,7 @@ as simple logic analyzer and/or oscilloscope hardware.")
        ("libftdi" ,libftdi)
        ("libzip" ,libzip)))
     (build-system gnu-build-system)
-    (home-page "http://www.sigrok.org/wiki/Libsigrok")
+    (home-page "https://www.sigrok.org/wiki/Libsigrok")
     (synopsis "Library which provides the basic hardware access drivers for logic
 analyzers")
     (description "@code{libsigrok} is a shared library written in C which provides the basic hardware
@@ -217,7 +219,7 @@ format support.")
        ("libsigrok" ,libsigrok)
        ("libsigrokdecode" ,libsigrokdecode)))
     (build-system gnu-build-system)
-    (home-page "http://sigrok.org/wiki/Sigrok-cli")
+    (home-page "https://sigrok.org/wiki/Sigrok-cli")
     (synopsis "Command-line frontend for sigrok")
     (description "Sigrok-cli is a command-line frontend for sigrok.")
     (license license:gpl3+)))
@@ -247,7 +249,7 @@ format support.")
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
     (build-system cmake-build-system)
-    (home-page "http://www.sigrok.org/wiki/PulseView")
+    (home-page "https://www.sigrok.org/wiki/PulseView")
     (synopsis "Qt based logic analyzer, oscilloscope and MSO GUI for sigrok")
     (description "PulseView is a Qt based logic analyzer, oscilloscope and MSO GUI
 for sigrok.")

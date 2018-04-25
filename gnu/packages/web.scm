@@ -186,14 +186,14 @@ Interface} specification.")
     (name "nginx")
     ;; Consider updating the nginx-documentation package if the nginx package is
     ;; updated.
-    (version "1.13.12")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1pl5ii1w2ycxprxk8zdnxlpdd1dia6hyrns7mnqkm3fv5ihgb4pv"))))
+                "1d9c0avfpbwvzyg53b59ks8shpnrxnbnshcd7ziizflsyv5vw5ax"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -3785,15 +3785,19 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.3.6.2")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "0h3hkw575b211bxma23inbq1565wkhiapgasd539h219apqs534f"))))
+                "1pndv0h870ygibk0bmg9ayzkls60jqscrsyk39k29gy2pvm9ha5y"))))
     (build-system r-build-system)
     (native-inputs `(("r-rcpp" ,r-rcpp)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-later" ,r-later)
+       ("r-promises" ,r-promises)))
     (home-page "https://github.com/rstudio/httpuv")
     (synopsis "HTTP and WebSocket server library for R")
     (description
@@ -3893,13 +3897,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "1.0")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "09lkmzh35l1420sg0dyh4vgyishqx3g8xmgs2y9z7lbi09xgwwwr"))))
+                "04c4d0mfcy3dkdlbxnaccpdgxvyxfdwfmmh5djim6v9hyg0j2z8s"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -5434,13 +5438,13 @@ responsive, and powerful applications with minimal effort.")
 (define-public r-shinydashboard
   (package
     (name "r-shinydashboard")
-    (version "0.6.1")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "shinydashboard" version))
               (sha256
                (base32
-                "14zi7g5wrngy6lwi9xpvaid7727m6rfdijbb89al9likfhjqzqqy"))))
+                "10yqcqqcxgfqwkmscqwvvgr710im583qsqnsqkfpisjvkqp10yqb"))))
     (build-system r-build-system)
     ;; The directory inst/AdminLTE/ contains a minified JavaScript file.
     ;; Regenerate it from the included sources.

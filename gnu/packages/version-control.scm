@@ -18,6 +18,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages)
@@ -1069,7 +1071,7 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.8.19")
+    (version "1.10.0")
     (source (origin
              (method url-fetch)
              (uri
@@ -1080,7 +1082,7 @@ following features:
                                 "subversion-" version ".tar.bz2")))
              (sha256
               (base32
-               "1gp6426gkdza6ni2whgifjcmjb4nq34ljy07yxkrhlarvfq6ks2n"))))
+               "115mlvmf663w16mc3xyypnaizq401vbypc56hl2ylzc3pcx3zwic"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1096,6 +1098,11 @@ following features:
                (substitute* "libtool"
                  (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls")))
                #t)))
+         (add-before 'build 'patch-test-sh
+           (lambda _
+             (substitute* "subversion/tests/libsvn_repos/repos-test.c"
+               (("#!/bin/sh") (string-append "#!" (which "sh"))))
+             #t))
          (add-after 'install 'install-perl-bindings
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Follow the instructions from 'subversion/bindings/swig/INSTALL'.
@@ -1124,10 +1131,12 @@ following features:
     (inputs
       `(("apr" ,apr)
         ("apr-util" ,apr-util)
+        ("lz4" ,lz4)
         ("serf" ,serf)
         ("perl" ,perl)
-        ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+        ("python" ,python-wrapper)
         ("sqlite" ,sqlite)
+        ("utf8proc" ,utf8proc)
         ("zlib" ,zlib)))
     (home-page "https://subversion.apache.org/")
     (synopsis "Revision control system")
@@ -1904,3 +1913,52 @@ repository is the centre, directories are branches and files are leaves.
 Contributors to the source code appear and disappear as they contribute to
 specific files and directories.")
     (license license:gpl3+)))
+
+(define-public src
+  (package
+    (name "src")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.catb.org/~esr/src/src-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0n0skhvya8w2az45h2gsafxy8m2mvqas64nrgxifcmrzfv0rf26c"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no 'configure' script
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (prog (string-append out "/bin/src"))
+                    (rcs  (assoc-ref inputs "rcs")))
+               (wrap-program prog
+                 `("PATH" ":" prefix (,(string-append rcs "/bin"))))
+               #t)))
+         (replace 'check
+           (lambda _
+             (setenv "HOME" (getenv "TMPDIR"))
+             (invoke "git" "config" "--global" "user.name" "guix")
+             (invoke "git" "config" "--global" "user.email" "guix")
+             (invoke "./srctest"))))))
+    (native-inputs
+     ;; For testing.
+     `(("git" ,git)
+       ("perl" ,perl)))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("rcs" ,rcs)))
+    (synopsis "Simple revision control")
+    (home-page "http://www.catb.org/~esr/src/")
+    (description
+     "SRC (or src) is simple revision control, a version-control system for
+single-file projects by solo developers and authors.  It modernizes the
+venerable RCS, hence the anagrammatic acronym.  The design is tuned for use
+cases like all those little scripts in your @file{~/bin} directory, or a
+directory full of HOWTOs.")
+    (license license:bsd-2)))

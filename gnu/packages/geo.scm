@@ -499,14 +499,14 @@ development.")
 (define-public r-maps
   (package
    (name "r-maps")
-   (version "3.2.0")
+   (version "3.3.0")
    (source
      (origin
        (method url-fetch)
        (uri (cran-uri "maps" version))
        (sha256
         (base32
-         "0577f3b5d3a7djl7r0miy9mzr6xq6jb32p8nyrma7m2azasbwyj3"))))
+         "05i2ppl5z4p8rawgqmy3z4ia05fcblpq1vvrmrkgkkpdlhczx6hr"))))
    (build-system r-build-system)
    (home-page "https://cran.r-project.org/web/packages/maps")
    (synopsis "Draw geographical maps")
@@ -518,14 +518,14 @@ Projection code and larger maps are in separate packages ('mapproj' and
 (define-public r-mapproj
   (package
    (name "r-mapproj")
-   (version "1.2-5")
+   (version "1.2.6")
    (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mapproj" version))
        (sha256
         (base32
-         "0rjz37r4rizk2c6jaf54f0kfb60dqv6b262cnhiwjl55d4x6l0pk"))))
+         "1rggww8cbwv0vzlj5afzhbsbngg4bzj5znbkz7wmxsbshfbsm9b2"))))
    (build-system r-build-system)
    (propagated-inputs `(("r-maps" ,r-maps)))
    (home-page "https://cran.r-project.org/web/packages/mapproj")

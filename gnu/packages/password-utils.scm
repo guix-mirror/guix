@@ -457,37 +457,6 @@ winner of the 2015 Password Hashing Competition.")
     ;; files are CC0 only; see README.md and LICENSE for details.
     (license (list license:cc0 license:asl2.0))))
 
-(define-public python-bcrypt
-  (package
-    (name "python-bcrypt")
-    (version "3.1.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "bcrypt" version))
-        (sha256
-         (base32
-          "13cyrnqwkhc70rs6dg65z4yrrr3dc42fhk11804fqmci9hvimvb7"))))
-        (build-system python-build-system)
-    (native-inputs
-     `(("python-pycparser" ,python-pycparser)
-       ("python-pytest" ,python-pytest)))
-    (propagated-inputs
-     `(("python-cffi" ,python-cffi)
-       ("python-six" ,python-six)))
-    (home-page "https://github.com/pyca/bcrypt/")
-    (synopsis
-     "Modern password hashing library")
-    (description
-     "Bcrypt is a Python module which provides a password hashing method based
-on the Blowfish password hashing algorithm, as described in
-@url{http://static.usenix.org/events/usenix99/provos.html,\"A Future-Adaptable
-Password Scheme\"} by Niels Provos and David Mazieres.")
-    (license license:asl2.0)))
-
-(define-public python2-bcrypt
-  (package-with-python2 python-bcrypt))
-
 (define-public pass-git-helper
   (package
     (name "pass-git-helper")

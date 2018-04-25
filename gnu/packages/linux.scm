@@ -16,7 +16,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
@@ -391,8 +391,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.16.2")
-(define %linux-libre-hash "04sma28djhr2llffnd8pmpb1jfwaqcg2sipp0jnnj1llpwj3rah7")
+(define %linux-libre-version "4.16.4")
+(define %linux-libre-hash "0lq3yv88yd9zcz52bl4hfllb41vy1i826gcim6qjjc88assqib9i")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -400,8 +400,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.34")
-(define %linux-libre-4.14-hash "11gmvxngjfx4w24a1yjc98hhdl8zfh87byrslgy94faybj8dl938")
+(define %linux-libre-4.14-version "4.14.36")
+(define %linux-libre-4.14-hash "03iwsaa5bb43v2yq81n0i9ysj63fik0nnhlrvwq8zsk8ni9sl6yb")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -410,14 +410,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.94"
-                    "1ff6g1pq16l95bpw4bfagdg4dd49mgfrg9z7l7s6r9z7qp14cd7m"
+  (make-linux-libre "4.9.96"
+                    "0w4j8pfpa1qfyv1ipqvdalfydsw2d1ygqd4aj9ls7f16rxq3clw0"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.128"
-                    "1aqz5skyz534bcpnn6w9madg6kadgyjjypah9dhmqf841rygb6rk"
+  (make-linux-libre "4.4.129"
+                    "1m4434iabnpn77521lm59wzjprq5brx8vr1952jd5a4gqwilmnnb"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2121,6 +2121,7 @@ time.")
                                               "/etc/lvm")
                                "--enable-udev_sync"
                                "--enable-udev_rules"
+                               "--enable-pkgconfig"
 
                                ;; Make sure programs such as 'dmsetup' can
                                ;; find libdevmapper.so.
@@ -2897,7 +2898,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.7.4")
+    (version "0.7.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
@@ -2905,7 +2906,7 @@ arrays when needed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02lk453wa2gfxkl8zmdws15nkcibln2yw76zm779pkngkhggl6w8"))
+                "0zkcayi3mmp43ji2zid1gprgsvqhjjapsw7jjd60sf75prf50h2r"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3306,7 +3307,8 @@ disks and SD cards.  This package provides the userland utilities.")
                       (substitute* "freefall.c"
                         (("alarm\\(2\\)") "alarm(5)")))))
        #:make-flags (list (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))
+                                         (assoc-ref %outputs "out"))
+                          "CC=gcc")
        #:tests? #f)) ;no tests
     (home-page (package-home-page linux-libre))
     (synopsis "Free-fall protection for spinning laptop hard drives")
@@ -4593,3 +4595,39 @@ emulates the behaviour of Gunnar Monell's older fbgrab utility.")
 restriction, permission handling and more.  This package provides userspace
 interface to this kernel feature.")
     (license license:lgpl2.1)))
+
+(define-public mbpfan
+  (package
+    (name "mbpfan")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dgraziotin/mbpfan/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wifsws9icki95hhfh4zw1hmk07ddmkcz9mg5a9jr7q2kkrk01cx"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "DESTDIR=" out)
+                            "CC=gcc"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda _
+             (substitute* "Makefile"
+               (("/usr") ""))
+             #t))
+         (delete 'configure)))) ; There's no configure phase.
+    (home-page "https://github.com/dgraziotin/mbpfan")
+    (synopsis "Control fan speed on Macbooks")
+    (description
+     "mbpfan is a fan control daemon for Apple Macbooks.  It uses input from
+the @code{coretemp} module and sets the fan speed using the @code{applesmc}
+module.  It can be executed as a daemon or in the foreground with root
+privileges.")
+    (license license:gpl3+)))

@@ -724,7 +724,8 @@ supplies a generic doubly-linked list and some string functions.")
                 (for-each
                   (lambda (dir)
                     (delete-file-recursively (string-append "Source/" dir)))
-                  '("LibJPEG" "LibJXR" "LibOpenJPEG" "LibPNG" "LibRawLite"
+                  '("LibJPEG" "LibOpenJPEG" "LibPNG" "LibRawLite"
+                    ;; "LibJXR"
                     "LibWebP" "OpenEXR" "ZLib"))))
             (patches (search-patches "freeimage-unbundle.patch"
                                      "freeimage-CVE-2015-0852.patch"
@@ -760,14 +761,15 @@ supplies a generic doubly-linked list and some string functions.")
             ;; We need '-fpermissive' for Source/FreeImage.h.
             ;; libjxr doesn't have a pkg-config file.
             (string-append "CFLAGS+=-O2 -fPIC -fvisibility=hidden -fpermissive "
-                           "-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib"))
+                           ;"-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib"
+                           ))
       #:tests? #f)) ; no check target
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("unzip" ,unzip)))
    (inputs
     `(("libjpeg" ,libjpeg)
-      ("libjxr" ,libjxr)
+      ;("libjxr" ,libjxr)
       ("libpng" ,libpng)
       ("libraw" ,libraw)
       ("libtiff" ,libtiff)
@@ -844,16 +846,18 @@ multi-dimensional image processing.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "0.6.1")
+    (version "1.0.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://downloads.webmproject.org/releases/webp/libwebp-" version
-             ".tar.gz"))
+       ;; No tarballs are provided for >0.6.1.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://chromium.googlesource.com/webm/libwebp")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ayq2zq0zbgf5yizbm32zh7p1vb8kibw74am6am1n5cz5mw3ql06"))))
+         "1w8jzdbr1s4238ygyrlxryycss3f2z6d9amxdq8m82nl3l6skar4"))))
     (build-system gnu-build-system)
     (inputs
      `(("freeglut" ,freeglut)
@@ -861,10 +865,18 @@ multi-dimensional image processing.")
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (arguments
      '(#:configure-flags '("--enable-libwebpmux"
                            "--enable-libwebpdemux"
-                           "--enable-libwebpdecoder")))
+                           "--enable-libwebpdecoder")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'bootstrap
+                    (lambda _
+                      (invoke "autoreconf" "-vif"))))))
     (home-page "https://developers.google.com/speed/webp/")
     (synopsis "Lossless and lossy image compression")
     (description

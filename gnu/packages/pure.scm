@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
 (define-public pure
   (package
     (name "pure")
-    (version "0.67")
+    (version "0.68")
     (source
      (origin
        (method url-fetch)
@@ -40,7 +41,7 @@
                            "pure-" version ".tar.gz"))
        (sha256
         (base32
-         "1hlx5dx6n70rbg668yc97yj4jbnrv0dpfw3l9b0ffmcgr76f6ba4"))))
+         "0px6x5ivcdbbp2pz5n1r1cwg1syadklhjw8piqhl63n91i4r7iyb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="

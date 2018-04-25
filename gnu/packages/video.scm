@@ -597,14 +597,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.4.2")
+    (version "4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0h6prjn1ijkzzhkyj8mazp0wpx7m0n9ycadjxagf9czqirbyk4ib"))))
+               "0gx4ngnhi5glmxh38603qy5n6vq8bl1cr4sqd1xff95i82pmv57d"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -770,6 +770,18 @@ convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
 
+(define-public ffmpeg-3.4
+  (package
+    (inherit ffmpeg)
+    (version "3.4.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0h6prjn1ijkzzhkyj8mazp0wpx7m0n9ycadjxagf9czqirbyk4ib"))))))
+
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
@@ -789,25 +801,6 @@ audio/video codec library.")
                     "--disable-mipsdspr1"
                     flag))
               ,flags))))))
-
-;; Annoyingly enough, the latest mpv release does not build with the stable
-;; release of ffmpeg. Use a git commit until the situation is fixed.
-(define-public ffmpeg-git
-  (let ((commit "3f887440677328c9cfed97ad81d14051ffa32aae")
-        (revision "1"))
-    (package
-     (inherit ffmpeg)
-     (name "ffmpeg-git")
-     (version (string-append "3.4-" revision "." (string-take commit 9)))
-     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/FFmpeg/FFmpeg.git")
-                    (commit commit)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1b7n3g4m2rbvrwsgbfl8wl91z42g1ld42clwxs8qpl9ny5rwz6sq")))))))
 
 (define-public vlc
   (package
@@ -1032,7 +1025,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("enca" ,enca)
-       ("ffmpeg" ,ffmpeg-git)
+       ("ffmpeg" ,ffmpeg)
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("lcms" ,lcms)
@@ -1160,7 +1153,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.03.14")
+    (version "2018.04.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1168,7 +1161,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0j8j797gqc29fd5ra3cjvwkp8dgvigdydsj0zzjs05zccfqrj9lh"))))
+                "17zxgwfcy7c6gdyxdgh02f5zi52gvmy0zpccfj6zjkhw5iqj1vbw"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1278,7 +1271,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1040")
+    (version "0.4.1060")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1287,7 +1280,7 @@ other site that youtube-dl supports.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0257p9bn426rv0cjk2j5hsx6cg7dz5gpjwlqq0sy1axa47phis46"))))
+                "1pq7c2ay42aan7ykpmddzh6ylq0qsq8a27pk68m5imaxi6abbwsz"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -1854,7 +1847,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("fftw" ,fftw)
        ("libxml2" ,libxml2)
        ("jack" ,jack-1)
@@ -2089,7 +2082,7 @@ making @dfn{screencasts}.")
     ;; As a result, they are omitted. Please add them back if problems appear.
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("glu" ,glu)
        ("jack" ,jack-1)
        ("libxi" ,libxi)
@@ -2801,7 +2794,7 @@ It counts more than 100 plugins.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libjpeg" ,libjpeg)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("sqlite" ,sqlite)))
     (arguments
      '(#:phases (modify-phases %standard-phases

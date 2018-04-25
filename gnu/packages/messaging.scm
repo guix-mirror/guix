@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016, 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016, 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -485,14 +485,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.1")
+    (version "0.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "0qvkiscy42nhzhccszi049ws8cnhpxgc13g8naq1rsa5x9zy163c"))))
+         "12rfmp613alh3mi8f94008sx7x1a8c1izs3icrvw7bf4gnf2pi31"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -510,7 +510,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "0.16.9")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -518,36 +518,74 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "0v08zdvpqaig0wxpxn1l8rsj3wr3fqvnagn8cnvch17vfqv9gcr1"))))
-    (build-system gnu-build-system)
+                "16ynws10vhx6rhjjjmzw6iyb3hc19823xhx4gsb14hrc7l8vzd1c"))))
+    (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure all Python scripts run with the correct PYTHONPATH.
-             (let ((out (assoc-ref outputs "out"))
-                   (path (getenv "PYTHONPATH")))
-               (for-each (lambda (name)
-                           (let ((file (string-append out "/bin/" name)))
-                             ;; Wrapping destroys identification of intended
-                             ;; application, so we need to override "APP".
-                             (substitute* file
-                               (("APP=`basename \\$0`")
-                                (string-append "APP=" name)))
-                             (wrap-program file
-                               `("PYTHONPATH" ":" prefix (,path)))))
-                         '("gajim" "gajim-remote" "gajim-history-manager")))
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (name)
+                  (let ((file (string-append out "/bin/" name))
+                        (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+                    (wrap-program file
+                      `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))))
+                '("gajim" "gajim-remote" "gajim-history-manager")))
+             #t))
+         (add-before 'check 'remove-test-resolver
+           ;; This test requires network access.
+           (lambda _
+             (substitute* "test/runtests.py"
+               (("'integration.test_resolver',") ""))
+             #t))
+         (add-before 'check 'start-xserver
+           ;; Tests require a running X server.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                   (display ":1"))
+               (setenv "DISPLAY" display)
+               (zero? (system (string-append xorg-server "/bin/Xvfb "
+                                             display " &"))))))
+         (add-after 'install 'install-icons
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (adwaita (string-append
+                              (assoc-ref inputs "adwaita-icon-theme")
+                              "/share/icons/Adwaita"))
+                    (hicolor (string-append
+                              (assoc-ref inputs "hicolor-icon-theme")
+                              "/share/icons/hicolor"))
+                    (icons (string-append
+                            out "/lib/python"
+                            ,(version-major+minor (package-version python))
+                            "/site-packages/gajim/data/icons")))
+               (with-directory-excursion icons
+                 (symlink adwaita "Adwaita")
+                 (copy-recursively hicolor "hicolor")))
              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)))
+     `(("intltool" ,intltool)
+       ("xorg-server" ,xorg-server)))
     (inputs
-     `(("python2-axolotl" ,python2-axolotl)
-       ("python2-nbxmpp" ,python2-nbxmpp)
-       ("python2-pyopenssl" ,python2-pyopenssl)
-       ("python2-gnupg" ,python2-gnupg)
-       ("python2-pygtk" ,python2-pygtk)
-       ("python" ,python-2)))
+     `(("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("gnome-keyring" ,gnome-keyring)
+       ("gtk+" ,gtk+)
+       ("gtkspell3" ,gtkspell3)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("libsecret" ,libsecret)
+       ("python-axolotl" ,python-axolotl)
+       ("python-dbus" ,python-dbus)
+       ("python-docutils" ,python-docutils)
+       ("python-gnupg" ,python-gnupg)
+       ("python-nbxmpp" ,python-nbxmpp)
+       ("python-pillow" ,python-pillow)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-qrcode" ,python-qrcode)))
     (home-page "https://gajim.org/")
     (synopsis "Jabber (XMPP) client")
     (description "Gajim is a feature-rich and easy to use Jabber/XMPP client.
@@ -764,7 +802,7 @@ protocols.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.1.11")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
@@ -773,7 +811,10 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "040vwihl1r5159vzimmnff75iqfg53vhnfi5wcb3cd0c2r51idl5"))))
+         "18bfqx0ylbas9gs91rkspf04l5fjjcl0mxm1gfs2d59bv65mvcm3"))))
+    (arguments
+     `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
+                     ; for now.
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -791,23 +832,26 @@ messenger protocol.")
 (define-public utox
   (package
    (name "utox")
-   (version "0.16.1")
+   (version "0.17.0")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://github.com/uTox/uTox/archive/v"
-                         version ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/uTox/uTox.git")
+           (commit "v0.17.0")
+           (recursive? #t))) ;; Needed for 'minini' git submodule.
+     (file-name (string-append name "-" version "-checkout"))
      (sha256
       (base32
-       "14xl72y4w1x2kk0cvkcr9pmywllm0r9w2grjqiknwn95pw6yxz6q"))))
+       "12wbq883il7ikldayh8hm0cjfrkp45vn05xx9s1jbfz6gmkidyar"))))
    (build-system cmake-build-system)
    (arguments
-    `(#:phases
+    `(#:configure-flags '("-DENABLE_TESTS=on")
+      #:phases
       (modify-phases %standard-phases
         (add-before 'build 'patch-absolute-filename-libgtk-3
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (substitute* "../uTox-0.16.1/src/xlib/gtk.c"
+            (substitute* "../source/src/xlib/gtk.c"
                          (("libgtk-3.so")
                          (string-append (assoc-ref inputs "gtk+")
                                         "/lib/libgtk-3.so")))))
@@ -846,14 +890,14 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.13.0")
+    (version "1.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/qTox/qTox/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dyplmlqhg4zbg7hdzp3iqppn9xgp7pds5k6w6byjcqhb9zv91ca"))
+                "0bmnx6m33qn9nx40yy268x4wnvv2y7bvm41hzrlbhsiaph7kg583"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -875,7 +919,7 @@ instant messenger with audio and video chat capabilities.")
                    ,(list (string-append (assoc-ref inputs "qtsvg")
                                          "/lib/qt5/plugins/"))))))))))
     (inputs
-     `(("ffmpeg" ,ffmpeg)
+     `(("ffmpeg" ,ffmpeg-3.4)
        ("filteraudio" ,filteraudio)
        ("glib" ,glib)
        ("gtk+" ,gtk+-2)
@@ -1492,14 +1536,14 @@ building the IRC clients and bots.")
 (define-public toxic
   (package
     (name "toxic")
-    (version "0.8.0")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/JFreegman/toxic/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0166lqb47f4kj34mhi57aqmnk9mh4hsicmbdsj6ag54sy1zicy20"))
+                "1dx6z7k0zpsd7dpysdy23f0hnm49qlikb0mq8fg0y01dsz9vxgak"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

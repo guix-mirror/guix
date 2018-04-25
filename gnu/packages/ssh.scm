@@ -259,8 +259,20 @@ Additionally, various channel-specific options can be negotiated.")
                              (substitute* (find-files "." "\\.scm$")
                                (("\"libguile-ssh\"")
                                 (string-append "\"" libdir "/libguile-ssh\"")))
-                             #t)))))
-
+                             #t))))
+                  (add-after 'install 'remove-bin-directory
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin"))
+                             (examples (string-append
+                                        out "/share/guile-ssh/examples")))
+                        (mkdir-p examples)
+                        (rename-file (string-append bin "/ssshd.scm")
+                                     (string-append examples "/ssshd.scm"))
+                        (rename-file (string-append bin "/sssh.scm")
+                                     (string-append examples "/sssh.scm"))
+                        (delete-file-recursively bin)
+                        #t))))
        ;; Tests are not parallel-safe.
        #:parallel-tests? #f))
     (native-inputs `(("autoconf" ,autoconf)

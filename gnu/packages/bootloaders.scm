@@ -443,9 +443,6 @@ also initializes the boards (RAM etc).")
 (define-public u-boot-beagle-bone-black
   (make-u-boot-package "am335x_boneblack" "arm-linux-gnueabihf"))
 
-(define-public u-boot-odroid-c2
-  (make-u-boot-package "odroid-c2" "aarch64-linux-gnu"))
-
 (define-public u-boot-pine64-plus
   (let ((base (make-u-boot-package "pine64_plus" "aarch64-linux-gnu")))
     (package

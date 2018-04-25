@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,37 @@
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
+
+(define-public python-bcrypt
+  (package
+    (name "python-bcrypt")
+    (version "3.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bcrypt" version))
+       (sha256
+        (base32
+         "13cyrnqwkhc70rs6dg65z4yrrr3dc42fhk11804fqmci9hvimvb7"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pycparser" ,python-pycparser)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/pyca/bcrypt/")
+    (synopsis
+     "Modern password hashing library")
+    (description
+     "Bcrypt is a Python module which provides a password hashing method based
+on the Blowfish password hashing algorithm, as described in
+@url{http://static.usenix.org/events/usenix99/provos.html,\"A Future-Adaptable
+Password Scheme\"} by Niels Provos and David Mazieres.")
+    (license license:asl2.0)))
+
+(define-public python2-bcrypt
+  (package-with-python2 python-bcrypt))
 
 (define-public python-passlib
   (package
@@ -587,6 +619,9 @@ Networking and Cryptography library.  These libraries have a stated goal
 of improving usability, security and speed.")
     (license license:asl2.0)))
 
+(define-public python2-pynacl
+  (package-with-python2 python-pynacl))
+
 (define-public python2-pgpdump
   (package
     (name "python2-pgpdump")
@@ -758,3 +793,30 @@ in userspace)
 
 (define-public python2-pycryptodome
   (package-with-python2 python-pycryptodome))
+
+(define-public python-m2crypto
+  (package
+    (name "python-m2crypto")
+    (version "0.29.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "M2Crypto" version))
+       (sha256
+        (base32 "1h16gpilrnlzc0iyj1mnd1iqh8wchzjsxjqw9n344glimg2s5zm0"))))
+    (build-system python-build-system)
+    (inputs `(("openssl" ,openssl)))
+    (propagated-inputs `(("python-typing" ,python-typing)))
+    (home-page "https://gitlab.com/m2crypto/m2crypto")
+    (synopsis "Python crypto and TLS toolkit")
+    (description "@code{M2Crypto} is a complete Python wrapper for OpenSSL
+featuring RSA, DSA, DH, EC, HMACs, message digests, symmetric ciphers
+(including AES); TLS functionality to implement clients and servers; HTTPS
+extensions to Python's httplib, urllib, and xmlrpclib; unforgeable HMAC'ing
+AuthCookies for web session management; FTP/TLS client and server; S/MIME;
+M2Crypto can also be used to provide TLS for Twisted.  Smartcards supported
+through the Engine interface.")
+    (license license:expat)))
+
+(define-public python2-m2crypto
+  (package-with-python2 python-m2crypto))
