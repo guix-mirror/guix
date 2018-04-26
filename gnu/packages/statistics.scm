@@ -4211,13 +4211,13 @@ series of numeric vectors/matrices and factors.")
 (define-public r-ztable
   (package
     (name "r-ztable")
-    (version "0.1.5")
+    (version "0.1.8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ztable" version))
               (sha256
                (base32
-                "1jfqnqy9544gfvz3bsb48v4177nwp4b4n9l2743asq8sbq305b5r"))))
+                "1hk5k9614n52dpfrhdws06w4gvwhnz8q47x4cwxx88qmrzm8z2m3"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/ztable")
     (synopsis "Zebra-striped tables in LaTeX and HTML formats for R")
