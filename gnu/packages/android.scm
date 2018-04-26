@@ -95,7 +95,11 @@ use their packages mostly unmodified in our Android NDK build system.")
                               version "-checkout"))
     (sha256
      (base32
-      "0xc2n7jxrf1iw9cc278pijdfjix2fkiig5ws27f6rwp40zg5mrgg"))))
+      "0xc2n7jxrf1iw9cc278pijdfjix2fkiig5ws27f6rwp40zg5mrgg"))
+    (patches
+     (search-patches "libbase-use-own-logging.patch"
+                     "libbase-fix-includes.patch"
+                     "adb-add-libraries.patch"))))
 
 (define liblog
   (package
@@ -122,11 +126,7 @@ in Main, System, Radio and Events sub-logs.")
   (package
     (name "libbase")
     (version (android-platform-version))
-    (source (origin
-              (inherit (android-platform-system-core version))
-              (patches
-               (search-patches "libbase-use-own-logging.patch"
-                               "libbase-fix-includes.patch"))))
+    (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
     (arguments
      `(#:tests? #f ; TODO.
@@ -197,12 +197,7 @@ various Android core host applications.")
   (package
     (name "adb")
     (version (android-platform-version))
-    (source (origin
-              (inherit (android-platform-system-core version))
-              (patches
-               (search-patches "libbase-use-own-logging.patch"
-                               "libbase-fix-includes.patch"
-                               "adb-add-libraries.patch"))))
+    (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
     (arguments
      `(#:tests? #f ; TODO.
