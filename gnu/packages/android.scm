@@ -103,6 +103,20 @@ use their packages mostly unmodified in our Android NDK build system.")
                      "adb-add-libraries.patch"
                      "libziparchive-add-includes.patch"))))
 
+(define (android-platform-external version subdirectory checksum)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url
+           (string-append "https://android.googlesource.com/platform/external/"
+                          subdirectory))
+          (commit (string-append "android-" version))))
+    (file-name (string-append "android-platform-system-external-" subdirectory "-"
+                              version "-checkout"))
+    (sha256
+     (base32
+      checksum))))
+
 (define liblog
   (package
     (name "liblog")
@@ -313,6 +327,30 @@ to a Unix shell that can run commands on the connected device or emulator.")
     (description "This package provides a tool to create Android Boot
 Images.")
     (license license:asl2.0)))
+
+(define-public android-safe-iop
+  (package
+    (name "android-safe-iop")
+    (version (android-platform-version))
+    (source (android-platform-external version "safe-iop"
+                                       "1nyyrs463advjhlq8xx1lm37m4g5afv7gy0csxrj7biwwl0v13qw"))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:make-flags '("CXXFLAGS=-fpermissive -Wno-error")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-host
+           (lambda _
+             ;; TODO: Cross-compile.
+             (substitute* "Android.mk"
+              (("BUILD_STATIC_LIBRARY") "BUILD_HOST_STATIC_LIBRARY"))
+             #t)))))
+    (home-page "https://developer.android.com/")
+    (synopsis "Safe integers in C")
+    (description "@code{android-safe-iop} provides a set of functions for
+performing and checking safe integer operations.  Ensure that integer
+operations do not result in silent overflow.")
+    (license license:bsd-2)))
 
 (define-public android-udev-rules
   (package
