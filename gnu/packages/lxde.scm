@@ -48,7 +48,7 @@
 (define-public libfm
   (package
     (name "libfm")
-    (version "1.2.5")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcmanfm/"
@@ -56,7 +56,7 @@
                                   "%29/LibFM/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0nlvfwh09gbq8bkbvwnw6iqr918rrs9gc9ljb9pjspyg408bn1n7"))))
+                "151jyy8ipmp2h829gd9s4s429qafv1zxl7j6zaj1k1gzm9s5rmnb"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("gtk+" ,gtk+-2)))
