@@ -237,14 +237,16 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
 (define-public mg
   (package
     (name "mg")
-    (version "20171014")
+    (version "20180408")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://homepage.boetes.org/software/mg/mg-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hboetes/mg")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hakfikzsml7z0hja8m8mcahrmfy2piy81bq9nccsjplyfc9clai"))
+                "06w86xk7sjl2x2h3z6msn8kpmwj05qdimcym77wzhz5s94dzh1bl"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -262,7 +264,7 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
        #:make-flags (list (string-append "prefix=" %output)
                           "CC=gcc")
        #:phases (modify-phases %standard-phases
-                  (delete 'configure)
+                  (delete 'configure)   ; no configure script
                   (add-before 'build 'correct-location-of-difftool
                     (lambda _
                       (substitute* "buffer.c"
