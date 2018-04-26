@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -169,7 +170,7 @@ tools that process C/C++ code.")
       (inputs
        `(("custom-qemu"
           ;; The afl-qemu tool builds qemu 2.10.0 with a few patches applied.
-          ,(package (inherit (@@ (gnu packages bootloaders) qemu-minimal-2.10))
+          ,(package (inherit qemu-minimal-2.10)
              (name "afl-qemu")
              (inputs
               `(("afl-src" ,source)

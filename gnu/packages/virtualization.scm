@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
@@ -187,7 +187,7 @@ exec smbd $@")))
        ;; ("pciutils" ,pciutils)
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
-       ("sdl" ,sdl)
+       ("sdl2" ,sdl2)
        ("spice" ,spice)
        ("usbredir" ,usbredir)
        ("util-linux" ,util-linux)
@@ -197,7 +197,7 @@ exec smbd $@")))
     (native-inputs `(("glib:bin" ,glib "bin") ; gtester, etc.
                      ("perl" ,perl)
                      ("pkg-config" ,pkg-config)
-                     ("python" ,python-2) ; incompatible with Python 3 according to error message
+                     ("python-wrapper" ,python-wrapper)
                      ("texinfo" ,texinfo)))
     (home-page "https://www.qemu.org")
     (synopsis "Machine emulator and virtualizer")
@@ -233,8 +233,29 @@ server and embedded PowerPC, and S390 guests.")
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (inputs (fold alist-delete (package-inputs qemu)
-                  '("libusb" "mesa" "sdl" "spice" "virglrenderer"
+                  '("libusb" "mesa" "sdl2" "spice" "virglrenderer"
                     "usbredir" "libdrm" "libepoxy" "pulseaudio")))))
+
+;; The GRUB test suite fails with later versions of Qemu, so we
+;; keep it at 2.10 for now.  See
+;; <https://lists.gnu.org/archive/html/bug-grub/2018-02/msg00004.html>.
+;; This package is hidden since we do not backport updates to it.
+(define-public qemu-minimal-2.10
+  (hidden-package
+   (package
+    (inherit qemu-minimal)
+    (version "2.10.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qemu.org/qemu-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))))
+    ;; qemu-minimal-2.10 needs Python 2. Remove below once no longer necessary.
+    (native-inputs `(("python-2" ,python-2)
+                     ,@(fold alist-delete (package-native-inputs qemu)
+                             '("python-wrapper")))))))
 
 (define-public libosinfo
   (package
