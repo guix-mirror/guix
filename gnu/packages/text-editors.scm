@@ -260,7 +260,6 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
      ;; No test suite available.
      '(#:tests? #f
        #:make-flags (list (string-append "prefix=" %output)
-                          "CURSES_LIBS=-lncurses"
                           "CC=gcc")
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
