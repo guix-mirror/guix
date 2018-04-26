@@ -103,6 +103,18 @@ use their packages mostly unmodified in our Android NDK build system.")
                      "adb-add-libraries.patch"
                      "libziparchive-add-includes.patch"))))
 
+(define (android-platform-bionic version)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://android.googlesource.com/platform/bionic")
+          (commit (string-append "android-" version))))
+    (file-name (string-append "android-platform-bionic-"
+                              version "-checkout"))
+    (sha256
+     (base32
+      "0n9wkz3ynqw39if1ss9n32m66iga14nndf29hpm7g1aqn4wvvgzk"))))
+
 (define (android-platform-external version subdirectory checksum)
   (origin
     (method git-fetch)
@@ -351,6 +363,37 @@ Images.")
 performing and checking safe integer operations.  Ensure that integer
 operations do not result in silent overflow.")
     (license license:bsd-2)))
+
+(define-public android-bionic-uapi
+  (package
+    (name "android-bionic-uapi")
+    (version (android-platform-version))
+    (source (android-platform-bionic version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+        (add-after 'unpack 'enter-source
+           (lambda _ (chdir "libc") #t))
+        (replace 'check
+          (const #t))
+        (replace 'build
+          (const #t))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (out-sys (string-append out "/include/sys")))
+              (mkdir-p out-sys)
+              (install-file "include/sys/system_properties.h" out-sys)
+              (install-file "include/sys/_system_properties.h" out-sys)
+              (copy-recursively "kernel/uapi" (string-append out "/include"))
+              #t))))))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android Linux API that is safe for user space")
+    (description "@code{android-bionic-uapi} provides the part of the Linux API
+that is safe to use for user space.  It also includes
+@code{system_properties.h} and @code{_system_properties.h}.")
+    (license license:asl2.0)))
 
 (define-public android-udev-rules
   (package
