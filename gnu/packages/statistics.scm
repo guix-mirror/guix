@@ -4270,14 +4270,14 @@ closely-packed, non-overlapping points.")
 (define-public r-sourcetools
   (package
     (name "r-sourcetools")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sourcetools" version))
        (sha256
         (base32
-         "0l8c6fql82cb246qh7hfgxb4s35qn0qfgy6dzvkx0zkz1cpqvx69"))))
+         "1jnjir0q2dj724f1mjm6p5h77yzyx6xcqy9r2g7gmcxkxw349627"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/sourcetools")
     (synopsis "Tools for reading, tokenizing and parsing R code")
