@@ -1065,7 +1065,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.0.1")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1074,7 +1074,7 @@ games.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k8c12nzhl98i9il9s3awbwdamkrwxk0s47jr7n8a3z93rpszd2p"))
+                "0ldnk3j4w2kh454mzclmq8nk7zqrn758yrqq85i4kzljpkf93g0m"))
               (modules '((guix build utils)))
               (snippet
                '(begin
