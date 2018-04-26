@@ -291,20 +291,18 @@ history mechanism, job control and a C-like syntax.")
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.4.2")
+    (version "5.5.1")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
                            "http://www.zsh.org/pub/zsh-" version
-                           ".tar.gz")
+                           ".tar.xz")
                          (string-append
                            "http://www.zsh.org/pub/old/zsh-" version
-                           ".tar.gz")))
-              (patches (search-patches "zsh-CVE-2018-7548.patch"
-                                       "zsh-CVE-2018-7549.patch"))
+                           ".tar.xz")))
               (sha256
                (base32
-                "1jdcfinzmki2w963msvsanv29vqqfmdfm4rncwpw0r3zqnrcsywm"))))
+                "105aqkdfsdxc4531anrj2zis2ywz6icagjam9lsc235yzh48ihz1"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
                  #:phases
