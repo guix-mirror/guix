@@ -292,7 +292,7 @@ team.")
 (define-public ghostwriter
   (package
     (name "ghostwriter")
-    (version "1.6.1")
+    (version "1.6.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -301,7 +301,7 @@ team.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ihdr4xk0j83q83xknbikxb7yf9qhlkgvc89w33lhj090cv376gd"))))
+                "0251563zy0q69fzfacvalpx43y15cshb0bhshyd4w37061gh1c12"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
