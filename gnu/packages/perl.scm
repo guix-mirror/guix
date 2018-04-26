@@ -7171,7 +7171,7 @@ and @code{deserialize_regexp}.")
 (define-public perl-safe-isa
   (package
     (name "perl-safe-isa")
-    (version "1.000008")
+    (version "1.000010")
     (source
      (origin
        (method url-fetch)
@@ -7179,7 +7179,7 @@ and @code{deserialize_regexp}.")
                            "Safe-Isa-" version ".tar.gz"))
        (sha256
         (base32
-         "08r74hwxq5b3bibnbwjr9anybg15l3zqdgcirpw1xm2qpvcxgdkx"))))
+         "0sm6p1kw98s7j6n92vvxjqf818xggnmjwci34xjmw7gzl2519x47"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Safe-Isa/")
     (synopsis "Call isa, can, does, and DOES safely")
