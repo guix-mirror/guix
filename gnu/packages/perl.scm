@@ -452,7 +452,7 @@ all known commands are checked.")
 (define-public perl-b-hooks-endofscope
   (package
     (name "perl-b-hooks-endofscope")
-    (version "0.21")
+    (version "0.24")
     (source
      (origin
        (method url-fetch)
@@ -460,7 +460,7 @@ all known commands are checked.")
                            "B-Hooks-EndOfScope-" version ".tar.gz"))
        (sha256
         (base32
-         "0b70vbpabsy9ia366k330cz1zbdyb1pwhb0l7j28pmpih045iwwh"))))
+         "1imcqxp23yc80a7p0h56sja9glbrh4qyhgzljqd4g9habpz3vah3"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)
