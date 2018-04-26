@@ -161,7 +161,7 @@
 
 ;; Fixes CVE-2018-6797, CVE-2018-6798, and CVE-2018-6913.
 ;; See <https://metacpan.org/changes/release/SHAY/perl-5.26.2>.
-(define-public perl-5.26.2
+(define perl-5.26.2
   (package
     (inherit perl)
     (version "5.26.2")
