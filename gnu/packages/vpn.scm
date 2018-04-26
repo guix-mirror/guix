@@ -278,7 +278,7 @@ and probably others.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.4.5")
+    (version "2.4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -286,7 +286,7 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "17njq59hsraqyxrbhkrxr7dvx0p066s3pn8w1mi0yd9jldis7h23"))))
+                "09lck4wmkas3iyrzaspin9gn3wiclqb1m9sf8diy7j8wakx38r2g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
