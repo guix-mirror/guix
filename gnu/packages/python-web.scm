@@ -61,6 +61,29 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
 
+(define-public python-aiodns
+  (package
+    (name "python-aiodns")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiodns" version))
+       (sha256
+        (base32
+         "1snr5paql8dgvc676n8xq460wypjsb1xj53cf3px1s4wczf7lryq"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-pycares" ,python-pycares)))
+    (arguments
+     `(#:tests? #f))                    ;tests require internet access
+    (home-page "http://github.com/saghul/aiodns")
+    (synopsis "Simple DNS resolver for asyncio")
+    (description "@code{aiodns} provides a simple way for doing
+asynchronous DNS resolutions with a synchronous looking interface by
+using @url{https://github.com/saghul/pycares,pycares}.")
+    (license license:expat)))
+
 (define-public python-furl
   (package
     (name "python-furl")
