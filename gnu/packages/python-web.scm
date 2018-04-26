@@ -2555,3 +2555,27 @@ more.")
 interface to @code{c-ares}, a C library that performs DNS requests and
 name resolutions asynchronously.")
     (license license:expat)))
+
+(define-public python-yarl
+  (package
+    (name "python-yarl")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "yarl" version))
+       (sha256
+        (base32
+         "1s6z13g8vgxfkkqwhn6imnm7pl7ky9arv4jygnn6bcndcbidg7d6"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-idna" ,python-idna)
+       ("python-multidict" ,python-multidict)))
+    (home-page "https://github.com/aio-libs/yarl/")
+    (synopsis "Yet another URL library")
+    (description "@code{yarl} module provides handy @code{URL} class
+for URL parsing and changing.")
+    (license license:asl2.0)))
