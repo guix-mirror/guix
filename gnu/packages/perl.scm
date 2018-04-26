@@ -4521,17 +4521,17 @@ logging mechanism.")
 (define-public perl-log-any-adapter-log4perl
   (package
     (name "perl-log-any-adapter-log4perl")
-    (version "0.08")
+    (version "0.09")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Log-Any-Adapter-Log4perl-"
+             "mirror://cpan/authors/id/P/PR/PREACTION/Log-Any-Adapter-Log4perl-"
              version
              ".tar.gz"))
        (sha256
         (base32
-         "0xf4fnrsznvg0hf36q481124ja1hp3lybki1xjgnk82z9990jmxn"))))
+         "19f1drqnzr6g4xwjm6jk4iaa3zmiax8bzxqch04f4jr12bjd75qi"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-any" ,perl-log-any)
