@@ -195,6 +195,28 @@ various Android core host applications.")
 various Android core host applications.")
     (license license:asl2.0)))
 
+(define-public android-libsparse
+  (package
+    (name "android-libsparse")
+    (version (android-platform-version))
+    (source (android-platform-system-core version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:tests? #f ; TODO.
+       #:make-flags '("CFLAGS=-Wno-error"
+                      "CXXFLAGS=-fpermissive -Wno-error")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source
+           (lambda _ (chdir "libsparse") #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android platform sparse library")
+    (description "@code{android-libsparse} is a library in common use by the
+various Android core host applications.")
+    (license license:asl2.0)))
+
 (define-public android-libziparchive
   (package
     (name "android-libziparchive")
