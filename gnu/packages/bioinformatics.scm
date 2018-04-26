@@ -3453,7 +3453,7 @@ The main functions of FastQC are:
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.7")
+    (version "1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3461,7 +3461,7 @@ The main functions of FastQC are:
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "1il6i2p84b0y9c93dhvzzki1ifw9bvapm2mvpr0xvb2nq8jlwgdy"))))
+                "18bw0mn9pj5wgarnlaxmf1bb8pdqgl1zd6czirqcr62ajpn1xvy0"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)
