@@ -10393,14 +10393,14 @@ a file-like object from which an arbitrarly-sized key can be read.")
 (define-public python-qrcode
   (package
     (name "python-qrcode")
-    (version "5.3")
+    (version "6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "qrcode" version))
        (sha256
         (base32
-         "0kljfrfq0c2rmxf8am57333ia41kd0snbm2rnqbdy816hgpcq5a1"))))
+         "1gz1g2n9kqwqkak78aavr354z1v3yyiksk7q6xp5hi1zr6s0syq3"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require packaging 'pymaging'.
