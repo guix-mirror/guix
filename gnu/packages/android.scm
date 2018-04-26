@@ -201,82 +201,33 @@ various Android core host applications.")
               (inherit (android-platform-system-core version))
               (patches
                (search-patches "libbase-use-own-logging.patch"
-                               "libbase-fix-includes.patch"))))
-    (build-system gnu-build-system)
+                               "libbase-fix-includes.patch"
+                               "adb-add-libraries.patch"))))
+    (build-system android-ndk-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; TODO.
+       #:make-flags
+       (list "CFLAGS=-Wno-error"
+             "CXXFLAGS=-fpermissive -Wno-error -std=gnu++14 -D_Nonnull= -D_Nullable= -I ."
+             (string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out") "/lib "
+                            "-Wl,-rpath=" (assoc-ref %build-inputs "openssl") "/lib -L ."))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "adb") #t))
-         (add-before 'build 'fix-clang
-           (lambda _
-             ;; adb_client.h contains _Nonnull and _Nullable attributes, that
-             ;; are not understood by gcc.
-             (substitute* "adb_client.h"
-                   (("_Nonnull") "")
-                   (("_Nullable") ""))
+         (add-after 'enter-source 'make-libs-available
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "Android.mk"
+              (("libcrypto_static") "libcrypto"))
              #t))
-         (add-before 'build 'fix-main
-           (lambda _
-             ;; main.cpp used to be adb_main.cpp in the current directory
-             ;; rather than in its own subdirectory, but it was not fixed.
-             ;; This leads to some header files not being found anymore.
-             (copy-file "client/main.cpp" "adb_main.cpp")
-             #t))
-         (add-after 'enter-source 'create-Makefile
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; No useful makefile is shipped, so we create one.
-             (with-output-to-file "Makefile"
-               (lambda _
-                 (display
-                  (string-append
-                   ;; Common for all components.
-                   "CXXFLAGS += -std=gnu++14 -fpermissive\n"
-                   "CPPFLAGS += -I../include -I../base/include -I. -DADB_HOST=1 "
-                   "-DADB_REVISION='\"" ,version "\"' -fPIC\n"
-                   "LDFLAGS += -lcrypto -lpthread -lbase -lcutils -L. -ladb\n"
-
-                   ;; Libadb specifics.
-                   "LIBADB_SOURCES = adb.cpp adb_auth.cpp adb_io.cpp "
-                   "adb_listeners.cpp adb_trace.cpp adb_utils.cpp fdevent.cpp "
-                   "sockets.cpp transport.cpp transport_local.cpp transport_usb.cpp "
-                   "get_my_path_linux.cpp sysdeps_unix.cpp usb_linux.cpp "
-                   "adb_auth_host.cpp diagnose_usb.cpp services.cpp "
-                   "shell_service_protocol.cpp bugreport.cpp line_printer.cpp\n"
-
-                   "LIBADB_LDFLAGS += -shared -Wl,-soname,libadb.so.0 "
-                   "-lcrypto -lpthread -lbase\n"
-
-                   ;; Adb specifics.
-                   "ADB_SOURCES = adb_main.cpp console.cpp commandline.cpp "
-                   "adb_client.cpp file_sync_client.cpp\n"
-                   "ADB_LDFLAGS += -Wl,-rpath=" (assoc-ref outputs "out") "/lib\n"
-
-                   "build: libadb $(ADB_SOURCES)\n"
-                   "	$(CXX) $(ADB_SOURCES) -o adb $(CXXFLAGS) $(CPPFLAGS) "
-                   "$(ADB_LDFLAGS) $(LDFLAGS)\n"
-
-                   "libadb: $(LIBADB_SOURCES)\n"
-                   "	$(CXX) $^ -o libadb.so.0 $(CXXFLAGS) $(CPPFLAGS) "
-                   "$(LIBADB_LDFLAGS)\n"
-                   "	ln -sv libadb.so.0 libadb.so\n"))
-                 #t))))
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (bin (string-append out "/bin")))
-               (install-file "libadb.so.0" lib)
-               (install-file "adb" bin)
-               (with-directory-excursion lib
-                 (symlink "libadb.so.0" "libadb.so"))
-               #t))))
-       ;; Test suite must be run with attached devices
-       #:tests? #f))
+         (add-after 'install 'install-headers
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (install-file "diagnose_usb.h" (string-append (assoc-ref outputs "out") "/include"))
+             #t)))))
     (inputs
      `(("libbase" ,libbase)
        ("libcutils" ,libcutils)
+       ("liblog" ,liblog)
        ("openssl" ,openssl)))
     (home-page "https://developer.android.com/studio/command-line/adb.html")
     (synopsis "Android Debug Bridge")
