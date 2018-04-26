@@ -343,7 +343,7 @@ of a the system to know what users are logged in, and where.")
 (define-public packagekit
   (package
     (name "packagekit")
-    (version "1.1.5")
+    (version "1.1.10")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -352,7 +352,7 @@ of a the system to know what users are logged in, and where.")
                    "PackageKit-" version ".tar.xz"))
              (sha256
               (base32
-               "035pqxgkyki813hyw2frrbpfllq113zfk5qcp9wvsq5lsp74ix2h"))))
+               "1msfmb22cm4s3l6vsbr86b8s0v897sy6gcga3qg87z7640a0di2b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
