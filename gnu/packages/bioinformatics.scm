@@ -337,7 +337,7 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
 (define-public bedops
   (package
     (name "bedops")
-    (version "2.4.14")
+    (version "2.4.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bedops/bedops/archive/v"
@@ -345,7 +345,7 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1kqbac547wyqma81cyky9n7mkgikjpsfd3nnmcm6hpqwanqgh10v"))))
+                "0kx4awrwby8f33wqyx8w7ms7v25xhf0d421csgf96a3hfzn2mb0m"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
