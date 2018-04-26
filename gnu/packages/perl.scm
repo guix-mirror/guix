@@ -720,7 +720,7 @@ algorithm to keep the most used entries in the cache.")
 (define-public perl-capture-tiny
   (package
     (name "perl-capture-tiny")
-    (version "0.46")
+    (version "0.48")
     (source
      (origin
        (method url-fetch)
@@ -729,7 +729,7 @@ algorithm to keep the most used entries in the cache.")
              version ".tar.gz"))
        (sha256
         (base32
-         "05bhlx6d4nzamhkkh0pkckg7wlvaq6mazf7q1fbb5wpp1j1nlyjx"))))
+         "069yrikrrb4vqzc3hrkkfj96apsh7q0hg8lhihq97lxshwz128vc"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Capture-Tiny/")
     (synopsis "Capture STDOUT and STDERR from Perl, XS or external programs")
