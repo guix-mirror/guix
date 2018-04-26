@@ -210,10 +210,13 @@ various Android core host applications.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib")))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
                (install-file "libcutils.so.0" lib)
                (with-directory-excursion lib
                  (symlink "libcutils.so.0" "libcutils.so"))
+               (copy-recursively "../include/cutils"
+                                 (string-append include "/cutils"))
                #t))))))
     (home-page "https://developer.android.com/")
     (synopsis "Android platform c utils library")
