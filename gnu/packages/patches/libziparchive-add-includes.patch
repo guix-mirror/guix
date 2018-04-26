@@ -1,0 +1,10 @@
+--- a/libziparchive/zip_writer.cc	2018-04-25 22:33:05.472674164 +0200
++++ b/libziparchive/zip_writer.cc	2018-04-25 22:33:21.296519518 +0200
+@@ -22,6 +22,7 @@
+ 
+ #include <sys/param.h>
+ 
++#include <cstring>
+ #include <cassert>
+ #include <cstdio>
+ #include <memory>

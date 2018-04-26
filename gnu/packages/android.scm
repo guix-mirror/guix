@@ -33,6 +33,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ssh)
@@ -99,7 +100,8 @@ use their packages mostly unmodified in our Android NDK build system.")
     (patches
      (search-patches "libbase-use-own-logging.patch"
                      "libbase-fix-includes.patch"
-                     "adb-add-libraries.patch"))))
+                     "adb-add-libraries.patch"
+                     "libziparchive-add-includes.patch"))))
 
 (define liblog
   (package
@@ -190,6 +192,34 @@ various Android core host applications.")
     (home-page "https://developer.android.com/")
     (synopsis "Android platform c utils library")
     (description "@code{libcutils} is a library in common use by the
+various Android core host applications.")
+    (license license:asl2.0)))
+
+(define-public android-libziparchive
+  (package
+    (name "android-libziparchive")
+    (version (android-platform-version))
+    (source (android-platform-system-core version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:tests? #f ; TODO.
+       #:make-flags '("CFLAGS=-Wno-error"
+                      "CXXFLAGS=-fpermissive -Wno-error -std=gnu++11")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source
+           (lambda _ (chdir "libziparchive") #t))
+         (add-after 'install 'install-headers
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "../include/ziparchive"
+                                 (string-append out "/include/ziparchive"))
+               #t))))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android platform ZIP library")
+    (description "@code{android-libziparchive} is a library in common use by the
 various Android core host applications.")
     (license license:asl2.0)))
 
