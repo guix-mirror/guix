@@ -725,7 +725,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.28.0")
+    (version "3.28.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -733,7 +733,7 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1a3kcls18dcz1lj8hrx8skcli9xxfyi71c17xjwayh71cm5jc8zs"))))
+               "1qbk1x2c7iacmmfwjzh136v2sdacrkqn9d6bnqid7xn9hlnx4m89"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
