@@ -798,7 +798,7 @@ If used in a subtest, the remainder of the subtest will be skipped.")
 (define-public perl-test-notabs
   (package
     (name "perl-test-notabs")
-    (version "2.00")
+    (version "2.02")
     (source
      (origin
        (method url-fetch)
@@ -808,7 +808,7 @@ If used in a subtest, the remainder of the subtest will be skipped.")
              ".tar.gz"))
        (sha256
         (base32
-         "127kpl1va267qar2ia4c22xb96jby2jqnda3sj5pjgmxg8si26cg"))))
+         "0c306p9qdpa2ycii3c50hml23mwy6bjxpry126g1dw11hyiwcxgv"))))
     (build-system perl-build-system)
     (home-page
      "http://search.cpan.org/dist/Test-NoTabs/")
