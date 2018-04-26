@@ -1310,7 +1310,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.3.3")
+    (version "3.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1319,7 +1319,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1j572his6qmazlmyrbnfq62s9bqml875ay7wy26byy9hfc7m0vgk"))))
+                "1dqaxkz5svv0lmxds6lppcpzhkq6gar2raw9gx6imrd7yz02fpgn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
