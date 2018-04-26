@@ -4305,20 +4305,20 @@ available in the kernel Linux.")
 (define-public cpuid
   (package
     (name "cpuid")
-    (version "20170122")
+    (version "20180419")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.etallen.com/cpuid/cpuid-"
                                   version ".src.tar.gz"))
               (sha256
                (base32
-                "0ra8ph9m1dckqaikfnbsh408fp2w9k49fkl423fl2hvhwsm14xk6"))))
+                "0cnxj72pjalsszhn862r6shw64zbrkw0k3mm36fn93bivswjnj12"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("CC=gcc")
-       #:tests? #f ; no tests
+       #:tests? #f                      ; no tests
        #:phases (modify-phases %standard-phases
-                  (delete 'configure)
+                  (delete 'configure)   ; no configure script
                   (add-before 'install 'fix-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       (substitute* "Makefile"
