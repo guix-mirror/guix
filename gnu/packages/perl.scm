@@ -7690,7 +7690,7 @@ return value is the sub.")
 (define-public perl-sub-quote
   (package
     (name "perl-sub-quote")
-    (version "2.005000")
+    (version "2.005001")
     (source
      (origin
        (method url-fetch)
@@ -7699,7 +7699,7 @@ return value is the sub.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1zv45cvj4ifkbr61ydcpphnj6lvib37gfxwfh40h0yzf3c8lbca4"))))
+         "01xsvfdpxzimsbrp9mqipsr93y83nhj21q05g8v1bw6yfl3lzayn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))
