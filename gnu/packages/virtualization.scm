@@ -39,6 +39,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -173,6 +174,7 @@ exec smbd $@")))
      `(("alsa-lib" ,alsa-lib)
        ("attr" ,attr)
        ("glib" ,glib)
+       ("gtk+" ,gtk+)
        ("libaio" ,libaio)
        ("libattr" ,attr)
        ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
@@ -194,7 +196,8 @@ exec smbd $@")))
        ;; ("vde2" ,vde2)
        ("virglrenderer" ,virglrenderer)
        ("zlib" ,zlib)))
-    (native-inputs `(("glib:bin" ,glib "bin") ; gtester, etc.
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("glib:bin" ,glib "bin") ; gtester, etc.
                      ("perl" ,perl)
                      ("pkg-config" ,pkg-config)
                      ("python-wrapper" ,python-wrapper)
@@ -232,8 +235,10 @@ server and embedded PowerPC, and S390 guests.")
         ''("--target-list=i386-softmmu,x86_64-softmmu,mips64el-softmmu,arm-softmmu,aarch64-softmmu"))))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
+    (native-inputs (fold alist-delete (package-native-inputs qemu)
+                  '("gettext")))
     (inputs (fold alist-delete (package-inputs qemu)
-                  '("libusb" "mesa" "sdl2" "spice" "virglrenderer"
+                  '("libusb" "mesa" "sdl2" "spice" "virglrenderer" "gtk+"
                     "usbredir" "libdrm" "libepoxy" "pulseaudio")))))
 
 ;; The GRUB test suite fails with later versions of Qemu, so we
