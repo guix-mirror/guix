@@ -127,43 +127,14 @@ in Main, System, Radio and Events sub-logs.")
               (patches
                (search-patches "libbase-use-own-logging.patch"
                                "libbase-fix-includes.patch"))))
-    (build-system gnu-build-system)
+    (build-system android-ndk-build-system)
     (arguments
      `(#:tests? #f ; TODO.
+       #:make-flags '("CXXFLAGS=-std=gnu++11")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
-           (lambda _ (chdir "base") #t))
-         (add-after 'enter-source 'create-Makefile
-           (lambda _
-             ;; No useful makefile is shipped, so we create one.
-             (with-output-to-file "Makefile"
-               (lambda _
-                 (display
-                  (string-append
-                   "NAME = libbase\n"
-                   "SOURCES = file.cpp logging.cpp parsenetaddress.cpp"
-                   " stringprintf.cpp strings.cpp errors_unix.cpp\n"
-
-                   "CXXFLAGS += -std=gnu++11 -fPIC\n"
-                   "CPPFLAGS += -Iinclude -I../include\n"
-                   "LDFLAGS += -shared -Wl,-soname,$(NAME).so.0"
-                   " -L.. -llog\n"
-
-                   "build: $(SOURCES)\n"
-                   "	$(CXX) $^ -o $(NAME).so.0 $(CXXFLAGS) $(CPPFLAGS)"
-                   " $(LDFLAGS)\n"))
-                 #t))))
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib")))
-               (install-file "libbase.so.0" lib)
-               (with-directory-excursion lib
-                 (symlink "libbase.so.0" "libbase.so"))
-               (copy-recursively "include" out)
-               #t))))))
+           (lambda _ (chdir "base") #t)))))
     (inputs `(("liblog" ,liblog)))
     (home-page "https://developer.android.com/")
     (synopsis "Android platform base library")
