@@ -214,13 +214,13 @@ and written in Python.")
 (define-public python-html5-parser
   (package
     (name "python-html5-parser")
-    (version "0.4.4")
+    (version "0.4.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "html5-parser" version))
               (sha256
                (base32
-                "1d8sxhl41ffh7qlk7wlsy17xw6slzx5v1yna9s72wx5qrpaa3wxr"))))
+                "01mx33sx4dhl4kj6wc48nj6jz7ry60rkhjv0s6k8h5xmjf5yy0x9"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
