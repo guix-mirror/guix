@@ -533,7 +533,7 @@ and keep up to date translations of documentation.")
 (define-public gnome-disk-utility
   (package
     (name "gnome-disk-utility")
-    (version "3.26.2")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -541,7 +541,7 @@ and keep up to date translations of documentation.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1wjnw9hpjqyhrr116491rfzd0837g6jqvzq2z1ndx2sdqv19caxa"))))
+                "09dmknfas8iifv6k5jb4a9ag57s8awrn0f26fd1qlg0mbfjlnfd6"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")
