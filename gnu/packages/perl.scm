@@ -3635,7 +3635,7 @@ distributions.  It is a companion module to File::ShareDir.")
 (define-public perl-file-sharedir-install
   (package
     (name "perl-file-sharedir-install")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
@@ -3643,7 +3643,7 @@ distributions.  It is a companion module to File::ShareDir.")
                            "File-ShareDir-Install-" version ".tar.gz"))
        (sha256
         (base32
-         "13g8d69c2lq3mrc0i4fr705h99gxyzw1srww4m7wdhzfmbsdqxli"))))
+         "1yc0wlkav2l2wr36a53n4mnhsy2zv29z5nm14mygxgjwv7qgvgj5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
