@@ -792,7 +792,9 @@ monitor/GPU.")
     (arguments
      '(#:import-path "github.com/opencontainers/runc"
        #:install-source? #f
-       #:tests? #f                      ; FIXME: 20/139 tests fail.
+       ;; XXX: 20/139 tests fail due to missing /var, cgroups and apparmor in
+       ;; the build environment.
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (replace 'unpack
