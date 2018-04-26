@@ -44,6 +44,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system python)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -1024,7 +1025,9 @@ of the SSL peer.")
 (define-public python2-ndg-httpsclient
   (package (inherit python-ndg-httpsclient)
     (name "python2-ndg-httpsclient")
-    (arguments `(#:python ,python-2))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-ndg-httpsclient)
+       ((#:python _) python-2)))
     (propagated-inputs
      `(("python2-pyopenssl" ,python2-pyopenssl)))))
 
