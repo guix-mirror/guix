@@ -285,7 +285,7 @@ BAM files.")
 (define-public bcftools
   (package
     (name "bcftools")
-    (version "1.5")
+    (version "1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -293,12 +293,11 @@ BAM files.")
                     version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "0093hkkvxmbwfaa7905s6185jymynvg42kq6sxv7fili11l5mxwz"))
-              (patches (search-patches "bcftools-regidx-unsigned-char.patch"))
+                "1vgw2mwngq20c530zim52zvgmw1lci8rzl33pvh44xqk3xlzvjsa"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled htslib.
-               '(delete-file-recursively "htslib-1.5"))))
+               '(delete-file-recursively "htslib-1.8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
