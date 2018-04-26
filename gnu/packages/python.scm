@@ -2438,13 +2438,13 @@ sources.")
 (define-public python-sphinx-1.6
   (package (inherit python-sphinx)
     (name "python-sphinx")
-    (version "1.6.3")
+    (version "1.6.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Sphinx" version))
               (sha256
                (base32
-                "1rj6f3i8hmrx2qlkshi5kp5xcy98dlynwlyl05yvflj5f66dp2xg"))))
+                "0gjakw9fv5pwqb5yyclxycs36sapxizk1vx6mkcdizmzgzcfy0gi"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
