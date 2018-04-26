@@ -6294,7 +6294,7 @@ existing databases over the internet.")
 (define-public gnome-tweak-tool
   (package
     (name "gnome-tweak-tool")
-    (version "3.24.1")
+    (version "3.26.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-tweak-tool/"
@@ -6304,7 +6304,7 @@ existing databases over the internet.")
                         (search-patch "gnome-tweak-tool-search-paths.patch")))
               (sha256
                (base32
-                "0rgmm7n6jwc5hz64sprm4jxnky62hw839a7r18rn1mj884vnn8hr"))))
+                "1pq5a0kzh1sz7s7ax5c7p6212k9d51nk5bfvjfyqn99cs928187x"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/tmp"
@@ -6312,6 +6312,16 @@ existing databases over the internet.")
        #:imported-modules ((guix build python-build-system)
                            ,@%glib-or-gtk-build-system-modules)
        #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (replace 'build
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (invoke "meson" "build"
+                                      "--prefix" (assoc-ref outputs "out"))))
+                  (replace 'check
+                    (lambda _ (invoke "ninja" "-C" "build" "test")))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (invoke "ninja" "-C" "build" "install")))
                   (add-after 'install 'wrap-program
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out               (assoc-ref outputs "out"))
@@ -6322,17 +6332,21 @@ existing databases over the internet.")
                   (add-after 'install 'wrap
                     (@@ (guix build python-build-system) wrap)))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gtk+:bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
+       ("intltool" ,intltool)
+       ("meson" ,meson-for-build)
+       ("ninja" ,ninja)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("python" ,python-2)
-       ("python2-pygobject" ,python2-pygobject)
-       ("gnome-desktop" ,gnome-desktop)
-       ("libsoup" ,libsoup)
-       ("libnotify" ,libnotify)
+     `(("gnome-desktop" ,gnome-desktop)
+       ("gtk+" ,gtk+)
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)))
+       ("libnotify" ,libnotify)
+       ("libsoup" ,libsoup)
+       ("nautilus" ,nautilus)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)))
     (synopsis "Customize advanced GNOME 3 options")
     (home-page "https://wiki.gnome.org/action/show/Apps/GnomeTweakTool")
     (description
