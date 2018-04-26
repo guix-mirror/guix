@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system android-ndk)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
@@ -101,46 +102,14 @@ use their packages mostly unmodified in our Android NDK build system.")
     (name "liblog")
     (version (android-platform-version))
     (source (android-platform-system-core version))
-    (build-system gnu-build-system)
+    (build-system android-ndk-build-system)
     (arguments
      `(#:tests? #f ; TODO.
        #:make-flags '("CC=gcc")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
-           (lambda _ (chdir "liblog") #t))
-         (add-after 'enter-source 'create-Makefile
-           (lambda _
-             ;; No useful makefile is shipped, so we create one.
-             (with-output-to-file "Makefile"
-               (lambda _
-                 (display
-                  (string-append
-                   "NAME = liblog\n"
-                   "SOURCES = log_event_list.c log_event_write.c"
-                   " logger_write.c config_write.c logger_name.c"
-                   " logger_lock.c fake_log_device.c fake_writer.c"
-                   " event_tag_map.c\n"
-
-                   "CFLAGS += -fvisibility=hidden -fPIC\n"
-                   "CPPFLAGS += -I../include -DFAKE_LOG_DEVICE=1"
-                   ;; Keep these two in sync with "liblog/Android.bp".
-                   " -DLIBLOG_LOG_TAG=1005"
-                   " -DSNET_EVENT_LOG_TAG=1397638484\n"
-                   "LDFLAGS += -shared -Wl,-soname,$(NAME).so.0 -lpthread\n"
-
-                   "build: $(SOURCES)\n"
-                   "	$(CC) $^ -o $(NAME).so.0 $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)\n"))
-                 #t))))
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib")))
-               (install-file "liblog.so.0" lib)
-               (with-directory-excursion lib
-                 (symlink "liblog.so.0" "liblog.so"))
-               #t))))))
+           (lambda _ (chdir "liblog") #t)))))
     (home-page "https://developer.android.com/")
     (synopsis "Logging library from the Android platform.")
     (description "@code{liblog} represents an interface to the volatile Android
