@@ -103,7 +103,7 @@
        ("qtscript" ,qtscript)
        ("snorenotify" ,snorenotify)
        ("zlib" ,zlib)))
-    (home-page "http://quassel-irc.org/")
+    (home-page "https://quassel-irc.org/")
     (synopsis "Distributed IRC client")
     (description "Quassel is a distributed IRC client, meaning that one or more
 clients can attach to and detach from the central core.  It resembles the
