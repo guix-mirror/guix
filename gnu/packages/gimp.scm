@@ -28,6 +28,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -272,3 +273,30 @@ inverse fourier transform.")
 brushstrokes which is used by MyPaint and GIMP.")
     (home-page "http://mypaint.org")
     (license license:isc)))
+
+(define-public mypaint-brushes
+  (package
+    (name "mypaint-brushes")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/Jehan/mypaint-brushes/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "055j2rgkav2024zl6y5hxb2ra0vbx58607d6sz7ml2351r1bcjvh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _ (invoke "sh" "./autogen.sh"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (synopsis "Default brushes for MyPaint")
+    (description "This package provides the default set of brushes for
+MyPaint.")
+    (home-page "https://github.com/Jehan/mypaint-brushes")
+    (license license:cc0)))
