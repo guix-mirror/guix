@@ -1599,7 +1599,7 @@ is subjective.")
 (define-public tuxguitar
   (package
     (name "tuxguitar")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1607,7 +1607,7 @@ is subjective.")
                     version "/tuxguitar-" version "-src.tar.gz"))
               (sha256
                (base32
-                "041275vwfr82kass7wiq9g2y82w9qrbzfinzcvfij2f2q45njwmc"))
+                "1yd5wv17sh6i8pkndxayfd6r2k1ccgnc4w3nda3lpniv8cpjzz3k"))
               (modules '((guix build utils)))
               (snippet
                '(begin
