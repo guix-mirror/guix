@@ -1881,17 +1881,17 @@ browser.")
 (define-public drumstick
   (package
     (name "drumstick")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/drumstick/"
                                   version "/drumstick-" version ".tar.bz2"))
               (sha256
                (base32
-                "13pkfqrav30bbcddgf1imd7jk6lpqbxkz1qv31718pdl446jq7df"))))
+                "0avwxr6n9ra7narxc5lmkhdqi8ix10gmif8rpd06wp4g9iv46xrn"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f  ; no test target
+     `(#:tests? #f                      ; no test target
        #:configure-flags '("-DLIB_SUFFIX=")
        #:phases
        (modify-phases %standard-phases
@@ -1907,11 +1907,10 @@ browser.")
     (inputs
      `(("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
-       ("alsa-lib" ,alsa-lib)
-       ("fluidsynth" ,fluidsynth)))
+       ("alsa-lib" ,alsa-lib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("libxslt" ,libxslt) ;for xsltproc
+       ("libxslt" ,libxslt)             ; for xsltproc
        ("docbook-xsl" ,docbook-xsl)
        ("doxygen" ,doxygen)))
     (home-page "http://drumstick.sourceforge.net/")
