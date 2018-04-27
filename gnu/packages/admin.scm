@@ -1962,7 +1962,8 @@ throughput (in the same interval).")
              (add-installed-pythonpath inputs outputs)
              ;; Some tests need write access to $HOME.
              (setenv "HOME" "/tmp")
-             (zero? (system* "py.test" "-v")))))))
+             (invoke "py.test" "-v")
+             #t)))))
     (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-decorator" ,python-decorator)
