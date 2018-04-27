@@ -553,7 +553,7 @@ based on human speech recordings.")
 (define-public infamous-plugins
   (package
     (name "infamous-plugins")
-    (version "0.2.02")
+    (version "0.2.04")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ssj71/infamousPlugins/"
@@ -561,10 +561,10 @@ based on human speech recordings.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qm3ak07vc1l3f5c3c2lq9gkfknlxwn8ks03cysw1pk8hj7dwnv6"))))
+                "1n6rhqsmvad7692w2h01niw5gqg5yk7a09wxl5ivs77zyp93vf7z"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; There are no tests
+     `(#:tests? #f                      ; there are no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-compiler-flags
@@ -579,7 +579,7 @@ based on human speech recordings.")
                             "src/powercut/CMakeLists.txt"
                             "src/powerup/CMakeLists.txt"
                             "src/stuck/CMakeLists.txt")
-                          (("-msse2 -mfpmath=sse") ""))
+               (("-msse2 -mfpmath=sse") ""))
              #t)))))
     (inputs
      `(("cairo" ,cairo)
