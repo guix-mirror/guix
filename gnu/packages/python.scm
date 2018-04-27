@@ -9357,25 +9357,30 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.9.0")
+    (version "0.12.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "jedi" version))
-        (sha256
-          (base32
-            "0c8x962ynpx001fdvp07m2q5jk4igkxbj3rmnydavphvlgxijk1v"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jedi" version))
+       (sha256
+        (base32
+         "1bcr7csx4xil1iwmk03d79jis0bkmgi9k0kir3xa4rmwqsagcwhr"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: One test fails (use "py.test" instead of 'setup.py test').
-     '(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _
+                           (invoke "py.test" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-parso" ,python-parso)
+       ("python-docopt" ,python-docopt)))
     (home-page "https://github.com/davidhalter/jedi")
     (synopsis
-      "Autocompletion for Python that can be used for text editors")
+     "Autocompletion for Python that can be used for text editors")
     (description
-      "Jedi is an autocompletion tool for Python that can be used for text editors.")
+     "Jedi is an autocompletion tool for Python that can be used for text
+ editors.")
     (license license:expat)))
 
 (define-public python2-jedi
