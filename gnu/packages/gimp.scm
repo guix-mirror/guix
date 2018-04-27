@@ -39,6 +39,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
 
 (define-public babl
@@ -243,3 +244,31 @@ an image, allowing you to work with the transformed image inside GIMP.  You
 can draw or apply filters in fourier space and get the modified image with an
 inverse fourier transform.")
     (license license:gpl3+)))
+
+(define-public libmypaint
+  (package
+    (name "libmypaint")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mypaint/libmypaint/"
+                                  "releases/download/v" version "/libmypaint-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0wd6jk69vmhsq1mdw96v0fh7b28n3glkr5ca466zcq7agzaxj1va"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    ;; As needed by 'libmypaint.pc'.
+    (propagated-inputs
+     `(("json-c" ,json-c)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("glib" ,glib)))
+    (synopsis "Artistic brushes library")
+    (description "Libmypaint, also called \"brushlib\", is a library for making
+brushstrokes which is used by MyPaint and GIMP.")
+    (home-page "http://mypaint.org")
+    (license license:isc)))
