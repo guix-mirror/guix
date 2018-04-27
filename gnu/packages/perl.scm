@@ -6257,7 +6257,7 @@ and libraries based on OpenSSL.")
 (define-public perl-multidimensional
   (package
     (name "perl-multidimensional")
-    (version "0.013")
+    (version "0.014")
     (source
      (origin
        (method url-fetch)
@@ -6266,7 +6266,7 @@ and libraries based on OpenSSL.")
              version ".tar.gz"))
        (sha256
         (base32
-         "02p5zv68i39hnkmzzxsk1fi7xy56pfcsslrd7yqwzhq74czcw81x"))))
+         "0prchsg547ziysjl8ghiid6ph3m2xnwpsrwrjymibga7fhqi9sqj"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
