@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +47,7 @@
             spec->file-system
             specification->file-system-mapping
 
+            %pseudo-file-system-types
             %fuse-control-file-system
             %binary-format-file-system
             %shared-memory-file-system
@@ -202,6 +203,12 @@ TARGET in the other system."
 ;;;
 ;;; Common file systems.
 ;;;
+
+(define %pseudo-file-system-types
+  ;; List of know pseudo file system types.  This is used when validating file
+  ;; system definitions.
+  '("binfmt_misc" "cgroup" "devpts" "devtmpfs" "fusectl"
+    "proc" "sysfs" "tmpfs"))
 
 (define %fuse-control-file-system
   ;; Control file system for Linux' file systems in user-space (FUSE).

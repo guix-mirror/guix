@@ -60,6 +60,7 @@
   #:use-module (texinfo string-utils)
   #:re-export (G_ N_ P_)                          ;backward compatibility
   #:export (report-error
+            display-hint
             leave
             make-user-module
             load*

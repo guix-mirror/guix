@@ -583,13 +583,19 @@ any, are available.  Raise an error if they're not."
   (define relevant
     (filter (lambda (fs)
               (and (file-system-mount? fs)
-                   (not (string=? "tmpfs" (file-system-type fs)))
+                   (not (member (file-system-type fs)
+                                %pseudo-file-system-types))
                    (not (memq 'bind-mount (file-system-flags fs)))))
             file-systems))
 
   (define labeled
     (filter (lambda (fs)
               (eq? (file-system-title fs) 'label))
+            relevant))
+
+  (define literal
+    (filter (lambda (fs)
+              (eq? (file-system-title fs) 'device))
             relevant))
 
   (define uuid
@@ -610,6 +616,22 @@ any, are available.  Raise an error if they're not."
                            (set! fail? #t)
                            (format (current-error-port)
                                    args ...))))))
+    (for-each (lambda (fs)
+                (catch 'system-error
+                  (lambda ()
+                    (stat (file-system-device fs)))
+                  (lambda args
+                    (let ((errno  (system-error-errno args))
+                          (device (file-system-device fs)))
+                      (error (G_ "~a: error: device '~a' not found: ~a~%")
+                             (file-system-location* fs) device
+                             (strerror errno))
+                      (unless (string-prefix? "/" device)
+                        (display-hint (format #f (G_ "If '~a' is a file system
+label, you need to add @code{(title 'label)} to your @code{file-system}
+definition.")
+                                              device)))))))
+              literal)
     (for-each (lambda (fs)
                 (unless (find-partition-by-label (file-system-device fs))
                   (error (G_ "~a: error: file system with label '~a' not found~%")
