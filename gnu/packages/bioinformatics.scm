@@ -9063,14 +9063,14 @@ replacement for strverscmp.")
 (define-public multiqc
   (package
     (name "multiqc")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multiqc" version))
        (sha256
         (base32
-         "0ihx4rzmsfphv4byn05qv6f1y95g2dxs6viwziipl4wjk96acgm8"))))
+         "02iihfl0w0hpnr4pa0sbd1y9qxrg3ycyhjp5lidkcrqh1lmzs3zy"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-jinja2" ,python-jinja2)
