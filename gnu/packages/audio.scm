@@ -589,7 +589,7 @@ based on human speech recordings.")
        ("zita-resampler" ,zita-resampler)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://ssj71.github.io/infamousPlugins")
+    (home-page "https://ssj71.github.io/infamousPlugins")
     (synopsis "LV2 plugins for live use")
     (description
      "The infamous plugins are a collection of LV2 audio plugins for live
