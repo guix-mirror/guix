@@ -4575,7 +4575,7 @@ partial genes, and identifies translation initiation sites.")
 (define-public roary
   (package
     (name "roary")
-    (version "3.11.0")
+    (version "3.12.0")
     (source
      (origin
        (method url-fetch)
@@ -4584,7 +4584,7 @@ partial genes, and identifies translation initiation sites.")
              version ".tar.gz"))
        (sha256
         (base32
-         "10lw78x1xzvn7xzvnmh4bm3cak3ah5cssapl0yidvhaj1f44h29i"))))
+         "0qxrds9wx7cfhlkihrp6697kx0flhhxymap9fwan0b3rbdhcnmff"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
