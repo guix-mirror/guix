@@ -6876,15 +6876,17 @@ well as Github-style emojis like @code{:smile:}.  It provides a minor mode
 (define-public emacs-websocket
   (package
     (name "emacs-websocket")
-    (version "1.8")
+    (version "1.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/websocket-"
-                           version ".tar"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ahyatt/emacs-websocket.git")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "0dcxmnnm8z7cvsc7nkb822a1g6w03klp7cijjnfq0pz84p3w9cd9"))))
+         "1dgrf7na6r6mmkknphzshlbd5fnzisg0qn0j7vfpa38wgsymaq52"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/websocket.html")
     (synopsis "Emacs WebSocket client and server")
