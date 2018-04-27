@@ -2339,7 +2339,8 @@ dynamic programming or a variety of heuristics.")
                 (string-append (assoc-ref inputs "bamtools") "/include/bamtools")))
              (substitute* "src/CMakeLists.txt"
                (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/\\.\\./bamtools/lib")
-                (string-append (assoc-ref inputs "bamtools") "/lib/bamtools")))
+                (string-append (assoc-ref inputs "bamtools") "/lib"))
+               (("libprotobuf.a") "libprotobuf.so"))
              #t)))))
     (inputs
      `(("boost" ,boost)
