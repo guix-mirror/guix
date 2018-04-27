@@ -5769,7 +5769,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.5.3a")
+    (version "2.6.0a")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alexdobin/STAR/archive/"
@@ -5777,7 +5777,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "013wirlz8lllgjyagl48l75n1isxyabqb3sj7qlsl0x1rmvqw99a"))
+                "0yci4ymy4407kjh0lqp021nzccp6r31wgrkixkmix5p130cxvc56"))
               (modules '((guix build utils)))
               (snippet
                '(begin
