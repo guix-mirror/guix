@@ -7451,7 +7451,7 @@ run from within a source-controlled directory.")
 (define-public perl-strictures-2
   (package
     (inherit perl-strictures)
-    (version "2.000003")
+    (version "2.000004")
     (source
      (origin
        (method url-fetch)
@@ -7459,7 +7459,7 @@ run from within a source-controlled directory.")
                            "strictures-" version ".tar.gz"))
        (sha256
         (base32
-         "08mgvf1d2651gsg3jgjfs13878ndqa4ji8vfsda9f7jjd84ymy17"))))))
+         "0lzp0q6kwk6vgf7zdlvy9zz28fj6n1b776irm556c7gylcq29113"))))))
 
 (define-public perl-string-camelcase
   (package
