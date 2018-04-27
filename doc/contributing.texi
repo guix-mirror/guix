@@ -308,6 +308,13 @@ indent a whole file, omit the second argument:
 ./etc/indent-code.el gnu/services/@var{file}.scm
 @end example
 
+@cindex Vim, Scheme code editing
+If you are editing code with Vim, we recommend that you run @code{:set
+autoindent} so that your code is automatically indented as you type.
+Additionally,
+@uref{https://www.vim.org/scripts/script.php?script_id=3998,
+@code{paredit.vim}} may help you deal with all these parentheses.
+
 We require all top-level procedures to carry a docstring.  This
 requirement can be relaxed for simple private procedures in the
 @code{(guix build @dots{})} name space, though.
