@@ -505,7 +505,10 @@ address of the default LAN gateway.")
                   "056dkgxrqjj5r18bnc3knlpgdz5p3yvp12y4y978hnsfhwaqvbjz"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "github.com/kardianos/osext"))
+       `(#:import-path "github.com/kardianos/osext"
+         ;; The tests are flaky:
+         ;; <https://github.com/kardianos/osext/issues/21>
+         #:tests? #f))
       (synopsis "Find the running executable")
       (description "Osext provides a method for finding the current executable
 file that is running.  This can be used for upgrading the current executable or
