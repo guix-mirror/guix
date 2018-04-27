@@ -2637,14 +2637,14 @@ automatically.")
 (define-public r-metap
   (package
     (name "r-metap")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "metap" version))
        (sha256
         (base32
-         "06ny9zkilawdy0s8yiwhnygs3yppw89bbyf76zgdavykbzscz5lh"))))
+         "03vg0mb6q7j2z0pkxykbak0hcp6dcak7zxs1lw9hswz9kqrq5jhz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
