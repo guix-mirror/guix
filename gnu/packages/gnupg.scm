@@ -795,7 +795,7 @@ passphrase when @code{gpg} is run and needs it.")))
 (define-public paperkey
   (package
     (name "paperkey")
-    (version "1.3")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.jabberwocky.com/"
@@ -803,7 +803,7 @@ passphrase when @code{gpg} is run and needs it.")))
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1yybj8bj68v4lxwpn596b6ismh2fyixw5vlqqg26byrn4d9dfmsv"))))
+                "1prd2jaf4zjad3xhv160hmi5n408ssljfg7iz90jxs9w111pjwy4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
