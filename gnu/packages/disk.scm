@@ -522,14 +522,11 @@ Duperemove can also take input from the @command{fdupes} program.")
        ("python-pylint" ,python-pylint)
        ("python-flake8" ,python-flake8)
        ("which" ,which)))
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (replace 'check
-                    (lambda _ (invoke "make" "test"))))))
+    (arguments '(#:test-target "test"))
     (home-page "https://ranger.github.io/")
     (synopsis "Console file manager")
-    (description "@code{ranger} is a console file manager with VI key
-bindings.  It provides a minimalistic and nice curses interface with a view on
-the directory hierarchy.  It ships with @code{rifle}, a file launcher that is
-good at automatically finding out which program to use for what file type.")
+    (description "ranger is a console file manager with Vi key bindings.  It
+provides a minimalistic and nice curses interface with a view on the directory
+hierarchy.  It ships with @code{rifle}, a file launcher that is good at
+automatically finding out which program to use for what file type.")
     (license license:gpl3)))
