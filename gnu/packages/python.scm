@@ -13145,3 +13145,27 @@ in Python.  You can simply type pybtex instead of bibtex.")
     (description "Python one-time password library for HMAC-based (HOTP) and
 time-based (TOTP) passwords.")
     (license license:expat)))
+
+(define-public python-parso
+  (package
+    (name "python-parso")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "parso" version))
+       (sha256
+        (base32
+         "0lamywk6dm5xshlkdvxxf5j6fa2k2zpi7xagf0bwidaay3vnpgb2"))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (build-system python-build-system)
+    (home-page "https://github.com/davidhalter/parso")
+    (synopsis "Python Parser")
+    (description "Parso is a Python parser that supports error recovery and
+round-trip parsing for different Python versions (in multiple Python versions).
+Parso is also able to list multiple syntax errors in your Python file.")
+    (license license:expat)))
+
+(define-public python2-parso
+  (package-with-python2 python-parso))
