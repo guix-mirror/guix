@@ -611,14 +611,14 @@ spreadsheet documents.")
 (define-public libstaroffice
   (package
     (name "libstaroffice")
-    (version "0.0.5")
+    (version "0.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/fosnola/libstaroffice/releases/download/"
                            version "/libstaroffice-" version ".tar.xz"))
        (sha256 (base32
-                "10m9imcgqf7kdhn1a5ara62fdayidwm7qzj3binsls40snnhfm9i"))))
+                "1i0ykl0c94lc1qzb5mbyf9jr7qw8p38ja424whmhgrllh7ny203b"))))
     (build-system gnu-build-system)
     (inputs
      `(("librevenge" ,librevenge)
