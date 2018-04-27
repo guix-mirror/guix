@@ -361,7 +361,7 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
   (config-file   dhcpd-configuration-config-file ;file-like
                  (default #f))
   (version dhcpd-configuration-version ;"4", "6", or "4o6"
-              (default "6"))
+              (default "4"))
   (run-directory dhcpd-configuration-run-directory
                  (default "/run/dhcpd"))
   (lease-file dhcpd-configuration-lease-file
