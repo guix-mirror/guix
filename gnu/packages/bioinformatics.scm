@@ -5963,13 +5963,13 @@ Cuffdiff or Ballgown programs.")
 (define-public taxtastic
   (package
     (name "taxtastic")
-    (version "0.6.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "taxtastic" version))
               (sha256
                (base32
-                "0s79z8kfl853x7l4h8ms05k31q87aw62nrchlk20w9n227j35929"))))
+                "03pysw79lsrvz4lwzis88j15067ffqbi4cid5pqhrlxmd6bh8rrk"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
