@@ -1941,7 +1941,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.25")
+    (version "3.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nvbn/thefuck/archive/"
@@ -1949,7 +1949,7 @@ throughput (in the same interval).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "088bn2l1376qlndbpnjya4q1x3913nj3yj3wc7s2w3bz66d23skk"))
+                "0ddlf25ik97z34bcpc52xyfhlfm6a3hdi43l6cz4ggwcawdwvn1p"))
               (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
