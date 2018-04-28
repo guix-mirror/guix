@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
@@ -38,6 +40,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -202,3 +205,51 @@ one-time-password (OTP) YubiKey against Yubico’s servers.  See the Yubico
 website for more information about Yubico and the YubiKey.")
     (home-page "https://developers.yubico.com/yubico-c-client/")
     (license license:bsd-2)))
+
+(define-public opensc
+  (package
+    (name "opensc")
+    (version "0.17.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/OpenSC/OpenSC/releases/download/"
+                    version "/opensc-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0043jh5g7q2lyd5vnb0akwb5y349isx7vbm9wqhlgav7d20wcwxy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; By setting an absolute path here, we arrange for OpenSC to
+         ;; successfully dlopen libpcsclite.so.1 by default.  The user can
+         ;; still override this if they want to, by specifying a custom OpenSC
+         ;; configuration file at runtime.
+         (add-after 'unpack 'set-default-libpcsclite.so.1-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libpcsclite (string-append (assoc-ref inputs "pcsc-lite")
+                                               "/lib/libpcsclite.so.1")))
+               (substitute* "configure"
+                 (("DEFAULT_PCSC_PROVIDER=\"libpcsclite\\.so\\.1\"")
+                  (string-append
+                   "DEFAULT_PCSC_PROVIDER=\"" libpcsclite "\"")))
+               #t))))))
+    (inputs
+     `(("readline" ,readline)
+       ("openssl" ,openssl)
+       ("pcsc-lite" ,pcsc-lite)
+       ("ccid" ,ccid)))
+    (native-inputs
+     `(("libxslt" ,libxslt)
+       ("docbook-xsl" ,docbook-xsl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/OpenSC/OpenSC/wiki")
+    (synopsis "Tools and libraries related to smart cards")
+    (description
+     "OpenSC is a set of software tools and libraries to work with smart
+cards, with the focus on smart cards with cryptographic capabilities.  OpenSC
+facilitate the use of smart cards in security applications such as
+authentication, encryption and digital signatures.  OpenSC implements the PKCS
+#15 standard and the PKCS #11 API.")
+    (license license:lgpl2.1+)))
