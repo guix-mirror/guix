@@ -3788,28 +3788,28 @@ multivalue dictionary that retains the order of insertions and deletions.")
 
 (define-public python-autopep8
   (package
-  (name "python-autopep8")
-  (version "1.3.2")
-  (source
-   (origin
-     (method url-fetch)
-     (uri (pypi-uri "autopep8" version))
-     (sha256
-      (base32
-       "1p9pa1ffg4iy96l918808jggg9a69iaka5awmj8xid36yc5mk0ky"))))
-  (build-system python-build-system)
-  (propagated-inputs
-    `(("python-pycodestyle" ,python-pycodestyle)))
-  (home-page "https://github.com/hhatto/autopep8")
-  (synopsis "Format Python code according to the PEP 8 style guide")
-  (description
-    "@code{autopep8} automatically formats Python code to conform to
+    (name "python-autopep8")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "autopep8" version))
+       (sha256
+        (base32
+         "192bvhzi4d0claqxgzymvv7k3qnj627742bc8sgxpzjj42pd9112"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pycodestyle" ,python-pycodestyle)))
+    (home-page "https://github.com/hhatto/autopep8")
+    (synopsis "Format Python code according to the PEP 8 style guide")
+    (description
+     "@code{autopep8} automatically formats Python code to conform to
 the PEP 8 style guide.  It uses the pycodestyle utility to determine
 what parts of the code needs to be formatted.  @code{autopep8} is
 capable of fixing most of the formatting issues that can be reported
 by pycodestyle.")
-  (license (license:non-copyleft
-            "https://github.com/hhatto/autopep8/blob/master/LICENSE"))))
+    (license (license:non-copyleft
+              "https://github.com/hhatto/autopep8/blob/master/LICENSE"))))
 
 (define-public python2-autopep8
   (package-with-python2 python-autopep8))
