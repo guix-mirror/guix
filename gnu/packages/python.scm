@@ -12689,14 +12689,14 @@ and works only with Python 2 and NumPy < 1.9.")
 (define-public python-yapf
   (package
     (name "python-yapf")
-    (version "0.20.1")
+    (version "0.21.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "yapf" version))
        (sha256
         (base32
-         "0s7l6afzxvpx39kzd0lwshlaxw8m4fwh4iy0rlmav4vipr3g46dx"))))
+         "144gc7d6b1415vh02409rnb8qd5kxi6mxlr7y64d5cizgxbf72kx"))))
     (build-system python-build-system)
     (home-page "https://github.com/google/yapf")
     (synopsis "Formatter for Python code")
