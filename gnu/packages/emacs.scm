@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -8002,3 +8002,29 @@ Emacs.")
 in @code{emacs-lisp-mode}, together with an elisp equivalent of
 @code{slime-describe-symbol}.")
     (license license:gpl3+)))
+
+(define-public emacs-dedicated
+  (package
+    (name "emacs-dedicated")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/emacsorphanage/dedicated/archive/"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "0nhbkp278cvcznb5rp3jp9ii3mjgb79zx8iwfrw7zfk3yg8688ni"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacsorphanage/dedicated")
+    (synopsis "Emacs minor mode for toggling a windows's \"dedicated\" flag")
+    (description
+     "This simple Emacs minor mode allows you to toggle a window's
+\"dedicated\" flag.  When a window is \"dedicated\", Emacs will not select
+files into that window.  This can be quite handy since many commands will use
+another window to show results (compilation mode, starting info, and so on).
+A dedicated window won't be used for such a purpose.  For details, please read
+the source file.")
+    (license license:gpl2+)))
