@@ -1026,7 +1026,10 @@ COREUTILS-FINAL vs. COREUTILS, etc."
 
                      (union-build (assoc-ref %outputs "debug")
                                   (list (assoc-ref %build-inputs
-                                                   "libc-debug")))))))
+                                                   "libc-debug")))
+                     (union-build (assoc-ref %outputs "static")
+                                  (list (assoc-ref %build-inputs
+                                                   "libc-static")))))))
 
     (native-search-paths (package-native-search-paths gcc))
     (search-paths (package-search-paths gcc))
@@ -1038,7 +1041,7 @@ COREUTILS-FINAL vs. COREUTILS, etc."
 be installed in user profiles.  This includes GCC, as well as libc (headers
 and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
     (home-page "https://gcc.gnu.org/")
-    (outputs '("out" "debug"))
+    (outputs '("out" "debug" "static"))
 
     ;; The main raison d'être of this "meta-package" is (1) to conveniently
     ;; install everything that we need, and (2) to make sure ld-wrapper comes
@@ -1047,7 +1050,8 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
               ("ld-wrapper" ,(car (assoc-ref %final-inputs "ld-wrapper")))
               ("binutils" ,binutils-final)
               ("libc" ,glibc-final)
-              ("libc-debug" ,glibc-final "debug")))))
+              ("libc-debug" ,glibc-final "debug")
+              ("libc-static" ,glibc-final "static")))))
 
 (define-public gcc-toolchain-4.8
   (make-gcc-toolchain gcc-4.8))
