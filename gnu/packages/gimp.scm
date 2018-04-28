@@ -77,43 +77,25 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.2.0")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
-              (uri (list (string-append "http://download.gimp.org/pub/gegl/"
+              (uri (list (string-append "https://download.gimp.org/pub/gegl/"
                                         (string-take version 3)
                                         "/" name "-" version ".tar.bz2")))
               (sha256
                (base32
-                "09nlv06li9nrn74ifpm7223mxpg0s7cii702z72cpbwrjh6nlbnz"))
-              (patches (search-patches "gegl-CVE-2012-4433.patch"))))
+                "1ighk4z8nlqrzyj8w97s140hzj59564l3xv6fpzbr97m1zx2nkfh"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; More than just the one test disabled below now fails; disable them
-       ;; all according to the rationale given below.
-       #:tests? #f
-       #:configure-flags '("LDFLAGS=-lm")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'pre-build
-           (lambda _
-             ;; This test program seems to crash on exit. Specifically, whilst
-             ;; g_object_unreffing bufferA and bufferB - This seems to be a bug
-             ;; in the destructor.  This is just a test program so will not have
-             ;; any wider effect, although might be hiding another problem.
-             ;; According to advice received on irc.gimp.org#gegl although 0.2.0
-             ;; is the latest released version, any bug reports against it will
-             ;; be ignored.  So we are on our own.
-             (substitute* "tools/img_cmp.c"
-               (("g_object_unref \\(buffer.\\);") ""))
-
-             (substitute* "tests/compositions/Makefile"
-               (("/bin/sh") (which "sh")))
-             #t)))))
-    (inputs
+     '(#:configure-flags '("LDFLAGS=-lm")))
+    ;; These are propagated to satisfy 'gegl-0.4.pc'.
+    (propagated-inputs
      `(("babl" ,babl)
        ("glib" ,glib)
-       ("cairo" ,cairo)
+       ("json-glib" ,json-glib)))
+    (inputs
+     `(("cairo" ,cairo)
        ("pango" ,pango)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-8)))
