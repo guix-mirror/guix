@@ -10,7 +10,7 @@
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -123,6 +123,36 @@
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
    (license license:gpl2+)
    (home-page "https://poppler.freedesktop.org/")))
+
+(define-public poppler-data
+  (package
+    (name "poppler-data")
+    (version "0.4.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://poppler.freedesktop.org/poppler-data"
+                                  "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "04i0wgdkn5lhda8cyxd1ll4a2p41pwqrwd47n9mdpl7cx5ypx70z"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no test suite
+       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The package only provides some data files, so there is nothing to
+         ;; build.
+         (delete 'configure)
+         (delete 'build))))
+    (synopsis "Poppler encoding files for rendering of CJK and Cyrillic text")
+    (description "This package provides optional encoding files for Poppler.
+When present, Poppler is able to correctly render CJK and Cyrillic text.")
+    (home-page (package-home-page poppler))
+    ;; See COPYING in the source distribution for more information about
+    ;; the licensing.
+    (license (list license:bsd-3
+                   license:gpl2))))
 
 (define-public poppler-qt4
   (package (inherit poppler)
