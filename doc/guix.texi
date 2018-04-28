@@ -235,6 +235,7 @@ Services
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
+* Sound Services::              ALSA and Pulseaudio services.
 * Database Services::           SQL databases, key-value stores, etc.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
@@ -9697,6 +9698,7 @@ declaration.
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
+* Sound Services::              ALSA and Pulseaudio services.
 * Database Services::           SQL databases, key-value stores, etc.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
@@ -12841,6 +12843,48 @@ bluetooth keyboard or mouse.
 
 Users need to be in the @code{lp} group to access the D-Bus service.
 @end deffn
+
+@node Sound Services
+@subsubsection Sound Services
+
+@cindex sound support
+@cindex ALSA
+@cindex PulseAudio, sound support
+
+The @code{(gnu services sound)} module provides an
+@code{alsa-service-type} service to generate an ALSA
+@file{/etc/asound.conf} configuration file.  This configuration file is
+what allows applications that produce sound using ALSA to be correctly
+handled.
+
+@deffn {Scheme Variable} alsa-service-type
+This is the type for the @uref{https://alsa-project.org/, ALSA},
+@command{alsa-configuration} record as in this example:
+
+@example
+(service alsa-service-type)
+@end example
+
+See below for details about @code{alsa-configuration}.
+@end deffn
+
+@deftp {Data Type} alsa-configuration
+Data type representing the configuration for @code{alsa-service}.
+
+@table @asis
+@item @code{pulseaudio?} (default: @var{#t})
+Whether ALSA applications should transparently be made to use the
+@uref{http://www.pulseaudio.org/, PulseAudio} sound server.
+
+Using PulseAudio allows you to run several sound-producing applications
+at the same time and to individual control them @i{via}
+@command{pavucontrol}, among other things.
+
+@item @code{extra-options} (default: @var{""})
+String to append to the @file{asound.conf} file.
+
+@end table
+@end deftp
 
 @node Database Services
 @subsubsection Database Services

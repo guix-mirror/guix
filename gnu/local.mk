@@ -480,6 +480,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/networking.scm			\
   %D%/services/nfs.scm			\
   %D%/services/shepherd.scm			\
+  %D%/services/sound.scm			\
   %D%/services/herd.scm				\
   %D%/services/pm.scm				\
   %D%/services/rsync.scm			\
