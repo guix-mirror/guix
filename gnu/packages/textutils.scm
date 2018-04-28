@@ -177,7 +177,7 @@ libenca and several charset conversion libraries and tools.")
              (substitute* "data/GraphemeBreakTest.txt"
                (("÷") "/")
                (("×") "+")))))))
-    (home-page "http://julialang.org/utf8proc/")
+    (home-page "https://julialang.org/utf8proc/")
     (synopsis "C library for processing UTF-8 Unicode data")
     (description "utf8proc is a small C library that provides Unicode
 normalization, case-folding, and other operations for data in the UTF-8
