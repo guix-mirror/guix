@@ -29,7 +29,8 @@
 
             warn-about-collision
 
-            relative-file-name))
+            relative-file-name
+            symlink-relative))
 
 ;;; Commentary:
 ;;;
@@ -212,5 +213,11 @@ Note that this is from a purely lexical standpoint; conversely, \"..\" is
                   (loop tail tail*)
                   (finish)))))))
       file))
+
+(define (symlink-relative old new)
+  "Assuming both OLD and NEW are absolute file names, make NEW a symlink to
+OLD, but using a relative file name."
+  (symlink (relative-file-name (dirname new) old)
+           new))
 
 ;;; union.scm ends here

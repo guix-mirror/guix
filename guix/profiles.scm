@@ -1202,6 +1202,7 @@ the entries in MANIFEST."
                              (hooks %default-profile-hooks)
                              (locales? #t)
                              (allow-collisions? #f)
+                             (relative-symlinks? #f)
                              system target)
   "Return a derivation that builds a profile (aka. 'user environment') with
 the given MANIFEST.  The profile includes additional derivations returned by
@@ -1212,6 +1213,9 @@ with a different version number.)
 
 When LOCALES? is true, the build is performed under a UTF-8 locale; this adds
 a dependency on the 'glibc-utf8-locales' package.
+
+When RELATIVE-SYMLINKS? is true, use relative file names for symlink targets.
+This is one of the things to do for the result to be relocatable.
 
 When TARGET is true, it must be a GNU triplet, and the packages in MANIFEST
 are cross-built for TARGET."
@@ -1275,6 +1279,9 @@ are cross-built for TARGET."
                                         (manifest-entries manifest))))))
 
             (build-profile #$output '#$inputs
+                           #:symlink #$(if relative-symlinks?
+                                           #~symlink-relative
+                                           #~symlink)
                            #:manifest '#$(manifest->gexp manifest)
                            #:search-paths search-paths))))
 

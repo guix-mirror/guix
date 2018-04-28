@@ -223,6 +223,52 @@
                  (string=? (dirname (readlink bindir))
                            (derivation->output-path guile))))))
 
+(test-assertm "profile-derivation relative symlinks, one entry"
+  (mlet* %store-monad
+      ((entry ->   (package->manifest-entry %bootstrap-guile))
+       (guile      (package->derivation %bootstrap-guile))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:relative-symlinks? #t
+                                       #:hooks '()
+                                       #:locales? #f))
+       (profile -> (derivation->output-path drv))
+       (bindir ->  (string-append profile "/bin"))
+       (_          (built-derivations (list drv))))
+    (return (and (file-exists? (string-append bindir "/guile"))
+                 (string=? (readlink bindir)
+                           (string-append "../"
+                                          (basename
+                                           (derivation->output-path guile))
+                                          "/bin"))))))
+
+(unless (network-reachable?) (test-skip 1))
+(test-assertm "profile-derivation relative symlinks, two entries"
+  (mlet* %store-monad
+      ((gnu-make-boot0 -> (@@ (gnu packages commencement) gnu-make-boot0))
+       (manifest -> (packages->manifest
+                     (list %bootstrap-guile gnu-make-boot0)))
+       (guile       (package->derivation %bootstrap-guile))
+       (make        (package->derivation gnu-make-boot0))
+       (drv         (profile-derivation manifest
+                                        #:relative-symlinks? #t
+                                        #:hooks '()
+                                        #:locales? #f))
+       (profile ->  (derivation->output-path drv))
+       (bindir ->   (string-append profile "/bin"))
+       (_           (built-derivations (list drv))))
+    (return (and (file-exists? (string-append bindir "/guile"))
+                 (file-exists? (string-append bindir "/make"))
+                 (string=? (readlink (string-append bindir "/guile"))
+                           (string-append "../../"
+                                          (basename
+                                           (derivation->output-path guile))
+                                          "/bin/guile"))
+                 (string=? (readlink (string-append bindir "/make"))
+                           (string-append "../../"
+                                          (basename
+                                           (derivation->output-path make))
+                                          "/bin/make"))))))
+
 (test-assertm "profile-derivation, inputs"
   (mlet* %store-monad
       ((entry ->   (package->manifest-entry packages:glibc "debug"))
