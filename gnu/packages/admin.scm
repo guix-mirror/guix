@@ -2335,21 +2335,23 @@ Intel DRM Driver.")
 (define-public fabric
   (package
     (name "fabric")
-    (version "1.13.2")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Fabric" version))
        (sha256
         (base32
-         "0k944dxr41whw7ib6380q9x15wyskx7fqni656icdn8rzshn9bwq"))))
+         "13r0b0hllgf8j9rh6x1knmbgvingbdmx046aazv6vck2ll120mw1"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))             ; Python 2 only
     (native-inputs
      `(("python2-fudge" ,python2-fudge)
        ("python2-jinja2" ,python2-jinja2)
-       ("python2-nose" ,python2-nose)))
+       ("python2-nose" ,python2-nose)
+       ("python2-pynacl" ,python2-pynacl)
+       ("python2-bcrypt" ,python2-bcrypt)))
     (propagated-inputs
      `(("python2-paramiko" ,python2-paramiko)))
     (home-page "http://fabfile.org")
