@@ -64,7 +64,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.7.12")
+    (version "0.7.17")
     (source
      (origin
       (method url-fetch)
@@ -74,12 +74,13 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1rhgrz2lm9vbfdp2raykrih1c6n2lw5jd572z4dsz488m52avjqi"))))
+        "0jmh3h09680xyf33hzxxxl74bwz66zqhzvjlj7j89r9rz3qwa91p"))))
     (build-system python-build-system)
     (native-inputs
      `(("util-linux" ,util-linux)     ;setsid command, for the tests
        ("par2cmdline" ,par2cmdline)
        ("python-pexpect" ,python2-pexpect)
+       ("python-fasteners" ,python2-fasteners)
        ("mock" ,python2-mock)))
     (propagated-inputs
      `(("lockfile" ,python2-lockfile)
