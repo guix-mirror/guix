@@ -32,8 +32,11 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
@@ -42,6 +45,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml))
@@ -253,3 +257,38 @@ facilitate the use of smart cards in security applications such as
 authentication, encryption and digital signatures.  OpenSC implements the PKCS
 #15 standard and the PKCS #11 API.")
     (license license:lgpl2.1+)))
+
+(define-public yubico-piv-tool
+  (package
+    (name "yubico-piv-tool")
+    (version "1.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://developers.yubico.com/yubico-piv-tool/Releases/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1axa0lnky5gsc8yack6mpfbjh49z0czr1cv52gbgjnx2kcbpb0y1"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl)
+       ("pcsc-lite" ,pcsc-lite)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
+       ("check" ,check)
+       ("texlive-bin" ,texlive-bin)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://developers.yubico.com/yubico-piv-tool/")
+    (synopsis "Interact with the PIV application on a YubiKey")
+    (description
+     "The Yubico PIV tool is used for interacting with the Privilege and
+Identification Card (PIV) application on a YubiKey.  With it you may generate
+keys on the device, import keys and certificates, create certificate requests,
+and other operations.  It includes a library and a command-line tool.")
+    ;; The file ykcs11/pkcs11.h also declares an additional, very short free
+    ;; license for that one file.  Please see it for details.  The vast
+    ;; majority of files are licensed under bsd-2.
+    (license license:bsd-2)))
