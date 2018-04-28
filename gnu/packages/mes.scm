@@ -60,16 +60,15 @@ extensive examples, including parsers for the Javascript and C99 languages.")
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.12")
+      (version "0.13")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://gitlab.com/janneke/mes"
-                                    "/repository/archive.tar.gz?ref=v"
-                                    version))
-                (file-name (string-append name "-" version ".tar.gz"))
+                                    "/-/archive/v" version
+                                    "/mes-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0lbwmyl5262z28kpac6kmxxx8aglzy8n6bsicp5lyzkmzkzvjnh2"))))
+                  "0db4f32rak839ff3n7ywkkng9672457pd2pvvgvcsyndqmmdsqw0"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
