@@ -52,6 +52,7 @@
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13615,3 +13616,35 @@ Boost.Python library by David Abrahams: to minimize boilerplate code in
 traditional extension modules by inferring type information using compile-time
 introspection.")
     (license license:expat)))
+
+(define-public python-fasteners
+  (package
+    (name "python-fasteners")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fasteners" version))
+       (sha256
+        (base32
+         "063y20kx01ihbz2mziapmjxi2cd0dq48jzg587xdsdp07xvpcz22"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-monotonic" ,python-monotonic)
+       ("python-six" ,python-six)
+       ("python-testtools" ,python-testtools)))
+    (home-page "https://github.com/harlowja/fasteners")
+    (synopsis "Python package that provides useful locks")
+    (description
+     "This package provides a Python program that provides following locks:
+
+@itemize
+@item Locking decorator
+@item Reader-writer locks
+@item Inter-process locks
+@item Generic helpers
+@end itemize\n")
+    (license license:asl2.0)))
+
+(define-public python2-fasteners
+  (package-with-python2 python-fasteners))
