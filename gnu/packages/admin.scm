@@ -245,16 +245,16 @@ services.")
 (define-public dfc
   (package
    (name "dfc")
-   (version "3.0.4")
+   (version "3.1.1")
    (source
     (origin
      (method url-fetch)
       (uri (string-append
-            "http://projects.gw-computing.net/attachments/download/79/dfc-"
+            "http://projects.gw-computing.net/attachments/download/615/dfc-"
             version ".tar.gz"))
       (sha256
        (base32
-        "0zk1ppx93ijimf4sbgqilxxikpsa2gmpbynknyh41xy7jbdjxp0b"))))
+        "0m1fd7l85ckb7bq4c5c3g257bkjglm8gq7x42pkmpp87fkknc94n"))))
    (build-system cmake-build-system)
    (arguments '(#:tests? #f)) ; There are no tests.
    (native-inputs `(("gettext" ,gettext-minimal)))
