@@ -90,14 +90,14 @@ cat "$@.tmp" | egrep '@p?x?ref' -A1 | sed 'N;s|--\n||g;P;D' | sed 's|^| |g' | \
 done
 endef
 
-$(srcdir)/%D%/guix.%.texi: po/doc/guix.%.po $(srcdir)/%D%/contributing.%.texi
+$(srcdir)/%D%/guix.%.texi: po/doc/guix-manual.%.po $(srcdir)/%D%/contributing.%.texi
 	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/guix.texi" -p "$<" -l "$@.tmp"
 	-sed -i "s|guix\.info|$$(basename "$@" | sed 's|texi$$|info|')|" "$@.tmp"
 	-$(AM_V_POXREF)$(xref_command)
 	-mv "$@.tmp" "$@"
 
-$(srcdir)/%D%/contributing.%.texi: po/doc/guix.%.po po/doc/contributing.%.po
-	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/contributing.texi" -p "$(word 2,$^)" -l "$@.tmp"
+$(srcdir)/%D%/contributing.%.texi: po/doc/guix-manual.%.po
+	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/contributing.texi" -p "$<" -l "$@.tmp"
 	-$(AM_V_POXREF)$(xref_command)
 	-mv "$@.tmp" "$@"
 
