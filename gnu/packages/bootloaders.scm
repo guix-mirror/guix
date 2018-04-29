@@ -466,6 +466,9 @@ also initializes the boards (RAM etc).")
 (define-public u-boot-wandboard
   (make-u-boot-package "wandboard" "arm-linux-gnueabihf"))
 
+(define-public u-boot-mx6cuboxi
+  (make-u-boot-package "mx6cuboxi" "arm-linux-gnueabihf"))
+
 (define-public vboot-utils
   (package
     (name "vboot-utils")
