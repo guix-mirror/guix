@@ -265,8 +265,7 @@ Libraries with some extra bells and whistles.")
                 "16zydv7z94aw3rywmb9gr8ya85k7b75h22wng95lfx1x0y1yb0ad"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-mount-eeze")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
