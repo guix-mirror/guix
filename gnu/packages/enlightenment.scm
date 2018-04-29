@@ -277,6 +277,8 @@ Libraries with some extra bells and whistles.")
                  (("/usr/share/X11/xkb/rules/xorg.lst")
                   (string-append xkeyboard
                                  "/share/X11/xkb/rules/base.lst")))
+               (substitute* "src/modules/everything/evry_plug_apps.c"
+                 (("/usr/bin/") ""))
                (substitute* "configure"
                  (("/bin/mount") (string-append utils "/bin/mount"))
                  (("/bin/umount") (string-append utils "/bin/umount"))
