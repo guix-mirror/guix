@@ -463,6 +463,9 @@ also initializes the boards (RAM etc).")
 (define-public u-boot-nintendo-nes-classic-edition
   (make-u-boot-package "Nintendo_NES_Classic_Edition" "arm-linux-gnueabihf"))
 
+(define-public u-boot-wandboard
+  (make-u-boot-package "wandboard" "arm-linux-gnueabihf"))
+
 (define-public vboot-utils
   (package
     (name "vboot-utils")
