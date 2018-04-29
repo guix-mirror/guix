@@ -408,7 +408,7 @@ also initializes the boards (RAM etc).")
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
                                     (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb)$")
-                                    (find-files "." "^MLO$"))))
+                                    (find-files "." "^(MLO|SPL)$"))))
                  (mkdir-p libexec)
                  (install-file ".config" libexec)
                  (for-each
