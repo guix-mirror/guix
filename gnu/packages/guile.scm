@@ -1078,7 +1078,7 @@ understand, extend, and port to host languages other than Scheme.")
                (install-file "irregex.html" doc)
                #t))))))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "http://synthcode.com/scheme/irregex")
     (synopsis "S-expression based regular expressions")
     (description
@@ -1087,8 +1087,11 @@ string-based regular expressions.  It implements SRFI 115 and is deeply
 inspired by the SCSH regular expression system.")
     (license license:bsd-3)))
 
+(define-public guile2.0-irregex
+  (package-for-guile-2.0 guile-irregex))
+
 (define-public guile2.2-irregex
-  (package-for-guile-2.2 guile-irregex))
+  (deprecated-package "guile2.2-irregex" guile-irregex))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.
