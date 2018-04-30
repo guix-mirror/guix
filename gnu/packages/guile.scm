@@ -1548,19 +1548,19 @@ provides access to that interface and its types from the Scheme level.")
     (arguments
      '(#:configure-flags
        (list (string-append
-              "--with-guile-site-dir=" %output "/share/guile/site/2.0"))
+              "--with-guile-site-dir=" %output "/share/guile/site/2.2"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'patch-extension-path
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
                     (dbi.scm (string-append
-                              out "/share/guile/site/2.0/dbi/dbi.scm"))
+                              out "/share/guile/site/2.2/dbi/dbi.scm"))
                     (ext     (string-append out "/lib/libguile-dbi")))
                (substitute* dbi.scm (("libguile-dbi") ext))
                #t))))))
     (propagated-inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (synopsis "Guile database abstraction layer")
     (home-page "http://home.gna.org/guile-dbi/guile-dbi.html")
     (description
