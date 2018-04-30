@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -83,7 +83,7 @@ standard.")
     (build-system trivial-build-system)
     (native-inputs '())
     (inputs `(("tcc" ,tcc)
-              ("guile" ,guile-2.0)))
+              ("guile" ,guile-2.2)))
 
     ;; By default TCC does not honor any search path environment variable.
     ;; This wrapper adds them.
