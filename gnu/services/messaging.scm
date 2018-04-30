@@ -692,6 +692,11 @@ See also @url{https://prosody.im/doc/modules/mod_muc}."
                                           (const %prosody-accounts))
                        (service-extension activation-service-type
                                           prosody-activation)))
+                (default-value (prosody-configuration
+                                (virtualhosts
+                                 (list
+                                  (virtualhost-configuration
+                                   (domain "localhost"))))))
                 (description
                  "Run Prosody, a modern XMPP communication server.")))
 
