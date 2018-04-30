@@ -746,8 +746,8 @@ format is also supported.")
        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0) ("which" ,which)))
-    (propagated-inputs `(("guile-lib" ,guile2.0-lib)))
+    (inputs `(("guile" ,guile-2.2) ("which" ,which)))
+    (propagated-inputs `(("guile-lib" ,guile-lib)))
     (home-page "https://github.com/artyom-poptsov/guile-ics")
     (synopsis "Guile parser library for the iCalendar format")
     (description
