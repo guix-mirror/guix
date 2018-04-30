@@ -1355,15 +1355,18 @@ above command-line parameters.")
                      (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "https://savannah.nongnu.org/projects/guile-redis/")
     (synopsis "Redis client library for Guile")
     (description "Guile-redis provides a Scheme interface to the Redis
 key-value cache and store.")
     (license license:lgpl3+)))
 
+(define-public guile2.0-redis
+  (package-for-guile-2.0 guile-redis))
+
 (define-public guile2.2-redis
-  (package-for-guile-2.2 guile-redis))
+  (deprecated-package "guile2.2-redis" guile-redis))
 
 (define-public guile-wisp
   (package
