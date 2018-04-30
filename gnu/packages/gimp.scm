@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -115,23 +116,18 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.8.22")
+    (version "2.10.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.gimp.org/pub/gimp/v"
+              (uri (string-append "https://download.gimp.org/pub/gimp/v"
                                   (version-major+minor version)
                                   "/gimp-" version ".tar.bz2"))
-              (patches (search-patches "gimp-CVE-2017-17784.patch"
-                                       "gimp-CVE-2017-17785.patch"
-                                       "gimp-CVE-2017-17786.patch"
-                                       "gimp-CVE-2017-17787.patch"
-                                       "gimp-CVE-2017-17789.patch"))
               (sha256
                (base32
-                "12k3lp938qdc9cqj29scg55f3bb8iav2fysd29w0s49bqmfa71wi"))))
+                "1qkxaigbfkx26xym5nzrgfrmn97cbnhn63v1saaha2nbi3xrdk3z"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "doc"))                            ;5 MiB of gtk-doc HTML
+               "doc"))                            ;9 MiB of gtk-doc HTML
     (arguments
      '(#:configure-flags (list (string-append "--with-html-dir="
                                               (assoc-ref %outputs "doc")
@@ -155,21 +151,27 @@ buffers.")
     (inputs
      `(("babl" ,babl)
        ("glib" ,glib)
+       ("glib-networking" ,glib-networking)
        ("libtiff" ,libtiff)
        ("libjpeg" ,libjpeg-8)
        ("atk" ,atk)
+       ("gexiv2" ,gexiv2)
        ("gtk+" ,gtk+-2)
+       ("libmypaint" ,libmypaint)
+       ("mypaint-brushes" ,mypaint-brushes)
        ("exif" ,libexif)                ; optional, EXIF + XMP support
        ("lcms" ,lcms)                   ; optional, color management
        ("librsvg" ,librsvg)             ; optional, SVG support
        ("poppler" ,poppler)             ; optional, PDF support
+       ("poppler-data" ,poppler-data)
        ("python" ,python-2)             ; optional, Python support
        ("python2-pygtk" ,python2-pygtk) ; optional, Python support
        ("gegl" ,gegl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("glib:bin" ,glib "bin") ; for glib-compile-resources and gdbus-codegen
+       ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
-    (home-page "http://gimp.org")
+    (home-page "https://www.gimp.org")
     (synopsis "GNU Image Manipulation Program")
     (description
      "GIMP is an application for image manipulation tasks such as photo
