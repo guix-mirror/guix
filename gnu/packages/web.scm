@@ -524,7 +524,7 @@ data.")
 (define-public json-c
   (package
     (name "json-c")
-    (version "0.13")
+    (version "0.13.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -532,7 +532,7 @@ data.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0kf2594kxcfga6x0mvwzj2qg8pgxhjkibc16ghnw85mdx45ph5h3"))
+               "0ws8dz9nk8q2c0gbf66kg2r6mrkl7kamd3gpdv9zsyrz9n6n0zmq"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -541,13 +541,8 @@ data.")
                  ;; run 'autoheader'.
                  (set-file-time "config.h.in"
                                 (stat "aclocal.m4"))
-
-                 ;; Don't try to build with -Werror.
-                 (substitute* (find-files "." "Makefile\\.in")
-                   (("-Werror") ""))))))
+                 #t))))
     (build-system gnu-build-system)
-    (arguments '(#:parallel-build? #f
-                 #:parallel-tests? #f))
     (home-page "https://github.com/json-c/json-c/wiki")
     (synopsis "JSON implementation in C")
     (description
