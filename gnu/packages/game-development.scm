@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -233,6 +233,15 @@ PCM data.")
                (base32
                 "13j1m92zhxwkaaja3lg5x0h0b28mrrawdzk9d3hd19031akfxwb3"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'no-Werror
+                    (lambda _
+                      ;; Don't abort builds due to things like GLib
+                      ;; deprecation warnings.
+                      (substitute* (find-files "." "^Makefile\\.in$")
+                        (("-Werror") ""))
+                      #t)))))
     (native-inputs `(("pkgconfig" ,pkg-config)))
     (inputs `(("bdb" ,bdb)
               ("glib" ,glib)
