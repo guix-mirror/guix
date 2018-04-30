@@ -295,6 +295,15 @@ the Nix package manager.")
     (inherit guix)
     (properties `((hidden? . #t)))
     (name "guix-register")
+
+    ;; Use a minimum set of dependencies.
+    (native-inputs
+     (fold alist-delete (package-native-inputs guix)
+           '("po4a" "graphviz" "help2man")))
+    (propagated-inputs
+     `(("gnutls" ,gnutls)
+       ("guile-git" ,guile-git)))
+
     (arguments
      (substitute-keyword-arguments (package-arguments guix)
        ((#:tests? #f #f)
