@@ -510,7 +510,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -518,7 +518,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "16ynws10vhx6rhjjjmzw6iyb3hc19823xhx4gsb14hrc7l8vzd1c"))))
+                "0wyyy3wrk7ka5xrsbafnajzf7iacg8vg3hi16pl4c5p104hdhjdw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
