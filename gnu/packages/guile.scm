@@ -720,16 +720,16 @@ format is also supported.")
 (define-public guile-ics
   (package
     (name "guile-ics")
-    (version "0.1.1")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/guile-ics")
-                    (commit "v0.1.1")))
+                    (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1pvg6j48inpbq47hq00yh5hhl2qd2srvrx5yjl7w7ky1jsjadp86"))))
+                "0qjjvadr7gibdq9jvwkmlkb4afsw9n2shfj9phpiadinxk3p4m2g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
