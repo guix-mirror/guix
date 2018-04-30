@@ -916,7 +916,7 @@ specification.  These are the main features:
            (install-file "README.org" doc)
            #t))))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "https://github.com/ijp/minikanren")
     (synopsis "MiniKanren declarative logic system, packaged for Guile")
     (description
@@ -931,8 +931,11 @@ slightly from miniKanren mainline.
 See http://minikanren.org/ for more on miniKanren generally.")
     (license license:expat)))
 
+(define-public guile2.0-minikanren
+  (package-for-guile-2.0 guile-minikanren))
+
 (define-public guile2.2-minikanren
-  (package-for-guile-2.2 guile-minikanren))
+  (deprecated-package "guile2.2-minikanren" guile-minikanren))
 
 (define-public guile-miniadapton
   (let ((commit "1b5749422304567c96ac5367f2221dda9eff5880")
