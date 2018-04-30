@@ -4913,7 +4913,8 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
         ,(origin
            (method url-fetch)
            (uri (string-append "https://bitbucket.org/shlomif/shlomif-cmake-modules/"
-                               "raw/default/shlomif-cmake-modules/Shlomif_Common.cmake"))
+                               "raw/c505713d7a7cda608f97f01577e5868a711b883e/"
+                               "shlomif-cmake-modules/Shlomif_Common.cmake"))
            (sha256
             (base32 "0kx9s1qqhhzprp1w3b67xmsns0n0v506bg5hgrshxaxpy6lqiwb2"))))))
     (home-page "http://www.shlomifish.org/open-source/projects/fortune-mod/")

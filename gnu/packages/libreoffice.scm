@@ -359,14 +359,14 @@ CorelDRAW documents of all versions.")
 (define-public libetonyek
   (package
     (name "libetonyek")
-    (version "0.1.7")
+    (version "0.1.8")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "1b1lqy6g7flximlv0bp8jbsivyhdp679yj0d0q4jzm968h6y3nv9"))))
+               "0bfq9rwm040xhh7b3v0gsdavwvnrz4hkwnhpggarxk70mr3j7jcx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-mdds=1.2")))
@@ -611,14 +611,14 @@ spreadsheet documents.")
 (define-public libstaroffice
   (package
     (name "libstaroffice")
-    (version "0.0.5")
+    (version "0.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/fosnola/libstaroffice/releases/download/"
                            version "/libstaroffice-" version ".tar.xz"))
        (sha256 (base32
-                "10m9imcgqf7kdhn1a5ara62fdayidwm7qzj3binsls40snnhfm9i"))))
+                "1i0ykl0c94lc1qzb5mbyf9jr7qw8p38ja424whmhgrllh7ny203b"))))
     (build-system gnu-build-system)
     (inputs
      `(("librevenge" ,librevenge)

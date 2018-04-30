@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Chris Marusich <cmmarusich@gmail.com>
@@ -321,14 +321,14 @@ editor (without an X toolkit)" )
 (define-public geiser
   (package
     (name "geiser")
-    (version "0.9")
+    (version "0.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/geiser/" version
                                  "/geiser-" version ".tar.gz"))
              (sha256
               (base32
-               "0phz9d8wjk4p13vqannv0003fwh8qqrp0gfzcs2hgq1mrmv1srss"))))
+               "0pj3l7p8d60c9b4vfprnv6g5l61d74pls4b5dvd84cn4ky9mzwjv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -412,7 +412,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.7.0")
+    (version "2.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -421,7 +421,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0kah7pv211zx9fsb5g4hd51bqcq2bxd1chdykd488ihvfz1l5y14"))))
+                "1jqi3axcs0cb1pcv1jxxc2a09v6psrm33wwl6hmyshzl8kbxs2mv"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -561,7 +561,7 @@ support for Git-SVN.")
 (define-public emacs-magit-popup
   (package
     (name "emacs-magit-popup")
-    (version "2.12.0")
+    (version "2.12.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -570,7 +570,7 @@ support for Git-SVN.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1dnk611f7lww6rb03hk8ijg2jwxx9f26pjfff4bwjmnjz7hnd6vz"))))
+                "1kz6vj67awkwf9y2wj6m3l2him3znm08z6bkdvnmfr6rwd96dr39"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -4536,6 +4536,31 @@ main features of Vim, and provides facilities for writing custom
 extensions.")
     (license license:gpl3+)))
 
+(define-public emacs-evil-collection
+  (let ((commit "f40704a57fd33b4bfad64147a2b771fc8961fdfc")
+        (revision "1"))
+    (package
+      (name "emacs-evil-collection")
+      (version (git-version "20180425" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-evil/evil-collection")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0qn19k0f3isnbi1hkmcf3qjxbyvp23m5ak5ny7623qgwb2nwz1l5"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/emacs-evil/evil-collection")
+      (synopsis "Collection of Evil bindings for many major and minor modes")
+      (description "This is a collection of Evil bindings for the parts of
+Emacs that Evil does not cover properly by default, such as @code{help-mode},
+@code{M-x calendar}, Eshell and more.")
+      (license license:gpl3+))))
+
 (define-public emacs-goto-chg
   (package
     (name "emacs-goto-chg")
@@ -4627,14 +4652,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.1.10")
+    (version "9.1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "01vvq6m7r2ifyflvq5ga241qvl4j62smz0zr6jljk56b6nqi20lm"))))
+                "0i27g5qbkfqbxhgiz917pjwkxg3rwid99d0ickwx43bzq0zi7c1m"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -4648,14 +4673,14 @@ reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20180416")
+    (version "20180423")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   version ".tar"))
               (sha256
                (base32
-                "1f5zdfsa1fcf66hk3w57wh5385069yg0b86h57jgkcbmxkcmj6ij"))))
+                "1aggvdy74q8p79xyc19zring5gjvlzp6lbsq8ar319zkmcjrapqd"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -5200,6 +5225,34 @@ To make YASnippet aware of these snippets, add the above directory to
       (description "This Emacs library provides Helm interface for
 Yasnippet.")
       (license license:gpl2+))))
+
+(define-public emacs-helm-system-packages
+  (let ((commit "986b7bd360a705053500c4ce2c9bea03dd7b24a6")
+        (revision "1"))
+    (package
+      (name "emacs-helm-system-packages")
+      (version (git-version "1.9.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-helm/helm-system-packages")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "19iklhpxgh5xx6h4dysf58nd46lmyb46xj601lf7kbwl6yq0y61f"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/emacs-helm/helm-system-packages")
+      (synopsis "Helm System Packages is an interface to your package manager")
+      (description "List all available packages in Helm (with installed
+packages displayed in their own respective face).  Fuzzy-search, mark and
+execute the desired action over any selections of packages: Install,
+uninstall, display packages details (in Org Mode) or insert details at point,
+find files owned by packages...  And much more, including performing all the
+above over the network.")
+      (license license:gpl3+))))
 
 (define-public emacs-memoize
   (package
@@ -6834,15 +6887,17 @@ well as Github-style emojis like @code{:smile:}.  It provides a minor mode
 (define-public emacs-websocket
   (package
     (name "emacs-websocket")
-    (version "1.8")
+    (version "1.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/websocket-"
-                           version ".tar"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ahyatt/emacs-websocket.git")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "0dcxmnnm8z7cvsc7nkb822a1g6w03klp7cijjnfq0pz84p3w9cd9"))))
+         "1dgrf7na6r6mmkknphzshlbd5fnzisg0qn0j7vfpa38wgsymaq52"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/websocket.html")
     (synopsis "Emacs WebSocket client and server")
@@ -6906,8 +6961,8 @@ want to use it.")
     (license license:gpl3+)))
 
 (define-public emacs-slack
-  (let ((commit "92724604879149cf331fa8778d089813a9d4ce1a")
-        (revision "3"))
+  (let ((commit "d90395482d26175ce38fd935e978c428be8af9a0")
+        (revision "4"))
     (package
       (name "emacs-slack")
       (version (string-append "0-" revision "." (string-take commit 7)))
@@ -6919,7 +6974,7 @@ want to use it.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1fdf8s3ca356k7m7f5kqzfamfl2nrqjj2pynjv3kkrr0ad15nxmw"))))
+                  "14f6wjcbl09cfd3yngr6m1k1d4nr764im666mbnqbk9nmqf50nib"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-alert" ,emacs-alert)
@@ -7943,3 +7998,25 @@ name and password.  To skip it press a @key{Return} key.
 You could get a Epkg package list by invoking @code{epkg-list-packages} in
 Emacs.")
       (license license:gpl3+))))
+
+(define-public emacs-elisp-slime-nav
+  (package
+    (name "emacs-elisp-slime-nav")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/purcell/elisp-slime-nav/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vq7ym1q47p97gxrv45c9gm96d23xbp237vkmakikj6grngxjfb2"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/elisp-slime-nav")
+    (synopsis "Make @code{M-.} and @code{M-,} work for elisp like they do in SLIME")
+    (description
+     "This package provides SLIME's convenient @code{M-.}and @code{M-,} navigation
+in @code{emacs-lisp-mode}, together with an elisp equivalent of
+@code{slime-describe-symbol}.")
+    (license license:gpl3+)))

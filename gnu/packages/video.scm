@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
@@ -598,14 +598,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.4.2")
+    (version "4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0h6prjn1ijkzzhkyj8mazp0wpx7m0n9ycadjxagf9czqirbyk4ib"))))
+               "0gx4ngnhi5glmxh38603qy5n6vq8bl1cr4sqd1xff95i82pmv57d"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -771,6 +771,18 @@ convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
 
+(define-public ffmpeg-3.4
+  (package
+    (inherit ffmpeg)
+    (version "3.4.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0h6prjn1ijkzzhkyj8mazp0wpx7m0n9ycadjxagf9czqirbyk4ib"))))))
+
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
@@ -790,25 +802,6 @@ audio/video codec library.")
                     "--disable-mipsdspr1"
                     flag))
               ,flags))))))
-
-;; Annoyingly enough, the latest mpv release does not build with the stable
-;; release of ffmpeg. Use a git commit until the situation is fixed.
-(define-public ffmpeg-git
-  (let ((commit "3f887440677328c9cfed97ad81d14051ffa32aae")
-        (revision "1"))
-    (package
-     (inherit ffmpeg)
-     (name "ffmpeg-git")
-     (version (string-append "3.4-" revision "." (string-take commit 9)))
-     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/FFmpeg/FFmpeg.git")
-                    (commit commit)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1b7n3g4m2rbvrwsgbfl8wl91z42g1ld42clwxs8qpl9ny5rwz6sq")))))))
 
 (define-public vlc
   (package
@@ -1033,7 +1026,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("enca" ,enca)
-       ("ffmpeg" ,ffmpeg-git)
+       ("ffmpeg" ,ffmpeg)
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("lcms" ,lcms)
@@ -1162,7 +1155,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.04.16")
+    (version "2018.04.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1170,7 +1163,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "046zg8pww2xg1yibh7c1a8jcg8f1znr4hsz1l1da03djcp6na99d"))))
+                "17zxgwfcy7c6gdyxdgh02f5zi52gvmy0zpccfj6zjkhw5iqj1vbw"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1319,7 +1312,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.3.3")
+    (version "3.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1328,7 +1321,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1j572his6qmazlmyrbnfq62s9bqml875ay7wy26byy9hfc7m0vgk"))))
+                "1dqaxkz5svv0lmxds6lppcpzhkq6gar2raw9gx6imrd7yz02fpgn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -1857,7 +1850,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("fftw" ,fftw)
        ("libxml2" ,libxml2)
        ("jack" ,jack-1)
@@ -2093,7 +2086,7 @@ making @dfn{screencasts}.")
     ;; As a result, they are omitted. Please add them back if problems appear.
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("glu" ,glu)
        ("jack" ,jack-1)
        ("libxi" ,libxi)
@@ -2806,7 +2799,7 @@ It counts more than 100 plugins.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libjpeg" ,libjpeg)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("sqlite" ,sqlite)))
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -2864,3 +2857,41 @@ the results, download the highest-rated result in the requested language and
 save it to the appropriate filename.")
       (license license:gpl3+)
       (home-page "https://github.com/alexanderwink/subdl"))))
+
+(define-public l-smash
+  (package
+    (name "l-smash")
+    (version "2.14.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/" name "/" name "/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dary0h65kq6sv93iabv25djlvzr5ckdcp3ywagbix44wqfw7xz6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags
+       (list (string-append "LDFLAGS=-Wl,-L.,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; configure fails if it is followed by CONFIG_SHELL
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "./configure" (string-append "--prefix=" out)
+                       "--disable-static")))))))
+    (native-inputs
+     `(("which" ,which)))
+    (home-page "https://l-smash.github.io/l-smash/")
+    (synopsis "MP4 multiplexer and demultiplexer library")
+    (description
+     "L-SMASH is a cross-platform library that handles the ISO base media file
+format and some of its derived file formats, including MP4.  It operates as a
+multiplexer and demultiplexer, and can mux video and audio in several formats
+using standalone executable files.")
+    (license license:isc)))

@@ -575,7 +575,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/azr3.patch				\
   %D%/packages/patches/bash-completion-directories.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
-  %D%/packages/patches/bcftools-regidx-unsigned-char.patch	\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/boost-fix-icu-build.patch		\
@@ -795,6 +794,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
+  %D%/packages/patches/java-apache-ivy-port-to-latest-bouncycastle.patch	\
   %D%/packages/patches/java-jeromq-fix-tests.patch		\
   %D%/packages/patches/java-powermock-fix-java-files.patch		\
   %D%/packages/patches/java-simple-xml-fix-tests.patch		\
@@ -976,7 +976,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   %D%/packages/patches/patch-hurd-path-max.patch		\
-  %D%/packages/patches/pcmanfm-CVE-2017-8934.patch		\
   %D%/packages/patches/perl-file-path-CVE-2017-6512.patch	\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-dbd-mysql-CVE-2017-10788.patch	\
@@ -1012,9 +1011,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/psm-arch.patch				\
   %D%/packages/patches/psm-ldflags.patch			\
   %D%/packages/patches/psm-repro.patch				\
-  %D%/packages/patches/pt-scotch-build-parallelism.patch	\
-  %D%/packages/patches/pulseaudio-glibc-2.27.patch		\
   %D%/packages/patches/pulseaudio-fix-mult-test.patch		\
+  %D%/packages/patches/pulseaudio-glibc-2.27.patch		\
   %D%/packages/patches/pulseaudio-longer-test-timeout.patch	\
   %D%/packages/patches/pybugz-encode-error.patch		\
   %D%/packages/patches/pybugz-stty.patch			\
@@ -1057,13 +1055,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
-  %D%/packages/patches/qemu-CVE-2018-7550.patch			\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
-  %D%/packages/patches/quassel-fix-tls-check.patch              \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
   %D%/packages/patches/rapicorn-isnan.patch			\
   %D%/packages/patches/raptor2-heap-overflow.patch		\
@@ -1087,6 +1083,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
+  %D%/packages/patches/scotch-build-parallelism.patch		\
+  %D%/packages/patches/scotch-graph-diam-64.patch		\
+  %D%/packages/patches/scotch-graph-induce-type-64.patch	\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/shadow-CVE-2018-7169.patch		\
@@ -1191,9 +1190,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
   %D%/packages/patches/libyaml-CVE-2014-9130.patch 		\
-  %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
-  %D%/packages/patches/zsh-CVE-2018-7548.patch			\
-  %D%/packages/patches/zsh-CVE-2018-7549.patch
+  %D%/packages/patches/zathura-plugindir-environment-variable.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in

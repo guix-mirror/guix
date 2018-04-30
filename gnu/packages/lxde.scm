@@ -48,7 +48,7 @@
 (define-public libfm
   (package
     (name "libfm")
-    (version "1.2.5")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcmanfm/"
@@ -56,7 +56,7 @@
                                   "%29/LibFM/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0nlvfwh09gbq8bkbvwnw6iqr918rrs9gc9ljb9pjspyg408bn1n7"))))
+                "151jyy8ipmp2h829gd9s4s429qafv1zxl7j6zaj1k1gzm9s5rmnb"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("gtk+" ,gtk+-2)))
@@ -205,26 +205,25 @@ speed up the access to freedesktop.org defined application menus.")
 (define-public pcmanfm
   (package
     (name "pcmanfm")
-    (version "1.2.5")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/"
                                   "PCManFM%20%2B%20Libfm%20%28tarball%20release"
                                   "%29/PCManFM/" name "-" version ".tar.xz"))
-              (patches (search-patches "pcmanfm-CVE-2017-8934.patch"))
               (sha256
                (base32
-                "0rxdh0dfzc84l85c54blq42gczygq8adhr3l9hqzy1dp530cm1hc"))))
+                "1ywgfyklms5hqkapsbjps4kyx20ac0d1qk16ww74yagkyfdkwsas"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+"   ,gtk+-2)
-              ("gvfs"   ,gvfs)                    ;for trash and mount support
+              ("gvfs"   ,gvfs)          ; for trash and mount support
               ("libfm"  ,libfm)
               ("libx11" ,libx11)))
     (native-inputs `(("intltool"   ,intltool)
                      ("libtool"    ,libtool)
                      ("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("lxmenu-data" ,lxmenu-data)))     ;for "Open With..." application list
+     `(("lxmenu-data" ,lxmenu-data)))   ; for "Open With..." application list
     (synopsis "LXDE file manager")
     (description "PCMan is a lightweight GTK+ based file manager, compliant
 with freedesktop.org standard.")

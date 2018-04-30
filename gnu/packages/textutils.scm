@@ -135,7 +135,7 @@ libenca and several charset conversion libraries and tools.")
 (define-public utf8proc
   (package
     (name "utf8proc")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
@@ -144,9 +144,9 @@ libenca and several charset conversion libraries and tools.")
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0q1jhdkk4f9b0zb8s2ql3sba3br5nvjsmbsaybmgj064k9hwbk15"))))
+        (base32 "1cnpigrazhslw65s4j1a56j7p6d7d61wsxxjf1218i9mkwv2yw17"))))
     (build-system gnu-build-system)
-    (inputs                  ;test data that is otherwise downloaded with curl
+    (inputs                 ; test data that is otherwise downloaded with curl
      `(("NormalizationTest.txt"
         ,(origin
            (method url-fetch)
@@ -176,7 +176,7 @@ libenca and several charset conversion libraries and tools.")
              (substitute* "data/GraphemeBreakTest.txt"
                (("÷") "/")
                (("×") "+")))))))
-    (home-page "http://julialang.org/utf8proc/")
+    (home-page "https://julialang.org/utf8proc/")
     (synopsis "C library for processing UTF-8 Unicode data")
     (description "utf8proc is a small C library that provides Unicode
 normalization, case-folding, and other operations for data in the UTF-8

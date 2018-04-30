@@ -186,7 +186,7 @@
          ("bluez" ,bluez)
          ("curl" ,curl)
          ("eudev" ,eudev)
-         ("ffmpeg" ,ffmpeg)
+         ("ffmpeg" ,ffmpeg-3.4)
          ("font-wqy-microhei" ,font-wqy-microhei)
          ("freetype" ,freetype)
          ("glew" ,glew)
@@ -1046,7 +1046,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
@@ -1054,7 +1054,7 @@ emulation community.  It provides highly accurate emulation.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1wykv0w0kdlh7lh0k1ig0lpk5vh4c7r19jlfa9103jmjlryrq679"))))
+        (base32 "1y9fakr41h6xpddpkj12mcw1kgldvy76nzvxm5jk5v7iyiks4c6k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests

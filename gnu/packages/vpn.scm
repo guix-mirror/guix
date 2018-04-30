@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,9 +33,11 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -207,6 +210,39 @@ example for writing your own.  For example, @command{vpnc-script-sshd} contains
 the entire VPN in a network namespace accessible only through SSH.")
       (license license:gpl2+))))
 
+(define-public ocproxy
+  (package
+    (name "ocproxy")
+    (version "1.60")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/cernekee/ocproxy/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1b4rg3xq5jnrp2l14sw0msan8kqhdxmsd7gpw9lkiwvxy13pcdm7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("libevent" ,libevent)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _ (invoke "sh" "autogen.sh"))))))
+    (home-page "https://github.com/cernekee/ocproxy")
+    (synopsis "OpenConnect proxy")
+    (description
+     "User-level @dfn{SOCKS} and port forwarding proxy for OpenConnect based
+on LwIP.  When using ocproxy, OpenConnect only handles network activity that
+the user specifically asks to proxy, so the @dfn{VPN} interface no longer
+\"hijacks\" all network traffic on the host.")
+    (license license:bsd-3)))
+
 (define-public openconnect
   (package
    (name "openconnect")
@@ -243,7 +279,7 @@ and probably others.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.4.5")
+    (version "2.4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -251,7 +287,7 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "17njq59hsraqyxrbhkrxr7dvx0p066s3pn8w1mi0yd9jldis7h23"))))
+                "09lck4wmkas3iyrzaspin9gn3wiclqb1m9sf8diy7j8wakx38r2g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))

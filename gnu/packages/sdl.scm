@@ -505,7 +505,7 @@ sound and device input (keyboards, joysticks, mice, etc.).")
              (string-append "--with-libsdl2-mixer-prefix="
                             (assoc-ref %build-inputs "sdl2-mixer")))))
     (native-inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("sdl2" ,sdl2)

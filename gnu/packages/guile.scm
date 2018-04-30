@@ -1501,7 +1501,7 @@ users and in some situations.")
     (description "Sly is a 2D/3D game engine written in Guile Scheme.  Sly
 features a functional reactive programming interface and live coding
 capabilities.")
-    (home-page "http://dthompson.us/pages/software/sly.html")
+    (home-page "https://dthompson.us/projects/sly.html")
     (license license:gpl3+)))
 
 (define-public g-wrap

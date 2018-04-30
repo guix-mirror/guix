@@ -24,12 +24,14 @@
 
 (define-module (gnu services networking)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services dbus)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages connman)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tor)
   #:use-module (gnu packages messaging)
@@ -45,18 +47,19 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (%facebook-host-aliases
-            static-networking
-
-            static-networking?
-            static-networking-interface
-            static-networking-ip
-            static-networking-netmask
-            static-networking-gateway
-            static-networking-requirement
-
-            static-networking-service
-            static-networking-service-type
             dhcp-client-service
+
+            dhcpd-service-type
+            dhcpd-configuration
+            dhcpd-configuration?
+            dhcpd-configuration-package
+            dhcpd-configuration-config-file
+            dhcpd-configuration-version
+            dhcpd-configuration-run-directory
+            dhcpd-configuration-lease-file
+            dhcpd-configuration-pid-file
+            dhcpd-configuration-interfaces
+
             %ntp-servers
 
             ntp-configuration
@@ -90,6 +93,9 @@
             connman-configuration?
             connman-service-type
 
+            modem-manager-configuration
+            modem-manager-configuration?
+            modem-manager-service-type
             wpa-supplicant-service-type
 
             openvswitch-service-type
@@ -133,154 +139,6 @@ fe80::1%lo0 static.ak.connect.facebook.com
 fe80::1%lo0 connect.facebook.net
 fe80::1%lo0 www.connect.facebook.net
 fe80::1%lo0 apps.facebook.com\n")
-
-
-(define-record-type* <static-networking>
-  static-networking make-static-networking
-  static-networking?
-  (interface static-networking-interface)
-  (ip static-networking-ip)
-  (netmask static-networking-netmask
-           (default #f))
-  (gateway static-networking-gateway              ;FIXME: doesn't belong here
-           (default #f))
-  (provision static-networking-provision
-             (default #f))
-  (requirement static-networking-requirement
-               (default '()))
-  (name-servers static-networking-name-servers    ;FIXME: doesn't belong here
-                (default '())))
-
-(define static-networking-shepherd-service
-  (match-lambda
-    (($ <static-networking> interface ip netmask gateway provision
-                            requirement name-servers)
-     (let ((loopback? (and provision (memq 'loopback provision))))
-       (shepherd-service
-
-        (documentation
-         "Bring up the networking interface using a static IP address.")
-        (requirement requirement)
-        (provision (or provision
-                       (list (symbol-append 'networking-
-                                            (string->symbol interface)))))
-
-        (start #~(lambda _
-                   ;; Return #t if successfully started.
-                   (let* ((addr     (inet-pton AF_INET #$ip))
-                          (sockaddr (make-socket-address AF_INET addr 0))
-                          (mask     (and #$netmask
-                                         (inet-pton AF_INET #$netmask)))
-                          (maskaddr (and mask
-                                         (make-socket-address AF_INET
-                                                              mask 0)))
-                          (gateway  (and #$gateway
-                                         (inet-pton AF_INET #$gateway)))
-                          (gatewayaddr (and gateway
-                                            (make-socket-address AF_INET
-                                                                 gateway 0))))
-                     (configure-network-interface #$interface sockaddr
-                                                  (logior IFF_UP
-                                                          #$(if loopback?
-                                                                #~IFF_LOOPBACK
-                                                                0))
-                                                  #:netmask maskaddr)
-                     (when gateway
-                       (let ((sock (socket AF_INET SOCK_DGRAM 0)))
-                         (add-network-route/gateway sock gatewayaddr)
-                         (close-port sock))))))
-        (stop #~(lambda _
-                  ;; Return #f is successfully stopped.
-                  (let ((sock (socket AF_INET SOCK_STREAM 0)))
-                    (when #$gateway
-                      (delete-network-route sock
-                                            (make-socket-address
-                                             AF_INET INADDR_ANY 0)))
-                    (set-network-interface-flags sock #$interface 0)
-                    (close-port sock)
-                    #f)))
-        (respawn? #f))))))
-
-(define (static-networking-etc-files interfaces)
-  "Return a /etc/resolv.conf entry for INTERFACES or the empty list."
-  (match (delete-duplicates
-          (append-map static-networking-name-servers
-                      interfaces))
-    (()
-     '())
-    ((name-servers ...)
-     (let ((content (string-join
-                     (map (cut string-append "nameserver " <>)
-                          name-servers)
-                     "\n" 'suffix)))
-       `(("resolv.conf"
-          ,(plain-file "resolv.conf"
-                       (string-append "\
-# Generated by 'static-networking-service'.\n"
-                                      content))))))))
-
-(define (static-networking-shepherd-services interfaces)
-  "Return the list of Shepherd services to bring up INTERFACES, a list of
-<static-networking> objects."
-  (define (loopback? service)
-    (memq 'loopback (shepherd-service-provision service)))
-
-  (let ((services (map static-networking-shepherd-service interfaces)))
-    (match (remove loopback? services)
-      (()
-       ;; There's no interface other than 'loopback', so we assume that the
-       ;; 'networking' service will be provided by dhclient or similar.
-       services)
-      ((non-loopback ...)
-       ;; Assume we're providing all the interfaces, and thus, provide a
-       ;; 'networking' service.
-       (cons (shepherd-service
-              (provision '(networking))
-              (requirement (append-map shepherd-service-provision
-                                       services))
-              (start #~(const #t))
-              (stop #~(const #f))
-              (documentation "Bring up all the networking interfaces."))
-             services)))))
-
-(define static-networking-service-type
-  ;; The service type for statically-defined network interfaces.
-  (service-type (name 'static-networking)
-                (extensions
-                 (list
-                  (service-extension shepherd-root-service-type
-                                     static-networking-shepherd-services)
-                  (service-extension etc-service-type
-                                     static-networking-etc-files)))
-                (compose concatenate)
-                (extend append)
-                (description
-                 "Turn up the specified network interfaces upon startup,
-with the given IP address, gateway, netmask, and so on.  The value for
-services of this type is a list of @code{static-networking} objects, one per
-network interface.")))
-
-(define* (static-networking-service interface ip
-                                    #:key
-                                    netmask gateway provision
-                                    ;; Most interfaces require udev to be usable.
-                                    (requirement '(udev))
-                                    (name-servers '()))
-  "Return a service that starts @var{interface} with address @var{ip}.  If
-@var{netmask} is true, use it as the network mask.  If @var{gateway} is true,
-it must be a string specifying the default network gateway.
-
-This procedure can be called several times, one for each network
-interface of interest.  Behind the scenes what it does is extend
-@code{static-networking-service-type} with additional network interfaces
-to handle."
-  (simple-service 'static-network-interface
-                  static-networking-service-type
-                  (list (static-networking (interface interface) (ip ip)
-                                           (netmask netmask) (gateway gateway)
-                                           (provision provision)
-                                           (requirement requirement)
-                                           (name-servers name-servers)))))
 
 (define dhcp-client-service-type
   (shepherd-service-type
@@ -340,6 +198,72 @@ to handle."
   "Return a service that runs @var{dhcp}, a Dynamic Host Configuration
 Protocol (DHCP) client, on all the non-loopback network interfaces."
   (service dhcp-client-service-type dhcp))
+
+(define-record-type* <dhcpd-configuration>
+  dhcpd-configuration make-dhcpd-configuration
+  dhcpd-configuration?
+  (package   dhcpd-configuration-package ;<package>
+             (default isc-dhcp))
+  (config-file   dhcpd-configuration-config-file ;file-like
+                 (default #f))
+  (version dhcpd-configuration-version ;"4", "6", or "4o6"
+              (default "4"))
+  (run-directory dhcpd-configuration-run-directory
+                 (default "/run/dhcpd"))
+  (lease-file dhcpd-configuration-lease-file
+              (default "/var/db/dhcpd.leases"))
+  (pid-file dhcpd-configuration-pid-file
+            (default "/run/dhcpd/dhcpd.pid"))
+  ;; list of strings, e.g. (list "enp0s25")
+  (interfaces dhcpd-configuration-interfaces
+              (default '())))
+
+(define dhcpd-shepherd-service
+  (match-lambda
+    (($ <dhcpd-configuration> package config-file version run-directory
+                              lease-file pid-file interfaces)
+     (unless config-file
+       (error "Must supply a config-file"))
+     (list (shepherd-service
+            ;; Allow users to easily run multiple versions simultaneously.
+            (provision (list (string->symbol
+                              (string-append "dhcpv" version "-daemon"))))
+            (documentation (string-append "Run the DHCPv" version " daemon"))
+            (requirement '(networking))
+            (start #~(make-forkexec-constructor
+                      '(#$(file-append package "/sbin/dhcpd")
+                        #$(string-append "-" version)
+                        "-lf" #$lease-file
+                        "-pf" #$pid-file
+                        "-cf" #$config-file
+                        #$@interfaces)
+                      #:pid-file #$pid-file))
+            (stop #~(make-kill-destructor)))))))
+
+(define dhcpd-activation
+  (match-lambda
+    (($ <dhcpd-configuration> package config-file version run-directory
+                              lease-file pid-file interfaces)
+     (with-imported-modules '((guix build utils))
+       #~(begin
+           (unless (file-exists? #$run-directory)
+             (mkdir #$run-directory))
+           ;; According to the DHCP manual (man dhcpd.leases), the lease
+           ;; database must be present for dhcpd to start successfully.
+           (unless (file-exists? #$lease-file)
+             (with-output-to-file #$lease-file
+               (lambda _ (display ""))))
+           ;; Validate the config.
+           (invoke
+            #$(file-append package "/sbin/dhcpd") "-t" "-cf"
+            #$config-file))))))
+
+(define dhcpd-service-type
+  (service-type
+   (name 'dhcpd)
+   (extensions
+    (list (service-extension shepherd-root-service-type dhcpd-shepherd-service)
+          (service-extension activation-service-type dhcpd-activation)))))
 
 (define %ntp-servers
   ;; Default set of NTP servers. These URLs are managed by the NTP Pool project.
@@ -891,6 +815,17 @@ and @command{wicd-curses} user interfaces."
 
 
 ;;;
+;;; ModemManager
+;;;
+
+(define-record-type* <modem-manager-configuration>
+  modem-manager-configuration make-modem-manager-configuration
+  modem-manager-configuration?
+  (modem-manager modem-manager-configuration-modem-manager
+                   (default modem-manager)))
+
+
+;;;
 ;;; NetworkManager
 ;;;
 
@@ -1025,6 +960,30 @@ wireless networking."))))
                   (description
                    "Run @url{https://01.org/connman,Connman},
 a network connection manager."))))
+
+
+;;;
+;;; Modem manager
+;;;
+
+(define modem-manager-service-type
+  (let ((config->package
+         (match-lambda
+          (($ <modem-manager-configuration> modem-manager)
+           (list modem-manager)))))
+    (service-type (name 'modem-manager)
+                  (extensions
+                   (list (service-extension dbus-root-service-type
+                                            config->package)
+                         (service-extension udev-service-type
+                                            config->package)
+                         (service-extension polkit-service-type
+                                            config->package)))
+                  (default-value (modem-manager-configuration))
+                  (description
+                   "Run @uref{https://wiki.gnome.org/Projects/ModemManager,
+ModemManager}, a modem management daemon that aims to simplify dialup
+networking."))))
 
 
 ;;;

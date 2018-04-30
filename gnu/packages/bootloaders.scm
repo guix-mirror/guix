@@ -72,23 +72,6 @@
      (base32
       "0p2vhnc18cnbmb39vq4m7hzv4mhnm2l0a2s7gx3ar277fwng3hys"))))
 
-;; The GRUB test suite fails with later versions of Qemu, so we
-;; keep it at 2.10 for now.  See
-;; <https://lists.gnu.org/archive/html/bug-grub/2018-02/msg00004.html>.
-;; TODO: When grub no longer needs this version, move to gnu/packages/debug.scm.
-(define qemu-minimal-2.10
-  (package
-    (inherit qemu-minimal)
-    (version "2.10.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.qemu.org/qemu-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))
-              (patches (search-patches "qemu-glibc-2.27.patch"))))))
-
 (define-public grub
   (package
     (name "grub")
@@ -425,7 +408,7 @@ also initializes the boards (RAM etc).")
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
                                     (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb)$")
-                                    (find-files "." "^MLO$"))))
+                                    (find-files "." "^(MLO|SPL)$"))))
                  (mkdir-p libexec)
                  (install-file ".config" libexec)
                  (for-each
@@ -479,6 +462,12 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-nintendo-nes-classic-edition
   (make-u-boot-package "Nintendo_NES_Classic_Edition" "arm-linux-gnueabihf"))
+
+(define-public u-boot-wandboard
+  (make-u-boot-package "wandboard" "arm-linux-gnueabihf"))
+
+(define-public u-boot-mx6cuboxi
+  (make-u-boot-package "mx6cuboxi" "arm-linux-gnueabihf"))
 
 (define-public vboot-utils
   (package

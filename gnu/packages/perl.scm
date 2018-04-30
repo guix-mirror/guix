@@ -162,7 +162,7 @@
 
 ;; Fixes CVE-2018-6797, CVE-2018-6798, and CVE-2018-6913.
 ;; See <https://metacpan.org/changes/release/SHAY/perl-5.26.2>.
-(define-public perl-5.26.2
+(define perl-5.26.2
   (package
     (inherit perl)
     (version "5.26.2")
@@ -386,7 +386,7 @@ error when it would have happened.")
 (define-public perl-bareword-filehandles
   (package
     (name "perl-bareword-filehandles")
-    (version "0.005")
+    (version "0.006")
     (source
      (origin
        (method url-fetch)
@@ -395,7 +395,7 @@ error when it would have happened.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0fdirls2pg7d6ymvlzzz59q3dy6hgh08k0qpr2mw51w127s8rav6"))))
+         "1yxz6likpfshpyfrgwyi7dw6ig1wjhh0vnvbcs6ypr62pv00fv5d"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
@@ -453,7 +453,7 @@ all known commands are checked.")
 (define-public perl-b-hooks-endofscope
   (package
     (name "perl-b-hooks-endofscope")
-    (version "0.21")
+    (version "0.24")
     (source
      (origin
        (method url-fetch)
@@ -461,7 +461,7 @@ all known commands are checked.")
                            "B-Hooks-EndOfScope-" version ".tar.gz"))
        (sha256
         (base32
-         "0b70vbpabsy9ia366k330cz1zbdyb1pwhb0l7j28pmpih045iwwh"))))
+         "1imcqxp23yc80a7p0h56sja9glbrh4qyhgzljqd4g9habpz3vah3"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)
@@ -611,7 +611,7 @@ Agency.")
 (define-public perl-business-isbn
   (package
     (name "perl-business-isbn")
-    (version "3.003")
+    (version "3.004")
     (source
      (origin
        (method url-fetch)
@@ -619,7 +619,7 @@ Agency.")
                            "Business-ISBN-" version ".tar.gz"))
        (sha256
         (base32
-         "1i2bxzqkki257rqbswa4ryj1grmwa5s47wrxln2ff5mha1ry31gm"))))
+         "07l3zfv8hagv37i3clvj5a1zc2jarr5phg80c93ks35zaz6llx9i"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-business-isbn-data" ,perl-business-isbn-data)
@@ -721,7 +721,7 @@ algorithm to keep the most used entries in the cache.")
 (define-public perl-capture-tiny
   (package
     (name "perl-capture-tiny")
-    (version "0.46")
+    (version "0.48")
     (source
      (origin
        (method url-fetch)
@@ -730,7 +730,7 @@ algorithm to keep the most used entries in the cache.")
              version ".tar.gz"))
        (sha256
         (base32
-         "05bhlx6d4nzamhkkh0pkckg7wlvaq6mazf7q1fbb5wpp1j1nlyjx"))))
+         "069yrikrrb4vqzc3hrkkfj96apsh7q0hg8lhihq97lxshwz128vc"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Capture-Tiny/")
     (synopsis "Capture STDOUT and STDERR from Perl, XS or external programs")
@@ -1121,7 +1121,7 @@ to the calling program.")
 (define-public perl-class-inspector
   (package
     (name "perl-class-inspector")
-    (version "1.31")
+    (version "1.32")
     (source
      (origin
        (method url-fetch)
@@ -1129,7 +1129,7 @@ to the calling program.")
                            "Class-Inspector-" version ".tar.gz"))
        (sha256
         (base32
-         "1sqfjgzxx1f951fykc6vgfvys4j8rxaw2zf3jq26yrvs3ygn8pq6"))))
+         "0d85rihxahdvhj8cysqrgg0kbmcqghz5hgy41dbkxr1qaf5xrynf"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Class-Inspector/")
     (synopsis "Get information about a class and its structure")
@@ -1321,14 +1321,14 @@ arrays for their internal representation.")
 (define-public perl-clone
   (package
     (name "perl-clone")
-    (version "0.38")
+    (version "0.39")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/"
                                   "Clone-" version ".tar.gz"))
               (sha256
                (base32
-                "1s5xrv9zlckqqzyhxi0l9lwj9m6na2bz5hqxrkva2v7gnx5m7c4z"))))
+                "0bgsidb96gxzf3zhy6v1ksj1c200vxbwykk32fqm1mj97rl4dc5c"))))
     (build-system perl-build-system)
     (synopsis "Recursively copy Perl datatypes")
     (description
@@ -2713,7 +2713,7 @@ variable in a subroutines scope to one of your choosing.")
 (define-public perl-devel-overloadinfo
   (package
     (name "perl-devel-overloadinfo")
-    (version "0.004")
+    (version "0.005")
     (source
      (origin
        (method url-fetch)
@@ -2721,7 +2721,7 @@ variable in a subroutines scope to one of your choosing.")
                            "Devel-OverloadInfo-" version ".tar.gz"))
        (sha256
         (base32
-         "0zckjhzdqa6smpp98y15mqafsyzwjxwrvk10snzhn2sb0r889s43"))))
+         "1rx6g8pyhi7lx6z130b7vlf8syzrq92w9ky8mpw4d6bwlkzy5zcb"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))
@@ -3026,14 +3026,14 @@ separator.")
 (define-public perl-error
   (package
     (name "perl-error")
-    (version "0.17023")
+    (version "0.17025")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
                                   "Error-" version ".tar.gz"))
               (sha256
                (base32
-                "0dsxic78mxy30qvbbdzfyp501hbkwhnbmafqfxipr0yqfy8f2j5g"))))
+                "1bzgzmf1v4md02vadm46b4j4ilqxrcrfasvbzymhrznlsd54g7vc"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Error/")
@@ -3371,7 +3371,7 @@ type.")
 (define-public perl-file-find-rule
   (package
     (name "perl-file-find-rule")
-    (version "0.33")
+    (version "0.34")
     (source
      (origin
        (method url-fetch)
@@ -3379,7 +3379,7 @@ type.")
                            "File-Find-Rule-" version ".tar.gz"))
        (sha256
         (base32
-         "0w73b4jr2fcrd74a1w3b2jryq3mqzc8z5mk7ia9p85xn3qmpa5r4"))))
+         "1znachnhmi1w5pdqx8dzgfa892jb7x8ivrdy4pzjj7zb6g61cvvy"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-text-glob" ,perl-text-glob)
@@ -3636,7 +3636,7 @@ distributions.  It is a companion module to File::ShareDir.")
 (define-public perl-file-sharedir-install
   (package
     (name "perl-file-sharedir-install")
-    (version "0.11")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
@@ -3644,7 +3644,7 @@ distributions.  It is a companion module to File::ShareDir.")
                            "File-ShareDir-Install-" version ".tar.gz"))
        (sha256
         (base32
-         "1j0cw1aq9fdv9kl1a6fnfa4zihsvmcqzy9sb0xk0i9pyx5r8ggrj"))))
+         "1yc0wlkav2l2wr36a53n4mnhsy2zv29z5nm14mygxgjwv7qgvgj5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -4522,17 +4522,17 @@ logging mechanism.")
 (define-public perl-log-any-adapter-log4perl
   (package
     (name "perl-log-any-adapter-log4perl")
-    (version "0.08")
+    (version "0.09")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Log-Any-Adapter-Log4perl-"
+             "mirror://cpan/authors/id/P/PR/PREACTION/Log-Any-Adapter-Log4perl-"
              version
              ".tar.gz"))
        (sha256
         (base32
-         "0xf4fnrsznvg0hf36q481124ja1hp3lybki1xjgnk82z9990jmxn"))))
+         "19f1drqnzr6g4xwjm6jk4iaa3zmiax8bzxqch04f4jr12bjd75qi"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-any" ,perl-log-any)
@@ -4981,7 +4981,7 @@ messages.")
 (define-public perl-mime-types
   (package
     (name "perl-mime-types")
-    (version "2.16")
+    (version "2.17")
     (source
      (origin
        (method url-fetch)
@@ -4989,7 +4989,7 @@ messages.")
                            "MIME-Types-" version ".tar.gz"))
        (sha256
         (base32
-         "0nkv99yd8bxa6h8c52nd07142f0mdzjnhcdw66s3wljmzsi9z8hk"))))
+         "1xlg7q6h8zyb8534sy0iqn90py18kilg419q6051bwqz5zadfkp0"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/MIME-Types/")
     (synopsis "Definition of MIME types")
@@ -5127,7 +5127,7 @@ debug options.
 (define-public perl-module-find
   (package
     (name "perl-module-find")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
@@ -5135,7 +5135,7 @@ debug options.
                            "Module-Find-" version ".tar.gz"))
        (sha256
         (base32
-         "1lc33jdv4pgmm7nkr9bff0lhwjhhw91kaf6iiy2n7i7mw8dfv47l"))))
+         "0s45y5lvd9k89g7lds83c0bn1p29c13hfsbrd7x64jfaf8h8cisa"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Module-Find/")
     (synopsis "Find and use installed modules in a (sub)category")
@@ -6258,7 +6258,7 @@ and libraries based on OpenSSL.")
 (define-public perl-multidimensional
   (package
     (name "perl-multidimensional")
-    (version "0.013")
+    (version "0.014")
     (source
      (origin
        (method url-fetch)
@@ -6267,7 +6267,7 @@ and libraries based on OpenSSL.")
              version ".tar.gz"))
        (sha256
         (base32
-         "02p5zv68i39hnkmzzxsk1fi7xy56pfcsslrd7yqwzhq74czcw81x"))))
+         "0prchsg547ziysjl8ghiid6ph3m2xnwpsrwrjymibga7fhqi9sqj"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
@@ -7172,7 +7172,7 @@ and @code{deserialize_regexp}.")
 (define-public perl-safe-isa
   (package
     (name "perl-safe-isa")
-    (version "1.000008")
+    (version "1.000010")
     (source
      (origin
        (method url-fetch)
@@ -7180,7 +7180,7 @@ and @code{deserialize_regexp}.")
                            "Safe-Isa-" version ".tar.gz"))
        (sha256
         (base32
-         "08r74hwxq5b3bibnbwjr9anybg15l3zqdgcirpw1xm2qpvcxgdkx"))))
+         "0sm6p1kw98s7j6n92vvxjqf818xggnmjwci34xjmw7gzl2519x47"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Safe-Isa/")
     (synopsis "Call isa, can, does, and DOES safely")
@@ -7452,7 +7452,7 @@ run from within a source-controlled directory.")
 (define-public perl-strictures-2
   (package
     (inherit perl-strictures)
-    (version "2.000003")
+    (version "2.000004")
     (source
      (origin
        (method url-fetch)
@@ -7460,7 +7460,7 @@ run from within a source-controlled directory.")
                            "strictures-" version ".tar.gz"))
        (sha256
         (base32
-         "08mgvf1d2651gsg3jgjfs13878ndqa4ji8vfsda9f7jjd84ymy17"))))))
+         "0lzp0q6kwk6vgf7zdlvy9zz28fj6n1b776irm556c7gylcq29113"))))))
 
 (define-public perl-string-camelcase
   (package
@@ -7691,7 +7691,7 @@ return value is the sub.")
 (define-public perl-sub-quote
   (package
     (name "perl-sub-quote")
-    (version "2.005000")
+    (version "2.005001")
     (source
      (origin
        (method url-fetch)
@@ -7700,7 +7700,7 @@ return value is the sub.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1zv45cvj4ifkbr61ydcpphnj6lvib37gfxwfh40h0yzf3c8lbca4"))))
+         "01xsvfdpxzimsbrp9mqipsr93y83nhj21q05g8v1bw6yfl3lzayn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))
@@ -7873,7 +7873,7 @@ of a system.")
 (define-public perl-task-weaken
   (package
     (name "perl-task-weaken")
-    (version "1.05")
+    (version "1.06")
     (source
      (origin
        (method url-fetch)
@@ -7881,7 +7881,7 @@ of a system.")
                            "Task-Weaken-" version ".tar.gz"))
        (sha256
         (base32
-         "0p5ryr3421p5rqj6dk5dcvxsml5gl9skbn7gv4szk50fimrvzww5"))))
+         "1gk6rmnp4x50lzr0vfng41khf0f8yzxlm0pad1j69vxskpdzx0r3"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -8261,7 +8261,7 @@ to tabs.")
 (define-public perl-text-glob
   (package
     (name "perl-text-glob")
-    (version "0.09")
+    (version "0.11")
     (source
      (origin
        (method url-fetch)
@@ -8269,7 +8269,7 @@ to tabs.")
                            "Text-Glob-" version ".tar.gz"))
        (sha256
         (base32
-         "0lr76wrsj8wcxrq4wi8z1640w4dmdbkznp06q744rg3g0bd238d5"))))
+         "11sj62fynfgwrlgkv5a051cq6yn0pagxqjsz27dxx8phsd4wv706"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Text-Glob/")
@@ -8791,7 +8791,7 @@ variable conform.")
 (define-public perl-type-tiny
   (package
     (name "perl-type-tiny")
-    (version "1.002001")
+    (version "1.002002")
     (source
      (origin
        (method url-fetch)
@@ -8799,7 +8799,7 @@ variable conform.")
                            "Type-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "1p8krim8kvw123nady96fagi8sk2pj1z8jkr4r8n45ihyamfxjck"))))
+         "0b48v28rvl20969gyr62yg6gr6a2nj9qik0bixavbjdmk67hqnx8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-warnings" ,perl-test-warnings)))

@@ -44,6 +44,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system python)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -214,13 +215,13 @@ and written in Python.")
 (define-public python-html5-parser
   (package
     (name "python-html5-parser")
-    (version "0.4.4")
+    (version "0.4.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "html5-parser" version))
               (sha256
                (base32
-                "1d8sxhl41ffh7qlk7wlsy17xw6slzx5v1yna9s72wx5qrpaa3wxr"))))
+                "01mx33sx4dhl4kj6wc48nj6jz7ry60rkhjv0s6k8h5xmjf5yy0x9"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -998,13 +999,13 @@ facilities for defining, registering and looking up components.")
 (define-public python-ndg-httpsclient
   (package
     (name "python-ndg-httpsclient")
-    (version "0.4.4")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ndg_httpsclient" version))
               (sha256
                 (base32
-                  "0sl5ak1r1xil9ms0a9fh9fm6ncml65kgnjpjfic9dhnaimwx997v"))))
+                  "12q8rjvsvjphj6lvvcka2izdjr36a5lgkygajwx6p4wh0x1za2f0"))))
     (build-system python-build-system)
     (arguments
      '(;; The tests appear to require networking.
@@ -1024,7 +1025,9 @@ of the SSL peer.")
 (define-public python2-ndg-httpsclient
   (package (inherit python-ndg-httpsclient)
     (name "python2-ndg-httpsclient")
-    (arguments `(#:python ,python-2))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-ndg-httpsclient)
+       ((#:python _) python-2)))
     (propagated-inputs
      `(("python2-pyopenssl" ,python2-pyopenssl)))))
 

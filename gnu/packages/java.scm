@@ -8150,70 +8150,50 @@ by technical operatives or consultants working with enterprise platforms.")
 algorithms and xxHash hashing algorithm.")
     (license license:asl2.0)))
 
-(define-public java-bouncycastle-bcprov
+(define-public java-bouncycastle
   (package
-    (name "java-bouncycastle-bcprov")
-    (version "1.58")
+    (name "java-bouncycastle")
+    (version "1.59")
     (source (origin
               (method url-fetch)
-              (uri "https://bouncycastle.org/download/bcprov-jdk15on-158.tar.gz")
+              (uri (string-append "https://github.com/bcgit/bc-java/archive/r"
+                                  (substring version 0 1) "rv"
+                                  (substring version 2 4) ".tar.gz"))
               (sha256
                (base32
-                "1hgkg96llbvgs8i0krwz2n0j7wlg6jfnq8w8kg0cc899j0wfmf3n"))))
+                "1bwl499whlbq896w18idqw2dkp8v0wp0npv9g71i5fgf8xjh0k3q"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file
+                            (find-files "." "\\.jar$"))
+                  #t))))
     (build-system ant-build-system)
     (arguments
-     `(#:jar-name "bouncycastle-bcprov.jar"
-       #:tests? #f; no tests
-       #:source-dir "src"
+     `(#:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'unzip-src
+         (replace 'build
            (lambda _
-             (mkdir-p "src")
-             (with-directory-excursion "src"
-               (invoke "unzip" "../src.zip"))
-             #t)))))
-    (native-inputs
-     `(("unzip" ,unzip)
-       ("junit" ,java-junit)))
-    (home-page "https://www.bouncycastle.org")
-    (synopsis "Cryptographic library")
-    (description "Bouncy Castle Provider (bcprov) is a cryptographic library
-for the Java programming language.")
-    (license license:expat)))
-
-(define-public java-bouncycastle-bcpkix
-  (package
-    (name "java-bouncycastle-bcpkix")
-    (version "1.58")
-    (source (origin
-              (method url-fetch)
-              (uri "https://bouncycastle.org/download/bcpkix-jdk15on-158.tar.gz")
-              (sha256
-               (base32
-                "0is7qay02803s9f7lhnfcjlz61ni3hq5d7apg0iil7nbqkbfbcq2"))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:jar-name "bouncycastle-bcpkix.jar"
-       #:tests? #f; no tests
-       #:source-dir "src"
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'unzip-src
+             (invoke "ant" "-f" "ant/jdk15+.xml" "build-provider")
+             (invoke "ant" "-f" "ant/jdk15+.xml" "build")
+             #t))
+         (replace 'check
            (lambda _
-             (mkdir-p "src")
-             (with-directory-excursion "src"
-               (invoke "unzip" "../src.zip"))
-             #t)))))
-    (native-inputs
-     `(("unzip" ,unzip)
-       ("junit" ,java-junit)))
+             (invoke "ant" "-f" "ant/jdk15+.xml" "test")))
+         (replace 'install
+           (install-jars "build/artifacts/jdk1.5/jars")))))
     (inputs
-     `(("bcprov" ,java-bouncycastle-bcprov)))
+     `(("java-javax-mail" ,java-javax-mail)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("junit" ,java-junit)
+       ("java-native-access" ,java-native-access)
+       ("java-native-access-platform" ,java-native-access-platform)))
     (home-page "https://www.bouncycastle.org")
     (synopsis "Cryptographic library")
-    (description "Bouncy Castle Java API for PKIX, CMS, EAC, TSP, PKCS, OCSP,
-CMP, and CRMF.")
+    (description "Bouncy Castle is a cryptographic library for the Java
+programming language.")
     (license license:expat)))
 
 (define-public java-lmax-disruptor
@@ -8636,8 +8616,7 @@ protocol-independent framework to build mail and messaging applications.")
        ("powermock-junit4-common" ,java-powermock-modules-junit4-common)
        ("powermock-junit4" ,java-powermock-modules-junit4)
        ("powermock-support" ,java-powermock-api-support)
-       ("bouncycastle" ,java-bouncycastle-bcprov)
-       ("bouncycastle-bcpkix" ,java-bouncycastle-bcpkix)))
+       ("java-bouncycastle" ,java-bouncycastle)))
     (home-page "https://kafka.apache.org")
     (synopsis "Distributed streaming platform")
     (description "Kafka is a distributed streaming platform, which means:
@@ -9610,3 +9589,225 @@ Java method invocation.")
 and mappings for a number of commonly used platform functions, including a
 large number of Win32 mappings as well as a set of utility classes that
 simplify native access.")))
+
+(define-public java-jsch-agentproxy-core
+  (package
+    (name "java-jsch-agentproxy-core")
+    (version "0.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ymnk/jsch-agent-proxy/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02iqg6jbc1kxvfzqcg6wy9ygqxfm82bw5rf6vnswqy4y572niz4q"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "jsch-agentproxy-core.jar"
+       #:source-dir "jsch-agent-proxy-core/src/main/java"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/ymnk/jsch-agent-proxy")
+    (synopsis "Core component of the proxy to ssh-agent and Pageant in Java")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included Putty.  It will be easily integrated into JSch, and users
+will be allowed to use these programs for authentication.")
+    (license license:bsd-3)))
+
+(define-public java-jsch-agentproxy-sshagent
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-sshagent")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-sshagent.jar"
+       #:source-dir "jsch-agent-proxy-sshagent/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)))
+    (synopsis "Proxy to ssh-agent")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains the code for a proxy to
+ssh-agent.")))
+
+(define-public java-jsch-agentproxy-usocket-jna
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-usocket-jna")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-usocket-jna.jar"
+       #:source-dir "jsch-agent-proxy-usocket-jna/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)
+       ("java-native-access" ,java-native-access)))
+    (synopsis "USocketFactory implementation using JNA")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains an implementation of
+USocketFactory using @dfn{JNA} (Java Native Access).")))
+
+(define-public java-jsch-agentproxy-pageant
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-pageant")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-pageant.jar"
+       #:source-dir "jsch-agent-proxy-pageant/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)
+       ("java-native-access" ,java-native-access)
+       ("java-native-access-platform" ,java-native-access-platform)))
+    (synopsis "Proxy to pageant")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains the code for a proxy to
+pageant.")))
+
+(define-public java-jsch-agentproxy-usocket-nc
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-usocket-nc")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-usocket-nc.jar"
+       #:source-dir "jsch-agent-proxy-usocket-nc/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)))
+    (synopsis "USocketFactory implementation using netcat")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains an implementation of
+USocketFactory using netcat.")))
+
+(define-public java-jsch-agentproxy-connector-factory
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-connector-factory")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-connector-factory.jar"
+       #:source-dir "jsch-agent-proxy-connector-factory/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)
+       ("java-jsch-agentproxy-sshagent" ,java-jsch-agentproxy-sshagent)
+       ("java-jsch-agentproxy-usocket-jna" ,java-jsch-agentproxy-usocket-jna)
+       ("java-jsch-agentproxy-pageant" ,java-jsch-agentproxy-pageant)
+       ("java-jsch-agentproxy-usocket-nc" ,java-jsch-agentproxy-usocket-nc)))
+    (synopsis "Connector factory for jsch agent proxy")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains a connector factory.")))
+
+(define-public java-jsch-agentproxy-jsch
+  (package
+    (inherit java-jsch-agentproxy-core)
+    (name "java-jsch-agentproxy-jsch")
+    (arguments
+     `(#:jar-name "jsch-agentproxy-jsch.jar"
+       #:source-dir "jsch-agent-proxy-jsch/src/main/java"
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-jsch" ,java-jsch)
+       ("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)))
+    (synopsis "JSch integration library for agentproxy")
+    (description "jsch-agent-proxy is a proxy program to OpenSSH's ssh-agent
+and Pageant included in Putty. This component contains a library to use
+jsch-agent-proxy with JSch.")))
+
+(define-public java-apache-ivy
+  (package
+    (name "java-apache-ivy")
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache//ant/ivy/" version
+                                  "/apache-ivy-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1xkfn57g2m7l6y0xdq75x5rnrgk52m9jx2xah70g3ggl8750hbr0"))
+              (patches
+                (search-patches
+                  "java-apache-ivy-port-to-latest-bouncycastle.patch"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "ivy.jar"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-example
+           (lambda _
+             (delete-file-recursively "src/example")
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (with-directory-excursion "src/java"
+               (for-each (lambda (file)
+                           (install-file file (string-append "../../build/classes/" (dirname file))))
+                 (append
+                   (find-files "." ".*.css")
+                   (find-files "." ".*.ent")
+                   (find-files "." ".*.html")
+                   (find-files "." ".*.properties")
+                   (find-files "." ".*.xsd")
+                   (find-files "." ".*.xsl")
+                   (find-files "." ".*.xml"))))))
+         (add-before 'build 'fix-vfs
+           (lambda _
+             (substitute*
+               '("src/java/org/apache/ivy/plugins/repository/vfs/VfsRepository.java"
+                 "src/java/org/apache/ivy/plugins/repository/vfs/VfsResource.java")
+               (("import org.apache.commons.vfs") "import org.apache.commons.vfs2"))
+             #t))
+         (add-before 'install 'copy-manifest
+           (lambda _
+             (install-file "META-INF/MANIFEST.MF" "build/classes/META-INF")
+             #t))
+         (add-before 'install 'repack
+           (lambda _
+             (invoke "jar" "-cmf" "build/classes/META-INF/MANIFEST.MF" "build/jar/ivy.jar"
+                     "-C" "build/classes" ".")
+             #t))
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                    (ivy (string-append bin "/ivy"))
+                    (jar (string-append (assoc-ref outputs "out") "/share/java/ivy.jar")))
+               (mkdir-p bin)
+               (with-output-to-file ivy
+                 (lambda _
+                   (display (string-append
+                              "#!" (which "sh") "\n"
+                              "if [[ -z $CLASSPATH ]]; then\n"
+                              "  cp=\"" (getenv "CLASSPATH") ":" jar "\"\n"
+                              "else\n"
+                              "  cp=\"" (getenv "CLASSPATH") ":" jar ":$CLASSPATH\"\n"
+                              "fi\n"
+                              (which "java") " -cp $cp org.apache.ivy.Main $@\n"))))
+               (chmod ivy #o755)
+               #t))))))
+    (inputs
+     `(("java-bouncycastle" ,java-bouncycastle)
+       ("java-commons-cli" ,java-commons-cli)
+       ("java-commons-collections" ,java-commons-collections)
+       ("java-commons-httpclient" ,java-commons-httpclient)
+       ("java-commons-lang" ,java-commons-lang)
+       ("java-commons-vfs" ,java-commons-vfs)
+       ("java-jakarta-oro" ,java-jakarta-oro)
+       ("java-jsch" ,java-jsch)
+       ("java-jsch-agentproxy-core" ,java-jsch-agentproxy-core)
+       ("java-jsch-agentproxy-connector-factory" ,java-jsch-agentproxy-connector-factory)
+       ("java-jsch-agentproxy-jsch" ,java-jsch-agentproxy-jsch)
+       ("java-junit" ,java-junit)))
+    (home-page "https://ant.apache.org/ivy")
+    (synopsis "Dependency manager for the Java programming language")
+    (description "Ivy is a tool for managing (recording, tracking, resolving
+and reporting) project dependencies.  It is characterized by the following:
+
+@itemize
+@item flexibility and configurability - Ivy is essentially process agnostic
+      and is not tied to any methodology or structure.  Instead it provides the
+      necessary flexibility and configurability to be adapted to a broad range
+      of dependency management and build processes.
+@item tight integration with Apache Ant - while available as a standalone tool,
+      Ivy works particularly well with Apache Ant providing a number of
+      powerful Ant tasks ranging from dependency resolution to dependency
+      reporting and publication.
+@end itemize")
+    (license license:asl2.0)))

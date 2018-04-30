@@ -211,7 +211,7 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
 (define-public grammalecte
   (package
     (name "grammalecte")
-    (version "0.6.3.1")
+    (version "0.6.4")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -219,21 +219,8 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
                            "Grammalecte-fr-v" version ".zip"))
        (sha256
         (base32
-         "0jlzrhpx9qvjdq679w188p86x09yfjf3l0h4scjl9w26yyp53gr8"))))
+         "13var1gi3gb2bwi7k21bn2pla0rs17cd7kc3mc5a2nsyqgsrzxfw"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-setup
-           ;; Fix typos in "setup.py".  In particular, add the new
-           ;; "graphspell" module introduced in 0.6.2.  Reported upstream:
-           ;; <https://www.dicollecte.org/thread.php?prj=fr&t=709>
-           (lambda _
-             (substitute* "setup.py"
-               (("packages=\\['grammalecte', 'grammalecte.fr'\\],")
-                "packages=['grammalecte', 'grammalecte.fr', 'grammalecte.graphspell'],")
-               (("_dictionaries/French.bdic") "graphspell/_dictionaries/fr.bdic"))
-             #t)))))
     (home-page "https://www.dicollecte.org")
     (synopsis  "French spelling and grammar checker")
     (description "Grammalecte is a grammar checker dedicated to the French

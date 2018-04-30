@@ -1779,7 +1779,7 @@ arising after the discretization of partial differential equations.")
 (define-public mumps
   (package
     (name "mumps")
-    (version "5.0.2")
+    (version "5.1.2")
     (source
      (origin
        (method url-fetch)
@@ -1787,7 +1787,7 @@ arising after the discretization of partial differential equations.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0igyc1pfzxdhpbad3v3lb86ixkdbqa1a8gbs15b04r2294h2nabp"))
+         "1s9asin08zqzmh08257sdghhivvy9vjif7c53fhaxaax2kd5qd7b"))
        (patches (search-patches "mumps-build-parallelism.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -2208,16 +2208,18 @@ implemented in ANSI C, and MPI for communications.")
 (define-public scotch
   (package
     (name "scotch")
-    (version "6.0.4")
+    (version "6.0.5a")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://gforge.inria.fr/frs/download.php/"
                           "latestfile/298/scotch_" version ".tar.gz"))
       (sha256
-       (base32 "1ir088mvrqggyqdkx9qfynmiaffqbyih5qfl5mga2nrlm1qlsgzm"))
+       (base32 "0vsmgjz8qv80di3ljmc7hbdsizxxxwy2b9rgd2fl1mdc6dgbj8av"))
       (patches (search-patches "scotch-test-threading.patch"
-                               "pt-scotch-build-parallelism.patch"))))
+                               "scotch-build-parallelism.patch"
+                               "scotch-graph-induce-type-64.patch"
+                               "scotch-graph-diam-64.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
@@ -3845,14 +3847,14 @@ analysed.")
 (define-public r-subplex
   (package
     (name "r-subplex")
-    (version "1.5-2")
+    (version "1.5-4")
     (source
     (origin
       (method url-fetch)
       (uri (cran-uri "subplex" version))
       (sha256
        (base32
-        "1v9xrnkapnq7v1jbhlg32ignklzf2vn8rqpayc8pzk8wvz53r33g"))))
+        "10cbgbx1bgsax5z7gz6716g360xpq4mvq19cf4qqrxv02mmwz57z"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))

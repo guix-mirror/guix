@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -302,7 +302,7 @@ Scheme and C programs and between Scheme and Java programs.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "09m7pahjsp7wxzd20cdph9j3mgf2nq5dyckcjljcd40m25v85kks"))))
+               "0bvq79vxcpgwydwi923cxb5w9isx2x8r3d0xndbdhacmmsw1m811"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

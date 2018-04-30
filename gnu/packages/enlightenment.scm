@@ -49,6 +49,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -176,7 +177,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.1.1")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -184,25 +185,17 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "05ncxvzb9rzkyjvd95hzn8lswqdwr8cix6rd54nqn9559jibh4ns"))
+                "0kw34l5lahn1qaks3ah6x8k41d6hfywpqfak2p7qq1z87zj506mx"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
               ;; TODO: Remove bundled lz4.
               (snippet
                '(begin
                   (delete-file-recursively "data/fonts")
-                  (substitute* '("data/Makefile.in" "data/Makefile.am")
-                    (("fonts") ""))
-                  (substitute* "configure"
-                    (("data/fonts/Makefile") "")
-                    (("\\\"data/fonts/Makefile") "# \"data/fonts/Makefile"))
-                  (substitute* '("data/themes/Makefile.in"
-                                 "data/themes/Makefile.am"
-                                 "data/themes/nyanology/Makefile.in"
-                                 "data/themes/nyanology/Makefile.am")
-                    (("-fd \\$\\(top_srcdir\\)/data/fonts") ""))
+                  (substitute* "data/meson.build"
+                    (("subdir\\('fonts'\\)") ""))
                   #t))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -211,6 +204,7 @@ removable devices or support for multimedia.")
            (lambda _ (setenv "HOME" "/tmp") #t)))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("efl" ,efl)))
@@ -257,7 +251,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.22.2")
+    (version "0.22.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -265,7 +259,7 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0b33w75s4w7xmz9cv8dyp8vy2gcffnrvjys20fhcpw26abw1wn2d"))))
+                "16zydv7z94aw3rywmb9gr8ya85k7b75h22wng95lfx1x0y1yb0ad"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-mount-eeze")

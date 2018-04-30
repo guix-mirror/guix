@@ -620,6 +620,9 @@ Networking and Cryptography library.  These libraries have a stated goal
 of improving usability, security and speed.")
     (license license:asl2.0)))
 
+(define-public python2-pynacl
+  (package-with-python2 python-pynacl))
+
 (define-public python2-pgpdump
   (package
     (name "python2-pgpdump")
@@ -715,28 +718,28 @@ Python.")
 (define-public python-josepy
   (package
     (name "python-josepy")
-    (version "1.0.1")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "josepy" version))
               (sha256
                (base32
-                "1k0ahzzaq2rrjiifwbhbp7vm8z4zk0ipgiqwicil80kzlf6bhj4z"))))
+                "11khz8malzrv375b27jjkv66z6z6khdx1v5mkkr4vq16gp3n4p7v"))))
     (build-system python-build-system)
     (arguments
-     ;; The tests require pytest >= 3.2, which is not yet packaged.
+     ;; The tests require flake8 >= 3.5, which is not yet packaged.
      '(#:tests? #f))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-pyopenssl" ,python-pyopenssl)
        ("python-six" ,python-six)))
-;; TODO Enable when we have pytest >= 3.2.
+;; TODO Enable when we have flake8 >= 3.5.
 ;    (native-inputs
 ;     `(("python-coverage" ,python-coverage)
 ;       ("python-flake8" ,python-flake8)
 ;       ("python-isort" ,python-isort)
 ;       ("python-mock" ,python-mock)
-;       ("python-pytest" ,python-pytest-3.0)
+;       ("python-pytest" ,python-pytest)
 ;       ("python-pytest-cov" ,python-pytest-cov)
 ;       ("python-pytest-cache" ,python-pytest-cache)
 ;       ("python-pytest-flake8" ,python-pytest-flake8)))

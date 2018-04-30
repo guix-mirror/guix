@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -509,6 +509,8 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
                                       #:system system
                                       #:guile guile)))
     ;; Take the tar bomb, and simply unpack it as a directory.
+    ;; Use ungrafted tar/gzip so that the resulting tarball doesn't depend on
+    ;; whether grafts are enabled.
     (gexp->derivation (or name file-name)
                       (with-imported-modules '((guix build utils))
                         #~(begin
@@ -518,6 +520,7 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
                             (chdir #$output)
                             (invoke (string-append #$tar "/bin/tar")
                                     "xf" #$drv)))
+                      #:graft? #f
                       #:local-build? #t)))
 
 (define* (url-fetch/zipbomb url hash-algo hash
@@ -541,6 +544,8 @@ own.  This helper makes it easier to deal with \"zip bombs\"."
                                       #:system system
                                       #:guile guile)))
     ;; Take the zip bomb, and simply unpack it as a directory.
+    ;; Use ungrafted unzip so that the resulting tarball doesn't depend on
+    ;; whether grafts are enabled.
     (gexp->derivation (or name file-name)
                       (with-imported-modules '((guix build utils))
                         #~(begin
@@ -549,6 +554,7 @@ own.  This helper makes it easier to deal with \"zip bombs\"."
                             (chdir #$output)
                             (invoke (string-append #$unzip "/bin/unzip")
                                     #$drv)))
+                      #:graft? #f
                       #:local-build? #t)))
 
 (define* (download-to-store store url #:optional (name (basename url))

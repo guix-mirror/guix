@@ -17,15 +17,15 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 EXTRA_DIST = \
-  %D%/contributing.fr.po \
-  %D%/guix.fr.po
+  %D%/guix-manual.pot \
+  %D%/guix-manual.fr.po
 
 POT_OPTIONS = --package-name "guix" --package-version "$(VERSION)" \
 	          --copyright-holder "Ludovic Courtès" \
 			  --msgid-bugs-address "ludo@gnu.org"
 
-$(srcdir)/po/doc/guix.%.po: $(srcdir)/po/doc/guix.pot
-	@lang=`echo $$(basename "$@") | sed -e 's|^guix.||' -e 's|.po$$||'` ;\
+$(srcdir)/po/doc/guix-manual.%.po: $(srcdir)/po/doc/guix-manual.pot
+	@lang=`echo $$(basename "$@") | sed -e 's|^guix-manual.||' -e 's|.po$$||'` ;\
 	if test -f "$@"; then \
 	  test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
 	  echo "$${cdcmd}$(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$${lang} $@ $<"; \
@@ -43,35 +43,17 @@ $(srcdir)/po/doc/guix.%.po: $(srcdir)/po/doc/guix.pot
 	     exit 1; \
 	fi
 
-$(srcdir)/po/doc/contributing.%.po: $(srcdir)/po/doc/contributing.pot
-	@lang=`echo $$(basename "$@") | sed -e 's|^contributing.||' -e 's|.po$$||'` ;\
-	if test -f "$@"; then \
-	  test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
-	  echo "$${cdcmd}$(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$${lang} $@ $<"; \
-	  cd $(srcdir) \
-	    && { case `$(MSGMERGE_UPDATE) --version | sed 1q | sed -e 's,^[^0-9]*,,'` in \
-	        '' | 0.[0-9] | 0.[0-9].* | 0.1[0-7] | 0.1[0-7].*) \
-	          $(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) $@ $<;; \
-	        *) \
-	          $(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$${lang} $@ $<;; \
-	      esac; \
-	    }; \
-	  touch "$@"; \
-	else \
-	     echo "File $@ does not exist. If you are a translator, you can create it through 'msginit'." 1>&2; \
-	     exit 1; \
-	fi
-
-$(srcdir)/po/doc/contributing.pot-update: doc/contributing.texi
+$(srcdir)/po/doc/%.pot-update: doc/%.texi
 	$(AM_V_PO4A)$(PO4A_UPDATEPO) -M UTF-8 -f texinfo -m "$<" \
 		-p "$$(echo $@ | sed 's|-update||')" $(POT_OPTIONS)
 	@touch "$$(echo $@ | sed 's|-update||')"
 
-$(srcdir)/po/doc/guix.pot-update: doc/guix.texi
-	$(AM_V_PO4A)$(PO4A_UPDATEPO) -M UTF-8 -f texinfo -m "$<" \
-		-p "$$(echo $@ | sed 's|-update||')" $(POT_OPTIONS)
-	@touch "$$(echo $@ | sed 's|-update||')"
+TMP_POT_FILES=contributing.pot guix.pot
 
 doc-pot-update:
-	$(MAKE) $(srcdir)/po/doc/guix.pot-update
-	$(MAKE) $(srcdir)/po/doc/contributing.pot-update
+	for f in $(TMP_POT_FILES); do \
+		$(MAKE) $(srcdir)/po/doc/guix.pot-update; \
+		$(MAKE) $(srcdir)/po/doc/contributing.pot-update; \
+	done
+	msgcat $(addprefix $(srcdir)/po/doc/, $(TMP_POT_FILES)) > $(srcdir)/po/doc/guix-manual.pot
+	rm -f $(addprefix $(srcdir)/po/doc/, $(TMP_POT_FILES))

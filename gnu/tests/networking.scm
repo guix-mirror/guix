@@ -22,6 +22,7 @@
   #:use-module (gnu system)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu services networking)
   #:use-module (guix gexp)
   #:use-module (guix store)
@@ -29,7 +30,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages networking)
   #:use-module (gnu services shepherd)
-  #:export (%test-inetd %test-openvswitch))
+  #:export (%test-inetd %test-openvswitch %test-dhcpd))
 
 (define %inetd-os
   ;; Operating system with 2 inetd services.
@@ -243,3 +244,98 @@ port 7, and a dict service on port 2628."
    (name "openvswitch")
    (description "Test a running OpenvSwitch configuration.")
    (value (run-openvswitch-test))))
+
+
+;;;
+;;; DHCP Daemon
+;;;
+
+(define minimal-dhcpd-v4-config-file
+  (plain-file "dhcpd.conf"
+              "\
+default-lease-time 600;
+max-lease-time 7200;
+
+subnet 192.168.1.0 netmask 255.255.255.0 {
+ range 192.168.1.100 192.168.1.200;
+ option routers 192.168.1.1;
+ option domain-name-servers 192.168.1.2, 192.168.1.3;
+ option domain-name \"dummy.domain.name.abc123xyz\";
+}
+"))
+
+(define dhcpd-v4-configuration
+  (dhcpd-configuration
+   (config-file minimal-dhcpd-v4-config-file)
+   (version "4")
+   (interfaces '("eth0"))))
+
+(define %dhcpd-os
+  (simple-operating-system
+   (static-networking-service "eth0" "192.168.1.4"
+                              #:netmask "255.255.255.0"
+                              #:gateway "192.168.1.1"
+                              #:name-servers '("192.168.1.2" "192.168.1.3"))
+   (service dhcpd-service-type dhcpd-v4-configuration)))
+
+(define (run-dhcpd-test)
+  (define os
+    (marionette-operating-system %dhcpd-os
+                                 #:imported-modules '((gnu services herd))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (ice-9 popen)
+                       (ice-9 rdelim)
+                       (srfi srfi-64))
+
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "dhcpd")
+
+          (test-assert "pid file exists"
+            (marionette-eval
+             '(file-exists?
+               #$(dhcpd-configuration-pid-file dhcpd-v4-configuration))
+             marionette))
+
+          (test-assert "lease file exists"
+            (marionette-eval
+             '(file-exists?
+               #$(dhcpd-configuration-lease-file dhcpd-v4-configuration))
+             marionette))
+
+          (test-assert "run directory exists"
+            (marionette-eval
+             '(file-exists?
+               #$(dhcpd-configuration-run-directory dhcpd-v4-configuration))
+             marionette))
+
+          (test-assert "dhcpd is alive"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd)
+                             (srfi srfi-1))
+                (live-service-running
+                 (find (lambda (live)
+                         (memq 'dhcpv4-daemon
+                               (live-service-provision live)))
+                       (current-services))))
+             marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "dhcpd-test" test))
+
+(define %test-dhcpd
+  (system-test
+   (name "dhcpd")
+   (description "Test a running DHCP daemon configuration.")
+   (value (run-dhcpd-test))))

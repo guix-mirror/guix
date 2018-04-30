@@ -18,6 +18,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1910,3 +1911,52 @@ repository is the centre, directories are branches and files are leaves.
 Contributors to the source code appear and disappear as they contribute to
 specific files and directories.")
     (license license:gpl3+)))
+
+(define-public src
+  (package
+    (name "src")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.catb.org/~esr/src/src-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0n0skhvya8w2az45h2gsafxy8m2mvqas64nrgxifcmrzfv0rf26c"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no 'configure' script
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (prog (string-append out "/bin/src"))
+                    (rcs  (assoc-ref inputs "rcs")))
+               (wrap-program prog
+                 `("PATH" ":" prefix (,(string-append rcs "/bin"))))
+               #t)))
+         (replace 'check
+           (lambda _
+             (setenv "HOME" (getenv "TMPDIR"))
+             (invoke "git" "config" "--global" "user.name" "guix")
+             (invoke "git" "config" "--global" "user.email" "guix")
+             (invoke "./srctest"))))))
+    (native-inputs
+     ;; For testing.
+     `(("git" ,git)
+       ("perl" ,perl)))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("rcs" ,rcs)))
+    (synopsis "Simple revision control")
+    (home-page "http://www.catb.org/~esr/src/")
+    (description
+     "SRC (or src) is simple revision control, a version-control system for
+single-file projects by solo developers and authors.  It modernizes the
+venerable RCS, hence the anagrammatic acronym.  The design is tuned for use
+cases like all those little scripts in your @file{~/bin} directory, or a
+directory full of HOWTOs.")
+    (license license:bsd-2)))

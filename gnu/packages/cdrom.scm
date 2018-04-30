@@ -394,7 +394,7 @@ capacity is user-selectable.")
        ("fontconfig" ,fontconfig)
        ("libexif" ,libexif)
        ("libjpeg" ,libjpeg)
-       ("ffmpeg" ,ffmpeg)))
+       ("ffmpeg" ,ffmpeg-3.4)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("flex" ,flex)

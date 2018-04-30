@@ -4079,14 +4079,14 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
-    (version "0.5.20170404")
+    (version "0.5.20180417")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "domain_name" version))
        (sha256
         (base32
-         "12hs8yijhak7p2hf1xkh98g0mnp5phq3mrrhywzaxpwz1gw5r3kf"))))
+         "0abdlwb64ns7ssmiqhdwgl27ly40x2l27l8hs8hn0z4kb3zd2x3v"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -4585,14 +4585,14 @@ files and use the data therein.")
 (define-public ruby-ascii85
   (package
     (name "ruby-ascii85")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "Ascii85" version))
        (sha256
         (base32
-         "0j95sbxd18kc8rhcnvl1w37kflqpax1r12h1x47gh4xxn3mz4m7q"))))
+         "0658m37jjjn6drzqg1gk4p6c205mgp7g1jh2d00n4ngghgmz5qvs"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))

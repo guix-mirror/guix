@@ -27,6 +27,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -391,8 +392,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.16.3")
-(define %linux-libre-hash "1wmx0ph8nbwidlx1dh8bi4p97b84nif9ymv00mafnn6iykdfdin0")
+(define %linux-libre-version "4.16.6")
+(define %linux-libre-hash "069bxqx27xib1gz4aayy8ar2hfp68cpdi8h51g6453k0w14pkchn")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -400,8 +401,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.35")
-(define %linux-libre-4.14-hash "0dfzc2290zks1a63zld8ac0xarc8gxwwh4wsr71y8mas7gfmyqzj")
+(define %linux-libre-4.14-version "4.14.38")
+(define %linux-libre-4.14-hash "09lmz8zbd3c1qf8z3d2lkhcqcwawajh76s85zdhgqdmd2idpwach")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -410,14 +411,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.95"
-                    "06i756gbglxa2m4lib4p0fff5m2fm4s6f9aqc58i8lihnjqpkldk"
+  (make-linux-libre "4.9.97"
+                    "1xc3mj1qi51n1kr5bxmdf1rlpyj78x9imhfc7gihn8qjc6zsf1sp"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.128"
-                    "1aqz5skyz534bcpnn6w9madg6kadgyjjypah9dhmqf841rygb6rk"
+  (make-linux-libre "4.4.130"
+                    "15cayafj7d9y5fs9flg115kzrcrjycbvax9hgfzz6yym94v9k8lk"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2898,7 +2899,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.7.4")
+    (version "0.7.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
@@ -2906,7 +2907,7 @@ arrays when needed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02lk453wa2gfxkl8zmdws15nkcibln2yw76zm779pkngkhggl6w8"))
+                "0zkcayi3mmp43ji2zid1gprgsvqhjjapsw7jjd60sf75prf50h2r"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3306,7 +3307,8 @@ disks and SD cards.  This package provides the userland utilities.")
                         (("alarm\\(2\\)") "alarm(5)"))
                       #t)))
        #:make-flags (list (string-append "PREFIX="
-                                         (assoc-ref %outputs "out")))
+                                         (assoc-ref %outputs "out"))
+                          "CC=gcc")
        #:tests? #f)) ;no tests
     (home-page (package-home-page linux-libre))
     (synopsis "Free-fall protection for spinning laptop hard drives")
@@ -4301,20 +4303,20 @@ available in the kernel Linux.")
 (define-public cpuid
   (package
     (name "cpuid")
-    (version "20170122")
+    (version "20180419")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.etallen.com/cpuid/cpuid-"
                                   version ".src.tar.gz"))
               (sha256
                (base32
-                "0ra8ph9m1dckqaikfnbsh408fp2w9k49fkl423fl2hvhwsm14xk6"))))
+                "0cnxj72pjalsszhn862r6shw64zbrkw0k3mm36fn93bivswjnj12"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("CC=gcc")
-       #:tests? #f ; no tests
+       #:tests? #f                      ; no tests
        #:phases (modify-phases %standard-phases
-                  (delete 'configure)
+                  (delete 'configure)   ; no configure script
                   (add-before 'install 'fix-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       (substitute* "Makefile"
@@ -4628,3 +4630,98 @@ the @code{coretemp} module and sets the fan speed using the @code{applesmc}
 module.  It can be executed as a daemon or in the foreground with root
 privileges.")
     (license license:gpl3+)))
+
+(define-public psm2
+  (package
+    (name "psm2")
+    (version "10.3-46")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/intel/opa-psm2.git")
+                    (commit (string-append "PSM2_" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0wadphv4rl5p38x6a3dgpbijlzqdvcn02cfafnp72nh9faz0zvlx"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       `(,(string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'unpack 'patch-Makefiles
+                    (lambda _
+                      (substitute* "Makefile"
+                        (("/lib64") "/lib")
+                        (("/usr") ""))
+                      (substitute* "compat/Makefile"
+                        (("/lib64") "/lib")
+                        (("/usr") ""))
+                      #t))
+                  (replace 'install
+                    (lambda _
+                      (setenv "DESTDIR" %output)
+                      (invoke "make" "install")
+                      #t)))))
+    (inputs
+     `(("rdma-core" ,rdma-core)
+       ("numactl" ,numactl)))
+    (synopsis "Intel Performance Scaled Messaging 2 (PSM2) library")
+    (description
+     "This package is low-level user-level Intel's communications interface.
+The PSM2 API is a high-performance vendor-specific protocol that provides a
+low-level communications interface for the Intel Omni-Path family of
+high-speed networking devices.")
+    (home-page "https://github.com/intel/opa-psm2")
+    ;; Only the x86_64 architecure is supported.
+    (supported-systems '("x86_64-linux"))
+    (license (list license:bsd-3 license:gpl2)))) ; dual
+
+(define-public libpfm4
+  (package
+    (name "libpfm4")
+    (version "4.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/perfmon2/"
+                                  name "/libpfm-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1qp4g4n6dw42p2w5rkwzdb7ynk8h7g5vg01ybpmvxncgwa7bw3yv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:modules ((guix build utils)
+                  (guix build gnu-build-system))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'check)
+                  (replace 'build
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (setenv "CC" "gcc")
+                        (invoke "make")
+                        #t)))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out")))
+                        (invoke "make"
+                                (string-append "PREFIX=" out)
+                                "install")
+                        #t))))))
+    (synopsis "Performance event monitoring library")
+    (description
+     "This package provides a library called libpfm4, which is used to develop
+monitoring tools exploiting the performance monitoring events such as those
+provided by the Performance Monitoring Unit (PMU) of modern processors.
+
+Libpfm4 helps convert from an event name, expressed as a string, to the event
+encoding that is either the raw event as documented by the hardware vendor or
+the OS-specific encoding.  In the latter case, the library is able to prepare
+the OS-specific data structures needed by the kernel to setup the event.
+
+libpfm4 provides support for the @code{perf_events} interface, which was
+introduced in Linux 2.6.31.")
+    (home-page "http://perfmon2.sourceforge.net/")
+    (license license:expat)))

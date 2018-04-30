@@ -18,7 +18,7 @@
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
@@ -58,6 +58,8 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages inkscape)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -76,6 +78,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
@@ -242,16 +245,16 @@ services.")
 (define-public dfc
   (package
    (name "dfc")
-   (version "3.0.4")
+   (version "3.1.1")
    (source
     (origin
      (method url-fetch)
       (uri (string-append
-            "http://projects.gw-computing.net/attachments/download/79/dfc-"
+            "http://projects.gw-computing.net/attachments/download/615/dfc-"
             version ".tar.gz"))
       (sha256
        (base32
-        "0zk1ppx93ijimf4sbgqilxxikpsa2gmpbynknyh41xy7jbdjxp0b"))))
+        "0m1fd7l85ckb7bq4c5c3g257bkjglm8gq7x42pkmpp87fkknc94n"))))
    (build-system cmake-build-system)
    (arguments '(#:tests? #f)) ; There are no tests.
    (native-inputs `(("gettext" ,gettext-minimal)))
@@ -1142,6 +1145,51 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                            (string-append dir "/wpa_supplicant.conf")))
               #t))))))))
 
+(define-public wpa-supplicant-gui
+  (package
+    (inherit wpa-supplicant)
+    (name "wpa-supplicant-gui")
+    (inputs `(("qtbase" ,qtbase)
+              ("qtsvg" ,qtsvg)
+              ,@(package-inputs wpa-supplicant)))
+    (native-inputs
+     ;; For icons.
+     `(("imagemagick" ,imagemagick)
+       ("inkscape" ,inkscape)
+       ,@(package-native-inputs wpa-supplicant)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'chdir
+                    (lambda _
+                      (chdir "wpa_supplicant/wpa_gui-qt4")
+                      #t))
+                  (delete 'configure)
+                  (replace 'build
+                    (lambda _
+                      (invoke "qmake" "wpa_gui.pro")
+                      (invoke "make" "-j" (number->string (parallel-job-count)))
+                      (invoke "make" "-C" "icons")))
+                  (replace 'install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (qt '("qtbase" "qtsvg")))
+                        (substitute* "wpa_gui.desktop"
+                          (("Exec=wpa_gui")
+                           (string-append "Exec=" out "/bin/wpa_gui")))
+                        (install-file "wpa_gui" (string-append out "/bin"))
+                        (install-file "wpa_gui.desktop"
+                                      (string-append out "/share/applications"))
+                        (copy-recursively "icons/hicolor"
+                                          (string-append out "/share/icons/hicolor"))
+                        (wrap-program (string-append out "/bin/wpa_gui")
+                          `("QT_PLUGIN_PATH" ":" prefix
+                            ,(map (lambda (label)
+                                    (string-append (assoc-ref inputs label)
+                                                   "/lib/qt5/plugins/"))
+                                  qt)))
+                        #t))))))
+    (synopsis "Graphical user interface for WPA supplicant")))
+
 (define-public wakelan
   (package
     (name "wakelan")
@@ -1534,7 +1582,9 @@ of supported upstream metrics systems simultaneously.")
        (patches (search-patches "ansible-wrap-program-hack.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-pycrypto" ,python2-pycrypto)
+     `(("python2-bcrypt" ,python2-bcrypt)
+       ("python2-pycrypto" ,python2-pycrypto)
+       ("python2-pynacl" ,python2-pynacl)
        ("python2-httplib2" ,python2-httplib2)
        ("python2-passlib" ,python2-passlib)
        ("python2-nose" ,python2-nose)
@@ -1899,7 +1949,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.25")
+    (version "3.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nvbn/thefuck/archive/"
@@ -1907,7 +1957,7 @@ throughput (in the same interval).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "088bn2l1376qlndbpnjya4q1x3913nj3yj3wc7s2w3bz66d23skk"))
+                "0ddlf25ik97z34bcpc52xyfhlfm6a3hdi43l6cz4ggwcawdwvn1p"))
               (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -1920,7 +1970,8 @@ throughput (in the same interval).")
              (add-installed-pythonpath inputs outputs)
              ;; Some tests need write access to $HOME.
              (setenv "HOME" "/tmp")
-             (zero? (system* "py.test" "-v")))))))
+             (invoke "py.test" "-v")
+             #t)))))
     (propagated-inputs
      `(("python-colorama" ,python-colorama)
        ("python-decorator" ,python-decorator)
@@ -2294,21 +2345,23 @@ Intel DRM Driver.")
 (define-public fabric
   (package
     (name "fabric")
-    (version "1.13.2")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Fabric" version))
        (sha256
         (base32
-         "0k944dxr41whw7ib6380q9x15wyskx7fqni656icdn8rzshn9bwq"))))
+         "13r0b0hllgf8j9rh6x1knmbgvingbdmx046aazv6vck2ll120mw1"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))             ; Python 2 only
     (native-inputs
      `(("python2-fudge" ,python2-fudge)
        ("python2-jinja2" ,python2-jinja2)
-       ("python2-nose" ,python2-nose)))
+       ("python2-nose" ,python2-nose)
+       ("python2-pynacl" ,python2-pynacl)
+       ("python2-bcrypt" ,python2-bcrypt)))
     (propagated-inputs
      `(("python2-paramiko" ,python2-paramiko)))
     (home-page "http://fabfile.org")
@@ -2375,7 +2428,7 @@ you are running, what theme or icon set you are using, etc.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "1.5")
+    (version "1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jarun/nnn/"
@@ -2383,7 +2436,7 @@ you are running, what theme or icon set you are using, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0zswf8lb29zr1z642i1d0zi1y2mxal8qjqdrpdiqjh197jamj3zm"))))
+                "0z3lqbfx3y1caxvn7yq90b7whwyq2y32zf8kyd976ilbxpxnxqpv"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))
@@ -2606,4 +2659,6 @@ launch daemons into the relevant nodes.")
      "Spindle is a tool for improving the performance of dynamic library and
 Python loading in HPC environments.")
     (home-page "https://github.com/hpc/Spindle")
+    ;; This package supports x86_64 and PowerPC64
+    (supported-systems '("x86_64-linux"))
     (license license:lgpl2.1)))

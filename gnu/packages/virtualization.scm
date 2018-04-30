@@ -5,9 +5,10 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,9 +41,11 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
@@ -65,9 +68,11 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+
+                                               asl2.0))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
@@ -85,16 +90,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.11.1")
+    (version "2.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "11l6cs6mib16rgdrnqrhkqs033fjik316gkgfz3asbmxz38lalca"))
-             (patches (search-patches "qemu-glibc-2.27.patch"
-                                      "qemu-CVE-2018-7550.patch"))))
+               "1z66spkm1prvhbq7h5mfnp0i6mmamsb938fqmdfvyrgzc7rh34z6"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -173,6 +176,7 @@ exec smbd $@")))
      `(("alsa-lib" ,alsa-lib)
        ("attr" ,attr)
        ("glib" ,glib)
+       ("gtk+" ,gtk+)
        ("libaio" ,libaio)
        ("libattr" ,attr)
        ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
@@ -187,19 +191,20 @@ exec smbd $@")))
        ;; ("pciutils" ,pciutils)
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
-       ("sdl" ,sdl)
+       ("sdl2" ,sdl2)
        ("spice" ,spice)
        ("usbredir" ,usbredir)
        ("util-linux" ,util-linux)
        ;; ("vde2" ,vde2)
        ("virglrenderer" ,virglrenderer)
        ("zlib" ,zlib)))
-    (native-inputs `(("glib:bin" ,glib "bin") ; gtester, etc.
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("glib:bin" ,glib "bin") ; gtester, etc.
                      ("perl" ,perl)
                      ("flex" ,flex)
                      ("bison" ,bison)
                      ("pkg-config" ,pkg-config)
-                     ("python" ,python-2) ; incompatible with Python 3 according to error message
+                     ("python-wrapper" ,python-wrapper)
                      ("texinfo" ,texinfo)))
     (home-page "https://www.qemu.org")
     (synopsis "Machine emulator and virtualizer")
@@ -234,9 +239,34 @@ server and embedded PowerPC, and S390 guests.")
         ''("--target-list=i386-softmmu,x86_64-softmmu,mips64el-softmmu,arm-softmmu,aarch64-softmmu"))))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
+    (native-inputs (fold alist-delete (package-native-inputs qemu)
+                  '("gettext")))
     (inputs (fold alist-delete (package-inputs qemu)
-                  '("libusb" "mesa" "sdl" "spice" "virglrenderer"
+                  '("libusb" "mesa" "sdl2" "spice" "virglrenderer" "gtk+"
                     "usbredir" "libdrm" "libepoxy" "pulseaudio")))))
+
+;; The GRUB test suite fails with later versions of Qemu, so we
+;; keep it at 2.10 for now.  See
+;; <https://lists.gnu.org/archive/html/bug-grub/2018-02/msg00004.html>.
+;; This package is hidden since we do not backport updates to it.
+(define-public qemu-minimal-2.10
+  (hidden-package
+   (package
+    (inherit qemu-minimal)
+    (version "2.10.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qemu.org/qemu-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))
+             (patches
+              (search-patches "qemu-glibc-2.27.patch"))))
+    ;; qemu-minimal-2.10 needs Python 2. Remove below once no longer necessary.
+    (native-inputs `(("python-2" ,python-2)
+                     ,@(fold alist-delete (package-native-inputs qemu)
+                             '("python-wrapper")))))))
 
 (define-public libosinfo
   (package
@@ -524,7 +554,7 @@ virtualization library.")
 (define-public virt-manager
   (package
     (name "virt-manager")
-    (version "1.4.3")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://virt-manager.org/download/sources"
@@ -532,7 +562,7 @@ virtualization library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "093azs8p4p7y4nf5j25xpsvdxww7gky1g0hs8mkcvmpxl2wjd0jj"))))
+                "1ardmd4sxdmd57y7qpka44gf09c1yq2g0xs074d3k1h925crv27f"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -777,3 +807,60 @@ monitor/GPU.")
    ;; This package requires SSE instructions.
    (supported-systems '("i686-linux" "x86_64-linux"))
    (license gpl2+)))
+
+(define-public runc
+  (package
+    (name "runc")
+    (version "1.0.0-rc5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/opencontainers/runc/releases/"
+                    "download/v" version "/runc.tar.xz"))
+              (sha256
+               (base32
+                "081avdzwnqpk368wbaihlzsypaxpj42d7699h7jgp0fks14x4103"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/opencontainers/runc"
+       #:install-source? #f
+       ;; XXX: 20/139 tests fail due to missing /var, cgroups and apparmor in
+       ;; the build environment.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source import-path #:allow-other-keys)
+             ;; Unpack the tarball into 'runc' instead of 'runc-1.0.0-rc5'.
+             (let ((dest (string-append "src/" import-path)))
+               (mkdir-p dest)
+               (invoke "tar" "-C" (string-append "src/" import-path)
+                       "--strip-components=1"
+                       "-xvf" source))))
+         (replace 'build
+           (lambda* (#:key import-path #:allow-other-keys)
+             (chdir (string-append "src/" import-path))
+             ;; XXX: requires 'go-md2man'.
+             ;; (invoke "make" "man")
+             (invoke "make")))
+         ;; (replace 'check
+         ;;   (lambda _
+         ;;     (invoke "make" "localunittest")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+              (invoke "make" "install" "install-bash"
+                      (string-append "PREFIX=" out))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libseccomp" ,libseccomp)))
+    (synopsis "Open container initiative runtime")
+    (home-page "https://www.opencontainers.org/")
+    (description
+     "@command{runc} is a command line client for running applications
+packaged according to the
+@uref{https://github.com/opencontainers/runtime-spec/blob/master/spec.md, Open
+Container Initiative (OCI) format} and is a compliant implementation of the
+Open Container Initiative specification.")
+    (license asl2.0)))

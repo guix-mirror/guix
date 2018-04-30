@@ -1601,7 +1601,7 @@ is subjective.")
 (define-public tuxguitar
   (package
     (name "tuxguitar")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1609,7 +1609,7 @@ is subjective.")
                     version "/tuxguitar-" version "-src.tar.gz"))
               (sha256
                (base32
-                "041275vwfr82kass7wiq9g2y82w9qrbzfinzcvfij2f2q45njwmc"))
+                "1yd5wv17sh6i8pkndxayfd6r2k1ccgnc4w3nda3lpniv8cpjzz3k"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1691,7 +1691,7 @@ is subjective.")
                #t))))))
     (inputs
      `(("java-swt" ,java-swt)))
-    (home-page "http://tuxguitar.pw")
+    (home-page "http://tuxguitar.com.ar/")
     (synopsis "Multitrack tablature editor and player")
     (description
      "TuxGuitar is a guitar tablature editor with player support through midi.
@@ -1883,17 +1883,17 @@ browser.")
 (define-public drumstick
   (package
     (name "drumstick")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/drumstick/"
                                   version "/drumstick-" version ".tar.bz2"))
               (sha256
                (base32
-                "13pkfqrav30bbcddgf1imd7jk6lpqbxkz1qv31718pdl446jq7df"))))
+                "0avwxr6n9ra7narxc5lmkhdqi8ix10gmif8rpd06wp4g9iv46xrn"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f  ; no test target
+     `(#:tests? #f                      ; no test target
        #:configure-flags '("-DLIB_SUFFIX=")
        #:phases
        (modify-phases %standard-phases
@@ -1909,11 +1909,10 @@ browser.")
     (inputs
      `(("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
-       ("alsa-lib" ,alsa-lib)
-       ("fluidsynth" ,fluidsynth)))
+       ("alsa-lib" ,alsa-lib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("libxslt" ,libxslt) ;for xsltproc
+       ("libxslt" ,libxslt)             ; for xsltproc
        ("docbook-xsl" ,docbook-xsl)
        ("doxygen" ,doxygen)))
     (home-page "http://drumstick.sourceforge.net/")
@@ -2150,14 +2149,14 @@ computer's keyboard.")
 (define-public aj-snapshot
   (package
     (name "aj-snapshot")
-    (version "0.9.7")
+    (version "0.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/aj-snapshot/"
                                   "aj-snapshot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0yxccgp9qw2cyqv719wlbq8wfsr5ga8czvwa7bmb8dh5s11n3rn8"))))
+                "0wilky1g2mb88v2z0520s7sw1dsn10iwanc8id5p6z1xsnhg7b6p"))))
     (build-system gnu-build-system)
     (inputs
      `(("minixml" ,minixml)
@@ -2393,7 +2392,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
        ("curl" ,curl)
        ("libgcrypt" ,libgcrypt)
        ("json-c" ,json-c)
-       ("ffmpeg" ,ffmpeg)))
+       ("ffmpeg" ,ffmpeg-3.4)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://6xq.net/projects/pianobar/")
@@ -2785,21 +2784,13 @@ available memory.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "026v977kwb0wbmlmf6mnik328plxg8wykfx9ryvqhirac0aq39pk"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Remove use of __DATE__ and __TIME__ for reproducibility.
-               '(begin
-                  (substitute* "main.c"
-                    (("printf \\(\"            Built : %s\", __DATE__\\);") "")
-                    (("printf \\(\" %s\", __TIME__\\);") ""))
-                  #t))))
+                "026v977kwb0wbmlmf6mnik328plxg8wykfx9ryvqhirac0aq39pk"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("curl" ,curl)
        ("faad2" ,faad2)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("file" ,file)
        ("jack" ,jack-1)
        ("libid3tag" ,libid3tag)

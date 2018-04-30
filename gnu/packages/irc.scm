@@ -65,18 +65,17 @@
 (define-public quassel
   (package
     (name "quassel")
-    (version "0.12.4")
+    (version "0.12.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://quassel-irc.org/pub/quassel-"
                             version ".tar.bz2"))
-        (patches (search-patches "quassel-fix-tls-check.patch"))
         (sha256
          (base32
-          "0ka456fb8ha3w7g74xlzfg6w4azxjjxgrhl4aqpbwg3lnd6fbr4k"))
+          "1qkl3sb4ijx4k17m0c42j2p5bc4jymypwhmplm942rbrzm6mg50q"))
         (modules '((guix build utils)))
-        ;; We don't want to install the bundles scripts
+        ;; We don't want to install the bundled scripts.
         (snippet
          '(begin
             (delete-file-recursively "data/scripts")
@@ -105,7 +104,7 @@
        ("qtscript" ,qtscript)
        ("snorenotify" ,snorenotify)
        ("zlib" ,zlib)))
-    (home-page "http://quassel-irc.org/")
+    (home-page "https://quassel-irc.org/")
     (synopsis "Distributed IRC client")
     (description "Quassel is a distributed IRC client, meaning that one or more
 clients can attach to and detach from the central core.  It resembles the

@@ -252,7 +252,7 @@ instance, it implements several methods to assess contig-wise read coverage.")
 (define-public bamtools
   (package
     (name "bamtools")
-    (version "2.4.1")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -261,7 +261,7 @@ instance, it implements several methods to assess contig-wise read coverage.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0jr024kcrhjb82cm69i7p5fcg5375zlc1h3qh2n1v368hcd0qflk"))))
+                "1z3kg24qrwq13a88n9d86izngrar4fll7gr6phddb2faw75pdgaa"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -285,7 +285,7 @@ BAM files.")
 (define-public bcftools
   (package
     (name "bcftools")
-    (version "1.5")
+    (version "1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -293,12 +293,11 @@ BAM files.")
                     version "/bcftools-" version ".tar.bz2"))
               (sha256
                (base32
-                "0093hkkvxmbwfaa7905s6185jymynvg42kq6sxv7fili11l5mxwz"))
-              (patches (search-patches "bcftools-regidx-unsigned-char.patch"))
+                "1vgw2mwngq20c530zim52zvgmw1lci8rzl33pvh44xqk3xlzvjsa"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Delete bundled htslib.
-                          (delete-file-recursively "htslib-1.5")
+                          (delete-file-recursively "htslib-1.8")
                           #t))))
     (build-system gnu-build-system)
     (arguments
@@ -339,7 +338,7 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
 (define-public bedops
   (package
     (name "bedops")
-    (version "2.4.14")
+    (version "2.4.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bedops/bedops/archive/v"
@@ -347,7 +346,7 @@ transparently with both VCFs and BCFs, both uncompressed and BGZF-compressed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1kqbac547wyqma81cyky9n7mkgikjpsfd3nnmcm6hpqwanqgh10v"))))
+                "0kx4awrwby8f33wqyx8w7ms7v25xhf0d421csgf96a3hfzn2mb0m"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -2089,7 +2088,7 @@ accurately delineate genomic rearrangements throughout the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.19")
+    (version "0.9.21")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2098,7 +2097,7 @@ accurately delineate genomic rearrangements throughout the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0c4y8l90vdxmglb0w37y0413v11qzcwg8sdmy9k0c0gr3bsq7dzs"))))
+                "1cf98vcsiwcv3c4apg50w1240v1mpw0zln1sdw3g692dqa4y041z"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2349,7 +2348,8 @@ dynamic programming or a variety of heuristics.")
                 (string-append (assoc-ref inputs "bamtools") "/include/bamtools")))
              (substitute* "src/CMakeLists.txt"
                (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/\\.\\./bamtools/lib")
-                (string-append (assoc-ref inputs "bamtools") "/lib/bamtools")))
+                (string-append (assoc-ref inputs "bamtools") "/lib"))
+               (("libprotobuf.a") "libprotobuf.so"))
              #t)))))
     (inputs
      `(("boost" ,boost)
@@ -3462,7 +3462,7 @@ The main functions of FastQC are:
 (define-public htslib
   (package
     (name "htslib")
-    (version "1.7")
+    (version "1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3470,7 +3470,7 @@ The main functions of FastQC are:
                     version "/htslib-" version ".tar.bz2"))
               (sha256
                (base32
-                "1il6i2p84b0y9c93dhvzzki1ifw9bvapm2mvpr0xvb2nq8jlwgdy"))))
+                "18bw0mn9pj5wgarnlaxmf1bb8pdqgl1zd6czirqcr62ajpn1xvy0"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)
@@ -4587,7 +4587,7 @@ partial genes, and identifies translation initiation sites.")
 (define-public roary
   (package
     (name "roary")
-    (version "3.11.0")
+    (version "3.12.0")
     (source
      (origin
        (method url-fetch)
@@ -4596,7 +4596,7 @@ partial genes, and identifies translation initiation sites.")
              version ".tar.gz"))
        (sha256
         (base32
-         "10lw78x1xzvn7xzvnmh4bm3cak3ah5cssapl0yidvhaj1f44h29i"))))
+         "0qxrds9wx7cfhlkihrp6697kx0flhhxymap9fwan0b3rbdhcnmff"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -4934,7 +4934,7 @@ to the user's query of interest.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.7")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
@@ -4943,7 +4943,7 @@ to the user's query of interest.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "18acyqysbxpydlc44lqv2hpp57l06bs9a3yqmcvjk8va2xrrdc77"))))
+         "05myg7bs90i68qbqab9cdg9rqj2xh39azibrx82ipzc5kcfvqhn9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -5784,7 +5784,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.5.3a")
+    (version "2.6.0a")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alexdobin/STAR/archive/"
@@ -5792,7 +5792,7 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "013wirlz8lllgjyagl48l75n1isxyabqb3sj7qlsl0x1rmvqw99a"))
+                "0yci4ymy4407kjh0lqp021nzccp6r31wgrkixkmix5p130cxvc56"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -5979,13 +5979,13 @@ Cuffdiff or Ballgown programs.")
 (define-public taxtastic
   (package
     (name "taxtastic")
-    (version "0.6.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "taxtastic" version))
               (sha256
                (base32
-                "0s79z8kfl853x7l4h8ms05k31q87aw62nrchlk20w9n227j35929"))))
+                "03pysw79lsrvz4lwzis88j15067ffqbi4cid5pqhrlxmd6bh8rrk"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -6098,19 +6098,20 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.4-6")
+    (version "2.5-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "175mqr42mmxy98gpf3rky8alnkw3w1k90ggdw3cispl36841p76w"))))
+         "0pynr02d1xngda6c3va8fc4nxpgfkawhzcnz1ws4dnarp9b1w90r"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
+       ("r-knitr" ,r-knitr)
        ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
@@ -6266,14 +6267,14 @@ distribution.")
 (define-public r-dexseq
   (package
     (name "r-dexseq")
-    (version "1.24.3")
+    (version "1.24.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DEXSeq" version))
        (sha256
         (base32
-         "0xip73hlbr3zry9d7ly9vvvsbb3xjcmfa09lr9fdy528dwjrf084"))))
+         "1a80yv742fx5c7qav7imsdybphf0d5bixsqyf8w5zng7fk8j16d5"))))
     (properties `((upstream-name . "DEXSeq")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6619,7 +6620,7 @@ SELECT or UPDATE queries to an end-point.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "2.7.1")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
@@ -6629,7 +6630,7 @@ SELECT or UPDATE queries to an end-point.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0jlzfgh79fzmb4g7sngzdjjsjyc37icvs1k7vmc2ksxglj6x5i7f"))
+         "15pbirgzhvflj4pi5n82vybbzjy9mlb0lv5l3qhrmdkfzpbyahw3"))
        (patches (search-patches "vsearch-unbundle-cityhash.patch"))
        (snippet
         '(begin
@@ -7604,13 +7605,13 @@ samples.")
 (define-public r-genomicalignments
   (package
     (name "r-genomicalignments")
-    (version "1.14.1")
+    (version "1.14.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicAlignments" version))
               (sha256
                (base32
-                "033p6fw46sn7w2yyn14nb9qcnkf30cl0nv6zh014ixflm3iifz39"))))
+                "1659nj1xps7vliy5955i51x6hvrf16n1z0dfh10mmpaaswn2d2mv"))))
     (properties
      `((upstream-name . "GenomicAlignments")))
     (build-system r-build-system)
@@ -9077,14 +9078,14 @@ replacement for strverscmp.")
 (define-public multiqc
   (package
     (name "multiqc")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multiqc" version))
        (sha256
         (base32
-         "0ihx4rzmsfphv4byn05qv6f1y95g2dxs6viwziipl4wjk96acgm8"))))
+         "02iihfl0w0hpnr4pa0sbd1y9qxrg3ycyhjp5lidkcrqh1lmzs3zy"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-jinja2" ,python-jinja2)
@@ -9652,13 +9653,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "2.2.1")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "1sr82nf38hq07avrfn8vlrzjq7dfm4pcr8l1nh6mnglcql2bk9z2"))
+                "0kp3lw1s896zkjd6x2wp8qcg7wnm5b40g8vihps13f1m7j4nx7r0"))
               ;; Delete pre-built jar.
               (snippet
                '(begin (delete-file "inst/java/ModularityOptimizer.jar")
@@ -9688,11 +9689,15 @@ Main-Class: ModularityOptimizer\n")))
     (propagated-inputs
      `(("r-ape" ,r-ape)
        ("r-caret" ,r-caret)
+       ("r-cluster" ,r-cluster)
        ("r-cowplot" ,r-cowplot)
        ("r-diffusionmap" ,r-diffusionmap)
+       ("r-dosnow" ,r-dosnow)
        ("r-dplyr" ,r-dplyr)
        ("r-dtw" ,r-dtw)
+       ("r-fitdistrplus" ,r-fitdistrplus)
        ("r-fnn" ,r-fnn)
+       ("r-foreach" ,r-foreach)
        ("r-fpc" ,r-fpc)
        ("r-gdata" ,r-gdata)
        ("r-ggplot2" ,r-ggplot2)
@@ -9704,13 +9709,16 @@ Main-Class: ModularityOptimizer\n")))
        ("r-igraph" ,r-igraph)
        ("r-irlba" ,r-irlba)
        ("r-lars" ,r-lars)
+       ("r-lmtest" ,r-lmtest)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
        ("r-metap" ,r-metap)
        ("r-mixtools" ,r-mixtools)
        ("r-pbapply" ,r-pbapply)
        ("r-plotly" ,r-plotly)
+       ("r-png" ,r-png)
        ("r-ranger" ,r-ranger)
+       ("r-rann" ,r-rann)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-rcpp" ,r-rcpp)
        ("r-rcppeigen" ,r-rcppeigen)
@@ -10185,14 +10193,14 @@ effort and encourages consistency.")
 (define-public r-ggbio
   (package
     (name "r-ggbio")
-    (version "1.26.0")
+    (version "1.26.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ggbio" version))
        (sha256
         (base32
-         "1bqxfqy0hff87ax92z4lfbjz01ndrz7x8pzm6dlkdmi52p30krm9"))))
+         "1xlmlngn27iwnr21s9di4059kav1a7c1sajx08wja8yn8f7j06hp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -10237,14 +10245,14 @@ interval to data view, mismatch pileup, and several splicing summaries.")
 (define-public r-gprofiler
   (package
     (name "r-gprofiler")
-    (version "0.6.4")
+    (version "0.6.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gProfileR" version))
        (sha256
         (base32
-         "1cka02zbz1rbppm782qpxk1xn9qxbrv2gp5rgf970j906hxm2y0b"))))
+         "1n6cj12j102b4x9vhyl4dljp1i0r43p23cnhqbx4als2xfxdlqgi"))))
     (properties `((upstream-name . "gProfileR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10355,14 +10363,14 @@ several related annotation packages.")
 (define-public r-erma
   (package
     (name "r-erma")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "erma" version))
        (sha256
         (base32
-         "0gcfs9g8vvdv5vmq9b21kd8sq5mizjj49nfzd4in9zvp4b9v7x1g"))))
+         "1fi8nc6fbd7i4p9i9hli31xplmdpsxqcdrb8v3nf8fx9klllbdav"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -10391,14 +10399,14 @@ by Ernst and Kellis.")
 (define-public r-ldblock
   (package
     (name "r-ldblock")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ldblock" version))
        (sha256
         (base32
-         "18nfsixh6d2wfrb9laqsgly5w1frzihhak683k0p8fdf51h4aqba"))))
+         "1q8dz8wcq1r7kr635s9q21g36sxkdybk8khhpa4p57qv8r0gppl0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-erma" ,r-erma)
@@ -10608,13 +10616,13 @@ assays such as Hi-C.")
 (define-public r-hitc
   (package
     (name "r-hitc")
-    (version "1.22.0")
+    (version "1.22.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "HiTC" version))
               (sha256
                (base32
-                "0288xa1jy6nzvz2ha07csmp6dirjw5r7p9vy69q2wsbyzr02ymkp"))))
+                "0da1jw9my2n2gihs31zyn14wwr23d8v2vij39ll7rm6fma3ydfbl"))))
     (properties `((upstream-name . "HiTC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10856,14 +10864,14 @@ quality control.")
 (define-public r-scran
   (package
     (name "r-scran")
-    (version "1.6.8")
+    (version "1.6.9")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scran" version))
        (sha256
         (base32
-         "07wniyrh2fhhkz28v0bfgpvpi1hkkn2cvhacrvvvck142j79944x"))))
+         "0cs64cnf0xjcgmawr210y99j3gxs6aqgh8081n9827kkqnx2y5dm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
@@ -12826,7 +12834,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.10")
+    (version "0.0.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12834,7 +12842,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "13w99bkr0w4j28ms0yzpl1x6fkpdqay0vh495q3x20bcilsjwnf1"))))
+                "11v9v3vyda0sv4cl45nki7mm4v4bjfcdq7a70kcvi9h465nq66wg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; parts of the tests rely on access to the network

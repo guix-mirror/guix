@@ -384,7 +384,7 @@
     ;; Julia is not officially released for ARM and MIPS.
     ;; See https://github.com/JuliaLang/julia/issues/10639
     (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
-    (home-page "http://julialang.org/")
+    (home-page "https://julialang.org/")
     (synopsis "High-performance dynamic language for technical computing")
     (description
      "Julia is a high-level, high-performance dynamic programming language for

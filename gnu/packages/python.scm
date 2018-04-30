@@ -1290,14 +1290,14 @@ after Andy Lester’s Perl module WWW::Mechanize.")
 (define-public python-simplejson
   (package
     (name "python-simplejson")
-    (version "3.13.2")
+    (version "3.14.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "simplejson" version))
       (sha256
        (base32
-        "02jg5nixffqyicfqdl4dil82fh1z9p2as758wp0nqwalw0hcykjc"))))
+        "1lkv3xlf7ryzi69zqfdbkvpxdfy1rg1rq2yzcnxgf4km5m6difqy"))))
     (build-system python-build-system)
     (home-page "http://simplejson.readthedocs.org/en/latest/")
     (synopsis
@@ -2525,13 +2525,13 @@ sources.")
 (define-public python-sphinx-1.6
   (package (inherit python-sphinx)
     (name "python-sphinx")
-    (version "1.6.3")
+    (version "1.6.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Sphinx" version))
               (sha256
                (base32
-                "1rj6f3i8hmrx2qlkshi5kp5xcy98dlynwlyl05yvflj5f66dp2xg"))))
+                "0gjakw9fv5pwqb5yyclxycs36sapxizk1vx6mkcdizmzgzcfy0gi"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2638,14 +2638,14 @@ and several other projects.")
 (define-public python-rst.linker
   (package
     (name "python-rst.linker")
-    (version "1.7")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rst.linker" version))
        (sha256
         (base32
-         "0bh4lnj2p1nh0wf5pgxgfbrp27xhb1rinahkb5j7s3qprq6qn0sr"))))
+         "16crgnai6020vdmnpwdimw1vm3jb74ysfyb3kmcidb0lgma5xq2d"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -3876,28 +3876,28 @@ multivalue dictionary that retains the order of insertions and deletions.")
 
 (define-public python-autopep8
   (package
-  (name "python-autopep8")
-  (version "1.3.2")
-  (source
-   (origin
-     (method url-fetch)
-     (uri (pypi-uri "autopep8" version))
-     (sha256
-      (base32
-       "1p9pa1ffg4iy96l918808jggg9a69iaka5awmj8xid36yc5mk0ky"))))
-  (build-system python-build-system)
-  (propagated-inputs
-    `(("python-pycodestyle" ,python-pycodestyle)))
-  (home-page "https://github.com/hhatto/autopep8")
-  (synopsis "Format Python code according to the PEP 8 style guide")
-  (description
-    "@code{autopep8} automatically formats Python code to conform to
+    (name "python-autopep8")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "autopep8" version))
+       (sha256
+        (base32
+         "192bvhzi4d0claqxgzymvv7k3qnj627742bc8sgxpzjj42pd9112"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pycodestyle" ,python-pycodestyle)))
+    (home-page "https://github.com/hhatto/autopep8")
+    (synopsis "Format Python code according to the PEP 8 style guide")
+    (description
+     "@code{autopep8} automatically formats Python code to conform to
 the PEP 8 style guide.  It uses the pycodestyle utility to determine
 what parts of the code needs to be formatted.  @code{autopep8} is
 capable of fixing most of the formatting issues that can be reported
 by pycodestyle.")
-  (license (license:non-copyleft
-            "https://github.com/hhatto/autopep8/blob/master/LICENSE"))))
+    (license (license:non-copyleft
+              "https://github.com/hhatto/autopep8/blob/master/LICENSE"))))
 
 (define-public python2-autopep8
   (package-with-python2 python-autopep8))
@@ -8264,13 +8264,13 @@ anymore.")
 (define-public python2-pathlib2
   (package
     (name "python2-pathlib2")
-    (version "2.3.0")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pathlib2" version))
               (sha256
                (base32
-                "1cx5gs2v9j2vnzmcrbq5l8fq2mwrr1h6pyf1sjdji2w1bavm09fk"))))
+                "10yb0iv5x2hs631rcppkhbddx799d3h8pcwmkbh2a66ns3w71ccf"))))
     (build-system python-build-system)
     ;; We only need the the Python 2 variant, since for Python 3 our minimum
     ;; version is 3.4 which already includes this package as part of the
@@ -10482,14 +10482,14 @@ a file-like object from which an arbitrarly-sized key can be read.")
 (define-public python-qrcode
   (package
     (name "python-qrcode")
-    (version "5.3")
+    (version "6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "qrcode" version))
        (sha256
         (base32
-         "0kljfrfq0c2rmxf8am57333ia41kd0snbm2rnqbdy816hgpcq5a1"))))
+         "1gz1g2n9kqwqkak78aavr354z1v3yyiksk7q6xp5hi1zr6s0syq3"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require packaging 'pymaging'.
@@ -12788,14 +12788,14 @@ and works only with Python 2 and NumPy < 1.9.")
 (define-public python-yapf
   (package
     (name "python-yapf")
-    (version "0.20.1")
+    (version "0.21.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "yapf" version))
        (sha256
         (base32
-         "0s7l6afzxvpx39kzd0lwshlaxw8m4fwh4iy0rlmav4vipr3g46dx"))))
+         "144gc7d6b1415vh02409rnb8qd5kxi6mxlr7y64d5cizgxbf72kx"))))
     (build-system python-build-system)
     (home-page "https://github.com/google/yapf")
     (synopsis "Formatter for Python code")
@@ -13263,7 +13263,7 @@ in Python.  You can simply type pybtex instead of bibtex.")
        (sha256
         (base32 "09vagxgbq78wvq4xbikmn2hpqqsa2i96kqsmphf7dqynfv0dlsd5"))))
     (build-system python-build-system)
-    (inputs `(("python-six" ,python-six)))
+    (propagated-inputs `(("python-six" ,python-six)))
     (home-page "https://github.com/tadeck/onetimepass/")
     (synopsis "One-time password library")
     (description "Python one-time password library for HMAC-based (HOTP) and

@@ -533,7 +533,7 @@ and keep up to date translations of documentation.")
 (define-public gnome-disk-utility
   (package
     (name "gnome-disk-utility")
-    (version "3.26.2")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -541,7 +541,7 @@ and keep up to date translations of documentation.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1wjnw9hpjqyhrr116491rfzd0837g6jqvzq2z1ndx2sdqv19caxa"))))
+                "09dmknfas8iifv6k5jb4a9ag57s8awrn0f26fd1qlg0mbfjlnfd6"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")
@@ -725,7 +725,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.28.0")
+    (version "3.28.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -733,7 +733,7 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1a3kcls18dcz1lj8hrx8skcli9xxfyi71c17xjwayh71cm5jc8zs"))))
+               "1qbk1x2c7iacmmfwjzh136v2sdacrkqn9d6bnqid7xn9hlnx4m89"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -2062,7 +2062,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.50.2")
+    (version "0.52.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2070,7 +2070,7 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1kq9bxf7waap190zx5k78d21y3l31npblrnhfkxz4j7zz9mk3pbr"))))
+                "1lva70inb5y8p42rg95fb88z2ybwcz0lybla3ixbgp2sj0s4rzdh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2730,7 +2730,7 @@ more fun.")
 (define-public gnome-terminal
   (package
     (name "gnome-terminal")
-    (version "3.26.2")
+    (version "3.28.1")
     (source
      (origin
        (method url-fetch)
@@ -2739,7 +2739,7 @@ more fun.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1c05f2lrlm8jfx2394k6nabg4ml07lqasxaja5v98mhlm0aa96rs"))))
+         "1hqwh12hiy73mazqgvyrq8jk4c669x2fb4nh8mwby3qbk8ca19pp"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -6302,7 +6302,7 @@ existing databases over the internet.")
 (define-public gnome-tweak-tool
   (package
     (name "gnome-tweak-tool")
-    (version "3.24.1")
+    (version "3.26.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-tweak-tool/"
@@ -6312,7 +6312,7 @@ existing databases over the internet.")
                         (search-patch "gnome-tweak-tool-search-paths.patch")))
               (sha256
                (base32
-                "0rgmm7n6jwc5hz64sprm4jxnky62hw839a7r18rn1mj884vnn8hr"))))
+                "1pq5a0kzh1sz7s7ax5c7p6212k9d51nk5bfvjfyqn99cs928187x"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/tmp"
@@ -6320,6 +6320,16 @@ existing databases over the internet.")
        #:imported-modules ((guix build python-build-system)
                            ,@%glib-or-gtk-build-system-modules)
        #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (replace 'build
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (invoke "meson" "build"
+                                      "--prefix" (assoc-ref outputs "out"))))
+                  (replace 'check
+                    (lambda _ (invoke "ninja" "-C" "build" "test")))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (invoke "ninja" "-C" "build" "install")))
                   (add-after 'install 'wrap-program
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((out               (assoc-ref outputs "out"))
@@ -6330,17 +6340,21 @@ existing databases over the internet.")
                   (add-after 'install 'wrap
                     (@@ (guix build python-build-system) wrap)))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gtk+:bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
+       ("intltool" ,intltool)
+       ("meson" ,meson-for-build)
+       ("ninja" ,ninja)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("python" ,python-2)
-       ("python2-pygobject" ,python2-pygobject)
-       ("gnome-desktop" ,gnome-desktop)
-       ("libsoup" ,libsoup)
-       ("libnotify" ,libnotify)
+     `(("gnome-desktop" ,gnome-desktop)
+       ("gtk+" ,gtk+)
        ("gobject-introspection" ,gobject-introspection)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)))
+       ("libnotify" ,libnotify)
+       ("libsoup" ,libsoup)
+       ("nautilus" ,nautilus)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)))
     (synopsis "Customize advanced GNOME 3 options")
     (home-page "https://wiki.gnome.org/action/show/Apps/GnomeTweakTool")
     (description

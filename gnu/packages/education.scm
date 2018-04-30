@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -107,29 +107,54 @@ of categories with some of the activities available in that category.
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "0.70")
+    (version "0.90")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "http://gcompris.net/download/qt/src/gcompris-qt-"
+               "https://gcompris.net/download/qt/src/gcompris-qt-"
                version ".tar.xz"))
         (sha256
          (base32
-          "01r7i8dmwb2nlfyp0y0mzs8yydmvn5gq7xn1w7g21lysak1mliwa"))))
+          "1i5adxnhig849qxwi3c4v7r84q6agx1zxkd69fh4y7lcmq2qiaza"))))
     (build-system cmake-build-system)
     (arguments
-      ;; Qml_box2d is unmaintained and not actually required for building
-     '(#:configure-flags (list "-DQML_BOX2D_MODULE=disabled")
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/gcompris-qt")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins"))
+                         '("qtbase" "qtdeclarative" "qtmultimedia" "qtsvg")))
+                 `("QML2_IMPORT_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/qml"))
+                         '("qtdeclarative" "qtgraphicaleffects"
+                           "qtmultimedia" "qtquickcontrols"))))
+               #t))))
+       #:configure-flags (list "-DQML_BOX2D_MODULE=disabled")
        #:tests? #f)) ; no test target
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("gettext" ,gettext-minimal)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("qttools" ,qttools)))
     (inputs
      `(("python-2" ,python-2)
-       ("qt" ,qt))) ; Cannot find qtquick at runtime with modular qt.
-    (home-page "http://gcompris.net/index-en.html")
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtsensors" ,qtsensors)
+       ("qtsvg" ,qtsvg)
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (home-page "https://gcompris.net/index-en.html")
     (synopsis "Educational games for small children")
     (description
      "Gcompris offers a large collection of educational games for small

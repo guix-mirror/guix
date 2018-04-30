@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 # Copyright © 2016, 2018 Mathieu Lirzin <mthl@gnu.org>
@@ -90,15 +90,15 @@ cat "$@.tmp" | egrep '@p?x?ref' -A1 | sed 'N;s|--\n||g;P;D' | sed 's|^| |g' | \
 done
 endef
 
-$(srcdir)/%D%/guix.%.texi: po/doc/guix.%.po $(srcdir)/%D%/contributing.%.texi
+$(srcdir)/%D%/guix.%.texi: po/doc/guix-manual.%.po $(srcdir)/%D%/contributing.%.texi
 	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/guix.texi" -p "$<" -l "$@.tmp"
 	-sed -i "s|guix\.info|$$(basename "$@" | sed 's|texi$$|info|')|" "$@.tmp"
-	-$(xref_command)
+	-$(AM_V_POXREF)$(xref_command)
 	-mv "$@.tmp" "$@"
 
-$(srcdir)/%D%/contributing.%.texi: po/doc/guix.%.po po/doc/contributing.%.po
-	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/contributing.texi" -p "$(word 2,$^)" -l "$@.tmp"
-	-$(xref_command)
+$(srcdir)/%D%/contributing.%.texi: po/doc/guix-manual.%.po
+	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/contributing.texi" -p "$<" -l "$@.tmp"
+	-$(AM_V_POXREF)$(xref_command)
 	-mv "$@.tmp" "$@"
 
 %D%/os-config-%.texi: gnu/system/examples/%.tmpl

@@ -846,7 +846,7 @@ types are supported, as is encryption.")
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "5.10.4")
+    (version "5.12.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/rocksdb"
@@ -854,7 +854,7 @@ types are supported, as is encryption.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0hp7jxr99vyc57n708hiqk4lks9a9zmjgfjc21mx6v1rmabj2944"))
+                "1jcwgsjhk4hdfr2wf549blkgb89vwcdb5i2ahhqs6zf3mm20i3bf"))
               (modules '((guix build utils)))
               (snippet
                '(begin

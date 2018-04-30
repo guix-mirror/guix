@@ -69,14 +69,14 @@
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.18.8")
+    (version "0.18.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1qi0fkw2zmd0yplrf79z7lgpz0hxl45dj5rdgpaj7283jzys9b2n"))))
+                "0kmjfdr409k9q9n17k9ywims5z4kqc16s81ba7y09n7669q1gvyj"))))
     (build-system gnu-build-system)
     (home-page "https://www.libraw.org")
     (synopsis "Raw image decoder")
@@ -330,7 +330,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "2.4.2")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -339,7 +339,7 @@ photographic equipment.")
                     version "/darktable-" version ".tar.xz"))
               (sha256
                (base32
-                "10asz918kv2248px3w9bn5k8cfrad5xrci58x9y61l0yf5hcpk0r"))))
+                "1lq3xp7hhfhfwqrz0f2mrp3xywnpvb0nlw6lbm5cgx22s5xzri8x"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; There are no tests.

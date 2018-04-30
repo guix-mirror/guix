@@ -740,6 +740,7 @@ assert-no-store-file-names: $(distdir)/ChangeLog
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
+		 --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
 	     --exclude=guix-prettify.el						\
 	     --exclude=ChangeLog						\
 	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\
@@ -800,3 +801,7 @@ AM_V_HELP2MAN_0 = @echo "  HELP2MAN" $@;
 AM_V_PO4A = $(AM_V_PO4A_$(V))
 AM_V_PO4A_ = $(AM_V_PO4A_$(AM_DEFAULT_VERBOSITY))
 AM_V_PO4A_0 = @echo "  PO4A" $@;
+
+AM_V_POXREF = $(AM_V_POXREF_$(V))
+AM_V_POXREF_ = $(AM_V_POXREF_$(AM_DEFAULT_VERBOSITY))
+AM_V_POXREF_0 = @echo "  POXREF" $@;

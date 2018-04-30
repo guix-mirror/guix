@@ -96,7 +96,7 @@ warning content is outputted via diag.")
 (define-public perl-test-base
   (package
     (name "perl-test-base")
-    (version "0.88")
+    (version "0.89")
     (source
      (origin
        (method url-fetch)
@@ -104,7 +104,7 @@ warning content is outputted via diag.")
                            "Test-Base-" version ".tar.gz"))
        (sha256
         (base32
-         "0fch1cvivnszbnwhpfmwv1rin04j5xkj1n1ylfmlxg6bm72qqdjj"))))
+         "056hibgg3i2b89mwr76vyxi6ayb3hqjqcwicvn3s5lximsma3517"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-algorithm-diff" ,perl-algorithm-diff)
@@ -317,7 +317,7 @@ structures without getting caught in an infinite loop.")
 (define-public perl-test-differences
   (package
     (name "perl-test-differences")
-    (version "0.63")
+    (version "0.64")
     (source
      (origin
        (method url-fetch)
@@ -325,7 +325,7 @@ structures without getting caught in an infinite loop.")
                            "Test-Differences-" version ".tar.gz"))
        (sha256
         (base32
-         "0rhs4q6qn64ji06ns7lwl6iiiw3mggvd9xk9nkiqvx1jihbplrbw"))))
+         "0xmj5vgklq4yqvi7l63ky1k6g7fhww68llpmw9rhlaihqbcrsicz"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -798,7 +798,7 @@ If used in a subtest, the remainder of the subtest will be skipped.")
 (define-public perl-test-notabs
   (package
     (name "perl-test-notabs")
-    (version "2.00")
+    (version "2.02")
     (source
      (origin
        (method url-fetch)
@@ -808,7 +808,7 @@ If used in a subtest, the remainder of the subtest will be skipped.")
              ".tar.gz"))
        (sha256
         (base32
-         "127kpl1va267qar2ia4c22xb96jby2jqnda3sj5pjgmxg8si26cg"))))
+         "0c306p9qdpa2ycii3c50hml23mwy6bjxpry126g1dw11hyiwcxgv"))))
     (build-system perl-build-system)
     (home-page
      "http://search.cpan.org/dist/Test-NoTabs/")
@@ -869,14 +869,14 @@ usually called epsilon.  This module provides such a function for use with
 (define-public perl-test-output
   (package
     (name "perl-test-output")
-    (version "1.03")
+    (version "1.031")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
                                   "Test-Output-" version ".tar.gz"))
               (sha256
                (base32
-                "12991jnzj4cbw9whhprmqvnzd1ayii84g2mh8vxbjngwqrjsy41i"))))
+                "193y1xjvgc1p9pdgdwps2127knvpz9wc1xh6gmr74y3ihmqz7f7q"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)
@@ -894,7 +894,7 @@ as flexible as possible to the tester.")
 (define-public perl-test-pod
   (package
     (name "perl-test-pod")
-    (version "1.51")
+    (version "1.52")
     (source
      (origin
        (method url-fetch)
@@ -902,7 +902,7 @@ as flexible as possible to the tester.")
                            "Test-Pod-" version ".tar.gz"))
        (sha256
         (base32
-         "1yvy5mc4j3s2h4aizryvark2nm58g2c6zhw9mlx9wmsavz7d78f1"))))
+         "1z75x1pxwp8ajwq9iazlg2c3wd7rdlim08yclpdg32qnc36dpa30"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Test-Pod/")
@@ -1077,14 +1077,14 @@ makes fork(2) safe to use in test cases.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.302122")
+    (version "1.302136")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "117m707cbvrh01s3w6g371i9xvpnklifiqpcmky4f49jgck8izgm"))))
+                "0inlv8f4rbhsw6qnqhf1w6ay153xbw27fldmb2pmg4ihn19mr6ld"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description
