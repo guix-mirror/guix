@@ -77,7 +77,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.26.1")
+   (version "2.28.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -85,7 +85,7 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1jwpx8az0iifw176dc2hl4mmg6gvxzxdkd1qvg4ds7c5hdmzy07g"))))
+              "1z7laf6qwv5zsqcnj222dm5f43c6f3liil0cgx4s4s62xjk1wfnd"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -433,7 +433,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.36.11")
+   (version "2.36.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -441,7 +441,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1wz2vpciwdpdv612s8kbww08q80hgcs5dxrfsxp1a4q44n3snqmf"))))
+              "0d534ysa6n9prd17wwzisq7mj6qkhwh8wcf8qgin1ar3hbs5ry7z"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")
@@ -659,7 +659,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.22.28")
+   (version "3.22.29")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -667,7 +667,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "07syy63d2q12b7mkbhqpirq270365fsql5l9qsrdgzlc04mn36fj"))
+              "1y5vzdbgww9l7xcrg13azff2rs94kggkywmpcsh39h7w76wn8zd0"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
