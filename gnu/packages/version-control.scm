@@ -1470,7 +1470,8 @@ any project with more than one developer, is one of Aegis's major functions.")
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "reposurgeon-mode.el"
                            (string-append (assoc-ref outputs "out")
-                                          "/share/emacs/site-lisp")))))))
+                                          "/share/emacs/site-lisp"))
+             #t)))))
     (inputs
      `(("python" ,python-wrapper)
        ("tzdata" ,tzdata)))

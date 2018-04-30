@@ -676,7 +676,7 @@ program capable of converting PDF into other formats.")
 (define-public xournal
   (package
     (name "xournal")
-    (version "0.4.8")
+    (version "0.4.8.2016")
     (source
      (origin
        (method url-fetch)
@@ -684,7 +684,7 @@ program capable of converting PDF into other formats.")
                            "/xournal-" version ".tar.gz"))
        (sha256
         (base32
-         "0c7gjcqhygiyp0ypaipdaxgkbivg6q45vhsj8v5jsi9nh6iqff13"))))
+         "09i88v3wacmx7f96dmq0l3afpyv95lh6jrx16xzm0jd1szdrhn5j"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk" ,gtk+-2)

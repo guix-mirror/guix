@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +20,11 @@
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (gnu services)
+  #:use-module (gnu services shepherd)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:export (service-type->recutils
@@ -38,6 +40,29 @@
 
 (define service-type-name*
   (compose symbol->string service-type-name))
+
+(define (service-type-default-shepherd-services type)
+  "Return the list of Shepherd services created by default instances of TYPE,
+provided TYPE has a default value."
+  (match (guard (c ((service-error? c) #f))
+           (service type))
+    (#f '())
+    ((? service? service)
+     (let* ((extension (find (lambda (extension)
+                               (eq? (service-extension-target extension)
+                                    shepherd-root-service-type))
+                             (service-type-extensions type)))
+            (compute   (and extension (service-extension-compute extension))))
+       (if compute
+           (compute (service-value service))
+           '())))))
+
+(define (service-type-shepherd-names type)
+  "Return the default names of Shepherd services created for TYPE."
+  (match (map shepherd-service-provision
+              (service-type-default-shepherd-services type))
+    (((names . _) ...)
+     names)))
 
 (define* (service-type->recutils type port
                                  #:optional (width (%text-width))
@@ -65,6 +90,16 @@ columns."
 
   (format port "extends: ~a~%"
           (extensions->recutils (service-type-extensions type)))
+
+  ;; If possible, display the list of *default* Shepherd service names.  Note
+  ;; that we may not always be able to do this (e.g., if the service type
+  ;; lacks a default value); furthermore, it could be that the service
+  ;; generates Shepherd services with different names if we give it different
+  ;; parameters (this is the case, for instance, for
+  ;; 'console-font-service-type'.)
+  (match (service-type-shepherd-names type)
+    (()    #f)
+    (names (format port "shepherdnames:~{ ~a~}~%" names)))
 
   (when (service-type-description type)
     (format port "~a~%"

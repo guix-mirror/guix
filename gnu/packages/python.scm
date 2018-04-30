@@ -9446,25 +9446,30 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.9.0")
+    (version "0.12.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "jedi" version))
-        (sha256
-          (base32
-            "0c8x962ynpx001fdvp07m2q5jk4igkxbj3rmnydavphvlgxijk1v"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jedi" version))
+       (sha256
+        (base32
+         "1bcr7csx4xil1iwmk03d79jis0bkmgi9k0kir3xa4rmwqsagcwhr"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: One test fails (use "py.test" instead of 'setup.py test').
-     '(#:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _
+                           (invoke "py.test" "-vv"))))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-parso" ,python-parso)
+       ("python-docopt" ,python-docopt)))
     (home-page "https://github.com/davidhalter/jedi")
     (synopsis
-      "Autocompletion for Python that can be used for text editors")
+     "Autocompletion for Python that can be used for text editors")
     (description
-      "Jedi is an autocompletion tool for Python that can be used for text editors.")
+     "Jedi is an autocompletion tool for Python that can be used for text
+ editors.")
     (license license:expat)))
 
 (define-public python2-jedi
@@ -13269,3 +13274,27 @@ in Python.  You can simply type pybtex instead of bibtex.")
     (description "Python one-time password library for HMAC-based (HOTP) and
 time-based (TOTP) passwords.")
     (license license:expat)))
+
+(define-public python-parso
+  (package
+    (name "python-parso")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "parso" version))
+       (sha256
+        (base32
+         "0lamywk6dm5xshlkdvxxf5j6fa2k2zpi7xagf0bwidaay3vnpgb2"))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (build-system python-build-system)
+    (home-page "https://github.com/davidhalter/parso")
+    (synopsis "Python Parser")
+    (description "Parso is a Python parser that supports error recovery and
+round-trip parsing for different Python versions (in multiple Python versions).
+Parso is also able to list multiple syntax errors in your Python file.")
+    (license license:expat)))
+
+(define-public python2-parso
+  (package-with-python2 python-parso))

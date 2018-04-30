@@ -291,7 +291,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.36")
+    (version "3.36.1")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -302,7 +302,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "1580qc0a4s8v3k3vg7zz4xly4alkjrw7qq9zy2nf6p4v56wcfg53"))
+                "1zrb49mp7cy3snnday1zv8d76h1mgppbcwxnlkqsgxlga8fl89b0"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))))
@@ -472,7 +472,14 @@ security standards.")
         (mozilla-patch "icecat-bug-1388020.patch"        "ad9a885b0df4" "1hrk1q9mk59jww55g4lqmaflznk87x3vvjn2mxfgfbbjs8l1cyz4")
         (mozilla-patch "icecat-bug-1452416.patch"        "f89ab96a2532" "1dqchxdyznhgyxhfq0hm0vg1p597hjqflfzigc7j3s5vxf9rg2nv")
         (mozilla-patch "icecat-bug-1451376.patch"        "af885a1bd293" "1wfpqhm2dp4fsx6zbrncngsqz7g2x09b625zcighixrbpvybyww3")
-        (mozilla-patch "icecat-bug-1444668.patch"        "666fc84ec72d" "0lml2wqd4yqidhi364x8r90f78397k2y0kq5z5bv8l8j4bhcnb9v")))
+        (mozilla-patch "icecat-bug-1444668.patch"        "666fc84ec72d" "0lml2wqd4yqidhi364x8r90f78397k2y0kq5z5bv8l8j4bhcnb9v")
+        (search-patch  "icecat-bug-1452075.patch")
+        (mozilla-patch "icecat-bug-1393367.patch"        "1ab40761a856" "1kgwypy7k5b33jwkni4025za4kcnv5m6klsx4wsswlixmljmkbc7")
+        (mozilla-patch "icecat-bug-1453339.patch"        "0edb8dca7087" "0b30pipqryh311sc97rcmwnx9n8qdlbbz90b2hkybjnprmbhfxrm")
+        (mozilla-patch "icecat-bug-1452202.patch"        "134c728799c1" "16hbwx6fx1hrddsyjjbd3z954ql3pg348xs13h9riyblq8crzmam")
+        (mozilla-patch "icecat-bug-1411415.patch"        "14eab155eaa8" "0wr4xgblxzk4c2gvlnpl7ic1196mrhry1hgwdl1jivq0ji5cbvbd")
+        (mozilla-patch "icecat-bug-1452619.patch"        "2b75d55ccf0e" "1g87aybw6ggv6hyk385bplv0lx63n020gwyq0d6d4pqld48hsm1i")
+        (mozilla-patch "icecat-bug-1453127.patch"        "89857f35df29" "0gzi47svrw5ajdlm3i12193psm702zx70x5h1rwp4gb7gxh4m4d9")))
       (modules '((guix build utils)))
       (snippet
        '(begin

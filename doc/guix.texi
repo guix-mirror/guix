@@ -10383,15 +10383,31 @@ See @code{man loadkeys} for details.
 
 @cindex mouse
 @cindex gpm
-@deffn {Scheme Procedure} gpm-service [#:gpm @var{gpm}] @
-          [#:options]
-Run @var{gpm}, the general-purpose mouse daemon, with the given
-command-line @var{options}.  GPM allows users to use the mouse in the console,
-notably to select, copy, and paste text.  The default value of @var{options}
-uses the @code{ps2} protocol, which works for both USB and PS/2 mice.
+@defvr {Scheme Variable} gpm-service-type
+This is the type of the service that runs GPM, the @dfn{general-purpose
+mouse daemon}, which provides mouse support to the Linux console.  GPM
+allows users to use the mouse in the console, notably to select, copy,
+and paste text.
 
-This service is not part of @var{%base-services}.
-@end deffn
+The value for services of this type must be a @code{gpm-configuration}
+(see below).  This service is not part of @var{%base-services}.
+@end defvr
+
+@deftp {Data Type} gpm-configuration
+Data type representing the configuration of GPM.
+
+@table @asis
+@item @code{options} (default: @code{%default-gpm-options})
+Command-line options passed to @command{gpm}.  The default set of
+options instruct @command{gpm} to listen to mouse events on
+@file{/dev/input/mice}.  @xref{Command Line,,, gpm, gpm manual}, for
+more information.
+
+@item @code{gpm} (default: @code{gpm})
+The GPM package to use.
+
+@end table
+@end deftp
 
 @anchor{guix-publish-service-type}
 @deffn {Scheme Variable} guix-publish-service-type

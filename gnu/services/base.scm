@@ -1962,10 +1962,16 @@ extra rules from the packages listed in @var{rules}."
   "Return a service that uses @var{device} as a swap device."
   (service swap-service-type device))
 
+(define %default-gpm-options
+  ;; Default options for GPM.
+  '("-m" "/dev/input/mice" "-t" "ps2"))
+
 (define-record-type* <gpm-configuration>
   gpm-configuration make-gpm-configuration gpm-configuration?
-  (gpm      gpm-configuration-gpm)                ;package
-  (options  gpm-configuration-options))           ;list of strings
+  (gpm      gpm-configuration-gpm                 ;package
+            (default gpm))
+  (options  gpm-configuration-options             ;list of strings
+            (default %default-gpm-options)))
 
 (define gpm-shepherd-service
   (match-lambda
@@ -2000,14 +2006,15 @@ extra rules from the packages listed in @var{rules}."
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           gpm-shepherd-service)))
+                (default-value (gpm-configuration))
                 (description
                  "Run GPM, the general-purpose mouse daemon, with the given
 command-line options.  GPM allows users to use the mouse in the console,
 notably to select, copy, and paste text.  The default options use the
 @code{ps2} protocol, which works for both USB and PS/2 mice.")))
 
-(define* (gpm-service #:key (gpm gpm)
-                      (options '("-m" "/dev/input/mice" "-t" "ps2")))
+(define* (gpm-service #:key (gpm gpm)             ;deprecated
+                      (options %default-gpm-options))
   "Run @var{gpm}, the general-purpose mouse daemon, with the given
 command-line @var{options}.  GPM allows users to use the mouse in the console,
 notably to select, copy, and paste text.  The default value of @var{options}

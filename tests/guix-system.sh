@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 #
@@ -267,6 +267,7 @@ guix system build "$tmpdir/config.scm" -n
 
 # Searching.
 guix system search tor | grep "^name: tor"
+guix system search tor | grep "^shepherdnames: tor"
 guix system search anonym network | grep "^name: tor"
 
 # Below, use -n (--dry-run) for the tests because if we actually tried to

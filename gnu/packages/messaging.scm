@@ -485,14 +485,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.4")
+    (version "0.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "12rfmp613alh3mi8f94008sx7x1a8c1izs3icrvw7bf4gnf2pi31"))))
+         "162dk6q4g61riam1p78bxwddwy4y2x1si34g5j9jv3rlc9xmhdcv"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -510,7 +510,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -518,7 +518,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "16ynws10vhx6rhjjjmzw6iyb3hc19823xhx4gsb14hrc7l8vzd1c"))))
+                "0wyyy3wrk7ka5xrsbafnajzf7iacg8vg3hi16pl4c5p104hdhjdw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

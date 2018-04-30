@@ -46,6 +46,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -115,6 +116,7 @@
        ("libXinerama" ,libxinerama)
        ("libXxf86vm" ,libxxf86vm)
        ("libXcomposite" ,libxcomposite)
+       ("mit-krb5" ,mit-krb5)
        ("ncurses" ,ncurses)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
@@ -221,7 +223,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
    (name "wine-staging-patchset-data")
-   (version "3.6")
+   (version "3.7")
    (source
     (origin
      (method url-fetch)
@@ -230,7 +232,7 @@ integrate Windows applications into your desktop.")
      (file-name (string-append name "-" version ".zip"))
      (sha256
       (base32
-       "1q5mgq7lk3sh82im65g51yk110ci9afl5wgqs2q6i8qd2nj5pv7d"))))
+       "112sy32sja4cc3rv8x6v4cdi3jfxdgzwfra8f78hzdf8a2wrjqz6"))))
    (build-system trivial-build-system)
    (native-inputs
     `(("bash" ,bash)
@@ -277,7 +279,7 @@ integrate Windows applications into your desktop.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0p4h0ynb5yf8rx5badpxg7b6vsrqdqafwszn5qm0shv0kb3jsl3q"))))
+                "1drbzk3y0m14lkq3vzwwkvain5shykgcbmyzh6gcb5r4sxh3givn"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
               ("gtk+" ,gtk+)
               ("libva" ,libva)

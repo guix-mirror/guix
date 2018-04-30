@@ -1261,7 +1261,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20180313")
+    (version "20180427")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1269,7 +1269,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "16galaadmr37q2pvk2gyxrm8d1xldzk31djfxfq9v1c9yq4i425h"))))
+                "1hfdzyzzznh9h8yjlz54p02zwwxyp5k7fgzxlb9phhj3kalp60md"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1278,7 +1278,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                           "CC=gcc"
                           "HOST=_LINUX"
                           "OPT_CFLAGS=-Wall -fno-strict-aliasing")
-       #:tests? #f  ; no 'check' target.
+       #:tests? #f                      ; no 'check' target
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://acpica.org/")
     (synopsis "Tools for the development and debug of ACPI tables")
@@ -1290,7 +1290,7 @@ of ACPI meant to be directly integrated into the host OS as a kernel-resident
 subsystem, and a small set of tools to assist in developing and debugging ACPI
 tables.  This package contains only the user-space tools needed for ACPI table
 development, not the kernel implementation of ACPI.")
-    (license license:gpl2)))  ; Dual GPLv2/ACPICA Licence
+    (license license:gpl2)))            ; dual GPLv2/ACPICA Licence
 
 (define-public stress
   (package

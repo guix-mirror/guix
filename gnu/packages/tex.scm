@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -175,6 +176,15 @@
                            (string-prefix? "mips64" s))))
       #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-unix-detection
+           ;; ps2eps.pl uses the "gswin32c" ghostscript executable on Windows,
+           ;; and the "gs" ghostscript executable on Unix. It detects Unix by
+           ;; checking for the existence of the /usr/bin directory. Since
+           ;; GuixSD does not have /usr/bin, it is also detected as Windows.
+           (lambda _
+             (substitute* "utils/ps2eps/ps2eps-src/bin/ps2eps.pl"
+               (("gswin32c") "gs"))
+             #t))
          (add-after 'install 'postint
            (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
              (let* ((out (assoc-ref outputs "out"))
@@ -196,7 +206,13 @@
                (with-directory-excursion "texlive-extra"
                  (apply unpack (list #:source texlive-extra))
                  (apply patch-source-shebangs (list #:source texlive-extra))
-                 (invoke "mv" "tlpkg" share))))))))
+                 (invoke "mv" "tlpkg" share))
+               ;; texlua shebangs are not patched by the patch-source-shebangs
+               ;; phase because the texlua executable does not exist at that
+               ;; time.
+               (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))
+               (with-directory-excursion out
+                 (patch-source-shebangs))))))))
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
