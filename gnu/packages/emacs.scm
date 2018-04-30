@@ -338,7 +338,7 @@ editor (without an X toolkit)" )
                                      "/share/emacs/site-lisp/"
                                      "geiser-autoloads.el"))
              #t)))))
-    (inputs `(("guile" ,guile-2.0)))
+    (inputs `(("guile" ,guile-2.2)))
     (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "https://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Guile and Racket hacking")
