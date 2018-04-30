@@ -46,6 +46,8 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:re-export (static-networking-service
+               static-networking-service-type)
   #:export (%facebook-host-aliases
             dhcp-client-service
 
