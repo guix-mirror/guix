@@ -671,7 +671,7 @@ BLAKE.")
 (define-public rhash
   (package
     (name "rhash")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
@@ -680,32 +680,27 @@ BLAKE.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0bhz3xdl6r06k1bqigdjz42l31iqz2qdpg7zk316i7p2ra56iq4q"))))
+         "14ngzfgmd1lfp7m78sn49x8ymf2s37nrr67c6p5vas85nrrgjkcn"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
-       #:test-target "test"
+     `(#:make-flags
+       ;; The binaries in /bin need some help finding librhash.so.0.
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:test-target "test"             ; ‘make check’ just checks the sources
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
+           ;; ./configure is not GNU autotools' and doesn't gracefully handle
+           ;; unrecognized options, so we must call it manually.
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile"
-               (("\\$\\(DESTDIR\\)/etc")
-                (string-append (assoc-ref outputs "out") "/etc")))
-             #t))
-         (add-after 'build 'build-library
+             (invoke "./configure"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))))
+         (add-after 'install 'install-library-extras
            (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "lib-shared" make-flags)))
-         (add-after 'install 'install-library
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "install-lib-shared" make-flags)
              (apply invoke
-                    "make" "-C" "librhash" "install-headers"
-                    "install-so-link" make-flags)))
-         (add-after 'check 'check-library
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "test-shared-lib" make-flags))))))
+                    "make" "-C" "librhash"
+                    "install-headers" "install-so-link"
+                    make-flags))))))
     (home-page "https://sourceforge.net/projects/rhash/")
     (synopsis "Utility for computing hash sums")
     (description "RHash is a console utility for calculation and verification
