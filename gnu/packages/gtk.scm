@@ -659,7 +659,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.22.29")
+   (version "3.22.30")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -667,7 +667,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1y5vzdbgww9l7xcrg13azff2rs94kggkywmpcsh39h7w76wn8zd0"))
+              "0rv5k8fyi2i19k4zncai6vf429s6zy3kncr8vb6f3m034z0sb951"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
