@@ -3418,10 +3418,6 @@ either mocked HTTP or a locally spawned server.")
         (base32
          "1d11fx9155d5v17d5w7q3kj37b01l8yj2yb0g6b0z1vh938rrlcr"))))
     (build-system perl-build-system)
-    (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
-    (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-carp-assert-more" ,perl-carp-assert-more)
        ("perl-html-form" ,perl-html-form)
