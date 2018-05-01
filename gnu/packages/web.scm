@@ -2437,7 +2437,7 @@ composed of HTML::Element style components.")
 (define-public perl-html-scrubber
   (package
     (name "perl-html-scrubber")
-    (version "0.15")
+    (version "0.17")
     (source
      (origin
        (method url-fetch)
@@ -2447,11 +2447,12 @@ composed of HTML::Element style components.")
              ".tar.gz"))
        (sha256
         (base32
-         "1m1f8gm2jry42zxja05dxp2ck7y66m7i8vc38nj6hccnwlby6cvi"))))
+         "06p7w4zd42b2yh541mlzyqj40lwmvvn3fyqi8big4mf34la7m2jm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-cpan-meta" ,perl-test-cpan-meta)
+       ("perl-test-differences" ,perl-test-differences)
        ("perl-test-eol" ,perl-test-eol)
        ("perl-test-memory-cycle" ,perl-test-memory-cycle)
        ("perl-test-notabs" ,perl-test-notabs)))
