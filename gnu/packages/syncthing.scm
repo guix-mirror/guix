@@ -909,7 +909,6 @@ libraries are in the same directory.")
 (define* (go-golang-org-x-net-union #:optional
                                  (packages (list go-golang-org-x-net-ipv4
                                                  go-golang-org-x-net-bpf
-                                                 go-golang-org-x-net-context
                                                  go-golang-org-x-net-ipv6
                                                  go-golang-org-x-net-proxy
                                                  go-golang-org-x-net-internal-iana)))
