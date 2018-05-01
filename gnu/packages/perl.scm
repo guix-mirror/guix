@@ -6002,7 +6002,7 @@ building is done in @code{MooX::ConfigFromFile::Role}---using
 (define-public perl-moox-file-configdir
   (package
     (name "perl-moox-file-configdir")
-    (version "0.006")
+    (version "0.007")
     (source
      (origin
        (method url-fetch)
@@ -6010,7 +6010,7 @@ building is done in @code{MooX::ConfigFromFile::Role}---using
                            "MooX-File-ConfigDir-" version ".tar.gz"))
        (sha256
         (base32
-         "0f808sq3627ymgf63zwgh705vv0nhwclxp89clhx8yl6hybcv7kx"))))
+         "074v150wrbddhy1n0qc8s80zrb71l3c4is968cnr06ac5l9kmshz"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-configdir" ,perl-file-configdir)
