@@ -7259,3 +7259,32 @@ prevention of repetitive strain injury (RSI).  The program frequently alerts
 you to take micro-pauses, rest breaks and restricts you to your daily limit")
       (home-page "http://www.workrave.org")
       (license license:gpl3+))))
+
+(define-public ghex
+  (package
+    (name "ghex")
+    (version "3.18.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1lq8920ad2chi9ibmyq0x9hg9yk63b0kdbzid03w42cwdzw50x66"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gnome-common" ,gnome-common)
+       ("which" ,which)
+       ("intltool" ,intltool)
+       ("yelp-tools" ,yelp-tools)
+       ("desktop-file-utils" ,desktop-file-utils))) ;for 'desktop-file-validate'
+    (inputs
+     `(("atk" ,atk)
+       ("gtk" ,gtk+)))
+    (synopsis "GNOME hexadecimal editor")
+    (description "The GHex program can view and edit files in two ways:
+hexadecimal or ASCII.  It is useful for editing binary files in general.")
+    (home-page "https://wiki.gnome.org/Apps/Ghex")
+    (license license:gpl2)))
