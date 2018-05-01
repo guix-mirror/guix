@@ -43,7 +43,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.66.0")
+    (version "1.67.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -52,7 +52,7 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "1aaw48cmimsskzgiclwn0iifp62a5iw9cbqrhfari876af1828ap"))
+                "1fmdlmkzsrd46wwk834jsi2ypxj68w2by0rfcg2pzrafk5rck116"))
               (patches (search-patches "boost-fix-icu-build.patch"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)
