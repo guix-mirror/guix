@@ -564,7 +564,8 @@ libebml is a C++ library to read and write EBML files.")
        ("libx11" ,libx11)
        ("libxext" ,libxext)
        ("libxfixes" ,libxfixes)
-       ("mesa" ,mesa)))
+       ("mesa" ,mesa)
+       ("wayland" ,wayland)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
