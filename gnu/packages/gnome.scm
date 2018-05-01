@@ -29,6 +29,7 @@
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -146,6 +147,7 @@
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages vpn)
   #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -7203,3 +7205,57 @@ into audio files that a personal computer or digital audio player can play.
 It supports ripping to any audio codec supported by a GStreamer plugin, such as
 mp3, Ogg Vorbis and FLAC")
     (license license:gpl2+)))
+
+(define-public workrave
+  (let ((commit "v1_10_20"))
+    (package
+      (name "workrave")
+      (version (string-map (match-lambda
+                             (#\_ #\.)
+                             (chr chr))
+                           (string-drop commit 1)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/rcaelers/workrave.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "099a87zkrkmsgfz9isrfm89dh545x52891jh6qxmn19h6wwsi941"))))
+      (build-system glib-or-gtk-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'autogen
+             (lambda _
+               (invoke "sh" "autogen.sh")
+               #t)))))
+      (propagated-inputs `(("glib" ,glib)
+                           ("gtk+" ,gtk+)
+                           ("gdk-pixbuf" ,gdk-pixbuf)
+                           ("gtkmm" ,gtkmm)
+                           ("glibmm" ,glibmm)
+                           ("libx11" ,libx11)
+                           ("libxtst" ,libxtst)
+                           ("dconf" ,dconf)
+                           ("libice" ,libice)))
+      (inputs `(("libsm", libsm)
+                ("python-cheetah" ,python2-cheetah)))
+      (native-inputs `(("glib" ,glib "bin")
+                       ("pkg-config" ,pkg-config)
+                       ("gettext" ,gnu-gettext)
+                       ("autoconf" ,autoconf)
+                       ("autoconf-archive" , autoconf-archive)
+                       ("automake" ,automake)
+                       ("libtool" ,libtool)
+                       ("intltool" ,intltool)
+                       ("libxscrnsaver" ,libxscrnsaver)
+                       ("gobject-introspection" ,gobject-introspection)
+                       ("python2" ,python-2)))
+      (synopsis "Tool to help prevent repetitive strain injury (RSI)")
+      (description "Workrave is a program that assists in the recovery and
+prevention of repetitive strain injury (RSI).  The program frequently alerts
+you to take micro-pauses, rest breaks and restricts you to your daily limit")
+      (home-page "http://www.workrave.org")
+      (license license:gpl3+))))
