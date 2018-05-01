@@ -2182,14 +2182,14 @@ other packages.")
 (define-public r-commonmark
   (package
     (name "r-commonmark")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "commonmark" version))
        (sha256
         (base32
-         "1vb8r9khpvcf0q7acv8rsplfjjwcll302bg5kp596cvn6aacypl6"))))
+         "1jwx5rgm0ypd9a3v4jd9za4a644rdzhk1n4dvmgkj9hdpwsida3z"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/commonmark")
     (synopsis "CommonMark and Github Markdown Rendering in R")
