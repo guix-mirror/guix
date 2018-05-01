@@ -222,7 +222,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "17.3.8")
+    (version "18.0.2")
     (source
       (origin
         (method url-fetch)
@@ -234,7 +234,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1cd6a4ll5arla3kncxnw9196ak1v4rvnb098aa7lm3n4h7r9p7cg"))
+          "1cz7p4b4yy201djzv3s28zx27f5cqwv0zgzqp5lcaba8d2bibylq"))
         (patches
          (search-patches "mesa-wayland-egl-symbols-check-mips.patch"
                          "mesa-skip-disk-cache-test.patch"))))
@@ -337,15 +337,9 @@ also known as DXTn or DXTC) for Mesa.")
          (add-before
            'build 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((s2tc (assoc-ref inputs "s2tc"))
-                   (out (assoc-ref outputs "out")))
+             (let ((out (assoc-ref outputs "out")))
                ;; Remain agnostic to .so.X.Y.Z versions while doing
                ;; the substitutions so we're future-safe.
-               (substitute*
-                   '("src/gallium/auxiliary/util/u_format_s3tc.c"
-                     "src/mesa/main/texcompress_s3tc.c")
-                 (("\"libtxc_dxtn\\.so")
-                  (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
                (substitute* "src/glx/dri_common.c"
                  (("dlopen\\(\"libGL\\.so")
                   (string-append "dlopen(\"" out "/lib/libGL.so")))
