@@ -3408,7 +3408,7 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-www-mechanize
   (package
     (name "perl-test-www-mechanize")
-    (version "1.48")
+    (version "1.50")
     (source
      (origin
        (method url-fetch)
@@ -3416,13 +3416,12 @@ either mocked HTTP or a locally spawned server.")
                            "Test-WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "1d11fx9155d5v17d5w7q3kj37b01l8yj2yb0g6b0z1vh938rrlcr"))))
+         "097pl87vdbxbb56vawzvs6ikrlb8nz3dx223kjjbdn3jlli3jjhg"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-carp-assert-more" ,perl-carp-assert-more)
        ("perl-html-form" ,perl-html-form)
        ("perl-html-lint" ,perl-html-lint)
-       ("perl-html-tree" ,perl-html-tree)
        ("perl-http-server-simple" ,perl-http-server-simple)
        ("perl-libwww" ,perl-libwww)
        ("perl-test-longstring" ,perl-test-longstring)
