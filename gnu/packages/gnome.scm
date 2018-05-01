@@ -5807,7 +5807,7 @@ files.")
 (define-public baobab
   (package
     (name "baobab")
-    (version "3.26.1")
+    (version "3.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5816,11 +5816,15 @@ files.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0zkqxyqyxd6j270jf5hbcrb3yh4k31ddh40v4cjhgngm8mcsnnbs"))))
-    (build-system glib-or-gtk-build-system)
+                "0qsx7vx5c3n4yxlxbr11sppw7qwcv9z3g45b5xb9y7wxw5lv42sk"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("gtk+-bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)
        ("glib" ,glib "bin")
