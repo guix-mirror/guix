@@ -144,7 +144,7 @@
        ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
        ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
        ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
-       ("go-github-com-zillode-notify" ,go-github-com-zillode-notify)
+       ("go-github-com-syncthing-notify" ,go-github-com-syncthing-notify)
        ;; For tests
        ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
     (synopsis "Decentralized continuous file system synchronization")
@@ -1107,30 +1107,30 @@ using sh's word-splitting rules.")
       (home-page "https://github.com/kballard/go-shellquote")
       (license expat))))
 
-(define-public go-github-com-zillode-notify
-  (let ((commit "53dd6873a851fc377c87d82f994b1fecdf25aadb")
-        (revision "3"))
+(define-public go-github-com-syncthing-notify
+  (let ((commit "b9ceffc925039c77cd9e0d38f248279ccc4399e2")
+        (revision "0"))
     (package
-      (name "go-github-com-zillode-notify")
+      (name "go-github-com-syncthing-notify")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/calmh/notify")
+                       (url "https://github.com/syncthing/notify")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ar6mj6s91y7hc5gdp88lz3i7xi29cqkx9f090xj899ir21a8djn"))))
+                  "1scha9b2r35bvqzqx86sarzjxf72ywvj3g6n9pm3xq4i4xzpylxf"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/Zillode/notify"))
+       '(#:import-path "github.com/syncthing/notify"))
       (propagated-inputs
        `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (synopsis "File system event notification library")
       (description "This package provides @code{notify}, a file system event
 notification library in Go.")
-      (home-page "https://github.com/zillode/notify")
+      (home-page "https://github.com/syncthing/notify")
       (license expat))))
 
 (define-public go-github-com-beorn7-perks-quantile
