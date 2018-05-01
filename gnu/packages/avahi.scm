@@ -77,7 +77,7 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
 (define-public nss-mdns
   (package
     (name "nss-mdns")
-    (version "0.12")
+    (version "0.14.1")
     (home-page "https://github.com/lathiat/nss-mdns")
     (source (origin
               (method url-fetch)
@@ -85,32 +85,13 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p2vj9fz4kzrjrj81ipf4qwgnr2n7a8cbzw4bpk18xyqhdx8h775"))
-              (patches
-               (list (origin
-                       ;; See
-                       ;; <https://github.com/lathiat/nss-mdns/issues/26#issuecomment-364781799>.
-                       (uri (string-append
-                             home-page
-                             "/commit/31ccbec3b4f054e590c7c880d8a8a50cfc97127d.patch"))
-                       (sha256
-                        (base32
-                         "0b1jmhnkpsczbph4ala7x3rafwxdg93277s30iaxh37jnvgjnhsd"))
-                       (method url-fetch))))))
+                "134wdr0n9cm5ab4g6dwq76lvzqns9dcylr470i2xxjimnw0l22d2"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'set-avahi-socket-name
-                    (lambda _
-                      ;; The Avahi daemon socket is expected by
-                      ;; src/Makefile.am to be at
-                      ;; "$(localstatedir)/run/avahi-daemon/socket", but
-                      ;; nowadays it lives in /run/avahi-daemon/socket.
-                      ;; Remove the "$(localstatedir)" bit.
-                      (substitute* "src/Makefile.in"
-                        (("\\$\\(localstatedir)/run/avahi-daemon/socket")
-                         "/run/avahi-daemon/socket"))
-                      #t)))))
+     ;; The Avahi daemon socket is expected by 'configure.ac' to be at
+     ;; "$(localstatedir)/run/avahi-daemon/socket", but nowadays it lives in
+     ;; /run/avahi-daemon/socket.  Remove the "$(localstatedir)" bit.
+     '(#:configure-flags '("AVAHI_SOCKET=/run/avahi-daemon/socket")))
     (synopsis "Multicast DNS Name Service Switch (@dfn{NSS}) plug-in")
     (description
      "Nss-mdns is a plug-in for the GNU C Library's Name Service Switch
