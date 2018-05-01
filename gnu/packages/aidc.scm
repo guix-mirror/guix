@@ -51,15 +51,15 @@ formats.")
 (define-public qrencode
   (package
     (name "qrencode")
-    (version "3.4.4")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://fukuchi.org/works/qrencode/qrencode-" version
-                    ".tar.gz"))
+                    ".tar.bz2"))
               (sha256
                (base32
-                "0wiagx7i8p9zal53smf5abrnh9lr31mv0p36wg017401jrmf5577"))))
+                "02vx69fl52jbcrmnydsaxcmy6nxqm9jyxzd7hr07s491d7hka069"))))
     (build-system gnu-build-system)
     (inputs `(("libpng" ,libpng)))
     (native-inputs `(("pkg-config" ,pkg-config)))
