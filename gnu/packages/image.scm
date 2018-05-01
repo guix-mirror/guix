@@ -251,13 +251,13 @@ files.  It can compress them as much as 40% losslessly.")
 (define-public libjpeg
   (package
    (name "libjpeg")
-   (version "9b")
+   (version "9c")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.ijg.org/files/jpegsrc.v"
                    version ".tar.gz"))
             (sha256 (base32
-                     "0lnhpahgdwlrkd41lx6cr90r199f8mc6ydlh7jznj5klvacd63r4"))))
+                     "08kixcf3a7s9x91174abjnk1xbvj4v8crdc73zi4k9h3jfbm00k5"))))
    (build-system gnu-build-system)
    (synopsis "Library for handling JPEG files")
    (description
