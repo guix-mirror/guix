@@ -8804,3 +8804,53 @@ your Emacs.")
     (synopsis "Sourcemap parser")
     (description "Sourcemap parser")
     (license license:gpl3+)))
+
+(define-public emacs-macrostep
+  (let ((commit "424e3734a1ee526a1bd7b5c3cd1d3ef19d184267"))
+    (package
+      (name "emacs-macrostep")
+      (version (git-version "0.9" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/joddie/macrostep.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1fm40mxdn289cyzgw992223dgrjmwxn4q8svyyxfaxjrpb38jhjz"))))
+      (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'remove-test
+             ;; Fails because of requirement ‘/bin/sh’.
+             (lambda _
+               (let ((file "macrostep-test.el"))
+                 (chmod file #o644)
+                 (emacs-batch-edit-file file
+                   `(progn (progn (goto-char (point-min))
+                                  (re-search-forward
+                                   "(ert-deftest macrostep-expand-c-macros")
+                                  (beginning-of-line)
+                                  (kill-sexp))
+                           (basic-save-buffer))))))
+           (add-before 'install 'check
+             (lambda _
+               (invoke "emacs" "--batch" "-L" "."
+                       "-l" "macrostep-test.el"
+                       "-f" "ert-run-tests-batch-and-exit"))))))
+      (home-page "https://github.com/joddie/macrostep")
+      (synopsis "Interactive macro-expander for Emacs")
+      (description "@code{macrostep} is an Emacs minor mode for interactively
+stepping through the expansion of macros in Emacs Lisp source code.  It lets
+you see exactly what happens at each step of the expansion process by
+pretty-printing the expanded forms inline in the source buffer, which is
+temporarily read-only while macro expansions are visible.  You can expand and
+collapse macro forms one step at a time, and evaluate or instrument the
+expansions for debugging with Edebug as normal (but see “Bugs and known
+limitations”, below).  Single-stepping through the expansion is particularly
+useful for debugging macros that expand into another macro form.  These can be
+difficult to debug with Emacs’ built-in macroexpand, which continues expansion
+until the top-level form is no longer a macro call.")
+      (license license:gpl3+))))
