@@ -8991,3 +8991,34 @@ within Emacs.")
       (description "Adds functionality to Emacs @code{ibuffer} for
 grouping buffers by their projectile root directory.")
       (license license:gpl3+))))
+
+(define-public emacs-helm-mode-manager
+  (package
+    (name "emacs-helm-mode-manager")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/istib/helm-mode-manager/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wllj321z16hgrx0ddwzk5wz4mnnx5am7w5nclqclfc5dfdn92wm"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/istib/helm-mode-manager/")
+    (synopsis "Switch and toggle Emacs major and minor modes using Helm")
+    (description "This package provides a Helm interface for toggling Emacs
+major or minor mode.
+
+@itemize
+@item @code{helm-switch-major-mode} list of all major modes
+@item @code{helm-enable-minor-mode} list of all inactive minor modes
+@item @code{helm-disable-minor-mode} list of all ACTIVE minor modes
+@end itemize\n
+
+Hitting @code{RET} enables the mode, @code{C-z} shows the mode
+documentation.")
+    (license license:gpl3+)))
