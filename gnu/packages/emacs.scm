@@ -8206,3 +8206,50 @@ browsing and fetching references.
 and publications from various sources, by keywords or by DOI.  References are
 automatically fetched from well-curated sources, and formatted as BibTeX.")
     (license license:gpl3+)))
+
+(define-public emacs-helm-bibtex
+  (let ((commit "8ed898fb5a68f18e9bb9973832a5c1f8abcfc463")
+        (revision "1"))
+    (package
+      (name "emacs-helm-bibtex")
+      (version (string-append "2.0.0" "-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tmalsburg/helm-bibtex.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "14lyx0vbqr97p3anzrsp7m3q0kqclyjcdwplpraim403fcklzbnz"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-parsebib" ,emacs-parsebib)
+         ("emacs-s" ,emacs-s)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-biblio" ,emacs-biblio)))
+      (home-page "https://github.com/tmalsburg/helm-bibtex")
+      (synopsis "Bibliography manager based on Helm")
+      (description "This package provides bibliography manager for Emacs,
+based on Helm and the bibtex-completion backend.
+
+Key features:
+
+@itemize
+@item Quick access to your bibliography from within Emacs
+@item Powerful search capabilities
+@item Provides instant search results as you type
+@item Tightly integrated with LaTeX authoring, emails, Org mode, etc.
+@item Open the PDFs, URLs, or DOIs associated with an entry
+@item Insert LaTeX cite commands, Ebib links, or Pandoc citations,
+BibTeX entries, or plain text references at point, attach PDFs to emails
+@item Support for note taking
+@item Quick access to online bibliographic databases such as Pubmed,
+arXiv, Google Scholar, Library of Congress, etc.
+@item Imports BibTeX entries from CrossRef and other sources.
+@end itemize\n")
+      (license license:gpl3+))))
