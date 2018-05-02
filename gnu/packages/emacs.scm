@@ -8854,3 +8854,22 @@ useful for debugging macros that expand into another macro form.  These can be
 difficult to debug with Emacs’ built-in macroexpand, which continues expansion
 until the top-level form is no longer a macro call.")
       (license license:gpl3+))))
+
+(define-public emacs-parent-mode
+  (package
+    (name "emacs-parent-mode")
+    (version "2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Fanael/parent-mode/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0gxbl5s1w96v6v55b7aaansgw4sxhzfx9nrsvpk3pfhsibs6yqjd"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Fanael/parent-mode")
+    (synopsis "Get major mode's parent modes")
+    (description "Get major mode's parent modes")
+    (license license:gpl3+)))
