@@ -8634,3 +8634,30 @@ tramp.")
 library adds a selection of popular loop structures as well as break and
 continue.")
     (license license:gpl3+)))
+
+(define-public emacs-elisp-refs
+  (package
+    (name "emacs-elisp-refs")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Wilfred/elisp-refs/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fj6wphwrvbslw46w7wgdk3b4bfr312ygj3lbgr9qw63lpqw26nl"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-list-utils" ,emacs-list-utils)
+       ("emacs-loop" ,emacs-loop)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/Wilfred/elisp-refs")
+    (synopsis "Find callers of elisp functions or macros")
+    (description "Find references to functions, macros or variables.  Unlike a
+dumb text search, @code{elisp-refs} actually parses the code, so it's never
+confused by comments or @code{foo-bar} matching @code{foo}.")
+    (license license:gpl3+)))
