@@ -8549,3 +8549,23 @@ timestamps and date-time format strings library for Emacs.")
       (description
        "This package creates Graphviz directed graphs from Org files.")
       (license license:gpl3+))))
+
+(define-public emacs-npm-mode
+  (package
+    (name "emacs-npm-mode")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mojochao/npm-mode/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kq1ww22dwf8c2i2b4z2ldbbmnihj65kb7n5vzvwkch9h4hxpqh5"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mojochao/npm-mode")
+    (synopsis "Minor mode for working with @code{npm} projects")
+    (description
+     "@code{npm-mode} provides a minor mode to work with @code{npm} projects.")
+    (license license:gpl3+)))
