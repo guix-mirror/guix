@@ -3372,17 +3372,18 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
-    (version "2.0.2")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "matplotlib" version))
        (sha256
         (base32
-         "1w8z2a1l7s72p1byfz7g03wqhygqxi8w82619dqb3a1lm97w9yqg"))))
+         "1s6dv225w3k4fv52h8lfjc7qq5y56i9755ayx0mz48ddi99fzisd"))))
     (build-system python-build-system)
     (propagated-inputs ; the following packages are all needed at run time
      `(("python-cycler" ,python-cycler)
+       ("python-kiwisolver" ,python-kiwisolver)
        ("python-pyparsing" ,python-pyparsing)
        ("python-pygobject" ,python-pygobject)
        ("gobject-introspection" ,gobject-introspection)
@@ -3462,6 +3463,8 @@ toolkits.")
       ;; of those automatically rewritten by package-with-python2.
       (propagated-inputs
        `(("python2-pycairo" ,python2-pycairo)
+         ("python2-backports-functools-lru-cache"
+          ,python2-backports-functools-lru-cache)
          ("python2-functools32" ,python2-functools32)
          ("python2-pygobject-2" ,python2-pygobject-2)
          ("python2-subprocess32" ,python2-subprocess32)
@@ -3478,7 +3481,8 @@ toolkits.")
     (native-inputs
      `(("python-matplotlib" ,python-matplotlib)
        ("python-colorspacious" ,python-colorspacious)
-       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx" ,python-sphinx-1.6)
+       ("python-sphinx-gallery" ,python-sphinx-gallery)
        ("python-numpydoc" ,python-numpydoc)
        ("python-ipython" ,python-ipython)
        ("python-mock" ,python-mock)
@@ -3501,7 +3505,7 @@ toolkits.")
                (("latex_elements\\['pointsize'\\] = '11pt'" match)
                 ;; insert at a point where latex_elements{} is defined:
                 (string-append match "\nlatex_elements['papersize'] = 'a4paper'")))
-             (zero? (system* "python" "make.py" "html" "latex" "texinfo"))))
+             (invoke "make" "SPHINXBUILD=sphinx-build" "html" "latex" "texinfo")))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "out") "/share"))
