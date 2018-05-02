@@ -9097,3 +9097,26 @@ CSS, JavaScript, JSON.")
       (description "This package provides an Emacs Helm interface to search
 throw a shell history.")
       (license license:gpl3+))))
+
+(define-public emacs-discover-my-major
+  (package
+    (name "emacs-discover-my-major")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/steckerhalter/discover-my-major"
+                       "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nah41f92rrl2l405kpqr6iaks11jyclgl4z7ilfymbr4ifmsiyl"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-makey" ,emacs-makey)))
+    (home-page "https://github.com/steckerhalter/discover-my-major")
+    (synopsis "Discover key bindings for the current Emacs major mode")
+    (description "This package provides allows to discover key bindings and
+their meaning for the current Emacs major-mode.")
+    (license license:gpl3+)))
