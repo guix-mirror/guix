@@ -10171,3 +10171,29 @@ interactive loop.")
       (synopsis "Evaluation result overlays")
       (description "@code{eros} provides evaluation result overlays.")
       (license license:gpl3+))))
+
+(define-public emacs-stickyfunc-enhance
+  (let ((commit "13bdba51fcd83ccbc3267959d23afc94d458dcb0")
+        (revision "1"))
+    (package
+      (name "emacs-stickyfunc-enhance")
+      (version "0.1")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tuhdo/semantic-stickyfunc-enhance.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "16dxjsr5nj20blww4xpd4jzgjprzzh1nwvb810ggdmp9paf4iy0g"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/tuhdo/semantic-stickyfunc-enhance")
+      (synopsis "Enhancement to stock @code{semantic-stickyfunc-mode}")
+      (description
+       "@code{semantic-stickyfunc-mode} shows the function point is currently
+in at the first line of the current buffer.  This is useful when you have a
+very long function that spreads more than a screen, and you don't have to
+scroll up to read the function name and then scroll down to original position.")
+      (license license:gpl3+))))
