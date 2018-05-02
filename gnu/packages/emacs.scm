@@ -8760,3 +8760,28 @@ for operating over the contents of Emacs buffers.")
     (description "This package offers a single macro, @code{let-alist}.  This
 macro takes a first argument (whose value must be an alist) and a body.")
     (license license:gpl3+)))
+
+(define-public emacs-esup
+  (let ((commit "a589005a9a888537deef94d6fe38a9b8790c97c7")
+        (revision "1"))
+    (package
+      (name "emacs-esup")
+      (version (string-append "0.6" "-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jschaf/esup.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "04lxmd0h7mfjjl0qghrycgff0vcv950j1wqv0dbkr61jxp64n5fv"))))
+      ;; TODO: Add tests
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jschaf/esup")
+      (synopsis "Emacs start up profiler")
+      (description "Benchmark Emacs Startup time without ever leaving
+your Emacs.")
+      (license license:gpl2+))))
