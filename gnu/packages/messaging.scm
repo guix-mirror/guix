@@ -454,8 +454,8 @@ compromised.")
        (modify-phases %standard-phases
          (add-after 'unpack 'unpack-googletest
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "tar" "xf"
-                             (assoc-ref inputs "googletest-source"))))))
+             (invoke "tar" "xf" (assoc-ref inputs "googletest-source"))
+             #t)))
        #:configure-flags '("--enable-python"
                            "--enable-perl"
                            "--enable-cyrus"
