@@ -10031,3 +10031,26 @@ bookmarks and history.")
     (description "This package provides functions to generate random words
 using user-provided rules.")
     (license license:gpl3+)))
+
+(define-public emacs-on-screen
+  (package
+    (name "emacs-on-screen")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://elpa.gnu.org/packages/on-screen-" version ".el"))
+       (file-name (string-append name "-" version ".el"))
+       (sha256
+        (base32
+         "15d18mjgv1pnwl6kf3pr5w64q1322p1l1qlfvnckglwmzy5sl2qv"))))
+    (build-system emacs-build-system)
+    (home-page
+     "https://github.com/michael-heerdegen/on-screen.el")
+    (synopsis "Guide your eyes while scrolling")
+    (description
+     "Scrolling can be distracting because your eyes may lose
+orientation.  This library implements a minor mode that highlights
+the previously visible buffer part after each scroll.")
+    (license license:gpl3+)))
