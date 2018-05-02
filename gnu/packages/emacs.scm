@@ -8136,3 +8136,29 @@ literate-programming upside-down in that the default mode is the
 programming-mode, and special action has to be taken to switch to the
 text-mode (i.e. Org-mode).")
       (license license:gpl3+))))
+
+(define-public emacs-outshine
+  (let ((commit "5f1a6b70231d2811c522e4e5e8c89ff461b311d6"))
+    (package
+      (name "emacs-outshine")
+      (version (git-version "2.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alphapapa/outshine.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1l9v1dfhgg7il11ifbhvcvrg3acfjk9sdxlc3lja1k54d7dp60jv"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-outorg" ,emacs-outorg)))
+      (home-page "https://github.com/alphapapa/outshine")
+      (synopsis "Emacs outline with outshine")
+      (description "Outshine attempts to bring the look and feel of
+@code{org-mode} to an Emacs outside of the Org major-mode.  It is an extension
+of @code{outline-minor-mode} (@code{org-mode} itself derives from
+outline-mode), so there is no such thing like an outshine mode, only
+@code{outline-minor-mode} with outshine extensions loaded.")
+      (license license:gpl3+))))
