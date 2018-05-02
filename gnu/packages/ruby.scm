@@ -3882,14 +3882,14 @@ definitions.")
 (define-public ruby-fivemat
   (package
     (name "ruby-fivemat")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "fivemat" version))
        (sha256
         (base32
-         "0ij7n250gk5c1g34rsbwjnpcv64gk4vsas8lkz8fac4wbygvk6z1"))))
+         "006n7b09vviv5bs5hv2ccmjxw9iw3brcsm3xh3dhzfncsknz4jp7"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no tests
