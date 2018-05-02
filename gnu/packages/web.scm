@@ -1816,15 +1816,15 @@ number, file name, and code context surrounding the line number.")
 (define-public perl-catalyst-plugin-static-simple
   (package
     (name "perl-catalyst-plugin-static-simple")
-    (version "0.33")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
                            "Catalyst-Plugin-Static-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "1h8f12bhzh0ssq9gs8r9g3hqn8zn2k0q944vc1vm8j81bns16msy"))))
+         "0m4l627p2fvzr4i6sgdxhdvsx4wpa6qmaibsbxlg5x5yjs7k7drn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
