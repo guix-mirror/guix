@@ -2976,15 +2976,15 @@ Linux Device Mapper multipathing driver:
 (define-public libaio
   (package
     (name "libaio")
-    (version "0.3.110")
+    (version "0.3.111")
     (source (origin
               (method url-fetch)
-             (uri (list
-                   (string-append "mirror://debian/pool/main/liba/libaio/"
-                                  name "_" version ".orig.tar.gz")))
-             (sha256
-              (base32
-               "0zjzfkwd1kdvq6zpawhzisv7qbq1ffs343i5fs9p498pcf7046g0"))))
+              (uri (list
+                    (string-append "https://releases.pagure.org/libaio/"
+                                   name "-" version ".tar.gz")))
+              (sha256
+               (base32
+                "0ajhzbqjwsmz51gwccfyw6w9k4j4gmxcl2ph30sfn2gxv0d8gkv2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -2992,7 +2992,7 @@ Linux Device Mapper multipathing driver:
        #:test-target "partcheck" ; need root for a full 'check'
        #:phases
        (modify-phases %standard-phases (delete 'configure)))) ; no configure script
-    (home-page "http://lse.sourceforge.net/io/aio.html")
+    (home-page "https://pagure.io/libaio")
     (synopsis "Linux-native asynchronous I/O access library")
     (description
      "This library enables userspace to use Linux kernel asynchronous I/O
