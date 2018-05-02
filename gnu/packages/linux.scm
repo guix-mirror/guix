@@ -1950,17 +1950,27 @@ for systems using the Linux kernel.  This includes commands such as
 (define-public inotify-tools
   (package
     (name "inotify-tools")
-    (version "3.13")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/inotify-tools/inotify-tools/"
-                    version "/inotify-tools-" version ".tar.gz"))
+                    "https://github.com/rvoicilas/inotify-tools/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0icl4bx041axd5dvhg89kilfkysjj86hjakc7bk8n49cxjn4cha6"))))
+                "1b22c8x4pjnz3abx4dikpbj43zprjw79pdkd4xw111dsxlfwqcx4"))))
     (build-system gnu-build-system)
-    (home-page "http://inotify-tools.sourceforge.net/")
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'bootstrap
+                    (lambda _
+                      (invoke "autoreconf" "-vif"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/rvoicilas/inotify-tools/wiki")
     (synopsis "Monitor file accesses")
     (description
      "The inotify-tools packages provides a C library and command-line tools
