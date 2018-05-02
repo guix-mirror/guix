@@ -9180,3 +9180,27 @@ You should really read org-ref.org in this package for details.")
     (description "This package provides a @code{add-hooks} function tidies up
 duplicate hook and function names further into a single declarative call.")
     (license license:gpl3+)))
+
+(define-public emacs-fancy-narrow
+  (package
+    (name "emacs-fancy-narrow")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Malabarba/fancy-narrow/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rf2rnzg82pdqch041yyx3f9ddixffkk9s2ydzg8hwy66sg3385n"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Malabarba/fancy-narrow/releases")
+    (synopsis "Immitate narrow-to-region with more eye-candy")
+    (description "Unlike narrow-to-region, which completely hides text outside
+the narrowed region, this package simply deemphasizes the text, makes it
+readonly, and makes it unreachable.  This leads to a much more natural
+feeling, where the region stays static (instead of being brutally moved to a
+blank slate) and is clearly highlighted with respect to the rest of the
+buffer.")
+    (license license:gpl2+)))
