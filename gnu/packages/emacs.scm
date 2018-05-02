@@ -9022,3 +9022,25 @@ major or minor mode.
 Hitting @code{RET} enables the mode, @code{C-z} shows the mode
 documentation.")
     (license license:gpl3+)))
+
+(define-public emacs-hy-mode
+  (package
+    (name "emacs-hy-mode")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/hylang/hy-mode/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0sbga36zkyhzrzcczsyjzll7b9qsa215pnlw51m4li2irm23jh17"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/hylang/hy-mode")
+    (synopsis "Major mode for Hylang")
+    (description "This package provides a major mode for Hylang.")
+    (license license:gpl3+)))
