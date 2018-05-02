@@ -9308,3 +9308,42 @@ downloading manager for Emacs.")
      "This package provides an Emacs CSV mode, a major mode for editing
 records in a generalized CSV (character-separated values) format.")
     (license license:gpl3+)))
+
+(define-public emacs-helpful
+  (package
+    (name "emacs-helpful")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Wilfred/helpful/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16dx566qzrjj0bf43lnw7h1qlvgs94brqplamw8kppp2ylr72qs9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-elisp-refs" ,emacs-elisp-refs)))
+    (home-page "https://github.com/Wilfred/helpful")
+    (synopsis "More contextual information in Emacs help")
+    (description "@code{helpful} is an alternative to the built-in Emacs help
+that provides much more contextual information.
+
+@itemize
+@item Show the source code for interactively defined functions (unlike the
+built-in Help).
+@item Fall back to the raw sexp if no source is available.
+@item Show where a function is being called.
+@item Docstrings will Highlight the summary (the first sentence), include
+cross-references, hide superfluous puncuation.
+@item Show you the properties that have been applied to the current
+symbol.  This provides visibility of features like edebug or byte-code
+optimisation.
+@item Provide a separate @code{helpful-command} function to view interactive
+functions.
+@item Display any keybindings that apply to interactive functions.
+@item Trace, disassemble functions from inside Helpful.  This is discoverable
+and doesn't require memorisation of commands.
+@end itemize\n")
+    (license license:gpl3+)))
