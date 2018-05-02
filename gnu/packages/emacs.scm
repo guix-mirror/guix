@@ -10102,3 +10102,28 @@ Emacs minor mode to escape sequences in code.")
     (description "This package provides an extensible Emacs dashboard, with
 sections for bookmarks, projectil projects, org-agenda and more. ")
     (license license:gpl3+)))
+
+(define-public emacs-slime-company
+  (package
+    (name "emacs-slime-company")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/anwyn/slime-company/archive/"
+                           "v" version ".tar.gz"))
+       (sha256
+        (base32
+         "1myl79pxj501xfr5qc5a24qddsn2l5iaamg7rf7fpny7mr9v70ar"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-slime" ,emacs-slime)
+       ("emacs-company" ,emacs-company)))
+    (home-page "https://company-mode.github.io")
+    (synopsis "SLIME completion backend for @code{company-mode}")
+    (description
+     "This is a backend implementation for the completion package
+@code{company-mode} which supports the normal and the fuzzy completion
+modes of SLIME.")
+    (license license:gpl3+)))
