@@ -8162,3 +8162,23 @@ of @code{outline-minor-mode} (@code{org-mode} itself derives from
 outline-mode), so there is no such thing like an outshine mode, only
 @code{outline-minor-mode} with outshine extensions loaded.")
       (license license:gpl3+))))
+
+(define-public emacs-parsebib
+  (package
+    (name "emacs-parsebib")
+    (version "2.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/joostkremers/parsebib/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cxagnmc5ab6idmb26axpizhr4sqglkncc59768yavn3p04jyq63"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/joostkremers/parsebib")
+    (synopsis "Library for parsing bib files")
+    (description
+     "This package provides an Emacs library for parsing bib files.")
+    (license license:gpl3+)))
