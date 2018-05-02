@@ -8685,3 +8685,30 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
       (description
        "@code{crux} provides a collection of useful functions for Emacs.")
       (license license:gpl3+))))
+
+(define-public emacs-edit-server
+  (package
+    (name "emacs-edit-server")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/stsquad/emacs_chrome/archive/"
+                           "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1r92kqggslqasza718z4ka883mqfbnibdm43f0j9gaipk0msm2wf"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-elisp
+           ;; Elisp directory is not in root of the source.
+           (lambda _
+             (chdir "servers"))))))
+    (home-page "https://github.com/stsquad/emacs_chrome")
+    (synopsis "Server that responds to edit requests from Chromium")
+    (description
+     "This package provides an edit server to respond to requests from Emacs.")
+    (license license:gpl3+)))
