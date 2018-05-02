@@ -10221,3 +10221,32 @@ tries to commit changes to a file after every save.
 When @code{gac-automatically-push-p} is non-nil, it also tries to push to
 the current upstream.")
     (license license:gpl3+)))
+
+(define-public emacs-company-restclient
+  (package
+    (name "emacs-company-restclient")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/iquiw/company-restclient/archive/"
+             "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kr3f0wgqlk7r171bvb2kinv7fanwj2md01wdpx04qkgwcr1as00"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-know-your-http-well" ,emacs-know-your-http-well)
+       ("emacs-restclient" ,emacs-restclient)))
+    (home-page "https://github.com/iquiw/company-restclient")
+    (synopsis "Company-mode completion back-end for restclient-mode")
+    (description "@code{company-mode} back-end for
+@code{restclient-mode}.
+
+It provides auto-completion for HTTP methods and headers in
+@code{restclient-mode}.  Completion source is given by
+@code{know-your-http-well}.")
+    (license license:gpl3+)))
