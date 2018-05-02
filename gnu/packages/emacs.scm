@@ -9922,3 +9922,24 @@ macros, faces and variables.  To enable call @code{highlight-defined-mode}. ")
 mode for Lisp programming languages.  It will infer some changes to
 keep Parens and Indentation inline with one another.")
     (license license:gpl3+)))
+
+(define-public emacs-helm-eww
+  (let ((commit "5d6c2c66d4694415ef8a16a6d38a37aeae76c5ac"))
+    (package
+      (name "emacs-helm-eww")
+      (version (git-version "0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-helm/helm-eww.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1x442ylrr7cx587s4rvfh187h3qbkr79qp95qr57a4igxkkw6183"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/emacs-helm/helm-eww/")
+      (synopsis "Helm interface to EWW")
+      (description "This package provides a Helm interface for EWW buffers,
+bookmarks and history.")
+      (license license:gpl3+))))
