@@ -440,32 +440,48 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.6.6")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "09cmsnxvi7jg9a0dicf60fxnxdff4aprw7h8vjqlj5ywf6y43f3z"))))
+                "0vxra50418bsjfdpf8vl70fijv8syvasjqdxfyjliff6k91k2zn0"))))
+    ;; TODO: autotools support has been deprecated, and new features like i18n
+    ;; are only supported when building with cmake.
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unpack-googletest
            (lambda* (#:key inputs #:allow-other-keys)
-             (invoke "tar" "xf" (assoc-ref inputs "googletest-source"))
+             (mkdir-p "googletest")
+             (copy-recursively (assoc-ref inputs "googletest-source")
+                               "googletest")
              #t)))
        #:configure-flags '("--enable-python"
                            "--enable-perl"
                            "--enable-cyrus"
-                           ,(string-append "--with-gtest="
-                                          "googletest-release-"
-                                          (package-version googletest)
-                                          "/googletest"))
+                           "--with-gmock=googletest/googlemock"
+                           "--with-gtest=googletest/googletest")
        #:test-target "test"))
     (native-inputs
-     `(("googletest-source" ,(package-source googletest))
+     `(("googletest-source"
+        ;; ZNC 1.7 needs a newer, unreleased googletest (a release is planned
+        ;; <https://github.com/google/googletest/issues/1583>, so don't update
+        ;; the public GOOGLETEST to an unstable version).  The commit is taken
+        ;; from ‘third_party/googletest’ in the ZNC git repository.
+        ,(let ((commit "9737e63c69e94ac5777caa0bc77c77d5206467f3"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/google/googletest")
+                   (commit commit)))
+             (file-name (git-file-name "googletest-for-znc" commit))
+             (sha256
+              (base32
+               "0ya36n8d62zbxk6p22yffgx43mqhx2fz41gqqwbpdshjryf3wvxj")))))
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ("python" ,python)))
