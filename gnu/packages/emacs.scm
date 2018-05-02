@@ -8356,3 +8356,29 @@ region instead.")
     (description "This Emacs library provides two functions that perform
 schema validation.")
     (license license:gpl3+)))
+
+(define-public emacs-load-relative
+  (let ((commit "738896e3da491b35399178ed2c6bc92cc728d119")
+        (revision "1"))
+    (package
+      (name "emacs-load-relative")
+      (version (string-append "0.0.1" "-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rocky/emacs-load-relative")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1rpy5mfncncl6gqgg53d3g25g1700g4b9bivd4c0cfcv5dbxhp73"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/rocky/emacs-load-relative")
+      (synopsis "Relative loads for Emacs Lisp files")
+      (description "@code{load-relative} allows to write small Emacs
+functions or modules in a larger multi-file Emacs package and
+facilitate running from the source tree without having to install the
+code or fiddle with evil @code{load-path}.")
+      (license license:gpl3+))))
