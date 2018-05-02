@@ -9394,3 +9394,23 @@ and doesn't require memorisation of commands.
 requested.  It's a great way of exploring list, string and arithmetic
 functions.")
     (license license:gpl3+)))
+
+(define-public emacs-benchmark-init
+  (package
+    (name "emacs-benchmark-init")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/dholm/benchmark-init-el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0szyqr4nncwz4vd5gww1vz31kf9r2lx25p4d0d09pm35974x53kz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dholm/benchmark-init-el")
+    (synopsis "Benchmark Emacs @code{require} and @code{load} calls")
+    (description "@code{benchmark-init} provides a way to keep track of where
+time is being spent during Emacs startup in order to optimize startup time.")
+    (license license:gpl3+)))
