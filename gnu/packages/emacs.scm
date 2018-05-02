@@ -9239,3 +9239,28 @@ buffer.")
     (synopsis "Meaning of HTTP headers codes")
     (description "Meaning of HTTP headers codes.")
     (license license:gpl3+)))
+
+(define-public emacs-navi-mode
+  (let ((commit "c1d38e8237f4e14af020a0b7d4f118ea198ab674"))
+    (package
+      (name "emacs-navi-mode")
+      (version (git-version "2.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/navi.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0jj5spk14hgb7zb1cd2n8whcw4k1kd5zb6llwj96v178yaws7l8k"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-outshine" ,emacs-outshine)
+         ("emacs-outorg" ,emacs-outorg)))
+      (home-page "https://github.com/alphapapa/navi")
+      (synopsis "Emacs major-mode for easy buffer-navigation")
+      (description
+       "This package provides an Emacs major-mode for easy buffer-navigation")
+      (license license:gpl3+))))
