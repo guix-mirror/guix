@@ -3694,17 +3694,17 @@ application.")
 (define-public ruby-eventmachine
   (package
     (name "ruby-eventmachine")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "eventmachine" version))
        (sha256
         (base32
-         "075hdw0fgzldgss3xaqm2dk545736khcvv1fmzbf1sgdlkyh1v8z"))))
+         "08477hl609rmmngwfy8dmsqz5zvsg8xrsrrk6xi70jf48majwli0"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ; test suite tries to connect to google.com
+     '(#:tests? #f))               ; test suite tries to connect to google.com
     (native-inputs
      `(("ruby-rake-compiler" ,ruby-rake-compiler)))
     (synopsis "Single-threaded network event framework for Ruby")
