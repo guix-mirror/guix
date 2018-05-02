@@ -8503,3 +8503,23 @@ navigate and display hierarchy structures.")
       (description
        "This package allows to control @code{pulseaudio} from Emacs.")
       (license license:gpl3+))))
+
+(define-public emacs-datetime
+  (package
+    (name "emacs-datetime")
+    (version "0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/doublep/datetime/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12wqpj67rjij2ki7nmw38rz3k2bsq68pk6zswknlcn9qhp1zd9w9"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/doublep/datetime/")
+    (synopsis "Library to work with dates in Emacs")
+    (description "Parsing, formatting, matching and recoding
+timestamps and date-time format strings library for Emacs.")
+    (license license:gpl3+)))
