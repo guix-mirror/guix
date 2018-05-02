@@ -9686,3 +9686,26 @@ standard key bindings and are all prefixed with rsw-elisp-.  They work the
 same way as the old commands when called non-interactively; only the
 interactive behavior should be different.")
     (license license:gpl3+)))
+
+(define-public emacs-default-text-scale
+  (let ((commit "968e985e219235f3e744d6d967e592acbaf6e0a8")
+        (revision "1"))
+    (package
+      (name "emacs-default-text-scale")
+      (version (string-append "0.1" "-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/purcell/default-text-scale")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0zds01c3q5yny6ab1fxfkzzgn1kgl3q23lxxap905f4qd70v922h"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/purcell/default-text-scale")
+      (synopsis "Adjust the font size in all Emacs frames")
+      (description "This package provides commands for increasing or
+decreasing the default font size in all GUI Emacs frames.")
+      (license license:gpl3+))))
