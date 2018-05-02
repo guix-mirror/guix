@@ -8712,3 +8712,32 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
     (description
      "This package provides an edit server to respond to requests from Emacs.")
     (license license:gpl3+)))
+
+(define-public emacs-m-buffer-el
+  (package
+    (name "emacs-m-buffer-el")
+    (version "0.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/phillord/m-buffer-el"
+                           "/archive/" "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17vdcc8q37q9db98jyww1c0ivinmwfcw4l04zccfacalra63a214"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "emacs" "--batch" "-L" "."
+                             "-l" "test/m-buffer-test.el"
+                             "-l" "test/m-buffer-at-test.el"
+                             "-f" "ert-run-tests-batch-and-exit")))))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/phillord/m-buffer-el")
+    (synopsis "List oriented buffer operations for Emacs")
+    (description "@code{m-buffer} provides a set of list-orientated functions
+for operating over the contents of Emacs buffers.")
+    (license license:gpl3+)))
