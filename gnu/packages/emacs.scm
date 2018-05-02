@@ -8068,3 +8068,26 @@ another window to show results (compilation mode, starting info, and so on).
 A dedicated window won't be used for such a purpose.  For details, please read
 the source file.")
     (license license:gpl2+)))
+
+(define-public emacs-nnreddit
+  (let ((commit "9843f99d01fd8f1eea2fc685965a7c7f4eeb187a")
+        (revision "1"))
+    (package
+      (name "emacs-nnreddit")
+      (version (string-append "0.0.1-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/paul-issartel/nnreddit.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0j4h3bnga640250jdq8bwyja49r41ssrsjd6lba4gzzllqk02nbn"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/paul-issartel/nnreddit")
+      (synopsis "Reddit backend for the Gnus newsreader")
+      (description "@url{https://www.reddit.com} backend for the Gnus
+newsreader.")
+      (license license:gpl3+))))
