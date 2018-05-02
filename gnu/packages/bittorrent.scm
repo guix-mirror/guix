@@ -62,7 +62,7 @@
 (define-public transmission
   (package
     (name "transmission")
-    (version "2.93")
+    (version "2.94")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -70,7 +70,7 @@
                     "master/transmission-" version ".tar.xz"))
               (sha256
                (base32
-                "02xrp49gsv4jkbzp37qrwlnb9nlja08s92dyvgdbr6a4187945c8"))))
+                "0zbbj7rlm6m7vb64x68a64cwmijhsrwx9l63hbwqs7zr9742qi1m"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out"                      ; library and command-line interface
                "gui"))                    ; graphical user interface
