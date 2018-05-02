@@ -8569,3 +8569,21 @@ timestamps and date-time format strings library for Emacs.")
     (description
      "@code{npm-mode} provides a minor mode to work with @code{npm} projects.")
     (license license:gpl3+)))
+
+(define-public emacs-seq
+  (package
+    (name "emacs-seq")
+    (version "2.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://elpa.gnu.org/packages/seq-" version ".tar"))
+       (sha256
+        (base32
+         "0vrpx6nnyjb0gsypknzagimlhvcvi5y1rcdkpxyqr42415zr8d0n"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/seq.html")
+    (synopsis "Sequence manipulation functions")
+    (description "Sequence-manipulation functions that complement basic
+functions provided by @file{subr.el}.")
+    (license license:gpl3+)))
