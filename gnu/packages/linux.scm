@@ -750,7 +750,8 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "00ilv65dzcgiap435j89xk86shf7rrav3wsik7cahy789qijdcn9"))))
+               "00ilv65dzcgiap435j89xk86shf7rrav3wsik7cahy789qijdcn9"))
+             (patches (search-patches "e2fsprogs-glibc-2.27.patch"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
