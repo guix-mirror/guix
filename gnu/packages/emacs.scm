@@ -8873,3 +8873,19 @@ until the top-level form is no longer a macro call.")
     (synopsis "Get major mode's parent modes")
     (description "Get major mode's parent modes")
     (license license:gpl3+)))
+
+(define-public emacs-lacarte
+  (package
+    (name "emacs-lacarte")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri "https://www.emacswiki.org/emacs/download/lacarte.el")
+              (sha256
+               (base32
+                "1sbmk37ljq5j7dsw5c37sbxvlfgdqswh7bi4dknyjzfxlq50f4am"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/lacarte.el")
+    (synopsis "Execute menu items as commands, with completion")
+    (description "Execute menu items as commands, with completion.")
+    (license license:gpl3)))
