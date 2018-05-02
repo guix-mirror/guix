@@ -2501,6 +2501,36 @@ sources.")
       (propagated-inputs `(("python2-pytz" ,python2-pytz)
                        ,@(package-propagated-inputs base))))))
 
+(define-public python-sphinx-gallery
+  (package
+    (name "python-sphinx-gallery")
+    (version "0.1.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sphinx-gallery/sphinx-gallery"
+                                  "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03fs99mcb1r7qp0xixqv07vcz98sk21yq19ffdysi0infdcpzfkd"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: Tests attempt to download <https://docs.python.org/3/objects.inv>,
+     ;; <https://docs.scipy.org/doc/numpy/objects.inv>, and
+     ;; <https://matplotlib.org/objects.inv>.
+     `(#:tests? #f))
+    (native-inputs
+     `(("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://sphinx-gallery.github.io/")
+    (synopsis "Generate an examples gallery automatically")
+    (description
+     "@code{sphinx_gallery} is a Sphinx extension that builds an HTML version
+from any set of Python scripts and puts it into an examples gallery.")
+    (license license:bsd-3)))
+
+(define-public python2-sphinx-gallery
+  (package-with-python2 python-sphinx-gallery))
+
 (define-public python-sphinx-rtd-theme
   (package
     (name "python-sphinx-rtd-theme")
