@@ -9347,3 +9347,24 @@ functions.
 and doesn't require memorisation of commands.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public emacs-logview
+  (package
+    (name "emacs-logview")
+    (version "0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/doublep/logview/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vd11ppm46ldqsiwhqgw91p34gbjh1y82r9mxcn9r2gj65nvhxcp"))))
+    (propagated-inputs
+     `(("emacs-datetime" ,emacs-datetime)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/doublep/logview/")
+    (synopsis "Emacs mode for viewing log files")
+    (description "@code{logview} provides an Emacs mode to view log files.")
+    (license license:gpl3+)))
