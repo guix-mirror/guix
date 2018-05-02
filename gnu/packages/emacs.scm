@@ -8253,3 +8253,27 @@ arXiv, Google Scholar, Library of Congress, etc.
 @item Imports BibTeX entries from CrossRef and other sources.
 @end itemize\n")
       (license license:gpl3+))))
+
+(define-public emacs-ewmctrl
+  (let ((commit "3d0217c4d6cdb5c308b6cb4293574f470d4faacf")
+        (revision "1"))
+    (package
+      (name "emacs-ewmctrl")
+      (version (string-append "0.0.1" "-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/flexibeast/ewmctrl.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0ilwvx0qryv3v6xf0gxqwnfm6pf96gxap8h9g3f6z6lk9ff4n1wi"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/flexibeast/ewmctrl")
+      (synopsis "Emacs interface to @code{wmctrl}")
+      (description "@code{ewmctrl} provides an Emacs interface to
+@code{wmctrl} command-line window-management program.")
+      (license license:gpl3+))))
