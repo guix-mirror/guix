@@ -8091,3 +8091,23 @@ the source file.")
       (description "@url{https://www.reddit.com} backend for the Gnus
 newsreader.")
       (license license:gpl3+))))
+
+(define-public emacs-makey
+  (package
+    (name "emacs-makey")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/mickeynp/makey/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kzl4q1wf2zhkx9nrymxa67n99iq0bj7zqhpaz4byksna1hsxfmv"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mickeynp/makey")
+    (synopsis "Emacs interactive command-line mode")
+    (description
+     "This package provides an Emacs interactive command-line mode.")
+    (license license:gpl3+)))
