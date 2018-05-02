@@ -8316,3 +8316,24 @@ arXiv, Google Scholar, Library of Congress, etc.
     (synopsis "List-manipulation utility functions")
     (description "This package provides a list manipulation library for Emacs.")
     (license license:gpl3+)))
+
+(define-public emacs-move-text
+  (package
+    (name "emacs-move-text")
+    (version "2.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/emacsfodder/move-text/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sjfja9r25692pgcldgnjzkapzy970m14jh9l4pajysiqcdk72g0"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacsfodder/move-text")
+    (synopsis "Move current line or region with M-up or M-down")
+    (description "This package provide functions to move the current line
+using @kbd{M-up} or @kbd{M-down} if a region is marked, it will move the
+region instead.")
+    (license license:gpl3+)))
