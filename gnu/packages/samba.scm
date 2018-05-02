@@ -204,14 +204,16 @@ anywhere.")
        ("gnutls" ,gnutls)
        ("iniparser" ,iniparser)
        ("libaio" ,libaio)
-       ("ldb" ,ldb)
        ("linux-pam" ,linux-pam)
        ("openldap" ,openldap)
        ("popt" ,popt)
        ("readline" ,readline)
-       ("talloc" ,talloc)
-       ("tevent" ,tevent)
        ("tdb" ,tdb)))
+    (propagated-inputs
+     ;; In Requires or Requires.private of pkg-config files.
+     `(("ldb" ,ldb)
+       ("talloc" ,talloc)
+       ("tevent" ,tevent)))
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)    ;for generating manpages
        ("xsltproc" ,libxslt)           ;ditto
