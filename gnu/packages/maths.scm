@@ -26,6 +26,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
   #:use-module (gnu packages algebra)
@@ -1673,6 +1675,31 @@ scientific applications modeled by partial differential equations.")
                            (assoc-ref %build-inputs "openmpi"))
            ,@(delete "--with-mpi=0" ,cf)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
+
+
+(define-public python-kiwisolver
+  (package
+    (name "python-kiwisolver")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "kiwisolver" version))
+              (sha256
+               (base32
+                "0y22ci86znwwwfhbmvbgdfnbi6lv5gv2xkdlxvjw7lml43ayafyf"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/nucleic/kiwi")
+    (synopsis "Fast implementation of the Cassowary constraint solver")
+    (description
+     "Kiwi is an efficient C++ implementation of the Cassowary constraint
+solving algorithm.  Kiwi has been designed from the ground up to be
+lightweight and fast.  Kiwi ranges from 10x to 500x faster than the original
+Cassowary solver with typical use cases gaining a 40x improvement.  Memory
+savings are consistently > 5x.")
+    (license license:bsd-3)))
+
+(define-public python2-kiwisolver
+  (package-with-python2 python-kiwisolver))
 
 (define-public slepc
   (package
