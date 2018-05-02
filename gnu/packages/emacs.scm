@@ -9044,3 +9044,23 @@ documentation.")
     (synopsis "Major mode for Hylang")
     (description "This package provides a major mode for Hylang.")
     (license license:gpl3+)))
+
+(define-public emacs-web-beautify
+  (package
+    (name "emacs-web-beautify")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/yasuyk/web-beautify/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1j57hwid74id4swkx2g0iljfawx0k9c7qjrwqc0mv657x9p78hcs"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/yasuyk/web-beautify")
+    (synopsis "Format HTML, CSS and JavaScript, JSON")
+    (description "This package provides an Emacs functions to format HTML,
+CSS, JavaScript, JSON.")
+    (license license:gpl3+)))
