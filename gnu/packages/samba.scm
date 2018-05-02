@@ -148,14 +148,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.7.7")
+    (version "4.8.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "0c81x2ncnvz3mi6fjj81clm1mh049d3ip3fj031l44qclxpx3yi9"))))
+               "17bqgxyv34hjnb4hfamag75gwhqipp6mpvba5xg7lszi0xskdxwf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -190,8 +190,8 @@ anywhere.")
          (add-before 'install 'disable-etc-samba-directory-creation
            (lambda _
              (substitute* "dynconfig/wscript"
-               (("bld\\.INSTALL_DIRS\\(\"\",[[:blank:]]{1,}\"\\$\\{CONFIGDIR\\}[[:blank:]]{1,}")
-                "bld.INSTALL_DIRS(\"\", \""))
+               (("bld\\.INSTALL_DIR\\(\"\\$\\{CONFIGDIR\\}\"\\)")
+                ""))
              #t)))
        ;; XXX: The test infrastructure attempts to set password with
        ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
