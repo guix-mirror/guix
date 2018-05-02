@@ -9543,3 +9543,37 @@ installed.  Dumb Jump requires at least GNU Emacs 24.3. ")
 @item File header insertion.
 @end itemize\n")
       (license license:gpl3+))))
+
+(define-public emacs-academic-phrases
+  (let ((commit "0823ed8c24b26c32f909b896a469833ec4d7b656"))
+    (package
+      (name "emacs-academic-phrases")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nashamri/academic-phrases.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0qfzsq8jh05w4zkr0cvq3i1hdn97bq344vcqjg46sib26x3wpz6r"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)
+         ("emacs-ht" ,emacs-ht)))
+      (home-page "https://github.com/nashamri/academic-phrases")
+      (synopsis "Bypass that mental block when writing your papers")
+      (description
+       "When writing your academic paper, you might get stuck trying to find
+the right phrase that captures your intention.  This package tries to
+alleviate that problem by presenting you with a list of phrases organized by
+the topic or by the paper section that you are writing.  This package has
+around 600 phrases so far.
+
+Using this package is easy, just call @code{academic-phrases} to get a list of
+phrases organized by topic, or call @code{academic-phrases-by-section} to
+browse the phrases by the paper section and fill-in the blanks if required.")
+      (license license:gpl3+))))
