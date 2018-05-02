@@ -9991,3 +9991,23 @@ bookmarks and history.")
     (description
      "This package provides an Emacs interface for IETF RFC document.")
     (license license:gpl3+)))
+
+(define-public emacs-ido-vertical-mode
+  (package
+    (name "emacs-ido-vertical-mode")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/creichert/ido-vertical-mode.el/archive/"
+             "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dprdxq8wvqd45dinwj92k0kixr07c8xvspa6i613mjcpxgwjg53"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/creichert/ido-vertical-mode.el")
+    (synopsis "Makes ido-mode display vertically")
+    (description "Makes ido-mode display prospects vertically.")
+    (license license:gpl3+)))
