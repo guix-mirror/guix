@@ -10054,3 +10054,27 @@ using user-provided rules.")
 orientation.  This library implements a minor mode that highlights
 the previously visible buffer part after each scroll.")
     (license license:gpl3+)))
+
+(define-public emacs-highlight-escape-sequences
+  (let ((commit "08d846a7aa748209d65fecead2b6a766c3e5cb41")
+        (revision "1"))
+    (package
+      (name "emacs-highlight-escape-sequences")
+      (version (string-append "0.0.1" "-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dgutov/highlight-escape-sequences.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "05mc3w1f8ykf80914a1yddw6j8cmh0h57llm07xh89s53821v2is"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/dgutov/highlight-escape-sequences")
+      (synopsis "Highlight escape sequences in Emacs")
+      (description "@code{highlight-escape-sequences} provides an
+Emacs minor mode to escape sequences in code.")
+      (license license:gpl3+))))
