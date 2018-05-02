@@ -10127,3 +10127,24 @@ sections for bookmarks, projectil projects, org-agenda and more. ")
 @code{company-mode} which supports the normal and the fuzzy completion
 modes of SLIME.")
     (license license:gpl3+)))
+
+(define-public emacs-sml-mode
+  (package
+    (name "emacs-sml-mode")
+    (version "6.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://elpa.gnu.org/packages/sml-mode-"
+                           version ".el"))
+       (sha256
+        (base32
+         "105fcrz5qp95f2n3fdm3awr6z58sbrjihjss6qnrg4lz2ggbc328"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/sml-mode.html")
+    (synopsis "Major mode for editing (Standard) ML")
+    (description "SML-MODE is a major Emacs mode for editing Standard ML.
+It provides syntax highlighting and automatic indentation and
+comes with sml-proc which allows interaction with an inferior SML
+interactive loop.")
+    (license license:gpl3+)))
