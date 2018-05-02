@@ -25,6 +25,7 @@
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
+;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -562,7 +563,7 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "5.0.6")
+    (version "5.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
@@ -570,7 +571,7 @@ singular value problems.")
                                   version ".tar.gz"))
        (sha256
         (base32
-         "0q5lr6nala3ln6f3yp6g17ziymb9r9gx9zylnw1y3hjmwl9lggjv"))))
+         "18diyy7aib9mn098x07g25c7jij1x7wbfpicz0z8gwxx08px45m4"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)
@@ -580,6 +581,9 @@ singular value problems.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texlive" ,texlive-tiny)))
+    (arguments `(#:configure-flags (list (string-append
+                                          "--with-texdir=" %output
+                                          "/texmf-local/tex/latex/gnuplot"))))
     (home-page "http://www.gnuplot.info")
     (synopsis "Command-line driven graphing utility")
     (description "Gnuplot is a portable command-line driven graphing
