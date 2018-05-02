@@ -9160,3 +9160,23 @@ The default setup uses helm-bibtex.
 
 You should really read org-ref.org in this package for details.")
       (license license:gpl3+))))
+
+(define-public emacs-add-hooks
+  (package
+    (name "emacs-add-hooks")
+    (version "3.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/nickmccurdy/add-hooks/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03a28gb3298g7pc2qji9hi44p4d99ljp5mpi9cmg42ldv8fl6549"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/nickmccurdy/add-hooks/")
+    (synopsis "Emacs function for setting multiple hooks")
+    (description "This package provides a @code{add-hooks} function tidies up
+duplicate hook and function names further into a single declarative call.")
+    (license license:gpl3+)))
