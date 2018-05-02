@@ -8450,3 +8450,32 @@ navigate and display hierarchy structures.")
       (description
        "This package provides an Emacs library to manage tree widgets.")
       (license license:gpl3+))))
+
+(define-public emacs-md4rd
+  (let ((commit "be0fc4951b2d1f5194ffa1fcaac706dbac560500")
+        (revision "1"))
+    (package
+      (name "emacs-md4rd")
+      (version (string-append "0.0.1" "-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ahungry/md4rd.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1i93shx5x192gd7cl2r6gvcvhhwyi1k08abi5w3izv1hn3pmksgq"))))
+      (propagated-inputs
+       `(("emacs-hierarchy" ,emacs-hierarchy)
+         ("emacs-request" ,emacs-request)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)
+         ("emacs-tree-mode" ,emacs-tree-mode)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/ahungry/md4rd")
+      (synopsis "Emacs Mode for Reddit")
+      (description
+       "This package allows to read Reddit from within Emacs interactively.")
+      (license license:gpl3+))))
