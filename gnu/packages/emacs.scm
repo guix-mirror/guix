@@ -9638,3 +9638,29 @@ syntax highlighting of numeric literals in source code.
 It s customizable: it's easy to add or redefine what exactly consitutes a
 \"number\" in given major mode.  See @code{highlight-numbers-modelist}.")
     (license license:gpl3+)))
+
+(define-public emacs-darkroom
+  (package
+    (name "emacs-darkroom")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://elpa.gnu.org/packages/darkroom-"
+                                  version ".el"))
+              (sha256
+               (base32
+                "0fif8fm1h7x7g16949shfnaik5f5488clsvkf8bi5izpqp3vi6ak"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/darkroom.html")
+    (synopsis "Remove visual distractions and focus on writing")
+    (description "@code{darkroom-mode} makes visual distractions disappear.
+The mode-line is temporarily elided, text is enlarged and margins are adjusted
+so that it's centered on the window.
+
+@code{darkroom-tentative-mode} is similar, but it doesn't immediately turn-on
+@code{darkroom-mode}, unless the current buffer lives in the sole window of
+the Emacs frame (i.e. all other windows are deleted).  Whenever the frame is
+split to display more windows and more buffers, the buffer exits
+@code{darkroom-mode}.  Whenever they are deleted, the buffer re-enters
+@code{darkroom-mode}.")
+    (license license:gpl3+)))
