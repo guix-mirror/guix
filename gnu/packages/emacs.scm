@@ -9612,3 +9612,29 @@ one place.  It's fast, because you're not leaving the current buffer, and all
 you do is enter the code you'd enter anyway, just placing ~ where you'd like
 yasnippet fields and mirrors to be.")
       (license license:gpl3+))))
+
+(define-public emacs-highlight-numbers
+  (package
+    (name "emacs-highlight-numbers")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/Fanael/highlight-numbers/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "030v5p11d4n0581ncv499l1fqrmfziy756q6378x2bv22ixghqqp"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-parent-mode" ,emacs-parent-mode)))
+    (home-page "https://github.com/Fanael/highlight-numbers")
+    (synopsis "Highlight numbers in source code")
+    (description "@code{highlight-numbers-mode} provides a minor mode for
+syntax highlighting of numeric literals in source code.
+
+It s customizable: it's easy to add or redefine what exactly consitutes a
+\"number\" in given major mode.  See @code{highlight-numbers-modelist}.")
+    (license license:gpl3+)))
