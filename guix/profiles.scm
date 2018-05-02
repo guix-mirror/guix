@@ -168,7 +168,7 @@
   (version      manifest-entry-version)           ; string
   (output       manifest-entry-output             ; string
                 (default "out"))
-  (item         manifest-entry-item)              ; package | store path
+  (item         manifest-entry-item)              ; package | file-like | store path
   (dependencies manifest-entry-dependencies       ; <manifest-entry>*
                 (default '()))
   (search-paths manifest-entry-search-paths       ; search-path-specification*
@@ -318,7 +318,7 @@ denoting a specific output of a package."
                  (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
                                       search-paths))))
-      (($ <manifest-entry> name version output (? package? package)
+      (($ <manifest-entry> name version output package
                            (deps ...) (search-paths ...))
        #~(#$name #$version #$output
                  (ungexp package (or output "out"))
@@ -671,7 +671,13 @@ if not found."
             (return (find-among-inputs inputs)))))
         ((? string? item)
          (mlet %store-monad ((refs (references* item)))
-           (return (find-among-store-items refs)))))))
+           (return (find-among-store-items refs))))
+        (item
+         ;; XXX: ITEM might be a 'computed-file' or anything like that, in
+         ;; which case we don't know what to do.  The fix may be to check
+         ;; references once ITEM is compiled, as proposed at
+         ;; <https://bugs.gnu.org/29927>.
+         (return #f)))))
 
   (anym %store-monad
         entry-lookup-package (manifest-entries manifest)))
