@@ -8785,3 +8785,22 @@ macro takes a first argument (whose value must be an alist) and a body.")
       (description "Benchmark Emacs Startup time without ever leaving
 your Emacs.")
       (license license:gpl2+))))
+
+(define-public emacs-sourcemap
+  (package
+    (name "emacs-sourcemap")
+    (version "0.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/syohex/emacs-sourcemap/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bmd5l3cx2iyl7vxn84xdhs80b07kpdpfwki28lh5d0kmm5qs6m6"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/syohex/emacs-sourcemap")
+    (synopsis "Sourcemap parser")
+    (description "Sourcemap parser")
+    (license license:gpl3+)))
