@@ -8613,3 +8613,24 @@ that allows you to filter the tail with unix pipes and highlight the
 contents of the tailed file.  Works locally or on remote files using
 tramp.")
       (license license:gpl3+))))
+
+(define-public emacs-loop
+  (package
+    (name "emacs-loop")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Wilfred/loop.el/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z3rhh3zyjabz36410yz0lp4a0qwwj0387as662wvx3z9y54jia9"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Wilfred/loop.el")
+    (synopsis "Imperative loop structures for Emacs")
+    (description "Loop structures familiar to users of other languages.  This
+library adds a selection of popular loop structures as well as break and
+continue.")
+    (license license:gpl3+)))
