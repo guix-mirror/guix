@@ -8941,3 +8941,27 @@ keybindings for Emacs modes so that point moves to meaningful
 locations.  Redefined keys are still accessible by pressing the same
 key again.")
     (license license:gpl3+)))
+
+(define-public emacs-mbsync
+  (let ((commit "42077e83ae2db778ce0f8e22f8357b40355526b3")
+        (revision "1"))
+    (package
+      (name "emacs-mbsync")
+      (version (string-append "0.0.1" "-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dimitri/mbsync-el.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0yj93y2mpxlir8x73znlg1slxlv4blm1vjv5h2w3j8lxg8bxvmn6"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/dimitri/mbsync-el")
+      (synopsis "Interface to mbsync for Emacs")
+      (description "This package allows to call the @code{mbsync} from
+within Emacs.")
+      (license license:gpl3+))))
