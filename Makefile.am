@@ -274,7 +274,8 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/4.4-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.4-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.1-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.1-x86_64.conf
+  gnu/packages/aux-files/linux-libre/4.1-x86_64.conf	\
+  gnu/packages/aux-files/run-in-namespace.c
 
 # Templates, examples.
 EXAMPLES =					\
