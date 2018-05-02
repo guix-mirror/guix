@@ -492,9 +492,9 @@ compromised.")
        ("cyrus-sasl" ,cyrus-sasl)))
     (home-page "https://znc.in")
     (synopsis "IRC network bouncer")
-    (description "ZNC is an IRC network bouncer or BNC.  It can detach the
-client from the actual IRC server, and also from selected channels.  Multiple
-clients from different locations can connect to a single ZNC account
+    (description "ZNC is an @dfn{IRC network bouncer} or @dfn{BNC}.  It can
+detach the client from the actual IRC server, and also from selected channels.
+Multiple clients from different locations can connect to a single ZNC account
 simultaneously and therefore appear under the same nickname on IRC.")
     (license license:asl2.0)))
 
