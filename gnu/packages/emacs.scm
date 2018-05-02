@@ -8111,3 +8111,28 @@ newsreader.")
     (description
      "This package provides an Emacs interactive command-line mode.")
     (license license:gpl3+)))
+
+(define-public emacs-outorg
+  (let ((commit "78b0695121fb974bc4e971eb4ef7f8afd6d89d64"))
+    (package
+      (name "emacs-outorg")
+      (version (git-version "2.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/outorg")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "03aclh4m3f7rb821gr9pwvnqkkl91px3qxdcarpf3ypa1x4fxvlj"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/alphapapa/outorg")
+      (synopsis "Org-style comment editing")
+      (description "Outorg is for editing comment-sections of source-code
+files in temporary Org-mode buffers.  It turns conventional
+literate-programming upside-down in that the default mode is the
+programming-mode, and special action has to be taken to switch to the
+text-mode (i.e. Org-mode).")
+      (license license:gpl3+))))
