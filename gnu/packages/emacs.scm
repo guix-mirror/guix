@@ -9467,3 +9467,25 @@ If you have a @file{todo.org} file with @code{TODO} items in the root of your
 repository, @code{magit-org-todos} will create a section in your Magit status
 buffer with each of your todos.")
       (license license:gpl3+))))
+
+(define-public emacs-f3
+  (package
+    (name "emacs-f3")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cosmicexplorer/f3/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06b8i1jvklm5k3k90n65f197l1miq1xlxqkqpbppw4h3rhl4y98h"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/cosmicexplorer/f3")
+    (synopsis "Fantastic File Finder for Emacs")
+    (description
+     "The Fantastic File Finder for Emacs.  Find files fast, using helm.")
+    (license license:gpl3+)))
