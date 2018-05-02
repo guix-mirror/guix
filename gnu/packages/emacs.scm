@@ -9441,3 +9441,29 @@ time is being spent during Emacs startup in order to optimize startup time.")
       (description "@code{emms-player-simple-mpv} provides macros and
 functions for defining emms simple players of mpv.")
       (license license:gpl3+))))
+
+(define-public emacs-magit-org-todos-el
+  (let ((commit "df206287737b9671f2e36ae7b1474ebbe9940d2a"))
+    (package
+      (name "emacs-magit-org-todos-el")
+      (version (git-version "0.1.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/danielma/magit-org-todos.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0kdp7k7jnnrkhsg0xh1c3h7iz0vgi120gf5xwl1hxy61avivnxrn"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/danielma/magit-org-todos.el")
+      (synopsis "Get todo.org into Emacs Magit status")
+      (description "This package allows you to get @file{todo.org} into your
+magit status.
+
+If you have a @file{todo.org} file with @code{TODO} items in the root of your
+repository, @code{magit-org-todos} will create a section in your Magit status
+buffer with each of your todos.")
+      (license license:gpl3+))))
