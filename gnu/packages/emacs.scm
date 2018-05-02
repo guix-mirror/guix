@@ -8889,3 +8889,30 @@ until the top-level form is no longer a macro call.")
     (synopsis "Execute menu items as commands, with completion")
     (description "Execute menu items as commands, with completion.")
     (license license:gpl3)))
+
+(define-public emacs-company-lua
+  (let ((commit "0be8122f3adf57ad27953bf4b03545d6298d3da4"))
+    (package
+      (name "emacs-company-lua")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ptrv/company-lua.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1d9i165apgmwns7b2fd5wcpjpkah3dyj20v5sb8ynvz6qhhr5r9c"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)
+         ("emacs-s" ,emacs-s)
+         ("emacs-f" ,emacs-f)
+         ("emacs-lua-mode" ,emacs-lua-mode)))
+      (home-page "https://github.com/ptrv/company-lua")
+      (synopsis "Company backend for Lua")
+      (description
+       "This package provides Company backend for Lua programming language.")
+      (license license:gpl3+))))
