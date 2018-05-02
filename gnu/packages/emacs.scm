@@ -8741,3 +8741,22 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
     (description "@code{m-buffer} provides a set of list-orientated functions
 for operating over the contents of Emacs buffers.")
     (license license:gpl3+)))
+
+(define-public emacs-let-alist
+  (package
+    (name "emacs-let-alist")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/let-alist-" version ".el"))
+       (sha256
+        (base32
+         "0r7b9jni50la1m79kklml11syg8d2fmdlr83pv005sv1wh02jszw"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/let-alist.html")
+    (synopsis "Easily let-bind values of an assoc-list by their names")
+    (description "This package offers a single macro, @code{let-alist}.  This
+macro takes a first argument (whose value must be an alist) and a body.")
+    (license license:gpl3+)))
