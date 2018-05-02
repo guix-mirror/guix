@@ -9729,3 +9729,28 @@ decreasing the default font size in all GUI Emacs frames.")
     (description "This package provides an Emacs regexp command with
 interactive visual feedback.")
     (license license:gpl3+)))
+
+(define-public emacs-faceup
+  (let ((commit "6c92dad56a133e14e7b27831e1bcf9b3a71ff154")
+        (revision "1"))
+    (package
+      (name "emacs-faceup")
+      (version (string-append "0.0.1" "-" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Lindydancer/faceup.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1yzmy7flrhrh0i10bdszx8idx6r8h6czm4vm4q0z6fp5fw94zwrx"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/Lindydancer/faceup")
+      (synopsis "Markup language for faces and font-lock regression testing")
+      (description "Emacs is capable of highlighting buffers based on
+language-specific @code{font-lock} rules.  This package makes it possible to
+perform regression test for packages that provide font-lock rules.")
+      (license license:gpl3+))))
