@@ -9943,3 +9943,32 @@ keep Parens and Indentation inline with one another.")
       (description "This package provides a Helm interface for EWW buffers,
 bookmarks and history.")
       (license license:gpl3+))))
+
+(define-public emacs-stumpwm-mode
+  (let ((commit "8fbe071d2c6c040794060a354eb377218dc10b35")
+        (revision "1"))
+    (package
+      (name "emacs-stumpwm-mode")
+      (version (string-append "0.0.1-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/stumpwm/stumpwm-contrib.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1dfwsvz1c8w6j4jp0kzaz78ml3f5dp0a5pvf090kwpbpg176r7iq"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir-elisp
+             ;; Elisp directory is not in root of the source.
+             (lambda _
+               (chdir "util/swm-emacs"))))))
+      (home-page "https://github.com/stumpwm/stumpwm-contrib")
+      (synopsis "Emacs minor-mode for Stumpwm")
+      (description "Emacs minor-mode for Stumpwm")
+      (license license:gpl3+))))
