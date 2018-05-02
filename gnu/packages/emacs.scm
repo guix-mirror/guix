@@ -9577,3 +9577,38 @@ Using this package is easy, just call @code{academic-phrases} to get a list of
 phrases organized by topic, or call @code{academic-phrases-by-section} to
 browse the phrases by the paper section and fill-in the blanks if required.")
       (license license:gpl3+))))
+
+(define-public emacs-auto-yasnippet
+  (let ((commit "d1ccfea87312c6dd8cf8501ab5b71b1d3d44d95b"))
+    (package
+      (name "emacs-auto-yasnippet")
+      (version (git-version "0.3.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/abo-abo/auto-yasnippet.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1i8k2qiyzd5rq0zplk4xb5nfa5mp0ibxbzwqj6c7877waq7244xk"))))
+      (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'check
+             (lambda _
+               (invoke "emacs" "--batch"
+                       "-l" "auto-yasnippet.el"
+                       "-l" "auto-yasnippet-test.el"
+                       "-f" "ert-run-tests-batch-and-exit"))))))
+      (propagated-inputs
+       `(("emacs-yasnippet" ,emacs-yasnippet)))
+      (home-page "https://github.com/abo-abo/auto-yasnippet/")
+      (synopsis "Quickly create disposable yasnippets")
+      (description "This package provides a hybrid of keyboard macros and
+yasnippet.  You create the snippet on the go, usually to be used just in the
+one place.  It's fast, because you're not leaving the current buffer, and all
+you do is enter the code you'd enter anyway, just placing ~ where you'd like
+yasnippet fields and mirrors to be.")
+      (license license:gpl3+))))
