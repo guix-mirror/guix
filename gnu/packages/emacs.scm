@@ -2567,17 +2567,19 @@ framework for Emacs Lisp to be used with @code{ert}.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'set-shell
+           ;; Setting the SHELL environment variable is required for the tests
+           ;; to find sh.
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             #t))
          (add-before 'check 'fix-makefile
            (lambda _
              (substitute* "Makefile"
                (("\\$\\(CASK\\) exec ") ""))
              #t)))
        #:tests? #t
-       ;; FIXME: Normally we'd run the "test" target but for some reason the
-       ;; test-deferred target fails when run in the Guix build environment
-       ;; with the error: (file-error "Searching for program" "No such file or
-       ;; directory" "/bin/sh").
-       #:test-command '("make" "test-concurrent" "test-concurrent-compiled")))
+       #:test-command '("make" "test")))
     (native-inputs
      `(("emacs-ert-expectations" ,emacs-ert-expectations)
        ("emacs-undercover" ,emacs-undercover)
