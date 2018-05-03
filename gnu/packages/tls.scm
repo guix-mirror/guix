@@ -675,18 +675,20 @@ servers or clients for more complicated applications.")
 (define-public perl-crypt-openssl-rsa
  (package
   (name "perl-crypt-openssl-rsa")
-  (version "0.28")
+  (version "0.30")
   (source
     (origin
       (method url-fetch)
       (uri (string-append
-             "mirror://cpan/authors/id/P/PE/PERLER/Crypt-OpenSSL-RSA-"
+             "mirror://cpan/authors/id/T/TO/TODDR/Crypt-OpenSSL-RSA-"
              version
              ".tar.gz"))
       (sha256
         (base32
-          "1gnpvv09b2gpifwdzc5jnhama3d1a4c39lzj9hcaicsb8rvzjmsk"))))
+          "1b19kaaw4wda8dy6kjiwqa2prpbs2dqcyjyj9zdh5wbs74qkbq93"))))
   (build-system perl-build-system)
+  (native-inputs
+   `(("perl-crypt-openssl-guess" ,perl-crypt-openssl-guess)))
   (inputs
     `(("perl-crypt-openssl-bignum" ,perl-crypt-openssl-bignum)
       ("perl-crypt-openssl-random" ,perl-crypt-openssl-random)
