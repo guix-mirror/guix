@@ -2068,14 +2068,14 @@ instance, it provides @code{assert_true}, @code{assert_false} and
 (define-public ruby-minitest-hooks
   (package
     (name "ruby-minitest-hooks")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "minitest-hooks" version))
        (sha256
         (base32
-         "05bngfyxwq1cflk568nhddgfrmws5ff6kiqax4skklsjnh71ykbi"))))
+         "0lnpvzijbjrvxjc43d155jnbk2mkfshrz22an711wh004scavlzc"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
