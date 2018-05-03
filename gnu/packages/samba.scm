@@ -340,14 +340,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.3.2")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1avn4fl393kc80krbc47phbp0argdkys62ycs8vm934a6nvz0gnf"))))
+                "14gsrm7dvyjpbpnc60z75j6fz2p187abm2h353lq95kx2bv70c1b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
