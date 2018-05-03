@@ -1080,14 +1080,14 @@ bindings for Python, Java, OCaml and more.")
 (define-public radare2
   (package
     (name "radare2")
-    (version "1.6.0")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://radare.mikelloc.com/get/" version "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "16ggsk40zz6hyvclvqj1r4bh4hb78jf0d6ppry1jk4r0j30wm7cm"))
+                "17h4ba5qqahfi8mi4x2dcvq87cqpir5v2dlaqbvmay6vby4zh4v7"))
               (modules '((guix build utils)))
               (snippet
                 '(begin
