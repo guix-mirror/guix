@@ -454,14 +454,15 @@ written in Objective Caml.")
 (define-public coq
   (package
     (name "coq")
-    (version "8.7.0")
+    (version "8.8.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://coq.inria.fr/distrib/V" version
-                                  "/files/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/coq/coq/archive/V"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15wjngjd5pyfqdl5yw92rvdxvy15xcjlpx0rqlkzvcsis1z20xpk"))))
+                "0g96k2x6lbddlmkmdaczvcpb2gwqi1ydbq9bv4gf9q38kv9w3xya"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
