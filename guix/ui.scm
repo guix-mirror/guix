@@ -173,9 +173,9 @@ messages."
               modules)
     module))
 
-(define* (load* file user-module
-                #:key (on-error 'nothing-special))
-  "Load the user provided Scheme source code FILE."
+(define (last-frame-with-source stack)
+  "Walk stack upwards and return the last frame that has source location
+information, or #f if it could not be found."
   (define (frame-with-source frame)
     ;; Walk from FRAME upwards until source location information is found.
     (let loop ((frame    frame)
@@ -186,6 +186,15 @@ messages."
               frame
               (loop (frame-previous frame) frame)))))
 
+  (let* ((depth (stack-length stack))
+         (last  (and (> depth 0) (stack-ref stack 0))))
+    (frame-with-source (if (> depth 1)
+                           (stack-ref stack 1)    ;skip the 'throw' frame
+                           last))))
+
+(define* (load* file user-module
+                #:key (on-error 'nothing-special))
+  "Load the user provided Scheme source code FILE."
   (define (error-string frame args)
     (call-with-output-string
       (lambda (port)
@@ -238,12 +247,7 @@ messages."
          ;; Capture the stack up to this procedure call, excluded, and pass
          ;; the faulty stack frame to 'report-load-error'.
          (let* ((stack (make-stack #t handle-error tag))
-                (depth (stack-length stack))
-                (last  (and (> depth 0) (stack-ref stack 0)))
-                (frame (frame-with-source
-                        (if (> depth 1)
-                            (stack-ref stack 1)   ;skip the 'throw' frame
-                            last))))
+                (frame (last-frame-with-source stack)))
 
            (report-load-error file args frame)
 
