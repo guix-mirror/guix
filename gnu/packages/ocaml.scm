@@ -3919,14 +3919,14 @@ inside Coq.")
 (define-public coq-gappa
   (package
     (name "coq-gappa")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/36351/gappa-"
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/36397/gappa-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0924jr6f15fx22qfsvim5vc0qxqg30ivg9zxj34lf6slbgdl3j39"))))
+                "19kg2zldaqs4smy7bv9hp650sqg46xbx1ss7jnyagpxdscwn9apd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
