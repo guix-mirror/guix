@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -137,6 +137,25 @@ guix build -d --sources=transitive foo
 test `guix build -d --sources=transitive foo \
       | grep -e 'foo\.tar\.gz' -e 'bar\.tar\.gz' -e 'bar\.dat' \
       | wc -l` -eq 3
+
+
+# Unbound variables.
+cat > "$module_dir/foo.scm"<<EOF
+(define-module (foo)
+  #:use-module (guix tests)
+  #:use-module (guix build-system trivial))
+
+(define-public foo
+  (dummy-package "package-with-something-wrong"
+    (build-system trivial-build-system)
+    (inputs (quasiquote (("sed" ,sed))))))  ;unbound variable
+EOF
+
+if guix build package-with-something-wrong -n; then false; else true; fi
+guix build package-with-something-wrong -n 2> "$module_dir/err" || true
+grep "unbound" "$module_dir/err"		     # actual error
+grep "forget.*(gnu packages base)" "$module_dir/err" # hint
+rm -f "$module_dir"/*
 
 # Should all return valid log files.
 drv="`guix build -d -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'`"
