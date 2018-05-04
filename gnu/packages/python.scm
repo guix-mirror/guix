@@ -10414,6 +10414,10 @@ a file-like object from which an arbitrarly-sized key can be read.")
      `(("python-lxml" ,python-lxml)     ; for SVG output
        ("python-pillow" ,python-pillow) ; for PNG output
        ("python-six" ,python-six)))
+    (inputs
+     `(;; The setup.cfg file needs to be used, and support for this requires
+       ;; at least version 30.3.0 of setuptools
+       ("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/lincolnloop/python-qrcode")
     (synopsis "QR Code image generator")
     (description "This package provides a pure Python QR Code generator
