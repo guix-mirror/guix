@@ -2157,14 +2157,14 @@ module, Java Server Pages, and Python's psp module.")
 (define-public r-desc
   (package
     (name "r-desc")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "desc" version))
        (sha256
         (base32
-         "0k07qighac1xzmm8k988zi7i88a0yfvia3gk5hbz0fyvb2v9kzrj"))))
+         "1s6s13fk6sxwcj8wzkwxl9vr33153xx11p5wi9avqx3rzkabavz6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
