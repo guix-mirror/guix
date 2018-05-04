@@ -4034,6 +4034,12 @@ part of the distribution.")
                             "/lib/coq/user-contrib/Coquelicot"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'fix-coq8.8
+           (lambda _
+             ; appcontext has been removed from coq 8.8
+             (substitute* "theories/AutoDerive.v"
+               (("appcontext") "context"))
+             #t))
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
