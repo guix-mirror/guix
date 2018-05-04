@@ -3869,15 +3869,15 @@ cross-platform SDL C library.")
 (define-public coq-flocq
   (package
     (name "coq-flocq")
-    (version "2.6.0")
+    (version "2.6.1")
     (source (origin
               (method url-fetch)
               ;; Use the ‘Latest version’ link for a stable URI across releases.
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "latestfile/2228/flocq-" version ".tar.gz"))
+                                  "file/37454/flocq-" version ".tar.gz"))
               (sha256
                (base32
-                "13fv150dcwnjrk00d7zj2c5x9jwmxgrq0ay440gkr730l8mvk3l3"))))
+                "06msp1fwpqv6p98a3i1nnkj7ch9rcq3rm916yxq8dxf51lkghrin"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
