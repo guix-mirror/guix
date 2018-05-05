@@ -2193,7 +2193,7 @@ Content System specification.")
 (define-public mps-youtube
   (package
     (name "mps-youtube")
-    (version "0.2.7.1")
+    (version "0.2.8")
     (source
      (origin
        (method url-fetch)
@@ -2202,7 +2202,7 @@ Content System specification.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1s7h35yx6f0szf8mm8612ic913w3v05m2kwphjfcxnpq0ammhyci"))))
+         "0x7cmfh199q9j396v7bz81nnvanfllhsg86489i5dw2p3yyc9wnm"))))
     (build-system python-build-system)
     (arguments
      ;; Tests need to be disabled until #556 upstream is fixed. It reads as if the
