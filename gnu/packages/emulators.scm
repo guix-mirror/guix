@@ -1043,7 +1043,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
@@ -1051,7 +1051,7 @@ emulation community.  It provides highly accurate emulation.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1y9fakr41h6xpddpkj12mcw1kgldvy76nzvxm5jk5v7iyiks4c6k"))))
+        (base32 "1si78dbwbsq4i0r42q94nmlpaxdyqch113nxavdprf4vc1224356"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -1085,6 +1085,7 @@ emulation community.  It provides highly accurate emulation.")
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python)
+       ("qtbase" ,qtbase)
        ("sdl" ,sdl2)
        ("udev" ,eudev)
        ("vulkan-icd-loader" ,vulkan-icd-loader)
