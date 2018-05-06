@@ -949,6 +949,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
              (method url-fetch)
              (uri (string-append home-page "/files/" version
                                  "/strace-" version ".tar.xz"))
+             (patches (search-patches "strace-kernel-4.16.patch"))
              (sha256
               (base32
                "17dkpnsjxmys1ydidm9wcvc3wscsz44fmlxw3dclspn9cj9d1306"))))
