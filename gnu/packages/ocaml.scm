@@ -456,14 +456,15 @@ written in Objective Caml.")
 (define-public coq
   (package
     (name "coq")
-    (version "8.7.0")
+    (version "8.8.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://coq.inria.fr/distrib/V" version
-                                  "/files/" name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/coq/coq/archive/V"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15wjngjd5pyfqdl5yw92rvdxvy15xcjlpx0rqlkzvcsis1z20xpk"))))
+                "0g96k2x6lbddlmkmdaczvcpb2gwqi1ydbq9bv4gf9q38kv9w3xya"))))
     (native-search-paths
      (list (search-path-specification
             (variable "COQPATH")
@@ -3874,15 +3875,15 @@ cross-platform SDL C library.")
 (define-public coq-flocq
   (package
     (name "coq-flocq")
-    (version "2.6.0")
+    (version "2.6.1")
     (source (origin
               (method url-fetch)
               ;; Use the ‘Latest version’ link for a stable URI across releases.
               (uri (string-append "https://gforge.inria.fr/frs/download.php/"
-                                  "latestfile/2228/flocq-" version ".tar.gz"))
+                                  "file/37454/flocq-" version ".tar.gz"))
               (sha256
                (base32
-                "13fv150dcwnjrk00d7zj2c5x9jwmxgrq0ay440gkr730l8mvk3l3"))))
+                "06msp1fwpqv6p98a3i1nnkj7ch9rcq3rm916yxq8dxf51lkghrin"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -3924,14 +3925,14 @@ inside Coq.")
 (define-public coq-gappa
   (package
     (name "coq-gappa")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/36351/gappa-"
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/file/36397/gappa-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0924jr6f15fx22qfsvim5vc0qxqg30ivg9zxj34lf6slbgdl3j39"))))
+                "19kg2zldaqs4smy7bv9hp650sqg46xbx1ss7jnyagpxdscwn9apd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -3976,14 +3977,14 @@ assistant.")
 (define-public coq-mathcomp
   (package
     (name "coq-mathcomp")
-    (version "1.6.2")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/math-comp/math-comp/archive/mathcomp-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0lg5ncr7p4y8qqq6pfw6brqc6a9xzlfa0drprwfdn0rnyaq5nca6"))))
+                "05zgyi4wmasi1rcyn5jq42w0bi9713q9m8dl1fdgl66nmacixh39"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -4039,6 +4040,12 @@ part of the distribution.")
                             "/lib/coq/user-contrib/Coquelicot"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'fix-coq8.8
+           (lambda _
+             ; appcontext has been removed from coq 8.8
+             (substitute* "theories/AutoDerive.v"
+               (("appcontext") "context"))
+             #t))
          (add-before 'configure 'fix-remake
            (lambda _
              (substitute* "remake.cpp"
@@ -4068,7 +4075,7 @@ theorems between the two libraries.")
 (define-public coq-bignums
   (package
     (name "coq-bignums")
-    (version "8.7.0")
+    (version "8.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/coq/bignums/archive/V"
@@ -4076,7 +4083,7 @@ theorems between the two libraries.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03iw9jiwq9jx45gsvp315y3lxr8m9ksppmcjvxs5c23qnky6zqjx"))))
+                "08m1cmq4hkaf4sb0vy978c11rgzvds71cphyadmr2iirpr5815r0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)

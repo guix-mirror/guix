@@ -723,16 +723,16 @@ format is also supported.")
 (define-public guile-ics
   (package
     (name "guile-ics")
-    (version "0.1.1")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/guile-ics")
-                    (commit "v0.1.1")))
+                    (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1pvg6j48inpbq47hq00yh5hhl2qd2srvrx5yjl7w7ky1jsjadp86"))))
+                "0qjjvadr7gibdq9jvwkmlkb4afsw9n2shfj9phpiadinxk3p4m2g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -749,8 +749,8 @@ format is also supported.")
        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0) ("which" ,which)))
-    (propagated-inputs `(("guile-lib" ,guile2.0-lib)))
+    (inputs `(("guile" ,guile-2.2) ("which" ,which)))
+    (propagated-inputs `(("guile-lib" ,guile-lib)))
     (home-page "https://github.com/artyom-poptsov/guile-ics")
     (synopsis "Guile parser library for the iCalendar format")
     (description
@@ -919,7 +919,7 @@ specification.  These are the main features:
 
            #t))))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "https://github.com/ijp/minikanren")
     (synopsis "MiniKanren declarative logic system, packaged for Guile")
     (description
@@ -934,8 +934,11 @@ slightly from miniKanren mainline.
 See http://minikanren.org/ for more on miniKanren generally.")
     (license license:expat)))
 
+(define-public guile2.0-minikanren
+  (package-for-guile-2.0 guile-minikanren))
+
 (define-public guile2.2-minikanren
-  (package-for-guile-2.2 guile-minikanren))
+  (deprecated-package "guile2.2-minikanren" guile-minikanren))
 
 (define-public guile-miniadapton
   (let ((commit "1b5749422304567c96ac5367f2221dda9eff5880")
@@ -1076,7 +1079,7 @@ understand, extend, and port to host languages other than Scheme.")
                (install-file "irregex.html" doc)
                #t))))))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "http://synthcode.com/scheme/irregex")
     (synopsis "S-expression based regular expressions")
     (description
@@ -1085,8 +1088,11 @@ string-based regular expressions.  It implements SRFI 115 and is deeply
 inspired by the SCSH regular expression system.")
     (license license:bsd-3)))
 
+(define-public guile2.0-irregex
+  (package-for-guile-2.0 guile-irregex))
+
 (define-public guile2.2-irregex
-  (package-for-guile-2.2 guile-irregex))
+  (deprecated-package "guile2.2-irregex" guile-irregex))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.
@@ -1368,15 +1374,18 @@ above command-line parameters.")
                   #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "https://savannah.nongnu.org/projects/guile-redis/")
     (synopsis "Redis client library for Guile")
     (description "Guile-redis provides a Scheme interface to the Redis
 key-value cache and store.")
     (license license:lgpl3+)))
 
+(define-public guile2.0-redis
+  (package-for-guile-2.0 guile-redis))
+
 (define-public guile2.2-redis
-  (package-for-guile-2.2 guile-redis))
+  (deprecated-package "guile2.2-redis" guile-redis))
 
 (define-public guile-wisp
   (package
@@ -1559,19 +1568,19 @@ provides access to that interface and its types from the Scheme level.")
     (arguments
      '(#:configure-flags
        (list (string-append
-              "--with-guile-site-dir=" %output "/share/guile/site/2.0"))
+              "--with-guile-site-dir=" %output "/share/guile/site/2.2"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'patch-extension-path
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
                     (dbi.scm (string-append
-                              out "/share/guile/site/2.0/dbi/dbi.scm"))
+                              out "/share/guile/site/2.2/dbi/dbi.scm"))
                     (ext     (string-append out "/lib/libguile-dbi")))
                (substitute* dbi.scm (("libguile-dbi") ext))
                #t))))))
     (propagated-inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (synopsis "Guile database abstraction layer")
     (home-page "http://home.gna.org/guile-dbi/guile-dbi.html")
     (description

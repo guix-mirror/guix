@@ -519,7 +519,7 @@ data.")
 (define-public json-c
   (package
     (name "json-c")
-    (version "0.13")
+    (version "0.13.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -527,7 +527,7 @@ data.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0kf2594kxcfga6x0mvwzj2qg8pgxhjkibc16ghnw85mdx45ph5h3"))
+               "0ws8dz9nk8q2c0gbf66kg2r6mrkl7kamd3gpdv9zsyrz9n6n0zmq"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -536,14 +536,8 @@ data.")
                  ;; run 'autoheader'.
                  (set-file-time "config.h.in"
                                 (stat "aclocal.m4"))
-
-                 ;; Don't try to build with -Werror.
-                 (substitute* (find-files "." "Makefile\\.in")
-                   (("-Werror") ""))
                  #t))))
     (build-system gnu-build-system)
-    (arguments '(#:parallel-build? #f
-                 #:parallel-tests? #f))
     (home-page "https://github.com/json-c/json-c/wiki")
     (synopsis "JSON implementation in C")
     (description
@@ -1818,15 +1812,15 @@ number, file name, and code context surrounding the line number.")
 (define-public perl-catalyst-plugin-static-simple
   (package
     (name "perl-catalyst-plugin-static-simple")
-    (version "0.33")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
                            "Catalyst-Plugin-Static-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "1h8f12bhzh0ssq9gs8r9g3hqn8zn2k0q944vc1vm8j81bns16msy"))))
+         "0m4l627p2fvzr4i6sgdxhdvsx4wpa6qmaibsbxlg5x5yjs7k7drn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
@@ -2439,7 +2433,7 @@ composed of HTML::Element style components.")
 (define-public perl-html-scrubber
   (package
     (name "perl-html-scrubber")
-    (version "0.15")
+    (version "0.17")
     (source
      (origin
        (method url-fetch)
@@ -2449,11 +2443,12 @@ composed of HTML::Element style components.")
              ".tar.gz"))
        (sha256
         (base32
-         "1m1f8gm2jry42zxja05dxp2ck7y66m7i8vc38nj6hccnwlby6cvi"))))
+         "06p7w4zd42b2yh541mlzyqj40lwmvvn3fyqi8big4mf34la7m2jm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-cpan-meta" ,perl-test-cpan-meta)
+       ("perl-test-differences" ,perl-test-differences)
        ("perl-test-eol" ,perl-test-eol)
        ("perl-test-memory-cycle" ,perl-test-memory-cycle)
        ("perl-test-notabs" ,perl-test-notabs)))
@@ -3412,7 +3407,7 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-www-mechanize
   (package
     (name "perl-test-www-mechanize")
-    (version "1.48")
+    (version "1.50")
     (source
      (origin
        (method url-fetch)
@@ -3420,17 +3415,12 @@ either mocked HTTP or a locally spawned server.")
                            "Test-WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "1d11fx9155d5v17d5w7q3kj37b01l8yj2yb0g6b0z1vh938rrlcr"))))
+         "097pl87vdbxbb56vawzvs6ikrlb8nz3dx223kjjbdn3jlli3jjhg"))))
     (build-system perl-build-system)
-    (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
-    (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-carp-assert-more" ,perl-carp-assert-more)
        ("perl-html-form" ,perl-html-form)
        ("perl-html-lint" ,perl-html-lint)
-       ("perl-html-tree" ,perl-html-tree)
        ("perl-http-server-simple" ,perl-http-server-simple)
        ("perl-libwww" ,perl-libwww)
        ("perl-test-longstring" ,perl-test-longstring)
@@ -3480,7 +3470,7 @@ testing of Catalyst applications without needing to start up a web server.")
 (define-public perl-test-www-mechanize-psgi
   (package
     (name "perl-test-www-mechanize-psgi")
-    (version "0.37")
+    (version "0.38")
     (source
      (origin
        (method url-fetch)
@@ -3488,7 +3478,7 @@ testing of Catalyst applications without needing to start up a web server.")
                            "Test-WWW-Mechanize-PSGI-" version ".tar.gz"))
        (sha256
         (base32
-         "0c9a9w0d2whadnrich7f09w37fgq5hws4gq04zgz4jsdjcvr3qv2"))))
+         "0fsh2i05kf1kfavv2r9kmnjl7qlyqrd11ikc0qcqzzxsqzzjkg9r"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-pod" ,perl-test-pod)))

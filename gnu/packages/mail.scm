@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -397,7 +397,7 @@ It adds a large amount of new and improved features to mutt.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "2.6.23")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -405,7 +405,7 @@ It adds a large amount of new and improved features to mutt.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "0slzlzcr3h8jikpz5a5amqd0csqh2m40gdk910ws2hnaf5m6hjbi"))))
+                "1q6palbpf6lh6bvy9ly26q5apl5k0z0r4mvl6zzqh90rz4rn1v3m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -429,8 +429,8 @@ It adds a large amount of new and improved features to mutt.")
                  (let* ((base (basename prog-path))
                         (prog (which base)))
                    (string-append pre
-                                  (or prog (error "not found: " base))))))
-              #t))))))
+                                  (or prog (error "not found: " base)))))))
+            #t)))))
     (home-page "http://spruce.sourceforge.net/gmime/")
     (synopsis "MIME message parser and creator library")
     (description
@@ -438,6 +438,20 @@ It adds a large amount of new and improved features to mutt.")
 the creation and parsing of messages using the Multipurpose Internet Mail
 Extension (MIME).")
     (license (list lgpl2.1+ gpl2+ gpl3+))))
+
+;; Some packages are not ready for GMime 3 yet.
+(define-public gmime-2.6
+  (package
+    (inherit gmime)
+    (version "2.6.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gmime/"
+                                  (version-major+minor version)
+                                  "/gmime-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0slzlzcr3h8jikpz5a5amqd0csqh2m40gdk910ws2hnaf5m6hjbi"))))))
 
 (define-public bogofilter
   (package
@@ -598,7 +612,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
      `(("xapian" ,xapian)
        ("guile" ,guile-2.2)
        ("glib" ,glib)
-       ("gmime" ,gmime)))
+       ("gmime" ,gmime-2.6)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -2429,7 +2443,7 @@ tools and applications:
      `(("cyrus-sasl" ,cyrus-sasl)
        ("enchant" ,enchant)
        ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gmime" ,gmime)
+       ("gmime" ,gmime-2.6)
        ("gnutls" ,gnutls)
        ("gpgme" ,gpgme)
        ("gtk+" ,gtk+)
@@ -2506,7 +2520,7 @@ killed threads.")
                                             "/bin/gpg\"")))
              #t)))))
     (inputs
-     `(("gmime" ,gmime)
+     `(("gmime" ,gmime-2.6)
        ("gnupg" ,gnupg)
        ("gnutls" ,gnutls)
        ("gtk+" ,gtk+)

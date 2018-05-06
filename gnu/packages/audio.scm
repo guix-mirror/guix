@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -572,16 +572,7 @@ based on human speech recordings.")
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-compiler-flags
            (lambda _
-             (substitute* '("src/casynth/CMakeLists.txt"
-                            "src/cheapdist/CMakeLists.txt"
-                            "src/duffer/CMakeLists.txt"
-                            "src/envfollower/CMakeLists.txt"
-                            "src/ewham/CMakeLists.txt"
-                            "src/hip2b/CMakeLists.txt"
-                            "src/lushlife/CMakeLists.txt"
-                            "src/powercut/CMakeLists.txt"
-                            "src/powerup/CMakeLists.txt"
-                            "src/stuck/CMakeLists.txt")
+             (substitute* (find-files "." "CMakeLists.txt")
                (("-msse2 -mfpmath=sse") ""))
              #t)))))
     (inputs

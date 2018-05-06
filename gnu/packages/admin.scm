@@ -358,16 +358,15 @@ hostname.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.5")
+    (version "4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
                     "download/" version "/shadow-" version ".tar.xz"))
-              (patches (search-patches "shadow-CVE-2018-7169.patch"))
               (sha256
                (base32
-                "0hdpai78n63l3v3fgr3kkiqzhd0awrpfnnzz4mf7lmxdh61qb37w"))))
+                "10smy01km2bqjjvsd2jz17zvrxbzj89qczyb1amk38j28bcci609"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -959,7 +958,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.22")
+    (version "1.8.23")
     (source (origin
               (method url-fetch)
               (uri
@@ -969,7 +968,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "00pxp74xkwdcmrjwy55j0k8p684jk1zx3nzdc11v30q8q8kwnmkj"))
+                "0yg62wq8rcrbr7qvh3wgfg2g4bwanbi50cr2lf2cfyy8dydx4qyq"))
               (modules '((guix build utils)))
               (snippet
                '(begin

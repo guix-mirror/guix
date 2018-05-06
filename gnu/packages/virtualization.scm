@@ -383,14 +383,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "4.2.0")
+    (version "4.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0nq1iz5iic466qahp0i8dlvyd6li0b0pdrvvrz9286l12x2fm61s"))))
+                "1dy243dqaj174hcka0my7q781wf0dvyi7f9328nwnplqicnf4cd5"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest

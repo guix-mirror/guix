@@ -1005,13 +1005,13 @@ interfaces.")
 (define-public ruby-lumberjack
   (package
     (name "ruby-lumberjack")
-    (version "1.0.12")
+    (version "1.0.13")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "lumberjack" version))
               (sha256
                (base32
-                "0yz26k9mi0djx1qvlmvdw1xw2yf7a2rkfmnb2j0d28kms33xpibp"))))
+                "06im7gcg42x77yhz2w5da2ly9xz0n0c36y5ks7xs53v0l9g0vf5n"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
@@ -2068,14 +2068,14 @@ instance, it provides @code{assert_true}, @code{assert_false} and
 (define-public ruby-minitest-hooks
   (package
     (name "ruby-minitest-hooks")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "minitest-hooks" version))
        (sha256
         (base32
-         "05bngfyxwq1cflk568nhddgfrmws5ff6kiqax4skklsjnh71ykbi"))))
+         "0lnpvzijbjrvxjc43d155jnbk2mkfshrz22an711wh004scavlzc"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
@@ -2924,13 +2924,13 @@ a native C extension.")
 (define-public ruby-rb-fsevent
   (package
     (name "ruby-rb-fsevent")
-    (version "0.10.2")
+    (version "0.10.3")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rb-fsevent" version))
               (sha256
                (base32
-                "1fbpmjypwxkb8r7y1kmhmyp6gawa4byw0yb3jc3dn9ly4ld9lizf"))))
+                "1lm1k7wpz69jx7jrc92w3ggczkjyjbfziq5mg62vjnxmzs383xx8"))))
     (build-system ruby-build-system)
     ;; Tests need "guard-rspec", which needs "guard".  However, "guard" needs
     ;; "listen", which needs "rb-fsevent" at runtime.
@@ -3694,17 +3694,17 @@ application.")
 (define-public ruby-eventmachine
   (package
     (name "ruby-eventmachine")
-    (version "1.2.5")
+    (version "1.2.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "eventmachine" version))
        (sha256
         (base32
-         "075hdw0fgzldgss3xaqm2dk545736khcvv1fmzbf1sgdlkyh1v8z"))))
+         "08477hl609rmmngwfy8dmsqz5zvsg8xrsrrk6xi70jf48majwli0"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ; test suite tries to connect to google.com
+     '(#:tests? #f))               ; test suite tries to connect to google.com
     (native-inputs
      `(("ruby-rake-compiler" ,ruby-rake-compiler)))
     (synopsis "Single-threaded network event framework for Ruby")
@@ -3882,14 +3882,14 @@ definitions.")
 (define-public ruby-fivemat
   (package
     (name "ruby-fivemat")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "fivemat" version))
        (sha256
         (base32
-         "0ij7n250gk5c1g34rsbwjnpcv64gk4vsas8lkz8fac4wbygvk6z1"))))
+         "006n7b09vviv5bs5hv2ccmjxw9iw3brcsm3xh3dhzfncsknz4jp7"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no tests

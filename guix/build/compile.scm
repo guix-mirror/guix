@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -120,6 +120,28 @@ front."
       (lambda ()
         (set! path initial-value)))))
 
+(define (call/exit-on-exception thunk)
+  "Evaluate THUNK and exit right away if an exception is thrown."
+  (catch #t
+    thunk
+    (const #f)
+    (lambda (key . args)
+      (false-if-exception
+       ;; Duplicate stderr to avoid thread-safety issues.
+       (let* ((port  (duplicate-port (current-error-port) "w0"))
+              (stack (make-stack #t))
+              (depth (stack-length stack))
+              (frame (and (> depth 1) (stack-ref stack 1))))
+         (false-if-exception (display-backtrace stack port))
+         (print-exception port frame key args)))
+
+      ;; Don't go any further.
+      (primitive-exit 1))))
+
+(define-syntax-rule (exit-on-exception exp ...)
+  "Evaluate EXP and exit if an exception is thrown."
+  (call/exit-on-exception (lambda () exp ...)))
+
 (define* (compile-files source-directory build-directory files
                         #:key
                         (host %host-type)
@@ -139,15 +161,18 @@ files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
   (define (build file)
     (with-mutex progress-lock
       (report-compilation file total completed))
-    (with-fluids ((*current-warning-prefix* ""))
-      (with-target host
-        (lambda ()
-          (let ((relative (relative-file source-directory file)))
-            (compile-file file
-                          #:output-file (string-append build-directory "/"
-                                                       (scm->go relative))
-                          #:opts (append warning-options
-                                         (optimization-options relative)))))))
+
+    ;; Exit as soon as something goes wrong.
+    (exit-on-exception
+     (with-fluids ((*current-warning-prefix* ""))
+       (with-target host
+         (lambda ()
+           (let ((relative (relative-file source-directory file)))
+             (compile-file file
+                           #:output-file (string-append build-directory "/"
+                                                        (scm->go relative))
+                           #:opts (append warning-options
+                                          (optimization-options relative))))))))
     (with-mutex progress-lock
       (set! completed (+ 1 completed))))
 

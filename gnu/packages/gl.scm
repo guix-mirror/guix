@@ -55,7 +55,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module ((srfi srfi-1) #:hide (zip)))
 
 (define-public glu
   (package
@@ -211,7 +212,8 @@ also known as DXTn or DXTC) for Mesa.")
     (package
       (inherit libva)
       (name "libva-without-mesa")
-      (inputs (alist-delete "mesa" (package-inputs libva)))
+      (inputs `(,@(fold alist-delete (package-inputs libva)
+                        '("mesa" "wayland"))))
       (arguments
        (strip-keyword-arguments
         '(#:make-flags)

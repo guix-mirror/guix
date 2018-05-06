@@ -11748,7 +11748,7 @@ accurate as existing quantification tools.")
 code that is used in the Cufflinks codebase.  The goal of this library is to
 provide this functionality without the necessity of drawing in a heavy-weight
 dependency like SeqAn.")
-    (license (license:x11-style "http://www.boost.org/LICENSE_1_0.txt"))))
+    (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"))))
 
 (define-public libdivsufsort
   (package

@@ -318,14 +318,14 @@ D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
 (define-public r-mass
   (package
     (name "r-mass")
-    (version "7.3-49")
+    (version "7.3-50")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MASS" version))
        (sha256
         (base32
-         "1yjbnj1p4z0vw84wga8q5fyqiw4n6r7pc6rdwam7vsbiamyzfcqs"))))
+         "16hasv9k4n773jsyzvh8s3gbga49hwdj8n5hxij6zqisy4i0kxq6"))))
     (properties `((upstream-name . "MASS")))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
@@ -939,14 +939,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.1.7")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "0nck1s2iglmkrn15ay2chrrwsy5lngcylz2sc87fxy5skxaahxdl"))))
+         "1z8yqnh3alq0xriz77vifgl27msf3av6maz07fld78m90ajb6y8r"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -1188,13 +1188,13 @@ evaluation (NSE) in R.")
 (define-public r-dbi
   (package
     (name "r-dbi")
-    (version "0.8")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DBI" version))
               (sha256
                (base32
-                "16nf8flxr5vdz8yrpprfbzydy3ajixkp9hc8ibd9n7r9nc29waym"))))
+                "1x8wy2vg2gcgd9bww04qmf0dsn3kp0rfjd8q8j1r2x9zxccg25pz"))))
     (build-system r-build-system)
     (home-page "https://github.com/rstats-db/DBI")
     (synopsis "R database interface")
@@ -1331,13 +1331,13 @@ syntax that can be converted to XHTML or other formats.")
 (define-public r-yaml
   (package
     (name "r-yaml")
-    (version "2.1.18")
+    (version "2.1.19")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "yaml" version))
               (sha256
                (base32
-                "15m4q5krfqg0avvqg9i2g6ns4757lk6zbyrwbx5c5bgh51glvd8v"))))
+                "04bzrnfgbpk0rhkvzwp3k3ip7jpq26bjxz71bx5mwxmcjdb07nz5"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/yaml/")
     (synopsis "Methods to convert R data to YAML and back")
@@ -1681,14 +1681,14 @@ transformations.")
 (define-public r-formula
   (package
     (name "r-formula")
-    (version "1.2-2")
+    (version "1.2-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Formula" version))
        (sha256
         (base32
-         "0ad49bzip1zqmpj1d8jajwl4bd81fm3k6dq8p26x6mvlzc04dvwd"))))
+         "0wiqh8rr9d5ciy80wj8f5fnmiiw0ywanvvnhkwd622dx42dk848l"))))
     (properties `((upstream-name . "Formula")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/Formula")
@@ -1742,13 +1742,13 @@ times.")
 (define-public r-data-table
   (package
     (name "r-data-table")
-    (version "1.10.4-3")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "data.table" version))
               (sha256
                (base32
-                "12caklgr19vy9wprdks6zh825vr1iw1cajgwcnbpyvmijqdlz2xs"))))
+                "0n1p35c9sni2272ykxsfbsy7xma62br7v668a5bvc37g75xf10df"))))
     (build-system r-build-system)
     (home-page "https://github.com/Rdatatable/data.table/wiki")
     (synopsis "Enhanced version of data.frame R object")
@@ -2157,14 +2157,14 @@ module, Java Server Pages, and Python's psp module.")
 (define-public r-desc
   (package
     (name "r-desc")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "desc" version))
        (sha256
         (base32
-         "0k07qighac1xzmm8k988zi7i88a0yfvia3gk5hbz0fyvb2v9kzrj"))))
+         "1s6s13fk6sxwcj8wzkwxl9vr33153xx11p5wi9avqx3rzkabavz6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -2182,14 +2182,14 @@ other packages.")
 (define-public r-commonmark
   (package
     (name "r-commonmark")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "commonmark" version))
        (sha256
         (base32
-         "1vb8r9khpvcf0q7acv8rsplfjjwcll302bg5kp596cvn6aacypl6"))))
+         "1jwx5rgm0ypd9a3v4jd9za4a644rdzhk1n4dvmgkj9hdpwsida3z"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/commonmark")
     (synopsis "CommonMark and Github Markdown Rendering in R")
@@ -2482,13 +2482,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.8.400.0.0")
+    (version "0.8.500.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "11y2ksf46zw6fcz0kk70szyfn7qqxwwd33xylrxvnyb7ldmbc5yr"))))
+                "1sh36dx6inmb56m40nigy94gxlgjva816qnlmjwg7y2bdvqj8vsi"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (native-inputs
@@ -3986,14 +3986,14 @@ hierarchical clustering dendrograms.")
 (define-public r-preprocesscore
   (package
     (name "r-preprocesscore")
-    (version "1.40.0")
+    (version "1.42.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "preprocessCore" version))
        (sha256
         (base32
-         "0mrdgbkb9dcfr9gsqyxfpshnxx60mq97pl98b8yl00l2gfwz48ph"))))
+         "1afar1z7959v7mbzsqa77vqfh0yc7y3nv5ayx71485a8scwsfwbk"))))
     (properties
      `((upstream-name . "preprocessCore")))
     (build-system r-build-system)

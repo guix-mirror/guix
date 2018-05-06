@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -967,3 +968,47 @@ It is inspired by Xmonad and dwm.  Its major features include:
     (description "Cwm is a stacking window manager for X11.  It is an OpenBSD
 project derived from the original Calm Window Manager.")
     (license license:isc)))
+
+(define-public nitrogen
+  (package
+    (name "nitrogen")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://github.com/l3ib/nitrogen/"
+                                  "releases/download/" version "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0zc3fl1mbhq0iyndy4ysmy8vv5c7xwf54rbgamzfhfvsgdq160pl"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("gtkmm" ,gtkmm-2)
+       ("glib" ,glib)
+       ("glibmm" ,glibmm)))
+    (native-inputs
+     `(("pkg-config", pkg-config)))
+    (arguments
+     `(#:configure-flags (list
+                          (string-append "--prefix=" %output)
+                          "CXXFLAGS=-std=c++11")))
+    (home-page "http://projects.l3ib.org/nitrogen/")
+    (synopsis "Background browser and setter for X windows")
+    (description
+     "This package is a background browser and setter for X windows.  It's
+features are:
+
+@itemize
+@item Multihead and Xinerama aware
+@item Recall mode to used via startup script
+@item Uses freedesktop.org standard for thumbnails
+@item Can set GNOME background
+@item Command lie set modes for script use
+@item Inotify monitoring of browse directory
+@item Lazy loading of thumbnails - conserves memory
+@item \"Automatic\" set mode - determines best mode to set an image based on
+its size
+@item Display preview images in a tiled icon layout
+@end itemize")
+    (license license:gpl2+)))

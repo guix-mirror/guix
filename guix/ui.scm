@@ -82,6 +82,7 @@
             show-manifest-transaction
             call-with-error-handling
             with-error-handling
+            with-unbound-variable-handling
             leave-on-EPIPE
             read/eval
             read/eval-package-expression
@@ -164,7 +165,7 @@ messages."
     ((proc message (variable) _ ...)
      ;; We can always omit PROC because when it's useful (i.e., different from
      ;; "module-lookup"), it gets displayed before.
-     (format port (G_ "~a: unbound variable") variable))
+     (format port (G_ "error: ~a: unbound variable") variable))
     (_
      (default-printer))))
 
@@ -179,9 +180,9 @@ messages."
               modules)
     module))
 
-(define* (load* file user-module
-                #:key (on-error 'nothing-special))
-  "Load the user provided Scheme source code FILE."
+(define (last-frame-with-source stack)
+  "Walk stack upwards and return the last frame that has source location
+information, or #f if it could not be found."
   (define (frame-with-source frame)
     ;; Walk from FRAME upwards until source location information is found.
     (let loop ((frame    frame)
@@ -192,6 +193,15 @@ messages."
               frame
               (loop (frame-previous frame) frame)))))
 
+  (let* ((depth (stack-length stack))
+         (last  (and (> depth 0) (stack-ref stack 0))))
+    (frame-with-source (if (> depth 1)
+                           (stack-ref stack 1)    ;skip the 'throw' frame
+                           last))))
+
+(define* (load* file user-module
+                #:key (on-error 'nothing-special))
+  "Load the user provided Scheme source code FILE."
   (define (error-string frame args)
     (call-with-output-string
       (lambda (port)
@@ -244,12 +254,7 @@ messages."
          ;; Capture the stack up to this procedure call, excluded, and pass
          ;; the faulty stack frame to 'report-load-error'.
          (let* ((stack (make-stack #t handle-error tag))
-                (depth (stack-length stack))
-                (last  (and (> depth 0) (stack-ref stack 0)))
-                (frame (frame-with-source
-                        (if (> depth 1)
-                            (stack-ref stack 1)   ;skip the 'throw' frame
-                            last))))
+                (frame (last-frame-with-source stack)))
 
            (report-load-error file args frame)
 
@@ -311,6 +316,21 @@ PORT."
                                            (- (terminal-columns) 5))))
             (texi->plain-text message))))
 
+(define* (report-unbound-variable-error args #:key frame)
+  "Return the given unbound-variable error, where ARGS is the list of 'throw'
+arguments."
+  (match args
+    ((key . args)
+     (print-exception (current-error-port) frame key args)))
+  (match args
+    (('unbound-variable proc message (variable) _ ...)
+     (match (known-variable-definition variable)
+       (#f
+        (display-hint (G_ "Did you forget a @code{use-modules} form?")))
+       ((? module? module)
+        (display-hint (format #f (G_ "Did you forget @code{(use-modules ~a)}?")
+                              (module-name module))))))))
+
 (define* (report-load-error file args #:optional frame)
   "Report the failure to load FILE, a user-provided Scheme file.
 ARGS is the list of arguments received by the 'throw' handler."
@@ -331,16 +351,8 @@ ARGS is the list of arguments received by the 'throw' handler."
      (let ((loc (source-properties->location properties)))
        (format (current-error-port) (G_ "~a: error: ~a~%")
                (location->string loc) message)))
-    (('unbound-variable proc message (variable) _ ...)
-     (match args
-       ((key . args)
-        (print-exception (current-error-port) frame key args)))
-     (match (known-variable-definition variable)
-       (#f
-        (display-hint (G_ "Did you forget a @code{use-modules} form?")))
-       (module
-        (display-hint (format #f (G_ "Did you forget @code{(use-modules ~a)}?")
-                              (module-name module))))))
+    (('unbound-variable _ ...)
+     (report-unbound-variable-error args #:frame frame))
     (('srfi-34 obj)
      (if (message-condition? obj)
          (if (error-location? obj)
@@ -380,6 +392,27 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
     ((error args ...)
      (warning (G_ "failed to load '~a':~%") file)
      (apply display-error #f (current-error-port) args))))
+
+(define (call-with-unbound-variable-handling thunk)
+  (define tag
+    (make-prompt-tag "user-code"))
+
+  (catch 'unbound-variable
+    (lambda ()
+      (call-with-prompt tag
+        thunk
+        (const #f)))
+    (const #t)
+    (rec (handle-error . args)
+         (let* ((stack (make-stack #t handle-error tag))
+                (frame (and stack (last-frame-with-source stack))))
+           (report-unbound-variable-error args #:frame frame)
+           (exit 1)))))
+
+(define-syntax-rule (with-unbound-variable-handling exp ...)
+  "Capture 'unbound-variable' exceptions in the dynamic extent of EXP... and
+report them in a user-friendly way."
+  (call-with-unbound-variable-handling (lambda () exp ...)))
 
 (define (install-locale)
   "Install the current locale settings."

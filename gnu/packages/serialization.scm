@@ -248,7 +248,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public yaml-cpp
   (package
     (name "yaml-cpp")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -256,12 +256,10 @@ that implements both the msgpack and msgpack-rpc specifications.")
                     "yaml-cpp-" version ".tar.gz"))
               (sha256
                (base32
-                "038ddf771d1zrdfiwqzq2lsjdis1fxbaasbdja2w9f1av3k3gv15"))))
+                "01gxn7kc8pzyh4aadjxxzq8cignmbwmm9rfrsmgqfg9w2q75dn74"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
-    (inputs
-     `(("boost" ,boost)))
     (native-inputs
      `(("python" ,python)))
     (home-page "https://github.com/jbeder/yaml-cpp")

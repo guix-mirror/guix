@@ -111,12 +111,12 @@
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "./b2" "install" make-flags))))))
 
-    (home-page "http://www.boost.org")
+    (home-page "https://www.boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
     (description
      "A collection of libraries intended to be widely useful, and usable
 across a broad spectrum of applications.")
-    (license (license:x11-style "http://www.boost.org/LICENSE_1_0.txt"
+    (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
 
 (define-public boost-sync
@@ -149,7 +149,7 @@ across a broad spectrum of applications.")
       (description "The Boost.Sync library provides mutexes, semaphores, locks
 and events and other thread related facilities.  Boost.Sync originated from
 Boost.Thread.")
-      (license (license:x11-style "http://www.boost.org/LICENSE_1_0.txt")))))
+      (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt")))))
 
 (define-public mdds
   (package

@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,11 +82,19 @@ a flexible and convenient way.")
                          (remove file-is-directory?
                                  (find-files "src/tests" ".*")))
                #t)))
-         (add-after 'unpack 'patch-iconv-path
+         (add-after 'unpack 'patch-absolute-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/man.c"
                (("\"iconv\"")
                 (string-append "\"" (which "iconv") "\"")))
+             ;; Embed an absolute reference to "preconv", otherwise it
+             ;; falls back to searching in PATH and ultimately fails
+             ;; to render unicode data (see <https://bugs.gnu.org/30785>).
+             (substitute* "lib/encodings.c"
+               (("groff_preconv = NULL")
+                (string-append "groff_preconv = \""
+                               (assoc-ref inputs "groff-minimal")
+                               "/bin/preconv\"")))
              #t)))
        #:configure-flags
        (let ((groff (assoc-ref %build-inputs "groff"))
@@ -151,7 +160,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "4.15")
+    (version "4.16")
     (source (origin
               (method url-fetch)
               (uri
@@ -164,7 +173,7 @@ the traditional flat-text whatis databases.")
                     "man-pages-" version ".tar.xz")))
               (sha256
                (base32
-                "01n1rq1kvambax85xamriawbga94mh63s5mgjmjljjgf50m7yw6f"))))
+                "1d2d6llazg3inwjiz22cn46mbm5ydpbyh9qb55z4j3nm4w6wrzs7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))

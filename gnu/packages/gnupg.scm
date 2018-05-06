@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,20 @@ Daemon and possibly more in the future.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgpg-error")))))
+
+;; Some packages (e.g. GPGME) require a newer libgpg-error to deal with
+;; error codes from recent GnuPG.  Remove this in the next rebuild cycle.
+(define-public libgpg-error-1.31
+  (package
+    (inherit libgpg-error)
+    (version "1.31")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/libgpg-error/libgpg-error-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1vx4nw6rxh2biy3h8n96fyr86q29h8gjl6837437i51jr4isil20"))))))
 
 (define-public libgcrypt
   (package
@@ -216,14 +231,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.6")
+    (version "2.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "110rf476l3cgn52gh9ia5y0y06y2ialq9dqc12jkhnfhl9gqqkg6"))))
+                "0vlpis0q7gvq9mhdc43hkyn3cdriz4mwgj20my3gyzpgwqg3cnyr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -361,7 +376,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.10.0")
+    (version "1.11.1")
     (source
      (origin
       (method url-fetch)
@@ -369,13 +384,13 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "14q619lxbk64vz7lih5gjb928qm28jrnn1h3yhsrrff3jw8yv3qs"))))
+        "0vxx5xaag3rhp4g2arp5qm77gvz4kj0m3hnpvhkdvqyjfhbi26rd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnupg" ,gnupg)))
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
-     `(("libgpg-error" ,libgpg-error)))
+     `(("libgpg-error" ,libgpg-error-1.31)))
     (inputs
      `(("libassuan" ,libassuan)))
     (home-page "https://www.gnupg.org/related_software/gpgme/")

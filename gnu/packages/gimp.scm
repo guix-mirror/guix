@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -39,12 +41,13 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
 
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.40")
+    (version "0.1.46")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
@@ -58,7 +61,7 @@
                                         "/babl-" version ".tar.bz2")))
               (sha256
                (base32
-                "08cdl6rcfvkhqsnhb214xzr0wbrv0956xzlrzqxcb1k1madgjanh"))))
+                "0nwyhvfca6m35wjcccvwca7fcihzgdfyc012qi703y5d3cxl1hmv"))))
     (build-system gnu-build-system)
     (home-page "http://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
@@ -75,43 +78,25 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.2.0")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
-              (uri (list (string-append "http://download.gimp.org/pub/gegl/"
+              (uri (list (string-append "https://download.gimp.org/pub/gegl/"
                                         (string-take version 3)
                                         "/" name "-" version ".tar.bz2")))
               (sha256
                (base32
-                "09nlv06li9nrn74ifpm7223mxpg0s7cii702z72cpbwrjh6nlbnz"))
-              (patches (search-patches "gegl-CVE-2012-4433.patch"))))
+                "1ighk4z8nlqrzyj8w97s140hzj59564l3xv6fpzbr97m1zx2nkfh"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; More than just the one test disabled below now fails; disable them
-       ;; all according to the rationale given below.
-       #:tests? #f
-       #:configure-flags '("LDFLAGS=-lm")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'pre-build
-           (lambda _
-             ;; This test program seems to crash on exit. Specifically, whilst
-             ;; g_object_unreffing bufferA and bufferB - This seems to be a bug
-             ;; in the destructor.  This is just a test program so will not have
-             ;; any wider effect, although might be hiding another problem.
-             ;; According to advice received on irc.gimp.org#gegl although 0.2.0
-             ;; is the latest released version, any bug reports against it will
-             ;; be ignored.  So we are on our own.
-             (substitute* "tools/img_cmp.c"
-               (("g_object_unref \\(buffer.\\);") ""))
-
-             (substitute* "tests/compositions/Makefile"
-               (("/bin/sh") (which "sh")))
-             #t)))))
-    (inputs
+     '(#:configure-flags '("LDFLAGS=-lm")))
+    ;; These are propagated to satisfy 'gegl-0.4.pc'.
+    (propagated-inputs
      `(("babl" ,babl)
        ("glib" ,glib)
-       ("cairo" ,cairo)
+       ("json-glib" ,json-glib)))
+    (inputs
+     `(("cairo" ,cairo)
        ("pango" ,pango)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-8)))
@@ -131,23 +116,18 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.8.22")
+    (version "2.10.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.gimp.org/pub/gimp/v"
+              (uri (string-append "https://download.gimp.org/pub/gimp/v"
                                   (version-major+minor version)
                                   "/gimp-" version ".tar.bz2"))
-              (patches (search-patches "gimp-CVE-2017-17784.patch"
-                                       "gimp-CVE-2017-17785.patch"
-                                       "gimp-CVE-2017-17786.patch"
-                                       "gimp-CVE-2017-17787.patch"
-                                       "gimp-CVE-2017-17789.patch"))
               (sha256
                (base32
-                "12k3lp938qdc9cqj29scg55f3bb8iav2fysd29w0s49bqmfa71wi"))))
+                "1qkxaigbfkx26xym5nzrgfrmn97cbnhn63v1saaha2nbi3xrdk3z"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "doc"))                            ;5 MiB of gtk-doc HTML
+               "doc"))                            ;9 MiB of gtk-doc HTML
     (arguments
      '(#:configure-flags (list (string-append "--with-html-dir="
                                               (assoc-ref %outputs "doc")
@@ -171,21 +151,27 @@ buffers.")
     (inputs
      `(("babl" ,babl)
        ("glib" ,glib)
+       ("glib-networking" ,glib-networking)
        ("libtiff" ,libtiff)
        ("libjpeg" ,libjpeg-8)
        ("atk" ,atk)
+       ("gexiv2" ,gexiv2)
        ("gtk+" ,gtk+-2)
+       ("libmypaint" ,libmypaint)
+       ("mypaint-brushes" ,mypaint-brushes)
        ("exif" ,libexif)                ; optional, EXIF + XMP support
        ("lcms" ,lcms)                   ; optional, color management
        ("librsvg" ,librsvg)             ; optional, SVG support
        ("poppler" ,poppler)             ; optional, PDF support
+       ("poppler-data" ,poppler-data)
        ("python" ,python-2)             ; optional, Python support
        ("python2-pygtk" ,python2-pygtk) ; optional, Python support
        ("gegl" ,gegl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("glib:bin" ,glib "bin") ; for glib-compile-resources and gdbus-codegen
+       ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
-    (home-page "http://gimp.org")
+    (home-page "https://www.gimp.org")
     (synopsis "GNU Image Manipulation Program")
     (description
      "GIMP is an application for image manipulation tasks such as photo
@@ -243,3 +229,58 @@ an image, allowing you to work with the transformed image inside GIMP.  You
 can draw or apply filters in fourier space and get the modified image with an
 inverse fourier transform.")
     (license license:gpl3+)))
+
+(define-public libmypaint
+  (package
+    (name "libmypaint")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mypaint/libmypaint/"
+                                  "releases/download/v" version "/libmypaint-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0wd6jk69vmhsq1mdw96v0fh7b28n3glkr5ca466zcq7agzaxj1va"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    ;; As needed by 'libmypaint.pc'.
+    (propagated-inputs
+     `(("json-c" ,json-c)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("glib" ,glib)))
+    (synopsis "Artistic brushes library")
+    (description "Libmypaint, also called \"brushlib\", is a library for making
+brushstrokes which is used by MyPaint and GIMP.")
+    (home-page "http://mypaint.org")
+    (license license:isc)))
+
+(define-public mypaint-brushes
+  (package
+    (name "mypaint-brushes")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/Jehan/mypaint-brushes/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "055j2rgkav2024zl6y5hxb2ra0vbx58607d6sz7ml2351r1bcjvh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _ (invoke "sh" "./autogen.sh"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (synopsis "Default brushes for MyPaint")
+    (description "This package provides the default set of brushes for
+MyPaint.")
+    (home-page "https://github.com/Jehan/mypaint-brushes")
+    (license license:cc0)))

@@ -392,8 +392,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.16.6")
-(define %linux-libre-hash "069bxqx27xib1gz4aayy8ar2hfp68cpdi8h51g6453k0w14pkchn")
+(define %linux-libre-version "4.16.7")
+(define %linux-libre-hash "145hv7paw5zd6bnkk0agxyg2a37066xhrxszbq3d03mjvi8ap117")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -401,8 +401,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.38")
-(define %linux-libre-4.14-hash "09lmz8zbd3c1qf8z3d2lkhcqcwawajh76s85zdhgqdmd2idpwach")
+(define %linux-libre-4.14-version "4.14.39")
+(define %linux-libre-4.14-hash "0r6fydsgspnskh5n1hfrkyrlrmql635zqr44ajafmqimldc0bplz")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -411,14 +411,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.97"
-                    "1xc3mj1qi51n1kr5bxmdf1rlpyj78x9imhfc7gihn8qjc6zsf1sp"
+  (make-linux-libre "4.9.98"
+                    "14mqg2hvxg4zwajwly18akyaca821sp4iz5w3xmikwndn2j8y1lw"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.130"
-                    "15cayafj7d9y5fs9flg115kzrcrjycbvax9hgfzz6yym94v9k8lk"
+  (make-linux-libre "4.4.131"
+                    "1phah297rxjwy22wfaqlzpbk71ddp3drma5dx3i8xv6g8vijd08x"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -1937,17 +1937,27 @@ for systems using the Linux kernel.  This includes commands such as
 (define-public inotify-tools
   (package
     (name "inotify-tools")
-    (version "3.13")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/inotify-tools/inotify-tools/"
-                    version "/inotify-tools-" version ".tar.gz"))
+                    "https://github.com/rvoicilas/inotify-tools/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0icl4bx041axd5dvhg89kilfkysjj86hjakc7bk8n49cxjn4cha6"))))
+                "1b22c8x4pjnz3abx4dikpbj43zprjw79pdkd4xw111dsxlfwqcx4"))))
     (build-system gnu-build-system)
-    (home-page "http://inotify-tools.sourceforge.net/")
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'bootstrap
+                    (lambda _
+                      (invoke "autoreconf" "-vif"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/rvoicilas/inotify-tools/wiki")
     (synopsis "Monitor file accesses")
     (description
      "The inotify-tools packages provides a C library and command-line tools

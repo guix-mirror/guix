@@ -233,10 +233,19 @@ PCM data.")
                (base32
                 "13j1m92zhxwkaaja3lg5x0h0b28mrrawdzk9d3hd19031akfxwb3"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'no-Werror
+                    (lambda _
+                      ;; Don't abort builds due to things like GLib
+                      ;; deprecation warnings.
+                      (substitute* (find-files "." "^Makefile\\.in$")
+                        (("-Werror") ""))
+                      #t)))))
     (native-inputs `(("pkgconfig" ,pkg-config)))
     (inputs `(("bdb" ,bdb)
               ("glib" ,glib)
-              ("guile" ,guile-2.0)
+              ("guile" ,guile-2.2)
               ("libmicrohttpd" ,libmicrohttpd)
               ("ncurses" ,ncurses)
               ("sdl" ,sdl)
@@ -541,22 +550,15 @@ archive on a per-file basis.")
 (define-public love
   (package
     (name "love")
-    (version "0.10.2")
+    (version "11.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/rude/love/downloads/"
                                  "love-" version "-linux-src.tar.gz"))
              (sha256
               (base32
-               "11x346pw0gqad8nmkmywzx4xpcbfc3dslbrdw5x94n1i25mk0sxj"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Build with luajit 2.1.0-beta3.  Fixed in love 0.11.
-                 ;; See <https://bitbucket.org/rude/love/issues/1277>.
-                 (substitute* "src/libraries/luasocket/libluasocket/lua.h"
-                   (("> 501") ">= 501"))
-                 #t))))
+               "1pkwiszmjs0xrwk0wqbc5cp9108b1y8gwsid0gqk1s0x09q9lpmw"))
+             (modules '((guix build utils)))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

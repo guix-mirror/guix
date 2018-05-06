@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,14 +152,14 @@ processing to visualization and annotation.")
 (define-public r-multtest
   (package
     (name "r-multtest")
-    (version "2.34.0")
+    (version "2.36.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "multtest" version))
        (sha256
         (base32
-         "0n11rd49xl2vn3ldmfips7d3yb70l8npjcqsxyswr9ypjhgzkv9j"))))
+         "11949h2kglw13x8haaj4clg4jim1mwh5n98n9zxp9mmgn01z1lp0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-survival" ,r-survival)

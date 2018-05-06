@@ -653,14 +653,14 @@ rows, dropping names) to see if the modified versions are identical.")
 (define-public r-dendextend
   (package
     (name "r-dendextend")
-    (version "1.7.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dendextend" version))
        (sha256
         (base32
-         "1krvqadnnh53xx5ql7bwzxaif6a317jzbs1m00gnc6jnj03rfl5d"))))
+         "1virn3c232xwcq3d0hhkgjh5gpzl01s39iwii5gxcm9mnsxjzdrh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fpc" ,r-fpc)
@@ -1537,14 +1537,14 @@ Delaunay triangulation and convex hull computation.")
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ddalpha" version))
        (sha256
         (base32
-         "1i2zcz20zy9xd42kdz09njbkq07mj2pp6f07z6dnwi5hrmvhbh9r"))))
+         "0g4iqhrz2gym05q40ih6srilyajw2l2mv46pchn65bc7hw4vkgrk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -2370,14 +2370,14 @@ timeout.  It can also poll several processes at once.")
 (define-public r-tsp
   (package
     (name "r-tsp")
-    (version "1.1-5")
+    (version "1.1-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TSP" version))
        (sha256
         (base32
-         "03xxfr5kk4zhzpb1q1pwncdp0dhchm9b48wzhvvxn2dxf3mnby2w"))))
+         "1ym97xl2icjpfkrici0wig29w06bb704hp51v7h5liygjlwpkhlc"))))
     (properties `((upstream-name . "TSP")))
     (build-system r-build-system)
     (propagated-inputs `(("r-foreach" ,r-foreach)))
@@ -3125,18 +3125,19 @@ creation and manipulation of WAVE audio files.")
 (define-public r-np
   (package
     (name "r-np")
-    (version "0.60-6")
+    (version "0.60-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "np" version))
        (sha256
         (base32
-         "1y72x5j9j9mcgcy2xizk31gl843hfkngxdn8s4qw7yhw2qj79hsr"))))
+         "02h62n5xclr01fx88ayp7y1s9gcnb11zb1vqshvdcq31v18h7kf2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
        ("r-cubature" ,r-cubature)
+       ("r-quadprog" ,r-quadprog)
        ("r-quantreg" ,r-quantreg)))
     (home-page "https://github.com/JeffreyRacine/R-Package-np")
     (synopsis "Non-parametric kernel smoothing methods for mixed data types")
@@ -3853,14 +3854,14 @@ exchanging spatial objects with other R packages.")
 (define-public r-later
   (package
     (name "r-later")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "later" version))
        (sha256
         (base32
-         "0z9jymmclkq9zcg1fd8p6gsnm5z1sn3n9pfz3bs03qjrkbizgrvz"))))
+         "0l5ln7sjyi2rj7bx8iamxykqlfarv05zb9882ikizppb1cr1hgyw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)

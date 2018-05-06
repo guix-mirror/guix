@@ -1712,7 +1712,7 @@ contain over 620 classes.")
 (define-public qscintilla
   (package
     (name "qscintilla")
-    (version "2.10.2")
+    (version "2.10.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pyqt/QScintilla2/"
@@ -1720,7 +1720,7 @@ contain over 620 classes.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1l2ylsv6s3wfhyx7qr5cxgkwwwhvbrpd2k7akgm9bvbyf4h1vcql"))))
+                "1rw1nlwnyzj5pb86cc5kk56qhrvwvrjvjzgrkwh3g7b9wxl7lrfj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

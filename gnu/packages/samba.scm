@@ -150,14 +150,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.7.7")
+    (version "4.8.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "0c81x2ncnvz3mi6fjj81clm1mh049d3ip3fj031l44qclxpx3yi9"))))
+               "17bqgxyv34hjnb4hfamag75gwhqipp6mpvba5xg7lszi0xskdxwf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -192,8 +192,8 @@ anywhere.")
          (add-before 'install 'disable-etc-samba-directory-creation
            (lambda _
              (substitute* "dynconfig/wscript"
-               (("bld\\.INSTALL_DIRS\\(\"\",[[:blank:]]{1,}\"\\$\\{CONFIGDIR\\}[[:blank:]]{1,}")
-                "bld.INSTALL_DIRS(\"\", \""))
+               (("bld\\.INSTALL_DIR\\(\"\\$\\{CONFIGDIR\\}\"\\)")
+                ""))
              #t)))
        ;; XXX: The test infrastructure attempts to set password with
        ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
@@ -206,14 +206,16 @@ anywhere.")
        ("gnutls" ,gnutls)
        ("iniparser" ,iniparser)
        ("libaio" ,libaio)
-       ("ldb" ,ldb)
        ("linux-pam" ,linux-pam)
        ("openldap" ,openldap)
        ("popt" ,popt)
        ("readline" ,readline)
-       ("talloc" ,talloc)
-       ("tevent" ,tevent)
        ("tdb" ,tdb)))
+    (propagated-inputs
+     ;; In Requires or Requires.private of pkg-config files.
+     `(("ldb" ,ldb)
+       ("talloc" ,talloc)
+       ("tevent" ,tevent)))
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)    ;for generating manpages
        ("xsltproc" ,libxslt)           ;ditto
@@ -340,14 +342,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.3.2")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1avn4fl393kc80krbc47phbp0argdkys62ycs8vm934a6nvz0gnf"))))
+                "14gsrm7dvyjpbpnc60z75j6fz2p187abm2h353lq95kx2bv70c1b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

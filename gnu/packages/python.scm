@@ -2588,6 +2588,36 @@ sources.")
       (propagated-inputs `(("python2-pytz" ,python2-pytz)
                        ,@(package-propagated-inputs base))))))
 
+(define-public python-sphinx-gallery
+  (package
+    (name "python-sphinx-gallery")
+    (version "0.1.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sphinx-gallery/sphinx-gallery"
+                                  "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "03fs99mcb1r7qp0xixqv07vcz98sk21yq19ffdysi0infdcpzfkd"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: Tests attempt to download <https://docs.python.org/3/objects.inv>,
+     ;; <https://docs.scipy.org/doc/numpy/objects.inv>, and
+     ;; <https://matplotlib.org/objects.inv>.
+     `(#:tests? #f))
+    (native-inputs
+     `(("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://sphinx-gallery.github.io/")
+    (synopsis "Generate an examples gallery automatically")
+    (description
+     "@code{sphinx_gallery} is a Sphinx extension that builds an HTML version
+from any set of Python scripts and puts it into an examples gallery.")
+    (license license:bsd-3)))
+
+(define-public python2-sphinx-gallery
+  (package-with-python2 python-sphinx-gallery))
+
 (define-public python-sphinx-rtd-theme
   (package
     (name "python-sphinx-rtd-theme")
@@ -2869,7 +2899,7 @@ between language specification and implementation aspects.")
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.14.0")
+    (version "1.14.3")
     (source
      (origin
        (method url-fetch)
@@ -2878,7 +2908,7 @@ between language specification and implementation aspects.")
              version "/numpy-" version ".tar.gz"))
        (sha256
         (base32
-         "1kh7y2ay21s9mcc11mq59g2f1yc75v152z2k2vlh0xmh9c9rjpf4"))))
+         "1yim2bxlycn4dhxmfxid6slplpmcb4ynhp411b37ahmsm2lwgkyg"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)
@@ -3430,17 +3460,18 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
-    (version "2.0.2")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "matplotlib" version))
        (sha256
         (base32
-         "1w8z2a1l7s72p1byfz7g03wqhygqxi8w82619dqb3a1lm97w9yqg"))))
+         "1s6dv225w3k4fv52h8lfjc7qq5y56i9755ayx0mz48ddi99fzisd"))))
     (build-system python-build-system)
     (propagated-inputs ; the following packages are all needed at run time
      `(("python-cycler" ,python-cycler)
+       ("python-kiwisolver" ,python-kiwisolver)
        ("python-pyparsing" ,python-pyparsing)
        ("python-pygobject" ,python-pygobject)
        ("gobject-introspection" ,gobject-introspection)
@@ -3520,6 +3551,8 @@ toolkits.")
       ;; of those automatically rewritten by package-with-python2.
       (propagated-inputs
        `(("python2-pycairo" ,python2-pycairo)
+         ("python2-backports-functools-lru-cache"
+          ,python2-backports-functools-lru-cache)
          ("python2-functools32" ,python2-functools32)
          ("python2-pygobject-2" ,python2-pygobject-2)
          ("python2-subprocess32" ,python2-subprocess32)
@@ -3536,7 +3569,8 @@ toolkits.")
     (native-inputs
      `(("python-matplotlib" ,python-matplotlib)
        ("python-colorspacious" ,python-colorspacious)
-       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx" ,python-sphinx-1.6)
+       ("python-sphinx-gallery" ,python-sphinx-gallery)
        ("python-numpydoc" ,python-numpydoc)
        ("python-ipython" ,python-ipython)
        ("python-mock" ,python-mock)
@@ -3559,7 +3593,7 @@ toolkits.")
                (("latex_elements\\['pointsize'\\] = '11pt'" match)
                 ;; insert at a point where latex_elements{} is defined:
                 (string-append match "\nlatex_elements['papersize'] = 'a4paper'")))
-             (zero? (system* "python" "make.py" "html" "latex" "texinfo"))))
+             (invoke "make" "SPHINXBUILD=sphinx-build" "html" "latex" "texinfo")))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "out") "/share"))
@@ -3693,14 +3727,14 @@ functions.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "1.0.0")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scipy" version))
        (sha256
         (base32
-         "043djb3vyk6qripmyw30jhl0g8qza0fmar6wck10iv79l08izsl7"))))
+         "1fj0r7bg0cfk5clvl57ga06y9bfh05iwlv1dqqs1r6pd89wccfc7"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
@@ -10503,6 +10537,10 @@ a file-like object from which an arbitrarly-sized key can be read.")
      `(("python-lxml" ,python-lxml)     ; for SVG output
        ("python-pillow" ,python-pillow) ; for PNG output
        ("python-six" ,python-six)))
+    (inputs
+     `(;; The setup.cfg file needs to be used, and support for this requires
+       ;; at least version 30.3.0 of setuptools
+       ("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/lincolnloop/python-qrcode")
     (synopsis "QR Code image generator")
     (description "This package provides a pure Python QR Code generator

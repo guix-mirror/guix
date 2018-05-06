@@ -480,6 +480,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/networking.scm			\
   %D%/services/nfs.scm			\
   %D%/services/shepherd.scm			\
+  %D%/services/sound.scm			\
   %D%/services/herd.scm				\
   %D%/services/pm.scm				\
   %D%/services/rsync.scm			\
@@ -557,6 +558,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegis-test-fixup-1.patch            	\
   %D%/packages/patches/aegis-test-fixup-2.patch            	\
   %D%/packages/patches/agg-am_c_prototype.patch			\
+  %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/ansible-wrap-program-hack.patch		\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
@@ -697,7 +699,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-CVE-2018-5711.patch			\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-freetype-test-failure.patch		\
-  %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/gemma-intel-compat.patch			\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch \
@@ -707,11 +708,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/ghostscript-runpath.patch		\
   %D%/packages/patches/giflib-make-reallocarray-private.patch	\
-  %D%/packages/patches/gimp-CVE-2017-17784.patch		\
-  %D%/packages/patches/gimp-CVE-2017-17785.patch		\
-  %D%/packages/patches/gimp-CVE-2017-17786.patch		\
-  %D%/packages/patches/gimp-CVE-2017-17787.patch		\
-  %D%/packages/patches/gimp-CVE-2017-17789.patch		\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
   %D%/packages/patches/glibc-CVE-2015-5180.patch		\
@@ -857,7 +853,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
-  %D%/packages/patches/liboop-mips64-deplibs-fix.patch		\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/liblxqt-include.patch			\
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
@@ -1090,7 +1085,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/scotch-graph-induce-type-64.patch	\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
-  %D%/packages/patches/shadow-CVE-2018-7169.patch		\
   %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
   %D%/packages/patches/shishi-fix-libgcrypt-detection.patch	\
   %D%/packages/patches/slim-session.patch			\

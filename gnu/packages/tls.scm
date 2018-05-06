@@ -493,13 +493,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.23.0")
+    (version "0.24.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "0l257dq1i2gka6ynldidpwaz1aa726643crqqckga1w5awsndh88"))))
+                "1jq1nlly5146k08dw31fc1pw78plya5jswznnd512c08giif0mfn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -548,7 +548,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0gh5fr61c3mj5vdkn68k17wcvri9rdj506cmmz6631i2l5flrzvc"))))
+                "0w3dbz74rpabjnc3l3ybnzjdypbr65lsjqf9yn243b5kid9d8wm0"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -634,18 +634,20 @@ servers or clients for more complicated applications.")
 (define-public perl-crypt-openssl-rsa
  (package
   (name "perl-crypt-openssl-rsa")
-  (version "0.28")
+  (version "0.30")
   (source
     (origin
       (method url-fetch)
       (uri (string-append
-             "mirror://cpan/authors/id/P/PE/PERLER/Crypt-OpenSSL-RSA-"
+             "mirror://cpan/authors/id/T/TO/TODDR/Crypt-OpenSSL-RSA-"
              version
              ".tar.gz"))
       (sha256
         (base32
-          "1gnpvv09b2gpifwdzc5jnhama3d1a4c39lzj9hcaicsb8rvzjmsk"))))
+          "1b19kaaw4wda8dy6kjiwqa2prpbs2dqcyjyj9zdh5wbs74qkbq93"))))
   (build-system perl-build-system)
+  (native-inputs
+   `(("perl-crypt-openssl-guess" ,perl-crypt-openssl-guess)))
   (inputs
     `(("perl-crypt-openssl-bignum" ,perl-crypt-openssl-bignum)
       ("perl-crypt-openssl-random" ,perl-crypt-openssl-random)
@@ -793,7 +795,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.7.2")
+    (version "2.7.3")
     (source
      (origin
        (method url-fetch)
@@ -803,7 +805,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1mvkqlxxvl6yp1g5g9dk4l7h3wl6149p3pfwgwzgs7xybyxw4f7x"))))
+         "0rfpcc4i01qsl66iy1z9vaw00s34h4qgx3r41i1v5vazv7vjla05"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
