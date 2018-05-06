@@ -8516,6 +8516,7 @@ outline-mode), so there is no such thing like an outshine mode, only
         (base32
          "109fvivsb4r0rbqljngqrmxqvbnbkqlivczx6brrvlr7ci625lhf"))))
     (build-system emacs-build-system)
+    (inputs `(("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/cpitclaudel/biblio.el")
     (synopsis "Browse and import bibliographic references")
     (description "This package provides an extensible Emacs package for
