@@ -166,7 +166,8 @@ to the default GNU unpack strategy."
                                       "/share/java")
                        source-dir test-dir main-class test-include test-exclude))
   (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
-  (setenv "CLASSPATH" (generate-classpath inputs)))
+  (setenv "CLASSPATH" (generate-classpath inputs))
+  #t)
 
 (define* (build #:key (make-flags '()) (build-target "jar")
                 #:allow-other-keys)
