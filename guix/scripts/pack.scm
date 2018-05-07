@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
@@ -37,7 +37,7 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages guile)
-  #:autoload   (gnu packages base) (tar)
+  #:use-module (gnu packages base)
   #:autoload   (gnu packages package-management) (guix)
   #:autoload   (gnu packages gnupg) (libgcrypt)
   #:autoload   (gnu packages guile) (guile2.0-json guile-json)
