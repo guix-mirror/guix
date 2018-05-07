@@ -41,12 +41,14 @@ guix pack --bootstrap guile-bootstrap
 # Build a tarball with a symlink.
 the_pack="`guix pack --bootstrap -S /opt/gnu/bin=bin guile-bootstrap`"
 
-# Try to extract it.
+# Try to extract it.  Note: we cannot test whether /opt/gnu/bin/guile itself
+# exists because /opt/gnu/bin may be an absolute symlink to a store item that
+# has been GC'd.
 test_directory="`mktemp -d`"
 trap 'rm -rf "$test_directory"' EXIT
 cd "$test_directory"
 tar -xf "$the_pack"
-test -x opt/gnu/bin/guile
+test -L opt/gnu/bin
 
 is_available () {
     # Use the "type" shell builtin to see if the program is on PATH.
