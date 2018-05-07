@@ -11626,7 +11626,7 @@ Script to run after starting xorg-server.
 @item @code{xdisplay-stop} (default @code{#~(string-append #$sddm "/share/sddm/scripts/Xstop")})
 Script to run before stopping xorg-server.
 
-@item @code{xsession-command} (default: @code{xinitr })
+@item @code{xsession-command} (default: @code{xinitrc})
 Script to run before starting a X session.
 
 @item @code{xsessions-directory} (default: "/run/current-system/profile/share/xsessions")
