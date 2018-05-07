@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -181,6 +182,9 @@ end-to-end encryption.")
          (add-after 'install 'install-etc
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
              (zero? (apply system* "make" "install-etc" make-flags))))
+         (add-after 'install-etc 'install-lib
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "install-dev" make-flags))))
          (replace 'configure
            ;; bitlbee's configure script does not tolerate many of the
            ;; variable settings that Guix would pass to it.
