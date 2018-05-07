@@ -476,7 +476,17 @@ Go.  It also includes runtime support libraries for these languages.")
                     "pa" "sh" "tilepro" "xtensa")))))
     (inputs
      `(("isl" ,isl)
-       ,@(package-inputs gcc-4.7)))))
+       ,@(package-inputs gcc-4.7)))
+
+    (native-search-paths
+     ;; We have to use 'CPATH' for GCC > 5, not 'C_INCLUDE_PATH' & co., due to
+     ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70129>.
+     (list (search-path-specification
+            (variable "CPATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "LIBRARY_PATH")
+            (files '("lib" "lib64")))))))
 
 (define-public gcc-7
   (package
