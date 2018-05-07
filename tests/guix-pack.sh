@@ -83,3 +83,10 @@ guix pack --dry-run --bootstrap -f docker -S /opt/gnu=/ guile-bootstrap
 # Build a tarball pack of cross-compiled software.  Use coreutils because
 # guile-bootstrap is not intended to be cross-compiled.
 guix pack --dry-run --bootstrap --target=arm-unknown-linux-gnueabihf coreutils
+
+# Make sure package transformation options are honored.
+mkdir -p "$test_directory"
+drv1="`guix pack -n guile 2>&1 | grep pack.*\.drv`"
+drv2="`guix pack -n --with-source=guile=$test_directory guile 2>&1 | grep pack.*\.drv`"
+test -n "$drv1"
+test "$drv1" != "$drv2"
