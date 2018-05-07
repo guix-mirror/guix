@@ -1371,7 +1371,7 @@ hashing schemes plugin for @code{Dovecot}.")
     (home-page "http://isync.sourceforge.net/")
     (synopsis "Mailbox synchronization program")
     (description
-     "isync/mbsync is command line tool for two-way synchronization of
+     "isync/mbsync is a command-line tool for two-way synchronization of
 mailboxes.  Currently Maildir and IMAP are supported types.")
     (license gpl2+)))
 
