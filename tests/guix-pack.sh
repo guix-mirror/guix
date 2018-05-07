@@ -35,8 +35,11 @@ export GUIX_BUILD_OPTIONS
 # Build a tarball with no compression.
 guix pack --compression=none --bootstrap guile-bootstrap
 
-# Build a tarball (with compression).
-guix pack --bootstrap guile-bootstrap
+# Build a tarball (with compression).  Check that '-e' works as well.
+out1="`guix pack --bootstrap guile-bootstrap`"
+out2="`guix pack --bootstrap -e '(@ (gnu packages bootstrap) %bootstrap-guile)'`"
+test -n "$out1"
+test "$out1" = "$out2"
 
 # Build a tarball with a symlink.
 the_pack="`guix pack --bootstrap -S /opt/gnu/bin=bin guile-bootstrap`"
