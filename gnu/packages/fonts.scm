@@ -138,7 +138,7 @@ TrueType (TTF) files.")
              (let ((conf-dir (string-append (assoc-ref outputs "out")
                                             "/share/fontconfig/conf.avail")))
                (copy-recursively "fontconfig" conf-dir)))))))
-    (home-page "http://dejavu-fonts.org/")
+    (home-page "https://dejavu-fonts.github.io/")
     (synopsis "Vera font family derivate with additional characters")
     (description "DejaVu provides an expanded version of the Vera font family
 aiming for quality and broader Unicode coverage while retaining the original
