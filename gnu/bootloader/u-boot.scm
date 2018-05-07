@@ -34,7 +34,8 @@
             u-boot-banana-pi-m2-ultra-bootloader
             u-boot-beaglebone-black-bootloader
             u-boot-mx6cuboxi-bootloader
-            u-boot-nintendo-nes-classic-edition-bootloader))
+            u-boot-nintendo-nes-classic-edition-bootloader
+            u-boot-wandboard-bootloader))
 
 (define install-u-boot
   #~(lambda (bootloader device mount-point)
@@ -130,3 +131,8 @@
   (bootloader
    (inherit u-boot-imx-bootloader)
    (package u-boot-mx6cuboxi)))
+
+(define u-boot-wandboard-bootloader
+  (bootloader
+   (inherit u-boot-imx-bootloader)
+   (package u-boot-wandboard)))
