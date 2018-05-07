@@ -9583,35 +9583,6 @@ buffer with each of your todos.")
      "The Fantastic File Finder for Emacs.  Find files fast, using helm.")
     (license license:gpl3+)))
 
-(define-public emacs-dumb-jump
-  (package
-    (name "emacs-dumb-jump")
-    (version "0.5.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jacktasia/dumb-jump/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "07n0xjgpxjpf3vp9gxchkjpydyj0zm166930as0kwiwkhjlsirsf"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-f" ,emacs-f)
-       ("emacs-s" ,emacs-s)
-       ("emacs-dash" ,emacs-dash)
-       ("emacs-popup" ,emacs-popup)))
-    (home-page "https://github.com/jacktasia/dumb-jump")
-    (synopsis "Jump to definition for multiple languages without configuration")
-    (description "Dumb Jump is an Emacs \"jump to definition\" package with
-support for multiple programming languages that favors \"just working\" over
-speed or accuracy.  This means minimal -- and ideally zero -- configuration
-with absolutely no stored indexes (TAGS) or persistent background processes.
-Dumb Jump performs best with The Silver Searcher `ag` or ripgrep `rg`
-installed.  Dumb Jump requires at least GNU Emacs 24.3. ")
-    (license license:gpl3+)))
-
 (define-public emacs-lice-el
   (let ((commit "4339929927c62bd636f89bb39ea999d18d269250"))
     (package
