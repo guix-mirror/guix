@@ -33,6 +33,7 @@
             u-boot-a20-olinuxino-micro-bootloader
             u-boot-banana-pi-m2-ultra-bootloader
             u-boot-beaglebone-black-bootloader
+            u-boot-mx6cuboxi-bootloader
             u-boot-nintendo-nes-classic-edition-bootloader))
 
 (define install-u-boot
@@ -62,6 +63,15 @@
         (write-file-on-device u-boot (stat:size (stat u-boot))
                               device (* 8 1024)))))
 
+(define install-imx-u-boot
+  #~(lambda (bootloader device mount-point)
+      (let ((spl (string-append bootloader "/libexec/SPL"))
+            (u-boot (string-append bootloader "/libexec/u-boot.img")))
+        (write-file-on-device spl (stat:size (stat spl))
+                              device (* 1 1024))
+        (write-file-on-device u-boot (stat:size (stat u-boot))
+                              device (* 69 1024)))))
+
 
 
 ;;;
@@ -85,6 +95,11 @@
   (bootloader
    (inherit u-boot-bootloader)
    (installer install-allwinner-u-boot)))
+
+(define u-boot-imx-bootloader
+  (bootloader
+   (inherit u-boot-bootloader)
+   (installer install-imx-u-boot)))
 
 (define u-boot-nintendo-nes-classic-edition-bootloader
   (bootloader
@@ -110,3 +125,8 @@
   (bootloader
    (inherit u-boot-allwinner-bootloader)
    (package u-boot-banana-pi-m2-ultra)))
+
+(define u-boot-mx6cuboxi-bootloader
+  (bootloader
+   (inherit u-boot-imx-bootloader)
+   (package u-boot-mx6cuboxi)))
