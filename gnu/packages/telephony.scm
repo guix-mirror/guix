@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages linux)
@@ -42,9 +44,15 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
 (define-public commoncpp
@@ -482,3 +490,63 @@ Mumble consists of two applications for separate usage:
     (license (list license:bsd-3
                    ;; The bundled celt is bsd-2. Remove after 1.3.0.
                    license:bsd-2))))
+
+(define-public twinkle
+  (let ((commit "02e1d1538af3337134bd7381dcd95f8d7775b30f")
+        (revision "1"))
+  (package
+   (name "twinkle")
+   (version (git-version "1.10.1" revision commit))
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/LubosD/twinkle")
+                   (commit commit)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0ds4rp4vr1wagn4m4m7ldqbsx5vgmgbfcqqgyhn1wf6s1dm0020z"))))
+   (build-system cmake-build-system)
+   (arguments
+    `(#:tests? #f ; no test target
+      #:phases
+      (modify-phases %standard-phases
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/twinkle")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins"))
+                         '("qtbase" "qtdeclarative")))
+                 `("QML2_IMPORT_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/qml"))
+                         '("qtdeclarative" "qtquickcontrols"))))
+               #t))))))
+   (native-inputs
+    `(("bison" ,bison)
+      ("flex" ,flex)
+      ("readline" ,readline)
+      ("file" ,file)
+      ("ucommon" ,ucommon)
+      ("ccrtp" ,ccrtp)
+      ("libxml2" ,libxml2)
+      ("speex" ,speex)
+      ("speexdsp" ,speexdsp)
+      ("libsndfile" ,libsndfile)
+      ("alsa-lib" ,alsa-lib)
+      ("qttools" ,qttools)))
+   (inputs
+    `(("qtbase" ,qtbase)
+      ("qtdeclarative" ,qtdeclarative)
+      ("qtquickcontrols" ,qtquickcontrols)))
+   (home-page "http://twinkle.dolezel.info/")
+   (synopsis "Softphone for voice over IP and instant messaging")
+   (description "Twinkle is a softphone for your voice over IP and instant
+messaging communcations using the SIP protocol.  You can use it for direct IP
+phone to IP phone communication or in a network using a SIP proxy to route your
+calls and messages")
+   (license license:gpl2+))))
