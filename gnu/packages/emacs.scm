@@ -9746,8 +9746,8 @@ split to display more windows and more buffers, the buffer exits
     (synopsis "Improved expressions that interactively evaluate Emacs Lisp")
     (description "This package improves and replaces the GNU Emacs commands
 that interactively evaluate Emacs Lisp expressions.  The new commands replace
-standard key bindings and are all prefixed with rsw-elisp-.  They work the
-same way as the old commands when called non-interactively; only the
+standard key bindings and are all prefixed with @code{rsw-elisp-}.  They work
+the same way as the old commands when called non-interactively; only the
 interactive behavior should be different.")
     (license license:gpl3+)))
 
