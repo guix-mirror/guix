@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -532,22 +532,22 @@ a C program.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       `("--enable-shared" "--enable-openmp" "--enable-threads"
-         ,,@(let ((system (or (%current-target-system) (%current-system))))
-              ;; Enable SIMD extensions for codelets.  See details at:
-              ;; <http://fftw.org/fftw3_doc/Installation-on-Unix.html>.
-              (cond
-               ((string-prefix? "x86_64" system)
-                '("--enable-sse2" "--enable-avx" "--enable-avx2"
-                  "--enable-avx512" "--enable-avx-128-fma"))
-               ((string-prefix? "i686" system)
-                '("--enable-sse2"))
-               ((string-prefix? "aarch64" system)
-                '("--enable-neon" "--enable-armv8-cntvct-el0"))
-               ((string-prefix? "arm" system) ;neon only for single-precision
-                '("--enable-armv7a-cntvct"))  ;on 32-bit arm
-               ((string-prefix? "mips" system)
-                '("--enable-mips-zbus-timer"))))
+       '("--enable-shared" "--enable-openmp" "--enable-threads"
+         ,@(let ((system (or (%current-target-system) (%current-system))))
+             ;; Enable SIMD extensions for codelets.  See details at:
+             ;; <http://fftw.org/fftw3_doc/Installation-on-Unix.html>.
+             (cond
+              ((string-prefix? "x86_64" system)
+               '("--enable-sse2" "--enable-avx" "--enable-avx2"
+                 "--enable-avx512" "--enable-avx-128-fma"))
+              ((string-prefix? "i686" system)
+               '("--enable-sse2"))
+              ((string-prefix? "aarch64" system)
+               ;; Note that fftw supports NEON on 32-bit ARM only when
+               ;; compiled for single-precision.
+               '("--enable-neon"))
+              (else
+               '())))
          ;; By default '-mtune=native' is used.  However, that may cause the
          ;; use of ISA extensions (e.g. AVX) that are not necessarily
          ;; available on the user's machine when that package is built on a
@@ -568,11 +568,15 @@ cosine/ sine transforms or DCT/DST).")
     (name "fftwf")
     (arguments
      (substitute-keyword-arguments (package-arguments fftw)
-       ((#:configure-flags cf)
-        (if (string-prefix? "arm" (or (%current-target-system)
-                                      (%current-system)))
-            `(cons "--enable-neon" ,cf)
-            cf))))
+       ((#:configure-flags fftw-configure-flags)
+        `(cons* "--enable-single"
+                ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                                (%current-system)))
+                      ;; fftw supports NEON on 32-bit ARM only when compiled
+                      ;; for single-precision, so add it here.
+                      '("--enable-neon")
+                      '())
+                ,fftw-configure-flags))))
     (description
      (string-append (package-description fftw)
                     "  Single-precision version."))))
