@@ -260,13 +260,18 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
 
-  (define *package-modules*
-    (scheme-node "guix-packages"
+  (define *core-package-modules*
+    (scheme-node "guix-packages-base"
                  `((gnu packages)
-                   ,@(scheme-modules* source "gnu/packages"))
+                   (gnu packages base))
                  (list *core-modules* *extra-modules*)
                  #:extensions dependencies
-                 #:extra-files                    ;all the non-Scheme files
+
+                 ;; Add all the non-Scheme files here.  We must do it here so
+                 ;; that 'search-patches' & co. can find them.  Ideally we'd
+                 ;; keep them next to the .scm files that use them but it's
+                 ;; difficult to do (XXX).
+                 #:extra-files
                  (file-imports source "gnu/packages"
                                (lambda (file stat)
                                  (and (eq? 'regular (stat:type stat))
@@ -276,13 +281,21 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                                       (not (string-suffix? "~" file)))))
                  #:guile-for-build guile-for-build))
 
+  (define *package-modules*
+    (scheme-node "guix-packages"
+                 (scheme-modules* source "gnu/packages")
+                 (list *core-modules* *extra-modules* *core-package-modules*)
+                 #:extensions dependencies
+                 #:guile-for-build guile-for-build))
+
   (define *system-modules*
     (scheme-node "guix-system"
                  `((gnu system)
                    (gnu services)
                    ,@(scheme-modules* source "gnu/system")
                    ,@(scheme-modules* source "gnu/services"))
-                 (list *package-modules* *extra-modules* *core-modules*)
+                 (list *core-package-modules* *package-modules*
+                       *extra-modules* *core-modules*)
                  #:extensions dependencies
                  #:extra-files
                  (file-imports source "gnu/system/examples" (const #t))
@@ -292,7 +305,8 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
   (define *cli-modules*
     (scheme-node "guix-cli"
                  (scheme-modules* source "/guix/scripts")
-                 (list *core-modules* *extra-modules* *package-modules*
+                 (list *core-modules* *extra-modules*
+                       *core-package-modules* *package-modules*
                        *system-modules*)
                  #:extensions dependencies
                  #:guile-for-build guile-for-build))
@@ -330,6 +344,7 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                                      *cli-modules*
                                      *system-modules*
                                      *package-modules*
+                                     *core-package-modules*
                                      *extra-modules*
                                      *core-modules*))
 

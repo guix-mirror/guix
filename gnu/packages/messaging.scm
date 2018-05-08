@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -181,6 +182,9 @@ end-to-end encryption.")
          (add-after 'install 'install-etc
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
              (zero? (apply system* "make" "install-etc" make-flags))))
+         (add-after 'install-etc 'install-lib
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "install-dev" make-flags))))
          (replace 'configure
            ;; bitlbee's configure script does not tolerate many of the
            ;; variable settings that Guix would pass to it.
@@ -198,6 +202,49 @@ microblogging network (plus all other Twitter API compatible services like
 identi.ca and status.net).")
     (home-page "http://www.bitlbee.org/")
     (license (list license:gpl2+ license:bsd-2))))
+
+(define-public bitlbee-discord
+  (package
+    (name "bitlbee-discord")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/sm00th/bitlbee-discord/"
+                              "archive/" version ".tar.gz"))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1bwqxlg6fwj3749y7w69n9jwsdzf5nl9xqiszbpv9k8x1422i1y1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (let ((sh (which "sh")))
+               (substitute* "autogen.sh" (("/bin/sh") sh))
+               (setenv "CONFIG_SHELL" sh)
+               (zero? (system* "./autogen.sh")))))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (invoke "./configure"
+                     (string-append "--with-plugindir="
+                                    (assoc-ref outputs "out")
+                                    "/lib/bitlbee/")))))))
+    (inputs `(("glib" ,glib)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("texinfo" ,texinfo)
+                     ("libtool" ,libtool)
+                     ("bitlbee" ,bitlbee)         ;needs bitlbee headers
+                     ("bash" ,bash)))
+    (synopsis "Discord plugin for Bitlbee")
+    (description "Bitlbee-discord is a plugin for Bitlbee witch provides
+access to servers running the Discord protocol.")
+    (home-page "https://github.com/sm00th/bitlbee-discord/")
+    (license license:gpl2+)))
 
 (define-public hexchat
   (package

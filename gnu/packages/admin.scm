@@ -50,8 +50,11 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages dns)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages linux)
@@ -70,6 +73,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages mcrypt)
@@ -97,7 +101,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages elf)
-  #:use-module (gnu packages mpi))
+  #:use-module (gnu packages mpi)
+  #:use-module (gnu packages web))
 
 (define-public aide
   (package
@@ -2661,3 +2666,117 @@ Python loading in HPC environments.")
     ;; This package supports x86_64 and PowerPC64
     (supported-systems '("x86_64-linux"))
     (license license:lgpl2.1)))
+
+(define-public inxi-minimal
+  (let ((real-name "inxi"))
+    (package
+      (name "inxi-minimal")
+      (version "3.0.04-1")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://github.com/smxi/inxi"
+                             "/archive/" version "/inxi.tar.gz"))
+         (file-name (string-append real-name "-" version ".tar.gz"))
+         (sha256
+          (base32
+           "14zxdsjgh9dbijmpp0hhvg2yiqqfwnqgcc6x8dpl1v15z1h1r7pc"))))
+      (build-system trivial-build-system)
+      (inputs
+       `(("bash" ,bash)
+         ("perl" ,perl)))
+      (native-inputs
+       `(("gzip" ,gzip)
+         ("tar" ,tar)))
+      (arguments
+       `(#:modules
+         ((guix build utils)
+          (ice-9 match)
+          (srfi srfi-26))
+         #:builder
+         (begin
+           (use-modules (guix build utils)
+                        (ice-9 match)
+                        (srfi srfi-26))
+           (setenv "PATH" (string-append
+                           (assoc-ref %build-inputs "bash") "/bin" ":"
+                           (assoc-ref %build-inputs "gzip") "/bin" ":"
+                           (assoc-ref %build-inputs "perl") "/bin" ":"
+                           (assoc-ref %build-inputs "tar") "/bin" ":"))
+           (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
+           (with-directory-excursion ,(string-append real-name "-" version)
+             (with-fluids ((%default-port-encoding #f))
+               (substitute* "inxi" (("/usr/bin/env perl") (which "perl"))))
+             (let ((bin (string-append %output "/bin")))
+               (install-file "inxi" bin)
+               (wrap-program (string-append bin "/inxi")
+                 `("PATH" ":" =
+                   ("$PATH"
+                    ,@(map (lambda (input)
+                             (match input
+                               ((name . store)
+                                (let ((store-append
+                                       (cut string-append store <>)))
+                                  (cond
+                                   ((member name '("util-linux"))
+                                    (string-append (store-append "/bin") ":"
+                                                   (store-append "/sbin")))
+                                   ((member name '("dmidecode" "iproute2"))
+                                    (store-append "/sbin"))
+                                   (else (store-append "/bin")))))))
+                           %build-inputs)))
+                 `("PERL5LIB" ":" =
+                   ,(delete
+                     ""
+                     (map (match-lambda
+                            (((? (cut string-prefix? "perl-" <>) name) . dir)
+                             (string-append dir "/lib/perl5/site_perl"))
+                            (_ ""))
+                          %build-inputs)))))
+             (invoke "gzip" "inxi.1")
+             (install-file "inxi.1.gz"
+                           (string-append %output "/share/doc/man/man1")))
+           #t)))
+      (home-page "https://smxi.org/docs/inxi.htm")
+      (synopsis "Full featured system information script")
+      (description "Inxi is a system information script that can display
+various things about your hardware and software to users in an IRC chatroom or
+support forum.  It runs with the /exec command in most IRC clients.")
+      (license license:gpl3+))))
+
+(define-public inxi
+  (package
+    (inherit inxi-minimal)
+    (name "inxi")
+    (inputs
+     `(("dmidecode" ,dmidecode)
+       ("file" ,file)
+       ("bind:utils" ,isc-bind "utils") ; dig
+       ("gzip" ,gzip)
+       ("iproute2" ,iproute)            ; ip
+       ("kmod" ,kmod)                   ; modinfo
+       ("lm-sensors" ,lm-sensors)
+       ("mesa-utils" ,mesa-utils)
+       ("pciutils" ,pciutils)
+       ("procps" ,procps)
+       ("tar" ,tar)
+       ("tree" ,tree)
+       ("util-linux" ,util-linux)       ; lsblk
+       ("usbutils" ,usbutils)           ; lsusb
+       ("wmctrl" ,wmctrl)
+       ("xdpyinfo" ,xdpyinfo)
+       ("xprop" ,xprop)
+       ("xrandr" ,xrandr)
+       ("coreutils" ,coreutils)         ; uptime
+       ("inetutils" ,inetutils)         ; ifconfig
+       ("perl-cpanel-json-xs" ,perl-cpanel-json-xs)
+       ("perl-http-tiny" ,perl-http-tiny)
+       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-json-xs" ,perl-json-xs)
+       ("perl-time-hires" ,perl-time-hires)
+       ;; TODO: Add more inputs:
+       ;; ipmi-sensors
+       ;; hddtemp
+       ;; perl-xml-dumper
+       ;; ipmitool
+       ,@(package-inputs inxi-minimal)))))

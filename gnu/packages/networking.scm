@@ -545,7 +545,7 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.4.5")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -553,7 +553,7 @@ of the same name.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1mvgy67rvnwj2kbc43s4il81jvz5ai0bx2j3j2js7x50zclyrcmk"))))
+         "0zqip4ai18iar7sgialc3jmpng1yxxy4i9bphbaig23ss80py73i"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
@@ -564,12 +564,14 @@ of the same name.")
               ("libpcap" ,libpcap)
               ("libssh" ,libssh)
               ("libxml2" ,libxml2)
+              ("lz4" ,lz4)
               ("lua" ,lua-5.2)          ;Lua 5.3 unsupported
               ("krb5" ,mit-krb5)
-              ("openssl" ,openssl)
               ("portaudio" ,portaudio)
               ("qtbase" ,qtbase)
+              ("qtmultimedia" ,qtmultimedia)
               ("sbc" ,sbc)
+              ("snappy" ,snappy)
               ("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)
                      ("pkg-config" ,pkg-config)
@@ -582,11 +584,12 @@ of the same name.")
              (string-append "--with-libcap=" (assoc-ref %build-inputs "libcap"))
              (string-append "--with-libssh=" (assoc-ref %build-inputs "libssh"))
              (string-append "--with-lua=" (assoc-ref %build-inputs "lua"))
+             (string-append "--with-lz4=" (assoc-ref %build-inputs "lz4"))
              (string-append "--with-pcap=" (assoc-ref %build-inputs "libpcap"))
              (string-append "--with-portaudio="
                             (assoc-ref %build-inputs "portaudio"))
              (string-append "--with-sbc=" (assoc-ref %build-inputs "sbc"))
-             (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl"))
+             (string-append "--with-snappy=" (assoc-ref %build-inputs "snappy"))
              (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib")))))
     (synopsis "Network traffic analyzer")
     (description "Wireshark is a network protocol analyzer, or @dfn{packet

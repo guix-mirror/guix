@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
@@ -37,12 +37,13 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages guile)
-  #:autoload   (gnu packages base) (tar)
+  #:use-module (gnu packages base)
   #:autoload   (gnu packages package-management) (guix)
   #:autoload   (gnu packages gnupg) (libgcrypt)
   #:autoload   (gnu packages guile) (guile2.0-json guile-json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (compressor?
@@ -397,9 +398,15 @@ Create a bundle of PACKAGE.\n"))
        (read/eval-package-expression exp))
       (x #f)))
 
-  (define (manifest-from-args opts)
-    (let ((packages      (filter-map maybe-package-argument opts))
-          (manifest-file (assoc-ref opts 'manifest)))
+  (define (manifest-from-args store opts)
+    (let* ((transform     (options->transformation opts))
+           (packages      (map (match-lambda
+                                 (((? package? package) output)
+                                  (list (transform store package) output))
+                                 ((? package? package)
+                                  (list (transform store package) "out")))
+                               (filter-map maybe-package-argument opts)))
+           (manifest-file (assoc-ref opts 'manifest)))
       (cond
        ((and manifest-file (not (null? packages)))
         (leave (G_ "both a manifest and a package list were given~%")))
@@ -409,33 +416,34 @@ Create a bundle of PACKAGE.\n"))
        (else (packages->manifest packages)))))
 
   (with-error-handling
-    (let* ((dry-run?    (assoc-ref opts 'dry-run?))
-           (manifest    (manifest-from-args opts))
-           (pack-format (assoc-ref opts 'format))
-           (name        (string-append (symbol->string pack-format)
-                                       "-pack"))
-           (target      (assoc-ref opts 'target))
-           (bootstrap?  (assoc-ref opts 'bootstrap?))
-           (compressor  (if bootstrap?
-                            bootstrap-xz
-                            (assoc-ref opts 'compressor)))
-           (tar         (if bootstrap?
-                            %bootstrap-coreutils&co
-                            tar))
-           (symlinks    (assoc-ref opts 'symlinks))
-           (build-image (match (assq-ref %formats pack-format)
-                          ((? procedure? proc) proc)
-                          (#f
-                           (leave (G_ "~a: unknown pack format")
-                                  format))))
-           (localstatedir? (assoc-ref opts 'localstatedir?)))
-      (with-store store
-        (parameterize ((%graft? (assoc-ref opts 'graft?))
-                       (%guile-for-build (package-derivation
-                                          store
-                                          (if (assoc-ref opts 'bootstrap?)
-                                              %bootstrap-guile
-                                              (canonical-package guile-2.2)))))
+    (with-store store
+      (parameterize ((%graft? (assoc-ref opts 'graft?))
+                     (%guile-for-build (package-derivation
+                                        store
+                                        (if (assoc-ref opts 'bootstrap?)
+                                            %bootstrap-guile
+                                            (canonical-package guile-2.2))
+                                        #:graft? (assoc-ref opts 'graft?))))
+        (let* ((dry-run?    (assoc-ref opts 'dry-run?))
+               (manifest    (manifest-from-args store opts))
+               (pack-format (assoc-ref opts 'format))
+               (name        (string-append (symbol->string pack-format)
+                                           "-pack"))
+               (target      (assoc-ref opts 'target))
+               (bootstrap?  (assoc-ref opts 'bootstrap?))
+               (compressor  (if bootstrap?
+                                bootstrap-xz
+                                (assoc-ref opts 'compressor)))
+               (tar         (if bootstrap?
+                                %bootstrap-coreutils&co
+                                tar))
+               (symlinks    (assoc-ref opts 'symlinks))
+               (build-image (match (assq-ref %formats pack-format)
+                              ((? procedure? proc) proc)
+                              (#f
+                               (leave (G_ "~a: unknown pack format")
+                                      format))))
+               (localstatedir? (assoc-ref opts 'localstatedir?)))
           ;; Set the build options before we do anything else.
           (set-build-options-from-command-line store opts)
 

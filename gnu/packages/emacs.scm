@@ -8396,6 +8396,8 @@ arXiv, Google Scholar, Library of Congress, etc.
                (base32
                 "1a10snhg6nnnan6w9a7mcziy26vxbsr3c35i0gcarnkdp2yqng36"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
     (home-page "https://github.com/syohex/emacs-helm-gtags")
     (synopsis "Emacs Helm interface to GNU Global")
     (description
@@ -9196,6 +9198,8 @@ CSS, JavaScript, JSON.")
                    ("(defvar helm-shell-history-file"
                     `(expand-file-name "~/.bash_history"))))
                #t)))))
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
       (home-page "https://github.com/yuutayamada/helm-shell-history")
       (synopsis "Find shell history with Emacs Helm")
       (description "This package provides an Emacs Helm interface to search
@@ -9561,6 +9565,8 @@ functions for defining emms simple players of mpv.")
          (sha256
           (base32
            "0kdp7k7jnnrkhsg0xh1c3h7iz0vgi120gf5xwl1hxy61avivnxrn"))))
+      (propagated-inputs
+       `(("magit" ,magit)))
       (build-system emacs-build-system)
       (home-page "https://github.com/danielma/magit-org-todos.el")
       (synopsis "Get todo.org into Emacs Magit status")
@@ -9592,35 +9598,6 @@ buffer with each of your todos.")
     (synopsis "Fantastic File Finder for Emacs")
     (description
      "The Fantastic File Finder for Emacs.  Find files fast, using helm.")
-    (license license:gpl3+)))
-
-(define-public emacs-dumb-jump
-  (package
-    (name "emacs-dumb-jump")
-    (version "0.5.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jacktasia/dumb-jump/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "07n0xjgpxjpf3vp9gxchkjpydyj0zm166930as0kwiwkhjlsirsf"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-f" ,emacs-f)
-       ("emacs-s" ,emacs-s)
-       ("emacs-dash" ,emacs-dash)
-       ("emacs-popup" ,emacs-popup)))
-    (home-page "https://github.com/jacktasia/dumb-jump")
-    (synopsis "Jump to definition for multiple languages without configuration")
-    (description "Dumb Jump is an Emacs \"jump to definition\" package with
-support for multiple programming languages that favors \"just working\" over
-speed or accuracy.  This means minimal -- and ideally zero -- configuration
-with absolutely no stored indexes (TAGS) or persistent background processes.
-Dumb Jump performs best with The Silver Searcher `ag` or ripgrep `rg`
-installed.  Dumb Jump requires at least GNU Emacs 24.3. ")
     (license license:gpl3+)))
 
 (define-public emacs-lice-el
@@ -9786,8 +9763,8 @@ split to display more windows and more buffers, the buffer exits
     (synopsis "Improved expressions that interactively evaluate Emacs Lisp")
     (description "This package improves and replaces the GNU Emacs commands
 that interactively evaluate Emacs Lisp expressions.  The new commands replace
-standard key bindings and are all prefixed with rsw-elisp-.  They work the
-same way as the old commands when called non-interactively; only the
+standard key bindings and are all prefixed with @code{rsw-elisp-}.  They work
+the same way as the old commands when called non-interactively; only the
 interactive behavior should be different.")
     (license license:gpl3+)))
 
@@ -9934,6 +9911,8 @@ compilation/grep buffers.  Works with @code{wgrep}, @code{ack}, @code{ag},
          (sha256
           (base32
            "08mjsi2f9s29fkk35cj1rrparjnkm836qmbfdwdz7y51f9varjbs"))))
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
       (build-system emacs-build-system)
       (home-page "https://github.com/emacs-helm/helm-firefox")
       (synopsis "Display firefox bookmarks with Emacs Helm interface")
@@ -10041,6 +10020,8 @@ keep Parens and Indentation inline with one another.")
                 (sha256
                  (base32
                   "1x442ylrr7cx587s4rvfh187h3qbkr79qp95qr57a4igxkkw6183"))))
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
       (build-system emacs-build-system)
       (home-page "https://github.com/emacs-helm/helm-eww/")
       (synopsis "Helm interface to EWW")

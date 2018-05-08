@@ -1819,7 +1819,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.12.6")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -1828,17 +1828,11 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0kifp6g1dsr16m6ngjq2hx19h851fqg326ps3krnhpyix963h3x5"))))
+                "09niq53y17faizhmd98anx3dha7hvacvj9a0a64lg8wn915cm0bw"))
+              (patches (search-patches "wesnoth-fix-std-bad-cast.patch"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; no check target
-       #:configure-flags
-       ;; XXX: Failed to compile with '-Werror=old-style-cast'.
-       ;;   boost/mpl/assert.hpp:313:58: error:
-       ;;     use of old-style cast [-Werror=old-style-cast]
-       ;;   [...]
-       ;;   cc1plus: all warnings being treated as errors
-       '("-DENABLE_STRICT_COMPILATION=OFF")))
+     `(#:tests? #f)) ; no check target
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -1847,12 +1841,10 @@ falling, themeable graphics and sounds, and replays.")
        ("dbus" ,dbus)
        ("fribidi" ,fribidi)
        ("libvorbis" ,libvorbis)
+       ("openssl" ,openssl)
        ("pango" ,pango)
-       ("sdl-image" ,sdl-image)
-       ("sdl-mixer" ,sdl-mixer)
-       ("sdl-net" ,sdl-net)
-       ("sdl-ttf" ,sdl-ttf)))
-    (home-page "http://www.wesnoth.org/")
+       ("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+    (home-page "https://www.wesnoth.org/")
     (synopsis "Turn-based strategy game")
     (description
      "The Battle for Wesnoth is a fantasy, turn based tactical strategy game,
@@ -1871,19 +1863,12 @@ next campaign.")
     (name "wesnoth-server")
     (inputs
      `(("boost" ,boost)
-       ("sdl-net" ,sdl-net)))
+       ("icu4c" ,icu4c)
+       ("openssl" ,openssl)
+       ("sdl2" ,sdl2)))
     (arguments
-     (append
-      (substitute-keyword-arguments (package-arguments wesnoth)
-        ((#:configure-flags configure-flags)
-         `(append ,configure-flags (list "-DENABLE_GAME=OFF"))))
-      `(#:phases
-        (modify-phases %standard-phases
-          ;; Delete game assets not required by the server.
-          (add-after 'install 'delete-data
-            (lambda* (#:key outputs #:allow-other-keys)
-              (delete-file-recursively (string-append (assoc-ref outputs "out")
-                                                      "/share/wesnoth"))))))))
+     `(#:configure-flags '("-DENABLE_GAME=OFF")
+       ,@(package-arguments wesnoth)))
     (synopsis "Dedicated @emph{Battle for Wesnoth} server")
     (description "This package contains a dedicated server for @emph{The
 Battle for Wesnoth}.")))
