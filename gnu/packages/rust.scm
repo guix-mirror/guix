@@ -138,7 +138,7 @@
     (home-page "https://www.rust-lang.org")
     (synopsis "Prebuilt rust compiler and cargo package manager")
     (description "This package provides a pre-built @command{rustc} compiler
-and a pre-built @command{cargo} package manaer, which can
+and a pre-built @command{cargo} package manager, which can
 in turn be used to build the final Rust.")
     (license license:asl2.0)))
 
