@@ -8385,6 +8385,8 @@ arXiv, Google Scholar, Library of Congress, etc.
                (base32
                 "1a10snhg6nnnan6w9a7mcziy26vxbsr3c35i0gcarnkdp2yqng36"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
     (home-page "https://github.com/syohex/emacs-helm-gtags")
     (synopsis "Emacs Helm interface to GNU Global")
     (description
