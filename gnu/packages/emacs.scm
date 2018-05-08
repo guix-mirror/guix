@@ -9187,6 +9187,8 @@ CSS, JavaScript, JSON.")
                    ("(defvar helm-shell-history-file"
                     `(expand-file-name "~/.bash_history"))))
                #t)))))
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
       (home-page "https://github.com/yuutayamada/helm-shell-history")
       (synopsis "Find shell history with Emacs Helm")
       (description "This package provides an Emacs Helm interface to search
