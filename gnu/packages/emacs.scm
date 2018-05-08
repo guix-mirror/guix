@@ -9552,6 +9552,8 @@ functions for defining emms simple players of mpv.")
          (sha256
           (base32
            "0kdp7k7jnnrkhsg0xh1c3h7iz0vgi120gf5xwl1hxy61avivnxrn"))))
+      (propagated-inputs
+       `(("magit" ,magit)))
       (build-system emacs-build-system)
       (home-page "https://github.com/danielma/magit-org-todos.el")
       (synopsis "Get todo.org into Emacs Magit status")
