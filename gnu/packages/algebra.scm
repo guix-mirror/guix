@@ -734,9 +734,10 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
                ;; but maintainers say it's a known issue and it's unsupported
                ;; anyway, so just skip them.
                '(begin
+                  (substitute* "unsupported/CMakeLists.txt"
+                    (("add_subdirectory\\(test.*")
+                     "# Do not build the tests for unsupported features.\n"))
 		  (substitute* "CMakeLists.txt"
-                    (("add_subdirectory\\(unsupported\\)")
-                     "# Do not build the tests for unsupported features.\n")
                     ;; Work around
                     ;; <http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1114>.
                     (("\"include/eigen3\"")
