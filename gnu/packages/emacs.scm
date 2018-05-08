@@ -9894,6 +9894,8 @@ compilation/grep buffers.  Works with @code{wgrep}, @code{ack}, @code{ag},
          (sha256
           (base32
            "08mjsi2f9s29fkk35cj1rrparjnkm836qmbfdwdz7y51f9varjbs"))))
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
       (build-system emacs-build-system)
       (home-page "https://github.com/emacs-helm/helm-firefox")
       (synopsis "Display firefox bookmarks with Emacs Helm interface")
