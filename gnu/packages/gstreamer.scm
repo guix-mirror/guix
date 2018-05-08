@@ -352,7 +352,6 @@ par compared to the rest.")
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
        ("liba52" ,liba52)
-       ("libmad" ,libmad)
        ("lame" ,lame)
        ("libcdio" ,libcdio)
        ("twolame" ,twolame)
