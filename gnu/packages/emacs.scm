@@ -4723,6 +4723,29 @@ used for reverse direction.")
 distribution, primarily targeting Clojure users")
     (license license:gpl3+)))
 
+(define-public emacs-orgalist
+  (package
+    (name "emacs-orgalist")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "orgalist-" version ".el"))
+       (sha256
+        (base32
+         "13dl0l727vlny3y88gqpngcy90ly5r719s1pbmkva5gmcryb68xr"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/orgalist.html")
+    (synopsis "Manage Org-like lists in non-Org buffers")
+    (description "Write Org mode's plain lists in non-Org buffers.  More
+specifically, Orgalist supports the syntax of Org mode for numbered,
+unnumbered, description items, checkboxes, and counter cookies.
+
+The library also implements radio lists, i.e., lists written in Org
+syntax later translated into the host format, e.g., @LaTeX{} or HTML.")
+    (license license:gpl3+)))
+
 (define-public emacs-writegood-mode
   (package
     (name "emacs-writegood-mode")
