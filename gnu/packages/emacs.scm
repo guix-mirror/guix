@@ -10001,6 +10001,8 @@ keep Parens and Indentation inline with one another.")
                 (sha256
                  (base32
                   "1x442ylrr7cx587s4rvfh187h3qbkr79qp95qr57a4igxkkw6183"))))
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
       (build-system emacs-build-system)
       (home-page "https://github.com/emacs-helm/helm-eww/")
       (synopsis "Helm interface to EWW")
