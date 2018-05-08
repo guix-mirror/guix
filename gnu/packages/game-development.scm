@@ -557,8 +557,7 @@ archive on a per-file basis.")
                                  "love-" version "-linux-src.tar.gz"))
              (sha256
               (base32
-               "1pkwiszmjs0xrwk0wqbc5cp9108b1y8gwsid0gqk1s0x09q9lpmw"))
-             (modules '((guix build utils)))))
+               "1pkwiszmjs0xrwk0wqbc5cp9108b1y8gwsid0gqk1s0x09q9lpmw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
