@@ -70,7 +70,8 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (ice-9 match))
 
 (define-public fann
   ;; The last release is >100 commits behind, so we package from git.
@@ -625,6 +626,63 @@ I/O.")
 adaptive sparsity and the Wong algorithm for adaptively sparse gaussian
 geometric models.")
     (license license:lgpl3+)))
+
+(define-public gemmlowp-for-tensorflow
+  ;; The commit hash is taken from "tensorflow/workspace.bzl".
+  (let ((commit "38ebac7b059e84692f53e5938f97a9943c120d98")
+        (revision "2"))
+    (package
+      (name "gemmlowp")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://mirror.bazel.build/"
+                                    "github.com/google/gemmlowp/archive/"
+                                    commit ".zip"))
+                (file-name (string-append "gemmlowp-" version ".zip"))
+                (sha256
+                 (base32
+                  "0n56s2g8hrssm4w8qj1v58gfm56a04n9v992ixkmvk6zjiralzxq"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags
+         (list ,@(match (%current-system)
+                   ((or "x86_64-linux" "i686-linux")
+                    '("-DCMAKE_CXX_FLAGS=-msse4.1"))
+                   (_ '())))
+         #:phases
+         (modify-phases %standard-phases
+           ;; This directory contains the CMakeLists.txt.
+           (add-after 'unpack 'chdir
+             (lambda _ (chdir "contrib") #t))
+           ;; There is no install target
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/"))
+                      (inc (string-append out "/include/")))
+                 (install-file "../build/libeight_bit_int_gemm.so" lib)
+                 (for-each (lambda (dir)
+                             (let ((target (string-append inc "/" dir)))
+                               (mkdir-p target)
+                               (for-each (lambda (h)
+                                           (install-file h target))
+                                         (find-files (string-append "../" dir)
+                                                     "\\.h$"))))
+                           '("meta" "profiling" "public" "fixedpoint"
+                             "eight_bit_int_gemm" "internal"))
+                 #t))))))
+      (native-inputs
+       `(("unzip" ,unzip)))
+      (home-page "https://github.com/google/gemmlowp")
+      (synopsis "Small self-contained low-precision GEMM library")
+      (description
+       "This is a small self-contained low-precision @dfn{general matrix
+multiplication} (GEMM) library.  It is not a full linear algebra library.
+Low-precision means that the input and output matrix entries are integers on
+at most 8 bits.  To avoid overflow, results are internally accumulated on more
+than 8 bits, and at the end only some significant 8 bits are kept.")
+      (license license:asl2.0))))
 
 (define-public dlib
   (package
