@@ -11141,25 +11141,22 @@ with narrow binding events such as transcription factor ChIP-seq.")
 (define-public trim-galore
   (package
     (name "trim-galore")
-    (version "0.4.2")
+    (version "0.4.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://www.bioinformatics.babraham.ac.uk/"
-                           "projects/trim_galore/trim_galore_v"
-                           version ".zip"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FelixKrueger/TrimGalore.git")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "0b9qdxi4521gsrjvbhgky8g7kry9b5nx3byzaxkgxz7p4k8bn1mn"))))
+         "0x5892l48c816pf00wmnz5vq0zq6170d3xc8zrxncd4jcz7h1p71"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         ;; The archive contains plain files.
-         (replace 'unpack
-           (lambda* (#:key source #:allow-other-keys)
-             (zero? (system* "unzip" source))))
          (delete 'configure)
          (delete 'build)
          (add-after 'unpack 'hardcode-tool-references
