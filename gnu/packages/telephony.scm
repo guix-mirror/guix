@@ -509,6 +509,7 @@ Mumble consists of two applications for separate usage:
    (build-system cmake-build-system)
    (arguments
     `(#:tests? #f ; no test target
+      #:configure-flags '("-DWITH_SPEEX=On")
       #:phases
       (modify-phases %standard-phases
          (add-after 'install 'wrap-executable
