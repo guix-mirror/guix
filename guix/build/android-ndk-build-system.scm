@@ -64,8 +64,6 @@
     (apply invoke "make" "install"
            (string-append "prefix=" out)
            make-flags)
-    (if (file-exists? "include")
-        (copy-recursively "include" (string-append out "/include")))
     #t))
 
 (define* (check #:key target inputs outputs (tests? (not target)) (make-flags '()) #:allow-other-keys)
