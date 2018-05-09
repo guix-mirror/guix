@@ -46,7 +46,7 @@
 (define-public android-make-stub
   (package
     (name "android-make-stub")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
       (method git-fetch)
@@ -57,7 +57,7 @@
                                 version "-checkout"))
       (sha256
        (base32
-        "0sbnn7fd607lfsgfs695k30gs9q5cz8jc2ki56x8irxlvhhrwdin"))))
+        "158qnp1x8isqfxcqglikinz65hw8iz6paw2cn8z0s8dysp4awb9g"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; None exist.
