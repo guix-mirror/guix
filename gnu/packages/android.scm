@@ -516,8 +516,7 @@ Android core.")
     (source (android-platform-system-extras version))
     (build-system android-ndk-build-system)
     (arguments
-     `(#:tests? #f ; TODO.
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "f2fs_utils") #t))
