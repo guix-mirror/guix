@@ -105,6 +105,18 @@ use their packages mostly unmodified in our Android NDK build system.")
                      "adb-add-libraries.patch"
                      "libziparchive-add-includes.patch"))))
 
+(define (android-platform-system-extras version)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://android.googlesource.com/platform/system/extras")
+          (commit (string-append "android-" version))))
+    (file-name (string-append "android-platform-system-extras-"
+                              version "-checkout"))
+    (sha256
+     (base32
+      "18130c23ybqcpgjc5v6f8kdbv2xn39hyiaj17dzldjb9rlwzcyy9"))))
+
 (define (android-platform-bionic version)
   (origin
     (method git-fetch)
@@ -434,13 +446,66 @@ that is safe to use for user space.  It also includes
      `(("openssl" ,openssl)))
     (native-inputs
      `(("android-bionic-uapi" ,android-bionic-uapi)
-       ("core" ,(android-platform-system-core version))))
-    (propagated-inputs
-     `(("pcre" ,pcre)))
+       ("core" ,(android-platform-system-core version))
+       ;; pcre is inlined by our package.
+       ("pcre" ,pcre)))
     (home-page "https://developer.android.com/")
     (synopsis (package-synopsis libselinux))
     (description (package-description libselinux))
     (license (package-license libselinux))))
+
+(define-public android-ext4-utils
+  (package
+    (name "android-ext4-utils")
+    (version (android-platform-version))
+    (source (android-platform-system-extras version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:tests? #f ; TODO.
+       #:make-flags
+       (list (string-append "CPPFLAGS="
+                            ;"-Wno-error "
+                            "-I "
+                            (assoc-ref %build-inputs "android-libselinux")
+                            "/include "
+                            "-I " (assoc-ref %build-inputs "android-libsparse")
+                            "/include "
+                            "-I " (assoc-ref %build-inputs "libcutils")
+                            "/include "
+                            "-I " (assoc-ref %build-inputs "liblog") "/include "
+                            "-I ../core/include")
+             "CFLAGS=-Wno-error"
+             "install-libext4_utils_host.a"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-core
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "core")
+             (with-directory-excursion "core"
+               (invoke "tar" "axf" (assoc-ref inputs "android-core")
+                             "--strip-components=1"))
+             #t))
+         (add-after 'unpack-core 'enter-source
+           (lambda _ (chdir "ext4_utils") #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "." (string-append out "/include")))
+             #t)))))
+    (inputs
+     `(("libcutils" ,libcutils)
+       ("liblog" ,liblog)
+       ("android-libselinux" ,android-libselinux)
+       ("android-libsparse" ,android-libsparse)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("android-core" ,(android-platform-system-core version))))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android ext4 filesystem utils")
+    (description "@code{android-ext4-utils} is a library in common use by the
+Android core.")
+    (license license:asl2.0)))
 
 (define-public android-udev-rules
   (package
