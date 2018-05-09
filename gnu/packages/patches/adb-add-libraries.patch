@@ -17,3 +17,14 @@
      libbase \
      libcrypto_static \
      libdiagnose_usb \
+--- a/adb/sysdeps_test.cpp	2018-05-09 23:58:46.583163684 +0200
++++ b/adb/sysdeps_test.cpp	2018-05-09 23:56:41.356544648 +0200
+@@ -17,6 +17,8 @@
+ #include <gtest/gtest.h>
+ #include <unistd.h>
+ #include <atomic>
++#include <climits>
++#include <mutex>
+ 
+ #include "adb_io.h"
+ #include "sysdeps.h"
