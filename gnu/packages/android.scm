@@ -435,12 +435,6 @@ that is safe to use for user space.  It also includes
                           "LDFLAGS=-L . -lpcre")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'unpack-core
-           (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir-p "core")
-             (with-directory-excursion "core"
-               (invoke "tar" "axf" (assoc-ref inputs "core") "--strip-components=1"))
-             #t))
          (add-after 'unpack-core 'patch-HOST
            (lambda _
              ;; gettid duplicates otherwise.
@@ -451,7 +445,6 @@ that is safe to use for user space.  It also includes
      `(("openssl" ,openssl)))
     (native-inputs
      `(("android-bionic-uapi" ,android-bionic-uapi)
-       ("core" ,(android-platform-system-core version))
        ;; pcre is inlined by our package.
        ("pcre" ,pcre)))
     (home-page "https://developer.android.com/")
