@@ -3750,6 +3750,25 @@ that should be run during the @code{build} phase.  By default the
 
 @end defvr
 
+@defvr {Scheme Variable} android-ndk-build-system
+@cindex Android distribution
+@cindex Android NDK build system
+This variable is exported by @code{(guix build-system android-ndk)}.  It
+implements a build procedure for Android NDK (native development kit)
+packages using a Guix-specific build process.
+
+The build system assumes that packages install their public interface
+(header) files to the subdirectory "include" of the "out" output and
+their libraries to the subdirectory "lib" of the "out" output.
+
+It's also assumed that the union of all the dependencies of a package
+has no conflicting files.
+
+For the time being, cross-compilation is not supported - so right now
+the libraries and header files are assumed to be host tools.
+
+@end defvr
+
 @defvr {Scheme Variable} asdf-build-system/source
 @defvrx {Scheme Variable} asdf-build-system/sbcl
 @defvrx {Scheme Variable} asdf-build-system/ecl
