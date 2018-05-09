@@ -464,8 +464,7 @@ that is safe to use for user space.  It also includes
     (source (android-platform-system-extras version))
     (build-system android-ndk-build-system)
     (arguments
-     `(#:tests? #f ; TODO.
-       #:make-flags
+     `(#:make-flags
        (list (string-append "CPPFLAGS="
                             ;"-Wno-error "
                             "-I "
