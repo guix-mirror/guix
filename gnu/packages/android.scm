@@ -143,9 +143,9 @@ use their packages mostly unmodified in our Android NDK build system.")
      (base32
       checksum))))
 
-(define liblog
+(define android-liblog
   (package
-    (name "liblog")
+    (name "android-liblog")
     (version (android-platform-version))
     (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
@@ -182,7 +182,7 @@ in Main, System, Radio and Events sub-logs.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "base") #t)))))
-    (inputs `(("liblog" ,liblog)))
+    (inputs `(("android-liblog" ,android-liblog)))
     (home-page "https://developer.android.com/")
     (synopsis "Android platform base library")
     (description "@code{libbase} is a library in common use by the
@@ -322,7 +322,7 @@ various Android core host applications.")
     (inputs
      `(("libbase" ,libbase)
        ("libcutils" ,libcutils)
-       ("liblog" ,liblog)
+       ("android-liblog" ,android-liblog)
        ("openssl" ,openssl)))
     (home-page "https://developer.android.com/studio/command-line/adb.html")
     (synopsis "Android Debug Bridge")
@@ -477,7 +477,7 @@ that is safe to use for user space.  It also includes
                             "/include "
                             "-I " (assoc-ref %build-inputs "libcutils")
                             "/include "
-                            "-I " (assoc-ref %build-inputs "liblog") "/include "
+                            "-I " (assoc-ref %build-inputs "android-liblog") "/include "
                             "-I ../core/include")
              "CFLAGS=-Wno-error"
              "install-libext4_utils_host.a"
@@ -500,7 +500,7 @@ that is safe to use for user space.  It also includes
              #t)))))
     (inputs
      `(("libcutils" ,libcutils)
-       ("liblog" ,liblog)
+       ("android-liblog" ,android-liblog)
        ("android-libselinux" ,android-libselinux)
        ("android-libsparse" ,android-libsparse)
        ("zlib" ,zlib)))
@@ -613,7 +613,7 @@ Android core.")
        ("googletest" ,googletest)
        ("libbase" ,libbase)
        ("libcutils" ,libcutils)
-       ("liblog" ,liblog)
+       ("android-liblog" ,android-liblog)
        ("android-libutils" ,android-libutils)
        ("android-libsparse" ,android-libsparse)
        ("android-libziparchive" ,android-libziparchive)
