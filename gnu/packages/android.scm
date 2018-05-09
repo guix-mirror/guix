@@ -270,13 +270,16 @@ various Android core host applications.")
     (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
     (arguments
-     `(#:tests? #f ; TODO.
-       #:make-flags '("CFLAGS=-Wno-error"
+     `(#:make-flags '("CFLAGS=-Wno-error"
                       "CXXFLAGS=-fpermissive -Wno-error -std=gnu++11")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "libziparchive") #t))
+         (add-before 'check 'setenv
+           (lambda _
+             (setenv "ziparchive_tests_host_PARAMS" "--test_data_dir=testdata")
+             #t))
          (add-after 'install 'install-headers
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -285,6 +288,10 @@ various Android core host applications.")
                #t))))))
     (inputs
      `(("zlib" ,zlib)))
+    (native-inputs
+     `(("android-libbase" ,android-libbase)
+       ("android-libutils" ,android-libutils)
+       ("android-liblog" ,android-liblog)))
     (home-page "https://developer.android.com/")
     (synopsis "Android platform ZIP library")
     (description "@code{android-libziparchive} is a library in common use by the
