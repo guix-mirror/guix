@@ -11568,47 +11568,62 @@ Browser.")
 (define-public bismark
   (package
     (name "bismark")
-    (version "0.16.3")
+    (version "0.19.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/FelixKrueger/Bismark/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FelixKrueger/Bismark.git")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "1204i0pa02ll2jn5pnxypkclnskvv7a2nwh5nxhagmhxk9wfv9sq"))))
+         "0yb5l36slwg02fp4b1jdlplgljcsxgqfzvzihzdnphd87dghcc84"))
+       (snippet
+        '(begin
+           ;; highcharts.js is non-free software.  The code is available under
+           ;; CC-BY-NC or proprietary licenses only.
+           (delete-file "bismark_sitrep/highcharts.js")
+           #t))))
     (build-system perl-build-system)
     (arguments
-     `(#:tests? #f ; there are no tests
+     `(#:tests? #f                      ; there are no tests
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out")
-                                       "/bin"))
-                   (docdir  (string-append (assoc-ref outputs "out")
-                                           "/share/doc/bismark"))
-                   (docs    '("Bismark_User_Guide.pdf"
-                              "RELEASE_NOTES.txt"))
-                   (scripts '("bismark"
-                              "bismark_genome_preparation"
-                              "bismark_methylation_extractor"
-                              "bismark2bedGraph"
-                              "bismark2report"
-                              "coverage2cytosine"
-                              "deduplicate_bismark"
-                              "bismark_sitrep.tpl"
-                              "bam2nuc"
-                              "bismark2summary")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share   (string-append out "/share/bismark"))
+                    (docdir  (string-append out "/share/doc/bismark"))
+                    (docs    '("Docs/Bismark_User_Guide.html"))
+                    (scripts '("bismark"
+                               "bismark_genome_preparation"
+                               "bismark_methylation_extractor"
+                               "bismark2bedGraph"
+                               "bismark2report"
+                               "coverage2cytosine"
+                               "deduplicate_bismark"
+                               "filter_non_conversion"
+                               "bam2nuc"
+                               "bismark2summary")))
+               (mkdir-p share)
                (mkdir-p docdir)
                (mkdir-p bin)
                (for-each (lambda (file) (install-file file bin))
                          scripts)
                (for-each (lambda (file) (install-file file docdir))
                          docs)
+               (copy-recursively "Docs/Images" (string-append docdir "/Images"))
+
+               (substitute* "bismark2report"
+                 (("\\$RealBin/bismark_sitrep")
+                  (string-append share "/bismark_sitrep")))
+               (copy-recursively "bismark_sitrep"
+                                 (string-append share "/bismark_sitrep"))
+
                ;; Fix references to gunzip
                (substitute* (map (lambda (file)
                                    (string-append bin "/" file))
