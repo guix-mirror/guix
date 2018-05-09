@@ -113,7 +113,7 @@
                         ;; Keep the standard inputs of 'gnu-build-system'
                         ,@(standard-packages)))
          (build-inputs `(("android-make-stub" ,(module-ref (resolve-interface '(gnu packages android)) 'android-make-stub))
-                         ("googletest" ,(module-ref (resolve-interface '(gnu packages check)) 'googletest))
+                         ("android-googletest" ,(module-ref (resolve-interface '(gnu packages android)) 'android-googletest))
                          ,@native-inputs))
          (outputs outputs)
          (build android-ndk-build)

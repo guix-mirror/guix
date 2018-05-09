@@ -77,6 +77,23 @@
 use their packages mostly unmodified in our Android NDK build system.")
     (license license:asl2.0)))
 
+(define-public android-googletest
+  (package (inherit googletest)
+    (name "android-googletest")
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-host-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (symlink "libgtest.so"
+                        (string-append lib "/libgtest_host.so"))
+               (symlink "libgmock.so"
+                        (string-append lib "/libgmock_host.so"))
+               #t))))))))
+
 ;; The Makefiles that we add are largely based on the Debian
 ;; packages.  They are licensed under GPL-2 and have copyright:
 ;; 2012, Stefan Handschuh <handschuh.stefan@googlemail.com>
