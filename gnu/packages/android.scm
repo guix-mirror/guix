@@ -151,11 +151,16 @@ use their packages mostly unmodified in our Android NDK build system.")
     (build-system android-ndk-build-system)
     (arguments
      `(#:tests? #f ; TODO.
-       #:make-flags '("CC=gcc")
+       #:make-flags '("LDLIBS=-lpthread")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
-           (lambda _ (chdir "liblog") #t)))))
+           (lambda _ (chdir "liblog") #t))
+         (add-after 'install 'ldconfig
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (symlink "liblog.so.0" (string-append out "/lib/liblog.so"))
+               #t))))))
     (home-page "https://developer.android.com/")
     (synopsis "Logging library from the Android platform.")
     (description "@code{liblog} represents an interface to the volatile Android
