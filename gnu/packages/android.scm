@@ -35,7 +35,9 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages selinux)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages tls)
@@ -397,6 +399,48 @@ operations do not result in silent overflow.")
 that is safe to use for user space.  It also includes
 @code{system_properties.h} and @code{_system_properties.h}.")
     (license license:asl2.0)))
+
+(define-public android-libselinux
+  (package
+    (name "android-libselinux")
+    (version (android-platform-version))
+    (source
+     (android-platform-external version "libselinux"
+                                "13m2q32gzdcs5d0zj1nwasjy1j8vsxsgbjg7m5sa9lfcjaj7nkm7"))
+    (build-system android-ndk-build-system)
+    (arguments
+     ;; See logd/Android.mk for the *_LOG_TAG values.
+     `(#:make-flags (list (string-append "CFLAGS=-Wno-error "
+                                         "-I core/include "
+                                         "-I core/libpackagelistparser/include "
+                                         "-DAUDITD_LOG_TAG=1003 "
+                                         "-DLOGD_LOG_TAG=1004 -D_GNU_SOURCE")
+                          "LDFLAGS=-L . -lpcre")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-core
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "core")
+             (with-directory-excursion "core"
+               (invoke "tar" "axf" (assoc-ref inputs "core") "--strip-components=1"))
+             #t))
+         (add-after 'unpack-core 'patch-HOST
+           (lambda _
+             ;; gettid duplicates otherwise.
+             (substitute* "src/procattr.c"
+              (("#ifdef HOST") "#ifdef XXX"))
+             #t)))))
+    (inputs
+     `(("openssl" ,openssl)))
+    (native-inputs
+     `(("android-bionic-uapi" ,android-bionic-uapi)
+       ("core" ,(android-platform-system-core version))))
+    (propagated-inputs
+     `(("pcre" ,pcre)))
+    (home-page "https://developer.android.com/")
+    (synopsis (package-synopsis libselinux))
+    (description (package-description libselinux))
+    (license (package-license libselinux))))
 
 (define-public android-udev-rules
   (package
