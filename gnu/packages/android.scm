@@ -102,6 +102,8 @@ use their packages mostly unmodified in our Android NDK build system.")
     (patches
      (search-patches "libbase-use-own-logging.patch"
                      "libbase-fix-includes.patch"
+                     "libutils-remove-damaging-includes.patch"
+                     "libutils-add-includes.patch"
                      "adb-add-libraries.patch"
                      "libziparchive-add-includes.patch"))))
 
@@ -534,6 +536,33 @@ Android core.")
     (synopsis "Android ext4 utils")
     (description "@code{android-ext4-utils} is a library in common use by the
 Android core.")
+    (license license:asl2.0)))
+
+(define-public android-libutils
+  (package
+    (name "android-libutils")
+    (version (android-platform-version))
+    (source (android-platform-system-core version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:tests? #f ; TODO
+       #:make-flags '("CXXFLAGS=-std=gnu++11 -Wno-error")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source
+           (lambda _ (chdir "libutils") #t))
+
+         (add-after 'install 'install-headers
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (copy-recursively "../include/utils" (string-append (assoc-ref outputs "out") "/include/utils")))))))
+    (inputs
+     `(("android-safe-iop" ,android-safe-iop)
+       ("libcutils" ,libcutils)))
+    (native-inputs
+     `(("android-bionic-uapi" ,android-bionic-uapi)))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android utility library")
+    (description "@code{android-libutils} provides utilities for Android NDK developers.")
     (license license:asl2.0)))
 
 (define-public android-udev-rules

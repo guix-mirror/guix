@@ -875,6 +875,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libusb-for-axoloti.patch			\
+  %D%/packages/patches/libutils-add-includes.patch		\
+  %D%/packages/patches/libutils-remove-damaging-includes.patch	\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
   %D%/packages/patches/libvorbis-CVE-2017-14632.patch		\
   %D%/packages/patches/libvorbis-CVE-2017-14633.patch		\
