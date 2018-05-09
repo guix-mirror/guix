@@ -150,8 +150,7 @@ use their packages mostly unmodified in our Android NDK build system.")
     (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
     (arguments
-     `(#:tests? #f ; TODO.
-       #:make-flags '("LDLIBS=-lpthread")
+     `(#:make-flags '("LDLIBS=-lpthread")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
