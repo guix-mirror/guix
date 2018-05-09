@@ -175,7 +175,7 @@ in Main, System, Radio and Events sub-logs.")
     (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
     (arguments
-     `(#:tests? #f ; TODO.
+     `(#:tests? #f ; Test failure: logging.UNIMPLEMENTED
        #:make-flags '("CXXFLAGS=-std=gnu++11")
        #:phases
        (modify-phases %standard-phases
