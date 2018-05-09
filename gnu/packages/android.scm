@@ -44,22 +44,20 @@
   #:use-module (gnu packages linux))
 
 (define-public android-make-stub
-  (let ((commit "v0.1")
-        (revision "21"))
   (package
     (name "android-make-stub")
-    (version "0.1")
+    (version "0.4")
     (source
      (origin
       (method git-fetch)
       (uri (git-reference
             (url "https://github.com/daym/android-make-stub.git")
-            (commit commit)))
+            (commit (string-append "v" version))))
       (file-name (string-append "android-make-stub-"
                                 version "-checkout"))
       (sha256
        (base32
-        "1ni4szpcx2clf3lpzrybabwk7bgvsl6ynng7xxfc49y4jkdkk4sh"))))
+        "069bcldva63qbda7c8j6kyf9z28qnygszqfkgzq48hmkfmjrhbqg"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; None exist.
@@ -77,7 +75,7 @@
     (description "@code{android-make-stub} provides stubs for the
 @command{make} system of the Android platform.  This allows us to
 use their packages mostly unmodified in our Android NDK build system.")
-    (license license:asl2.0))))
+    (license license:asl2.0)))
 
 ;; The Makefiles that we add are largely based on the Debian
 ;; packages.  They are licensed under GPL-2 and have copyright:
