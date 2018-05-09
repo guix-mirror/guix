@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -500,6 +501,47 @@ combine multiple data representations, algorithm classes, and general purpose
 tools.  This enables both rapid prototyping of data pipelines and extensibility
 in terms of new algorithms.")
     (license license:gpl3+)))
+
+(define-public rxcpp
+  (package
+    (name "rxcpp")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ReactiveX/RxCpp/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0y2isr8dy2n1yjr9c5570kpc9lvdlch6jv0jvw000amwn5d3krsh"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-werror
+           (lambda _
+             (substitute* (find-files ".")
+               (("-Werror") ""))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "ctest"))))))
+    (native-inputs
+     `(("catch" ,catch-framework)))
+    (home-page "http://reactivex.io/")
+    (synopsis "Reactive Extensions for C++")
+    (description
+     "The Reactive Extensions for C++ (RxCpp) is a library of algorithms for
+values-distributed-in-time.  ReactiveX is a library for composing asynchronous
+and event-based programs by using observable sequences.
+
+It extends the observer pattern to support sequences of data and/or events and
+adds operators that allow you to compose sequences together declaratively while
+abstracting away concerns about things like low-level threading,
+synchronization, thread-safety, concurrent data structures, and non-blocking
+I/O.")
+    (license license:asl2.0)))
 
 (define-public r-adaptivesparsity
   (package
