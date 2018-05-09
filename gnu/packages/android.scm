@@ -568,6 +568,70 @@ Android core.")
     (description "@code{android-libutils} provides utilities for Android NDK developers.")
     (license license:asl2.0)))
 
+(define-public fastboot
+  (package
+    (name "fastboot")
+    (version (android-platform-version))
+    (source #f)
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:make-flags (list "CXXFLAGS=-std=gnu++11")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "core")
+             (with-directory-excursion "core"
+               (invoke "tar" "axf" (assoc-ref inputs "core") "--strip-components=1")
+               (substitute* "fastboot/Android.mk"
+                (("libext4_utils_host") "libext4_utils_host libselinux libpcre")))
+             (copy-recursively (assoc-ref inputs "extras") "extras"
+                               #:keep-mtime? #t)
+             #t))
+         (add-after 'unpack 'enter-source
+           (lambda _
+             (chdir "core/fastboot")
+             #t))
+         (add-after 'enter-source 'make-googletest-available
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((googletest (assoc-ref inputs "googletest")))
+               (symlink (string-append googletest "/lib/libgtest.so") "libgtest_host.so")
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (bin (string-append out "/bin")))
+               (install-file "fastboot" bin)
+               #t))))
+       #:tests? #f)) ; Require network
+    (inputs
+     `(("adb" ,adb)
+       ("android-safe-iop" ,android-safe-iop)
+       ("android-ext4-utils" ,android-ext4-utils)
+       ("android-f2fs-utils" ,android-f2fs-utils)
+       ("googletest" ,googletest)
+       ("libbase" ,libbase)
+       ("libcutils" ,libcutils)
+       ("liblog" ,liblog)
+       ("android-libutils" ,android-libutils)
+       ("android-libsparse" ,android-libsparse)
+       ("android-libziparchive" ,android-libziparchive)
+       ("android-libselinux" ,android-libselinux)
+       ("pcre" ,pcre)
+       ("mkbootimg" ,mkbootimg)
+       ("openssl" ,openssl) ; FIXME remove
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("core" ,(android-platform-system-core version))
+       ("extras" ,(android-platform-system-extras version))
+       ("xz" ,xz)))
+    (home-page "https://developer.android.com/studio/command-line/")
+    (synopsis "Android image flasher")
+    (description
+     "This package provides @command{fastboot}, a tool to upload file system images to Android devices.")
+    (license license:asl2.0)))
+
 (define-public android-udev-rules
   (package
     (name "android-udev-rules")
