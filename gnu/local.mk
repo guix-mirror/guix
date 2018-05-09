@@ -802,7 +802,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/java-xerces-bootclasspath.patch	\
   %D%/packages/patches/java-xerces-build_dont_unzip.patch	\
   %D%/packages/patches/java-xerces-xjavac_taskdef.patch	\
-  %D%/packages/patches/jemalloc-arm-address-bits.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/json-glib-fix-tests-32bit.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
