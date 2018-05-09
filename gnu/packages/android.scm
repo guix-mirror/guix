@@ -189,9 +189,9 @@ in Main, System, Radio and Events sub-logs.")
 various Android core host applications.")
     (license license:asl2.0)))
 
-(define libcutils
+(define android-libcutils
   (package
-    (name "libcutils")
+    (name "android-libcutils")
     (version (android-platform-version))
     (source (android-platform-system-core version))
     (build-system gnu-build-system)
@@ -321,7 +321,7 @@ various Android core host applications.")
              #t)))))
     (inputs
      `(("android-libbase" ,android-libbase)
-       ("libcutils" ,libcutils)
+       ("android-libcutils" ,android-libcutils)
        ("android-liblog" ,android-liblog)
        ("openssl" ,openssl)))
     (home-page "https://developer.android.com/studio/command-line/adb.html")
@@ -475,7 +475,7 @@ that is safe to use for user space.  It also includes
                             "/include "
                             "-I " (assoc-ref %build-inputs "android-libsparse")
                             "/include "
-                            "-I " (assoc-ref %build-inputs "libcutils")
+                            "-I " (assoc-ref %build-inputs "android-libcutils")
                             "/include "
                             "-I " (assoc-ref %build-inputs "android-liblog") "/include "
                             "-I ../core/include")
@@ -499,7 +499,7 @@ that is safe to use for user space.  It also includes
                (copy-recursively "." (string-append out "/include")))
              #t)))))
     (inputs
-     `(("libcutils" ,libcutils)
+     `(("android-libcutils" ,android-libcutils)
        ("android-liblog" ,android-liblog)
        ("android-libselinux" ,android-libselinux)
        ("android-libsparse" ,android-libsparse)
@@ -533,7 +533,7 @@ Android core.")
      `(("f2fs-tools" ,f2fs-tools-1.7)
        ("android-libselinux" ,android-libselinux)
        ("android-libsparse" ,android-libsparse)
-       ("libcutils" ,libcutils)
+       ("android-libcutils" ,android-libcutils)
        ("zlib" ,zlib)))
     (home-page "https://developer.android.com/")
     (synopsis "Android ext4 utils")
@@ -560,7 +560,7 @@ Android core.")
              (copy-recursively "../include/utils" (string-append (assoc-ref outputs "out") "/include/utils")))))))
     (inputs
      `(("android-safe-iop" ,android-safe-iop)
-       ("libcutils" ,libcutils)))
+       ("android-libcutils" ,android-libcutils)))
     (native-inputs
      `(("android-bionic-uapi" ,android-bionic-uapi)))
     (home-page "https://developer.android.com/")
@@ -612,7 +612,7 @@ Android core.")
        ("android-f2fs-utils" ,android-f2fs-utils)
        ("googletest" ,googletest)
        ("android-libbase" ,android-libbase)
-       ("libcutils" ,libcutils)
+       ("android-libcutils" ,android-libcutils)
        ("android-liblog" ,android-liblog)
        ("android-libutils" ,android-libutils)
        ("android-libsparse" ,android-libsparse)
