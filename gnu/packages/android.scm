@@ -507,6 +507,35 @@ that is safe to use for user space.  It also includes
 Android core.")
     (license license:asl2.0)))
 
+(define-public android-f2fs-utils
+  (package
+    (name "android-f2fs-utils")
+    (version (android-platform-version))
+    (source (android-platform-system-extras version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:tests? #f ; TODO.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source
+           (lambda _ (chdir "f2fs_utils") #t))
+         (add-after 'install 'install-headers
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (copy-recursively "." (string-append (assoc-ref outputs "out")
+                                                  "/include"))
+             #t)))))
+    (inputs
+     `(("f2fs-tools" ,f2fs-tools-1.7)
+       ("android-libselinux" ,android-libselinux)
+       ("android-libsparse" ,android-libsparse)
+       ("libcutils" ,libcutils)
+       ("zlib" ,zlib)))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android ext4 utils")
+    (description "@code{android-ext4-utils} is a library in common use by the
+Android core.")
+    (license license:asl2.0)))
+
 (define-public android-udev-rules
   (package
     (name "android-udev-rules")
