@@ -249,8 +249,7 @@ various Android core host applications.")
     (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
     (arguments
-     `(#:tests? #f ; TODO.
-       #:make-flags '("CFLAGS=-Wno-error"
+     `(#:make-flags '("CFLAGS=-Wno-error"
                       "CXXFLAGS=-fpermissive -Wno-error")
        #:phases
        (modify-phases %standard-phases
