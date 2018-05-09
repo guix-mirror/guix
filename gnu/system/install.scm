@@ -51,6 +51,7 @@
             beaglebone-black-installation-os
             mx6cuboxi-installation-os
             nintendo-nes-classic-edition-installation-os
+            novena-installation-os
             wandboard-installation-os))
 
 ;;; Commentary:
@@ -435,6 +436,11 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
   (embedded-installation-os u-boot-mx6cuboxi-bootloader
                             "/dev/mmcblk0" ; SD card storage
                             "ttymxc0"))
+
+(define novena-installation-os
+  (embedded-installation-os u-boot-novena-bootloader
+                            "/dev/mmcblk1" ; SD card storage
+                            "ttymxc1"))
 
 (define nintendo-nes-classic-edition-installation-os
   (embedded-installation-os u-boot-nintendo-nes-classic-edition-bootloader

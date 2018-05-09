@@ -35,6 +35,7 @@
             u-boot-beaglebone-black-bootloader
             u-boot-mx6cuboxi-bootloader
             u-boot-nintendo-nes-classic-edition-bootloader
+            u-boot-novena-bootloader
             u-boot-wandboard-bootloader))
 
 (define install-u-boot
@@ -136,3 +137,8 @@
   (bootloader
    (inherit u-boot-imx-bootloader)
    (package u-boot-wandboard)))
+
+(define u-boot-novena-bootloader
+  (bootloader
+   (inherit u-boot-imx-bootloader)
+   (package u-boot-novena)))
