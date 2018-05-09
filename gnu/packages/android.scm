@@ -169,9 +169,9 @@ interfaces for either writing or reading logs.  The log buffers are divided up
 in Main, System, Radio and Events sub-logs.")
     (license license:asl2.0)))
 
-(define libbase
+(define android-libbase
   (package
-    (name "libbase")
+    (name "android-libbase")
     (version (android-platform-version))
     (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
@@ -320,7 +320,7 @@ various Android core host applications.")
              (install-file "diagnose_usb.h" (string-append (assoc-ref outputs "out") "/include"))
              #t)))))
     (inputs
-     `(("libbase" ,libbase)
+     `(("android-libbase" ,android-libbase)
        ("libcutils" ,libcutils)
        ("android-liblog" ,android-liblog)
        ("openssl" ,openssl)))
@@ -611,7 +611,7 @@ Android core.")
        ("android-ext4-utils" ,android-ext4-utils)
        ("android-f2fs-utils" ,android-f2fs-utils)
        ("googletest" ,googletest)
-       ("libbase" ,libbase)
+       ("android-libbase" ,android-libbase)
        ("libcutils" ,libcutils)
        ("android-liblog" ,android-liblog)
        ("android-libutils" ,android-libutils)
