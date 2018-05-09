@@ -68,11 +68,15 @@
         (copy-recursively "include" (string-append out "/include")))
     #t))
 
-(define* (check #:key inputs outputs tests? (make-flags '()) #:allow-other-keys)
-  ;; TODO: Also handle root-level tests.
-  (when (and (file-exists? "tests") tests?)
-    (with-directory-excursion "tests"
-      (apply invoke "make" "check" make-flags))))
+(define* (check #:key target inputs outputs (tests? (not target)) (make-flags '()) #:allow-other-keys)
+  (if tests?
+      (begin
+        (apply invoke "make" "check" make-flags)
+        (when (and (file-exists? "tests") tests?)
+          (with-directory-excursion "tests"
+            (apply invoke "make" "check" make-flags))))
+      (format #t "test suite not run~%"))
+  #t)
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
