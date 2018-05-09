@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -366,6 +367,44 @@ JavaScript engine.  @code{es5-sham.js} patches other ES5 methods as closely as
 possible.  Many of these shams are intended only to allow code to be written
 to ES5 without causing run-time errors in older engines.  In many cases, this
 means that these shams cause many ES5 methods to silently fail.")
+    (license license:expat)))
+
+(define-public js-filesaver
+  (package
+    (name "js-filesaver")
+    (version "1.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eligrey/FileSaver.js/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "1rkhfqs5plaj628kzj7qgm5qahy4v7ihygifidqr6g6265mil97h"))))
+    (build-system minify-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-uglification
+           ;; Remove "export" keyword which prevents the file from being
+           ;; uglified by uglify-js.  Moreover, that keyword is not present in
+           ;; the minified version of the library some projects are using,
+           ;; e.g.,
+           ;; <https://github.com/jmoenig/Snap--Build-Your-Own-Blocks/blob/master/FileSaver.min.js>
+           (lambda _
+             (substitute* "src/FileSaver.js"
+               (("export ") ""))
+             #t)))))
+    (home-page
+     "https://eligrey.com/blog/saving-generated-files-on-the-client-side/")
+    (synopsis "HTML5 saveAs() FileSaver implementation")
+    (description "@file{FileSaver.js} implements the @code{saveAs()}
+FileSaver interface in browsers that do not natively support it.
+
+@file{FileSaver.js} is the solution to saving files on the
+client-side, and is perfect for webapps that need to generate files,
+or for saving sensitive information that shouldn't be sent to an
+external server.")
     (license license:expat)))
 
 (define-public mujs
