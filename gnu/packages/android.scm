@@ -612,8 +612,7 @@ Android core.")
                     (lib (string-append out "/lib"))
                     (bin (string-append out "/bin")))
                (install-file "fastboot" bin)
-               #t))))
-       #:tests? #f)) ; Require network
+               #t))))))
     (inputs
      `(("adb" ,adb)
        ("android-safe-iop" ,android-safe-iop)
