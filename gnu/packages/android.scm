@@ -606,11 +606,6 @@ Android core.")
            (lambda _
              (chdir "core/fastboot")
              #t))
-         (add-after 'enter-source 'make-googletest-available
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((googletest (assoc-ref inputs "googletest")))
-               (symlink (string-append googletest "/lib/libgtest.so") "libgtest_host.so")
-               #t)))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -634,7 +629,6 @@ Android core.")
        ("android-libselinux" ,android-libselinux)
        ("pcre" ,pcre)
        ("mkbootimg" ,mkbootimg)
-       ("openssl" ,openssl) ; FIXME remove
        ("zlib" ,zlib)))
     (native-inputs
      `(("core" ,(android-platform-system-core version))
