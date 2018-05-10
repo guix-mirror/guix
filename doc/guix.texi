@@ -14985,6 +14985,9 @@ networking interface.
 @item @code{package} (default: @code{bitlbee})
 The BitlBee package to use.
 
+@item @code{plugins} (default: @code{'()})
+List of plugin packages to use---e.g., @code{bitlbee-discord}.
+
 @item @code{extra-settings} (default: @code{""})
 Configuration snippet added as-is to the BitlBee configuration file.
 @end table
