@@ -627,7 +627,15 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                (with-directory-excursion icons
                  (symlink adwaita "Adwaita")
                  (copy-recursively hicolor "hicolor")))
-             #t)))))
+             #t))
+         (add-after 'install-icons 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/gajim")
+               ;; For GtkFileChooserDialog.
+               `("GSETTINGS_SCHEMA_DIR" =
+                 (,(string-append (assoc-ref inputs "gtk+")
+                                  "/share/glib-2.0/schemas")))))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("xorg-server" ,xorg-server)))
