@@ -322,7 +322,7 @@ various Android core host applications.")
     (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
     (arguments
-     `(#:tests? #f ; TODO.
+     `(#:tests? #f ; Test failure: sysdeps_poll.fd_count
        #:make-flags
        (list "CFLAGS=-Wno-error"
              "CXXFLAGS=-fpermissive -Wno-error -std=gnu++14 -D_Nonnull= -D_Nullable= -I ."
