@@ -549,9 +549,10 @@ Android core.")
        ("android-libcutils" ,android-libcutils)
        ("zlib" ,zlib)))
     (home-page "https://developer.android.com/")
-    (synopsis "Android ext4 utils")
-    (description "@code{android-ext4-utils} is a library in common use by the
-Android core.")
+    (synopsis "Android f2fs utils")
+    (description "@code{android-f2fs-utils} is a library in common use by the
+Android core.  It allows the user to create images for the @code{f2fs} Flash
+file system.")
     (license license:asl2.0)))
 
 (define-public android-libutils
