@@ -541,7 +541,16 @@ Android core.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (copy-recursively "." (string-append (assoc-ref outputs "out")
                                                   "/include"))
-             #t)))))
+             #t))
+         (add-after 'install 'install-shell-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (patch-shebang "mkf2fsuserimg.sh")
+               (substitute* "mkf2fsuserimg.sh"
+                (("make_f2fs") (string-append bin "/make_f2fs")))
+               (install-file "mkf2fsuserimg.sh" bin)
+               #t))))))
     (inputs
      `(("f2fs-tools" ,f2fs-tools-1.7)
        ("android-libselinux" ,android-libselinux)
