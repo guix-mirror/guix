@@ -586,25 +586,20 @@ Android core.")
   (package
     (name "fastboot")
     (version (android-platform-version))
-    (source #f)
+    (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
     (arguments
      `(#:make-flags (list "CXXFLAGS=-std=gnu++11")
        #:phases
        (modify-phases %standard-phases
-         (replace 'unpack
-           (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir-p "core")
-             (with-directory-excursion "core"
-               (invoke "tar" "axf" (assoc-ref inputs "core") "--strip-components=1")
-               (substitute* "fastboot/Android.mk"
-                (("libext4_utils_host") "libext4_utils_host libselinux libpcre")))
-             (copy-recursively (assoc-ref inputs "extras") "extras"
-                               #:keep-mtime? #t)
-             #t))
          (add-after 'unpack 'enter-source
            (lambda _
-             (chdir "core/fastboot")
+             (chdir "fastboot")
+             #t))
+         (add-after 'enter-source 'patch-source
+           (lambda _
+             (substitute* "Android.mk"
+              (("libext4_utils_host") "libext4_utils_host libselinux libpcre"))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -629,9 +624,7 @@ Android core.")
        ("mkbootimg" ,mkbootimg)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("core" ,(android-platform-system-core version))
-       ("extras" ,(android-platform-system-extras version))
-       ("xz" ,xz)))
+     `(("xz" ,xz)))
     (home-page "https://developer.android.com/studio/command-line/")
     (synopsis "Android image flasher")
     (description
