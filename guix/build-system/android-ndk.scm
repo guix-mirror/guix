@@ -67,8 +67,8 @@
                     #:make-flags (cons* "-f"
                                          ,(string-append
                                           (derivation->output-path
-                                           (car (assoc-ref inputs "android-make-stub")))
-                                          "/share/android-make-stub/Makefile")
+                                           (car (assoc-ref inputs "android-build")))
+                                          "/share/android/build/core/main.mk")
                                          ,make-flags)
                     #:outputs %outputs
                     #:search-paths ',(map search-path-specification->sexp
@@ -112,7 +112,7 @@
 
                         ;; Keep the standard inputs of 'gnu-build-system'
                         ,@(standard-packages)))
-         (build-inputs `(("android-make-stub" ,(module-ref (resolve-interface '(gnu packages android)) 'android-make-stub))
+         (build-inputs `(("android-build" ,(module-ref (resolve-interface '(gnu packages android)) 'android-make-stub))
                          ("android-googletest" ,(module-ref (resolve-interface '(gnu packages android)) 'android-googletest))
                          ,@native-inputs))
          (outputs outputs)
