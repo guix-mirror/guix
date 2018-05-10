@@ -83,7 +83,7 @@ available to help to click.")
     (license license:gpl2+)))
 
 (define-public footswitch
-  (let ((commit "deedd87fd90fad90ce342aeabafd4a3198d7d3d4")
+  (let ((commit "ca43d53fc2002520cc825d119702afc124303e73")
         (revision "2"))
     (package
       (name "footswitch")
@@ -95,7 +95,8 @@ available to help to click.")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
-                 (base32 "1ys90wqyz62kffa8m3hgaq1dl7f29x3mrc3zqfjrkbn2ps0k6ps0"))))
+                 (base32
+                  "14pyzc4ws1mj859xs9n4x83wzxxvd3bh5bdxzr6nv267xwx1mq68"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("pkg-config" ,pkg-config)))
@@ -112,6 +113,7 @@ available to help to click.")
                         (let ((bin (string-append (assoc-ref outputs "out")
                                                   "/bin")))
                           (install-file "footswitch" bin)
+                          (install-file "scythe" bin)
                           #t))))))
       (home-page "https://github.com/rgerganov/footswitch")
       (synopsis "Command line utility for PCsensor foot switch")
