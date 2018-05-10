@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1549,6 +1550,9 @@ provides access to that interface and its types from the Scheme level.")
      '(#:configure-flags
        (list (string-append
               "--with-guile-site-dir=" %output "/share/guile/site/2.2"))
+       #:make-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib:"
+                            (assoc-ref %build-inputs "guile-dbd-sqlite3") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'patch-extension-path
@@ -1559,6 +1563,8 @@ provides access to that interface and its types from the Scheme level.")
                     (ext     (string-append out "/lib/libguile-dbi")))
                (substitute* dbi.scm (("libguile-dbi") ext))
                #t))))))
+    (inputs
+     `(("guile-dbd-sqlite3" ,guile-dbd-sqlite3))) ; only shared library, no scheme files
     (propagated-inputs
      `(("guile" ,guile-2.2)))
     (synopsis "Guile database abstraction layer")
@@ -1569,6 +1575,15 @@ SQL databases.  Database programming with guile-dbi is generic in that the same
 programming interface is presented regardless of which database system is used.
 It currently supports MySQL, Postgres and SQLite3.")
     (license license:gpl2+)))
+
+(define guile-dbi-bootstrap
+  (package
+    (inherit guile-dbi)
+    (name "guile-dbi-bootstrap")
+    (inputs '())
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-dbi)
+       ((#:make-flags _) '(list))))))
 
 (define-public guile-dbd-sqlite3
   (package
@@ -1584,12 +1599,11 @@ It currently supports MySQL, Postgres and SQLite3.")
                 "0rg71jchxd2y8x496s8zmfmikr5g8zxi8zv2ar3f7a23pph92iw2"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("guile-dbi-bootstrap" ,guile-dbi-bootstrap))) ; only required for headers
     (inputs
      `(("sqlite" ,sqlite)
        ("zlib" ,(@ (gnu packages compression) zlib))))
-    (propagated-inputs
-     `(("guile-dbi" ,guile-dbi)))
     (synopsis "Guile DBI driver for SQLite")
     (home-page "https://github.com/jkalbhenn/guile-dbd-sqlite3")
     (description
