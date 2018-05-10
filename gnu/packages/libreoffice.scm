@@ -844,7 +844,7 @@ and to return information on pronunciations, meanings and synonyms.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.4.6.2")
+    (version "5.4.7.1")
     (source
      (origin
       (method url-fetch)
@@ -854,7 +854,7 @@ and to return information on pronunciations, meanings and synonyms.")
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256
        (base32
-        "0icd8h221gp2dsbn6d35flwhqhcfpx66cjc5dg8yifhhvrfam74i"))))
+        "0g60wzg90n1kanmkiwy01jz4s4xgdkpczvm7vdrmjpp7ifrgijbv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
