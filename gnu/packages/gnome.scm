@@ -3875,7 +3875,7 @@ supports image conversion, rotation, and slideshows.")
   ;; 'XDG_DATA_DIRS' appropriately set.
   (package
     (name "eog-plugins")
-    (version "3.26.1")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3883,7 +3883,7 @@ supports image conversion, rotation, and slideshows.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0v45f2m3b60ygkwpq6jrl49nwrivw6qy0ciibpv821qrm73hsgd7"))))
+                "1w8zw7kwfvlwlyb1k1inqdvbwnzq959sqawlmnwfb8ykn98hbk8y"))))
     (build-system gnu-build-system)
     (home-page "https://wiki.gnome.org/Apps/EyeOfGnome/Plugins")
     (synopsis "Extensions for the Eye of GNOME image viewer")
