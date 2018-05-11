@@ -4769,35 +4769,35 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.1.11")
+    (version "9.1.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0i27g5qbkfqbxhgiz917pjwkxg3rwid99d0ickwx43bzq0zi7c1m"))))
+                "1vx0n32gvrgy2bl2b4pvxf00cywxwm57gi46f2b2zlrnmd5n85pr"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
-lists, and project planning with a fast and effective plain-text system.  It
-also is an authoring system with unique support for literate programming and
-reproducible research.")
+lists, and project planning with a fast and effective lightweight markup
+language.  It also is an authoring system with unique support for literate
+programming and reproducible research.")
     (license license:gpl3+)))
 
 (define-public emacs-org-contrib
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20180423")
+    (version "20180507")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   version ".tar"))
               (sha256
                (base32
-                "1aggvdy74q8p79xyc19zring5gjvlzp6lbsq8ar319zkmcjrapqd"))))
+                "190iwjpdjrhg7gl2d4bri2y0y679vlrwd841r6dvhza0yy338d2d"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
