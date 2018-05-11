@@ -105,6 +105,7 @@
   #:use-module (gnu packages gd)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages password-utils)
+  #:use-module (gnu packages xdisorg)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -8363,6 +8364,19 @@ arXiv, Google Scholar, Library of Congress, etc.
           (base32
            "0ilwvx0qryv3v6xf0gxqwnfm6pf96gxap8h9g3f6z6lk9ff4n1wi"))))
       (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-ewmctrl
+             ;; This build phase makes sure ‘ewmctrl’ looks
+             ;; for ‘wmctrl’ in the right place.
+             (lambda _
+               (let ((file "ewmctrl.el"))
+                 (chmod file #o644)
+                 (emacs-substitute-sexps file
+                   ("(defcustom ewmctrl-wmctrl-path" (which "wmctrl")))))))))
+      (inputs
+       `(("wmctrl" ,wmctrl)))
       (home-page "https://github.com/flexibeast/ewmctrl")
       (synopsis "Emacs interface to @code{wmctrl}")
       (description "@code{ewmctrl} provides an Emacs interface to
