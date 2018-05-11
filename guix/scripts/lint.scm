@@ -1037,7 +1037,7 @@ them for PACKAGE."
      (check       check-inputs-should-be-native))
    (lint-checker
      (name        'inputs-should-not-be-input)
-     (description "Identify inputs that should be inputs at all")
+     (description "Identify inputs that shouldn't be inputs at all")
      (check       check-inputs-should-not-be-an-input-at-all))
    (lint-checker
      (name        'patch-file-names)
