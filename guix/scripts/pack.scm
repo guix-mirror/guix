@@ -122,10 +122,17 @@ added to the pack."
             ;; parent directories.
             (match-lambda
               ((source '-> target)
-               (let ((target (string-append #$profile "/" target)))
-                 `((directory ,(dirname source))
+               (let ((target (string-append #$profile "/" target))
+                     (parent (dirname source)))
+                 ;; Never add a 'directory' directive for "/" so as to
+                 ;; preserve its ownnership when extracting the archive (see
+                 ;; below), and also because this would lead to adding the
+                 ;; same entries twice in the tarball.
+                 `(,@(if (string=? parent "/")
+                         '()
+                         `((directory ,parent)))
                    (,source
-                    -> ,(relative-file-name (dirname source) target)))))))
+                    -> ,(relative-file-name parent target)))))))
 
           (define directives
             ;; Fully-qualified symlinks.
@@ -146,9 +153,11 @@ added to the pack."
                                        "")
                                  #$tar "/bin"))
 
-          ;; Note: there is not much to gain here with deduplication and
-          ;; there is the overhead of the '.links' directory, so turn it
-          ;; off.
+          ;; Note: there is not much to gain here with deduplication and there
+          ;; is the overhead of the '.links' directory, so turn it off.
+          ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
+          ;; with hard links:
+          ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
           (populate-single-profile-directory %root
                                              #:profile #$profile
                                              #:closure "profile"
@@ -195,6 +204,8 @@ added to the pack."
                             (filter-map (match-lambda
                                           (('directory directory)
                                            (string-append "." directory))
+                                          ((source '-> _)
+                                           (string-append "." source))
                                           (_ #f))
                                         directives)))))))))
 
