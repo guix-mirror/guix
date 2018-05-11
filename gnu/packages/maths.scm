@@ -479,7 +479,10 @@ large scale eigenvalue problems.")
     (inputs
      `(("mpi" ,openmpi)
        ,@(package-inputs arpack-ng)))
-    (arguments `(#:configure-flags '("--enable-mpi")))
+    (arguments
+     (substitute-keyword-arguments (package-arguments arpack-ng)
+       ((#:configure-flags _ '())
+        ''("--enable-mpi"))))
     (synopsis "Fortran subroutines for solving eigenvalue problems with MPI")))
 
 (define-public lapack
