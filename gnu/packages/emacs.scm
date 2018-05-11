@@ -8348,19 +8348,17 @@ arXiv, Google Scholar, Library of Congress, etc.
       (license license:gpl3+))))
 
 (define-public emacs-ewmctrl
-  (let ((commit "3d0217c4d6cdb5c308b6cb4293574f470d4faacf")
-        (revision "1"))
+  (let ((commit "3d0217c4d6cdb5c308b6cb4293574f470d4faacf"))
     (package
       (name "emacs-ewmctrl")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.1" "1" commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/flexibeast/ewmctrl.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0ilwvx0qryv3v6xf0gxqwnfm6pf96gxap8h9g3f6z6lk9ff4n1wi"))))
