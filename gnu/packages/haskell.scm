@@ -9490,4 +9490,35 @@ within appropriate monads, as well as some instances of these classes.")
    (home-page "https://hackage.haskell.org/package/array")
    (license license:bsd-3)))
 
+(define-public ghc-containers
+  (package
+   (name "ghc-containers")
+   (version "0.5.11.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri
+      (string-append "https://hackage.haskell.org/package/containers-0.5.11.0/containers-"
+                     version ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32
+       "0j29w09kvcn1c0yi4clmrdbgs2gqmpxs2m7q80ib2ix1smm25kaq"))))
+   (build-system haskell-build-system)
+   (inputs `(("ghc-array" ,ghc-array)
+             ("ghc-deepseq" ,ghc-deepseq-generics)
+             ("ghc-hunit" ,ghc-hunit)
+             ("ghc-chasingbottoms" ,ghc-chasingbottoms)
+             ("ghc-test-framework" ,ghc-test-framework)
+             ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+             ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+             ("ghc-quickcheck" ,ghc-quickcheck)
+             ("ghc-ghc-prim" ,ghc-primitive)))
+   (synopsis "Haskell containers: Assorted concrete container types")
+   (description "This Haskell module provides efficient general-purpose
+implementations of various immutable container types including sets, maps,
+sequences, trees, and graphs.")
+   (home-page "https://hackage.haskell.org/package/containers")
+   (license license:bsd-3)))
+
 ;;; haskell.scm ends here
