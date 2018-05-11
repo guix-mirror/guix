@@ -40,6 +40,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <sys/syscall.h>
 
 /* Concatenate DIRECTORY, a slash, and FILE.  Return the result, which the
    caller must eventually free.  */
@@ -168,6 +169,48 @@ bind_mount (const char *source, const char *target)
   closedir (stream);
 }
 
+/* Write the user/group ID map for PID to FILE, mapping ID to itself.  See
+   user_namespaces(7).  */
+static void
+write_id_map (pid_t pid, const char *file, int id)
+{
+  char id_map_file[100];
+  snprintf (id_map_file, sizeof id_map_file, "/proc/%d/%s", pid, file);
+
+  char id_map[100];
+
+  /* Map root and the current user.  */
+  int len = snprintf (id_map, sizeof id_map, "%d %d 1\n", id, id);
+  int fd = open (id_map_file, O_WRONLY);
+  if (fd < 0)
+    assert_perror (errno);
+
+  int n = write (fd, id_map, len);
+  if (n < 0)
+    assert_perror (errno);
+
+  close (fd);
+}
+
+/* Disallow setgroups(2) for PID.  */
+static void
+disallow_setgroups (pid_t pid)
+{
+  char file[100];
+
+  snprintf (file, sizeof file, "/proc/%d/setgroups", pid);
+
+  int fd = open (file, O_WRONLY);
+  if (fd < 0)
+    assert_perror (errno);
+
+  int err = write (fd, "deny", 5);
+  if (err < 0)
+    assert_perror (errno);
+
+  close (fd);
+}
+
 
 int
 main (int argc, char *argv[])
@@ -201,26 +244,16 @@ main (int argc, char *argv[])
       char *new_store = concat (new_root, "@STORE_DIRECTORY@");
       char *cwd = get_current_dir_name ();
 
-      pid_t child = fork ();
+      /* Create a child with separate namespaces and set up bind-mounts from
+	 there.  That way, bind-mounts automatically disappear when the child
+	 exits, which simplifies cleanup for the parent.  Note: clone is more
+	 convenient than fork + unshare since the parent can directly write
+	 the child uid_map/gid_map files.  */
+      pid_t child = syscall (SYS_clone, SIGCHLD | CLONE_NEWNS | CLONE_NEWUSER,
+			     NULL, NULL, NULL);
       switch (child)
 	{
 	case 0:
-	  /* Unshare namespaces in the child and set up bind-mounts from
-	     there.  That way, bind-mounts automatically disappear when the
-	     child exits, which simplifies cleanup for the parent.  */
-	  err = unshare (CLONE_NEWNS | CLONE_NEWUSER);
-	  if (err < 0)
-	    {
-	      fprintf (stderr, "%s: error: 'unshare' failed: %m\n", argv[0]);
-	      fprintf (stderr, "\
-This may be because \"user namespaces\" are not supported on this system.\n\
-Consequently, we cannot run '@WRAPPED_PROGRAM@',\n\
-unless you move it to the '@STORE_DIRECTORY@' directory.\n\
-\n\
-Please refer to the 'guix pack' documentation for more information.\n");
-	      return EXIT_FAILURE;
-	    }
-
 	  /* Note: Due to <https://bugzilla.kernel.org/show_bug.cgi?id=183461>
 	     we cannot make NEW_ROOT a tmpfs (which would have saved the need
 	     for 'rm_rf'.)  */
@@ -239,11 +272,27 @@ Please refer to the 'guix pack' documentation for more information.\n");
 	  /* Change back to where we were before chroot'ing.  */
 	  chdir (cwd);
 	  break;
+
 	case -1:
-	  assert_perror (errno);
-	  break;
+	  fprintf (stderr, "%s: error: 'clone' failed: %m\n", argv[0]);
+	  fprintf (stderr, "\
+This may be because \"user namespaces\" are not supported on this system.\n\
+Consequently, we cannot run '@WRAPPED_PROGRAM@',\n\
+unless you move it to the '@STORE_DIRECTORY@' directory.\n\
+\n\
+Please refer to the 'guix pack' documentation for more information.\n");
+	  return EXIT_FAILURE;
+
 	default:
 	  {
+	    /* Map the current user/group ID in the child's namespace (the
+	       default is to get the "overflow UID", i.e., the UID of
+	       "nobody").  We must first disallow 'setgroups' for that
+	       process.  */
+	    disallow_setgroups (child);
+	    write_id_map (child, "uid_map", getuid ());
+	    write_id_map (child, "gid_map", getgid ());
+
 	    int status;
 	    waitpid (child, &status, 0);
 	    chdir ("/");			  /* avoid EBUSY */
