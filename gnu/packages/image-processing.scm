@@ -372,6 +372,11 @@ integrates with various databases on GUI toolkits such as Qt and Tk.")
               ("protobuf" ,protobuf)
               ("vtk" ,vtk)
               ("python" ,python)))
+    ;; These three CVEs are not a problem of OpenCV, see:
+    ;; https://github.com/opencv/opencv/issues/10998
+    (properties '((lint-hidden-cve . ("CVE-2018-7712"
+                                      "CVE-2018-7713"
+                                      "CVE-2018-7714"))))
     (synopsis "Computer vision library")
     (description "OpenCV is a library aimed at
 real-time computer vision, including several hundred computer
