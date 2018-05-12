@@ -18,9 +18,12 @@
 
 (define-module (gnu packages opencl)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
-  #:use-module ((guix licenses) #:prefix license:))
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages python))
 
 ;; This file adds OpenCL implementation related packages. Due to the fact that
 ;; OpenCL devices are not available during build (store environment), tests are
@@ -80,3 +83,38 @@ programming.")
   (make-opencl-headers "1" "0"))
 
 (define-public opencl-headers opencl-headers-2.2)
+
+(define-public opencl-clhpp
+  (package
+    (name "opencl-clhpp")
+    (version "2.0.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/KhronosGroup/OpenCL-CLHPP/archive/v"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0awg6yznbz3h285kmnd47fykx2qa34a07sr4x1657yn3jmi4a9zs"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (native-inputs
+     `(("python" ,python-wrapper)))
+    (propagated-inputs
+     `(("opencl-headers" ,opencl-headers)))
+    (arguments
+     `(#:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list
+          "-DBUILD_EXAMPLES=OFF"
+          "-DBUILD_TESTS=OFF"
+          (string-append "-DCMAKE_INSTALL_PREFIX="
+                         (assoc-ref %outputs "out")
+                         "/include")))
+       ;; regression tests requires a lot more dependencies
+       #:tests? #f))
+    (build-system cmake-build-system)
+    (home-page "http://github.khronos.org/OpenCL-CLHPP/")
+    (synopsis "Khronos OpenCL-CLHPP")
+    (description
+     "This package provides the @dfn{host API} C++ headers for OpenCL.")
+    (license license:expat)))
