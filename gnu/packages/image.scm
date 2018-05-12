@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -842,6 +843,39 @@ algorithms and data structures.  It is particularly strong for
 multi-dimensional image processing.")
    (license license:expat)
    (home-page "https://ukoethe.github.io/vigra/")))
+
+(define-public vigra-c
+  (let* ((commit "a2ff675f42079e2623318d8ff8b4288dbe7a7f06")
+         (revision "0")
+         (version (git-version "0.0.0" revision commit)))
+    (package
+      (name "vigra-c")
+      (version version)
+      (home-page "https://github.com/BSeppke/vigra_c")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1f1phmfbbz3dsq9330rd6bjmdg29hxskxi9l17cyx1f4mdqpgdgl"))
+                (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f))                  ; No test target.
+      (native-inputs
+       `(("doxygen" ,doxygen)))
+      (inputs
+       `(("fftw" ,fftw)
+         ("fftwf" ,fftwf)
+         ("vigra" ,vigra)))
+      (synopsis "C interface to the VIGRA computer vision library")
+      (description
+       "This package provides a C interface to the VIGRA C++ computer vision
+library.  It is designed primarily to ease the implementation of higher-level
+language bindings to VIGRA.")
+      (license license:expat))))
 
 (define-public libwebp
   (package
