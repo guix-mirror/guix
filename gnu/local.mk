@@ -322,6 +322,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ocaml.scm			\
   %D%/packages/ocr.scm				\
   %D%/packages/onc-rpc.scm			\
+  %D%/packages/opencl.scm			\
   %D%/packages/openbox.scm			\
   %D%/packages/openldap.scm			\
   %D%/packages/openstack.scm			\
