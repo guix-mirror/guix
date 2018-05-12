@@ -3454,6 +3454,7 @@ set.")
     (native-inputs
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
+       ("perl" ,perl)                   ;needed to run 'ppmquant' during tests
        ("texlive" ,texlive)             ;full package required for fonts
        ("ghostscript" ,ghostscript)))
     (inputs
