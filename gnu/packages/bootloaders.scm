@@ -475,6 +475,9 @@ also initializes the boards (RAM etc).")
 (define-public u-boot-novena
   (make-u-boot-package "novena" "arm-linux-gnueabihf"))
 
+(define-public u-boot-cubieboard
+  (make-u-boot-package "Cubieboard" "arm-linux-gnueabihf"))
+
 (define-public vboot-utils
   (package
     (name "vboot-utils")
