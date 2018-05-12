@@ -392,12 +392,13 @@ also initializes the boards (RAM etc).")
                  (if (file-exists? (string-append "configs/" config-name))
                      (zero? (apply system* "make" `(,@make-flags ,config-name)))
                      (begin
-                       (display "Invalid board name. Valid board names are:")
+                       (display "Invalid board name. Valid board names are:"
+                                (current-error-port))
                        (let ((suffix-len (string-length "_defconfig"))
                              (entries (scandir "configs")))
                          (for-each (lambda (file-name)
                                      (when (string-suffix? "_defconfig" file-name)
-                                       (format #t
+                                       (format (current-error-port)
                                                "- ~A\n"
                                                (string-drop-right file-name
                                                                   suffix-len))))
@@ -472,6 +473,9 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-novena
   (make-u-boot-package "novena" "arm-linux-gnueabihf"))
+
+(define-public u-boot-versatilepb
+  (make-u-boot-package "vesx" "arm-linux-gnueabihf"))
 
 (define-public vboot-utils
   (package
