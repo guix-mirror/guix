@@ -349,7 +349,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                 "0j60p4iskzb4hamxgykc6gd7xchxfka1zwh8hv08r9rrc4m3r8ad"))))
     (native-inputs
      `(("bc" ,bc)
-       ;("dtc" ,dtc) ; they have their own incompatible copy.
+       ("dtc" ,dtc)
        ("python-2" ,python-2)
        ("swig" ,swig)))
     (build-system  gnu-build-system)
