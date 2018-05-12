@@ -13303,3 +13303,39 @@ generators and Python 3.7's context managers into Python 3.5.")
 manager compatible with @code{asyncio}.")
     (license license:asl2.0)))
 
+(define-public python-glob2
+  (package
+    (name "python-glob2")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/miracle2k/python-glob2/archive/"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "0ja168f0dz4kbz4m06dm0rd3acaypk6hjx2km541pw22y9s40mag"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/miracle2k/python-glob2/")
+    (synopsis "Extended Version of the python buildin glob module")
+    (description "This is an extended version of the Python
+@url{http://docs.python.org/library/glob.html, built-in glob module} which
+adds:
+
+@itemize
+@item The ability to capture the text matched by glob patterns, and return
+those matches alongside the file names.
+@item A recursive @code{**} globbing syntax, akin for example to the
+@code{globstar} option of Bash.
+@item The ability to replace the file system functions used, in order to glob
+on virtual file systems.
+@item Compatible with Python 2 and Python 3 (tested with 3.3).
+@end itemize
+
+Glob2 currently based on the glob code from Python 3.3.1.")
+    (license license:bsd-2)))
+
+(define-public python2-glob2
+  (package-with-python2 python-glob2))
