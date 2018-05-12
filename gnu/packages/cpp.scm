@@ -124,3 +124,30 @@ unified access to TCP/UDP sockets, serial ports, console, and files streams.
 It also allows a server application to wait for any activity on any
 combination of these streams.")
     (license license:bsd-3)))
+
+(define-public xsimd
+  (package
+    (name "xsimd")
+    (version "4.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/QuantStack/xsimd/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0x05l4xpqr9b66sm6lkf48n6x7999ks921x6k2hzkkg6mh3gqd46"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (home-page "https://github.com/QuantStack/xsimd")
+    (build-system cmake-build-system)
+    (arguments
+     `(#:test-target "xtest"))
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (synopsis "C++ wrappers for SIMD intrinsics and math implementations")
+    (description "xsimd provides a unified means for using SIMD features for
+library authors.  Namely, it enables manipulation of batches of numbers with
+the same arithmetic operators as for single values.  It also provides
+accelerated implementation of common mathematical functions operating on
+batches.")
+    (license license:bsd-3)))
