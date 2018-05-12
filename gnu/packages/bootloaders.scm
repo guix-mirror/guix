@@ -442,9 +442,10 @@ also initializes the boards (RAM etc).")
                   (let ((bl31 (string-append (assoc-ref inputs "firmware")
                                              "/bl31.bin")))
                     (setenv "BL31" bl31)
-                    ;; This is necessary while we're using the bundled dtc.
-                    (setenv "PATH" (string-append (getenv "PATH") ":"
-                                                  "scripts/dtc")))
+                    ;; This is necessary when we're using the bundled dtc.
+                    ;(setenv "PATH" (string-append (getenv "PATH") ":"
+                    ;                              "scripts/dtc"))
+                    )
                   #t))))))
       (native-inputs
        `(("firmware" ,arm-trusted-firmware-pine64-plus)
