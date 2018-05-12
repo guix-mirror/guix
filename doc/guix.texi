@@ -6835,15 +6835,33 @@ where @code{CVE-YYYY-ABCD} is the CVE identifier---e.g.,
 
 Package developers can specify in package recipes the
 @uref{https://nvd.nist.gov/cpe.cfm,Common Platform Enumeration (CPE)}
-name and version of the package when they differ from the name that Guix
-uses, as in this example:
+name and version of the package when they differ from the name or version
+that Guix uses, as in this example:
 
 @example
 (package
   (name "grub")
   ;; @dots{}
   ;; CPE calls this package "grub2".
-  (properties '((cpe-name . "grub2"))))
+  (properties '((cpe-name . "grub2")
+                (cpe-version . "2.3")))
+@end example
+
+@c See <http://www.openwall.com/lists/oss-security/2017/03/15/3>.
+Some entries in the CVE database do not specify which version of a
+package they apply to, and would thus ``stick around'' forever.  Package
+developers who found CVE alerts and verified they can be ignored can
+declare them as in this example:
+
+@example
+(package
+  (name "t1lib")
+  ;; @dots{}
+  ;; These CVEs no longer apply and can be safely ignored.
+  (properties `((lint-hidden-cve . ("CVE-2011-0433"
+                                    "CVE-2011-1553"
+                                    "CVE-2011-1554"
+                                    "CVE-2011-5244")))))
 @end example
 
 @item formatting
