@@ -393,14 +393,15 @@ also initializes the boards (RAM etc).")
                      (zero? (apply system* "make" `(,@make-flags ,config-name)))
                      (begin
                        (display "Invalid board name. Valid board names are:")
-                       (let ((suffix-len (string-length "_defconfig")))
-                         (scandir "configs"
-                                  (lambda (file-name)
-                                    (when (string-suffix? "_defconfig" file-name)
-                                      (format #t
-                                              "- ~A\n"
-                                              (string-drop-right file-name
-                                                                 suffix-len))))))
+                       (let ((suffix-len (string-length "_defconfig"))
+                             (entries (scandir "configs")))
+                         (for-each (lambda (file-name)
+                                     (when (string-suffix? "_defconfig" file-name)
+                                       (format #t
+                                               "- ~A\n"
+                                               (string-drop-right file-name
+                                                                  suffix-len))))
+                                   (sort entries string<)))
                        #f)))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
