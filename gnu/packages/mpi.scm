@@ -153,7 +153,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "1.10.7")
+    (version "3.0.1")
     (source
      (origin
       (method url-fetch)
@@ -162,7 +162,7 @@ bind processes, and much more.")
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32
-        "142s1vny9gllkq336yafxayjgcirj2jv0ddabj879jgya7hyr2d0"))))
+        "0pbqrm5faf57nasy1s81wqivl7zvxmv8lzjh8hvb0f3qxv8m0d36"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc "lib")
@@ -205,8 +205,8 @@ bind processes, and much more.")
                         (("_ABSOLUTE") ""))
                       ;; Avoid valgrind (which pulls in gdb etc.).
                       (substitute*
-                          '("./ompi/mca/io/romio/src/io_romio_component.c")
-                        (("MCA_io_romio_COMPLETE_CONFIGURE_FLAGS")
+                          '("./ompi/mca/io/romio314/src/io_romio314_component.c")
+                        (("MCA_io_romio314_COMPLETE_CONFIGURE_FLAGS")
                          "\"[elided to reduce closure]\""))
                       #t))
                   (add-before 'build 'scrub-timestamps ;reproducibility

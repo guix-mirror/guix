@@ -554,7 +554,16 @@ problems in numerical linear algebra.")
        ("fortran" ,gfortran)
        ("lapack" ,lapack)))             ;for testing only
     (arguments
-     `(#:configure-flags `("-DBUILD_SHARED_LIBS:BOOL=YES")))
+     `(#:configure-flags `("-DBUILD_SHARED_LIBS:BOOL=YES")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-test-environment
+                    (lambda _
+                      ;; By default, running the test suite would fail because
+                      ;; 'ssh' could not be found in $PATH.  Define this
+                      ;; variable to placate Open MPI without adding a
+                      ;; dependency on OpenSSH (the agent isn't used anyway.)
+                      (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+                      #t)))))
     (home-page "http://www.netlib.org/scalapack/")
     (synopsis "Library for scalable numerical linear algebra")
     (description
@@ -1786,6 +1795,18 @@ arising after the discretization of partial differential equations.")
 (define-public slepc-openmpi
   (package (inherit slepc)
     (name "slepc-openmpi")
+    (arguments
+     (substitute-keyword-arguments (package-arguments slepc)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               #t))))))
     (inputs
      `(("mpi" ,openmpi)
        ("arpack" ,arpack-ng-openmpi)
@@ -1955,11 +1976,18 @@ sparse system of linear equations A x = b using Guassian elimination.")
      (substitute-keyword-arguments (package-arguments mumps)
        ((#:phases phases)
         `(modify-phases ,phases
-           (replace
-            'check
-            (lambda _
-              ((assoc-ref ,phases 'check)
-               #:exec-prefix '("mpirun" "-n" "2"))))))))
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               #t))
+           (replace 'check
+             (lambda _
+               ((assoc-ref ,phases 'check)
+                #:exec-prefix '("mpirun" "-n" "2"))))))))
     (synopsis "Multifrontal sparse direct solver (with MPI)")))
 
 (define-public mumps-metis-openmpi
@@ -2201,6 +2229,11 @@ CDEFS       = -DAdd_"
              #t))
          (replace 'check
            (lambda _
+             ;; By default, running the test suite would fail because 'ssh'
+             ;; could not be found in $PATH.  Define this variable to placate
+             ;; Open MPI without adding a dependency on OpenSSH (the agent
+             ;; isn't used anyway.)
+             (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
              (with-directory-excursion "EXAMPLE"
                (and
                 (zero? (system* "mpirun" "-n" "2"
@@ -2295,6 +2328,12 @@ YACC = bison -pscotchyy -y -b y
          (add-after
           'build 'build-esmumps
           (lambda _
+            ;; By default, running the test suite would fail because 'ssh'
+            ;; could not be found in $PATH.  Define this variable to placate
+            ;; Open MPI without adding a dependency on OpenSSH (the agent
+            ;; isn't used anyway.)
+            (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+
             (zero? (system* "make"
                             (format #f "-j~a" (parallel-job-count))
                             "esmumps"))))
@@ -2474,7 +2513,16 @@ schemes.")
                                            " -lopenblas")
                            ,(string-append "LAPACK_LIBS=-L"
                                            (assoc-ref %build-inputs "lapack")
-                                           " -llapack"))))
+                                           " -llapack"))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-test-environment
+                    (lambda _
+                      ;; By default, running the test suite would fail because
+                      ;; 'ssh' could not be found in $PATH.  Define this
+                      ;; variable to placate Open MPI without adding a
+                      ;; dependency on OpenSSH (the agent isn't used anyway.)
+                      (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+                      #t)))))
     (home-page "http://www.p4est.org")
     (synopsis "Adaptive mesh refinement on forests of octrees")
     (description
@@ -3531,7 +3579,17 @@ problems.")
      (substitute-keyword-arguments (package-arguments hypre)
        ((#:configure-flags flags)
         ``("--with-MPI"
-           ,@(delete "--without-MPI" ,flags)))))
+           ,@(delete "--without-MPI" ,flags)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               #t))))))
     (synopsis "Parallel solvers and preconditioners for linear equations")
     (description
      "HYPRE is a software library of high performance preconditioners and
