@@ -2109,35 +2109,34 @@ also provides threshold-based ILU factorization preconditioners.")
 (define-public superlu-dist
   (package
     (name "superlu-dist")
-    (version "3.3")
+    (version "5.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
                            "superlu_dist_" version ".tar.gz"))
        (sha256
-        (base32 "1hnak09yxxp026blq8zhrl7685yip16svwngh1wysqxf8z48vzfj"))
-              (modules '((guix build utils)))
+        (base32 "0ja5ihqivkda1wd58y4lmzvmwssm9g91f70c5q0fzwhng6580h6y"))
+       (modules '((guix build utils)))
        (snippet
         ;; Replace the non-free implementation of MC64 with a stub
         '(begin
            (use-modules (ice-9 regex)
                         (ice-9 rdelim))
-           (call-with-output-file "SRC/mc64ad.c"
+           (call-with-output-file "SRC/mc64ad_dist.c"
              (lambda (port)
                (display "
 #include <stdio.h>
 #include <stdlib.h>
-void mc64id_(int *a) {
+void mc64id_dist(int *a) {
   fprintf (stderr, \"SuperLU_DIST: non-free MC64 not available.  Aborting.\\n\");
   abort ();
 }
-void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
+void mc64ad_dist (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
               int *h, int *i, int *j, int *k, double *l, int *m, int *n) {
   fprintf (stderr, \"SuperLU_DIST: non-free MC64 not available.  Aborting.\\n\");
   abort ();
 }\n" port)))
-           (delete-file "SRC/mc64ad.f.bak")
            (substitute* "SRC/util.c"    ;adjust default algorithm
              (("RowPerm[[:blank:]]*=[[:blank:]]*LargeDiag")
               "RowPerm = NOROWPERM"))))
