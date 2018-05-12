@@ -413,6 +413,8 @@ also initializes the boards (RAM etc).")
                                     (find-files "." "^(MLO|SPL)$"))))
                  (mkdir-p libexec)
                  (install-file ".config" libexec)
+                 ;; Useful for "qemu -kernel".
+                 (install-file "u-boot" libexec)
                  (for-each
                   (lambda (file)
                     (let ((target-file (string-append libexec "/" file)))
