@@ -1573,7 +1573,8 @@ modification time.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "10q7lpx152xnkk701fscn4dq99q9znnmv3bc2482khhjg7z8rps0"))))
+        (base32 "10q7lpx152xnkk701fscn4dq99q9znnmv3bc2482khhjg7z8rps0"))
+       (patches (search-patches "myrepos-CVE-2018-7032.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl)))
