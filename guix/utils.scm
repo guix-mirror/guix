@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
@@ -84,6 +84,7 @@
             version-major+minor
             version-major
             guile-version>?
+            version-prefix?
             string-replace-substring
             arguments-from-environment-variable
             file-extension
@@ -520,6 +521,27 @@ minor version numbers from version-string."
                             (minor-version) "."
                             (micro-version))
              str))
+
+(define version-prefix?
+  (let ((not-dot (char-set-complement (char-set #\.))))
+    (lambda (v1 v2)
+      "Return true if V1 is a version prefix of V2:
+
+  (version-prefix? \"4.1\" \"4.16.2\") => #f
+  (version-prefix? \"4.1\" \"4.1.2\") => #t
+"
+      (define (list-prefix? lst1 lst2)
+        (match lst1
+          (() #t)
+          ((head1 tail1 ...)
+           (match lst2
+             (() #f)
+             ((head2 tail2 ...)
+              (and (equal? head1 head2)
+                   (list-prefix? tail1 tail2)))))))
+
+      (list-prefix? (string-tokenize v1 not-dot)
+                    (string-tokenize v2 not-dot)))))
 
 (define (file-extension file)
   "Return the extension of FILE or #f if there is none."

@@ -72,6 +72,12 @@
 (test-assert "guile-version>? 10.5"
   (not (guile-version>? "10.5")))
 
+(test-assert "version-prefix?"
+  (and (version-prefix? "4.1" "4.1.2")
+       (version-prefix? "4.1" "4.1")
+       (not (version-prefix? "4.1" "4.16.2"))
+       (not (version-prefix? "4.1" "4"))))
+
 (test-equal "string-tokenize*"
   '(("foo")
     ("foo" "bar" "baz")
