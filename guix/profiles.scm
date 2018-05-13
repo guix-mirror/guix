@@ -78,6 +78,7 @@
             manifest-entry-dependencies
             manifest-entry-search-paths
             manifest-entry-parent
+            manifest-entry-properties
 
             manifest-pattern
             manifest-pattern?
@@ -181,7 +182,9 @@
   (search-paths manifest-entry-search-paths       ; search-path-specification*
                 (default '()))
   (parent       manifest-entry-parent        ; promise (#f | <manifest-entry>)
-                (default (delay #f))))
+                (default (delay #f)))
+  (properties   manifest-entry-properties         ; list of symbol/value pairs
+                (default '())))
 
 (define-record-type* <manifest-pattern> manifest-pattern
   make-manifest-pattern
@@ -320,18 +323,20 @@ denoting a specific output of a package."
   (define (entry->gexp entry)
     (match entry
       (($ <manifest-entry> name version output (? string? path)
-                           (deps ...) (search-paths ...))
+                           (deps ...) (search-paths ...) _ (properties ...))
        #~(#$name #$version #$output #$path
                  (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
-                                      search-paths))))
+                                      search-paths))
+                 (properties . #$properties)))
       (($ <manifest-entry> name version output package
-                           (deps ...) (search-paths ...))
+                           (deps ...) (search-paths ...) _ (properties ...))
        #~(#$name #$version #$output
                  (ungexp package (or output "out"))
                  (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
-                                      search-paths))))))
+                                      search-paths))
+                 (properties . #$properties)))))
 
   (match manifest
     (($ <manifest> (entries ...))
@@ -394,7 +399,9 @@ procedure is here for backward-compatibility and will eventually vanish."
                           (dependencies deps*)
                           (search-paths (map sexp->search-path-specification
                                              search-paths))
-                          (parent parent))))
+                          (parent parent)
+                          (properties (or (assoc-ref extra-stuff 'properties)
+                                          '())))))
          entry))))
 
   (match sexp
