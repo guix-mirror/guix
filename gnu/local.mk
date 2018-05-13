@@ -344,6 +344,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/plotutils.scm			\
   %D%/packages/polkit.scm			\
   %D%/packages/popt.scm				\
+  %D%/packages/printers.scm			\
   %D%/packages/profiling.scm			\
   %D%/packages/pth.scm				\
   %D%/packages/pulseaudio.scm			\
