@@ -35,6 +35,7 @@
   #:use-module (guix sets)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
+  #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-11)
@@ -106,6 +107,7 @@
             package-cross-derivation
             package-output
             package-grafts
+            package-patched-vulnerabilities
             package/inherit
 
             transitive-input-references
@@ -393,6 +395,32 @@ object."
 DELIMITER (a string), you can customize what will appear between the name and
 the version.  By default, DELIMITER is \"@\"."
   (string-append (package-name package) delimiter (package-version package)))
+
+(define (patch-file-name patch)
+  "Return the basename of PATCH's file name, or #f if the file name could not
+be determined."
+  (match patch
+    ((? string?)
+     (basename patch))
+    ((? origin?)
+     (and=> (origin-actual-file-name patch) basename))))
+
+(define %vulnerability-regexp
+  ;; Regexp matching a CVE identifier in patch file names.
+  (make-regexp "CVE-[0-9]{4}-[0-9]+"))
+
+(define (package-patched-vulnerabilities package)
+  "Return the list of patched vulnerabilities of PACKAGE as a list of CVE
+identifiers.  The result is inferred from the file names of patches."
+  (define (patch-vulnerabilities patch)
+    (map (cut match:substring <> 0)
+         (list-matches %vulnerability-regexp patch)))
+
+  (let ((patches (filter-map patch-file-name
+                             (or (and=> (package-source package)
+                                        origin-patches)
+                                 '()))))
+    (append-map patch-vulnerabilities patches)))
 
 (define (%standard-patch-inputs)
   (let* ((canonical (module-ref (resolve-interface '(gnu packages base))

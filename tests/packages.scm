@@ -959,6 +959,21 @@
                    ((("x" dep))
                     (eq? dep findutils)))))))))
 
+(test-equal "package-patched-vulnerabilities"
+  '(("CVE-2015-1234")
+    ("CVE-2016-1234" "CVE-2018-4567")
+    ())
+  (let ((p1 (dummy-package "pi"
+              (source (dummy-origin
+                       (patches (list "/a/b/pi-CVE-2015-1234.patch"))))))
+        (p2 (dummy-package "pi"
+              (source (dummy-origin
+                       (patches (list
+                                 "/a/b/pi-CVE-2016-1234-CVE-2018-4567.patch"))))))
+        (p3 (dummy-package "pi" (source (dummy-origin)))))
+    (map package-patched-vulnerabilities
+         (list p1 p2 p3))))
+
 (test-eq "fold-packages" hello
   (fold-packages (lambda (p r)
                    (if (string=? (package-name p) "hello")
