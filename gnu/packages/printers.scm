@@ -60,7 +60,7 @@
        ("qtsvg" ,qtsvg)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qmake" ,qttools)))
+       ("qmake" ,qtbase)))
     (synopsis "Graphical program to drive plotting cutters")
     (description
      "Robocut is a simple graphical program that allows you to cut graphics
