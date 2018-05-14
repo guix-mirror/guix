@@ -27,7 +27,7 @@
   #:use-module (guix records)
   #:use-module (ice-9 match)
   #:export (wesnothd-configuration
-            wesnoth-configuration?
+            wesnothd-configuration?
             wesnothd-service-type))
 
 ;;;
