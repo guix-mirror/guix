@@ -6881,6 +6881,12 @@ Jupyter kernels such as IJulia and IRKernel.")
        ("python-jupyter-console" ,python-jupyter-console)
        ("python-nbconvert" ,python-nbconvert)
        ("python-notebook" ,python-notebook)))
+
+    (native-search-paths
+     (list (search-path-specification
+            (variable "JUPYTER_PATH")
+            (files '("share/jupyter")))))
+
     (home-page "http://jupyter.org")
     (synopsis "Web application for interactive documents")
     (description
