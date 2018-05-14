@@ -3643,6 +3643,35 @@ splitting the input text by spaces and re-building it into a regular
 expression.")
     (license license:gpl3+)))
 
+(define-public emacs-ivy-yasnippet
+  (let ((commit "59b32cf8cfb63df906822a17f6f5e8545dac38d4"))
+    (package
+      (name "emacs-ivy-yasnippet")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mkcms/ivy-yasnippet.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0hghdlxkfwrglvc1nql2ikgp6jj0qdbfwc3yvpb19mrf26hwgp13"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)
+         ("emacs-yasnippet" ,emacs-yasnippet)
+         ("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/mkcms/ivy-yasnippet")
+      (synopsis "Preview @code{yasnippets} with @code{ivy}")
+      (description "This package allows you to select @code{yasnippet}
+snippets using @code{ivy} completion.  When current selection changes in the
+minibuffer, the snippet contents are temporarily expanded in the buffer.  To
+use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
+@code{yas-minor-mode} first).")
+      (license license:gpl3+))))
+
 (define-public emacs-avy
   (package
     (name "emacs-avy")
