@@ -378,9 +378,13 @@ please email '~a'~%")
     (local-file (search-auxiliary-file "run-in-namespace.c")))
 
   (define build
-    (with-imported-modules '((guix build utils))
+    (with-imported-modules (source-module-closure
+                            '((guix build utils)
+                              (guix build union)))
       #~(begin
           (use-modules (guix build utils)
+                       ((guix build union) #:select (relative-file-name))
+                       (ice-9 ftw)
                        (ice-9 match))
 
           (define (strip-store-prefix file)
@@ -411,6 +415,17 @@ please email '~a'~%")
           (setvbuf (current-output-port)
                    (cond-expand (guile-2.2 'line)
                                 (else      _IOLBF)))
+
+          ;; Link the top-level files of PACKAGE so that search paths are
+          ;; properly defined in PROFILE/etc/profile.
+          (mkdir #$output)
+          (for-each (lambda (file)
+                      (unless (member file '("." ".." "bin" "sbin" "libexec"))
+                        (let ((file* (string-append #$package "/" file)))
+                          (symlink (relative-file-name #$output file*)
+                                   (string-append #$output "/" file)))))
+                    (scandir #$package))
+
           (for-each build-wrapper
                     (append (find-files #$(file-append package "/bin"))
                             (find-files #$(file-append package "/sbin"))
