@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
@@ -597,21 +597,17 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.12.0")
+    (version "1.13.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://mupdf.com/downloads/archive/"
                             name "-" version "-source.tar.xz"))
-        (patches (search-patches "mupdf-build-with-latest-openjpeg.patch"
-                                 "mupdf-CVE-2017-17858.patch"
-                                 "mupdf-CVE-2018-6544.patch"
-                                 "mupdf-CVE-2018-1000051.patch"))
         (sha256
          (base32
-          "0b9j0gqbc3jhmx87r6idcsh8lnb30840c3hyx6dk2gdjqqh3hysp"))
+          "0129k92bav692l6lyw10ryldx7h2f9khjpgnp3f3n4fdsph9hrkl"))
         (modules '((guix build utils)))
-        (snippet '(delete-file-recursively "thirdparty"))))
+        (snippet '(begin (delete-file-recursively "thirdparty") #t))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
