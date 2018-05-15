@@ -29,6 +29,38 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages bioinformatics))
 
+(define-public r-bsgenome-dmelanogaster-ucsc-dm6
+  (package
+    (name "r-bsgenome-dmelanogaster-ucsc-dm6")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Dmelanogaster.UCSC.dm6_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1bhj0rdgf7lspw4xby9y9mf7v7jxxz8001bc8vw8kf04rjsx6060"))))
+    (properties
+     `((upstream-name . "BSgenome.Dmelanogaster.UCSC.dm6")))
+    (build-system r-build-system)
+    ;; As this package provides little more than a very large data file it
+    ;; doesn't make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Dmelanogaster.UCSC.dm6/")
+    (synopsis "Full genome sequences for Fly")
+    (description
+     "This package provides full genome sequences for Drosophila
+melanogaster (Fly) as provided by UCSC (dm6) and stored in Biostrings
+objects.")
+    (license license:artistic2.0)))
+
 (define-public r-hpar
   (package
     (name "r-hpar")
