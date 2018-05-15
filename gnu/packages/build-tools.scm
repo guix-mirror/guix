@@ -87,6 +87,8 @@ makes a few sacrifices to acquire fast full and incremental build times.")
                (base32
                 "1m0w0wqnz983l7fpp5p9pdsqr7n3ybrzp8ywjcvn0rihsrzj65j6"))))
     (build-system cmake-build-system)
+    (inputs
+     `(("python" ,python-wrapper)))
     (home-page "https://github.com/rizsotto/Bear")
     (synopsis "Tool for generating a compilation database")
     (description "A JSON compilation database is used in the Clang project to
