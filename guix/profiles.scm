@@ -843,6 +843,57 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
                     #:local-build? #t
                     #:substitutable? #f))
 
+(define (glib-schemas manifest)
+  "Return a derivation that unions all schemas from manifest entries and
+creates the Glib 'gschemas.compiled' file."
+  (define glib  ; lazy reference
+    (module-ref (resolve-interface '(gnu packages glib)) 'glib))
+
+  (mlet %store-monad ((%glib (manifest-lookup-package manifest "glib"))
+                      ;; XXX: Can't use glib-compile-schemas corresponding
+                      ;; to the glib referenced by 'manifest'.  Because
+                      ;; '%glib' can be either a package or store path, and
+                      ;; there's no way to get the "bin" output for the later.
+                      (glib-compile-schemas
+                       -> #~(string-append #+glib:bin
+                                           "/bin/glib-compile-schemas")))
+
+    (define build
+      (with-imported-modules '((guix build utils)
+                               (guix build union)
+                               (guix build profiles)
+                               (guix search-paths)
+                               (guix records))
+        #~(begin
+            (use-modules (guix build utils)
+                         (guix build union)
+                         (guix build profiles)
+                         (srfi srfi-26))
+
+            (let* ((destdir  (string-append #$output "/share/glib-2.0/schemas"))
+                   (schemadirs (filter file-exists?
+                                     (map (cut string-append <> "/share/glib-2.0/schemas")
+                                          '#$(manifest-inputs manifest)))))
+
+              ;; Union all the schemas.
+              (mkdir-p (string-append #$output "/share/glib-2.0"))
+              (union-build destdir schemadirs
+                           #:log-port (%make-void-port "w"))
+
+              (let ((dir destdir))
+                 (when (file-is-directory? dir)
+                   (ensure-writable-directory dir)
+                   (invoke #+glib-compile-schemas
+                           (string-append "--targetdir=" dir)
+                           dir)))))))
+
+    ;; Don't run the hook when there's nothing to do.
+    (if %glib
+        (gexp->derivation "glib-schemas" build
+                          #:local-build? #t
+                          #:substitutable? #f)
+        (return #f))))
+
 (define (gtk-icon-themes manifest)
   "Return a derivation that unions all icon themes from manifest entries and
 creates the GTK+ 'icon-theme.cache' file for each theme."
@@ -1198,6 +1249,7 @@ the entries in MANIFEST."
         fonts-dir-file
         ghc-package-cache-file
         ca-certificate-bundle
+        glib-schemas
         gtk-icon-themes
         gtk-im-modules
         xdg-desktop-database
