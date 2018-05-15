@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017, 2018 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,7 @@
 (define-public dunst
   (package
     (name "dunst")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -41,7 +42,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1mkdp1vqc376z8clwm5s9070jq1g92j8hv2rr231jr2468fnwaga"))))
+                "12nj8qw3y3nl8sm24wizy2a7k06v1p88bnz1xr9l39h527xyidma"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
