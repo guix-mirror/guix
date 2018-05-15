@@ -6905,7 +6905,8 @@ single output for a package that could easily be split (@pxref{Packages
 with Multiple Outputs}).  Such are the typical issues that
 @command{guix size} can highlight.
 
-The command can be passed a package specification such as @code{gcc@@4.8}
+The command can be passed one or more package specifications
+such as @code{gcc@@4.8}
 or @code{guile:debug}, or a file name in the store.  Consider this
 example:
 
@@ -6941,13 +6942,16 @@ In this example, we see that the closure of Coreutils weighs in at
 large fraction of the closure is not a problem @i{per se} because it is
 always available on the system anyway.)
 
-When the package passed to @command{guix size} is available in the
-store, @command{guix size} queries the daemon to determine its
+When the package(s) passed to @command{guix size} are available in the
+store@footnote{More precisely, @command{guix size} looks for the
+@emph{ungrafted} variant of the given package(s), as returned by
+@code{guix build @var{package} --no-grafts}.  @xref{Security Updates},
+for information on grafts.}, @command{guix size} queries the daemon to determine its
 dependencies, and measures its size in the store, similar to @command{du
 -ms --apparent-size} (@pxref{du invocation,,, coreutils, GNU
 Coreutils}).
 
-When the given package is @emph{not} in the store, @command{guix size}
+When the given packages are @emph{not} in the store, @command{guix size}
 reports information based on the available substitutes
 (@pxref{Substitutes}).  This makes it possible it to profile disk usage of
 store items that are not even on disk, only available remotely.
