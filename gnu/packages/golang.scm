@@ -1411,3 +1411,37 @@ increment versions.")
       (description "This package is a simple exponential backoff counter in
 Go.")
       (license license:expat))))
+
+(define-public go-github-com-stretchr-testify
+  (let ((commit
+          "b1f989447a57594c728884458a39abf3a73447f7")
+        (revision "0"))
+    (package
+      (name "go-github-com-stretchr-testify")
+      (version (git-version "1.1.4" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/stretchr/testify.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "0p0gkqzh2p8r5g0rxm885ljl7ghih7h7hx9w562imx5ka0vdgixv"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/stretchr/testify"))
+      (home-page "https://github.com/stretchr/testify")
+      (synopsis "Go helper library for tests and invariant checking")
+      (description "This package provide many tools for testifying that your
+code will behave as you intend.
+
+Features include:
+@itemize
+@item Easy assertions
+@item Mocking
+@item HTTP response trapping
+@item Testing suite interfaces and functions.
+@end itemize")
+      (license license:expat))))
