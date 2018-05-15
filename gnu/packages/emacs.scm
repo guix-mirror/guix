@@ -4743,7 +4743,7 @@ specifically, Orgalist supports the syntax of Org mode for numbered,
 unnumbered, description items, checkboxes, and counter cookies.
 
 The library also implements radio lists, i.e., lists written in Org
-syntax later translated into the host format, e.g., @LaTeX{} or HTML.")
+syntax later translated into the host format, e.g., LaTeX or HTML.")
     (license license:gpl3+)))
 
 (define-public emacs-writegood-mode
