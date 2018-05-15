@@ -18,6 +18,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages networking)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -2115,5 +2117,94 @@ It has a nice, simple s-expression based syntax.")
     (description
      "Guile-colorized provides you with a colorized REPL for GNU Guile.")
     (license license:gpl3+)))
+
+(define-public guile-simple-zmq
+  (let ((commit "d76657aeb1cd10ef8136edc06bb90999914c7c3c")
+        (revision "0"))
+    (package
+      (name "guile-simple-zmq")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jerry40/guile-simple-zmq")
+               (commit commit)))
+         (sha256
+          (base32
+           "1w73dy5gpyv33jn34dqlkqpwh9w4y8wm6hgvbpb3wbp6xsa2mk4z"))
+         (file-name (git-file-name name version))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils)
+                        (srfi srfi-26)
+                        (ice-9 match)
+                        (ice-9 popen)
+                        (ice-9 rdelim))
+
+           (let* ((out (assoc-ref %outputs "out"))
+                  (guile (assoc-ref %build-inputs "guile"))
+                  (effective (read-line
+                              (open-pipe* OPEN_READ
+                                          (string-append guile "/bin/guile")
+                                          "-c" "(display (effective-version))")))
+                  (module-dir (string-append out "/share/guile/site/"
+                                             effective))
+                  (go-dir     (string-append out "/lib/guile/"
+                                             effective "/site-ccache/"))
+                  (source     (string-append (assoc-ref %build-inputs "source")
+                                             "/src"))
+                  (scm-file "simple-zmq.scm")
+                  (guild (string-append (assoc-ref %build-inputs "guile")
+                                        "/bin/guild"))
+                  (zmq  (assoc-ref %build-inputs "zeromq"))
+                  (deps (list zmq))
+                  (path (string-join
+                         (map (cut string-append <>
+                                   "/lib/")
+                              deps)
+                         ":")))
+             ;; Make installation directories.
+             (mkdir-p module-dir)
+             (mkdir-p go-dir)
+
+             ;; Compile .scm files and install.
+             (chdir source)
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             (for-each (lambda (file)
+                         (let* ((dest-file (string-append module-dir "/"
+                                                          file))
+                                (go-file (match (string-split file #\.)
+                                           ((base _)
+                                            (string-append go-dir "/"
+                                                           base ".go")))))
+                           ;; Install source module.
+                           (copy-file file dest-file)
+                           (substitute* dest-file
+                             (("\\(dynamic-link \"libzmq\"\\)")
+                              (format #f "(dynamic-link \"~a/lib/libzmq.so\")"
+                                      (assoc-ref %build-inputs "zeromq"))))
+
+                           ;; Install and compile module.
+                           (unless (zero? (system* guild "compile"
+                                                   "-L" source
+                                                   "-o" go-file
+                                                   dest-file))
+                             (error (format #f "Failed to compile ~s to ~s!"
+                                            file go-file)))))
+                       (list scm-file))
+             #t))))
+      (propagated-inputs
+       `(("guile" ,guile-2.2)
+         ("zeromq" ,zeromq)))
+      (home-page "https://github.com/jerry40/guile-simple-zmq")
+      (synopsis "Guile wrapper over ZeroMQ library")
+      (description
+       "This package provides a Guile programming interface to the ZeroMQ
+messaging library.")
+      (license license:gpl3+))))
 
 ;;; guile.scm ends here
