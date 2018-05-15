@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1300,3 +1301,30 @@ support functions for dealing with terminals, as commonly found on UNIX
 systems.")
       (home-page "https://go.googlesource.com/crypto/")
       (license license:bsd-3))))
+
+(define-public go-github-com-burntsushi-toml
+  (let ((commit
+         "a368813c5e648fee92e5f6c30e3944ff9d5e8895")
+        (revision "0"))
+    (package
+      (name "go-github-com-burntsushi-toml")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BurntSushi/toml.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1sjxs2lwc8jpln80s4rlzp7nprbcljhy5mz4rf9995gq93wqnym5"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/BurntSushi/toml"))
+      (home-page "https://github.com/BurntSushi/toml")
+      (synopsis "Toml parser and encoder for Go")
+      (description "This package is toml parser and encoder for Go.  The
+interface is similar to Go's standard library @code{json} and @code{xml}
+package.")
+      (license license:expat))))
