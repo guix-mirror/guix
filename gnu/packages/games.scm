@@ -1809,7 +1809,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.0")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -1818,8 +1818,7 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "09niq53y17faizhmd98anx3dha7hvacvj9a0a64lg8wn915cm0bw"))
-              (patches (search-patches "wesnoth-fix-std-bad-cast.patch"))))
+                "1mzrnbv71b4s41c5x8clhb53l8lidiwzny1hl828228pvys5bxkb"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
