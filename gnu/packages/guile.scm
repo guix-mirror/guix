@@ -61,6 +61,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages maths)
@@ -2205,6 +2206,134 @@ It has a nice, simple s-expression based syntax.")
       (description
        "This package provides a Guile programming interface to the ZeroMQ
 messaging library.")
+      (license license:gpl3+))))
+
+(define-public jupyter-guile-kernel
+  (let ((commit "a5c5f3ea3215b65e770bcb62f71117b0ec4575ed")
+        (revision "0"))
+    (package
+      (name "jupyter-guile-kernel")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jerry40/guile-kernel")
+               (commit commit)))
+         (sha256
+          (base32
+           "0y5jr0f0dyskvsawqbf6n0bpg8jirw4mhqbarf2a6p9lxhqha9s9"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils)
+                        (srfi srfi-26)
+                        (ice-9 match)
+                        (ice-9 popen)
+                        (ice-9 rdelim))
+
+           (let* ((out (assoc-ref %outputs "out"))
+                  (guile (assoc-ref %build-inputs "guile"))
+                  (effective (read-line
+                              (open-pipe* OPEN_READ
+                                          (string-append guile "/bin/guile")
+                                          "-c" "(display (effective-version))")))
+                  (module-dir (string-append out "/share/guile/site/"
+                                             effective))
+                  (kernel-dir (string-append out "/share/jupyter/kernels/guile"))
+                  (go-dir     (string-append out "/lib/guile/"
+                                             effective
+                                             "/site-ccache"))
+                  (source     (string-append (assoc-ref %build-inputs "source")
+                                             "/src"))
+                  (scm-files '("hmac.scm"
+                               "tools.scm"
+                               "guile-jupyter-kernel.scm"))
+                  (kernel-file "kernel.json")
+                  (guild  (string-append (assoc-ref %build-inputs "guile")
+                                         "/bin/guild"))
+                  (g-szmq (assoc-ref %build-inputs "guile-simple-zmq"))
+                  (json   (assoc-ref %build-inputs "guile-json"))
+                  (deps   (list g-szmq json))
+                  (path   (string-join
+                           (map (cut string-append <>
+                                     "/share/guile/site/"
+                                     effective)
+                                deps)
+                           ":"))
+                  (gopath (string-join
+                           (map (cut string-append <>
+                                     "/lib/guile/" effective
+                                     "/site-ccache/")
+                                deps)
+                           ":")))
+
+             ;; Make installation directories.
+             (mkdir-p module-dir)
+             (mkdir-p kernel-dir)
+             (mkdir-p go-dir)
+
+             ;; Make a writable copy of SOURCE.
+             (copy-recursively source ".")
+
+             ;; Record the absolute file name of the 'openssl' command.
+             (substitute* "hmac.scm"
+               (("openssl")
+                (string-append (assoc-ref %build-inputs "openssl")
+                               "/bin/openssl")))
+
+             ;; Compile .scm files and install.
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             (setenv "GUILE_LOAD_PATH" path)
+             (setenv "GUILE_LOAD_COMPILED_PATH" gopath)
+
+             (for-each (lambda (file)
+                         (let* ((dest-file (string-append module-dir "/"
+                                                          file))
+                                (go-file (match (string-split file #\.)
+                                           ((base _)
+                                            (string-append go-dir "/"
+                                                           base ".go")))))
+                           ;; Install source module.
+                           (copy-file file dest-file)
+
+                           ;; Install compiled module.
+                           (unless (zero? (system* guild "compile"
+                                                   "-L" source
+                                                   "-o" go-file
+                                                   file))
+                             (error (format #f "Failed to compile ~s to ~s!"
+                                            file go-file)))))
+                       scm-files)
+
+             ;; Install kernel
+             (copy-file kernel-file (string-append kernel-dir "/"
+                                                   kernel-file))
+             ;; Fix hard-coded file name in the kernel
+             (substitute* (string-append kernel-dir "/"
+                                         kernel-file)
+               (("/home/jerry/.local/share/jupyter/kernels/guile/guile-jupyter-kernel.scm")
+                (string-append module-dir "/guile-jupyter-kernel.scm"))
+               (("\"guile\"")
+                (string-append "\"" (assoc-ref %build-inputs "guile")
+                               "/bin/guile\""))
+               (("-s")
+                (string-append "--no-auto-compile\", \"-s")))
+
+             #t))))
+      (inputs
+       `(("openssl" ,openssl)
+         ("guile" ,guile-2.2)))
+      (propagated-inputs
+       `(("guile-json" ,guile-json)
+         ("guile-simple-zmq" ,guile-simple-zmq)))
+      (synopsis "Guile kernel for the Jupyter Notebook")
+      (description
+       "This package provides a Guile 2.x kernel for the Jupyter Notebook.  It
+allows users to interact with the Guile REPL through Jupyter.")
+      (home-page "https://github.com/jerry40/guile-kernel")
       (license license:gpl3+))))
 
 ;;; guile.scm ends here
