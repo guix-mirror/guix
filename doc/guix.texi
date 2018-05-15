@@ -6913,12 +6913,15 @@ example:
 @example
 $ guix size coreutils
 store item                               total    self
-/gnu/store/@dots{}-coreutils-8.23          70.0    13.9  19.8%
-/gnu/store/@dots{}-gmp-6.0.0a              55.3     2.5   3.6%
-/gnu/store/@dots{}-acl-2.2.52              53.7     0.5   0.7%
-/gnu/store/@dots{}-attr-2.4.46             53.2     0.3   0.5%
-/gnu/store/@dots{}-gcc-4.8.4-lib           52.9    15.7  22.4%
-/gnu/store/@dots{}-glibc-2.21              37.2    37.2  53.1%
+/gnu/store/@dots{}-gcc-5.5.0-lib           60.4    30.1  38.1%
+/gnu/store/@dots{}-glibc-2.27              30.3    28.8  36.6%
+/gnu/store/@dots{}-coreutils-8.28          78.9    15.0  19.0%
+/gnu/store/@dots{}-gmp-6.1.2               63.1     2.7   3.4%
+/gnu/store/@dots{}-bash-static-4.4.12       1.5     1.5   1.9%
+/gnu/store/@dots{}-acl-2.2.52              61.1     0.4   0.5%
+/gnu/store/@dots{}-attr-2.4.47             60.6     0.2   0.3%
+/gnu/store/@dots{}-libcap-2.25             60.5     0.2   0.2%
+total: 78.9 MiB
 @end example
 
 @cindex closure
@@ -6938,9 +6941,10 @@ item itself.  The last column shows the ratio of the size of the item
 itself to the space occupied by all the items listed here.
 
 In this example, we see that the closure of Coreutils weighs in at
-70@tie{}MiB, half of which is taken by libc.  (That libc represents a
-large fraction of the closure is not a problem @i{per se} because it is
-always available on the system anyway.)
+79@tie{}MiB, most of which is taken by libc and GCC's run-time support
+libraries.  (That libc and GCC's libraries represent a large fraction of
+the closure is not a problem @i{per se} because they are always available
+on the system anyway.)
 
 When the package(s) passed to @command{guix size} are available in the
 store@footnote{More precisely, @command{guix size} looks for the
