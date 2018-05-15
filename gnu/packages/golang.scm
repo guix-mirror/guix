@@ -1355,3 +1355,33 @@ package.")
       (description "This package is Go client API for the Sentry event/error
 logging system.")
       (license license:bsd-3))))
+
+(define-public go-github-com-hashicorp-go-version
+  (let ((commit
+         "03c5bf6be031b6dd45afec16b1cf94fc8938bc77")
+        (revision "0"))
+    (package
+      (name "go-github-com-hashicorp-go-version")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hashicorp/go-version.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0sjq57gpfznaqdrbyb2p0bn90g9h661cvr0jrk6ngags4pbw14ik"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/hashicorp/go-version"))
+      (home-page
+       "https://github.com/hashicorp/go-version")
+      (synopsis "Go library for parsing and verifying versions and version
+constraints")
+      (description "This package is a library for parsing versions and version
+constraints, and verifying versions against a set of constraints.  It can sort
+a collection of versions properly, handles prerelease/beta versions, can
+increment versions.")
+      (license license:mpl2.0))))
