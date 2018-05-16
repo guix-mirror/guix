@@ -3516,7 +3516,7 @@ The following service daemons are also provided:
 (define-public rng-tools
   (package
     (name "rng-tools")
-    (version "6.1")
+    (version "6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nhorman/rng-tools/"
@@ -3524,7 +3524,7 @@ The following service daemons are also provided:
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00ywsknjpc9jd9kfmz2syk9l0xkiiwyx5qhl5zvhhc69v6682i31"))))
+                "0xy4qmfhvkr5z4jr9j55dn5gnajr2jccdp6n0xsxkipjcgag342j"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
