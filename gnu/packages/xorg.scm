@@ -6044,15 +6044,15 @@ X11 servers, Windows, or macOS.")
 (define-public uim
   (package
     (name "uim")
-    (version "1.8.6")
+    (version "1.8.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/uim/uim/releases/download/uim-"
+       (uri (string-append "https://github.com/uim/uim/releases/download/"
                            version "/uim-" version ".tar.bz2"))
        (sha256
         (base32
-         "0pr3rfqpxha8p6cxzdjsxbbmmr76riklzw36f68phd1zqw1sh7kv"))))
+         "1p7sl0js47ja4glmax93ci59h02ipqw3wxkh4f1qgaz5qjy9nn9l"))))
     (build-system gnu-build-system)
     (inputs
      `(("anthy" ,anthy)
