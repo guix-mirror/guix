@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
@@ -752,3 +754,63 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 
 (define-public python2-stdnum
   (package-with-python2 python-stdnum))
+
+(define-public silkaj
+  (package
+    (name "silkaj")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.duniter.org/clients/python/silkaj.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0xy25lpgz04nxikjvxlnlckrc9xmsxyiz2qm0bsiid8cnbdqcn12"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         ;; The program is just a bunch of Python files in "src/" directory.
+         ;; Many phases are useless.  However, `python-build-system' correctly
+         ;; sets PYTHONPATH and patches Python scripts.
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/silkaj"))
+                    (executable (string-append share "/silkaj.py"))
+                    (bin (string-append out "/bin")))
+               ;; Install data.
+               (copy-recursively "src" share)
+               ;; Install executable.
+               (mkdir-p bin)
+               (with-directory-excursion bin
+                 (symlink executable "silkaj")))
+             #t)))))
+    (inputs
+     `(("python-commandlines" ,python-commandlines)
+       ("python-ipaddress" ,python-ipaddress)
+       ("python-pyaes" ,python-pyaes)
+       ("python-pynacl" ,python-pynacl)
+       ("python-scrypt" ,python-scrypt)
+       ("python-tabulate" ,python-tabulate)))
+    (home-page "https://silkaj.duniter.org/")
+    (synopsis "Command line client for Duniter network")
+    (description "@code{Silkaj} is a command line client for the
+@uref{https://github.com/duniter/duniter/, Duniter} network.
+
+Its features are:
+@itemize
+@item information about currency,
+@item issuers difficulty to generate next block,
+@item network view of nodes,
+@item list of last issuers,
+@item send transactions,
+@item get account amount.
+@end itemize")
+    (license license:agpl3+)))
