@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,13 +52,45 @@
       ((weird _ ...)                              ;weird!
        (syntax-violation name "invalid field specifier" #'weird)))))
 
+(define (print-record-abi-mismatch-error port key args
+                                         default-printer)
+  (match args
+    ((rtd . _)
+     ;; The source file where this exception is thrown must be recompiled.
+     (format port "ERROR: ~a: record ABI mismatch; recompilation needed"
+             rtd))))
+
+(set-exception-printer! 'record-abi-mismatch-error
+                        print-record-abi-mismatch-error)
+
+(define (current-abi-identifier type)
+  "Return an identifier unhygienically derived from TYPE for use as its
+\"current ABI\" variable."
+  (let ((type-name (syntax->datum type)))
+    (datum->syntax
+     type
+     (string->symbol
+      (string-append "% " (symbol->string type-name)
+                     " abi-cookie")))))
+
+(define (abi-check type cookie)
+  "Return syntax that checks that the current \"application binary
+interface\" (ABI) for TYPE is equal to COOKIE."
+  (with-syntax ((current-abi (current-abi-identifier type)))
+    #`(unless (eq? current-abi #,cookie)
+        (throw 'record-abi-mismatch-error #,type))))
+
 (define-syntax make-syntactic-constructor
   (syntax-rules ()
     "Make the syntactic constructor NAME for TYPE, that calls CTOR, and
 expects all of EXPECTED fields to be initialized.  DEFAULTS is the list of
 FIELD/DEFAULT-VALUE tuples, THUNKED is the list of identifiers of thunked
-fields, and DELAYED is the list of identifiers of delayed fields."
+fields, and DELAYED is the list of identifiers of delayed fields.
+
+ABI-COOKIE is the cookie (an integer) against which to check the run-time ABI
+of TYPE matches the expansion-time ABI."
     ((_ type name ctor (expected ...)
+        #:abi-cookie abi-cookie
         #:thunked thunked
         #:delayed delayed
         #:innate innate
@@ -130,6 +162,7 @@ fields, and DELAYED is the list of identifiers of delayed fields."
          (syntax-case s (inherit expected ...)
            ((_ (inherit orig-record) (field value) (... ...))
             #`(let* #,(field-bindings #'((field value) (... ...)))
+                #,(abi-check #'type abi-cookie)
                 #,(record-inheritance #'orig-record
                                       #'((field value) (... ...)))))
            ((_ (field value) (... ...))
@@ -144,6 +177,7 @@ fields, and DELAYED is the list of identifiers of delayed fields."
                 (cond ((lset= eq? fields '(expected ...))
                        #`(let* #,(field-bindings
                                   #'((field value) (... ...)))
+                           #,(abi-check #'type abi-cookie)
                            (ctor #,@(map field-value '(expected ...)))))
                       ((pair? (lset-difference eq? fields
                                                '(expected ...)))
@@ -270,6 +304,16 @@ inherited."
                ;; The real value of that field is a promise, so force it.
                (force (real-get x)))))))
 
+    (define (compute-abi-cookie field-specs)
+      ;; Compute an "ABI cookie" for the given FIELD-SPECS.  We use
+      ;; 'string-hash' because that's a better hash function that 'hash' on a
+      ;; list of symbols.
+      (syntax-case field-specs ()
+        (((field get properties ...) ...)
+         (string-hash (object->string
+                       (syntax->datum #'((field properties ...) ...)))
+                      most-positive-fixnum))))
+
     (syntax-case s ()
       ((_ type syntactic-ctor ctor pred
           (field get properties ...) ...)
@@ -278,7 +322,8 @@ inherited."
               (delayed    (filter-map delayed-field? field-spec))
               (innate     (filter-map innate-field? field-spec))
               (defaults   (filter-map field-default-value
-                                      #'((field properties ...) ...))))
+                                      #'((field properties ...) ...)))
+              (cookie     (compute-abi-cookie field-spec)))
          (with-syntax (((field-spec* ...)
                         (map field-spec->srfi-9 field-spec))
                        ((thunked-field-accessor ...)
@@ -298,10 +343,13 @@ inherited."
                  (ctor field ...)
                  pred
                  field-spec* ...)
+               (define #,(current-abi-identifier #'type)
+                 #,cookie)
                thunked-field-accessor ...
                delayed-field-accessor ...
                (make-syntactic-constructor type syntactic-ctor ctor
                                            (field ...)
+                                           #:abi-cookie #,cookie
                                            #:thunked #,thunked
                                            #:delayed #,delayed
                                            #:innate #,innate
