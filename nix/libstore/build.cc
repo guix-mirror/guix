@@ -1244,6 +1244,7 @@ static bool canBuildLocally(const string & platform)
     return platform == settings.thisSystem
 #if __linux__
         || (platform == "i686-linux" && settings.thisSystem == "x86_64-linux")
+        || (platform == "armhf-linux" && settings.thisSystem == "aarch64-linux")
 #endif
         ;
 }
@@ -2218,6 +2219,13 @@ void DerivationGoal::runChild()
              (!strcmp(utsbuf.sysname, "Linux") && !strcmp(utsbuf.machine, "x86_64")))) {
             if (personality(PER_LINUX32) == -1)
                 throw SysError("cannot set i686-linux personality");
+        }
+
+        if (drv.platform == "armhf-linux" &&
+            (settings.thisSystem == "aarch64-linux" ||
+             (!strcmp(utsbuf.sysname, "Linux") && !strcmp(utsbuf.machine, "aarch64")))) {
+            if (personality(PER_LINUX32) == -1)
+                throw SysError("cannot set armhf-linux personality");
         }
 
         /* Impersonate a Linux 2.6 machine to get some determinism in

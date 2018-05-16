@@ -5855,8 +5855,15 @@ information on cross-compilation.
 
 An example use of this is on Linux-based systems, which can emulate
 different personalities.  For instance, passing
-@code{--system=i686-linux} on an @code{x86_64-linux} system allows you
+@code{--system=i686-linux} on an @code{x86_64-linux} system or
+@code{--system=armhf-linux} on an @code{aarch64-linux} system allows you
 to build packages in a complete 32-bit environment.
+
+@quotation Note
+Building for an @code{armhf-linux} system is unconditionally enabled on
+@code{aarch64-linux} machines, although certain aarch64 chipsets do not
+allow for this functionality, notably the ThunderX.
+@end quotation
 
 Similarly, when transparent emulation with QEMU and @code{binfmt_misc}
 is enabled (@pxref{Virtualization Services,
