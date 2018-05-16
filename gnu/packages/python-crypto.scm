@@ -972,3 +972,23 @@ main features are:
 @item Duniter signing key
 @end itemize")
     (license license:gpl3+)))
+
+(define-public python-scrypt
+  (package
+    (name "python-scrypt")
+    (version "0.8.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "scrypt" version))
+       (sha256
+        (base32
+         "0b9nw10hfdl0jflm3b62q485ssc3f3f33lpg4yy407gs8wnrn8zq"))))
+    (build-system python-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "http://bitbucket.org/mhallin/py-scrypt")
+    (synopsis "Bindings for the scrypt key derivation function library")
+    (description "This is a set of Python bindings for the scrypt key
+derivation function.")
+    (license license:bsd-2)))
