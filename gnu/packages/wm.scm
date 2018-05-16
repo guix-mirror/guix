@@ -136,14 +136,14 @@ the leaves of a full binary tree.")
 (define-public i3status
   (package
     (name "i3status")
-    (version "2.11")
+    (version "2.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/i3status/i3status-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0pwcy599fw8by1a1sf91crkqba7679qhvhbacpmhis8c1xrpxnwq"))))
+                "06krpbijv4yi33nypg6qcn4hilcrdyarsdpd9fmr2cq46qaqiikg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
