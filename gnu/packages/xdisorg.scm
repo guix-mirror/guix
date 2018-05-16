@@ -18,7 +18,7 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
@@ -532,7 +532,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.5")
+    (version "5.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -541,7 +541,7 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02blbimjdckbcb04crhv0k2vxnp3rcgskyq66sk0v13l2h52849v"))))
+                "1dvw0axnr9hhjg6zdcq9lwvaq0x7vrzlz00p8n3hj25qzsi4z5as"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
