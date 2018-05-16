@@ -636,14 +636,14 @@ that conforms to the API of the Document Object Model.")
 (define-public perl-xml-compile-tester
   (package
     (name "perl-xml-compile-tester")
-    (version "0.90")
+    (version "0.91")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-Tester-" version ".tar.gz"))
               (sha256
                (base32
-                "1bcl8x8cyacqv9yjp97aq9qq85sy8wv78kd8c16yd9yw3by4cpp1"))))
+                "1drzwziwi96rfkh48qpw4l225mcbk8ppl2157nj92cslcpwwdk75"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
