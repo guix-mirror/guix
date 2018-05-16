@@ -13799,3 +13799,23 @@ Let's Encrypt.")
 
 (define-public python2-dns-lexicon
   (package-with-python2 python-dns-lexicon))
+
+(define-public python-commandlines
+  (package
+    (name "python-commandlines")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "commandlines" version))
+       (sha256
+        (base32
+         "0r7xcr0knv02p4mswa2bng61nn8nbhhrs6kvdnb9bb3hhjvm1dl6"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/chrissimpkins/commandlines")
+    (synopsis "Command line argument to object parsing library")
+    (description
+     "@code{Commandlines} is a Python library for command line application
+development that supports command line argument parsing, command string
+validation testing and application logic.")
+    (license license:expat)))
