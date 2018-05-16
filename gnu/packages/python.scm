@@ -4964,14 +4964,14 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 (define-public python-netifaces
   (package
     (name "python-netifaces")
-    (version "0.10.6")
+    (version "0.10.7")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "netifaces" version))
         (sha256
           (base32
-            "1q7bi5k2r955rlcpspx4salvkkpk28jky67fjbpz2dkdycisak8c"))))
+            "1gccklrcplbbqh81g1mdgpa5y8na7kkf29cq2ka3f5a2fp5hyndx"))))
     (build-system python-build-system)
     (home-page "https://github.com/al45tair/netifaces")
     (synopsis
