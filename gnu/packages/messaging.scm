@@ -736,14 +736,14 @@ a graphical desktop environment like GNOME.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.10.0")
+    (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "1644jy5dk46vahmh6nna36s79k8k668sbi3qamjb4q3c4m3y853l"))))
+                "1kmmpkkgymg1r8r0k8j83pgmiskg1phl8hmpzjrnvlvsfnrnjplr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
