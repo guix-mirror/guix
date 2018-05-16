@@ -3889,14 +3889,14 @@ are noisy or are discontinuous at the solution.")
 (define-public r-desolve
   (package
     (name "r-desolve")
-    (version "1.20")
+    (version "1.21")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "deSolve" version))
         (sha256
          (base32
-          "18nx3maww979a8p8ly4hv63y65mnjx8vbj2fpipd6rhcbf1lbsan"))))
+          "0qqc4mknw1jblzcmph1dg3k1p6w42yal0k1xjh8pqk7yb3a75hs5"))))
     (properties `((upstream-name . "deSolve")))
     (build-system r-build-system)
     (native-inputs
