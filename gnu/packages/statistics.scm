@@ -965,13 +965,13 @@ transliteration, concatenation, date-time formatting and parsing, etc.")
 (define-public r-stringr
   (package
     (name "r-stringr")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringr" version))
        (sha256
-        (base32 "07dvfbkhv8gk6l32j43jvxpmqlhqp0mdby406h5a3bsc6k94ic13"))))
+        (base32 "0hq3ybz7clnifi5wdm2s6p2i0kzljdkv26blg6yphng472h8x2vs"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-glue" ,r-glue)
