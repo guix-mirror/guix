@@ -45,6 +45,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -107,8 +108,8 @@
 
 ;; Building from recent Git because the official 5.0 release no longer builds.
 (define-public dolphin-emu
-  (let ((commit "d04b179111f8d863f360839474cb82c766f762b8")
-        (revision "0"))
+  (let ((commit "47fd8c6eff4cdea7660d0fa78040f98d1d4fa136")
+        (revision "1"))
     (package
       (name "dolphin-emu")
       (version (git-version "5.0" revision commit))
@@ -134,7 +135,7 @@
              #t))
          (sha256
           (base32
-           "0g725wmhlim73zrhi47wmr1bmplpy4b7sbimd5pm8xpfhj5nm10l"))))
+           "1gp2sshnr0dswdawxd5ix96nksp435b52bqvpjx8pmn523k29zsw"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f
@@ -143,6 +144,10 @@
 
          #:phases
          (modify-phases %standard-phases
+           (add-before 'configure 'fixgcc7
+             (lambda _
+               (unsetenv "C_INCLUDE_PATH")
+               (unsetenv "CPLUS_INCLUDE_PATH")))
            (add-before 'configure 'generate-fonts&hardcore-libvulkan-path
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((fontfile
@@ -179,6 +184,7 @@
                "-DX11_FOUND=1")))
       (native-inputs
        `(("pkg-config" ,pkg-config)
+         ("gcc" ,gcc-7) ; Building with gcc@5 doesn't work anymore.
          ("gettext" ,gnu-gettext)))
       (inputs
        `(("alsa-lib" ,alsa-lib)
