@@ -130,7 +130,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
 (define-public lynx
   (package
     (name "lynx")
-    (version "2.8.9dev.17")
+    (version "2.8.9dev.18")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -138,7 +138,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
                     "/lynx" version ".tar.bz2"))
               (sha256
                (base32
-                "1lvfsnrw5mmwrmn1m76q9mx287xwm3h5lg8sv7bcqilc0ywi2f54"))))
+                "08v3n58hlrwncfvz6g76v061xwcbjgabiy5gv7ainf1li5akjwz5"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
