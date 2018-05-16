@@ -5199,14 +5199,14 @@ classification and regression models.")
 (define-public r-rcppprogress
   (package
     (name "r-rcppprogress")
-    (version "0.4")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppProgress" version))
        (sha256
         (base32
-         "09ayw6d69i0lplmaj5md25p5hn1nmiyp6a4sh60v93nrrs1cq7iv"))))
+         "0yk01hfv961zyp569682k9igvhnwqyg5j0n5fm63sxigj82l2xhi"))))
     (properties `((upstream-name . "RcppProgress")))
     (build-system r-build-system)
     (propagated-inputs
