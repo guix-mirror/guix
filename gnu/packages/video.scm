@@ -472,7 +472,7 @@ canvas operations.")
 (define-public libdca
   (package
     (name "libdca")
-    (version "0.0.5")
+    (version "0.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -480,7 +480,7 @@ canvas operations.")
                     version "/libdca-" version ".tar.bz2"))
               (sha256
                (base32
-                "0hh6a7l8vvccsd5i1fkv9av2gzv9fy8m0b8jpsn5p6hh4bh2586v"))))
+                "0h0zvcn97i9kyljdpifzi8in9xnw31fx3b3ggj96p8h0l2d8mycq"))))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libdca.html")
     (synopsis "DTS Coherent Acoustics decoder")
