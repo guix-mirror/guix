@@ -9483,4 +9483,37 @@ address string against RFC 5322.")
     (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
               ,@(package-inputs ghc-semigroupoids)))))
 
+(define-public ghc-bytes
+  (package
+   (name "ghc-bytes")
+   (version "0.15.4")
+   (source
+    (origin
+     (method url-fetch)
+     (uri
+      (string-append "https://hackage.haskell.org/package/bytes-"
+                     version "/bytes-"
+                     version ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32
+       "121x3iqlm8pghw8cd9g30cnqbl7jrdpfjxdanmqdqllajw6xivrm"))))
+   (build-system haskell-build-system)
+   (inputs `(("ghc-cereal" ,ghc-cereal)
+             ("cabal-doctest" ,cabal-doctest)
+             ("ghc-doctest" ,ghc-doctest-0.13)
+             ("ghc-mtl" ,ghc-mtl)
+             ("ghc-scientific" ,ghc-scientific)
+             ("ghc-text" ,ghc-text)
+             ("ghc-transformers-compat" ,ghc-transformers-compat)
+             ("ghc-unordered-containers" ,ghc-unordered-containers)
+             ("ghc-void" ,ghc-void)
+             ("ghc-vector" ,ghc-vector)))
+   (synopsis "Serialization between @code{binary} and @code{cereal}")
+   (description "This package provides a simple compatibility shim that lets
+you work with both @code{binary} and @code{cereal} with one chunk of
+serialization code.")
+   (home-page "https://hackage.haskell.org/package/bytes")
+   (license license:bsd-3)))
+
 ;;; haskell.scm ends here
