@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1768,3 +1769,36 @@ allowing you to run a client with no graphical interface, and a Web GUI for
 remote access.  The @command{amulecmd} command allows you to control aMule
 remotely.")
     (license license:gpl2+)))
+
+(define-public zyre
+  (package
+    (name "zyre")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/zeromq/zyre/releases/download/v"
+                              version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qz2730bng1gs9xbqxhkw88qbsmszgmmrl2g9k6xrg6r3bqvsdc7"))))
+    (build-system gnu-build-system)
+    (inputs `(("zeromq" ,zeromq)
+              ("czmq" ,czmq)
+              ("libsodium" ,libsodium)))
+    (synopsis "Framework for proximity-based peer-to-peer applications")
+    (description "Zyre provides reliable group messaging over local area
+networks using zeromq.  It has these key characteristics:
+
+@itemize
+@item Zyre needs no administration or configuration.
+@item Peers may join and leave the network at any time.
+@item Peers talk to each other without any central brokers or servers.
+@item Peers can talk directly to each other.
+@item Peers can join groups, and then talk to groups.
+@item Zyre is reliable, and loses no messages even when the network is heavily loaded.
+@item Zyre is fast and has low latency, requiring no consensus protocols.
+@item Zyre is designed for WiFi networks, yet also works well on Ethernet networks.
+@end itemize")
+    (home-page "https://github.com/zeromq/zyre")
+    (license license:mpl2.0)))
