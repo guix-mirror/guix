@@ -13,6 +13,7 @@
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -9465,5 +9466,21 @@ system dependencies.")
      "This Haskell package provides a validator that can validate an email
 address string against RFC 5322.")
     (license license:bsd-3)))
+
+(define-public ghc-semigroupoids-5.2.2
+  (package
+    (inherit ghc-semigroupoids)
+    (name "ghc-semigroupoids")
+    (version "5.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "semigroupoids-" version "/semigroupoids-"
+                                   version ".tar.gz"))
+              (sha256
+               (base32
+                "17i96y4iqj8clcs090lf6k0ij3j16nj14vsfwz0mm9nd6i4gbpp4"))))
+    (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
+              ,@(package-inputs ghc-semigroupoids)))))
 
 ;;; haskell.scm ends here
