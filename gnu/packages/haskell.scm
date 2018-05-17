@@ -13,7 +13,6 @@
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -9466,59 +9465,5 @@ system dependencies.")
      "This Haskell package provides a validator that can validate an email
 address string against RFC 5322.")
     (license license:bsd-3)))
-
-(define-public ghc-array
-  (package
-   (name "ghc-array")
-   (version "0.5.2.0")
-   (source
-    (origin
-     (method url-fetch)
-     (uri
-      (string-append "https://hackage.haskell.org/package/array-0.5.2.0/array-"
-                     version ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
-     (sha256
-      (base32
-       "12v83s2imxb3p2crnlzrpjh0nk6lpysw9bdk9yahs6f37csa5jaj"))))
-   (build-system haskell-build-system)
-   (synopsis "Haskell @code{Data.Array} module")
-   (description "In addition to providing the @code{Data.Array} module as
-specified in the Haskell 2010 Language Report, this package defines the
-classes @code{IArray} of immutable arrays and @code{MArray} of arrays mutable
-within appropriate monads, as well as some instances of these classes.")
-   (home-page "https://hackage.haskell.org/package/array")
-   (license license:bsd-3)))
-
-(define-public ghc-containers
-  (package
-   (name "ghc-containers")
-   (version "0.5.11.0")
-   (source
-    (origin
-     (method url-fetch)
-     (uri
-      (string-append "https://hackage.haskell.org/package/containers-0.5.11.0/containers-"
-                     version ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
-     (sha256
-      (base32
-       "0j29w09kvcn1c0yi4clmrdbgs2gqmpxs2m7q80ib2ix1smm25kaq"))))
-   (build-system haskell-build-system)
-   (inputs `(("ghc-array" ,ghc-array)
-             ("ghc-deepseq" ,ghc-deepseq-generics)
-             ("ghc-hunit" ,ghc-hunit)
-             ("ghc-chasingbottoms" ,ghc-chasingbottoms)
-             ("ghc-test-framework" ,ghc-test-framework)
-             ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-             ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-             ("ghc-quickcheck" ,ghc-quickcheck)
-             ("ghc-ghc-prim" ,ghc-primitive)))
-   (synopsis "Haskell containers: Assorted concrete container types")
-   (description "This Haskell module provides efficient general-purpose
-implementations of various immutable container types including sets, maps,
-sequences, trees, and graphs.")
-   (home-page "https://hackage.haskell.org/package/containers")
-   (license license:bsd-3)))
 
 ;;; haskell.scm ends here
