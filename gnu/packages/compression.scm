@@ -22,6 +22,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2151,3 +2152,25 @@ with @code{deflate} but offers more dense compression.
 
 The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
     (license license:expat)))
+
+(define-public ucl
+  (package
+    (name "ucl")
+    (version "1.03")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.oberhumer.com/opensource/"
+                                 name "/download/" name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0j036lkwsxvm15gr29n8wn07cqq79dswjs9k54939ms5zngjjrdq"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.oberhumer.com/opensource/ucl/")
+    (synopsis "Portable lossless data compression library")
+    (description "UCL implements a number of compression algorithms that
+achieve an excellent compression ratio while allowing fast decompression.
+Decompression requires no additional memory.
+
+Compared to LZO, the UCL algorithms achieve a better compression ratio but
+decompression is a little bit slower.")
+    (license license:gpl2+)))
