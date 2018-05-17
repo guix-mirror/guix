@@ -202,6 +202,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/graphics.scm			\
   %D%/packages/graphviz.scm			\
   %D%/packages/groff.scm			\
+  %D%/packages/groovy.scm			\
   %D%/packages/gsasl.scm			\
   %D%/packages/gstreamer.scm			\
   %D%/packages/gtk.scm				\
@@ -343,6 +344,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/plotutils.scm			\
   %D%/packages/polkit.scm			\
   %D%/packages/popt.scm				\
+  %D%/packages/printers.scm			\
   %D%/packages/profiling.scm			\
   %D%/packages/pth.scm				\
   %D%/packages/pulseaudio.scm			\
@@ -552,6 +554,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/abiword-black-drawing-with-gtk322.patch	\
   %D%/packages/patches/acl-fix-perl-regex.patch		\
   %D%/packages/patches/acl-hurd-path-max.patch			\
+  %D%/packages/patches/adb-add-libraries.patch			\
   %D%/packages/patches/aegis-constness-error.patch         	\
   %D%/packages/patches/aegis-perl-tempdir1.patch           	\
   %D%/packages/patches/aegis-perl-tempdir2.patch           	\
@@ -746,6 +749,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gpsbabel-qstring.patch     		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groff-source-date-epoch.patch		\
+  %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
@@ -784,7 +788,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
-  %D%/packages/patches/icecat-bug-1452075.patch			\
+  %D%/packages/patches/icecat-CVE-2018-5157-and-CVE-2018-5158.patch	\
   %D%/packages/patches/icecat-use-system-graphite2.patch	\
   %D%/packages/patches/icecat-use-system-harfbuzz.patch		\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
@@ -805,6 +809,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/khmer-use-libraries.patch                \
+  %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/kiki-level-selection-crash.patch		\
   %D%/packages/patches/kiki-makefile.patch			\
   %D%/packages/patches/kiki-missing-includes.patch		\
@@ -872,6 +877,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libusb-for-axoloti.patch			\
+  %D%/packages/patches/libutils-add-includes.patch		\
+  %D%/packages/patches/libutils-remove-damaging-includes.patch	\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libxslt-generated-ids.patch		\
@@ -924,13 +931,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-tracelogger.patch		\
   %D%/packages/patches/mozjs38-version-detection.patch		\
   %D%/packages/patches/mumps-build-parallelism.patch		\
-  %D%/packages/patches/mupdf-build-with-latest-openjpeg.patch	\
-  %D%/packages/patches/mupdf-CVE-2017-17858.patch		\
-  %D%/packages/patches/mupdf-CVE-2018-6544.patch		\
-  %D%/packages/patches/mupdf-CVE-2018-1000051.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/mutt-store-references.patch		\
+  %D%/packages/patches/myrepos-CVE-2018-7032.patch		\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-date-time.patch			\
   %D%/packages/patches/netcdf-tst_h_par.patch			\
@@ -1037,7 +1041,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-nose-timer-drop-ordereddict.patch \
   %D%/packages/patches/python-pillow-fix-failing-tests.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
-  %D%/packages/patches/python-statsmodels-fix-tests.patch	\
   %D%/packages/patches/python-scikit-learn-fix-test-non-determinism.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
@@ -1155,7 +1158,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/wavpack-CVE-2018-7253.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7254.patch		\
   %D%/packages/patches/weechat-python.patch			\
-  %D%/packages/patches/wesnoth-fix-std-bad-cast.patch		\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\
   %D%/packages/patches/wicd-urwid-1.3.patch			\

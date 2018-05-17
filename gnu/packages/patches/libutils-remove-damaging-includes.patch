@@ -1,0 +1,21 @@
+--- a/include/utils/StrongPointer.h	2018-04-25 18:42:34.321003602 +0200
++++ b/include/utils/StrongPointer.h	2018-04-25 18:42:42.180912201 +0200
+@@ -17,8 +17,6 @@
+ #ifndef ANDROID_STRONG_POINTER_H
+ #define ANDROID_STRONG_POINTER_H
+ 
+-#include <cutils/atomic.h>
+-
+ #include <stdint.h>
+ #include <sys/types.h>
+ #include <stdlib.h>
+--- a/libutils/Trace.cpp	2018-04-25 20:41:48.775049786 +0200
++++ b/libutils/Trace.cpp	2018-04-25 20:42:13.674744182 +0200
+@@ -21,5 +21,7 @@
+ 
+ static void traceInit()
+ {
++#if defined(__ANDROID__)
+     ::android::add_sysprop_change_callback(atrace_update_tags, 0);
++#endif
+ }

@@ -472,7 +472,7 @@ canvas operations.")
 (define-public libdca
   (package
     (name "libdca")
-    (version "0.0.5")
+    (version "0.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -480,7 +480,7 @@ canvas operations.")
                     version "/libdca-" version ".tar.bz2"))
               (sha256
                (base32
-                "0hh6a7l8vvccsd5i1fkv9av2gzv9fy8m0b8jpsn5p6hh4bh2586v"))))
+                "0h0zvcn97i9kyljdpifzi8in9xnw31fx3b3ggj96p8h0l2d8mycq"))))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libdca.html")
     (synopsis "DTS Coherent Acoustics decoder")
@@ -1156,7 +1156,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.04.25")
+    (version "2018.05.09")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1164,7 +1164,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "17zxgwfcy7c6gdyxdgh02f5zi52gvmy0zpccfj6zjkhw5iqj1vbw"))))
+                "0sl4bi2jls3417rd62awbqdq1b6wskkjbfwpnyw4a61qarfxid1d"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

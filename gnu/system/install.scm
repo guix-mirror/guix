@@ -49,7 +49,10 @@
             a20-olinuxino-micro-installation-os
             banana-pi-m2-ultra-installation-os
             beaglebone-black-installation-os
-            nintendo-nes-classic-edition-installation-os))
+            mx6cuboxi-installation-os
+            nintendo-nes-classic-edition-installation-os
+            novena-installation-os
+            wandboard-installation-os))
 
 ;;; Commentary:
 ;;;
@@ -429,10 +432,25 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
                             "/dev/mmcblk1" ; eMMC storage
                             "ttyS0"))
 
+(define mx6cuboxi-installation-os
+  (embedded-installation-os u-boot-mx6cuboxi-bootloader
+                            "/dev/mmcblk0" ; SD card storage
+                            "ttymxc0"))
+
+(define novena-installation-os
+  (embedded-installation-os u-boot-novena-bootloader
+                            "/dev/mmcblk1" ; SD card storage
+                            "ttymxc1"))
+
 (define nintendo-nes-classic-edition-installation-os
   (embedded-installation-os u-boot-nintendo-nes-classic-edition-bootloader
                             "/dev/mmcblk0" ; SD card (solder it yourself)
                             "ttyS0"))
+
+(define wandboard-installation-os
+  (embedded-installation-os u-boot-wandboard-bootloader
+                            "/dev/mmcblk0" ; SD card storage
+                            "ttymxc0"))
 
 ;; Return the default os here so 'guix system' can consume it directly.
 installation-os

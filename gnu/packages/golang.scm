@@ -214,7 +214,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.9.5")
+    (version "1.9.6")
     (source
      (origin
        (method url-fetch)
@@ -222,7 +222,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "1g4zqhbh1yw3gnb400szzwrdz0k5s3h0h5nc35xgmn5v69zvphpi"))))
+         "0a2qkvzr0g5cbd66wi7b6r40qyp9p55y0zz2j5qg1xsqwsdhbx1n"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -383,7 +383,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.9)
     (name "go")
-    (version "1.10.1")
+    (version "1.10.2")
     (source
      (origin
        (method url-fetch)
@@ -391,7 +391,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "1p1xyyxicp752n9wj10sljjl6mjxpfsplkhx74fzzjrwdkzlk52q"))))
+         "1gcqbac3wbhbcr0ri9zgfj6qkqbwf9fn116a0a7fvn4wdff60r32"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.9)
        ((#:phases phases)

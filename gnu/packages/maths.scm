@@ -481,7 +481,10 @@ large scale eigenvalue problems.")
     (inputs
      `(("mpi" ,openmpi)
        ,@(package-inputs arpack-ng)))
-    (arguments `(#:configure-flags '("--enable-mpi")))
+    (arguments
+     (substitute-keyword-arguments (package-arguments arpack-ng)
+       ((#:configure-flags _ '())
+        ''("--enable-mpi"))))
     (synopsis "Fortran subroutines for solving eigenvalue problems with MPI")))
 
 (define-public lapack
@@ -3466,6 +3469,7 @@ set.")
     (native-inputs
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
+       ("perl" ,perl)                   ;needed to run 'ppmquant' during tests
        ("texlive" ,texlive)             ;full package required for fonts
        ("ghostscript" ,ghostscript)))
     (inputs
@@ -3900,14 +3904,14 @@ are noisy or are discontinuous at the solution.")
 (define-public r-desolve
   (package
     (name "r-desolve")
-    (version "1.20")
+    (version "1.21")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "deSolve" version))
         (sha256
          (base32
-          "18nx3maww979a8p8ly4hv63y65mnjx8vbj2fpipd6rhcbf1lbsan"))))
+          "0qqc4mknw1jblzcmph1dg3k1p6w42yal0k1xjh8pqk7yb3a75hs5"))))
     (properties `((upstream-name . "deSolve")))
     (build-system r-build-system)
     (native-inputs

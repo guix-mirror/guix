@@ -536,7 +536,7 @@ and keep up to date translations of documentation.")
 (define-public gnome-disk-utility
   (package
     (name "gnome-disk-utility")
-    (version "3.28.1")
+    (version "3.28.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -544,7 +544,7 @@ and keep up to date translations of documentation.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09dmknfas8iifv6k5jb4a9ag57s8awrn0f26fd1qlg0mbfjlnfd6"))))
+                "1j3l4b1prbnixzy6srvcsjfg1dx5nqys2lmygm31ygfdq7svp3m6"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")
@@ -3877,7 +3877,7 @@ supports image conversion, rotation, and slideshows.")
   ;; 'XDG_DATA_DIRS' appropriately set.
   (package
     (name "eog-plugins")
-    (version "3.26.1")
+    (version "3.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3885,7 +3885,7 @@ supports image conversion, rotation, and slideshows.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0v45f2m3b60ygkwpq6jrl49nwrivw6qy0ciibpv821qrm73hsgd7"))))
+                "1w8zw7kwfvlwlyb1k1inqdvbwnzq959sqawlmnwfb8ykn98hbk8y"))))
     (build-system gnu-build-system)
     (home-page "https://wiki.gnome.org/Apps/EyeOfGnome/Plugins")
     (synopsis "Extensions for the Eye of GNOME image viewer")

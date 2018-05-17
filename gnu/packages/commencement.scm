@@ -267,7 +267,7 @@
                                ;; Drop trailing letters, as gmp-6.0.0a unpacks
                                ;; into gmp-6.0.0.
                                `(symlink ,(string-trim-right
-                                           (package-full-name lib)
+                                           (package-full-name lib "-")
                                            char-set:letter)
                                          ,(package-name lib)))
                              (list gmp-6.0 mpfr mpc))

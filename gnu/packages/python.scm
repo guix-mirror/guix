@@ -51,6 +51,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3369,14 +3370,14 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python-numexpr
   (package
     (name "python-numexpr")
-    (version "2.6.4")
+    (version "2.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "numexpr" version))
        (sha256
         (base32
-         "1kpnbb5d5n927113zccfibn16z7gidjipyac6kbbhzs0lnizkgph"))))
+         "1frnbcwmsi312154x274xl28xazr1k8vjby83fwyla2n10a81bgq"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))          ; no tests included
     (propagated-inputs
@@ -3871,6 +3872,27 @@ Python code against some of the style conventions in
 
 (define-public python2-pycodestyle
   (package-with-python2 python-pycodestyle))
+
+(define-public python-multidict
+  (package
+    (name "python-multidict")
+    (version "4.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "multidict" version))
+       (sha256
+        (base32
+         "1vf5bq8hn5a9rvhr5v4fwbmarfsp35hhr8gs74kqfijy34j2f194"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/aio-libs/multidict/")
+    (synopsis "Multidict implementation")
+    (description "Multidict is dict-like collection of key-value pairs
+where key might be occurred more than once in the container.")
+    (license license:asl2.0)))
 
 (define-public python-orderedmultidict
   (package
@@ -5030,14 +5052,14 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 (define-public python-netifaces
   (package
     (name "python-netifaces")
-    (version "0.10.6")
+    (version "0.10.7")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "netifaces" version))
         (sha256
           (base32
-            "1q7bi5k2r955rlcpspx4salvkkpk28jky67fjbpz2dkdycisak8c"))))
+            "1gccklrcplbbqh81g1mdgpa5y8na7kkf29cq2ka3f5a2fp5hyndx"))))
     (build-system python-build-system)
     (home-page "https://github.com/al45tair/netifaces")
     (synopsis
@@ -6372,6 +6394,26 @@ specification.")
 
 (define-public python2-idna
   (package-with-python2 python-idna))
+
+(define-public python-idna-ssl
+  (package
+    (name "python-idna-ssl")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "idna-ssl" version))
+       (sha256
+        (base32
+         "0ydrc8hpg9mdr5hqq1lqfsfbn6sjq69slwpfrnlrm3k0phqg14qj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))          ;circular dependency with python-aiohttp
+    (home-page "https://github.com/aio-libs/idna-ssl")
+    (synopsis "Patch @code{ssl.match_hostname} for Unicode(idna) domains support")
+    (description "Patch @code{ssl.match_hostname} for Unicode(idna)
+domains support.")
+    (license license:expat)))
 
 (define-public python-pretend
   (package
@@ -10606,14 +10648,14 @@ convering text with ANSI color codes to HTML or LaTeX.")
 (define-public python-ddt
   (package
     (name "python-ddt")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ddt" version))
        (sha256
         (base32
-         "1wqkmz0yhanly8sif5vb02p2iik7mwxwph8ywph2kbb8ws8szdpx"))))
+         "1lw17420iimhghkgzgax85nn8d1an2d6k2cfvb7j5kwn2dqlr1vk"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -10827,10 +10869,12 @@ and bit flag values.")
                 "1jafnn1kzd6qhxgprhx6y6ik1r5m2rilx25syzcmq03azp660y8w"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)
+     `(("python-coverage" ,python-coverage)
        ("python-hypothesis" ,python-hypothesis)
-       ("python-zope-interface" ,python-zope-interface)
-       ("python-six" ,python-six)))
+       ("python-pytest" ,python-pytest)
+       ("python-six" ,python-six)
+       ("python-sphinx" ,python-sphinx)
+       ("python-zope-interface" ,python-zope-interface)))
     (home-page "https://github.com/python-attrs/attrs/")
     (synopsis "Attributes without boilerplate")
     (description "@code{attrs} is a Python package with class decorators that
@@ -13336,3 +13380,43 @@ Parso is also able to list multiple syntax errors in your Python file.")
 
 (define-public python2-parso
   (package-with-python2 python-parso))
+
+(define-public python-async-generator
+  (package
+    (name "python-async-generator")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "async_generator" version))
+       (sha256
+        (base32
+         "0wc3hidz1q85cja93k5pzybn0fprfnqyrv4qlkdqdzklc5f4dmdp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python-trio/async_generator")
+    (synopsis "Async generators and context managers for Python 3.5+")
+    (description "@code{async_generator} back-ports Python 3.6's native async
+generators and Python 3.7's context managers into Python 3.5.")
+    ;; Dual licensed.
+    (license (list license:expat license:asl2.0))))
+
+(define-public python-async-timeout
+  (package
+    (name "python-async-timeout")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "async-timeout" version))
+       (sha256
+        (base32
+         "1l3kg062m02mph6rf9rdv8r5c5n356clxa6b6mrn0i77vk9g9kq0"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/aio-libs/async_timeout/")
+    (synopsis "Timeout context manager for asyncio programs")
+    (description "@code{async-timeout} provides a timeout timeout context
+manager compatible with @code{asyncio}.")
+    (license license:asl2.0)))
+

@@ -223,6 +223,52 @@
                  (string=? (dirname (readlink bindir))
                            (derivation->output-path guile))))))
 
+(test-assertm "profile-derivation relative symlinks, one entry"
+  (mlet* %store-monad
+      ((entry ->   (package->manifest-entry %bootstrap-guile))
+       (guile      (package->derivation %bootstrap-guile))
+       (drv        (profile-derivation (manifest (list entry))
+                                       #:relative-symlinks? #t
+                                       #:hooks '()
+                                       #:locales? #f))
+       (profile -> (derivation->output-path drv))
+       (bindir ->  (string-append profile "/bin"))
+       (_          (built-derivations (list drv))))
+    (return (and (file-exists? (string-append bindir "/guile"))
+                 (string=? (readlink bindir)
+                           (string-append "../"
+                                          (basename
+                                           (derivation->output-path guile))
+                                          "/bin"))))))
+
+(unless (network-reachable?) (test-skip 1))
+(test-assertm "profile-derivation relative symlinks, two entries"
+  (mlet* %store-monad
+      ((gnu-make-boot0 -> (@@ (gnu packages commencement) gnu-make-boot0))
+       (manifest -> (packages->manifest
+                     (list %bootstrap-guile gnu-make-boot0)))
+       (guile       (package->derivation %bootstrap-guile))
+       (make        (package->derivation gnu-make-boot0))
+       (drv         (profile-derivation manifest
+                                        #:relative-symlinks? #t
+                                        #:hooks '()
+                                        #:locales? #f))
+       (profile ->  (derivation->output-path drv))
+       (bindir ->   (string-append profile "/bin"))
+       (_           (built-derivations (list drv))))
+    (return (and (file-exists? (string-append bindir "/guile"))
+                 (file-exists? (string-append bindir "/make"))
+                 (string=? (readlink (string-append bindir "/guile"))
+                           (string-append "../../"
+                                          (basename
+                                           (derivation->output-path guile))
+                                          "/bin/guile"))
+                 (string=? (readlink (string-append bindir "/make"))
+                           (string-append "../../"
+                                          (basename
+                                           (derivation->output-path make))
+                                          "/bin/make"))))))
+
 (test-assertm "profile-derivation, inputs"
   (mlet* %store-monad
       ((entry ->   (package->manifest-entry packages:glibc "debug"))
@@ -242,8 +288,8 @@
                                         #:hooks '()
                                         #:locales? #t
                                         #:target target)))
-    (define (find-input name)
-      (let ((name (string-append name ".drv")))
+    (define (find-input package)
+      (let ((name (string-append (package-full-name package "-") ".drv")))
         (any (lambda (input)
                (let ((input (derivation-input-path input)))
                  (and (string-suffix? name input) input)))
@@ -252,12 +298,11 @@
     ;; The inputs for grep and sed should be cross-build derivations, but that
     ;; for the glibc-utf8-locales should be a native build.
     (return (and (string=? (derivation-system drv) (%current-system))
-                 (string=? (find-input (package-full-name packages:grep))
+                 (string=? (find-input packages:grep)
                            (derivation-file-name grep))
-                 (string=? (find-input (package-full-name packages:sed))
+                 (string=? (find-input packages:sed)
                            (derivation-file-name sed))
-                 (string=? (find-input
-                            (package-full-name packages:glibc-utf8-locales))
+                 (string=? (find-input packages:glibc-utf8-locales)
                            (derivation-file-name locales))))))
 
 (test-assert "package->manifest-entry defaults to \"out\""

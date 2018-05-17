@@ -168,7 +168,7 @@
   (version      manifest-entry-version)           ; string
   (output       manifest-entry-output             ; string
                 (default "out"))
-  (item         manifest-entry-item)              ; package | store path
+  (item         manifest-entry-item)              ; package | file-like | store path
   (dependencies manifest-entry-dependencies       ; <manifest-entry>*
                 (default '()))
   (search-paths manifest-entry-search-paths       ; search-path-specification*
@@ -318,7 +318,7 @@ denoting a specific output of a package."
                  (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
                                       search-paths))))
-      (($ <manifest-entry> name version output (? package? package)
+      (($ <manifest-entry> name version output package
                            (deps ...) (search-paths ...))
        #~(#$name #$version #$output
                  (ungexp package (or output "out"))
@@ -671,7 +671,13 @@ if not found."
             (return (find-among-inputs inputs)))))
         ((? string? item)
          (mlet %store-monad ((refs (references* item)))
-           (return (find-among-store-items refs)))))))
+           (return (find-among-store-items refs))))
+        (item
+         ;; XXX: ITEM might be a 'computed-file' or anything like that, in
+         ;; which case we don't know what to do.  The fix may be to check
+         ;; references once ITEM is compiled, as proposed at
+         ;; <https://bugs.gnu.org/29927>.
+         (return #f)))))
 
   (anym %store-monad
         entry-lookup-package (manifest-entries manifest)))
@@ -1202,6 +1208,7 @@ the entries in MANIFEST."
                              (hooks %default-profile-hooks)
                              (locales? #t)
                              (allow-collisions? #f)
+                             (relative-symlinks? #f)
                              system target)
   "Return a derivation that builds a profile (aka. 'user environment') with
 the given MANIFEST.  The profile includes additional derivations returned by
@@ -1212,6 +1219,9 @@ with a different version number.)
 
 When LOCALES? is true, the build is performed under a UTF-8 locale; this adds
 a dependency on the 'glibc-utf8-locales' package.
+
+When RELATIVE-SYMLINKS? is true, use relative file names for symlink targets.
+This is one of the things to do for the result to be relocatable.
 
 When TARGET is true, it must be a GNU triplet, and the packages in MANIFEST
 are cross-built for TARGET."
@@ -1275,6 +1285,9 @@ are cross-built for TARGET."
                                         (manifest-entries manifest))))))
 
             (build-profile #$output '#$inputs
+                           #:symlink #$(if relative-symlinks?
+                                           #~symlink-relative
+                                           #~symlink)
                            #:manifest '#$(manifest->gexp manifest)
                            #:search-paths search-paths))))
 

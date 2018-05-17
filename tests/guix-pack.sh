@@ -20,9 +20,9 @@
 # Test the `guix pack' command-line utility.
 #
 
-# A network connection is required to build %bootstrap-coreutils&co,
-# which is required to run these tests with the --bootstrap option.
-if ! guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null; then
+# The bootstrap binaries are needed to run these tests, which usually requires
+# a network connection.
+if ! guix build -q guile-bootstrap; then
     exit 77
 fi
 
@@ -86,6 +86,10 @@ guix pack --dry-run --bootstrap -f docker -S /opt/gnu=/ guile-bootstrap
 # Build a tarball pack of cross-compiled software.  Use coreutils because
 # guile-bootstrap is not intended to be cross-compiled.
 guix pack --dry-run --bootstrap --target=arm-unknown-linux-gnueabihf coreutils
+
+# Likewise, 'guix pack -R' requires a full-blown toolchain (because
+# 'glibc-bootstrap' lacks 'libc.a'), hence '--dry-run'.
+guix pack -R --dry-run --bootstrap -S /mybin=bin guile-bootstrap
 
 # Make sure package transformation options are honored.
 mkdir -p "$test_directory"

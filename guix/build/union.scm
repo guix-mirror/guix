@@ -27,7 +27,10 @@
   #:use-module (rnrs io ports)
   #:export (union-build
 
-            warn-about-collision))
+            warn-about-collision
+
+            relative-file-name
+            symlink-relative))
 
 ;;; Commentary:
 ;;;
@@ -173,5 +176,48 @@ returns #f, skip the faulty file altogether."
     (setvbuf log-port _IOLBF))
 
   (union-of-directories output (delete-duplicates inputs)))
+
+
+;;;
+;;; Relative symlinks.
+;;;
+
+(define %not-slash
+  (char-set-complement (char-set #\/)))
+
+(define (relative-file-name reference file)
+  "Given REFERENCE and FILE, both of which are absolute file names, return the
+file name of FILE relative to REFERENCE.
+
+  (relative-file-name \"/gnu/store/foo\" \"/gnu/store/bin/bar\")
+  => \"../bin/bar\"
+
+Note that this is from a purely lexical standpoint; conversely, \"..\" is
+*not* resolved lexically on POSIX in the presence of symlinks."
+  (if (and (string-prefix? "/" file) (string-prefix? "/" reference))
+      (let loop ((reference (string-tokenize reference %not-slash))
+                 (file      (string-tokenize file %not-slash)))
+        (define (finish)
+          (string-join (append (make-list (length reference) "..") file)
+                       "/"))
+
+        (match reference
+          (()
+           (finish))
+          ((head . tail)
+           (match file
+             (()
+              (finish))
+             ((head* . tail*)
+              (if (string=? head head*)
+                  (loop tail tail*)
+                  (finish)))))))
+      file))
+
+(define (symlink-relative old new)
+  "Assuming both OLD and NEW are absolute file names, make NEW a symlink to
+OLD, but using a relative file name."
+  (symlink (relative-file-name (dirname new) old)
+           new))
 
 ;;; union.scm ends here

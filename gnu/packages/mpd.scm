@@ -119,9 +119,10 @@ interfacing MPD in the C, C++ & Objective C languages.")
               ("flac" ,flac)
               ("glib" ,glib)
               ("icu4c" ,icu4c)
+              ;; The LAME decoder comes from FFmpeg, but is added here so that
+              ;; configure picks up the LAME encoder.
               ("lame" ,lame)
               ("libid3tag" ,libid3tag)
-              ("libmad" ,libmad)
               ("libmpdclient" ,libmpdclient)
               ("libsamplerate" ,libsamplerate)
               ("libsndfile" ,libsndfile)

@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,27 +23,33 @@
 (define-module (gnu packages education)
   #:use-module (ice-9 regex)
   #:use-module (gnu packages)
-  #:use-module (gnu packages qt)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages javascript)
   #:use-module (gnu packages kde-frameworks) ; extra-cmake-modules
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (guix utils)
-  #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1))
 
 (define-public gcompris
@@ -224,3 +231,65 @@ Useful support functions and an extensive progress tracker, topical lessons
 and the ability to create your own practice lessons make learning to type
 easy.")
     (license license:gpl2)))
+
+(define-public snap
+  (package
+    (name "snap")
+    (version "4.1.2.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jmoenig/Snap--Build-Your-Own-Blocks.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0cy3jhqqpmivqnfm9kmlnh3fhf3m3y4xqhikblk8vfjprh6vmcvd"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out (assoc-ref %outputs "out"))
+                (share (string-append out "/share/snap")))
+           (copy-recursively source share)
+           ;; Replace the sole minified file in the package.
+           (with-directory-excursion share
+             (delete-file "FileSaver.min.js")
+             (symlink (string-append (assoc-ref %build-inputs "js-filesaver")
+                                     "/share/javascript/FileSaver.min.js")
+                      "FileSaver.min.js"))
+           ;; Create a "snap" executable.
+           (let* ((bin (string-append out "/bin"))
+                  (script (string-append bin "/snap"))
+                  (snap (string-append share "/snap.html"))
+                  (bash (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/sh"))
+                  (xdg-open (string-append (assoc-ref %build-inputs "xdg-utils")
+                                           "/bin/xdg-open")))
+             (mkdir-p bin)
+             (call-with-output-file script
+               (lambda (port)
+                 (format port "#!~a\n~a '~a'" bash xdg-open snap)))
+             (chmod script #o555)))
+         #t)))
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("js-filesaver" ,js-filesaver)
+       ("xdg-utils" ,xdg-utils)))
+    (home-page "https://snap.berkeley.edu")
+    (synopsis "Visual, blocks based programming language")
+    (description "Snap! (formerly BYOB) is a visual, drag-and-drop
+programming language.  It is an extended reimplementation of Scratch (a
+project of the Lifelong Kindergarten Group at the MIT Media Lab) that
+allows you to Build Your Own Blocks.  It also features first class
+lists, first class procedures, and continuations.  These added
+capabilities make it suitable for a serious introduction to computer
+science for high school or college students.
+
+This package provides a @command{snap} executable calling @command{xdg-open}
+to open the application in a web browser, for offline usage.")
+    (license license:agpl3+)))

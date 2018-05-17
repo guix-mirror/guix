@@ -134,7 +134,7 @@ edges."
                      (map (lambda (destination)
                             (list "p-0.drv"
                                   (string-append
-                                   (package-full-name destination)
+                                   (package-full-name destination "-")
                                    ".drv")))
                           implicit)))))))
 

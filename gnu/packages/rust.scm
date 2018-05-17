@@ -237,8 +237,21 @@ in turn be used to build the final Rust.")
        ("llvm" ,llvm-3.9.1)
        ("openssl" ,openssl)
        ("libcurl" ,curl))) ; For "cargo"
+
     ;; rustc invokes gcc, so we need to set its search paths accordingly.
-    (native-search-paths (package-native-search-paths gcc))
+    ;; Note: duplicate its value here to cope with circular dependencies among
+    ;; modules (see <https://bugs.gnu.org/31392>).
+    (native-search-paths
+     (list (search-path-specification
+            (variable "C_INCLUDE_PATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "CPLUS_INCLUDE_PATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "LIBRARY_PATH")
+            (files '("lib" "lib64")))))
+
     (synopsis "Compiler for the Rust progamming language")
     (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")

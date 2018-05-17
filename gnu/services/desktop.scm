@@ -29,6 +29,7 @@
   #:use-module (gnu services avahi)
   #:use-module (gnu services xorg)
   #:use-module (gnu services networking)
+  #:use-module (gnu services sound)
   #:use-module ((gnu system file-systems)
                 #:select (%elogind-file-systems))
   #:use-module (gnu system shadow)
@@ -933,6 +934,8 @@ with the administrator's password."
          (ntp-service)
 
          x11-socket-directory-service
+
+         (service alsa-service-type)
 
          %base-services))
 

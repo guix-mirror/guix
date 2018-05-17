@@ -392,8 +392,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.16.7")
-(define %linux-libre-hash "145hv7paw5zd6bnkk0agxyg2a37066xhrxszbq3d03mjvi8ap117")
+(define %linux-libre-version "4.16.9")
+(define %linux-libre-hash "13v5pb30v16cn81w2gnwaa4zhxas7q3zz10igpa2rqd5fdiy3rlz")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -401,8 +401,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.39")
-(define %linux-libre-4.14-hash "0r6fydsgspnskh5n1hfrkyrlrmql635zqr44ajafmqimldc0bplz")
+(define %linux-libre-4.14-version "4.14.41")
+(define %linux-libre-4.14-hash "0qcfw4spnjlzri8bgch1j0yxsw75gjx1m9qyn3h1lk4a33gczih6")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -411,14 +411,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.98"
-                    "14mqg2hvxg4zwajwly18akyaca821sp4iz5w3xmikwndn2j8y1lw"
+  (make-linux-libre "4.9.100"
+                    "1zphlisrjzbgk7nvclbwm23kmrx7vw13w02r1va3g5lzh0rlwx71"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.131"
-                    "1phah297rxjwy22wfaqlzpbk71ddp3drma5dx3i8xv6g8vijd08x"
+  (make-linux-libre "4.4.132"
+                    "012nmbvvi8sg0iav5aibk8qx189iwqjadnr4h5jv65gzi7i79li9"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -716,7 +716,7 @@ slabtop, and skill.")
 (define-public usbutils
   (package
     (name "usbutils")
-    (version "009")
+    (version "010")
     (source
      (origin
       (method url-fetch)
@@ -724,7 +724,7 @@ slabtop, and skill.")
                           "usbutils-" version ".tar.xz"))
       (sha256
        (base32
-        "0q3iavmak2bs9xw486w4xfbjl0hbzii93ssgpr95mxmm9kjz1gwb"))))
+        "06aag4jfgsfjxk563xsp9ik9nadihmasrr37a1gb0vwqni5kdiv1"))))
     (build-system gnu-build-system)
     (inputs
      `(("libusb" ,libusb)
@@ -3268,8 +3268,51 @@ repair and easy administration.")
 from the btrfs-progs package.  It is meant to be used in initrds.")
     (license (package-license btrfs-progs))))
 
+(define-public f2fs-tools-1.7
+  (package
+    (name "f2fs-tools")
+    (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://git.kernel.org/cgit/linux/kernel/git/jaegeuk"
+                    "/f2fs-tools.git/snapshot/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1m6bn1ibq0p53m0n97il91xqgjgn2pzlz74lb5bfzassx7159m1k"))))
+
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-include (string-append out "/include")))
+               (install-file "include/f2fs_fs.h" out-include)
+               (install-file "mkfs/f2fs_format_utils.h" out-include)
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libuuid" ,util-linux)
+       ("libselinux" ,libselinux)))
+    (home-page "https://f2fs.wiki.kernel.org/")
+    (synopsis "Userland tools for f2fs")
+    (description
+     "F2FS, the Flash-Friendly File System, is a modern file system
+designed to be fast and durable on flash devices such as solid-state
+disks and SD cards.  This package provides the userland utilities.")
+    ;; The formatting utility, libf2fs and include/f2fs_fs.h is dual
+    ;; GPL2/LGPL2.1, everything else is GPL2 only. See 'COPYING'.
+    (license (list license:gpl2 license:lgpl2.1))))
+
 (define-public f2fs-tools
   (package
+    (inherit f2fs-tools-1.7)
     (name "f2fs-tools")
     (version "1.8.0")
     (source (origin
@@ -3280,23 +3323,8 @@ from the btrfs-progs package.  It is meant to be used in initrds.")
               (sha256
                (base32
                 "1bir9ladb58ijlcvrjrq1fb1xv5ys50zdjaq0yzliib0apsyrnyl"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libuuid" ,util-linux)))
-    (home-page "https://f2fs.wiki.kernel.org/")
-    (synopsis "Userland tools for f2fs")
-    (description
-     "F2FS, the Flash-Friendly File System, is a modern file system
-designed to be fast and durable on flash devices such as solid-state
-disks and SD cards.  This package provides the userland utilities.")
-    ;; The formatting utility, libf2fs and include/f2fs_fs.h is dual
-    ;; GPL2/LGPL2.1, everything else is GPL2 only. See 'COPYING'.
-    (license (list license:gpl2 license:lgpl2.1))))
+     `(("libuuid" ,util-linux)))))
 
 (define-public freefall
   (package
@@ -3493,7 +3521,7 @@ The following service daemons are also provided:
 (define-public rng-tools
   (package
     (name "rng-tools")
-    (version "6.1")
+    (version "6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nhorman/rng-tools/"
@@ -3501,7 +3529,7 @@ The following service daemons are also provided:
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00ywsknjpc9jd9kfmz2syk9l0xkiiwyx5qhl5zvhhc69v6682i31"))))
+                "0xy4qmfhvkr5z4jr9j55dn5gnajr2jccdp6n0xsxkipjcgag342j"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
@@ -4136,7 +4164,7 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.0.9")
+    (version "1.1.0")
     (source
       (origin
         (method url-fetch)
@@ -4144,7 +4172,7 @@ re-use code and to avoid re-inventing the wheel.")
                             "libnftnl-" version ".tar.bz2"))
         (sha256
          (base32
-          "0d9nkdbdck8sg6msysqyv3m9kjr9sjif5amf26dfa0g3mqjdihgy"))))
+          "0v4gywcjvv2vg4zk632al1zv3ad0lx87nshynv110l8n3fhsq3pc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

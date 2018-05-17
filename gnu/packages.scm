@@ -188,7 +188,7 @@ decreasing version order."
                             version>?)))
         (if version
             (filter (lambda (package)
-                      (string-prefix? version (package-version package)))
+                      (version-prefix? version (package-version package)))
                     matching)
             matching)))))
 

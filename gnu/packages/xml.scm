@@ -636,14 +636,14 @@ that conforms to the API of the Document Object Model.")
 (define-public perl-xml-compile-tester
   (package
     (name "perl-xml-compile-tester")
-    (version "0.90")
+    (version "0.91")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-Tester-" version ".tar.gz"))
               (sha256
                (base32
-                "1bcl8x8cyacqv9yjp97aq9qq85sy8wv78kd8c16yd9yw3by4cpp1"))))
+                "1drzwziwi96rfkh48qpw4l225mcbk8ppl2157nj92cslcpwwdk75"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
@@ -735,14 +735,14 @@ used.")
 (define-public perl-xml-compile-wsdl11
   (package
     (name "perl-xml-compile-wsdl11")
-    (version "3.06")
+    (version "3.07")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-WSDL11-" version ".tar.gz"))
               (sha256
                (base32
-                "0vbq05cpynm3jj81fw1k4nsb3wv4zngi6blvi1jhdarmh2rfg1x2"))))
+                "09ayl442hzvn97q4ghn5rz4r82dm9w3l69hixhb29h9xq9ysi7ba"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)

@@ -96,6 +96,7 @@ MODULES =					\
   guix/workers.scm				\
   guix/zlib.scm					\
   guix/build-system.scm				\
+  guix/build-system/android-ndk.scm		\
   guix/build-system/ant.scm			\
   guix/build-system/cargo.scm			\
   guix/build-system/cmake.scm			\
@@ -128,6 +129,7 @@ MODULES =					\
   guix/svn-download.scm				\
   guix/i18n.scm					\
   guix/ui.scm					\
+  guix/build/android-ndk-build-system.scm	\
   guix/build/ant-build-system.scm		\
   guix/build/download.scm			\
   guix/build/download-nar.scm			\
@@ -272,7 +274,8 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/4.4-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.4-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.1-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.1-x86_64.conf
+  gnu/packages/aux-files/linux-libre/4.1-x86_64.conf	\
+  gnu/packages/aux-files/run-in-namespace.c
 
 # Templates, examples.
 EXAMPLES =					\

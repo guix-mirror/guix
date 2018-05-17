@@ -1,0 +1,98 @@
+From 3dbdc68093e90f0ef9b77b70490d8e0b1dcfbf8f Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Sun, 17 Sep 2017 21:08:45 +0200
+Subject: [PATCH] Add ExceptionUtilsGenerator.java.
+
+A gradle task (in gradle/utils.gradle) is normally used to generate an
+ExceptionUtils class. Since gradle depends on groovy, we cannot use it, so
+we copy the code from the gradle task to a new file. Running this file then
+generates the required class.
+---
+ .../codehaus/groovy/ExceptionUtilsGenerator.java   | 75 ++++++++++++++++++++++
+ 1 file changed, 75 insertions(+)
+ create mode 100644 config/ant/src/org/codehaus/groovy/ExceptionUtilsGenerator.java
+
+diff --git a/config/ant/src/org/codehaus/groovy/ExceptionUtilsGenerator.java b/config/ant/src/org/codehaus/groovy/ExceptionUtilsGenerator.java
+new file mode 100644
+index 0000000..41f006d
+--- /dev/null
++++ b/config/ant/src/org/codehaus/groovy/ExceptionUtilsGenerator.java
+@@ -0,0 +1,75 @@
++package org.codehaus.groovy;
++
++import org.objectweb.asm.*;
++
++import java.io.BufferedOutputStream;
++import java.io.File;
++import java.io.FileOutputStream;
++import java.io.IOException;
++import java.util.logging.Logger;
++
++public class ExceptionUtilsGenerator implements Opcodes {
++    private final static Logger LOGGER = Logger.getLogger(ExceptionUtilsGenerator.class.getName());
++
++    public static void main(String... args) {
++        if (args==null || args.length==0) {
++            throw new IllegalArgumentException("You must specify at least one file");
++        }
++
++        ClassWriter cw = new ClassWriter(0);
++        MethodVisitor mv;
++
++        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, "org/codehaus/groovy/runtime/ExceptionUtils", null, "java/lang/Object", null);
++
++        cw.visitSource("ExceptionUtils.java", null);
++
++        mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
++        mv.visitCode();
++        Label l0 = new Label();
++        mv.visitLabel(l0);
++        mv.visitLineNumber(18, l0);
++        mv.visitVarInsn(ALOAD, 0);
++        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
++        mv.visitInsn(RETURN);
++        Label l1 = new Label();
++        mv.visitLabel(l1);
++        mv.visitLocalVariable("this", "Lorg/codehaus/groovy/runtime/ExceptionUtils;", null, l0, l1, 0);
++        mv.visitMaxs(1, 1);
++        mv.visitEnd();
++
++        mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "sneakyThrow", "(Ljava/lang/Throwable;)V", null, null);
++        mv.visitCode();
++        Label l2 = new Label();
++        mv.visitLabel(l2);
++        mv.visitLineNumber(20, l2);
++        mv.visitVarInsn(ALOAD, 0);
++        mv.visitInsn(ATHROW);
++        Label l3 = new Label();
++        mv.visitLabel(l3);
++        mv.visitLocalVariable("e", "Ljava/lang/Throwable;", null, l2, l3, 0);
++        mv.visitMaxs(1, 1);
++        mv.visitEnd();
++
++        cw.visitEnd();
++
++        LOGGER.info("Generating ExceptionUtils");
++        byte[] bytes = cw.toByteArray();
++        for (String classFilePath : args) {
++            File classFile = new File(classFilePath);
++            if (classFile.getParentFile().exists() || classFile.getParentFile().mkdirs()) {
++                try {
++                    if (classFile.exists()) {
++                        classFile.delete();
++                    }
++                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(classFile));
++                    bos.write(bytes);
++                    bos.close();
++                } catch (IOException e) {
++                    LOGGER.warning("Unable to write file "+classFile);
++                }
++            } else {
++                LOGGER.warning("Unable to create directory "+classFile.getParentFile());
++            }
++        }
++	}
++}
+-- 
+2.14.1
+

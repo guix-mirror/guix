@@ -52,7 +52,7 @@
 (define-public dash
   (package
     (name "dash")
-    (version "0.5.9.1")
+    (version "0.5.10.1")
     (source
      (origin
        (method url-fetch)
@@ -60,7 +60,7 @@
                            "dash-" version ".tar.gz"))
        (sha256
         (base32
-         "0ng695mq5ngg43h7ljhxvbjm46ym3nayj6ssn47d2gm9fbm5pkay"))
+         "1bl4brz5vy07lrss54glp4vfca3q8d73hyc87sqdk99f76z95b6s"))
        (modules '((guix build utils)))
        (snippet
         '(begin

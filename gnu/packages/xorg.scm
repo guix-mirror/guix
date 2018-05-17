@@ -5899,7 +5899,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.2.6")
+    (version "2.3")
     (source
      (origin
        (method url-fetch)
@@ -5907,7 +5907,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1zyynghhzjbgnmzcibm17wpj9f7jy31d7dr373li8cwg2yl2swyz"))))
+         "0kq0ambpy8r7m3wxdp79cgxgnl9yfmr19lv88f617gnv0sp0aarp"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)
@@ -6000,15 +6000,15 @@ X11 servers, Windows, or macOS.")
 (define-public uim
   (package
     (name "uim")
-    (version "1.8.6")
+    (version "1.8.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/uim/uim/releases/download/uim-"
+       (uri (string-append "https://github.com/uim/uim/releases/download/"
                            version "/uim-" version ".tar.bz2"))
        (sha256
         (base32
-         "0pr3rfqpxha8p6cxzdjsxbbmmr76riklzw36f68phd1zqw1sh7kv"))))
+         "1p7sl0js47ja4glmax93ci59h02ipqw3wxkh4f1qgaz5qjy9nn9l"))))
     (build-system gnu-build-system)
     (inputs
      `(("anthy" ,anthy)

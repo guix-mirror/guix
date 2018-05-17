@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,7 @@
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
+  #:re-export (symlink-relative)                  ;for convenience
   #:export (ensure-writable-directory
             build-profile))
 
@@ -129,12 +130,15 @@ instead make DIRECTORY a \"real\" directory containing symlinks."
             (apply throw args))))))
 
 (define* (build-profile output inputs
-                        #:key manifest search-paths)
-  "Build a user profile from INPUTS in directory OUTPUT.  Write MANIFEST, an
-sexp, to OUTPUT/manifest.  Create OUTPUT/etc/profile with Bash definitions for
--all the variables listed in SEARCH-PATHS."
+                        #:key manifest search-paths
+                        (symlink symlink))
+  "Build a user profile from INPUTS in directory OUTPUT, using SYMLINK to
+create symlinks.  Write MANIFEST, an sexp, to OUTPUT/manifest.  Create
+OUTPUT/etc/profile with Bash definitions for -all the variables listed in
+SEARCH-PATHS."
   ;; Make the symlinks.
   (union-build output inputs
+               #:symlink symlink
                #:log-port (%make-void-port "w"))
 
   ;; Store meta-data.

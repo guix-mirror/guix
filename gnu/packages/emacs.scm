@@ -18,7 +18,7 @@
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
@@ -105,6 +105,7 @@
   #:use-module (gnu packages gd)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages password-utils)
+  #:use-module (gnu packages xdisorg)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -4731,6 +4732,29 @@ used for reverse direction.")
 distribution, primarily targeting Clojure users")
     (license license:gpl3+)))
 
+(define-public emacs-orgalist
+  (package
+    (name "emacs-orgalist")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "orgalist-" version ".el"))
+       (sha256
+        (base32
+         "13dl0l727vlny3y88gqpngcy90ly5r719s1pbmkva5gmcryb68xr"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/orgalist.html")
+    (synopsis "Manage Org-like lists in non-Org buffers")
+    (description "Write Org mode's plain lists in non-Org buffers.  More
+specifically, Orgalist supports the syntax of Org mode for numbered,
+unnumbered, description items, checkboxes, and counter cookies.
+
+The library also implements radio lists, i.e., lists written in Org
+syntax later translated into the host format, e.g., LaTeX or HTML.")
+    (license license:gpl3+)))
+
 (define-public emacs-writegood-mode
   (package
     (name "emacs-writegood-mode")
@@ -4777,35 +4801,35 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.1.11")
+    (version "9.1.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0i27g5qbkfqbxhgiz917pjwkxg3rwid99d0ickwx43bzq0zi7c1m"))))
+                "1vx0n32gvrgy2bl2b4pvxf00cywxwm57gi46f2b2zlrnmd5n85pr"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
-lists, and project planning with a fast and effective plain-text system.  It
-also is an authoring system with unique support for literate programming and
-reproducible research.")
+lists, and project planning with a fast and effective lightweight markup
+language.  It also is an authoring system with unique support for literate
+programming and reproducible research.")
     (license license:gpl3+)))
 
 (define-public emacs-org-contrib
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20180423")
+    (version "20180507")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   version ".tar"))
               (sha256
                (base32
-                "1aggvdy74q8p79xyc19zring5gjvlzp6lbsq8ar319zkmcjrapqd"))))
+                "190iwjpdjrhg7gl2d4bri2y0y679vlrwd841r6dvhza0yy338d2d"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -8359,23 +8383,34 @@ arXiv, Google Scholar, Library of Congress, etc.
       (license license:gpl3+))))
 
 (define-public emacs-ewmctrl
-  (let ((commit "3d0217c4d6cdb5c308b6cb4293574f470d4faacf")
-        (revision "1"))
+  (let ((commit "3d0217c4d6cdb5c308b6cb4293574f470d4faacf"))
     (package
       (name "emacs-ewmctrl")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.1" "1" commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/flexibeast/ewmctrl.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0ilwvx0qryv3v6xf0gxqwnfm6pf96gxap8h9g3f6z6lk9ff4n1wi"))))
       (build-system emacs-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-ewmctrl
+             ;; This build phase makes sure ‘ewmctrl’ looks
+             ;; for ‘wmctrl’ in the right place.
+             (lambda _
+               (let ((file "ewmctrl.el"))
+                 (chmod file #o644)
+                 (emacs-substitute-sexps file
+                   ("(defcustom ewmctrl-wmctrl-path" (which "wmctrl")))))))))
+      (inputs
+       `(("wmctrl" ,wmctrl)))
       (home-page "https://github.com/flexibeast/ewmctrl")
       (synopsis "Emacs interface to @code{wmctrl}")
       (description "@code{ewmctrl} provides an Emacs interface to
@@ -10416,3 +10451,27 @@ with absolutely no stored indexes (tags) or persistent background processes.
 Dumb Jump performs best with The Silver Searcher @command{ag} or ripgrep
 @command{rg} installed.")
     (license license:gpl3+)))
+
+(define-public emacs-dts-mode
+  (let ((commit "9ee0854446dcc6c53d2b8d2941051768dba50344")
+        (revision "1"))
+    (package
+      (name "emacs-dts-mode")
+      (version (string-append "0.1.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/bgamari/dts-mode.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1k8lljdbc90nd29xrhdrsscxavzdq532wq2mg7ljc94krj7538b1"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/bgamari/dts-mode.git")
+      (synopsis "Emacs minor mode for editing device tree files")
+      (description
+       "This package provides an Emacs minor mode for highlighting
+device tree files.")
+      (license license:gpl3+))))

@@ -17,6 +17,8 @@
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +68,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages networking)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -1569,6 +1572,9 @@ provides access to that interface and its types from the Scheme level.")
      '(#:configure-flags
        (list (string-append
               "--with-guile-site-dir=" %output "/share/guile/site/2.2"))
+       #:make-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib:"
+                            (assoc-ref %build-inputs "guile-dbd-sqlite3") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'patch-extension-path
@@ -1579,6 +1585,8 @@ provides access to that interface and its types from the Scheme level.")
                     (ext     (string-append out "/lib/libguile-dbi")))
                (substitute* dbi.scm (("libguile-dbi") ext))
                #t))))))
+    (inputs
+     `(("guile-dbd-sqlite3" ,guile-dbd-sqlite3))) ; only shared library, no scheme files
     (propagated-inputs
      `(("guile" ,guile-2.2)))
     (synopsis "Guile database abstraction layer")
@@ -1589,6 +1597,15 @@ SQL databases.  Database programming with guile-dbi is generic in that the same
 programming interface is presented regardless of which database system is used.
 It currently supports MySQL, Postgres and SQLite3.")
     (license license:gpl2+)))
+
+(define guile-dbi-bootstrap
+  (package
+    (inherit guile-dbi)
+    (name "guile-dbi-bootstrap")
+    (inputs '())
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-dbi)
+       ((#:make-flags _) '(list))))))
 
 (define-public guile-dbd-sqlite3
   (package
@@ -1604,12 +1621,11 @@ It currently supports MySQL, Postgres and SQLite3.")
                 "0rg71jchxd2y8x496s8zmfmikr5g8zxi8zv2ar3f7a23pph92iw2"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("guile-dbi-bootstrap" ,guile-dbi-bootstrap))) ; only required for headers
     (inputs
      `(("sqlite" ,sqlite)
        ("zlib" ,(@ (gnu packages compression) zlib))))
-    (propagated-inputs
-     `(("guile-dbi" ,guile-dbi)))
     (synopsis "Guile DBI driver for SQLite")
     (home-page "https://github.com/jkalbhenn/guile-dbd-sqlite3")
     (description
@@ -2108,5 +2124,94 @@ It has a nice, simple s-expression based syntax.")
     (description
      "Guile-colorized provides you with a colorized REPL for GNU Guile.")
     (license license:gpl3+)))
+
+(define-public guile-simple-zmq
+  (let ((commit "d76657aeb1cd10ef8136edc06bb90999914c7c3c")
+        (revision "0"))
+    (package
+      (name "guile-simple-zmq")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jerry40/guile-simple-zmq")
+               (commit commit)))
+         (sha256
+          (base32
+           "1w73dy5gpyv33jn34dqlkqpwh9w4y8wm6hgvbpb3wbp6xsa2mk4z"))
+         (file-name (git-file-name name version))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils)
+                        (srfi srfi-26)
+                        (ice-9 match)
+                        (ice-9 popen)
+                        (ice-9 rdelim))
+
+           (let* ((out (assoc-ref %outputs "out"))
+                  (guile (assoc-ref %build-inputs "guile"))
+                  (effective (read-line
+                              (open-pipe* OPEN_READ
+                                          (string-append guile "/bin/guile")
+                                          "-c" "(display (effective-version))")))
+                  (module-dir (string-append out "/share/guile/site/"
+                                             effective))
+                  (go-dir     (string-append out "/lib/guile/"
+                                             effective "/site-ccache/"))
+                  (source     (string-append (assoc-ref %build-inputs "source")
+                                             "/src"))
+                  (scm-file "simple-zmq.scm")
+                  (guild (string-append (assoc-ref %build-inputs "guile")
+                                        "/bin/guild"))
+                  (zmq  (assoc-ref %build-inputs "zeromq"))
+                  (deps (list zmq))
+                  (path (string-join
+                         (map (cut string-append <>
+                                   "/lib/")
+                              deps)
+                         ":")))
+             ;; Make installation directories.
+             (mkdir-p module-dir)
+             (mkdir-p go-dir)
+
+             ;; Compile .scm files and install.
+             (chdir source)
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             (for-each (lambda (file)
+                         (let* ((dest-file (string-append module-dir "/"
+                                                          file))
+                                (go-file (match (string-split file #\.)
+                                           ((base _)
+                                            (string-append go-dir "/"
+                                                           base ".go")))))
+                           ;; Install source module.
+                           (copy-file file dest-file)
+                           (substitute* dest-file
+                             (("\\(dynamic-link \"libzmq\"\\)")
+                              (format #f "(dynamic-link \"~a/lib/libzmq.so\")"
+                                      (assoc-ref %build-inputs "zeromq"))))
+
+                           ;; Install and compile module.
+                           (unless (zero? (system* guild "compile"
+                                                   "-L" source
+                                                   "-o" go-file
+                                                   dest-file))
+                             (error (format #f "Failed to compile ~s to ~s!"
+                                            file go-file)))))
+                       (list scm-file))
+             #t))))
+      (propagated-inputs
+       `(("guile" ,guile-2.2)
+         ("zeromq" ,zeromq)))
+      (home-page "https://github.com/jerry40/guile-simple-zmq")
+      (synopsis "Guile wrapper over ZeroMQ library")
+      (description
+       "This package provides a Guile programming interface to the ZeroMQ
+messaging library.")
+      (license license:gpl3+))))
 
 ;;; guile.scm ends here

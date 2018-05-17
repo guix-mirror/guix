@@ -2088,7 +2088,7 @@ accurately delineate genomic rearrangements throughout the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.9.21")
+    (version "0.9.22")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2097,7 +2097,7 @@ accurately delineate genomic rearrangements throughout the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1cf98vcsiwcv3c4apg50w1240v1mpw0zln1sdw3g692dqa4y041z"))))
+                "0adp87r9ak63frdrdmrdfhsn6g0jnnyq1lr2wibvqbxcl37iir9m"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -11151,25 +11151,22 @@ with narrow binding events such as transcription factor ChIP-seq.")
 (define-public trim-galore
   (package
     (name "trim-galore")
-    (version "0.4.2")
+    (version "0.4.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://www.bioinformatics.babraham.ac.uk/"
-                           "projects/trim_galore/trim_galore_v"
-                           version ".zip"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FelixKrueger/TrimGalore.git")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "0b9qdxi4521gsrjvbhgky8g7kry9b5nx3byzaxkgxz7p4k8bn1mn"))))
+         "0x5892l48c816pf00wmnz5vq0zq6170d3xc8zrxncd4jcz7h1p71"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         ;; The archive contains plain files.
-         (replace 'unpack
-           (lambda* (#:key source #:allow-other-keys)
-             (zero? (system* "unzip" source))))
          (delete 'configure)
          (delete 'build)
          (add-after 'unpack 'hardcode-tool-references
@@ -11581,47 +11578,62 @@ Browser.")
 (define-public bismark
   (package
     (name "bismark")
-    (version "0.16.3")
+    (version "0.19.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/FelixKrueger/Bismark/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FelixKrueger/Bismark.git")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "1204i0pa02ll2jn5pnxypkclnskvv7a2nwh5nxhagmhxk9wfv9sq"))))
+         "0yb5l36slwg02fp4b1jdlplgljcsxgqfzvzihzdnphd87dghcc84"))
+       (snippet
+        '(begin
+           ;; highcharts.js is non-free software.  The code is available under
+           ;; CC-BY-NC or proprietary licenses only.
+           (delete-file "bismark_sitrep/highcharts.js")
+           #t))))
     (build-system perl-build-system)
     (arguments
-     `(#:tests? #f ; there are no tests
+     `(#:tests? #f                      ; there are no tests
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'build)
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((bin (string-append (assoc-ref outputs "out")
-                                       "/bin"))
-                   (docdir  (string-append (assoc-ref outputs "out")
-                                           "/share/doc/bismark"))
-                   (docs    '("Bismark_User_Guide.pdf"
-                              "RELEASE_NOTES.txt"))
-                   (scripts '("bismark"
-                              "bismark_genome_preparation"
-                              "bismark_methylation_extractor"
-                              "bismark2bedGraph"
-                              "bismark2report"
-                              "coverage2cytosine"
-                              "deduplicate_bismark"
-                              "bismark_sitrep.tpl"
-                              "bam2nuc"
-                              "bismark2summary")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share   (string-append out "/share/bismark"))
+                    (docdir  (string-append out "/share/doc/bismark"))
+                    (docs    '("Docs/Bismark_User_Guide.html"))
+                    (scripts '("bismark"
+                               "bismark_genome_preparation"
+                               "bismark_methylation_extractor"
+                               "bismark2bedGraph"
+                               "bismark2report"
+                               "coverage2cytosine"
+                               "deduplicate_bismark"
+                               "filter_non_conversion"
+                               "bam2nuc"
+                               "bismark2summary")))
+               (mkdir-p share)
                (mkdir-p docdir)
                (mkdir-p bin)
                (for-each (lambda (file) (install-file file bin))
                          scripts)
                (for-each (lambda (file) (install-file file docdir))
                          docs)
+               (copy-recursively "Docs/Images" (string-append docdir "/Images"))
+
+               (substitute* "bismark2report"
+                 (("\\$RealBin/bismark_sitrep")
+                  (string-append share "/bismark_sitrep")))
+               (copy-recursively "bismark_sitrep"
+                                 (string-append share "/bismark_sitrep"))
+
                ;; Fix references to gunzip
                (substitute* (map (lambda (file)
                                    (string-append bin "/" file))

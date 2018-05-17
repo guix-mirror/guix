@@ -32,6 +32,8 @@
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (guix derivations)
+  #:use-module (guix search-paths)
+  #:use-module (guix build-system gnu)
   #:use-module (guix scripts build)
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
@@ -100,11 +102,14 @@ with a properly initialized store database.
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
   (define build
-    (with-imported-modules '((guix build utils)
-                             (guix build store-copy)
-                             (gnu build install))
+    (with-imported-modules (source-module-closure
+                            '((guix build utils)
+                              (guix build union)
+                              (guix build store-copy)
+                              (gnu build install)))
       #~(begin
           (use-modules (guix build utils)
+                       ((guix build union) #:select (relative-file-name))
                        (gnu build install)
                        (srfi srfi-1)
                        (srfi srfi-26)
@@ -117,9 +122,17 @@ added to the pack."
             ;; parent directories.
             (match-lambda
               ((source '-> target)
-               (let ((target (string-append #$profile "/" target)))
-                 `((directory ,(dirname source))
-                   (,source -> ,target))))))
+               (let ((target (string-append #$profile "/" target))
+                     (parent (dirname source)))
+                 ;; Never add a 'directory' directive for "/" so as to
+                 ;; preserve its ownnership when extracting the archive (see
+                 ;; below), and also because this would lead to adding the
+                 ;; same entries twice in the tarball.
+                 `(,@(if (string=? parent "/")
+                         '()
+                         `((directory ,parent)))
+                   (,source
+                    -> ,(relative-file-name parent target)))))))
 
           (define directives
             ;; Fully-qualified symlinks.
@@ -140,9 +153,11 @@ added to the pack."
                                        "")
                                  #$tar "/bin"))
 
-          ;; Note: there is not much to gain here with deduplication and
-          ;; there is the overhead of the '.links' directory, so turn it
-          ;; off.
+          ;; Note: there is not much to gain here with deduplication and there
+          ;; is the overhead of the '.links' directory, so turn it off.
+          ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
+          ;; with hard links:
+          ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
           (populate-single-profile-directory %root
                                              #:profile #$profile
                                              #:closure "profile"
@@ -189,6 +204,8 @@ added to the pack."
                             (filter-map (match-lambda
                                           (('directory directory)
                                            (string-append "." directory))
+                                          ((source '-> _)
+                                           (string-append "." source))
                                           (_ #f))
                                         directives)))))))))
 
@@ -217,11 +234,13 @@ the image."
       (('gnu rest ...) #t)
       (rest #f)))
 
+  (define defmod 'define-module)                  ;trick Geiser
+
   (define config
     ;; (guix config) module for consumption by (guix gcrypt).
     (scheme-file "gcrypt-config.scm"
                  #~(begin
-                     (define-module (guix config)
+                     (#$defmod (guix config)
                        #:export (%libgcrypt))
 
                      ;; XXX: Work around <http://bugs.gnu.org/15602>.
@@ -267,6 +286,165 @@ the image."
 
 
 ;;;
+;;; Compiling C programs.
+;;;
+
+;; A C compiler.  That lowers to a single program that can be passed typical C
+;; compiler flags, and it makes sure the whole toolchain is available.
+(define-record-type <c-compiler>
+  (%c-compiler toolchain guile)
+  c-compiler?
+  (toolchain c-compiler-toolchain)
+  (guile     c-compiler-guile))
+
+(define* (c-compiler #:optional inputs
+                     #:key (guile (default-guile)))
+  (%c-compiler inputs guile))
+
+(define (bootstrap-c-compiler)
+  "Return the C compiler that uses the bootstrap toolchain.  This is used only
+by '--bootstrap', for testing purposes."
+  (define bootstrap-toolchain
+    (list (first (assoc-ref %bootstrap-inputs "gcc"))
+          (first (assoc-ref %bootstrap-inputs "binutils"))
+          (first (assoc-ref %bootstrap-inputs "libc"))))
+
+  (c-compiler bootstrap-toolchain
+              #:guile %bootstrap-guile))
+
+(define-gexp-compiler (c-compiler-compiler (compiler <c-compiler>) system target)
+  "Lower COMPILER to a single script that does the right thing."
+  (define toolchain
+    (or (c-compiler-toolchain compiler)
+        (list (first (assoc-ref (standard-packages) "gcc"))
+              (first (assoc-ref (standard-packages) "ld-wrapper"))
+              (first (assoc-ref (standard-packages) "binutils"))
+              (first (assoc-ref (standard-packages) "libc"))
+              (gexp-input (first (assoc-ref (standard-packages) "libc"))
+                          "static"))))
+
+  (define inputs
+    (match (append-map package-propagated-inputs
+                       (filter package? toolchain))
+      (((labels things . _) ...)
+       (append toolchain things))))
+
+  (define search-paths
+    (cons $PATH
+          (append-map package-native-search-paths
+                      (filter package? inputs))))
+
+  (define run
+    (with-imported-modules (source-module-closure
+                            '((guix build utils)
+                              (guix search-paths)))
+      #~(begin
+          (use-modules (guix build utils) (guix search-paths)
+                       (ice-9 match))
+
+          (define (output-file args)
+            (let loop ((args args))
+              (match args
+                (() "a.out")
+                (("-o" file _ ...) file)
+                ((head rest ...) (loop rest)))))
+
+          (set-search-paths (map sexp->search-path-specification
+                                 '#$(map search-path-specification->sexp
+                                         search-paths))
+                            '#$inputs)
+
+          (let ((output (output-file (command-line))))
+            (apply invoke "gcc" (cdr (command-line)))
+            (invoke "strip" output)))))
+
+  (when target
+    ;; TODO: Yep, we'll have to do it someday!
+    (leave (G_ "cross-compilation not implemented here;
+please email '~a'~%")
+           (@ (guix config) %guix-bug-report-address)))
+
+  (gexp->script "c-compiler" run
+                #:guile (c-compiler-guile compiler)))
+
+
+;;;
+;;; Wrapped package.
+;;;
+
+(define* (wrapped-package package
+                          #:optional (compiler (c-compiler)))
+  (define runner
+    (local-file (search-auxiliary-file "run-in-namespace.c")))
+
+  (define build
+    (with-imported-modules (source-module-closure
+                            '((guix build utils)
+                              (guix build union)))
+      #~(begin
+          (use-modules (guix build utils)
+                       ((guix build union) #:select (relative-file-name))
+                       (ice-9 ftw)
+                       (ice-9 match))
+
+          (define (strip-store-prefix file)
+            ;; Given a file name like "/gnu/store/…-foo-1.2/bin/foo", return
+            ;; "/bin/foo".
+            (let* ((len  (string-length (%store-directory)))
+                   (base (string-drop file (+ 1 len))))
+              (match (string-index base #\/)
+                (#f    base)
+                (index (string-drop base index)))))
+
+          (define (build-wrapper program)
+            ;; Build a user-namespace wrapper for PROGRAM.
+            (format #t "building wrapper for '~a'...~%" program)
+            (copy-file #$runner "run.c")
+
+            (substitute* "run.c"
+              (("@WRAPPED_PROGRAM@") program)
+              (("@STORE_DIRECTORY@") (%store-directory)))
+
+            (let* ((base   (strip-store-prefix program))
+                   (result (string-append #$output "/" base)))
+              (mkdir-p (dirname result))
+              (invoke #$compiler "-std=gnu99" "-static" "-Os" "-g0" "-Wall"
+                      "run.c" "-o" result)
+              (delete-file "run.c")))
+
+          (setvbuf (current-output-port)
+                   (cond-expand (guile-2.2 'line)
+                                (else      _IOLBF)))
+
+          ;; Link the top-level files of PACKAGE so that search paths are
+          ;; properly defined in PROFILE/etc/profile.
+          (mkdir #$output)
+          (for-each (lambda (file)
+                      (unless (member file '("." ".." "bin" "sbin" "libexec"))
+                        (let ((file* (string-append #$package "/" file)))
+                          (symlink (relative-file-name #$output file*)
+                                   (string-append #$output "/" file)))))
+                    (scandir #$package))
+
+          (for-each build-wrapper
+                    (append (find-files #$(file-append package "/bin"))
+                            (find-files #$(file-append package "/sbin"))
+                            (find-files #$(file-append package "/libexec")))))))
+
+  (computed-file (string-append (package-full-name package "-") "R")
+                 build))
+
+(define (map-manifest-entries proc manifest)
+  "Apply PROC to all the entries of MANIFEST and return a new manifest."
+  (make-manifest
+   (map (lambda (entry)
+          (manifest-entry
+            (inherit entry)
+            (item (proc (manifest-entry-item entry)))))
+        (manifest-entries manifest))))
+
+
+;;;
 ;;; Command-line options.
 ;;;
 
@@ -302,6 +480,9 @@ the image."
          (option '(#\f "format") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'format (string->symbol arg) result)))
+         (option '(#\R "relocatable") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'relocatable? #t result)))
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'expression arg result)))
@@ -353,6 +534,8 @@ Create a bundle of PACKAGE.\n"))
   (newline)
   (display (G_ "
   -f, --format=FORMAT    build a pack in the given FORMAT"))
+  (display (G_ "
+  -R, --relocatable      produce relocatable executables"))
   (display (G_ "
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
   (display (G_ "
@@ -417,6 +600,9 @@ Create a bundle of PACKAGE.\n"))
 
   (with-error-handling
     (with-store store
+      ;; Set the build options before we do anything else.
+      (set-build-options-from-command-line store opts)
+
       (parameterize ((%graft? (assoc-ref opts 'graft?))
                      (%guile-for-build (package-derivation
                                         store
@@ -425,7 +611,13 @@ Create a bundle of PACKAGE.\n"))
                                             (canonical-package guile-2.2))
                                         #:graft? (assoc-ref opts 'graft?))))
         (let* ((dry-run?    (assoc-ref opts 'dry-run?))
-               (manifest    (manifest-from-args store opts))
+               (relocatable? (assoc-ref opts 'relocatable?))
+               (manifest    (let ((manifest (manifest-from-args store opts)))
+                              ;; Note: We cannot honor '--bootstrap' here because
+                              ;; 'glibc-bootstrap' lacks 'libc.a'.
+                              (if relocatable?
+                                  (map-manifest-entries wrapped-package manifest)
+                                  manifest)))
                (pack-format (assoc-ref opts 'format))
                (name        (string-append (symbol->string pack-format)
                                            "-pack"))
@@ -444,12 +636,10 @@ Create a bundle of PACKAGE.\n"))
                                (leave (G_ "~a: unknown pack format")
                                       format))))
                (localstatedir? (assoc-ref opts 'localstatedir?)))
-          ;; Set the build options before we do anything else.
-          (set-build-options-from-command-line store opts)
-
           (run-with-store store
             (mlet* %store-monad ((profile (profile-derivation
                                            manifest
+                                           #:relative-symlinks? relocatable?
                                            #:hooks (if bootstrap?
                                                        '()
                                                        %default-profile-hooks)

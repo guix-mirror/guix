@@ -132,6 +132,7 @@ then
 
 	for file in "$bootstrap_directory"/guile-*
 	do
+	    [ -f "$file" ] &&					\
 	    "@abs_top_builddir@/pre-inst-env"			\
 		guix download "file://$file" > /dev/null
 	done

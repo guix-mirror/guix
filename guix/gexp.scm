@@ -664,7 +664,9 @@ The other arguments are as for 'derivation'."
                                      (imported-modules %modules
                                                        #:system system
                                                        #:module-path module-path
-                                                       #:guile guile-for-build)
+                                                       #:guile guile-for-build
+                                                       #:deprecation-warnings
+                                                       deprecation-warnings)
                                      (return #f)))
                        (compiled (if (pair? %modules)
                                      (compiled-modules %modules
@@ -974,7 +976,15 @@ environment."
 (define* (imported-files files
                          #:key (name "file-import")
                          (system (%current-system))
-                         (guile (%guile-for-build)))
+                         (guile (%guile-for-build))
+
+                         ;; XXX: The only reason we have
+                         ;; #:deprecation-warnings is because (guix build
+                         ;; utils), which we use here, relies on _IO*, which
+                         ;; is deprecated in 2.2.  On the next full-rebuild
+                         ;; cycle, we should disable such warnings
+                         ;; unconditionally.
+                         (deprecation-warnings #f))
   "Return a derivation that imports FILES into STORE.  FILES must be a list
 of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
 resulting store path.  FILE can be either a file name, or a file-like object,
@@ -1010,13 +1020,25 @@ as returned by 'local-file' for example."
     (gexp->derivation name build
                       #:system system
                       #:guile-for-build guile
-                      #:local-build? #t)))
+                      #:local-build? #t
+
+                      ;; TODO: On the next rebuild cycle, set to "no"
+                      ;; unconditionally.
+                      #:env-vars
+                      (case deprecation-warnings
+                        ((#f)
+                         '(("GUILE_WARN_DEPRECATED" . "no")))
+                        ((detailed)
+                         '(("GUILE_WARN_DEPRECATED" . "detailed")))
+                        (else
+                         '())))))
 
 (define* (imported-modules modules
                            #:key (name "module-import")
                            (system (%current-system))
                            (guile (%guile-for-build))
-                           (module-path %load-path))
+                           (module-path %load-path)
+                           (deprecation-warnings #f))
   "Return a derivation that contains the source files of MODULES, a list of
 module names such as `(ice-9 q)'.  All of MODULES must be either names of
 modules to be found in the MODULE-PATH search path, or a module name followed
@@ -1041,7 +1063,8 @@ last one is created from the given <scheme-file> object."
                                    (cons f (search-path* module-path f))))))
                              modules)))
     (imported-files files #:name name #:system system
-                    #:guile guile)))
+                    #:guile guile
+                    #:deprecation-warnings deprecation-warnings)))
 
 (define* (compiled-modules modules
                            #:key (name "module-import-compiled")
@@ -1058,7 +1081,9 @@ they can refer to each other."
                                                  #:system system
                                                  #:guile guile
                                                  #:module-path
-                                                 module-path)))
+                                                 module-path
+                                                 #:deprecation-warnings
+                                                 deprecation-warnings)))
     (define build
       (gexp
        (begin

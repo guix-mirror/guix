@@ -338,7 +338,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2018.01")
+    (version "2018.05")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -346,10 +346,10 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "1nidnnjprgxdhiiz7gmaj8cgcf52l5gbv64cmzjq4gmkjirmk3wk"))))
+                "0j60p4iskzb4hamxgykc6gd7xchxfka1zwh8hv08r9rrc4m3r8ad"))))
     (native-inputs
      `(("bc" ,bc)
-       ;("dtc" ,dtc) ; they have their own incompatible copy.
+       ("dtc" ,dtc)
        ("python-2" ,python-2)
        ("swig" ,swig)))
     (build-system  gnu-build-system)
@@ -392,15 +392,17 @@ also initializes the boards (RAM etc).")
                  (if (file-exists? (string-append "configs/" config-name))
                      (zero? (apply system* "make" `(,@make-flags ,config-name)))
                      (begin
-                       (display "Invalid board name. Valid board names are:")
-                       (let ((suffix-len (string-length "_defconfig")))
-                         (scandir "configs"
-                                  (lambda (file-name)
-                                    (when (string-suffix? "_defconfig" file-name)
-                                      (format #t
-                                              "- ~A\n"
-                                              (string-drop-right file-name
-                                                                 suffix-len))))))
+                       (display "Invalid board name. Valid board names are:"
+                                (current-error-port))
+                       (let ((suffix-len (string-length "_defconfig"))
+                             (entries (scandir "configs")))
+                         (for-each (lambda (file-name)
+                                     (when (string-suffix? "_defconfig" file-name)
+                                       (format (current-error-port)
+                                               "- ~A\n"
+                                               (string-drop-right file-name
+                                                                  suffix-len))))
+                                   (sort entries string<)))
                        #f)))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
@@ -411,6 +413,8 @@ also initializes the boards (RAM etc).")
                                     (find-files "." "^(MLO|SPL)$"))))
                  (mkdir-p libexec)
                  (install-file ".config" libexec)
+                 ;; Useful for "qemu -kernel".
+                 (install-file "u-boot" libexec)
                  (for-each
                   (lambda (file)
                     (let ((target-file (string-append libexec "/" file)))
@@ -440,9 +444,10 @@ also initializes the boards (RAM etc).")
                   (let ((bl31 (string-append (assoc-ref inputs "firmware")
                                              "/bl31.bin")))
                     (setenv "BL31" bl31)
-                    ;; This is necessary while we're using the bundled dtc.
-                    (setenv "PATH" (string-append (getenv "PATH") ":"
-                                                  "scripts/dtc")))
+                    ;; This is necessary when we're using the bundled dtc.
+                    ;(setenv "PATH" (string-append (getenv "PATH") ":"
+                    ;                              "scripts/dtc"))
+                    )
                   #t))))))
       (native-inputs
        `(("firmware" ,arm-trusted-firmware-pine64-plus)
@@ -468,6 +473,12 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-mx6cuboxi
   (make-u-boot-package "mx6cuboxi" "arm-linux-gnueabihf"))
+
+(define-public u-boot-novena
+  (make-u-boot-package "novena" "arm-linux-gnueabihf"))
+
+(define-public u-boot-cubieboard
+  (make-u-boot-package "Cubieboard" "arm-linux-gnueabihf"))
 
 (define-public vboot-utils
   (package
