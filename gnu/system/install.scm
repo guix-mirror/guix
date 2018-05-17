@@ -52,6 +52,7 @@
             mx6cuboxi-installation-os
             nintendo-nes-classic-edition-installation-os
             novena-installation-os
+            pine64-plus-installation-os
             wandboard-installation-os))
 
 ;;; Commentary:
@@ -445,6 +446,11 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
 (define nintendo-nes-classic-edition-installation-os
   (embedded-installation-os u-boot-nintendo-nes-classic-edition-bootloader
                             "/dev/mmcblk0" ; SD card (solder it yourself)
+                            "ttyS0"))
+
+(define pine64-plus-installation-os
+  (embedded-installation-os u-boot-pine64-plus-bootloader
+                            "/dev/mmcblk0" ; SD card storage
                             "ttyS0"))
 
 (define wandboard-installation-os
