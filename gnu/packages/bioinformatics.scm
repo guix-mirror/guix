@@ -9085,6 +9085,19 @@ replacement for strverscmp.")
        ("python-numpy" ,python-numpy)
        ;; MultQC checks for the presence of nose at runtime.
        ("python-nose" ,python-nose)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "setup.py"
+               ;; MultiQC 1.5 ‘requires’ a version of python-matplotlib older
+               ;; than the one in Guix, but should work fine with 2.2.2.
+               ;; See <https://github.com/ewels/MultiQC/issues/725> and
+               ;; <https://github.com/ewels/MultiQC/issues/732> for details.
+               (("['\"]matplotlib.*?['\"]")
+                "'matplotlib'"))
+             #t)))))
     (home-page "http://multiqc.info")
     (synopsis "Aggregate bioinformatics analysis reports")
     (description
