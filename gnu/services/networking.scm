@@ -959,6 +959,7 @@ wireless networking."))))
                          ;; Add connman to the system profile.
                          (service-extension profile-service-type
                                             connman-package)))
+                  (default-value (connman-configuration))
                   (description
                    "Run @url{https://01.org/connman,Connman},
 a network connection manager."))))
