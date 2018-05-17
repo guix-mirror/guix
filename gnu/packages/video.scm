@@ -515,7 +515,7 @@ SMPTE 314M.")
 (define-public libmatroska
   (package
     (name "libmatroska")
-    (version "1.4.8")
+    (version "1.4.9")
     (source
      (origin
        (method url-fetch)
@@ -523,12 +523,14 @@ SMPTE 314M.")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "14n9sw974prr3yp4yjb7aadi6x2yz5a0hjw8fs3qigy5shh2piyq"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
+         "1j4mjzx6mjzfjf9hz8g4w84krf5jccmr5cyynll0j1vwv3aiv9iq"))))
+    (build-system cmake-build-system)
     (inputs
      `(("libebml" ,libebml)))
+    (arguments
+     `(#:configure-flags
+       (list "-DBUILD_SHARED_LIBS=YES")
+       #:tests? #f))                    ; no test suite
     (home-page "https://www.matroska.org")
     (synopsis "C++ library to parse Matroska files (.mkv and .mka)")
     (description
