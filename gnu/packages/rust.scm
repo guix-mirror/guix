@@ -272,8 +272,8 @@ safety and thread safety guarantees.")
                                    (package-native-inputs base-rust))))))
 
 (define-public mrustc
-  (let ((commit "4f98e4322ef7aabd3bbef8cd93c0980cd6eeeed1")
-        (revision "1")
+  (let ((commit "ee65f12f4aeb27238c8a2fc07fbe84eceafdde26")
+        (revision "2")
         (rustc-version "1.19.0"))
     (package
       (name "mrustc")
@@ -286,7 +286,7 @@ safety and thread safety guarantees.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1hk1x2iv64il5g2n3z06d6h219hnxg1w84lj7vi1lydqa65qk92p"))))
+                  "0rdjzxfwhrpzf44afpm0i7b8fiqvriccn93z22sys8pxw22pkp0d"))))
       (outputs '("out" "cargo"))
       (build-system gnu-build-system)
       (inputs
@@ -320,7 +320,10 @@ safety and thread safety guarantees.")
                (invoke "patch" "-p0" "../rust_src.patch")
                (chdir "..")
                #t))
-           (delete 'configure)
+           (replace 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+               #t))
            (add-after 'build 'build-minicargo
              (lambda _
                (for-each (lambda (target)
