@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,7 +55,6 @@
   (define (tmpfs directory)
     (file-system
       (device "none")
-      (title 'device)
       (mount-point directory)
       (type "tmpfs")
       (check? #f)))

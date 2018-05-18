@@ -571,7 +571,6 @@ to USB sticks meant to be read-only."
               (file-systems (cons (file-system
                                     (mount-point "/")
                                     (device root-uuid)
-                                    (title 'uuid)
                                     (type file-system-type))
                                   file-systems-to-keep)))))
 
@@ -636,7 +635,6 @@ of the GNU system as described by OS."
               (file-systems (cons (file-system
                                     (mount-point "/")
                                     (device root-uuid)
-                                    (title 'uuid)
                                     (type file-system-type))
                                   file-systems-to-keep)))))
     (mlet* %store-monad

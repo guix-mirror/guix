@@ -111,8 +111,7 @@ cat > "$tmpfile" <<EOF
 
   (bootloader (GRUB-config (device "/dev/sdX")))      ; 9
   (file-systems (cons (file-system
-                        (device "root")
-                        (title 'label)
+                        (device (file-system-label "root"))
                         (mount-point "/")
                         (type "ext4"))
                       %base-file-systems)))
@@ -140,8 +139,7 @@ OS_BASE='
                (bootloader grub-bootloader)
                (device "/dev/sdX")))
   (file-systems (cons (file-system
-                        (device "root")
-                        (title (string->symbol "label"))
+                        (device (file-system-label "root"))
                         (mount-point "/")
                         (type "ext4"))
                       %base-file-systems))
@@ -213,8 +211,7 @@ make_user_config ()
                 (bootloader grub-bootloader)
                 (device "/dev/sdX")))
   (file-systems (cons (file-system
-                        (device "root")
-                        (title 'label)
+                        (device (file-system-label "root"))
                         (mount-point "/")
                         (type "ext4"))
                       %base-file-systems))
