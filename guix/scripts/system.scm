@@ -590,17 +590,17 @@ any, are available.  Raise an error if they're not."
 
   (define labeled
     (filter (lambda (fs)
-              (eq? (file-system-title fs) 'label))
+              (file-system-label? (file-system-device fs)))
             relevant))
 
   (define literal
     (filter (lambda (fs)
-              (eq? (file-system-title fs) 'device))
+              (string? (file-system-device fs)))
             relevant))
 
   (define uuid
     (filter (lambda (fs)
-              (eq? (file-system-title fs) 'uuid))
+              (uuid? (file-system-device fs)))
             relevant))
 
   (define fail? #f)
@@ -628,15 +628,15 @@ any, are available.  Raise an error if they're not."
                              (strerror errno))
                       (unless (string-prefix? "/" device)
                         (display-hint (format #f (G_ "If '~a' is a file system
-label, you need to add @code{(title 'label)} to your @code{file-system}
-definition.")
-                                              device)))))))
+label, write @code{(file-system-label ~s)} in your @code{device} field.")
+                                              device device)))))))
               literal)
     (for-each (lambda (fs)
-                (unless (find-partition-by-label (file-system-device fs))
-                  (error (G_ "~a: error: file system with label '~a' not found~%")
-                         (file-system-location* fs)
-                         (file-system-device fs))))
+                (let ((label (file-system-label->string
+                              (file-system-device fs))))
+                  (unless (find-partition-by-label label)
+                    (error (G_ "~a: error: file system with label '~a' not found~%")
+                           (file-system-location* fs) label))))
               labeled)
     (for-each (lambda (fs)
                 (unless (find-partition-by-uuid (file-system-device fs))
@@ -677,10 +677,13 @@ available in the initrd.  Note that mapped devices are responsible for
 checking this by themselves in their 'check' procedure."
   (define (file-system-/dev fs)
     (let ((device (file-system-device fs)))
-      (match (file-system-title fs)
-        ('device device)
-        ('uuid   (find-partition-by-uuid device))
-        ('label  (find-partition-by-label device)))))
+      (match device
+        ((? string?)
+         device)
+        ((? uuid?)
+         (find-partition-by-uuid device))
+        ((? file-system-label?)
+         (find-partition-by-label (file-system-label->string device))))))
 
   (define file-systems
     (filter file-system-needed-for-boot?

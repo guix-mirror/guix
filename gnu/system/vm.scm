@@ -693,13 +693,12 @@ environment with the store shared with the host.  MAPPINGS is a list of
                     (source (file-system-device fs)))
                 (or (string=? target (%store-prefix))
                     (string=? target "/")
-                    (and (eq? 'device (file-system-title fs))
+                    (and (string? source)
                          (string-prefix? "/dev/" source))
 
                     ;; Labels and UUIDs are necessarily invalid in the VM.
                     (and (file-system-mount? fs)
-                         (or (eq? 'label (file-system-title fs))
-                             (eq? 'uuid (file-system-title fs))
+                         (or (file-system-label? source)
                              (uuid? source))))))
             (operating-system-file-systems os)))
 
