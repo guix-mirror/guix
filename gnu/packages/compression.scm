@@ -647,7 +647,7 @@ decompression of some loosely related file formats used by Microsoft.")
 (define-public perl-compress-raw-bzip2
   (package
     (name "perl-compress-raw-bzip2")
-    (version "2.074")
+    (version "2.081")
     (source
      (origin
        (method url-fetch)
@@ -655,7 +655,7 @@ decompression of some loosely related file formats used by Microsoft.")
                            "Compress-Raw-Bzip2-" version ".tar.gz"))
        (sha256
         (base32
-         "0b5jwqf15zr787acnx8sfyy2zavdd7gfkd98n1dgy8fs6r8yb8a4"))))
+         "081mpkjy688lg48997fqh3d7ja12vazmz02fw84495civg4vb4l6"))))
     (build-system perl-build-system)
     ;; TODO: Use our bzip2 package.
     (home-page "http://search.cpan.org/dist/Compress-Raw-Bzip2")
