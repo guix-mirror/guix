@@ -25,8 +25,7 @@
   #:re-export (uuid                               ;backward compatibility
                string->uuid
                uuid->string)
-  #:export (<file-system>
-            file-system
+  #:export (file-system
             file-system?
             file-system-device
             file-system-title
