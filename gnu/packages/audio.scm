@@ -3409,7 +3409,7 @@ representations.")
 (define-public cava
   (package
     (name "cava")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3418,7 +3418,7 @@ representations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p24lz3h4d0h82ffylqr7mq8a8x1c66flm2r2bsv1liw51n1rma2"))))
+                "13d72swnjs894llf0paandmhf1lf90dz6ygkcdw4bv84wzkq1f4q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
