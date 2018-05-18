@@ -464,6 +464,8 @@ make an initial adjustment of more than 1,000 seconds."
                                           openntpd-shepherd-service)
                        (service-extension account-service-type
                                           (const %ntp-accounts))
+                       (service-extension profile-service-type
+                                          (compose list openntpd-configuration-openntpd))
                        (service-extension activation-service-type
                                           openntpd-service-activation)))
                 (default-value (openntpd-configuration))
