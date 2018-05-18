@@ -206,3 +206,20 @@ and workspaces that can be used in the compiler environment of your choice.")
     (inputs
      `(("rhash" ,rhash)
        ,@(package-inputs cmake)))))
+
+(define-public emacs-cmake-mode
+  (package
+    (inherit cmake)
+    (name "emacs-cmake-mode")
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-elisp
+           ;; Elisp directory is not in root of the source.
+           (lambda _
+             (chdir "Auxiliary"))))))
+    (synopsis "Emacs major mode for editing Cmake expressions")
+    (description "@code{cmakeos-mode} provides an Emacs major mode for editing
+Cmake files.  It supports syntax highlighting, indenting and refilling of
+comments.")))
