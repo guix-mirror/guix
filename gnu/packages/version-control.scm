@@ -191,6 +191,7 @@ as well as the classic centralized workflow.")
    (outputs '("out"                               ; the core
               "send-email"                        ; for git-send-email
               "svn"                               ; git-svn
+              "credential-netrc"                  ; git-credential-netrc
               "gui"))                             ; gitk, git gui
    (arguments
     `(#:make-flags `("V=1"                        ;more verbose compilation
@@ -273,6 +274,12 @@ as well as the classic centralized workflow.")
               (mkdir-p completions)
               (copy-file "contrib/completion/git-completion.bash"
                          (string-append completions "/git"))
+              #t)))
+        (add-after 'install 'install-credential-netrc
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((netrc (assoc-ref outputs "credential-netrc")))
+              (install-file "contrib/credential/netrc/git-credential-netrc"
+                            (string-append netrc "/bin"))
               #t)))
         (add-after 'install 'split
           (lambda* (#:key inputs outputs #:allow-other-keys)
