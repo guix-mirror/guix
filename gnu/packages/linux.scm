@@ -695,14 +695,14 @@ by Robert Shea and Robert Anton Wilson.")
 (define-public procps
   (package
     (name "procps")
-    (version "3.3.12")
+    (version "3.3.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/procps-ng/Production/"
                                   "procps-ng-" version ".tar.xz"))
               (sha256
                (base32
-                "1m57w6jmry84njd5sgk5afycbglql0al80grx027kwqqcfw5mmkf"))))
+                "0v3j6rkzzscqds37i105cxx3q4dk04rsgpqfd5p7hzcvk59h5njy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:modules ((guix build utils)
@@ -711,15 +711,6 @@ by Robert Shea and Robert Anton Wilson.")
                   (srfi srfi-26))
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'disable-strtod-test
-           (lambda _
-             ;; Disable the 'strtod' test, which fails on 32-bit systems.
-             ;; This is what upstream does:
-             ;; <https://gitlab.com/procps-ng/procps/commit/100afbc1491be388f1429021ff65d969f4b1e08f>.
-             (substitute* "Makefile"
-               (("^(TESTS|check_PROGRAMS) = .*$" all)
-                (string-append "# " all "\n")))
-             #t))
          (add-after
           'install 'post-install
           ;; Remove commands and man pages redudant with
