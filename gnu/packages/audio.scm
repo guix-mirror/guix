@@ -2032,9 +2032,9 @@ into various outputs and to start, stop and configure jackd")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "qmake"
-                             (string-append "PREFIX="
-                                            (assoc-ref outputs "out")))))))))
+             (invoke "qmake"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "out"))))))))
     (native-inputs
      `(("qtbase" ,qtbase))) ; for qmake
     (inputs
