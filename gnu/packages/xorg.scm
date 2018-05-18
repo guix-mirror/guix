@@ -5769,7 +5769,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "332")
+    (version "333")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -5779,7 +5779,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
                                    name "-" version ".tgz")))
               (sha256
                (base32
-                "0zdjiik4ravc3zld5c9i2ndrvazjmwiwbgl2c21348762wki2jsx"))))
+                "0y7gl26mxw6kwqx9j9mi6lx1lp1v3nrlga19ddn07j2m9q0l479g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
