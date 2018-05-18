@@ -726,10 +726,10 @@ as a drop-in replacement of MySQL.")
                        #t))
          (add-after 'build 'build-contrib
            (lambda _
-             (zero? (system* "make" "-C" "contrib"))))
+             (invoke "make" "-C" "contrib")))
          (add-after 'install 'install-contrib
            (lambda _
-             (zero? (system* "make" "-C" "contrib" "install")))))))
+             (invoke "make" "-C" "contrib" "install"))))))
     (inputs
      `(("readline" ,readline)
        ("libuuid" ,util-linux)
