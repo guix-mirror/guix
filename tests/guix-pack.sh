@@ -20,9 +20,9 @@
 # Test the `guix pack' command-line utility.
 #
 
-# The bootstrap binaries are needed to run these tests, which usually requires
-# a network connection.
-if ! guix build -q guile-bootstrap; then
+# A network connection is required to build %bootstrap-coreutils&co,
+# which is required to run these tests with the --bootstrap option.
+if ! guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null; then
     exit 77
 fi
 
