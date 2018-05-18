@@ -3128,7 +3128,7 @@ code, used in @code{libtoxcore}.")
 (define-public gsm
   (package
     (name "gsm")
-    (version "1.0.17")
+    (version "1.0.18")
     (source
      (origin
        (method url-fetch)
@@ -3137,7 +3137,7 @@ code, used in @code{libtoxcore}.")
                        "-" version ".tar.gz"))
        (sha256
         (base32
-         "00bns0d4wwrvc60lj2w7wz4yk49q1f6rpdrwqzrxsha9d78mfnl5"))))
+         "041amvpz8cvxykl3pwqldrzxligmmzcg8ncdnxbg32rlqf3q1xh4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tst"
@@ -3163,7 +3163,7 @@ code, used in @code{libtoxcore}.")
                (mkdir-p (string-append out "/include/gsm"))
                (copy-recursively "inc"
                                  (string-append out "/include/gsm")))))
-         (delete 'configure))))
+         (delete 'configure))))         ; no configure script
     (synopsis "GSM 06.10 lossy speech compression library")
     (description "This C library provides an encoder and a decoder for the GSM
 06.10 RPE-LTP lossy speech compression algorithm.")
