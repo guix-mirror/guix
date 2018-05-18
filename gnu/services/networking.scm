@@ -954,6 +954,8 @@ wireless networking."))))
                   (extensions
                    (list (service-extension shepherd-root-service-type
                                             connman-shepherd-service)
+                         (service-extension polkit-service-type
+                                            connman-package)
                          (service-extension dbus-root-service-type
                                             connman-package)
                          (service-extension activation-service-type
