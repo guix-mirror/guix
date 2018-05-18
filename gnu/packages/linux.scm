@@ -388,7 +388,7 @@ It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
-(define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
+(define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux"))
 
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
@@ -409,7 +409,7 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
                     %linux-libre-4.14-hash
-                    %linux-compatible-systems
+                    '("x86_64-linux" "i686-linux" "armhf-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
