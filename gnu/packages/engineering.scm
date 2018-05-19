@@ -1279,17 +1279,27 @@ an embedded event driven algorithm.")
   ;; TODO: Remove when we have modular Trilinos packages?
   (package
     (name "trilinos-serial-xyce")
-    (version "12.6.3")
+    (version "12.12.1")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://trilinos.org/oldsite/download/files/trilinos-"
                                  version "-Source.tar.gz"))
              (sha256
               (base32
-               "07jd1qpsbf31cmbyyngr4l67xzwyan24dyx5wlcahgbw7x6my3wn"))))
+               "1zgrcksrcbmyy79mbdv0j4j4sh0chpigxk8vcrrwgaxyxwxxhrvw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:out-of-source? #t
+       #:phases
+       (modify-phases %standard-phases
+         ;; Delete unneeded tribits(build system) directory which makes validate-runpath
+         ;; phase to fail.
+         (add-before 'validate-runpath 'delete-tribits
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+              (string-append (assoc-ref outputs "out")
+                             "/lib/cmake/tribits"))
+             #t)))
        #:configure-flags
        (list "-DCMAKE_CXX_FLAGS=-O3 -fPIC"
              "-DCMAKE_C_FLAGS=-O3 -fPIC"
@@ -1322,7 +1332,7 @@ an embedded event driven algorithm.")
        ("swig" ,swig)))
     (inputs
      `(("boost" ,boost)
-       ("lapack" ,lapack-3.5)
+       ("lapack" ,lapack)
        ("suitesparse" ,suitesparse)))
     (home-page "https://trilinos.org")
     (synopsis "Engineering and scientific problems algorithms")
