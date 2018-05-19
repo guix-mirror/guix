@@ -132,7 +132,7 @@ keys, no previous conversation is compromised.")
 (define-public libsignal-protocol-c
   (package
   (name "libsignal-protocol-c")
-  (version "2.3.1")
+  (version "2.3.2")
   (source (origin
            (method url-fetch)
            (uri (string-append "https://github.com/WhisperSystems/"
@@ -141,7 +141,7 @@ keys, no previous conversation is compromised.")
            (file-name (string-append name "-" version ".tar.gz"))
            (sha256
             (base32
-             "1klz9jvbnmfc3qy2x6qcswzw14a7kyzs51dlg18yllvir1f1kz0s"))))
+             "0380hl6fw3ppf265fg897pyrpqygpx4m9j8ifq118bim8lq6z0pk"))))
   (arguments
    `(;; Required for proper linking and for tests to run.
      #:configure-flags '("-DBUILD_SHARED_LIBS=on" "-DBUILD_TESTING=1")))
