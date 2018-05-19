@@ -2336,4 +2336,28 @@ allows users to interact with the Guile REPL through Jupyter.")
       (home-page "https://github.com/jerry40/guile-kernel")
       (license license:gpl3+))))
 
+(define-public guile-sparql
+  (package
+   (name "guile-sparql")
+   (version "0.0.7")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/roelj/guile-sparql/releases/download/"
+                  version "/guile-sparql-" version ".tar.gz"))
+            (sha256
+             (base32 "1drnvhsgl0gc5crmb16yyw1j98nkhwwcgssv9vgm36ng43nnzffd"))))
+   (build-system gnu-build-system)
+   (arguments `(#:tests? #f)) ; There are no tests.
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (inputs
+    `(("guile" ,guile-2.2)))
+   (home-page "https://github.com/roelj/guile-sparql")
+   (synopsis "SPARQL module for Guile")
+   (description "This package provides the functionality to query a SPARQL
+endpoint.  Additionally, it provides an interface to write SPARQL queries
+using S-expressions.")
+   (license license:gpl3+)))
+
 ;;; guile.scm ends here
