@@ -1347,14 +1347,14 @@ unique design feature of Trilinos is its focus on packages.")
 (define-public xyce-serial
   (package
     (name "xyce-serial")
-    (version "6.7")
+    (version "6.8")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://archive.org/download/Xyce-"
                                  version "/Xyce-" version ".tar.gz"))
              (sha256
               (base32
-               "02k952mnvrnc5kv7r65fdrn7khwq1lbyhwyvd7jznafzdpsvgm4x"))))
+               "09flp1xywbb2laayd9rg8vd0fjsh115y6k1p71jacy0nrbdvvlcg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -1370,7 +1370,7 @@ unique design feature of Trilinos is its focus on packages.")
     (inputs
      `(("fftw" ,fftw)
        ("suitesparse" ,suitesparse)
-       ("lapack" ,lapack-3.5)
+       ("lapack" ,lapack)
        ("trilinos" ,trilinos-serial-xyce)))
     (home-page "https://xyce.sandia.gov/")
     (synopsis "High-performance analog circuit simulator")
@@ -1405,8 +1405,6 @@ parallel computing platforms.  It also supports serial execution.")
                    "CC=mpicc"
                    "F77=mpif77"
                    "--enable-mpi"
-                   "--enable-isorropia=no"
-                   "--enable-zoltan=no"
                    (string-append
                     "ARCHDIR="
                     (assoc-ref %build-inputs "trilinos")))))))
