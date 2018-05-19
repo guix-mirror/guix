@@ -1622,14 +1622,15 @@ simulations are also supported.")
 (define-public qucs-s
   (package
     (name "qucs-s")
-    (version "0.0.19S")
+    (version "0.0.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/ra3xdh/qucs/releases/download/"
-                                  version "/qucs-" version ".tar.gz"))
+              (uri (string-append "https://github.com/ra3xdh/qucs_s/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1bhahvdqmayaw0306fxz1ghmjhd4fq05yk3rk7zi0z703w5imgjv"))))
+                "01dizf4rjciqc8x7bmv3kbhdlz90bm6n9m9fz7dbzqcwvszcs1hx"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1664,19 +1665,21 @@ simulations are also supported.")
                                 "\\+ \"qucsator\" \\+ executableSuffix"))
                 (string-append "}{ QucsSettings.Qucsator = \""
                                (assoc-ref inputs "qucs") "/bin/qucsator\""))
-               (((string-append "else QucsSettings\\.XyceExecutable = "
-                                "\"/usr/local/Xyce-Release-6.2.0-OPENSOURCE/bin/runxyce"))
-                (string-append "QucsSettings.XyceExecutable = \""
+               (((string-append "QucsSettings\\.XyceExecutable = "
+                                "\"/usr/local/Xyce-Release-6.8.0-OPENSOURCE/bin/Xyce"))
+                (string-append "}{ QucsSettings.XyceExecutable = \""
                                (assoc-ref inputs "xyce-serial") "/bin/Xyce"))
-               (((string-append "else QucsSettings\\.XyceParExecutable = \"/usr/local"
-                                "/Xyce-Release-6.2.0-OPENMPI-OPENSOURCE/bin/xmpirun"))
+               (((string-append "else QucsSettings\\.XyceParExecutable = "
+                                "\"mpirun -np %p /usr/local"
+                                "/Xyce-Release-6.8.0-OPENMPI-OPENSOURCE/bin/Xyce"))
                 (string-append "QucsSettings.XyceParExecutable = \""
-                               (assoc-ref inputs "mpi") "/bin/mpirun"))
-               (("%p")
-                (string-append "%p "(assoc-ref inputs "xyce-parallel") "/bin/Xyce"))
+                               (assoc-ref inputs "mpi") "/bin/mpirun -np %p "
+                               (assoc-ref inputs "xyce-parallel") "/bin/Xyce"))
                (("else QucsSettings\\.NgspiceExecutable = \"ngspice\"")
                 (string-append "QucsSettings.NgspiceExecutable = " "\""
                                (assoc-ref inputs "ngspice") "/bin/ngspice\"")))
+             (substitute* "qucs/extsimkernels/ngspice.cpp"
+               (("share/qucs/xspice_cmlib") "share/qucs-s/xspice_cmlib"))
              (substitute* "qucs/qucs_actions.cpp"
                (("qucstrans")
                 (string-append (assoc-ref inputs "qucs") "/bin/qucstrans"))
@@ -1689,7 +1692,7 @@ simulations are also supported.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (for-each
               (lambda (script)
-                (let ((file (string-append "../qucs-" ,version
+                (let ((file (string-append "../qucs_s-" ,version
                                            "/qucs/" script))
                       (out (assoc-ref outputs "out")))
                   (install-file file (string-append out "/bin"))
