@@ -366,8 +366,10 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                (for-each (lambda (file) (install-file file out))
                          (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map)$"))
                ;; Install device tree files
-               (for-each (lambda (file) (install-file file dtbdir))
-                         (find-files "." "\\.dtb$"))
+               (unless (null? (find-files "." "\\.dtb$"))
+                 (mkdir-p dtbdir)
+                 (invoke "make" (string-append "INSTALL_DTBS_PATH=" dtbdir)
+                         "dtbs_install"))
                ;; Install kernel modules
                (mkdir-p moddir)
                (invoke "make"
