@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -527,3 +528,45 @@ produce colored output.")
 output is a graphviz-dot file, a Gexf-XML file or a list of the deepest
 independent targets.")
     (license license:expat)))
+
+(define-public uncrustify
+  (package
+    (name "uncrustify")
+    (version "0.67")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/uncrustify/uncrustify/archive/"
+                    "uncrustify-" version ".zip"))
+              (sha256
+               (base32
+                "0n13kq0nsm35fxhdp0f275n4x0w88hdv3bdjy0hgvv42x0dx5zyp"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-etc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Configuration samples are not installed by default.
+             (let* ((output (assoc-ref outputs "out"))
+                    (etcdir (string-append output "/etc")))
+               (for-each (lambda (l)
+                           (install-file l etcdir))
+                         (find-files "etc" "\\.cfg$")))
+             #t)))))
+    (home-page "http://uncrustify.sourceforge.net/")
+    (synopsis "Code formatter for C and other related languages")
+    (description
+     "Beautify source code in many languages of the C family (C, C++, C#,
+Objective@tie{}C, D, Java, Pawn, and Vala).  Features:
+@itemize
+@item Indent and align code.
+@item Reformat comments (a little bit).
+@item Fix inter-character spacing.
+@item Add or remove parens / braces.
+@item Supports embedded SQL @code{EXEC SQL} stuff.
+@item Highly configurable - More than 600 configurable options.
+@end itemize\n")
+    (license license:gpl2+)))

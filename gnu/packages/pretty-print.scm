@@ -322,3 +322,4 @@ highlighting.  Language definitions and color themes are customizable.")
      "Artistic Style is a source code indenter, formatter, and beautifier for
 the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
     (license lgpl3+)))
+
