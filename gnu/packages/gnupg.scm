@@ -593,7 +593,8 @@ signing, decryption, verification, and key-listing parsing.")
               "1893hzpx3zv724drqv48csrn0cm98xw4ymb1zmhs2jvjj1778zfj"))))
    (build-system python-build-system)
    (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
-             ("gpg" ,gnupg)))
+             ("gpg" ,gnupg)
+             ("python-six" ,python2-six)))
    (arguments
     `(#:tests? #f
       #:python ,python-2                     ;uses the Python 2 'print' syntax
