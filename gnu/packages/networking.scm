@@ -1802,3 +1802,42 @@ networks using zeromq.  It has these key characteristics:
 @end itemize")
     (home-page "https://github.com/zeromq/zyre")
     (license license:mpl2.0)))
+
+(define-public can-utils
+  (package
+    (name "can-utils")
+    (version "2018.02.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linux-can/can-utils.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0r0zkm67bdcmbfypjr7z041d4zp0xzb379dyl8cvhmflh12fd2jb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests exist.
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/linux-can/can-utils")
+    (synopsis "CAN utilities")
+    (description "This package provides CAN utilities in the following areas:
+
+@itemize
+@item Basic tools to display, record, generate and replay CAN traffic
+@item CAN access via IP sockets
+@item CAN in-kernel gateway configuration
+@item CAN bus measurement and testing
+@item ISO-TP (ISO15765-2:2016 - this means messages with a body larger than
+eight bytes) tools
+@item Log file converters
+@item Serial Line Discipline configuration for slcan driver
+@end itemize")
+    ;; Either BSD-3 or GPL-2 can be used.
+    (license (list license:bsd-3 license:gpl2))))
