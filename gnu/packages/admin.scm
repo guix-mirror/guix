@@ -608,10 +608,10 @@ connection alive.")
 
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
-         (bind-minor-version "9")
-         (bind-patch-version "11")
-         (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "1")      ; for patch release, e.g. "6"
+         (bind-minor-version "11")
+         (bind-patch-version "3")
+         (bind-release-type "")         ; for patch release, use "-P"
+         (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -621,14 +621,14 @@ connection alive.")
                                       bind-release-version)))
     (package
       (name "isc-dhcp")
-      (version "4.3.6-P1")
+      (version "4.4.1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "http://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1hx3az6ckvgvybr1ag4k9kqr8zfcpzcww4vpw5gz0mi8y2z7gl9g"))))
+                  "025nfqx4zwdgv4b3rkw26ihcj312vir08jk6yi57ndmb4a4m08ia"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
@@ -728,7 +728,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1a4g6nzzrbmhngdgvgv1jjq4fm06m8fwc2a0gskkchplxl7dva20"))))
+                      "1xbnb2b11274z9frc9y7nvkyxr52qx09bwb97gf9qzzcn8adx78d"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -743,7 +743,7 @@ connection alive.")
        "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
 reference implementation of all aspects of DHCP, through a suite of DHCP
 tools: server, client, and relay agent.")
-      (license license:isc)
+      (license license:mpl2.0)
       (properties '((cpe-name . "dhcp"))))))
 
 (define-public libpcap
