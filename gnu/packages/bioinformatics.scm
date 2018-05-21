@@ -9100,6 +9100,19 @@ replacement for strverscmp.")
        ("python-numpy" ,python-numpy)
        ;; MultQC checks for the presence of nose at runtime.
        ("python-nose" ,python-nose)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "setup.py"
+               ;; MultiQC 1.5 ‘requires’ a version of python-matplotlib older
+               ;; than the one in Guix, but should work fine with 2.2.2.
+               ;; See <https://github.com/ewels/MultiQC/issues/725> and
+               ;; <https://github.com/ewels/MultiQC/issues/732> for details.
+               (("['\"]matplotlib.*?['\"]")
+                "'matplotlib'"))
+             #t)))))
     (home-page "http://multiqc.info")
     (synopsis "Aggregate bioinformatics analysis reports")
     (description
@@ -11547,7 +11560,9 @@ browser.")
            (replace 'install
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((target (assoc-ref outputs "out"))
-                      (doc (string-append target "/share/doc/f-seq/")))
+                      (bin (string-append target "/bin"))
+                      (doc (string-append target "/share/doc/f-seq"))
+                      (lib (string-append target "/lib")))
                  (mkdir-p target)
                  (mkdir-p doc)
                  (substitute* "bin/linux/fseq"
@@ -11556,11 +11571,11 @@ browser.")
                     (string-append (assoc-ref inputs "java-commons-cli")
                                    "/share/java/commons-cli.jar"))
                    (("REALDIR=.*")
-                    (string-append "REALDIR=" target "/bin\n")))
+                    (string-append "REALDIR=" bin "\n")))
                  (install-file "README.txt" doc)
-                 (install-file "bin/linux/fseq" (string-append target "/bin"))
-                 (install-file "build~/fseq.jar" (string-append target "/lib"))
-                 (copy-recursively "lib" (string-append target "/lib"))
+                 (install-file "bin/linux/fseq" bin)
+                 (install-file "build~/fseq.jar" lib)
+                 (copy-recursively "lib" lib)
                  #t))))))
       (inputs
        `(("perl" ,perl)

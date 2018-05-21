@@ -36,6 +36,7 @@
             u-boot-mx6cuboxi-bootloader
             u-boot-nintendo-nes-classic-edition-bootloader
             u-boot-novena-bootloader
+            u-boot-pine64-plus-bootloader
             u-boot-wandboard-bootloader))
 
 (define install-u-boot
@@ -64,6 +65,15 @@
                                    "/libexec/u-boot-sunxi-with-spl.bin")))
         (write-file-on-device u-boot (stat:size (stat u-boot))
                               device (* 8 1024)))))
+
+(define install-allwinner64-u-boot
+  #~(lambda (bootloader device mount-point)
+      (let ((spl (string-append bootloader "/libexec/spl/sunxi-spl.bin"))
+            (u-boot (string-append bootloader "/libexec/u-boot.itb")))
+        (write-file-on-device spl (stat:size (stat spl))
+                              device (* 8 1024))
+        (write-file-on-device u-boot (stat:size (stat u-boot))
+                              device (* 40 1024)))))
 
 (define install-imx-u-boot
   #~(lambda (bootloader device mount-point)
@@ -97,6 +107,11 @@
   (bootloader
    (inherit u-boot-bootloader)
    (installer install-allwinner-u-boot)))
+
+(define u-boot-allwinner64-bootloader
+  (bootloader
+   (inherit u-boot-bootloader)
+   (installer install-allwinner64-u-boot)))
 
 (define u-boot-imx-bootloader
   (bootloader
@@ -142,3 +157,8 @@
   (bootloader
    (inherit u-boot-imx-bootloader)
    (package u-boot-novena)))
+
+(define u-boot-pine64-plus-bootloader
+  (bootloader
+   (inherit u-boot-allwinner64-bootloader)
+   (package u-boot-pine64-plus)))

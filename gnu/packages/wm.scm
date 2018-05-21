@@ -920,7 +920,7 @@ It is inspired by Xmonad and dwm.  Its major features include:
 (define-public cwm
   (package
     (name "cwm")
-    (version "6.2")
+    (version "6.3")
     (source
      (origin
        (method url-fetch)
@@ -928,7 +928,7 @@ It is inspired by Xmonad and dwm.  Its major features include:
                            version ".tar.gz"))
        (sha256
         (base32
-         "1b8k2hjxpb0bzqjh2wj6mn2nf2360zacf8z19sw2rw5lxvmfy89x"))))
+         "17pdp9cfgh2n3n3905l4rl9qk7b722i8psnarhlc2h98qzx7zmac"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"

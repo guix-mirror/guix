@@ -366,8 +366,10 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                (for-each (lambda (file) (install-file file out))
                          (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map)$"))
                ;; Install device tree files
-               (for-each (lambda (file) (install-file file dtbdir))
-                         (find-files "." "\\.dtb$"))
+               (unless (null? (find-files "." "\\.dtb$"))
+                 (mkdir-p dtbdir)
+                 (invoke "make" (string-append "INSTALL_DTBS_PATH=" dtbdir)
+                         "dtbs_install"))
                ;; Install kernel modules
                (mkdir-p moddir)
                (invoke "make"
@@ -386,14 +388,14 @@ It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
 (define %intel-compatible-systems '("x86_64-linux" "i686-linux"))
-(define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux"))
+(define %linux-compatible-systems '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux"))
 
 ;; linux-libre configuration for armhf-linux is derived from Debian armmp.  It
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.16.9")
-(define %linux-libre-hash "13v5pb30v16cn81w2gnwaa4zhxas7q3zz10igpa2rqd5fdiy3rlz")
+(define %linux-libre-version "4.16.10")
+(define %linux-libre-hash "028xl0jj7wibd8v93r1r0vnw5iifin46p6ghd9m3w095lailqlsi")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -401,18 +403,18 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.41")
-(define %linux-libre-4.14-hash "0qcfw4spnjlzri8bgch1j0yxsw75gjx1m9qyn3h1lk4a33gczih6")
+(define %linux-libre-4.14-version "4.14.42")
+(define %linux-libre-4.14-hash "12vjzb5g1abg5d5w6z65n1ixw7c3y9f5zwx3gd3854dgnynbq708")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
                     %linux-libre-4.14-hash
-                    %linux-compatible-systems
+                    '("x86_64-linux" "i686-linux" "armhf-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.100"
-                    "1zphlisrjzbgk7nvclbwm23kmrx7vw13w02r1va3g5lzh0rlwx71"
+  (make-linux-libre "4.9.101"
+                    "1s8zpl3dnz0nrg0by6hnss5z20iwlcwdg5x4251w0l9la81p05v5"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 

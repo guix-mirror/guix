@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -251,7 +251,8 @@ corresponding bytevector; otherwise return #f."
 
 (define-syntax uuid
   (lambda (s)
-    "Return the UUID object corresponding to the given UUID representation."
+    "Return the UUID object corresponding to the given UUID representation or
+#f if the string could not be parsed."
     (syntax-case s (quote)
       ((_ str (quote type))
        (and (string? (syntax->datum #'str))
@@ -266,9 +267,11 @@ corresponding bytevector; otherwise return #f."
        (string? (syntax->datum #'str))
        #'(uuid str 'dce))
       ((_ str)
-       #'(make-uuid 'dce (string->uuid str 'dce)))
+       #'(let ((bv (string->uuid str 'dce)))
+           (and bv (make-uuid 'dce bv))))
       ((_ str type)
-       #'(make-uuid type (string->uuid str type))))))
+       #'(let ((bv (string->uuid str type)))
+           (and bv (make-uuid type bv)))))))
 
 (define uuid->string
   ;; Convert the given bytevector or UUID object, to the corresponding UUID

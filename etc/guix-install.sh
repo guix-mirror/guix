@@ -86,9 +86,7 @@ chk_require()
     _debug "--- [ $FUNCNAME ] ---"
 
     for c in ${cmds[@]}; do
-        command -v "$c" &>/dev/null
-        [ "$?" -eq "1" ] &&
-            warn+=("$c")
+        command -v "$c" &>/dev/null || warn+=("$c")
     done
 
     [ "${#warn}" -ne 0 ] &&

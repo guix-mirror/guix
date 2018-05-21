@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -592,10 +592,12 @@ signing, decryption, verification, and key-listing parsing.")
                   version "/pius-" version ".tar.bz2"))
             (sha256
              (base32
-              "1893hzpx3zv724drqv48csrn0cm98xw4ymb1zmhs2jvjj1778zfj"))))
+              "1893hzpx3zv724drqv48csrn0cm98xw4ymb1zmhs2jvjj1778zfj"))
+            (patches (search-patches "pius.patch"))))
    (build-system python-build-system)
    (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
-             ("gpg" ,gnupg)))
+             ("gpg" ,gnupg)
+             ("python-six" ,python2-six)))
    (arguments
     `(#:tests? #f
       #:python ,python-2                     ;uses the Python 2 'print' syntax

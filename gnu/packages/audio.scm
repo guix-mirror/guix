@@ -1028,7 +1028,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "1.1.10")
+    (version "1.1.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1037,7 +1037,7 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "04jlgq1d1hd8r9cnmkl3lgf1fgm7kgy4hh9nfddap41fm1wp121p"))))
+                "0n75jq3xgq46hfmjkaaxz3gic77shs4fzajq40c8gk043i84xbdh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -2037,9 +2037,9 @@ into various outputs and to start, stop and configure jackd")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "qmake"
-                             (string-append "PREFIX="
-                                            (assoc-ref outputs "out")))))))))
+             (invoke "qmake"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "out"))))))))
     (native-inputs
      `(("qtbase" ,qtbase))) ; for qmake
     (inputs
@@ -3125,7 +3125,7 @@ code, used in @code{libtoxcore}.")
 (define-public gsm
   (package
     (name "gsm")
-    (version "1.0.17")
+    (version "1.0.18")
     (source
      (origin
        (method url-fetch)
@@ -3134,7 +3134,7 @@ code, used in @code{libtoxcore}.")
                        "-" version ".tar.gz"))
        (sha256
         (base32
-         "00bns0d4wwrvc60lj2w7wz4yk49q1f6rpdrwqzrxsha9d78mfnl5"))))
+         "041amvpz8cvxykl3pwqldrzxligmmzcg8ncdnxbg32rlqf3q1xh4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tst"
@@ -3160,7 +3160,7 @@ code, used in @code{libtoxcore}.")
                (mkdir-p (string-append out "/include/gsm"))
                (copy-recursively "inc"
                                  (string-append out "/include/gsm")))))
-         (delete 'configure))))
+         (delete 'configure))))         ; no configure script
     (synopsis "GSM 06.10 lossy speech compression library")
     (description "This C library provides an encoder and a decoder for the GSM
 06.10 RPE-LTP lossy speech compression algorithm.")
@@ -3400,7 +3400,7 @@ representations.")
 (define-public cava
   (package
     (name "cava")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3409,7 +3409,7 @@ representations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p24lz3h4d0h82ffylqr7mq8a8x1c66flm2r2bsv1liw51n1rma2"))))
+                "13d72swnjs894llf0paandmhf1lf90dz6ygkcdw4bv84wzkq1f4q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

@@ -84,7 +84,7 @@ things the parser might find in the XML document (like start tags).")
 (define-public libebml
   (package
     (name "libebml")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
@@ -92,8 +92,23 @@ things the parser might find in the XML document (like start tags).")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "005a0ipqnfbsq47zrc61zszi439jw32q5xd6dc1jyb3lc0zl266q"))))
-    (build-system gnu-build-system)
+         "17iynkj22rbszaymxiaq6k02qy9w4fs1appkn1iam4y441w7lnhy"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri
+            (string-append "https://github.com/Matroska-Org/libebml/commit/"
+                           "e46906b80e7662fb78d305f576412f9fa4a22218.patch"))
+           (file-name "libebml-use-limits-not-climits.patch")
+           (sha256
+            (base32
+             "1803rcj4kzg385xij8j3fcz8h86z43ivciv512zr7jp9jwrafs58")))))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DBUILD_SHARED_LIBS=YES")
+       #:tests? #f))                    ; no test suite
     (home-page "https://matroska-org.github.io/libebml/")
     (synopsis "C++ library to parse EBML files")
     (description "libebml is a C++ library to read and write @dfn{EBML}

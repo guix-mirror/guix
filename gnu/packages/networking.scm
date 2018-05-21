@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1768,3 +1769,75 @@ allowing you to run a client with no graphical interface, and a Web GUI for
 remote access.  The @command{amulecmd} command allows you to control aMule
 remotely.")
     (license license:gpl2+)))
+
+(define-public zyre
+  (package
+    (name "zyre")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/zeromq/zyre/releases/download/v"
+                              version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qz2730bng1gs9xbqxhkw88qbsmszgmmrl2g9k6xrg6r3bqvsdc7"))))
+    (build-system gnu-build-system)
+    (inputs `(("zeromq" ,zeromq)
+              ("czmq" ,czmq)
+              ("libsodium" ,libsodium)))
+    (synopsis "Framework for proximity-based peer-to-peer applications")
+    (description "Zyre provides reliable group messaging over local area
+networks using zeromq.  It has these key characteristics:
+
+@itemize
+@item Zyre needs no administration or configuration.
+@item Peers may join and leave the network at any time.
+@item Peers talk to each other without any central brokers or servers.
+@item Peers can talk directly to each other.
+@item Peers can join groups, and then talk to groups.
+@item Zyre is reliable, and loses no messages even when the network is heavily loaded.
+@item Zyre is fast and has low latency, requiring no consensus protocols.
+@item Zyre is designed for WiFi networks, yet also works well on Ethernet networks.
+@end itemize")
+    (home-page "https://github.com/zeromq/zyre")
+    (license license:mpl2.0)))
+
+(define-public can-utils
+  (package
+    (name "can-utils")
+    (version "2018.02.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linux-can/can-utils.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0r0zkm67bdcmbfypjr7z041d4zp0xzb379dyl8cvhmflh12fd2jb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests exist.
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://github.com/linux-can/can-utils")
+    (synopsis "CAN utilities")
+    (description "This package provides CAN utilities in the following areas:
+
+@itemize
+@item Basic tools to display, record, generate and replay CAN traffic
+@item CAN access via IP sockets
+@item CAN in-kernel gateway configuration
+@item CAN bus measurement and testing
+@item ISO-TP (ISO15765-2:2016 - this means messages with a body larger than
+eight bytes) tools
+@item Log file converters
+@item Serial Line Discipline configuration for slcan driver
+@end itemize")
+    ;; Either BSD-3 or GPL-2 can be used.
+    (license (list license:bsd-3 license:gpl2))))

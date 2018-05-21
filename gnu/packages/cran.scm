@@ -219,14 +219,14 @@ the embedded @code{RapidXML} C++ library.")
 (define-public r-modelr
   (package
     (name "r-modelr")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "modelr" version))
        (sha256
         (base32
-         "1rqw0b583vp107zqp4h3wj51dvv4hb3wszfr1f5f48xassc53f95"))))
+         "09whg3q5xq6csbqwgwfwav09vda8vgady5j70sk52xcn232k363a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -271,13 +271,13 @@ embedded @url{https://github.com/WizardMac/ReadStat,ReadStat} C library.")
 (define-public r-amap
   (package
     (name "r-amap")
-    (version "0.8-14")
+    (version "0.8-16")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "amap" version))
               (sha256
                (base32
-                "1dz37z9v4zvyvqrs4xvpfv468jwvpxav60qn2w0049bw8llj6xdl"))))
+                "1qnl2x98x64iaipkx5126rsddq2sx5ml43h75xyiyn30yvbmlxyk"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))

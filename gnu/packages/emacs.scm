@@ -1629,7 +1629,7 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.3.4")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/alezost/guix.el"
@@ -1637,7 +1637,7 @@ type, for example: packages, buffers, files, etc.")
                                   "/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "152zf9vkafmnnf7by5armg165npznb961csgnvr8iwdj3smvivjf"))))
+                "1nn4b0gd895g0k4fynzrip7z8yb1r3qmvznq9v8a6q7sm84irmqq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1646,6 +1646,7 @@ type, for example: packages, buffers, files, etc.")
              (dash        (assoc-ref %build-inputs "dash"))
              (bui         (assoc-ref %build-inputs "bui"))
              (magit-popup (assoc-ref %build-inputs "magit-popup"))
+             (edit-indirect (assoc-ref %build-inputs "edit-indirect"))
              (site-lisp   "/share/emacs/site-lisp"))
          (list (string-append "--with-guix-site-dir="
                               (car (find-files (string-append guix
@@ -1669,6 +1670,9 @@ type, for example: packages, buffers, files, etc.")
                (string-append "--with-bui-lispdir="
                               bui site-lisp "/guix.d/bui-"
                               ,(package-version emacs-bui))
+               (string-append "--with-editindirect-lispdir="
+                              edit-indirect site-lisp "/guix.d/edit-indirect-"
+                              ,(package-version emacs-edit-indirect))
                (string-append "--with-popup-lispdir="
                               magit-popup site-lisp "/guix.d/magit-popup-"
                               ,(package-version emacs-magit-popup))))))
@@ -1682,6 +1686,7 @@ type, for example: packages, buffers, files, etc.")
      `(("geiser" ,geiser)
        ("dash" ,emacs-dash)
        ("bui" ,emacs-bui)
+       ("edit-indirect" ,emacs-edit-indirect)
        ("magit-popup" ,emacs-magit-popup)))
     (home-page "https://alezost.github.io/guix.el/")
     (synopsis "Emacs interface for GNU Guix")

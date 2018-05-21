@@ -22,6 +22,7 @@
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1435,3 +1436,39 @@ with black color on a white background (colors are configurable on the
 commandline).")
     (home-page "https://www.joachim-breitner.de/projects#screen-message")
     (license license:gpl2+)))
+
+(define-public xss-lock
+  ;; xss-lock does not seem to be maintained any longer, but the last commits
+  ;; fix important issues so we package them.
+  (let ((version "0.3.0")
+        (revision "1")
+        (commit "1e158fb20108058dbd62bd51d8e8c003c0a48717"))
+    (package
+      (name "xss-lock")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://bitbucket.org/raymonad/xss-lock.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "10hx7k7ga8g08akwz8qrsvj8iqr5nd4siiva6sjx789jvf0sak7r"))))
+      (build-system cmake-build-system)
+      (inputs `(("glib" ,glib)
+                ("xcb-util" ,xcb-util)))
+      (native-inputs
+       `(("python-docutils" ,python-docutils)
+         ("pkg-config" ,pkg-config)))
+      (arguments
+       `(#:tests? #f))
+      (synopsis "Use external screen locker on events")
+      (description "@code{xss-lock} listens to X signals to fire up a
+user-defined screensaver.  In effect this allows to automatically lock the
+screen when closing a laptop lid or after a period of user inactivity (as set
+with @code{xset s TIMEOUT}).  The notifier command, if specified, is executed
+first.  Additionally, xss-lock uses the inhibition logic to lock the screen
+before the system goes to sleep.")
+      (home-page "https://bitbucket.org/raymonad/xss-lock")
+      (license license:expat))))

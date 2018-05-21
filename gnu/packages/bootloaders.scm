@@ -359,6 +359,47 @@ tree binary files.  These are board description files used by Linux and BSD.")
 also initializes the boards (RAM etc).")
     (license license:gpl2+)))
 
+(define-public u-boot-tools
+  (package
+    (inherit u-boot)
+    (name "u-boot-tools")
+    (arguments
+     `(#:make-flags '("HOSTCC=gcc" "NO_SDL=1")
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (call-with-output-file "configs/tools_defconfig"
+               (lambda (port)
+                 (display "CONFIG_SYS_TEXT_BASE=0\n" port)))
+             (apply invoke "make" "tools_defconfig" make-flags)))
+         (replace 'build
+           (lambda* (#:key inputs make-flags #:allow-other-keys)
+             (apply invoke "make" "tools-only" make-flags)
+             (apply invoke "make" "envtools" make-flags)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (name)
+                           (install-file name bin))
+                         '("tools/netconsole"
+                           "tools/jtagconsole"
+                           "tools/gen_eth_addr"
+                           "tools/gen_ethaddr_crc"
+                           "tools/img2srec"
+                           "tools/mkenvimage"
+                           "tools/dumpimage"
+                           "tools/mkimage"
+                           "tools/proftool"
+                           "tools/fdtgrep"
+                           "tools/env/fw_printenv"))
+               #t))))))
+    (description "U-Boot is a bootloader used mostly for ARM boards.  It
+also initializes the boards (RAM etc).  This package provides its
+board-independent tools.")))
+
 (define (make-u-boot-package board triplet)
   "Returns a u-boot package for BOARD cross-compiled for TRIPLET."
   (let ((same-arch? (if (string-prefix? (%current-system)

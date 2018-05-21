@@ -9469,58 +9469,53 @@ system dependencies.")
 address string against RFC 5322.")
     (license license:bsd-3)))
 
-(define-public ghc-array
+(define-public ghc-semigroupoids-5.2.2
   (package
-   (name "ghc-array")
-   (version "0.5.2.0")
-   (source
-    (origin
-     (method url-fetch)
-     (uri
-      (string-append "https://hackage.haskell.org/package/array-0.5.2.0/array-"
-                     version ".tar.gz"))
-     (file-name (string-append name "-" version ".tar.gz"))
-     (sha256
-      (base32
-       "12v83s2imxb3p2crnlzrpjh0nk6lpysw9bdk9yahs6f37csa5jaj"))))
-   (build-system haskell-build-system)
-   (synopsis "Haskell @code{Data.Array} module")
-   (description "In addition to providing the @code{Data.Array} module as
-specified in the Haskell 2010 Language Report, this package defines the
-classes @code{IArray} of immutable arrays and @code{MArray} of arrays mutable
-within appropriate monads, as well as some instances of these classes.")
-   (home-page "https://hackage.haskell.org/package/array")
-   (license license:bsd-3)))
+    (inherit ghc-semigroupoids)
+    (name "ghc-semigroupoids")
+    (version "5.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "semigroupoids-" version "/semigroupoids-"
+                                   version ".tar.gz"))
+              (sha256
+               (base32
+                "17i96y4iqj8clcs090lf6k0ij3j16nj14vsfwz0mm9nd6i4gbpp4"))))
+    (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
+              ,@(package-inputs ghc-semigroupoids)))))
 
-(define-public ghc-containers
+(define-public ghc-bytes
   (package
-   (name "ghc-containers")
-   (version "0.5.11.0")
+   (name "ghc-bytes")
+   (version "0.15.4")
    (source
     (origin
      (method url-fetch)
      (uri
-      (string-append "https://hackage.haskell.org/package/containers-0.5.11.0/containers-"
+      (string-append "https://hackage.haskell.org/package/bytes-"
+                     version "/bytes-"
                      version ".tar.gz"))
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "0j29w09kvcn1c0yi4clmrdbgs2gqmpxs2m7q80ib2ix1smm25kaq"))))
+       "121x3iqlm8pghw8cd9g30cnqbl7jrdpfjxdanmqdqllajw6xivrm"))))
    (build-system haskell-build-system)
-   (inputs `(("ghc-array" ,ghc-array)
-             ("ghc-deepseq" ,ghc-deepseq-generics)
-             ("ghc-hunit" ,ghc-hunit)
-             ("ghc-chasingbottoms" ,ghc-chasingbottoms)
-             ("ghc-test-framework" ,ghc-test-framework)
-             ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-             ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
-             ("ghc-quickcheck" ,ghc-quickcheck)
-             ("ghc-ghc-prim" ,ghc-primitive)))
-   (synopsis "Haskell containers: Assorted concrete container types")
-   (description "This Haskell module provides efficient general-purpose
-implementations of various immutable container types including sets, maps,
-sequences, trees, and graphs.")
-   (home-page "https://hackage.haskell.org/package/containers")
+   (inputs `(("ghc-cereal" ,ghc-cereal)
+             ("cabal-doctest" ,cabal-doctest)
+             ("ghc-doctest" ,ghc-doctest-0.13)
+             ("ghc-mtl" ,ghc-mtl)
+             ("ghc-scientific" ,ghc-scientific)
+             ("ghc-text" ,ghc-text)
+             ("ghc-transformers-compat" ,ghc-transformers-compat)
+             ("ghc-unordered-containers" ,ghc-unordered-containers)
+             ("ghc-void" ,ghc-void)
+             ("ghc-vector" ,ghc-vector)))
+   (synopsis "Serialization between @code{binary} and @code{cereal}")
+   (description "This package provides a simple compatibility shim that lets
+you work with both @code{binary} and @code{cereal} with one chunk of
+serialization code.")
+   (home-page "https://hackage.haskell.org/package/bytes")
    (license license:bsd-3)))
 
 ;;; haskell.scm ends here

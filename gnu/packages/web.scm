@@ -3774,13 +3774,13 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.4.1")
+    (version "1.4.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "1pndv0h870ygibk0bmg9ayzkls60jqscrsyk39k29gy2pvm9ha5y"))))
+                "15ghxcyg9h0za3qy077fnn3izbpihskvaqwsppm2s43a771imsf6"))))
     (build-system r-build-system)
     (native-inputs `(("r-rcpp" ,r-rcpp)))
     (propagated-inputs
@@ -4000,14 +4000,14 @@ objects in HTML format.")
 (define-public r-rjson
   (package
     (name "r-rjson")
-    (version "0.2.15")
+    (version "0.2.18")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rjson" version))
        (sha256
         (base32
-         "1vzjyvf57k1fjizlk28rby65y5lsww5qnfvgnhln74qwda7hvl3p"))))
+         "18myz05ana8zlyqxi6i4xjs5vmafxln8459ab3ws5kk59c1ardfn"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/rjson")
     (synopsis "JSON library for R")

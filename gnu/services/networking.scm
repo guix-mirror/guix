@@ -464,6 +464,8 @@ make an initial adjustment of more than 1,000 seconds."
                                           openntpd-shepherd-service)
                        (service-extension account-service-type
                                           (const %ntp-accounts))
+                       (service-extension profile-service-type
+                                          (compose list openntpd-configuration-openntpd))
                        (service-extension activation-service-type
                                           openntpd-service-activation)))
                 (default-value (openntpd-configuration))
@@ -952,6 +954,8 @@ wireless networking."))))
                   (extensions
                    (list (service-extension shepherd-root-service-type
                                             connman-shepherd-service)
+                         (service-extension polkit-service-type
+                                            connman-package)
                          (service-extension dbus-root-service-type
                                             connman-package)
                          (service-extension activation-service-type
@@ -959,6 +963,7 @@ wireless networking."))))
                          ;; Add connman to the system profile.
                          (service-extension profile-service-type
                                             connman-package)))
+                  (default-value (connman-configuration))
                   (description
                    "Run @url{https://01.org/connman,Connman},
 a network connection manager."))))
