@@ -222,7 +222,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "18.0.2")
+    (version "18.0.4")
     (source
       (origin
         (method url-fetch)
@@ -234,10 +234,9 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1cz7p4b4yy201djzv3s28zx27f5cqwv0zgzqp5lcaba8d2bibylq"))
+          "03wjlb5qy1mn8d6zm0q1pq35x60agrfxyh9bmq6w59ghrvkwyfqz"))
         (patches
-         (search-patches "mesa-wayland-egl-symbols-check-mips.patch"
-                         "mesa-skip-disk-cache-test.patch"))))
+         (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
@@ -285,7 +284,7 @@ also known as DXTn or DXTC) for Mesa.")
               '("--with-gallium-drivers=i915,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
-         "--with-platforms=x11,drm,wayland,surfaceless"
+         "--with-platforms=x11,drm,surfaceless"
          "--enable-glx-tls"        ;Thread Local Storage, improves performance
          ;; "--enable-opencl"
          ;; "--enable-omx"
