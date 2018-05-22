@@ -10494,3 +10494,32 @@ daemons (services) for those getting tired of typing out @code{sudo service
 my_thing reload} all the time.  It offers a consistent UI over different init
 systems.")
     (license license:gpl3+)))
+
+(define-public emacs-esh-autosuggest
+  (package
+    (name "emacs-esh-autosuggest")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dieggsy/esh-autosuggest")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "116pdjgpjy9b0psm5kzwkwy7dq8vn0p6dy75dl1zsy2xrjf1iqdw"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-company" ,emacs-company)))
+    (home-page "https://github.com/dieggsy/esh-autosuggest")
+    (synopsis "Fish-like autosuggestions in Eshell")
+    (description
+     "This package assumes you use something other than company for eshell
+completion (e.g. @code{eshell-pcomplete}, @code{completion-at-point},
+@code{helm-esh-pcomplete}).  @code{company-mode} is used solely as a mechanism
+for history autosuggestions.
+
+Unless you're using @code{use-package}'s hook keyword, you can enable the
+autosuggestions with:
+@code{(add-hook 'eshell-mode-hook #'esh-autosuggest-mode)}")
+    (license license:gpl3+)))
