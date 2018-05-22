@@ -752,6 +752,10 @@ with the host.
 When FULL-BOOT? is true, return an image that does a complete boot sequence,
 bootloaded included; thus, make a disk image that contains everything the
 bootloader refers to: OS kernel, initrd, bootloader data, etc."
+  (define root-uuid
+    ;; Use a fixed UUID to improve determinism.
+    (operating-system-uuid os 'dce))
+
   (mlet* %store-monad ((os-drv   (operating-system-derivation os))
                        (bootcfg  (operating-system-bootcfg os)))
     ;; XXX: When FULL-BOOT? is true, we end up creating an image that contains
@@ -763,6 +767,7 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
                 #:bootloader (bootloader-configuration-bootloader
                               (operating-system-bootloader os))
                 #:disk-image-size disk-image-size
+                #:file-system-uuid root-uuid
                 #:inputs (if full-boot?
                              `(("bootcfg" ,bootcfg))
                              '())
