@@ -34,6 +34,7 @@
 ;;; Copyright © 2017, 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10469,3 +10470,27 @@ Dumb Jump performs best with The Silver Searcher @command{ag} or ripgrep
        "This package provides an Emacs minor mode for highlighting
 device tree files.")
       (license license:gpl3+))))
+
+(define-public emacs-daemons
+  (package
+    (name "emacs-daemons")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cbowdon/daemons.el")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "00ijgm22ck76gw0x79krl05yy0m8a502yfakazfy5xhpn1zi6ab7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cbowdon/daemons.el")
+    (synopsis "Emacs UI for managing init system services")
+    (description
+     "This is an Emacs mode to give you a UI for managing init system
+daemons (services) for those getting tired of typing out @code{sudo service
+my_thing reload} all the time.  Its offers a consistent UI over different init
+systems.")
+    (license license:gpl3+)))
