@@ -85,6 +85,12 @@
            " --exclude-regex ^\\(" (string-join skipped-tests "\\|") "\\)$")))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'split-package
+           ;; Remove files that have been packaged in other package recipes.
+           (lambda _
+             (delete-file "Auxiliary/cmake-mode.el")
+             (substitute* "Auxiliary/CMakeLists.txt"
+               ((".*cmake-mode.el.*") ""))))
          (add-before 'configure 'patch-bin-sh
            (lambda _
              ;; Replace "/bin/sh" by the right path in... a lot of
