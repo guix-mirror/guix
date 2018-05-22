@@ -11624,6 +11624,9 @@ Browser.")
                                "filter_non_conversion"
                                "bam2nuc"
                                "bismark2summary")))
+               (substitute* "bismark2report"
+                 (("\\$RealBin/bismark_sitrep")
+                  (string-append share "/bismark_sitrep")))
                (mkdir-p share)
                (mkdir-p docdir)
                (mkdir-p bin)
@@ -11632,10 +11635,6 @@ Browser.")
                (for-each (lambda (file) (install-file file docdir))
                          docs)
                (copy-recursively "Docs/Images" (string-append docdir "/Images"))
-
-               (substitute* "bismark2report"
-                 (("\\$RealBin/bismark_sitrep")
-                  (string-append share "/bismark_sitrep")))
                (copy-recursively "bismark_sitrep"
                                  (string-append share "/bismark_sitrep"))
 
