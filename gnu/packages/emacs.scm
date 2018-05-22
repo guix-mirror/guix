@@ -10491,6 +10491,6 @@ device tree files.")
     (description
      "This is an Emacs mode to give you a UI for managing init system
 daemons (services) for those getting tired of typing out @code{sudo service
-my_thing reload} all the time.  Its offers a consistent UI over different init
+my_thing reload} all the time.  It offers a consistent UI over different init
 systems.")
     (license license:gpl3+)))
