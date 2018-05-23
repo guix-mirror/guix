@@ -38,7 +38,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -13339,3 +13339,30 @@ Glob2 currently based on the glob code from Python 3.3.1.")
 
 (define-public python2-glob2
   (package-with-python2 python-glob2))
+
+(define-public python-gipc
+  (package
+    (name "python-gipc")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gipc" version ".zip"))
+       (sha256
+        (base32
+         "0pd9by719qh882hqs6xpby61sn1x5h98hms5p2p8yqnycrf1s0h2"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("python-gevent" ,python-gevent)))
+    (home-page "http://gehrcke.de/gipc")
+    (synopsis "Child process management in the context of gevent")
+    (description "Usage of Python's multiprocessing package in a
+gevent-powered application may raise problems.  With @code{gipc},
+process-based child processes can safely be created anywhere within a
+gevent-powered application.")
+    (license license:expat)))
+
+(define-public python2-gipc
+  (package-with-python2 python-gipc))
