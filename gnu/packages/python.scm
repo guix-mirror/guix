@@ -13366,3 +13366,36 @@ gevent-powered application.")
 
 (define-public python2-gipc
   (package-with-python2 python-gipc))
+
+(define-public python-fusepy
+  (package
+    (name "python-fusepy")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fusepy" version))
+       (sha256
+        (base32
+         "0v5grm4zyf58hsplwsxfbihddw95lz9w8cy3rpzbyha287swgx8h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-library-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((fuse (assoc-ref inputs "fuse")))
+               (substitute* "fuse.py"
+                 (("find_library\\('fuse'\\)")
+                  (string-append "'" fuse "/lib/libfuse.so'")))
+               #t))))))
+    (propagated-inputs
+     `(("fuse" ,fuse)))
+    (home-page "https://github.com/fusepy/fusepy")
+    (synopsis "Simple ctypes bindings for FUSE")
+    (description "Python module that provides a simple interface to FUSE and
+MacFUSE.  The binding is created using the standard @code{ctypes} library.")
+    (license license:isc)))
+
+(define-public python2-fusepy
+  (package-with-python2 python-fusepy))
