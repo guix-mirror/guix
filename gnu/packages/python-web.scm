@@ -25,6 +25,7 @@
 ;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2089,6 +2090,9 @@ users' sessions over extended periods of time.")
     (description "@code{python-oauth2client} provides an OAuth 2.0 client
 library for Python")
     (license license:asl2.0)))
+
+(define-public python2-oauth2client
+  (package-with-python2 python-oauth2client))
 
 (define-public python-flask-oidc
   (package
