@@ -272,8 +272,8 @@ safety and thread safety guarantees.")
                                    (package-native-inputs base-rust))))))
 
 (define-public mrustc
-  (let ((commit "ee65f12f4aeb27238c8a2fc07fbe84eceafdde26")
-        (revision "2")
+  (let ((commit "b5b70897015ee70d62ddda9711c256ca7c720e0f")
+        (revision "3")
         (rustc-version "1.19.0"))
     (package
       (name "mrustc")
@@ -286,7 +286,7 @@ safety and thread safety guarantees.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0rdjzxfwhrpzf44afpm0i7b8fiqvriccn93z22sys8pxw22pkp0d"))))
+                  "1d6jr6agiy598ab8lax0h9dfn9n67wg906y1f46l1c27sz3w82lb"))))
       (outputs '("out" "cargo"))
       (build-system gnu-build-system)
       (inputs
