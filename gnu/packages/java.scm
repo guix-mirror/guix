@@ -1948,27 +1948,31 @@ designs.")
                      license:asl2.0
                      license:cpl1.0)))))
 
-(define-public javacc
+(define-public javacc-4
   (package
     (name "javacc")
-    (version "7.0.3")
+    (version "4.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/javacc/javacc/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append "javacc-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/javacc/javacc.git")
+                    (commit "release_41")))
+              (file-name (string-append "javacc-" version "-checkout"))
               (sha256
                (base32
-                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))))
+                "07ysav7j8r1c6h8qxrgqk6lwdp74ly0ad1935lragxml0qqc3ka0"))))
     (build-system ant-build-system)
+    ;; Tests fail with
+    ;; /tmp/guix-build-javacc-4.1.drv-0/source/test/javacodeLA/build.xml:60:
+    ;; JAVACODE failed
     (arguments
-     `(#:test-target "test"
+     `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-bundled-libs
            (lambda _
              (delete-file-recursively "lib") #t))
-         (replace 'install (install-jars "target")))))
+         (replace 'install (install-jars "bin/lib")))))
     (home-page "https://javacc.org/")
     (synopsis "Java parser generator")
     (description "Java Compiler Compiler (JavaCC) is the most popular parser
@@ -1980,29 +1984,26 @@ as tree building (via a tool called JJTree included with JavaCC), actions,
 debugging, etc.")
     (license license:bsd-3)))
 
-(define-public javacc-4
-  (package (inherit javacc)
-    (version "4.1")
+(define-public javacc
+  (package
+    (inherit javacc-4)
+    (version "7.0.3")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/javacc/javacc.git")
-                    (commit "release_41")))
-              (file-name (string-append "javacc-" version "-checkout"))
+              (method url-fetch)
+              (uri (string-append "https://github.com/javacc/javacc/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append "javacc-" version ".tar.gz"))
               (sha256
                (base32
-                "07ysav7j8r1c6h8qxrgqk6lwdp74ly0ad1935lragxml0qqc3ka0"))))
-    ;; Tests fail with
-    ;; /tmp/guix-build-javacc-4.1.drv-0/source/test/javacodeLA/build.xml:60:
-    ;; JAVACODE failed
+                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))))
     (arguments
-     `(#:tests? #f
+     `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-bundled-libs
            (lambda _
              (delete-file-recursively "lib") #t))
-         (replace 'install (install-jars "bin/lib")))))))
+         (replace 'install (install-jars "target")))))))
 
 ;; This is the last 3.x release of ECJ
 (define-public java-ecj-3
