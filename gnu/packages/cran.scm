@@ -3994,3 +3994,35 @@ determining dependencies between variables, code improvement suggestions.")
 user's computer should be used to save data, caches and logs.  It is a port of
 Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
     (license license:expat)))
+
+(define-public r-learnr
+  (package
+    (name "r-learnr")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "learnr" version))
+       (sha256
+        (base32
+         "1z04c1djg7ghsl7p9ypc6k5m7snahnmjy10xmrzqfayx1wkfkn9n"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-evaluate" ,r-evaluate)
+       ("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-markdown" ,r-markdown)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-rprojroot" ,r-rprojroot)
+       ("r-shiny" ,r-shiny)
+       ("r-withr" ,r-withr)))
+    (home-page "https://rstudio.github.io/learnr/")
+    (synopsis "Interactive tutorials for R")
+    (description
+     "This package provides tools to create interactive tutorials using R
+Markdown.  Use a combination of narrative, figures, videos, exercises, and
+quizzes to create self-paced tutorials for learning about R and R packages.")
+    (license license:asl2.0)))
