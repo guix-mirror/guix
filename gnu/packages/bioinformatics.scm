@@ -12995,7 +12995,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.3")
+    (version "0.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -13003,7 +13003,7 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "12qdq0nj1wdkyighdxj6924bmbpd1a0b3gam6w64l4hiqrv5sijz"))))
+                "1pvjm6f3mascprs65vflggwwg5v925knvgal7k7a6nnlmw5qndrf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
