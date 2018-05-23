@@ -3432,7 +3432,19 @@ from userspace.")
                                "--with-fuse=external" ;use our own FUSE
                                "--enable-mount-helper"
                                "--enable-posix-acls"
-                               "--enable-xattr-mappings")))
+                               "--enable-xattr-mappings")
+       #:phases
+       (modify-phases %standard-phases
+         ;; If users install ntfs-3g, they probably want to make it the
+         ;; default driver as well, so we opt for sensible defaults and link
+         ;; mount.ntfs to mount.ntfs-3g.  (libmount tries to run mount.ntfs to
+         ;; mount NTFS filesystems.)
+         (add-after 'install 'install-link
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sbin (string-append out "/sbin")))
+               (symlink "mount.ntfs-3g"
+                        (string-append sbin "/mount.ntfs"))))))))
     (home-page "https://www.tuxera.com/community/open-source-ntfs-3g/")
     (synopsis "Read-write access to NTFS file systems")
     (description
