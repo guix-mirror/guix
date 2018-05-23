@@ -2010,12 +2010,20 @@ debugging, etc.")
                 "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))
               (modules '((guix build utils)))
               ;; delete bundled jars
-              (snippet '(begin (delete-file-recursively "lib") #t))))
+              (snippet '(begin (for-each delete-file-recursively
+                                         '("bootstrap" "lib"))
+                               #t))))
     (arguments
-     `(#:test-target "test"
+     `(#:make-flags ; bootstrap from javacc-4
+       (list (string-append "-Dbootstrap-jar="
+                            (assoc-ref %build-inputs "javacc")
+                            "/share/java/javacc.jar"))
+       #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (replace 'install (install-jars "target")))))))
+         (replace 'install (install-jars "target")))))
+    (native-inputs
+     `(("javacc" ,javacc-4)))))
 
 ;; This is the last 3.x release of ECJ
 (define-public java-ecj-3
