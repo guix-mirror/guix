@@ -9,6 +9,8 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -612,3 +614,34 @@ Objective@tie{}C, D, Java, Pawn, and Vala).  Features:
      "Artistic Style is a source code indenter, formatter, and beautifier for
 the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
     (license license:lgpl3+)))
+
+(define-public indent
+  (package
+   (name "indent")
+   (version "2.2.10")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/indent/indent-" version
+                                ".tar.gz"))
+            (sha256 (base32
+                     "0f9655vqdvfwbxvs1gpa7py8k1z71aqh8hp73f65vazwbfz436wa"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:phases (alist-cons-after
+                'unpack 'fix-docdir
+                (lambda _
+                  ;; Although indent uses a modern autoconf in which docdir
+                  ;; defaults to PREFIX/share/doc, the doc/Makefile.am
+                  ;; overrides this to be in PREFIX/doc.  Fix this.
+                  (substitute* "doc/Makefile.in"
+                    (("^docdir = .*$") "docdir = @docdir@\n")))
+                %standard-phases)))
+   (synopsis "Code reformatter")
+   (description
+    "Indent is a program that makes source code easier to read by
+reformatting it in a consistent style.  It can change the style to one of
+several different styles such as GNU, BSD or K&R.  It has some flexibility to
+deal with incomplete or malformed syntax.  GNU indent offers several
+extensions over the standard utility.")
+   (license license:gpl3+)
+   (home-page "https://www.gnu.org/software/indent/")))
