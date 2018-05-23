@@ -2624,3 +2624,30 @@ name resolutions asynchronously.")
     (description "@code{yarl} module provides handy @code{URL} class
 for URL parsing and changing.")
     (license license:asl2.0)))
+
+(define-public python-google-api-client
+  (package
+    (name "python-google-api-client")
+    (version "1.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "google-api-python-client" version))
+       (sha256
+        (base32
+         "1wpbbbxfpy9mwxdy3kn352cb590ladv574j1aa2l4grjdqw3ln05"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests require internet access
+    (native-inputs
+     `(("python-httplib2" ,python-httplib2)
+       ("python-six" ,python-six)
+       ("python-oauth2client" ,python-oauth2client)
+       ("python-uritemplate" ,python-uritemplate)))
+    (home-page "https://github.com/google/google-api-python-client")
+    (synopsis "Core Python library for accessing Google APIs")
+    (description "Python client library for Google's discovery based APIs")
+    (license license:asl2.0)))
+
+(define-public python2-google-api-client
+  (package-with-python2 python-google-api-client))
