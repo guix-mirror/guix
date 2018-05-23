@@ -120,7 +120,7 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
 (define-public mescc-tools
   (package
     (name "mescc-tools")
-    (version "0.3")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -130,13 +130,18 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04lvyyp7isamgddrnfpi92lgqdflzdzx5kc2x8fxmgsjisy0dgr4"))))
+                "1iwc8xqwzdaqckb4jkkisljrgn8ii4bl7dzk1l2kpv98hsyq9vi1"))))
     (build-system gnu-build-system)
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:test-target "test"
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure)
+                  (add-after 'install 'install-2
+                    (lambda _
+                      (let ((out (assoc-ref %outputs "out")))
+                       (copy-file "bin/blood-elf" (string-append out "/bin/blood-elf"))))))))
     (synopsis "Tools for the full source bootstrapping process")
     (description
      "Mescc-tools is a collection of tools for use in a full source
