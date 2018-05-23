@@ -3974,3 +3974,23 @@ including the ability to summarize or get a high-level view of code,
 determining dependencies between variables, code improvement suggestions.")
     ;; Any version of the GPL
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-rappdirs
+  (package
+    (name "r-rappdirs")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rappdirs" version))
+       (sha256
+        (base32
+         "0ji6sg3bdn5gazkq14xmmcq7jnbsyxw4lzmmbgv6526j2vn93n1g"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rappdirs/")
+    (synopsis "Determine where to save data, caches, and logs")
+    (description
+     "This package provides an easy way to determine which directories on the
+user's computer should be used to save data, caches and logs.  It is a port of
+Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
+    (license license:expat)))
