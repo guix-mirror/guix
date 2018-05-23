@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017,2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -55,6 +55,19 @@ The syntax and nomenclature should be considered not stable.  It comes with
 extensive examples, including parsers for the Javascript and C99 languages.")
     (home-page "https://savannah.nongnu.org/projects/nyacc")
     (license (list gpl3+ lgpl3+))))
+
+(define-public nyacc-for-mes
+  (package
+    (inherit nyacc)
+    (version "0.80.42")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://gitlab.com/janneke/nyacc"
+                                    "/-/archive/v" version
+                                    "/nyacc-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0c8c8kxir0h2d4nxr131xbkfs7c80haipmkp2g6677sh14wn0b3y"))))))
 
 (define-public mes
   (let ((triplet "i686-unknown-linux-gnu"))
