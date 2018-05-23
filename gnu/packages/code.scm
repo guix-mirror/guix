@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -570,3 +571,44 @@ Objective@tie{}C, D, Java, Pawn, and Vala).  Features:
 @item Highly configurable - More than 600 configurable options.
 @end itemize\n")
     (license license:gpl2+)))
+
+(define-public astyle
+  (package
+    (name "astyle")
+    (version "2.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/astyle/astyle/astyle%20"
+                           version "/astyle_"  version "_linux.tar.gz"))
+       (sha256
+        (base32
+         "0f9sh9kq5ajp1yz133h00fr9235p1m698x7n3h7zbrhjiwgynd6s"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags (list (string-append "prefix=" %output)
+                          "INSTALL=install"
+                          "all")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _ (chdir "build/gcc") #t))
+         (add-after 'install 'install-libs
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Libraries are not installed by default
+             (let* ((output (assoc-ref outputs "out"))
+                    (libdir (string-append output "/lib")))
+               (begin
+                 (mkdir-p libdir)
+                 (for-each (lambda (l)
+                             (copy-file
+                              l (string-append libdir "/" (basename l))))
+                           (find-files "bin" "lib*"))))
+             #t)))))
+    (home-page "http://astyle.sourceforge.net/")
+    (synopsis "Source code indenter, formatter, and beautifier")
+    (description
+     "Artistic Style is a source code indenter, formatter, and beautifier for
+the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
+    (license license:lgpl3+)))
