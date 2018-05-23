@@ -695,14 +695,14 @@ by Robert Shea and Robert Anton Wilson.")
 (define-public procps
   (package
     (name "procps")
-    (version "3.3.14")
+    (version "3.3.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/procps-ng/Production/"
                                   "procps-ng-" version ".tar.xz"))
               (sha256
                (base32
-                "0v3j6rkzzscqds37i105cxx3q4dk04rsgpqfd5p7hzcvk59h5njy"))))
+                "0r84kwa5fl0sjdashcn4vh7hgfm7ahdcysig3mcjvpmkzi7p9g8h"))))
     (build-system gnu-build-system)
     (arguments
      '(#:modules ((guix build utils)
