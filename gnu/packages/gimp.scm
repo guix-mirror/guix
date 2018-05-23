@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -196,7 +196,18 @@ that is extensible via a plugin system.")
      `(#:tests? #f ;no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         ;; FIXME: The gegl package only installs "gegl-0.4.pc", but
+         ;; "gimp-2.0.pc" requires "gegl-0.3.pc", so we just copy it.
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "tmppkgconfig")
+             (copy-file (string-append (assoc-ref inputs "gegl")
+                                       "/lib/pkgconfig/gegl-0.4.pc")
+                        "tmppkgconfig/gegl-0.3.pc")
+             (setenv "PKG_CONFIG_PATH"
+                     (string-append "tmppkgconfig:"
+                                    (or (getenv "PKG_CONFIG_PATH") "")))
+             #t))
          (add-after 'unpack 'set-prefix
            (lambda* (#:key outputs #:allow-other-keys)
              ;; gimptool-2.0 does not allow us to install to any target
@@ -215,6 +226,7 @@ that is extensible via a plugin system.")
        ("gimp" ,gimp)
        ;; needed by gimp-2.0.pc
        ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gegl" ,gegl)
        ("cairo" ,cairo)
        ("glib" ,glib)
        ;; needed by gimpui-2.0.pc
