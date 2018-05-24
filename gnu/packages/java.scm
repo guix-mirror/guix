@@ -1960,7 +1960,10 @@ designs.")
               (file-name (string-append "javacc-" version "-checkout"))
               (sha256
                (base32
-                "07ysav7j8r1c6h8qxrgqk6lwdp74ly0ad1935lragxml0qqc3ka0"))))
+                "07ysav7j8r1c6h8qxrgqk6lwdp74ly0ad1935lragxml0qqc3ka0"))
+              (modules '((guix build utils)))
+              ;; delete bundled jars
+              (snippet '(begin (delete-file-recursively "lib") #t))))
     (build-system ant-build-system)
     ;; Tests fail with
     ;; /tmp/guix-build-javacc-4.1.drv-0/source/test/javacodeLA/build.xml:60:
@@ -1969,9 +1972,18 @@ designs.")
      `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-bundled-libs
+         ;; Delete tests to avoid build failure (we don't run them anyway).
+         (add-after 'unpack 'delete-tests
            (lambda _
-             (delete-file-recursively "lib") #t))
+             (for-each delete-file
+                       '("src/org/javacc/JavaCCTestCase.java"
+                         "src/org/javacc/parser/ExpansionTest.java"
+                         "src/org/javacc/parser/OptionsTest.java"
+                         "src/org/javacc/jjtree/JJTreeOptionsTest.java"))
+             (for-each delete-file-recursively
+                       '("src/org/javacc/parser/test"
+                         "src/org/javacc/jjdoc/test"))
+             #t))
          (replace 'install (install-jars "bin/lib")))))
     (home-page "https://javacc.org/")
     (synopsis "Java parser generator")
@@ -1995,14 +2007,14 @@ debugging, etc.")
               (file-name (string-append "javacc-" version ".tar.gz"))
               (sha256
                (base32
-                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))))
+                "111xc9mnmc5a6qz6x3xbhqc07y1lg2b996ggzw0hrblg42zya9xf"))
+              (modules '((guix build utils)))
+              ;; delete bundled jars
+              (snippet '(begin (delete-file-recursively "lib") #t))))
     (arguments
      `(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-bundled-libs
-           (lambda _
-             (delete-file-recursively "lib") #t))
          (replace 'install (install-jars "target")))))))
 
 ;; This is the last 3.x release of ECJ
