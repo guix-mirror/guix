@@ -524,7 +524,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
              (string-append "--with-xserver-path="
                             (assoc-ref %build-inputs "xorg-server-xwayland")
                             "/bin/Xwayland"))
-       #:tests? #f ; FIXME: Tests randomly fail.
+       #:parallel-tests? #f ; Parallel tests cause failures.
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'use-elogind
