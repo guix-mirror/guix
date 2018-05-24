@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2018 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
@@ -33,6 +33,7 @@
   #:use-module (guix svn-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -1109,3 +1111,59 @@ straight into any libretro-compatible frontend.  RetroArch is the official
 reference frontend for the libretro API, currently used by most as a modular
 multi-system game/emulator system.")
     (license license:gpl3+)))
+
+(define-public scummvm
+  (package
+    (name "scummvm")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.scummvm.org/frs/scummvm/" version
+                           "/scummvm-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0q6aiw97wsrf8cjw9vjilzhqqsr2rw2lll99s8i5i9svan6l314p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;require "git"
+       #:configure-flags (list "--enable-release") ;for optimizations
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; configure does not work followed by both "SHELL=..." and
+           ;; "CONFIG_SHELL=..."; set environment variables instead
+           (lambda* (#:key outputs configure-flags #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash (which "bash"))
+                    (flags `(,(string-append "--prefix=" out)
+                             ,@configure-flags)))
+               (setenv "SHELL" bash)
+               (setenv "CONFIG_SHELL" bash)
+               (apply invoke "./configure" flags)))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("faad2" ,faad2)
+       ("fluidsynth" ,fluidsynth)
+       ("freetype" ,freetype)
+       ("libflac" ,flac)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libmad" ,libmad)
+       ("libmpeg2" ,libmpeg2)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("nasm" ,nasm)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (home-page "https://www.scummvm.org/")
+    (synopsis "Engine for several graphical adventure games")
+    (description "ScummVM is a program which allows you to run certain
+classic graphical point-and-click adventure games, provided you
+already have their data files.  The clever part about this: ScummVM
+just replaces the executables shipped with the games, allowing you to
+play them on systems for which they were never designed!")
+    (license license:gpl2+)))
