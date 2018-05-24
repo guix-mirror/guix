@@ -10523,3 +10523,28 @@ Unless you're using @code{use-package}'s hook keyword, you can enable the
 autosuggestions with:
 @code{(add-hook 'eshell-mode-hook #'esh-autosuggest-mode)}")
     (license license:gpl3+)))
+
+(define-public emacs-desktop-environment
+  (package
+    (name "emacs-desktop-environment")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/DamienCassou/desktop-environment.git")
+             (commit (string-append "v" version))))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1fal3yfmqg10cb53qsf5gsq2gvyz9w16wmlpnpjwjzwnjfn6l73r"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.petton.fr/DamienCassou/desktop-environment")
+    (synopsis "Control your GNU/Linux desktop environment from Emacs")
+    (description
+     "This package helps you control your GNU/Linux desktop from Emacs.
+With @code{desktop-environment}, you can control the brightness and volume as
+well as take screenshots and lock your screen.  The package depends on the
+availability of shell commands to do the hard work for us.  These commands can
+be changed by customizing the appropriate variables.")
+    (license license:gpl3+)))
