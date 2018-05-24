@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -828,7 +829,8 @@ rules."
                              gnome-polkit-settings)
           (service-extension profile-service-type
                              (compose list
-                                      gnome-package))))))
+                                      gnome-package))))
+   (description "Run the GNOME desktop environment.")))
 
 (define* (gnome-desktop-service #:key (config (gnome-desktop-configuration)))
   "Return a service that adds the @code{gnome} package to the system profile,
