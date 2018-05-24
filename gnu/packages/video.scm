@@ -379,7 +379,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "2.6")
+    (version "2.7")
     (source
       (origin
         (method url-fetch)
@@ -387,7 +387,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "1gyd94jkwdii9308m07nymsbxrmrcl81c0j8i10zhslr2mj07w0v"))
+          "18llni1m8kfvdwy5bp950z6gyd0nijmvi3hzd6gd8vpy5yk5zrym"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -395,7 +395,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
-       ;; Currently the source code doesn't check for aarch64
+       ;; Currently the source code doesn't check for aarch64.
        ,@(if (string-prefix? "aarch64" (or (%current-target-system) (%current-system)))
            '(#:configure-flags '("-DENABLE_PIC=TRUE"))
            '())
@@ -2073,7 +2073,7 @@ making @dfn{screencasts}.")
 (define-public simplescreenrecorder
   (package
     (name "simplescreenrecorder")
-    (version "0.3.10")
+    (version "0.3.11")
     (source
      (origin
        (method url-fetch)
@@ -2082,14 +2082,14 @@ making @dfn{screencasts}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "02rl9yyx3hlz9fqvgzv7ipmvx2qahj7ws5wx2m7zs3lssq3qag3g"))))
+         "0l6irdadqpajvv0dj3ngs1231n559l0y1pykhs2h7526qm4w7xal"))))
     (build-system cmake-build-system)
     ;; Although libx11, libxfixes, libxext are listed as build dependencies in
     ;; README.md, the program builds and functions properly without them.
     ;; As a result, they are omitted. Please add them back if problems appear.
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("ffmpeg" ,ffmpeg-3.4)
+       ("ffmpeg" ,ffmpeg)
        ("glu" ,glu)
        ("jack" ,jack-1)
        ("libxi" ,libxi)

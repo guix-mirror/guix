@@ -29,6 +29,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system emacs)
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
@@ -154,3 +155,20 @@ and workspaces that can be used in the compiler environment of your choice.")
                    license:bsd-2             ; cmlibarchive
                    license:expat             ; cmjsoncpp is dual MIT/public domain
                    license:public-domain)))) ; cmlibarchive/archive_getdate.c
+
+(define-public emacs-cmake-mode
+  (package
+    (inherit cmake)
+    (name "emacs-cmake-mode")
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-elisp
+           ;; Elisp directory is not in root of the source.
+           (lambda _
+             (chdir "Auxiliary"))))))
+    (synopsis "Emacs major mode for editing Cmake expressions")
+    (description "@code{cmakeos-mode} provides an Emacs major mode for editing
+Cmake files.  It supports syntax highlighting, indenting and refilling of
+comments.")))

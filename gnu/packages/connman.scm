@@ -3,7 +3,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +43,7 @@
 (define-public connman
   (package
     (name "connman")
-    (version "1.35")
+    (version "1.36")
     (source
       (origin
         (method url-fetch)
@@ -51,7 +51,7 @@
                             name "-" version ".tar.xz"))
     (sha256
      (base32
-      "1apj5j25kj7v1bsfv3nh54aiq873nfrsjfbj85p5qm3ihfwxxmv6"))))
+      "0x00dq5c2frz06md3g5y0jh5kbcj2hrfl5qjcqga8gs4ri0xp2f7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

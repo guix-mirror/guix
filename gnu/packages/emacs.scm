@@ -34,6 +34,7 @@
 ;;; Copyright © 2017, 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10480,3 +10481,56 @@ Dumb Jump performs best with The Silver Searcher @command{ag} or ripgrep
        "This package provides an Emacs minor mode for highlighting
 device tree files.")
       (license license:gpl3+))))
+
+(define-public emacs-daemons
+  (package
+    (name "emacs-daemons")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cbowdon/daemons.el")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "00ijgm22ck76gw0x79krl05yy0m8a502yfakazfy5xhpn1zi6ab7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cbowdon/daemons.el")
+    (synopsis "Emacs UI for managing init system services")
+    (description
+     "This is an Emacs mode to give you a UI for managing init system
+daemons (services) for those getting tired of typing out @code{sudo service
+my_thing reload} all the time.  It offers a consistent UI over different init
+systems.")
+    (license license:gpl3+)))
+
+(define-public emacs-esh-autosuggest
+  (package
+    (name "emacs-esh-autosuggest")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dieggsy/esh-autosuggest")
+             (commit version)))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "116pdjgpjy9b0psm5kzwkwy7dq8vn0p6dy75dl1zsy2xrjf1iqdw"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-company" ,emacs-company)))
+    (home-page "https://github.com/dieggsy/esh-autosuggest")
+    (synopsis "Fish-like autosuggestions in Eshell")
+    (description
+     "This package assumes you use something other than company for eshell
+completion (e.g. @code{eshell-pcomplete}, @code{completion-at-point},
+@code{helm-esh-pcomplete}).  @code{company-mode} is used solely as a mechanism
+for history autosuggestions.
+
+Unless you're using @code{use-package}'s hook keyword, you can enable the
+autosuggestions with:
+@code{(add-hook 'eshell-mode-hook #'esh-autosuggest-mode)}")
+    (license license:gpl3+)))

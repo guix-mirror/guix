@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1300,3 +1301,173 @@ support functions for dealing with terminals, as commonly found on UNIX
 systems.")
       (home-page "https://go.googlesource.com/crypto/")
       (license license:bsd-3))))
+
+(define-public go-github-com-burntsushi-toml
+  (let ((commit
+         "a368813c5e648fee92e5f6c30e3944ff9d5e8895")
+        (revision "0"))
+    (package
+      (name "go-github-com-burntsushi-toml")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BurntSushi/toml.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1sjxs2lwc8jpln80s4rlzp7nprbcljhy5mz4rf9995gq93wqnym5"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/BurntSushi/toml"))
+      (home-page "https://github.com/BurntSushi/toml")
+      (synopsis "Toml parser and encoder for Go")
+      (description "This package is toml parser and encoder for Go.  The
+interface is similar to Go's standard library @code{json} and @code{xml}
+package.")
+      (license license:expat))))
+
+(define-public go-github-com-getsentry-raven-go
+  (let ((commit
+         "dffeb57df75d6a911f00232155194e43d79d38d7")
+        (revision "0"))
+    (package
+      (name "go-github-com-getsentry-raven-go")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/getsentry/raven-go.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "13sb9rvl3369m7fah3ss9g0hwky259snqfn8gmbr0h5zvp651lja"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/getsentry/raven-go"))
+      (home-page
+       "https://github.com/getsentry/raven-go")
+      (synopsis "Sentry client in Go")
+      (description "This package is Go client API for the Sentry event/error
+logging system.")
+      (license license:bsd-3))))
+
+(define-public go-github-com-hashicorp-go-version
+  (let ((commit
+         "03c5bf6be031b6dd45afec16b1cf94fc8938bc77")
+        (revision "0"))
+    (package
+      (name "go-github-com-hashicorp-go-version")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hashicorp/go-version.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0sjq57gpfznaqdrbyb2p0bn90g9h661cvr0jrk6ngags4pbw14ik"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/hashicorp/go-version"))
+      (home-page
+       "https://github.com/hashicorp/go-version")
+      (synopsis "Go library for parsing and verifying versions and version
+constraints")
+      (description "This package is a library for parsing versions and version
+constraints, and verifying versions against a set of constraints.  It can sort
+a collection of versions properly, handles prerelease/beta versions, can
+increment versions.")
+      (license license:mpl2.0))))
+
+(define-public go-github-com-jpillora-backoff
+  (let ((commit
+         "06c7a16c845dc8e0bf575fafeeca0f5462f5eb4d")
+        (revision "0"))
+    (package
+      (name "go-github-com-jpillora-backoff")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jpillora/backoff.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0xhvxr7bm47czdc5hy3kl508z3y4j91i2jm7vg774i52zych6k4l"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/jpillora/backoff"))
+      (home-page "https://github.com/jpillora/backoff")
+      (synopsis "Simple exponential backoff counter in Go")
+      (description "This package is a simple exponential backoff counter in
+Go.")
+      (license license:expat))))
+
+(define-public go-github-com-stretchr-testify
+  (let ((commit
+          "b1f989447a57594c728884458a39abf3a73447f7")
+        (revision "0"))
+    (package
+      (name "go-github-com-stretchr-testify")
+      (version (git-version "1.1.4" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/stretchr/testify.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "0p0gkqzh2p8r5g0rxm885ljl7ghih7h7hx9w562imx5ka0vdgixv"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/stretchr/testify"))
+      (home-page "https://github.com/stretchr/testify")
+      (synopsis "Go helper library for tests and invariant checking")
+      (description "This package provide many tools for testifying that your
+code will behave as you intend.
+
+Features include:
+@itemize
+@item Easy assertions
+@item Mocking
+@item HTTP response trapping
+@item Testing suite interfaces and functions.
+@end itemize")
+      (license license:expat))))
+
+(define-public go-github-com-tevino-abool
+  (let ((commit
+          "3c25f2fe7cd0ef3eabefce1d90efd69a65d35b12")
+        (revision "0"))
+    (package
+      (name "go-github-com-tevino-abool")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/tevino/abool.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "1wxqrclxk93q0aj15z596dx2y57x9nkhi64nbrr5cxnhxn8vwixm"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/tevino/abool"))
+      (home-page "https://github.com/tevino/abool")
+      (synopsis "Atomic boolean library for Go code")
+      (description "This package is atomic boolean library for Go code,
+optimized for performance yet simple to use.")
+      (license license:expat))))

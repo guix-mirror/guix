@@ -950,7 +950,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
 (define-public redshift
   (package
     (name "redshift")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -960,7 +960,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
                        "/redshift-" version ".tar.xz"))
        (sha256
         (base32
-         "0ngkwj7rg8nfk806w0sg443w6wjr91xdc0zisqfm5h2i77wm1qqh"))))
+         "1fi27b73x85qqar526dbd33av7mahca2ykaqwr7siqiw1qqcby6j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -970,7 +970,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
        ("libxxf86vm" ,libxxf86vm)
-       ("glib" ,glib)))                           ;for Geoclue2 support
+       ("glib" ,glib)))                 ; for Geoclue2 support
     (home-page "https://github.com/jonls/redshift")
     (synopsis "Adjust the color temperature of your screen")
     (description

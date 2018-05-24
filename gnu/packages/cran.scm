@@ -3974,3 +3974,55 @@ including the ability to summarize or get a high-level view of code,
 determining dependencies between variables, code improvement suggestions.")
     ;; Any version of the GPL
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-rappdirs
+  (package
+    (name "r-rappdirs")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rappdirs" version))
+       (sha256
+        (base32
+         "0ji6sg3bdn5gazkq14xmmcq7jnbsyxw4lzmmbgv6526j2vn93n1g"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/rappdirs/")
+    (synopsis "Determine where to save data, caches, and logs")
+    (description
+     "This package provides an easy way to determine which directories on the
+user's computer should be used to save data, caches and logs.  It is a port of
+Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
+    (license license:expat)))
+
+(define-public r-learnr
+  (package
+    (name "r-learnr")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "learnr" version))
+       (sha256
+        (base32
+         "1z04c1djg7ghsl7p9ypc6k5m7snahnmjy10xmrzqfayx1wkfkn9n"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-evaluate" ,r-evaluate)
+       ("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-markdown" ,r-markdown)
+       ("r-rappdirs" ,r-rappdirs)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-rprojroot" ,r-rprojroot)
+       ("r-shiny" ,r-shiny)
+       ("r-withr" ,r-withr)))
+    (home-page "https://rstudio.github.io/learnr/")
+    (synopsis "Interactive tutorials for R")
+    (description
+     "This package provides tools to create interactive tutorials using R
+Markdown.  Use a combination of narrative, figures, videos, exercises, and
+quizzes to create self-paced tutorials for learning about R and R packages.")
+    (license license:asl2.0)))

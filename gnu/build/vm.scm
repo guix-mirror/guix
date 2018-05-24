@@ -265,7 +265,8 @@ actual /dev name based on DEVICE."
                                  #:key label uuid)
   "Create an ext-family file system of TYPE on PARTITION.  If LABEL is true,
 use that as the volume name.  If UUID is true, use it as the partition UUID."
-  (format #t "creating ~a partition...\n" type)
+  (format #t "creating ~a partition... ~@[label: ~s~] ~@[uuid: ~s~]\n"
+          type label (and uuid (uuid->string uuid)))
   (apply invoke (string-append "mkfs." type)
          "-F" partition
          `(,@(if label

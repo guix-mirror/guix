@@ -394,8 +394,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.16.10")
-(define %linux-libre-hash "028xl0jj7wibd8v93r1r0vnw5iifin46p6ghd9m3w095lailqlsi")
+(define %linux-libre-version "4.16.11")
+(define %linux-libre-hash "0dc6kwpzncg2a8haf081i5si4ry9y3x6m39bjblbx9c809hdls6g")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -403,8 +403,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.42")
-(define %linux-libre-4.14-hash "12vjzb5g1abg5d5w6z65n1ixw7c3y9f5zwx3gd3854dgnynbq708")
+(define %linux-libre-4.14-version "4.14.43")
+(define %linux-libre-4.14-hash "0mqgxp0001j11m5s82s7j4398443zx474a5kpzql7cqf3aljfybm")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -413,8 +413,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.101"
-                    "1s8zpl3dnz0nrg0by6hnss5z20iwlcwdg5x4251w0l9la81p05v5"
+  (make-linux-libre "4.9.102"
+                    "1y32rc2zi2is4yl184i1vbbvc7gvkyr15r325g2syascxqzxarn0"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -670,14 +670,14 @@ by Robert Shea and Robert Anton Wilson.")
 (define-public procps
   (package
     (name "procps")
-    (version "3.3.14")
+    (version "3.3.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/procps-ng/Production/"
                                   "procps-ng-" version ".tar.xz"))
               (sha256
                (base32
-                "0v3j6rkzzscqds37i105cxx3q4dk04rsgpqfd5p7hzcvk59h5njy"))))
+                "0r84kwa5fl0sjdashcn4vh7hgfm7ahdcysig3mcjvpmkzi7p9g8h"))))
     (build-system gnu-build-system)
     (arguments
      '(#:modules ((guix build utils)

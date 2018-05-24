@@ -729,13 +729,13 @@ allowing to handle large objects with a small memory footprint.")
 (define-public python-gitpython
   (package
     (name "python-gitpython")
-    (version "2.1.9")
+    (version "2.1.10")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "GitPython" version))
               (sha256
                (base32
-                "0a9in1jfv9ssxhckl6sasw45bhm762y2r5ikgb2pk2g8yqdc6z64"))))
+                "00bk48s5szh296r7zyvdpv3sd7q9j2cb9sqdc9diwcjayrf082xn"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;XXX: Tests can only be run within the GitPython repository.

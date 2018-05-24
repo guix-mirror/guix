@@ -226,7 +226,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/image-processing.scm	\
   %D%/packages/image-viewers.scm	\
   %D%/packages/imagemagick.scm			\
-  %D%/packages/indent.scm			\
   %D%/packages/inklingreader.scm		\
   %D%/packages/inkscape.scm			\
   %D%/packages/irc.scm  			\

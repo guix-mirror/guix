@@ -26,7 +26,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages indent)
+  #:use-module (gnu packages code)
   #:use-module (srfi srfi-1))
 
 (define-public flex
