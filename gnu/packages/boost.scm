@@ -68,16 +68,7 @@
 
              ;; Set the RUNPATH to $libdir so that the libs find each other.
              (string-append "linkflags=-Wl,-rpath="
-                            (assoc-ref %outputs "out") "/lib")
-
-             ;; Boost's 'context' library is not yet supported on mips64, so
-             ;; we disable it.  The 'coroutine' library depends on 'context',
-             ;; so we disable that too.
-             ,@(if (string-prefix? "mips64" (or (%current-target-system)
-                                                (%current-system)))
-                   '("--without-context"
-                     "--without-coroutine" "--without-coroutine2")
-                   '()))
+                            (assoc-ref %outputs "out") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap)
