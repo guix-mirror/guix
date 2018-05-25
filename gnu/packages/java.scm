@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -4262,6 +4262,33 @@ is achieved by providing an API that permits calling scripting language engines
 from within Java, as well as an object registry that exposes Java objects to
 these scripting language engines.")
     (license license:asl2.0)))
+
+(define-public java-jsr250
+  (package
+    (name "java-jsr250")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "javax/annotation/javax.annotation-api/"
+                                  version "/javax.annotation-api-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "08clh8n4n9wfglf75qsqfjs6yf79f7x6hqx38cn856pksszv50kz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jdk ,icedtea-8
+       #:jar-name "jsr250.jar"))
+    (home-page "https://jcp.org/en/jsr/detail?id=250")
+    (synopsis "Security-related annotations")
+    (description "This package provides annotations for security.  It provides
+packages in the @code{javax.annotation} and @code{javax.annotation.security}
+namespaces.")
+    ;; either cddl or gpl2 only, with classpath exception
+    (license (list license:cddl1.0
+                   license:gpl2))))
 
 (define-public java-jsr305
   (package
