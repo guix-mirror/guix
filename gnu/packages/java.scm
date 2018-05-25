@@ -9986,3 +9986,34 @@ OSGi Service Registry is a goal of this project.")
 classpath scanning, auto-binding, and dynamic auto-wiring.  This package
 adds Plexus support to the Sisu-Inject container.")
     (license license:epl1.0)))
+
+(define-public java-commons-compiler
+  (package
+    (name "java-commons-compiler")
+    (version "3.0.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janino-compiler/janino")
+                     (commit "91aa95686d1e4ca3b16a984a03a38686572331b2")))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "04hfdl59sgh20qkxzgnibvs8f9hy6n7znxwpk611y5d89977y62r"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file
+                            (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "commons-compiler.jar"
+       #:source-dir "commons-compiler/src/main"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/janino-compiler/janino")
+    (synopsis "Java compiler")
+    (description "Commons-compiler contains an API for janino, including the
+@code{IExpressionEvaluator}, @code{IScriptEvaluator}, @code{IClassBodyEvaluator}
+and @code{ISimpleCompiler} interfaces.")
+    (license license:bsd-3)))
