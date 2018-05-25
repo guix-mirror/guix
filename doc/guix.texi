@@ -2856,6 +2856,22 @@ command.  See the
 @uref{https://docs.docker.com/engine/reference/commandline/load/, Docker
 documentation} for more information.
 
+@cindex Singularity, build an image with guix pack
+@cindex SquashFS, build an image with guix pack
+Yet another option is to produce a SquashFS image with the following
+command:
+
+@example
+guix pack -f squashfs guile emacs geiser
+@end example
+
+@noindent
+The result is a SquashFS file system image that can either be mounted or
+directly be used as a file system container image with the
+@uref{http://singularity.lbl.gov, Singularity container execution
+environment}, using commands like @command{singularity shell} or
+@command{singularity exec}.
+
 Several command-line options allow you to customize your pack:
 
 @table @code
@@ -2874,6 +2890,11 @@ specified binaries and symlinks.
 This produces a tarball that follows the
 @uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
 Docker Image Specification}.
+
+@item squashfs
+This produces a SquashFS image containing all the specified binaries and
+symlinks, as well as empty mount points for virtual file systems like
+procfs.
 @end table
 
 @item --relocatable
