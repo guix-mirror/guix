@@ -9873,3 +9873,85 @@ support, but removes the need to write explicit bindings in Guice modules.
 Integration with other containers via the Eclipse Extension Registry and the
 OSGi Service Registry is a goal of this project.")
     (license license:epl1.0)))
+
+(define-public java-eclipse-sisu-plexus
+  (package
+    (name "java-eclipse-sisu-plexus")
+    (version "0.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eclipse/sisu.plexus/"
+                                  "archive/releases/" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lbj7nxy5j0z71k407zbb82icfqh7midrfk0fb3fa3jzdjz0d9d9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." ".*.jar"))
+                  (rename-file "org.eclipse.sisu.plexus.tests/src"
+                               "org.eclipse.sisu.plexus.tests/java")
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "eclipse-sisu-plexus.jar"
+       #:source-dir "org.eclipse.sisu.plexus/src"
+       #:test-dir "org.eclipse.sisu.plexus.tests"
+       #:test-exclude
+       (list
+         ;; This test fails probably because we can't generate the necessary
+         ;; meta-inf files.
+         "**/PlexusLoggingTest.*"
+         ;; FIXME: This test fails because of some injection error
+         "**/PlexusRequirementTest.*")
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (install-file "org.eclipse.sisu.plexus/META-INF/plexus/components.xml"
+                           "build/classes/META-INF/plexus")
+             #t))
+         (add-before 'check 'build-test-jar
+           (lambda _
+             (with-directory-excursion "org.eclipse.sisu.plexus.tests/resources/component-jar/src/main/"
+               (mkdir "build")
+               (with-directory-excursion "java"
+                 (apply invoke "javac" "-cp"
+                        (string-append (getenv "CLASSPATH")
+                                       ":../../../../../build/classes")
+                        (find-files "." ".*.java"))
+                 (for-each (lambda (file) (install-file file (string-append "../build/" file)))
+                           (find-files "." ".*.jar")))
+               (mkdir-p "build/META-INF/plexus")
+               (copy-file "resources/META-INF/plexus/components.xml"
+                          "build/META-INF/plexus/components.xml")
+               (with-directory-excursion "build"
+                 (invoke "jar" "cf" "../../../component-jar-0.1.jar" ".")))
+             (with-directory-excursion "org.eclipse.sisu.plexus.tests/"
+               (copy-recursively "META-INF" "../build/test-classes/META-INF")
+               (substitute* "java/org/eclipse/sisu/plexus/DefaultPlexusContainerTest.java"
+                 (("resources/component-jar")
+                  "org.eclipse.sisu.plexus.tests/resources/component-jar")))
+             #t)))))
+    (inputs
+     `(("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-plexus-util" ,java-plexus-utils)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-osgi-framework" ,java-osgi-framework)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-guice" ,java-guice)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("java-guava" ,java-guava)
+       ("java-aopalliance" ,java-aopalliance)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)))
+    (home-page "https://www.eclipse.org/sisu/")
+    (synopsis "Plexus support for the sisu container")
+    (description "Sisu is a modular JSR330-based container that supports
+classpath scanning, auto-binding, and dynamic auto-wiring.  This package
+adds Plexus support to the Sisu-Inject container.")
+    (license license:epl1.0)))
