@@ -4263,6 +4263,37 @@ from within Java, as well as an object registry that exposes Java objects to
 these scripting language engines.")
     (license license:asl2.0)))
 
+(define-public java-commons-jxpath
+  (package
+    (name "java-commons-jxpath")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/jxpath/source/"
+                                  "commons-jxpath-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1rpgg31ayn9fwr4bfi2i1ij0npcg79ad2fv0w9hacvawsyc42cfs"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "commons-jxpath.jar"
+       ;; tests require more dependencies, including mockrunner which depends on old software
+       #:tests? #f
+       #:source-dir "src/java"))
+    (inputs
+     `(("java-tomcat" ,java-tomcat)
+       ("java-jdom" ,java-jdom)
+       ("java-commons-beanutils" ,java-commons-beanutils)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://commons.apache.org/jxpath/")
+    (synopsis "Simple interpreter of an expression language called XPath.")
+    (description "The org.apache.commons.jxpath package defines a simple
+interpreter of an expression language called XPath.  JXPath applies XPath
+expressions to graphs of objects of all kinds: JavaBeans, Maps, Servlet
+contexts, DOM etc, including mixtures thereof.")
+    (license license:asl2.0)))
+
 (define-public java-jsr250
   (package
     (name "java-jsr250")
