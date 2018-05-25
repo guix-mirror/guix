@@ -9833,3 +9833,43 @@ and reporting) project dependencies.  It is characterized by the following:
       reporting and publication.
 @end itemize")
     (license license:asl2.0)))
+
+(define-public java-eclipse-sisu-inject
+  (package
+    (name "java-eclipse-sisu-inject")
+    (version "0.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eclipse/sisu.inject/"
+                                  "archive/releases/" version ".tar.gz"))
+              (sha256
+               (base32
+                "11rg6yw5nl13i65xsp4jxxgr341qcnnaan48p767h28kb07s0ajn"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "eclipse-sisu-inject.jar"
+       #:source-dir "org.eclipse.sisu.inject/src"
+       #:jdk ,icedtea-8
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-guice" ,java-guice)
+       ("java-guice-servlet" ,java-guice-servlet)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-tomcat" ,java-tomcat)
+       ("java-junit" ,java-junit)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-jsr305" ,java-jsr305)
+       ("java-jsr250" ,java-jsr250)
+       ("java-cdi-api" ,java-cdi-api)
+       ("java-osgi-framework" ,java-osgi-framework)
+       ("java-osgi-util-tracker" ,java-osgi-util-tracker)
+       ("java-testng" ,java-testng)))
+    (home-page "https://www.eclipse.org/sisu/")
+    (synopsis "Classpath scanning, auto-binding, and dynamic auto-wiring")
+    (description "Sisu is a modular JSR330-based container that supports
+classpath scanning, auto-binding, and dynamic auto-wiring.  Sisu uses
+Google-Guice to perform dependency injection and provide the core JSR330
+support, but removes the need to write explicit bindings in Guice modules.
+Integration with other containers via the Eclipse Extension Registry and the
+OSGi Service Registry is a goal of this project.")
+    (license license:epl1.0)))
