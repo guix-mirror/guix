@@ -284,7 +284,7 @@ also known as DXTn or DXTC) for Mesa.")
               '("--with-gallium-drivers=i915,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
-         "--with-platforms=x11,drm,surfaceless"
+         "--with-platforms=x11,drm,surfaceless,wayland"
          "--enable-glx-tls"        ;Thread Local Storage, improves performance
          ;; "--enable-opencl"
          ;; "--enable-omx"
