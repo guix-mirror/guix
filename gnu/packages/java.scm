@@ -10017,3 +10017,26 @@ adds Plexus support to the Sisu-Inject container.")
 @code{IExpressionEvaluator}, @code{IScriptEvaluator}, @code{IClassBodyEvaluator}
 and @code{ISimpleCompiler} interfaces.")
     (license license:bsd-3)))
+
+(define-public java-janino
+  (package
+    (inherit java-commons-compiler)
+    (name "java-janino")
+    (arguments
+     `(#:jar-name "janino.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "janino"))))))
+    (inputs
+     `(("java-commons-compiler" ,java-commons-compiler)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (description "Janino is a Java compiler.  Janino can compile a set of
+source files to a set of class files like @code{javac}, but also compile a
+Java expression, block, class body or source file in memory, load the bytecode
+and execute it directly in the same JVM.  @code{janino} can also be used for
+static code analysis or code manipulation.")))
