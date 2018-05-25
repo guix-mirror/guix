@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -843,6 +843,23 @@ It is intended to be used for archival use, for live CDs, and for embedded
 systems where low overhead is needed.  This package allows you to create and
 extract such file systems.")
     (license license:gpl2+)))
+
+;; We need this for building squashfs images with symlinks.
+(define-public squashfs-tools-next
+  (let ((commit "fb33dfc32b131a1162dcf0e35bd88254ae10e265")
+        (revision "1"))
+    (package (inherit squashfs-tools)
+      (name "squashfs-tools-next")
+      (version (string-append "4.3-" revision (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/plougher/squashfs-tools.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1x2skf8hxzfch978nzx5mh46d4hhi6gl22270hiarjszsjk3bnsx")))))))
 
 (define-public pigz
   (package
