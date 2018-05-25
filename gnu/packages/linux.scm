@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -80,6 +80,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages perl)
@@ -2565,6 +2566,52 @@ an isolated container, created with the help of Linux namespaces.  It is
 similar in functionality to chroot, although pflask provides better isolation
 thanks to the use of namespaces.")
     (license license:bsd-2)))
+
+(define-public singularity
+  (package
+    (name "singularity")
+    (version "2.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/singularityware/singularity/"
+                                  "releases/download/" version
+                                  "/singularity-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0f28dgf2qcy8ljjfix7p9q36q12j7rxyicfzzi4n0fl8zr8ab88g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-suid"
+             "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Do not create directories in /var.
+         (add-after 'unpack 'disable-install-hook
+           (lambda _
+             (substitute* "Makefile.in"
+               (("\\$\\(MAKE\\) .*install-data-hook") ""))
+             #t))
+         (add-after 'unpack 'patch-reference-to-squashfs-tools
+           (lambda _
+             (substitute* "libexec/cli/build.exec"
+               (("if ! singularity_which mksquashfs") "if 0")
+               (("if ! mksquashfs")
+                (string-append "if ! " (which "mksquashfs"))))
+             #t)))))
+    (inputs
+     `(("libarchive" ,libarchive)
+       ("python" ,python-wrapper)
+       ("nettle" ,nettle)
+       ("zlib" ,zlib)
+       ("squashfs-tools" ,squashfs-tools)))
+    (home-page "https://singularity.lbl.gov/")
+    (synopsis "Container platform")
+    (description "Singularity is a container platform supporting a number of
+container image formats.  It can build SquashFS container images or import
+existing Docker images.  Singularity requires kernel support for container
+isolation or root privileges.")
+    (license license:bsd-3)))
 
 (define-public hdparm
   (package
