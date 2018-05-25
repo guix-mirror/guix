@@ -60,15 +60,15 @@
 (define-public mpfrcx
   (package
    (name "mpfrcx")
-   (version "0.4.2")
+   (version "0.5")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://www.multiprecision.org/mpfrcx/download/mpfrcx-"
+                  "http://www.multiprecision.org/downloads/mpfrcx-"
                   version ".tar.gz"))
             (sha256
              (base32
-              "0grw66b255r574lvll1bqccm5myj2m8ajzsjaygcyq9zjnnbnhhy"))))
+              "1s968480ymv6w0rnvfp9mxvx98hvi29fkvw8nk4ggzc6azxgwybs"))))
    (build-system gnu-build-system)
    (propagated-inputs
      `(("gmp" ,gmp)
@@ -82,7 +82,7 @@ on the rounding.  For the time being, only the few functions needed to
 implement the floating point approach to complex multiplication are
 implemented.  On the other hand, these comprise asymptotically fast
 multiplication routines such as Toom–Cook and the FFT.")
-   (license license:lgpl2.1+)
+   (license license:lgpl3+)
    (home-page "http://mpfrcx.multiprecision.org/")))
 
 (define-public cm
