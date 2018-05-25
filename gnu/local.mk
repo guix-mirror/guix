@@ -1,4 +1,4 @@
-# GNU Guix --- Functional package management for GNU
+ GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
@@ -560,6 +560,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegis-test-fixup-1.patch            	\
   %D%/packages/patches/aegis-test-fixup-2.patch            	\
   %D%/packages/patches/agg-am_c_prototype.patch			\
+  %D%/packages/patches/alsa-lib-add-environment-variable.patch \
   %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/ansible-wrap-program-hack.patch		\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\

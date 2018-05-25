@@ -974,8 +974,15 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "096pwrnhj36yndldvs2pj4r871zhcgisks0is78f1jkjn9sd4b2z"))))
+               "096pwrnhj36yndldvs2pj4r871zhcgisks0is78f1jkjn9sd4b2z"))
+             (patches (search-patches "alsa-lib-add-environment-variable.patch"))))
     (build-system gnu-build-system)
+    (native-search-paths
+     (list (search-path-specification
+             (variable "ALSA_PLUGIN_DIR")
+             (file-type 'regular)
+             (separator #f)                         ;single entry
+             (files '("lib/alsa-lib")))))
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
     (description
