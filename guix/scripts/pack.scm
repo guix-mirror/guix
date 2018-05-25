@@ -93,7 +93,7 @@ found."
                                  (compressor (first %compressors))
                                  localstatedir?
                                  (symlinks '())
-                                 (tar tar))
+                                 (archiver tar))
   "Return a self-contained tarball containing a store initialized with the
 closure of PROFILE, a derivation.  The tarball contains /gnu/store; if
 LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
@@ -142,7 +142,7 @@ added to the pack."
           ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
           ;; older and doesn't support it.
           (define tar-supports-sort?
-            (zero? (system* (string-append #+tar "/bin/tar")
+            (zero? (system* (string-append #+archiver "/bin/tar")
                             "cf" "/dev/null" "--files-from=/dev/null"
                             "--sort=name")))
 
@@ -151,7 +151,7 @@ added to the pack."
                   (string-append #$(if localstatedir?
                                        (file-append guix "/sbin:")
                                        "")
-                                 #$tar "/bin"))
+                                 #$archiver "/bin"))
 
           ;; Note: there is not much to gain here with deduplication and there
           ;; is the overhead of the '.links' directory, so turn it off.
@@ -220,7 +220,7 @@ added to the pack."
                        (compressor (first %compressors))
                        localstatedir?
                        (symlinks '())
-                       (tar tar))
+                       (archiver tar))
   "Return a derivation to construct a Docker image of PROFILE.  The
 image is a tarball conforming to the Docker Image Specification, compressed
 with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
@@ -268,7 +268,7 @@ the image."
 
           (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
 
-          (setenv "PATH" (string-append #$tar "/bin"))
+          (setenv "PATH" (string-append #$archiver "/bin"))
 
           (build-docker-image #$output
                               (call-with-input-file "profile"
@@ -626,7 +626,7 @@ Create a bundle of PACKAGE.\n"))
                (compressor  (if bootstrap?
                                 bootstrap-xz
                                 (assoc-ref opts 'compressor)))
-               (tar         (if bootstrap?
+               (archiver    (if bootstrap?
                                 %bootstrap-coreutils&co
                                 tar))
                (symlinks    (assoc-ref opts 'symlinks))
@@ -654,8 +654,8 @@ Create a bundle of PACKAGE.\n"))
                                                    symlinks
                                                    #:localstatedir?
                                                    localstatedir?
-                                                   #:tar
-                                                   tar)))
+                                                   #:archiver
+                                                   archiver)))
               (mbegin %store-monad
                 (show-what-to-build* (list drv)
                                      #:use-substitutes?
