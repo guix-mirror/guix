@@ -10040,3 +10040,58 @@ source files to a set of class files like @code{javac}, but also compile a
 Java expression, block, class body or source file in memory, load the bytecode
 and execute it directly in the same JVM.  @code{janino} can also be used for
 static code analysis or code manipulation.")))
+
+(define-public java-logback-core
+  (package
+    (name "java-logback-core")
+    (version "1.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/qos-ch/logback/archive/v_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1x6ga74yfgm94cfx98gybakbrlilx8i2gn6dx13l40kasmys06mi"))
+              (modules '((guix build utils)))
+              (snippet
+               '(delete-file-recursively "logback-access/lib"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "logback.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:test-exclude
+       ;; These tests fail with Unable to set MockitoNamingPolicy on cglib generator
+       ;; which creates FastClasses
+       (list "**/AllCoreTest.*"
+             "**/AutoFlushingObjectWriterTest.*"
+             "**/PackageTest.*"
+             "**/ResilientOutputStreamTest.*"
+             ;; And we still don't want to run abstract classes
+             "**/Abstract*.*")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "logback-core")
+             #t)))))
+    (inputs
+     `(("java-javax-mail" ,java-javax-mail)
+       ("java-tomcat" ,java-tomcat)
+       ("java-commons-compiler" ,java-commons-compiler)
+       ("java-janino" ,java-janino)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-mockito-1" ,java-mockito-1)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("java-objenesis" ,java-objenesis)
+       ("java-joda-time" ,java-joda-time)))
+    (home-page "https://logback.qos.ch")
+    (synopsis "Logging for java")
+    (description "Logback is intended as a successor to the popular log4j project.
+This module lays the groundwork for the other two modules.")
+    ;; Either epl1.0 or lgpl2.1
+    (license (list license:epl1.0
+                   license:lgpl2.1))))
