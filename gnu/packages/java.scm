@@ -53,6 +53,7 @@
   #:use-module (gnu packages gnuzilla) ;nss
   #:use-module (gnu packages ghostscript) ;lcms
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages groovy)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
@@ -10095,3 +10096,47 @@ This module lays the groundwork for the other two modules.")
     ;; Either epl1.0 or lgpl2.1
     (license (list license:epl1.0
                    license:lgpl2.1))))
+
+(define-public java-logback-classic
+  (package
+    (inherit java-logback-core)
+    (name "java-logback-classic")
+    (arguments
+     `(#:jar-name "logback-classic.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:tests? #f; tests require more packages: h2, greenmail, hsql, subethamail, slf4j, log4j, felix
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "logback-classic")
+             #t))
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "build/classes")
+             (setenv "CLASSPATH"
+                     (string-join
+                       (apply append (map (lambda (input)
+                                            (find-files (assoc-ref inputs input)
+                                                        ".*.jar"))
+                                          '("java-logback-core" "java-slf4j-api"
+                                            "java-commons-compiler" "java-tomcat"
+                                            "groovy")))
+                       ":"))
+             (apply invoke "groovyc" "-d" "build/classes" "-j"
+                    (find-files "src/main/" ".*\\.(groovy|java)$"))
+             (invoke "ant" "jar")
+             #t)))))
+    (inputs
+     `(("java-logback-core" ,java-logback-core)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ,@(package-inputs java-logback-core)))
+    (native-inputs
+     `(("groovy" ,groovy)))
+    (description "Logback is intended as a successor to the popular log4j project.
+This module can be assimilated to a significantly improved version of log4j.
+Moreover, @code{logback-classic} natively implements the slf4j API so that you
+can readily switch back and forth between logback and other logging frameworks
+such as log4j or @code{java.util.logging} (JUL).")))
