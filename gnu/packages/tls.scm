@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
@@ -125,7 +125,7 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.10")
+    (version "0.23.11")
     (source
      (origin
       (method url-fetch)
@@ -133,7 +133,7 @@ in intelligent transportation networks.")
                           "download/" version "/p11-kit-" version ".tar.gz"))
       (sha256
        (base32
-        "0hxfwnyb5yllvlsh0cj6favcph36gm94b6df7zhl7xay48zjl8gr"))))
+        "0asaxbypvns5xf9hb5jy0kijz0b3hp1s8likhywmry3klpdchhxj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -141,7 +141,17 @@ in intelligent transportation networks.")
      `(("libffi" ,libffi)
        ("libtasn1" ,libtasn1)))
     (arguments
-     `(#:configure-flags '("--without-trust-paths")))
+     `(#:configure-flags '("--without-trust-paths")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'prepare-tests
+                    (lambda _
+                      ;; "test-runtime" expects XDG_RUNTIME_DIR to be set up
+                      ;; and looks for .cache and other directories (only).
+                      ;; For simplicity just drop it since it is irrelevant
+                      ;; in the build container.
+                      (substitute* "Makefile"
+                        (("test-runtime\\$\\(EXEEXT\\)") ""))
+                      #t)))))
     (home-page "https://p11-glue.freedesktop.org/p11-kit.html")
     (synopsis "PKCS#11 library")
     (description
