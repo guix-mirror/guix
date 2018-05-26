@@ -2174,3 +2174,53 @@ Decompression requires no additional memory.
 Compared to LZO, the UCL algorithms achieve a better compression ratio but
 decompression is a little bit slower.")
     (license license:gpl2+)))
+
+(define-public upx
+  (package
+    (name "upx")
+    (version "3.94")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/upx/upx/releases/download/v"
+                                 version "/" name "-" version "-src.tar.xz"))
+             (sha256
+              (base32
+               "08anybdliqsbsl6x835iwzljahnm9i7v26icdjkcv33xmk6p5vw1"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("perl" ,perl)
+                     ("ucl" ,ucl)))
+    (inputs `(("zlib" ,zlib)))
+    (arguments
+     `(#:make-flags
+       (list "all"
+             ;; CHECK_WHITESPACE does not seem to work.
+             ;; See https://git.archlinux.org/svntogit/community.git/tree/trunk/PKGBUILD?h=packages/upx.
+             "CHECK_WHITESPACE=true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (delete 'install)
+         (add-before 'build 'patch-exec-bin-sh
+           (lambda _
+             (substitute* (find-files "Makefile")
+               (("/bin/sh") (which "sh")))
+             (substitute* "src/Makefile"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'build 'install-upx
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (copy-file "src/upx.out" (string-append bin "/upx")))
+             #t))
+         )))
+    (home-page "https://upx.github.io/")
+    (synopsis "Compression tool for executables")
+    (description
+     "The Ultimate Packer for eXecutables (UPX) is an executable file
+compressor.  UPX typically reduces the file size of programs and shared
+libraries by around 50%--70%, thus reducing disk space, network load times,
+download times, and other distribution and storage costs.")
+    (license license:gpl2+)))
