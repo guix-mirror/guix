@@ -75,6 +75,8 @@
    (eval . (put 'with-imported-modules 'scheme-indent-function 1))
    (eval . (put 'with-extensions 'scheme-indent-function 1))
 
+   (eval . (put 'with-database 'scheme-indent-function 2))
+
    (eval . (put 'call-with-container 'scheme-indent-function 1))
    (eval . (put 'container-excursion 'scheme-indent-function 1))
    (eval . (put 'eventually 'scheme-indent-function 1))
