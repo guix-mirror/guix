@@ -216,3 +216,32 @@ and compares versions:")
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains the model for Maven @dfn{POM} (Project Object Model),
 so really just plain Java objects.")))
+
+(define-public maven-builder-support
+  (package
+    (inherit maven-artifact)
+    (name "maven-builder-support")
+    (arguments
+     `(#:jar-name "maven-builder-support.jar"
+       #:source-dir "maven-builder-support/src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "maven-builder-support/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-paths
+           (lambda _
+             (with-directory-excursion "maven-builder-support/src/test/java"
+               (substitute*
+                 '("org/apache/maven/building/FileSourceTest.java"
+                   "org/apache/maven/building/UrlSourceTest.java")
+                 (("target/test-classes") "maven-builder-support/src/test/resources")))
+             #t)))))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-commons-lang3" ,java-commons-lang3)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains a support library for descriptor builders (model,
+setting, toolchains)")))
