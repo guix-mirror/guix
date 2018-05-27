@@ -259,7 +259,8 @@ endif BUILD_DAEMON_OFFLOAD
 
 # Scheme implementation of the build daemon and related functionality.
 STORE_MODULES =					\
-  guix/store/database.scm
+  guix/store/database.scm			\
+  guix/store/deduplication.scm
 
 if HAVE_GUILE_SQLITE3
 MODULES += $(STORE_MODULES)
@@ -392,7 +393,8 @@ endif
 if HAVE_GUILE_SQLITE3
 
 SCM_TESTS +=					\
-  tests/store-database.scm
+  tests/store-database.scm			\
+  tests/store-deduplication.scm
 
 endif
 

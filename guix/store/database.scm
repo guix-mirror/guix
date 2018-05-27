@@ -21,10 +21,9 @@
   #:use-module (sqlite3)
   #:use-module (guix config)
   #:use-module (guix serialization)
+  #:use-module (guix store deduplication)
   #:use-module (guix base16)
-  #:use-module (guix hash)
   #:use-module (guix build syscalls)
-  #:use-module (rnrs io ports)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (ice-9 match)
@@ -140,39 +139,6 @@ bytes of the store item denoted by PATH after being converted to nar form."
 ;;; High-level interface.
 ;;;
 
-;; XXX: Would it be better to just make WRITE-FILE give size as well? I question
-;; the general utility of this approach.
-(define (counting-wrapper-port output-port)
-  "Some custom ports don't implement GET-POSITION at all. But if we want to
-figure out how many bytes are being written, we will want to use that. So this
-makes a wrapper around a port which implements GET-POSITION."
-  (let ((byte-count 0))
-    (make-custom-binary-output-port "counting-wrapper"
-                                    (lambda (bytes offset count)
-                                      (set! byte-count
-                                        (+ byte-count count))
-                                      (put-bytevector output-port bytes
-                                                      offset count)
-                                      count)
-                                    (lambda ()
-                                      byte-count)
-                                    #f
-                                    (lambda ()
-                                      (close-port output-port)))))
-
-
-(define (nar-sha256 file)
-  "Gives the sha256 hash of a file and the size of the file in nar form."
-  (let-values (((port get-hash) (open-sha256-port)))
-    (let ((wrapper (counting-wrapper-port port)))
-      (write-file file wrapper)
-      (force-output wrapper)
-      (force-output port)
-      (let ((hash (get-hash))
-            (size (port-position wrapper)))
-        (close-port wrapper)
-        (values hash size)))))
-
 ;; TODO: Factorize with that in (gnu build install).
 (define (reset-timestamps file)
   "Reset the modification time on FILE and on all the files it contains, if
@@ -211,7 +177,7 @@ it's a directory."
 
 (define* (register-path path
                         #:key (references '()) deriver prefix
-                        state-directory)
+                        state-directory (deduplicate? #t))
   ;; Priority for options: first what is given, then environment variables,
   ;; then defaults. %state-directory, %store-directory, and
   ;; %store-database-directory already handle the "environment variables /
@@ -262,4 +228,7 @@ be used internally by the daemon's build hook."
        #:deriver deriver
        #:hash (string-append "sha256:"
                              (bytevector->base16-string hash))
-       #:nar-size nar-size))))
+       #:nar-size nar-size)
+
+      (when deduplicate?
+        (deduplicate real-path hash #:store store-dir)))))
