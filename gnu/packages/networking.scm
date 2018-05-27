@@ -502,7 +502,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.3.0")
+    (version "5.3.1")
     (source
      (origin
        (method url-fetch)
@@ -510,7 +510,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "08sp2gzv09rar1a5mnfmbc24pqvhpqqmz2hnmv436n7v7d09qy2d"))))
+         "0gl98l26dcgmlap0pxllbv4b9n2fr5b7zml3ijf8sf3a60qsskpg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -524,8 +524,7 @@ and up to 1 Mbit/s downstream.")
              (setenv "HAVE_ICONV" "1")
              #t)))))
     (inputs
-     ;; TODO: Switch to libidn2 when >= 2.0.3 is ungrafted in master.
-     `(("libidn" ,libidn)))
+     `(("libidn2" ,libidn2)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)

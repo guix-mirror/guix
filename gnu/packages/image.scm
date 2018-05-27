@@ -18,6 +18,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1391,4 +1392,51 @@ Features:
    (description "This package provides a way to read, write and display bitmap
 images stored in the JPEG format with R.  It can read and write both files and
 in-memory raw vectors.")
+   (license license:gpl2+)))
+
+(define-public gifsicle
+  (package
+   (name "gifsicle")
+   (version "1.91")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.lcdf.org/gifsicle/gifsicle-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "00586z1yz86qcblgmf16yly39n4lkjrscl52hvfxqk14m81fckha"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        (add-before 'check 'patch-tests
+          (lambda _
+            (substitute* "test/testie"
+              (("/usr/bin/perl")
+               (which "perl"))
+              (("/bin/sh")
+               (which "sh"))
+              (("/bin/rm")
+               (which "rm")))
+            #t)))))
+   (native-inputs `(("perl" ,perl))) ; Only for tests.
+   (inputs `(("libx11" ,libx11)))
+   (home-page "http://www.lcdf.org/gifsicle/")
+   (synopsis "Edit GIF images and animations")
+   (description "Gifsicle is a command-line GIF image manipulation tool that:
+
+@itemize
+@item Provides a batch mode for changing GIFs in place.
+@item Prints detailed information about GIFs, including comments.
+@item Control over interlacing, comments, looping, transparency, etc.
+@item Creates well-behaved GIFs: removes redundant colors, only uses local color
+tables, etc.
+@item Shrinks colormaps and change images to use the Web-safe palette.
+@item Optimizes GIF animations, or unoptimizes them for easier editing.
+@end itemize
+
+Two other programs are included with Gifsicle: @command{gifview} is a
+lightweight animated-GIF viewer, and @command{gifdiff} compares two GIFs for
+identical visual appearance.")
    (license license:gpl2+)))

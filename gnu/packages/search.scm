@@ -32,12 +32,14 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml))
 
 (define-public xapian
@@ -326,27 +328,52 @@ search the generated indexes.")
          "0ykz6hn3qj46w3c99d6q0pi5ncq2894simcl7vapv047zm3cylmd"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-urwid" ,python-urwid)))
-    (inputs
      `(("poppler" ,poppler)
-       ("python" ,python)
-       ("python-latexcodec" ,python-latexcodec)
+       ("python-urwid" ,python-urwid)
+       ("xclip" ,xclip)
+       ("xdg-utils" ,xdg-utils)))
+    (inputs
+     `(("python-latexcodec" ,python-latexcodec)
        ("python-pybtex" ,python-pybtex)
        ("python-pycurl" ,python-pycurl)
        ("python-pyyaml" ,python-pyyaml)
        ("python-six" ,python-six)
        ("python-xapian-bindings" ,python-xapian-bindings)))
     (arguments
-     `(#:phases
+     `(#:modules ((ice-9 rdelim)
+                  (guix build python-build-system)
+                  (guix build utils))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
+             (define (purge-term-support input output)
+               (let loop ((line (read-line input)))
+                 (if (string-prefix? "if [[ \"$term\"" line)
+                     (begin (display "eval \"$cmd\"\n" output)
+                            #t)
+                     (begin (display (string-append line "\n") output)
+                            (loop (read-line input))))))
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
+                    (adder-out (string-append bin "/xapers-adder"))
                     (man1 (string-append out "/share/man/man1")))
                (install-file "man/man1/xapers.1"  man1)
                (install-file "man/man1/xapers-adder.1" man1)
-               (install-file "bin/xapers-adder" bin)))))))
+               ;; below is equivalent to setting --no-term option
+               ;; permanently on; this is desirable to avoid imposing
+               ;; an x-terminal installation on the user but breaks
+               ;; some potential xapers-adder uses like auto browser
+               ;; pdf handler, but user could instead still use
+               ;; e.g. "xterm -e xapers-adder %F" for same use.
+               ;; alternatively we could propagate xterm as an input
+               ;; and replace 'x-terminal-emulator' with 'xterm'
+               (call-with-input-file "bin/xapers-adder"
+                 (lambda (input)
+                   (call-with-output-file adder-out
+                     (lambda (output)
+                       (purge-term-support input output)))))
+               (chmod adder-out #o555)))))))
     (home-page "https://finestructure.net/xapers/")
     (synopsis "Personal document indexing system")
     (description

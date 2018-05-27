@@ -394,8 +394,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.16.11")
-(define %linux-libre-hash "0dc6kwpzncg2a8haf081i5si4ry9y3x6m39bjblbx9c809hdls6g")
+(define %linux-libre-version "4.16.12")
+(define %linux-libre-hash "1zjq16z5cdcpa4acqdilavjjv2xbqnh3fmn400n9hd5pzyll817m")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -403,8 +403,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.43")
-(define %linux-libre-4.14-hash "0mqgxp0001j11m5s82s7j4398443zx474a5kpzql7cqf3aljfybm")
+(define %linux-libre-4.14-version "4.14.44")
+(define %linux-libre-4.14-hash "0w89y22by17yqk89l1mmhlvz0i4dkp1mjc347nq3zy1llbwiwvnf")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -413,14 +413,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.102"
-                    "1y32rc2zi2is4yl184i1vbbvc7gvkyr15r325g2syascxqzxarn0"
+  (make-linux-libre "4.9.103"
+                    "00g58y92pmb6xf9lhjrab2jrjv3naw3857pf9s43dvh6fwlbccbf"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.132"
-                    "012nmbvvi8sg0iav5aibk8qx189iwqjadnr4h5jv65gzi7i79li9"
+  (make-linux-libre "4.4.133"
+                    "05qc9smcvxd68d46l5gjhvihhnidkiymqh4fv4nyagzv555q7na7"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -3437,7 +3437,19 @@ from userspace.")
                                "--with-fuse=external" ;use our own FUSE
                                "--enable-mount-helper"
                                "--enable-posix-acls"
-                               "--enable-xattr-mappings")))
+                               "--enable-xattr-mappings")
+       #:phases
+       (modify-phases %standard-phases
+         ;; If users install ntfs-3g, they probably want to make it the
+         ;; default driver as well, so we opt for sensible defaults and link
+         ;; mount.ntfs to mount.ntfs-3g.  (libmount tries to run mount.ntfs to
+         ;; mount NTFS filesystems.)
+         (add-after 'install 'install-link
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sbin (string-append out "/sbin")))
+               (symlink "mount.ntfs-3g"
+                        (string-append sbin "/mount.ntfs"))))))))
     (home-page "https://www.tuxera.com/community/open-source-ntfs-3g/")
     (synopsis "Read-write access to NTFS file systems")
     (description

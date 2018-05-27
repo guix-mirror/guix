@@ -90,6 +90,7 @@
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages music)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
@@ -4926,3 +4927,244 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
     (description "Fortune is a command-line utility which displays a random
 quotation from a collection of quotes.")
     (license license:bsd-4)))
+
+(define xonotic-data
+  (package
+    (name "xonotic-data")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.xonotic.org/xonotic-"
+                           version ".zip"))
+       (file-name (string-append name "-" version ".zip"))
+       (sha256
+        (base32
+         "1mcs6l4clvn7ibfq3q69k2p0z6ww75rxvnngamdq5ic6yhq74bx2"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (xonotic (string-append out "/share/xonotic"))
+                (source (assoc-ref %build-inputs "source"))
+                (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+           (copy-file source (string-append ,name "-" ,version ".zip"))
+           (invoke unzip (string-append ,name "-" ,version ".zip"))
+           (mkdir-p out)
+           (mkdir-p xonotic)
+           (chdir "Xonotic")
+           (copy-recursively "data"
+                             (string-append xonotic "/data"))
+           (copy-recursively "server"
+                             (string-append xonotic "/server"))
+           (install-file "key_0.d0pk" xonotic)))))
+    (home-page "http://xonotic.org")
+    (synopsis "Data files for Xonotic")
+    (description
+     "Xonotic-data provides the data files required by the game Xonotic.")
+    (license (list license:gpl2+
+                   license:x11)))) ; server/rcon.pl
+
+(define-public xonotic
+  (package
+    (name "xonotic")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.xonotic.org/xonotic-"
+                           version "-source.zip"))
+       (file-name (string-append name "-" version ".zip"))
+       (sha256
+        (base32
+         "0axxw04fyz6jlfqd0kp7hdrqa0li31sx1pbipf2j5qp9wvqicsay"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "--prefix="
+                                              (assoc-ref %outputs "out"))
+                               "--disable-rijndael")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'make-darkplaces
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sharedir (string-append out "/share/xonotic/")))
+               (invoke "make" "-C" "source/darkplaces"
+                       (string-append "DP_FS_BASEDIR="
+                                      sharedir)
+                       "DP_LINK_TO_LIBJPEG=1"
+                       "DP_SOUND_API=ALSA"
+                       "CC=gcc"
+                       "-f" "makefile"
+                       "cl-release")
+               (invoke "make" "-C" "source/darkplaces"
+                       (string-append "DP_FS_BASEDIR="
+                                      sharedir)
+                       "DP_LINK_TO_LIBJPEG=1"
+                       "DP_SOUND_API=ALSA"
+                       "CC=gcc"
+                       "-f" "makefile"
+                       "sdl-release")
+               (invoke "make" "-C" "source/darkplaces"
+                       (string-append "DP_FS_BASEDIR="
+                                      sharedir)
+                       "DP_LINK_TO_LIBJPEG=1"
+                       "DP_SOUND_API=ALSA"
+                       "CC=gcc"
+                       "-f" "makefile"
+                       "sv-release"))))
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (chdir "source/d0_blind_id")
+             (invoke "sh" "autogen.sh")))
+         (add-after 'build 'install-desktop-entry
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Add .desktop files for the 2 variants and the symlink
+             (let* ((output (assoc-ref outputs "out"))
+                    (apps (string-append output "/share/applications")))
+               (mkdir-p apps)
+               (with-output-to-file
+                   (string-append apps "/xonotic-glx.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                     Name=xonotic-glx~@
+                     Comment=Xonotic glx~@
+                     Exec=~a/bin/xonotic-glx~@
+                     TryExec=~@*~a/bin/xonotic-glx~@
+                     Icon=~@
+                     Type=Application~%"
+                           output)))
+               (with-output-to-file
+                   (string-append apps "/xonotic-sdl.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                     Name=xonotic-sdl~@
+                     Comment=Xonotic sdl~@
+                     Exec=~a/bin/xonotic-sdl~@
+                     TryExec=~@*~a/bin/xonotic-sdl~@
+                     Icon=~@
+                     Type=Application~%"
+                           output)))
+               (with-output-to-file
+                   (string-append apps "/xonotic.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                     Name=xonotic~@
+                     Comment=Xonotic~@
+                     Exec=~a/bin/xonotic-glx~@
+                     TryExec=~@*~a/bin/xonotic~@
+                     Icon=~@
+                     Type=Application~%"
+                           output)))
+               #t)))
+         (add-after 'install-desktop-entry 'install-icons
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion "../../misc/logos/icons_png/"
+                 (for-each
+                  (lambda (file)
+                    (let* ((size (string-filter char-numeric? file))
+                           (icons (string-append out "/share/icons/hicolor/"
+                                                 size "x" size "/apps")))
+                      (mkdir-p icons)
+                      (copy-file file (string-append icons "/xonotic.png"))))
+                  '("xonotic_16.png" "xonotic_22.png" "xonotic_24.png"
+                    "xonotic_32.png" "xonotic_48.png" "xonotic_64.png"
+                    "xonotic_128.png" "xonotic_256.png" "xonotic_512.png"))))))
+         (add-after 'install-icons 'install-binaries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (define (install src dst)
+                 (let ((dst (string-append out dst)))
+                   (mkdir-p (dirname dst))
+                   (copy-file src dst)))
+               (mkdir-p (string-append out "/bin"))
+               (install "../darkplaces/darkplaces-dedicated"
+                        "/bin/xonotic-dedicated")
+               (install "../darkplaces/darkplaces-glx"
+                        "/bin/xonotic-glx")
+               (install "../darkplaces/darkplaces-sdl"
+                        "/bin/xonotic-sdl")
+               ;; Provide a default xonotic executable, defaulting to SDL.
+               (symlink (string-append out "/bin/xonotic-sdl")
+                        (string-append out "/bin/xonotic"))
+               #t)))
+         (add-after 'install-binaries 'install-data
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (data (assoc-ref inputs "xonotic-data")))
+               (copy-recursively (string-append data "/share/xonotic")
+                                 (string-append out "/share/xonotic"))
+               #t)))
+         (add-after 'install-binaries 'wrap-binaries
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; Curl and libvorbis need to be wrapped so that we get
+             ;; sound and networking.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/xonotic"))
+                    (bin-sdl (string-append out "/bin/xonotic-sdl"))
+                    (bin-glx (string-append out "/bin/xonotic-glx"))
+                    (bin-dedicated (string-append out "/bin/xonotic-dedicated"))
+                    (curl (assoc-ref inputs "curl"))
+                    (vorbis (assoc-ref inputs "libvorbis")))
+               (wrap-program bin
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,(string-append curl "/lib:" vorbis "/lib"))))
+               (wrap-program bin-sdl
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,(string-append curl "/lib:" vorbis "/lib"))))
+               (wrap-program bin-glx
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,(string-append curl "/lib:" vorbis "/lib"))))
+               (wrap-program bin-dedicated
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,(string-append curl "/lib:" vorbis "/lib"))))
+               #t))))))
+    (inputs
+     `(("xonotic-data" ,xonotic-data)
+       ("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
+       ("libjpeg" ,libjpeg)
+       ("libmodplug" ,libmodplug)
+       ("libvorbis" ,libvorbis)
+       ("libogg" ,libogg)
+       ("libxpm" ,libxpm)
+       ("libxxf86dga" ,libxxf86dga)
+       ("libxxf86vm" ,libxxf86vm)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxau" ,libxau)
+       ("libxdmcp" ,libxdmcp)
+       ("mesa" ,mesa)
+       ("glu" ,glu)
+       ("freetype" ,freetype)
+       ("sdl2" ,sdl2)
+       ("libpng" ,libpng)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ("gmp" ,gmp)))
+    (home-page "http://xonotic.org")
+    (synopsis "Fast-paced first-person shooter game")
+    (description
+     "Xonotic is a free, fast-paced first-person shooter.
+The project is geared towards providing addictive arena shooter
+gameplay which is all spawned and driven by the community itself.
+Xonotic is a direct successor of the Nexuiz project with years of
+development between them, and it aims to become the best possible
+open-source FPS of its kind.")
+    (license (list license:gpl2+
+                   license:bsd-3 ; /source/d0_blind_id folder and others
+                   license:x11-style))))

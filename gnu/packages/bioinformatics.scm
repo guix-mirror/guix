@@ -3459,6 +3459,42 @@ The main functions of FastQC are:
 @end itemize\n")
     (license license:gpl3+)))
 
+(define-public fastp
+  (package
+    (name "fastp")
+    (version "0.14.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OpenGene/fastp.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1r6ms5zbf5rps4rgp4z73nczadl00b5rqylw8f684isfz27dp0xh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:make-flags
+       (list (string-append "BINDIR=" (assoc-ref %outputs "out") "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'create-target-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/OpenGene/fastp/")
+    (synopsis "All-in-one FastQ preprocessor")
+    (description
+     "Fastp is a tool designed to provide fast all-in-one preprocessing for
+FastQ files.  This tool has multi-threading support to afford high
+performance.")
+    (license license:expat)))
+
 (define-public htslib
   (package
     (name "htslib")

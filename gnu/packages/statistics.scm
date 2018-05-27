@@ -61,6 +61,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -216,7 +217,7 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
          (add-after 'build 'install-info
           (lambda _ (zero? (system* "make" "install-info")))))
        #:configure-flags
-       '(;; Do not build the recommended packages.  The build system creates
+       `(;; Do not build the recommended packages.  The build system creates
          ;; random temporary directories and embeds their names in some
          ;; package files.  We build these packages with the r-build-system
          ;; instead.
@@ -227,6 +228,13 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
          "--with-jpeglib"
          "--with-libtiff"
          "--with-ICU"
+         "--with-tcltk"
+         ,(string-append "--with-tcl-config="
+                         (assoc-ref %build-inputs "tcl")
+                         "/lib/tclConfig.sh")
+         ,(string-append "--with-tk-config="
+                         (assoc-ref %build-inputs "tk")
+                         "/lib/tkConfig.sh")
          "--enable-R-shlib"
          "--enable-BLAS-shlib"
          "--with-system-tre")))
@@ -265,6 +273,8 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
        ;; This avoids a reference to the ungraftable static bash.  R uses the
        ;; detected shell for the "system" procedure.
        ("bash" ,bash-minimal)
+       ("tcl" ,tcl)
+       ("tk" ,tk)
        ("which" ,which)
        ("zlib" ,zlib)))
     (native-search-paths

@@ -38,7 +38,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -13462,3 +13462,133 @@ Glob2 currently based on the glob code from Python 3.3.1.")
 
 (define-public python2-glob2
   (package-with-python2 python-glob2))
+
+(define-public python-gipc
+  (package
+    (name "python-gipc")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gipc" version ".zip"))
+       (sha256
+        (base32
+         "0pd9by719qh882hqs6xpby61sn1x5h98hms5p2p8yqnycrf1s0h2"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("python-gevent" ,python-gevent)))
+    (home-page "http://gehrcke.de/gipc")
+    (synopsis "Child process management in the context of gevent")
+    (description "Usage of Python's multiprocessing package in a
+gevent-powered application may raise problems.  With @code{gipc},
+process-based child processes can safely be created anywhere within a
+gevent-powered application.")
+    (license license:expat)))
+
+(define-public python2-gipc
+  (package-with-python2 python-gipc))
+
+(define-public python-fusepy
+  (package
+    (name "python-fusepy")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fusepy" version))
+       (sha256
+        (base32
+         "0v5grm4zyf58hsplwsxfbihddw95lz9w8cy3rpzbyha287swgx8h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-library-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((fuse (assoc-ref inputs "fuse")))
+               (substitute* "fuse.py"
+                 (("find_library\\('fuse'\\)")
+                  (string-append "'" fuse "/lib/libfuse.so'")))
+               #t))))))
+    (propagated-inputs
+     `(("fuse" ,fuse)))
+    (home-page "https://github.com/fusepy/fusepy")
+    (synopsis "Simple ctypes bindings for FUSE")
+    (description "Python module that provides a simple interface to FUSE and
+MacFUSE.  The binding is created using the standard @code{ctypes} library.")
+    (license license:isc)))
+
+(define-public python2-fusepy
+  (package-with-python2 python-fusepy))
+
+(define-public python2-gdrivefs
+  (package
+    (name "python2-gdrivefs")
+    (version "0.14.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gdrivefs" version))
+       (sha256
+        (base32
+         "0v9sp2cfg4ki3wagkwf3rnfpjhvgf845anz3757il9z95yvvcvb7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-setup-py
+           (lambda _
+             ;; Update requirements from dependency==version
+             ;; to dependency>=version
+             (substitute* "gdrivefs/resources/requirements.txt"
+               (("==") ">="))
+             #t)))))
+    (native-inputs
+     `(("python2-gipc" ,python2-gipc)
+       ("python2-gevent" ,python2-gevent)
+       ("python2-greenlet" ,python2-greenlet)
+       ("python2-httplib2" ,python2-httplib2)
+       ("python2-uritemplate" ,python2-uritemplate)
+       ("python2-oauth2client" ,python2-oauth2client)
+       ("python2-six" ,python2-six)))
+    (propagated-inputs
+     `(("python2-dateutil" ,python2-dateutil)
+       ("python2-fusepy" ,python2-fusepy)
+       ("python2-google-api-client" ,python2-google-api-client)))
+    (home-page "https://github.com/dsoprea/GDriveFS")
+    (synopsis "Mount Google Drive as a local file system")
+    (description "@code{gdrivefs} provides a FUSE wrapper for Google Drive
+under Python 2.7.")
+    (license license:gpl2)))
+
+(define-public pybind11
+  (package
+    (name "pybind11")
+    (version "2.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/pybind/pybind11/archive/v"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1sj0x4fwsbnwdai5sxpw1l1vh8m5hpbkfk3zanxcbcgs39jpnfrs"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("python" ,python)
+       ("python-pytest" ,python-pytest)))
+    (arguments
+     `(#:test-target "check"))
+    (home-page "https://github.com/pybind/pybind11/")
+    (synopsis "Seamless operability between C++11 and Python")
+    (description "pybind11 is a lightweight header-only library that exposes
+C++ types in Python and vice versa, mainly to create Python bindings of
+existing C++ code.  Its goals and syntax are similar to the excellent
+Boost.Python library by David Abrahams: to minimize boilerplate code in
+traditional extension modules by inferring type information using compile-time
+introspection.")
+    (license license:expat)))

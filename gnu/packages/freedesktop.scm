@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -495,7 +495,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public weston
   (package
     (name "weston")
-    (version "3.0.0")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -503,7 +503,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "weston-" version ".tar.xz"))
               (sha256
                (base32
-                "19936zlkb75xcaidd8fag4ah8000wrh2ziqy7nxkq36pimgdbqfd"))))
+                "0n2big8xw6g6n46zm1jyf00dv9r4d84visdz5b8vxpw3xzkhmz50"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -529,6 +529,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
              (string-append "--with-xserver-path="
                             (assoc-ref %build-inputs "xorg-server-xwayland")
                             "/bin/Xwayland"))
+       #:parallel-tests? #f ; Parallel tests cause failures.
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'use-elogind

@@ -4026,3 +4026,37 @@ Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
 Markdown.  Use a combination of narrative, figures, videos, exercises, and
 quizzes to create self-paced tutorials for learning about R and R packages.")
     (license license:asl2.0)))
+
+(define-public r-analytics
+  (package
+    (name "r-analytics")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "analytics" version))
+       (sha256
+        (base32
+         "1jkdjqc3fnvvsgi6x9ncf36rxzq0a55cmgkcv92mfmpcramg2lk6"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-car" ,r-car)
+       ("r-cluster" ,r-cluster)
+       ("r-fractal" ,r-fractal)
+       ("r-lmtest" ,r-lmtest)
+       ("r-mass" ,r-mass)
+       ("r-np" ,r-np)
+       ("r-powerplus" ,r-powerplus)
+       ("r-robust" ,r-robust)
+       ("r-trend" ,r-trend)
+       ("r-tsa" ,r-tsa)
+       ("r-urca" ,r-urca)))
+    (home-page "https://cran.r-project.org/web/packages/analytics/")
+    (synopsis "Collection of data analysis tools")
+    (description
+     "This package is a collection of data analysis tools.  It includes tools
+for regression outlier detection in a fitted linear model, stationary
+bootstrap using a truncated geometric distribution, a comprehensive test for
+weak stationarity, column means by group, weighted biplots, and a heuristic to
+obtain a better initial configuration in non-metric MDS.")
+    (license license:gpl2)))

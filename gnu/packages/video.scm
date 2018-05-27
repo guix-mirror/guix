@@ -379,7 +379,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "2.7")
+    (version "2.8")
     (source
       (origin
         (method url-fetch)
@@ -387,7 +387,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "18llni1m8kfvdwy5bp950z6gyd0nijmvi3hzd6gd8vpy5yk5zrym"))
+          "0qx8mavwdzdpkkby7n29i9av7zsnklavacwfz537mf62q2pzjnbf"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -2195,7 +2195,7 @@ Content System specification.")
 (define-public mps-youtube
   (package
     (name "mps-youtube")
-    (version "0.2.7.1")
+    (version "0.2.8")
     (source
      (origin
        (method url-fetch)
@@ -2204,7 +2204,7 @@ Content System specification.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1s7h35yx6f0szf8mm8612ic913w3v05m2kwphjfcxnpq0ammhyci"))))
+         "0x7cmfh199q9j396v7bz81nnvanfllhsg86489i5dw2p3yyc9wnm"))))
     (build-system python-build-system)
     (arguments
      ;; Tests need to be disabled until #556 upstream is fixed. It reads as if the

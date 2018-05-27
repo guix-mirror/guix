@@ -106,11 +106,16 @@ the #:references-graphs parameter of 'derivation'."
                  (not target-arm32?))
             '("-enable-kvm")
             '())
+
+      ;; Pass "panic=1" so that the guest dies upon error.
       "-append"
-      ;; The serial port name differs between emulated architectures/machines.
-      ,@(if target-arm32?
-            `(,(string-append "console=ttyAMA0 --load=" builder))
-            `(,(string-append "console=ttyS0 --load=" builder)))
+      ,(string-append "panic=1 --load=" builder
+
+                      ;; The serial port name differs between emulated
+                      ;; architectures/machines.
+                      " console="
+                      (if target-arm32? "ttyAMA0" "ttyS0"))
+
       ;; NIC is not supported on ARM "virt" machine, so use a user mode
       ;; network stack instead.
       ,@(if target-arm32?
