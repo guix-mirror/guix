@@ -23,12 +23,14 @@
   #:use-module (guix serialization)
   #:use-module (guix base16)
   #:use-module (guix hash)
+  #:use-module (guix build syscalls)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (ice-9 match)
   #:export (sqlite-register
-            register-path))
+            register-path
+            reset-timestamps))
 
 ;;; Code for working with the store database directly.
 
@@ -171,6 +173,34 @@ makes a wrapper around a port which implements GET-POSITION."
         (close-port wrapper)
         (values hash size)))))
 
+;; TODO: Factorize with that in (gnu build install).
+(define (reset-timestamps file)
+  "Reset the modification time on FILE and on all the files it contains, if
+it's a directory."
+  (let loop ((file file)
+             (type (stat:type (lstat file))))
+    (case type
+      ((directory)
+       (utime file 0 0 0 0)
+       (let ((parent file))
+         (for-each (match-lambda
+                     (("." . _) #f)
+                     ((".." . _) #f)
+                     ((file . properties)
+                      (let ((file (string-append parent "/" file)))
+                        (loop file
+                              (match (assoc-ref properties 'type)
+                                ((or 'unknown #f)
+                                 (stat:type (lstat file)))
+                                (type type))))))
+                   (scandir* parent))))
+      ((symlink)
+       ;; FIXME: Implement bindings for 'futime' to reset the timestamps on
+       ;; symlinks.
+       #f)
+      (else
+       (utime file 0 0 0 0)))))
+
 ;; TODO: make this canonicalize store items that are registered. This involves
 ;; setting permissions and timestamps, I think. Also, run a "deduplication
 ;; pass", whatever that involves. Also, handle databases not existing yet
@@ -224,6 +254,7 @@ be used internally by the daemon's build hook."
          (real-path (string-append store-dir "/" (basename path))))
     (let-values (((hash nar-size)
                   (nar-sha256 real-path)))
+      (reset-timestamps real-path)
       (sqlite-register
        #:db-file (string-append db-dir "/db.sqlite")
        #:path to-register
