@@ -166,3 +166,53 @@ tool.  This package contains the Maven Artifact classes, providing the
 jar file is executable and provides a little tool to display how Maven parses
 and compares versions:")
     (license license:asl2.0)))
+
+(define-public maven-model
+  (package
+    (inherit maven-artifact)
+    (name "maven-model")
+    (arguments
+     `(#:jar-name "maven-model.jar"
+       #:source-dir "maven-model/src/main/java"
+       #:test-dir "maven-model/src/test"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (invoke "java" "org.codehaus.modello.ModelloCli"
+                       file mode "maven-model/src/main/java" version
+                       "false" "true"))
+             (let ((file "maven-model/src/main/mdo/maven.mdo"))
+               (modello-single-mode file "4.0.0" "java")
+               (modello-single-mode file "4.0.0" "xpp3-reader")
+               (modello-single-mode file "4.0.0" "xpp3-writer")
+               (modello-single-mode file "4.0.0" "xpp3-extended-reader"))
+             #t)))))
+    (inputs
+     `(("java-commons-lang3" ,java-commons-lang3)
+       ("java-plexus-utils" ,java-plexus-utils)))
+    (native-inputs
+     `(("java-modello-core" ,java-modello-core)
+       ;; for modello:
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-guice" ,java-guice)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-guava" ,java-guava)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-sisu-build-api" ,java-sisu-build-api)
+       ;; modello plugins:
+       ("java-modello-plugins-java" ,java-modello-plugins-java)
+       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
+       ("java-modello-plugins-xpp3" ,java-modello-plugins-xpp3)
+       ;; for tests
+       ("java-junit" ,java-junit)))
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains the model for Maven @dfn{POM} (Project Object Model),
+so really just plain Java objects.")))
