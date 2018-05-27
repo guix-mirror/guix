@@ -174,6 +174,24 @@ AC_DEFUN([GUIX_CHECK_GUILE_SSH], [
      fi])
 ])
 
+dnl GUIX_CHECK_GUILE_SQLITE3
+dnl
+dnl Check whether a recent-enough Guile-Sqlite3 is available.
+AC_DEFUN([GUIX_CHECK_GUILE_SQLITE3], [
+  dnl Check whether 'sqlite-bind-arguments' is available.  It was introduced
+  dnl in February 2018:
+  dnl <https://notabug.org/civodul/guile-sqlite3/commit/1cd1dec96a9999db48c0ff45bab907efc637247f>.
+  AC_CACHE_CHECK([whether Guile-Sqlite3 is available and recent enough],
+    [guix_cv_have_recent_guile_sqlite3],
+    [GUILE_CHECK([retval],
+      [(@ (sqlite3) sqlite-bind-arguments)])
+     if test "$retval" = 0; then
+       guix_cv_have_recent_guile_sqlite3="yes"
+     else
+       guix_cv_have_recent_guile_sqlite3="no"
+     fi])
+])
+
 dnl GUIX_TEST_ROOT_DIRECTORY
 AC_DEFUN([GUIX_TEST_ROOT_DIRECTORY], [
   AC_CACHE_CHECK([for unit test root directory],

@@ -82,6 +82,7 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("guile-json" (ref '(gnu packages guile) 'guile-json))
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))
+      ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
       ("libgcrypt"  (ref '(gnu packages gnupg) 'libgcrypt))
       ("zlib"       (ref '(gnu packages compression) 'zlib))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
@@ -92,6 +93,7 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("guile2.0-json" (ref '(gnu packages guile) 'guile2.0-json))
       ("guile2.0-ssh"  (ref '(gnu packages ssh) 'guile2.0-ssh))
       ("guile2.0-git"  (ref '(gnu packages guile) 'guile2.0-git))
+      ;; XXX: No "guile2.0-sqlite3".
       (_               #f))))                     ;no such package
 
 
@@ -216,11 +218,16 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                        "guile2.0-git"))
 
 
+  (define guile-sqlite3
+    (package-for-guile guile-version
+                       "guile-sqlite3"
+                       "guile2.0-sqlite3"))
+
   (define dependencies
     (match (append-map (lambda (package)
                          (cons (list "x" package)
                                (package-transitive-propagated-inputs package)))
-                       (list guile-git guile-json guile-ssh))
+                       (list guile-git guile-json guile-ssh guile-sqlite3))
       (((labels packages _ ...) ...)
        packages)))
 
