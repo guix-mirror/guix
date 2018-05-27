@@ -3846,12 +3846,19 @@ by The Echo Nest.")
                                   "libmygpo-qt/libmygpo-qt." version ".tar.gz"))
               (sha256
                (base32
-                "1kg18qrq2rsswgzhl65r3mlyx7kpqg4wwnbp4yiv6svvmadmlxl2"))))
+                "1kg18qrq2rsswgzhl65r3mlyx7kpqg4wwnbp4yiv6svvmadmlxl2"))
+              (patches (search-patches "libmygpo-qt-fix-qt-5.11.patch"
+                                       "libmygpo-qt-missing-qt5-modules.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("qt" ,qtbase)))
+    (arguments
+     `(#:configure-flags '("-DMYGPO_BUILD_TESTS=ON")
+       ;; TODO: Enable tests when https://github.com/gpodder/gpodder/issues/446
+       ;; is fixed.
+       #:tests? #f))
     (home-page "http://wiki.gpodder.org/wiki/Libmygpo-qt")
     (synopsis "Qt/C++ library wrapping the gpodder web service")
     (description "@code{libmygpo-qt} is a Qt/C++ library wrapping the
