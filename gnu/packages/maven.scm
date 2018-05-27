@@ -292,3 +292,35 @@ setting, toolchains)")))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains strictly the model for Maven settings, that is
 simply plain java objects.")))
+
+(define-public maven-settings-builder
+  (package
+    (inherit maven-artifact)
+    (name "maven-settings-builder")
+    (arguments
+     `(#:jar-name "maven-settings-builder.jar"
+       #:source-dir "maven-settings-builder/src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "maven-settings-builder/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-components.xml
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (chmod "components.sh" #o755)
+             (invoke "./components.sh" "maven-settings-builder/src/main/java"
+                     "build/classes/META-INF/plexus/components.xml")
+             #t)))))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-plexus-interpolation" ,java-plexus-interpolation)
+       ("java-plexus-sec-dispatcher" ,java-plexus-sec-dispatcher)
+       ("maven-builder-support" ,maven-builder-support)
+       ("maven-settings" ,maven-settings)
+       ("java-commons-lang3" ,java-commons-lang3)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains the effective model builder, with profile activation,
+inheritance, interpolation, @dots{}")))
