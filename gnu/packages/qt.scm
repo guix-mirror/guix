@@ -804,17 +804,6 @@ with JavaScript and C++.")))
              (sha256
               (base32
                "0wqq5q5saf007aphvpn5pvj6l0qp0z7wxvfba6v9iq5ylyqm6bnd"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments qtsvg)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'disable-failing-tests
-             ;; this test fails on armhf and aarch64
-             (lambda _
-               (substitute* "tests/auto/qndefnfcsmartposterrecord/tst_qndefnfcsmartposterrecord.cpp"
-                 (("QCOMPARE\\(record.action\\(\\), QNdefNfcSmartPosterRecord::UnspecifiedAction")
-                 "//QCOMPARE(record.action(), QNdefNfcSmartPosterRecord::UnspecifiedAction"))
-               #t))))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
