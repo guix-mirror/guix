@@ -128,3 +128,41 @@ ease usage of the repository system.")))
     (synopsis "Maven repository connector implementation")
     (description "This package contains a repository connector implementation
 for repositories using URI-based layouts.")))
+
+(define-public maven-artifact
+  (package
+    (name "maven-artifact")
+    (version "3.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.apache.org/dist/maven/"
+                                  "maven-3/" version "/source/"
+                                  "apache-maven-" version "-src.tar.gz"))
+              (sha256 (base32 "06by23fz207lkvsndq883irfcf4p77jzkgf7n2q7hzyw1hs4h5s7"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.jar$"))
+                  #t))
+              (patches
+                (search-patches "maven-generate-component-xml.patch"
+                                "maven-generate-javax-inject-named.patch"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-artifact.jar"
+       #:source-dir "maven-artifact/src/main/java"
+       #:test-dir "maven-artifact/src/test"
+       #:main-class "org.apache.maven.artifact.versioning.ComparableVersion"))
+    (inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-commons-lang3" ,java-commons-lang3)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "https://maven.apache.org/")
+    (synopsis "Build system")
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains the Maven Artifact classes, providing the
+@code{Artifact} interface, with its @code{DefaultArtifact} implementation.  The
+jar file is executable and provides a little tool to display how Maven parses
+and compares versions:")
+    (license license:asl2.0)))
