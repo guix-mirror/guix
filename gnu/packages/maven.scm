@@ -245,3 +245,50 @@ so really just plain Java objects.")))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains a support library for descriptor builders (model,
 setting, toolchains)")))
+
+(define-public maven-settings
+  (package
+    (inherit maven-artifact)
+    (name "maven-settings")
+    (arguments
+     `(#:jar-name "maven-settings.jar"
+       #:source-dir "maven-settings/src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-models
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (modello-single-mode file version mode)
+               (invoke "java" "org.codehaus.modello.ModelloCli"
+                       file mode "maven-settings/src/main/java" version
+                       "false" "true"))
+             (let ((file "maven-settings/src/main/mdo/settings.mdo"))
+               (modello-single-mode file "1.1.0" "java")
+               (modello-single-mode file "1.1.0" "xpp3-reader")
+               (modello-single-mode file "1.1.0" "xpp3-writer"))
+             #t)))))
+    (inputs '())
+    (native-inputs
+     `(("java-modello-core" ,java-modello-core)
+       ;; for modello:
+       ;("container" ,java-plexus-container-default)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-guice" ,java-guice)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-guava" ,java-guava)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-sisu-build-api" ,java-sisu-build-api)
+       ;; modello plugins:
+       ("java-modello-plugins-java" ,java-modello-plugins-java)
+       ("java-modello-plugins-xml" ,java-modello-plugins-xml)
+       ("java-modello-plugins-xpp3" ,java-modello-plugins-xpp3)))
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains strictly the model for Maven settings, that is
+simply plain java objects.")))
