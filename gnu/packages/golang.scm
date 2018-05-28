@@ -1546,3 +1546,29 @@ interfaces in Go.")
 developers to use @code{http} methods explicitly and in a way that's consistent
 with the HTTP protocol definition.")
       (license license:expat))))
+
+(define-public go-github-com-google-cadvisor
+  (let ((commit "2ed7198f77395ee9a172878a0a7ab92ab59a2cfd")
+        (revision "0"))
+    (package
+      (name "go-github-com-google-cadvisor")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/google/cadvisor.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1w8p345z5j0gk3yiq5ah0znd5lfh348p2s624k5r10drz04p3f55"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/google/cadvisor"))
+      (home-page "https://github.com/google/cadvisor")
+      (synopsis "Analyze resource usage of running containers")
+      (description "The package provides @code{cadvisor}, which provides
+information about the resource usage and preformance characteristics of running
+containers.")
+      (license license:asl2.0))))
