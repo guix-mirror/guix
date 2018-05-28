@@ -340,28 +340,25 @@ the image."
         guile-json))
 
   (define build
-    (with-imported-modules `(,@(source-module-closure '((guix docker))
-                                                      #:select? not-config?)
-                             (guix build store-copy)
-                             ((guix config) => ,config))
-      #~(begin
-          ;; Guile-JSON is required by (guix docker).
-          (add-to-load-path
-           (string-append #+json "/share/guile/site/"
-                          (effective-version)))
+    ;; Guile-JSON is required by (guix docker).
+    (with-extensions (list json)
+      (with-imported-modules `(,@(source-module-closure '((guix docker))
+                                                        #:select? not-config?)
+                               (guix build store-copy)
+                               ((guix config) => ,config))
+        #~(begin
+            (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
 
-          (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
+            (setenv "PATH" (string-append #$archiver "/bin"))
 
-          (setenv "PATH" (string-append #$archiver "/bin"))
-
-          (build-docker-image #$output
-                              (call-with-input-file "profile"
-                                read-reference-graph)
-                              #$profile
-                              #:system (or #$target (utsname:machine (uname)))
-                              #:symlinks '#$symlinks
-                              #:compressor '#$(compressor-command compressor)
-                              #:creation-time (make-time time-utc 0 1)))))
+            (build-docker-image #$output
+                                (call-with-input-file "profile"
+                                  read-reference-graph)
+                                #$profile
+                                #:system (or #$target (utsname:machine (uname)))
+                                #:symlinks '#$symlinks
+                                #:compressor '#$(compressor-command compressor)
+                                #:creation-time (make-time time-utc 0 1))))))
 
   (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
