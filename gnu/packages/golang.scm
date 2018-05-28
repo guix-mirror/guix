@@ -1572,3 +1572,28 @@ with the HTTP protocol definition.")
 information about the resource usage and preformance characteristics of running
 containers.")
       (license license:asl2.0))))
+
+(define-public go-github-com-google-gofuzz
+  (let ((commit "fd52762d25a41827db7ef64c43756fd4b9f7e382")
+        (revision "0"))
+    (package
+      (name "go-github-com-google-gofuzz")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/google/gofuzz.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1yxmmr73h0lq7ryf3q9a7pcm2x5xrg4d5bxkq8n5pxwxwyq26kw8"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/google/gofuzz"))
+      (home-page "https://github.com/google/gofuzz")
+      (synopsis "Fuzz testing library for Go")
+      (description "Gofuzz is a library for populationg Go objects with random
+values for the purpose of fuzz testing.")
+      (license license:asl2.0))))
