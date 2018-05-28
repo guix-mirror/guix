@@ -482,7 +482,7 @@ board-independent tools.")))
                                                "- ~A\n"
                                                (string-drop-right file-name
                                                                   suffix-len))))
-                                   (sort entries string<)))
+                                   (sort entries string-ci<)))
                        #f)))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
