@@ -123,19 +123,12 @@ otherwise."
   "Build a PNG of HEIGHT x WIDTH from SVG."
   (gexp->derivation "grub-image.png"
                     (with-imported-modules '((gnu build svg))
-                      #~(begin
-                          ;; We need these two libraries.
-                          (add-to-load-path (string-append #+guile-rsvg
-                                                           "/share/guile/site/"
-                                                           (effective-version)))
-                          (add-to-load-path (string-append #+guile-cairo
-                                                           "/share/guile/site/"
-                                                           (effective-version)))
-
-                          (use-modules (gnu build svg))
-                          (svg->png #+svg #$output
-                                    #:width #$width
-                                    #:height #$height)))))
+                      (with-extensions (list guile-rsvg guile-cairo)
+                        #~(begin
+                            (use-modules (gnu build svg))
+                            (svg->png #+svg #$output
+                                      #:width #$width
+                                      #:height #$height))))))
 
 (define* (grub-background-image config #:key (width 1024) (height 768))
   "Return the GRUB background image defined in CONFIG with a ratio of
