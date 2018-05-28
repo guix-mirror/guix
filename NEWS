@@ -12,6 +12,11 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 * Changes in 0.15.0 (since 0.14.0)
 
+** Package management
+
+*** ‘guix pack’ now supports building SquashFS images
+*** ‘guix pack’ can now build relocatable tarballs
+
 ** Distribution
 
 *** New services
