@@ -121,25 +121,21 @@ otherwise."
 
 (define* (svg->png svg #:key width height)
   "Build a PNG of HEIGHT x WIDTH from SVG."
-  ;; Note: Guile-RSVG & co. are now built for Guile 2.2, so we use 2.2 here.
-  ;; TODO: Remove #:guile-for-build when 2.2 has become the default.
-  (mlet %store-monad ((guile (package->derivation guile-2.2 #:graft? #f)))
-    (gexp->derivation "grub-image.png"
-                      (with-imported-modules '((gnu build svg))
-                        #~(begin
-                            ;; We need these two libraries.
-                            (add-to-load-path (string-append #+guile-rsvg
-                                                             "/share/guile/site/"
-                                                             (effective-version)))
-                            (add-to-load-path (string-append #+guile-cairo
-                                                             "/share/guile/site/"
-                                                             (effective-version)))
+  (gexp->derivation "grub-image.png"
+                    (with-imported-modules '((gnu build svg))
+                      #~(begin
+                          ;; We need these two libraries.
+                          (add-to-load-path (string-append #+guile-rsvg
+                                                           "/share/guile/site/"
+                                                           (effective-version)))
+                          (add-to-load-path (string-append #+guile-cairo
+                                                           "/share/guile/site/"
+                                                           (effective-version)))
 
-                            (use-modules (gnu build svg))
-                            (svg->png #+svg #$output
-                                      #:width #$width
-                                      #:height #$height)))
-                      #:guile-for-build guile)))
+                          (use-modules (gnu build svg))
+                          (svg->png #+svg #$output
+                                    #:width #$width
+                                    #:height #$height)))))
 
 (define* (grub-background-image config #:key (width 1024) (height 768))
   "Return the GRUB background image defined in CONFIG with a ratio of
