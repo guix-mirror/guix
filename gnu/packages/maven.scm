@@ -324,3 +324,58 @@ simply plain java objects.")))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains the effective model builder, with profile activation,
 inheritance, interpolation, @dots{}")))
+
+(define-public maven-model-builder
+  (package
+    (inherit maven-artifact)
+    (name "maven-model-builder")
+    (arguments
+     `(#:jar-name "maven-model-builder.jar"
+       #:source-dir "maven-model-builder/src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "maven-model-builder/src/test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "maven-model-builder/src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'build 'generate-components.xml
+           (lambda _
+             (mkdir-p "build/classes/META-INF/plexus")
+             (chmod "components.sh" #o755)
+             (invoke "./components.sh" "maven-model-builder/src/main/java"
+                     "build/classes/META-INF/plexus/components.xml")
+             #t))
+         (add-before 'check 'fix-paths
+           (lambda _
+             (substitute* (find-files "maven-model-builder/src/test/java" ".*.java")
+               (("src/test") "maven-model-builder/src/test"))
+             #t)))))
+    (inputs
+     `(("model" ,maven-model)
+       ("artifact" ,maven-artifact)
+       ("support" ,maven-builder-support)
+       ("annotations" ,java-plexus-component-annotations)
+       ("utils" ,java-plexus-utils)
+       ("interpolation" ,java-plexus-interpolation)
+       ("lang3" ,java-commons-lang3)
+       ("guava" ,java-guava)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-eclipse-sisu-plexus" ,java-eclipse-sisu-plexus)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("guice" ,java-guice)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("sisu-inject" ,java-eclipse-sisu-inject)
+       ("javax-inject" ,java-javax-inject)
+       ("xmlunit" ,java-xmlunit)
+       ("xmlunit" ,java-xmlunit-legacy)
+       ("xbean" ,java-geronimo-xbean-reflect)
+       ("classworlds" ,java-plexus-classworlds)))
+    (description "Apache Maven is a software project management and comprehension
+tool.  This package contains the effective model builder, with profile activation,
+inheritance, interpolation, @dots{}")))
