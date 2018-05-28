@@ -1597,3 +1597,27 @@ containers.")
       (description "Gofuzz is a library for populationg Go objects with random
 values for the purpose of fuzz testing.")
       (license license:asl2.0))))
+
+(define-public go-github-com-gorilla-context
+  (let ((commit "08b5f424b9271eedf6f9f0ce86cb9396ed337a42")
+        (revision "0"))
+    (package
+      (name "go-github-com-gorilla-context")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gorilla/context.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "03p4hn87vcmfih0p9w663qbx9lpsf7i7j3lc7yl7n84la3yz63m4"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gorilla/context"))
+      (home-page "https://github.com/gorilla/context")
+      (synopsis "Go registry for request variables")
+      (description "This package provides @code{gorilla/context}, which is a general purpose registry for global request variables in the Go programming language.")
+      (license license:bsd-3))))
