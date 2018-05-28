@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2064,6 +2065,7 @@ background file post-processing.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
+                           "-DSC_QT=off"
                            "-DSC_EL=off") ;scel is packaged individually as
                                           ;emacs-scel.
        #:modules ((guix build utils)
@@ -2124,8 +2126,7 @@ set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/\
 external_libraries/yaml-cpp/include)"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
@@ -2138,12 +2139,7 @@ external_libraries/yaml-cpp/include)"))
        ("icu4c" ,icu4c)
        ("boost" ,boost)
        ("boost-sync" ,boost-sync)
-       ("yaml-cpp" ,yaml-cpp)
-       ("qtbase" ,qtbase)               ;IDE support
-       ("qtwebkit" ,qtwebkit)
-       ("qtsensors" ,qtsensors)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtlocation" ,qtlocation)))
+       ("yaml-cpp" ,yaml-cpp)))
     (home-page "https://github.com/supercollider/supercollider")
     (synopsis "Synthesis engine and programming language")
     (description "SuperCollider is a synthesis engine (@code{scsynth} or
