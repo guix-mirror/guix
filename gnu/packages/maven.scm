@@ -23,6 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages java))
 
 (define-public maven-resolver-api
@@ -188,6 +189,46 @@ for repositories using URI-based layouts.")))
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)
        ("maven-resolver-test-util" ,maven-resolver-test-util)))))
+
+(define-public maven-shared-utils
+  (package
+    (name "maven-shared-utils")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.apache.org/dist/maven/shared/"
+                                  "maven-shared-utils-" version "-source-release.zip"))
+              (sha256
+               (base32
+                "1kzmj68wwdcznb36hm6kfz57wbavw7g1rp236pz10znkjljn6rf6"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "maven-shared-utils.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-cyclic-dep
+           (lambda _
+             (delete-file
+               "src/test/java/org/apache/maven/shared/utils/introspection/ReflectionValueExtractorTest.java")
+             #t)))))
+    (inputs
+     `(("java-jansi" ,java-jansi)
+       ("java-commons-io" ,java-commons-io)
+       ("java-jsr305" ,java-jsr305)
+       ("java-plexus-container-default" ,java-plexus-container-default)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-commons-lang3" ,java-commons-lang3)))
+    (home-page "https://maven.apache.org/shared/maven-shared-utils/")
+    (synopsis "Plexus-util replacement for maven")
+    (description "This project aims to be a functional replacement for
+plexus-utils in Maven.  It is not a 100% API compatible replacement but a
+replacement with improvements.")
+    (license license:asl2.0)))
 
 (define-public maven-artifact
   (package
