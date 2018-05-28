@@ -114,14 +114,14 @@
 (define-public emacs
   (package
     (name "emacs")
-    (version "25.3")
+    (version "26.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/emacs/emacs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "02y00y9q42g1iqgz5qhmsja75hwxd88yrn9zp14lanay0zkwafi5"))
+               "0b6k1wq44rc8gkvxhi1bbjxbz3cwg29qbq8mklq2az6p1hjgrx0w"))
              (patches (search-patches "emacs-exec-path.patch"
                                       "emacs-fix-scheme-indent-function.patch"
                                       "emacs-source-date-epoch.patch"))
@@ -159,7 +159,8 @@
                      " ")))))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f  ; no check target
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-/bin/pwd
            (lambda _
