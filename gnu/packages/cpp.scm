@@ -238,3 +238,36 @@ as ordering relation.")
     (description "JSON for Modern C++ is a C++ JSON library that provides
 intutive syntax and trivial integration.")
     (license license:expat)))
+
+(define-public xtl
+  (package
+    (name "xtl")
+    (version "0.4.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/QuantStack/xtl/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "05bcz9y590b77bxcip0k31rgsapmkwqi1smvsvc84zz7m87d4jvy"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("json-modern-cxx" ,json-modern-cxx)))
+    (arguments
+     `(#:configure-flags
+       '("-DBUILD_TESTS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* _
+             (with-directory-excursion "test"
+               (invoke "./test_xtl")
+               #t))))))
+    (home-page "https://github.com/QuantStack/xtl")
+    (build-system cmake-build-system)
+    (synopsis "C++ template library providing some basic tools")
+    (description "xtl is a C++ header-only template library providing basic
+tools (containers, algorithms) used by other QuantStack packages.")
+    (license license:bsd-3)))
