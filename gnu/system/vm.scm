@@ -410,58 +410,57 @@ should set REGISTER-CLOSURES? to #f."
                      (eval-when (expand load eval)
                        (define %libgcrypt
                          #+(file-append libgcrypt "/lib/libgcrypt"))))))
+
   (mlet %store-monad ((os-drv (operating-system-derivation os #:container? #t))
                       (name -> (string-append name ".tar.gz"))
                       (graph -> "system-graph"))
     (define build
-      (with-imported-modules `(,@(source-module-closure '((guix docker)
-                                                          (guix build utils)
-                                                          (gnu build vm))
-                                                        #:select? not-config?)
-                               (guix build store-copy)
-                               ((guix config) => ,config))
-        #~(begin
-            ;; Guile-JSON is required by (guix docker).
-            (add-to-load-path
-             (string-append #+guile-json "/share/guile/site/"
-                            (effective-version)))
-            (use-modules (guix docker)
-                         (guix build utils)
-                         (gnu build vm)
-                         (srfi srfi-19)
-                         (guix build store-copy))
+      (with-extensions (list guile-json)          ;for (guix docker)
+        (with-imported-modules `(,@(source-module-closure
+                                    '((guix docker)
+                                      (guix build utils)
+                                      (gnu build vm))
+                                    #:select? not-config?)
+                                 (guix build store-copy)
+                                 ((guix config) => ,config))
+          #~(begin
+              (use-modules (guix docker)
+                           (guix build utils)
+                           (gnu build vm)
+                           (srfi srfi-19)
+                           (guix build store-copy))
 
-            (let* ((inputs '#$(append (list tar)
-                                      (if register-closures?
-                                          (list guix)
-                                          '())))
-                   ;; This initializer requires elevated privileges that are
-                   ;; not normally available in the build environment (e.g.,
-                   ;; it needs to create device nodes).  In order to obtain
-                   ;; such privileges, we run it as root in a VM.
-                   (initialize (root-partition-initializer
-                                #:closures '(#$graph)
-                                #:register-closures? #$register-closures?
-                                #:system-directory #$os-drv
-                                ;; De-duplication would fail due to
-                                ;; cross-device link errors, so don't do it.
-                                #:deduplicate? #f))
-                   ;; Even as root in a VM, the initializer would fail due to
-                   ;; lack of privileges if we use a root-directory that is on
-                   ;; a file system that is shared with the host (e.g., /tmp).
-                   (root-directory "/guixsd-system-root"))
-              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
-              (mkdir root-directory)
-              (initialize root-directory)
-              (build-docker-image
-               (string-append "/xchg/" #$name) ;; The output file.
-               (cons* root-directory
-                      (call-with-input-file (string-append "/xchg/" #$graph)
-                        read-reference-graph))
-               #$os-drv
-               #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
-               #:creation-time (make-time time-utc 0 1)
-               #:transformations `((,root-directory -> "")))))))
+              (let* ((inputs '#$(append (list tar)
+                                        (if register-closures?
+                                            (list guix)
+                                            '())))
+                     ;; This initializer requires elevated privileges that are
+                     ;; not normally available in the build environment (e.g.,
+                     ;; it needs to create device nodes).  In order to obtain
+                     ;; such privileges, we run it as root in a VM.
+                     (initialize (root-partition-initializer
+                                  #:closures '(#$graph)
+                                  #:register-closures? #$register-closures?
+                                  #:system-directory #$os-drv
+                                  ;; De-duplication would fail due to
+                                  ;; cross-device link errors, so don't do it.
+                                  #:deduplicate? #f))
+                     ;; Even as root in a VM, the initializer would fail due to
+                     ;; lack of privileges if we use a root-directory that is on
+                     ;; a file system that is shared with the host (e.g., /tmp).
+                     (root-directory "/guixsd-system-root"))
+                (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+                (mkdir root-directory)
+                (initialize root-directory)
+                (build-docker-image
+                 (string-append "/xchg/" #$name) ;; The output file.
+                 (cons* root-directory
+                        (call-with-input-file (string-append "/xchg/" #$graph)
+                          read-reference-graph))
+                 #$os-drv
+                 #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
+                 #:creation-time (make-time time-utc 0 1)
+                 #:transformations `((,root-directory -> ""))))))))
     (expression->derivation-in-linux-vm
      name
      ;; The VM's initrd Guile doesn't support dlopen, but our "build" gexp
