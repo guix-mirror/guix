@@ -5064,6 +5064,23 @@ headers, which comes in handy in this case:
                         @dots{})))
 @end example
 
+@cindex extensions, for gexps
+@findex with-extensions
+In the same vein, sometimes you want to import not just pure-Scheme
+modules, but also ``extensions'' such as Guile bindings to C libraries
+or other ``full-blown'' packages.  Say you need the @code{guile-json}
+package available on the build side, here's how you would do it:
+
+@example
+(use-modules (gnu packages guile))  ;for 'guile-json'
+
+(with-extensions (list guile-json)
+  (gexp->derivation "something-with-json"
+                    #~(begin
+                        (use-modules (json))
+                        @dots{})))
+@end example
+
 The syntactic form to construct gexps is summarized below.
 
 @deffn {Scheme Syntax} #~@var{exp}
@@ -5147,6 +5164,18 @@ directly defined in @var{body}@dots{}, but not on those defined, say, in
 procedures called from @var{body}@dots{}.
 @end deffn
 
+@deffn {Scheme Syntax} with-extensions @var{extensions} @var{body}@dots{}
+Mark the gexps defined in @var{body}@dots{} as requiring
+@var{extensions} in their build and execution environment.
+@var{extensions} is typically a list of package objects such as those
+defined in the @code{(gnu packages guile)} module.
+
+Concretely, the packages listed in @var{extensions} are added to the
+load path while compiling imported modules in @var{body}@dots{}; they
+are also added to the load path of the gexp returned by
+@var{body}@dots{}.
+@end deffn
+
 @deffn {Scheme Procedure} gexp? @var{obj}
 Return @code{#t} if @var{obj} is a G-expression.
 @end deffn
@@ -5161,6 +5190,7 @@ information about monads.)
        [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:module-path @var{%load-path}] @
+       [#:effective-version "2.2"] @
        [#:references-graphs #f] [#:allowed-references #f] @
        [#:disallowed-references #f] @
        [#:leaked-env-vars #f] @
@@ -5180,6 +5210,9 @@ make @var{modules} available in the evaluation context of @var{exp};
 @var{module-path} to be copied in the store, compiled, and made available in
 the load path during the execution of @var{exp}---e.g., @code{((guix
 build utils) (guix build gnu-build-system))}.
+
+@var{effective-version} determines the string to use when adding extensions of
+@var{exp} (see @code{with-extensions}) to the search path---e.g., @code{"2.2"}.
 
 @var{graft?} determines whether packages referred to by @var{exp} should be grafted when
 applicable.
