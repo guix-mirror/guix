@@ -10575,3 +10575,28 @@ be changed by customizing the appropriate variables.")
      "Synchronize between events in Org-mode files and a CalDAV calendar.
 This code is still alpha.")
     (license license:gpl3+)))
+
+(define-public emacs-zotxt
+  (package
+    (name "emacs-zotxt")
+    (version "20180518")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/egh/zotxt-emacs/archive/"
+             "23a4a9f74a658222027d53a9a83cd4bcc583ca8b"
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1qlibaciqgsva6fc7vv9krssjq00bi880396jk7llbi3c52q9n1y"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-deferred" ,emacs-deferred)
+       ("emacs-request" ,emacs-request)))
+    (home-page "https://github.com/egh/zotxt-emacs")
+    (synopsis "Integrate Emacs with Zotero")
+    (description "This package provides two integration features between Emacs
+and the Zotero research assistant: Insertion of links to Zotero items into an
+Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
+    (license license:gpl3+)))
