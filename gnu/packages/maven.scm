@@ -526,3 +526,39 @@ inheritance, interpolation, @dots{}")))
     (description "Apache Maven is a software project management and comprehension
 tool.  This package contains strictly the model for Maven Repository Metadata,
 so really just plain objects.")))
+
+(define-public maven-resolver-provider
+  (package
+    (inherit maven-artifact)
+    (name "maven-resolver-provider")
+    (arguments
+     `(#:jar-name "maven-resolver-provider.jar"
+       #:source-dir "maven-resolver-provider/src/main/java"
+       #:test-dir "maven-resolver-provider/src/test"
+       #:jdk ,icedtea-8
+       #:tests? #f; dependency loop on maven-core (@Component RepositorySystem)
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'generate-sisu-named
+           (lambda _
+             (mkdir-p "build/classes/META-INF/sisu")
+             (chmod "./sisu.sh" #o755)
+             (invoke "./sisu.sh" "maven-resolver-provider/src/main/java"
+                     "build/classes/META-INF/sisu/javax.inject.Named")
+             #t)))))
+    (inputs
+     `(("maven-resolver-spi" ,maven-resolver-spi)
+       ("maven-resolver-api" ,maven-resolver-api)
+       ("maven-resolver-impl" ,maven-resolver-impl)
+       ("maven-resolver-util" ,maven-resolver-util)
+       ("maven-model" ,maven-model)
+       ("maven-model-builder" ,maven-model-builder)
+       ("maven-builder-support" ,maven-builder-support)
+       ("maven-repository-metadata" ,maven-repository-metadata)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-commons-lang3" ,java-commons-lang3)
+       ("java-guice" ,java-guice)
+       ("java-guava" ,java-guava)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-javax-inject" ,java-javax-inject)))))
