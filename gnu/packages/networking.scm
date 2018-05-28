@@ -21,6 +21,7 @@
 ;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -588,7 +589,21 @@ of the same name.")
                             (assoc-ref %build-inputs "portaudio"))
              (string-append "--with-sbc=" (assoc-ref %build-inputs "sbc"))
              (string-append "--with-snappy=" (assoc-ref %build-inputs "snappy"))
-             (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib")))))
+             (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             ;; Fix build against Qt 5.11.
+             (substitute* "ui/qt/packet_format_group_box.cpp"
+               (("#include <QStyle>") "#include <QStyle>
+#include <QStyleOption>"))
+             (substitute* "ui/qt/time_shift_dialog.cpp"
+               (("#include <ui/time_shift.h>") "#include <ui/time_shift.h>
+#include <QStyleOption>"))
+             (substitute* "ui/qt/wireless_frame.cpp"
+               (("#include <QProcess>") "#include <QProcess>
+#include <QAbstractItemView>")))))))
     (synopsis "Network traffic analyzer")
     (description "Wireshark is a network protocol analyzer, or @dfn{packet
 sniffer}, that lets you capture and interactively browse the contents of
