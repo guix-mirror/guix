@@ -14,16 +14,16 @@ The fix is made by Mark H Weaver <mhw@netris.org>:
 
 --- a/lisp/progmodes/scheme.el
 +++ b/lisp/progmodes/scheme.el
-@@ -494,6 +494,12 @@ indentation."
-                         (> (length function) 3)
-                         (string-match "\\`def" function)))
-                (lisp-indent-defform state indent-point))
+@@ -482,6 +482,12 @@
+ 			(> (length function) 3)
+ 			(string-match "\\`def" function)))
+ 	       (lisp-indent-defform state indent-point))
 +              ((and (null method)
 +                    (> (length function) 1)
 +                    ;; The '#' in '#:' seems to get lost, not sure why
 +                    (string-match "\\`:" function))
 +               (let ((lisp-body-indent 1))
 +                 (lisp-indent-defform state indent-point)))
-               ((integerp method)
-                (lisp-indent-specform method state
-                                      indent-point normal-indent))
+ 	      ((integerp method)
+ 	       (lisp-indent-specform method state
+ 				     indent-point normal-indent))
