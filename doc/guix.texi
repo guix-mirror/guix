@@ -2843,6 +2843,7 @@ they can be placed anywhere in the file system hierarchy: in the example
 above, users can unpack your tarball in their home directory and
 directly run @file{./opt/gnu/bin/guile}.
 
+@cindex Docker, build an image with guix pack
 Alternatively, you can produce a pack in the Docker image format using
 the following command:
 
