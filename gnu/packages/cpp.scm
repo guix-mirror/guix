@@ -29,7 +29,9 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls))
 
@@ -195,3 +197,44 @@ batches.")
 container which uses the order in which keys were inserted to the container
 as ordering relation.")
       (license license:expat))))
+
+(define-public json-modern-cxx
+  (package
+    (name "json-modern-cxx")
+    (version "3.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/nlohmann/json/archive/v" version ".tar.gz"))
+       (sha256
+        (base32
+         "0m5fhdpx2qll933db2nsi30nns3cifavzvijzz6mxhdkpmngmzz8"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "./third_party")
+           (delete-file-recursively "./test/thirdparty")
+           (delete-file-recursively "./benchmarks/thirdparty")
+           ;; Splits catch and fifo_map
+           (with-directory-excursion "test/src"
+             (let ((files (find-files "." ".*\\.cpp")))
+               (substitute* files
+                 (("#include ?\"(catch.hpp)\"" all catch-hpp)
+                  (string-append "#include <catch/" catch-hpp ">")))
+               (substitute* files
+                 (("#include ?\"(fifo_map.hpp)\"" all fifo-map-hpp)
+                  (string-append
+                   "#include <fifo_map/" fifo-map-hpp ">")))))))))
+    (native-inputs
+     `(("amalgamate" ,amalgamate)))
+    (inputs
+     `(("catch2" ,catch-framework2)
+       ("fifo-map" ,fifo-map)))
+    (home-page "https://github.com/nlohmann/json")
+    (build-system cmake-build-system)
+    (synopsis "JSON parser and printer library for C++")
+    (description "JSON for Modern C++ is a C++ JSON library that provides
+intutive syntax and trivial integration.")
+    (license license:expat)))
