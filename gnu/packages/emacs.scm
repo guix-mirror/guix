@@ -245,10 +245,11 @@ languages.")
     (synopsis "The extensible text editor (used only for byte-compilation)")
     (build-system gnu-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments emacs)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (delete 'install-site-start)))))
+     `(#:configure-flags (list "--with-gnutls=no")
+       ,@(substitute-keyword-arguments (package-arguments emacs)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (delete 'install-site-start))))))
     (inputs
      `(("ncurses" ,ncurses)))
     (native-inputs
