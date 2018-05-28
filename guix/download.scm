@@ -391,11 +391,6 @@
   (plain-file "content-addressed-mirrors"
               (object->string %content-addressed-mirrors)))
 
-(define (gnutls-package)
-  "Return the default GnuTLS package."
-  (let ((module (resolve-interface '(gnu packages tls))))
-    (module-ref module 'gnutls)))
-
 (define built-in-builders*
   (let ((cache (make-weak-key-hash-table)))
     (lambda ()
