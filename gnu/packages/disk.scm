@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,7 +56,11 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages w3m)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages swig))
 
 (define-public parted
   (package
@@ -547,3 +552,44 @@ provides a minimalistic and nice curses interface with a view on the directory
 hierarchy.  It ships with @code{rifle}, a file launcher that is good at
 automatically finding out which program to use for what file type.")
     (license license:gpl3)))
+
+(define-public volume-key
+  (package
+    (name "volume-key")
+    (version "0.3.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://releases.pagure.org/volume_key/volume_key-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0vaz15rcgdkh5z4yxc22x76wi44gh50jxnrqz5avaxz4bb17kcp6"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("util-linux" ,util-linux)
+       ("swig" ,swig)
+       ("python" ,python-3)))           ; Used to generate the Python bindings.
+    (inputs
+     `(("cryptsetup" ,cryptsetup)
+       ("nss" ,nss)
+       ("lvm2" ,lvm2)                   ; For "-ldevmapper".
+       ("glib" ,glib)
+       ("gpgme" ,gpgme)))
+    (arguments
+     `(#:tests? #f ; Not sure how tests are supposed to pass, even when run manually.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-python.h-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python")))
+               (substitute* "Makefile.in"
+                 (("/usr/include/python") (string-append python "/include/python")))
+               #t))))))
+    (home-page "https://pagure.io/volume_key")
+    (synopsis "Manipulate storage volume encryption keys")
+    (description
+     "This package provides a library for manipulating storage volume
+encryption keys and storing them separately from volumes to handle forgotten
+passphrases.")
+    (license license:gpl2)))
