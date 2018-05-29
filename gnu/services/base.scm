@@ -306,7 +306,7 @@ seconds after @code{SIGTERM} has been sent are terminated with
   (string-append (match (file-system-device file-system)
                    ((? file-system-label? label)
                     (string-append "LABEL="
-                                   (file-system-label->string file-system)))
+                                   (file-system-label->string label)))
                    ((? uuid? uuid)
                     (string-append "UUID=" (uuid->string uuid)))
                    ((? string? device)
