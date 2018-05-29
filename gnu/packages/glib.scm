@@ -643,7 +643,18 @@ useful for C++.")
     (inputs
      `(("python" ,python-2)
        ("python-pycairo" ,python2-pycairo)
-       ("gobject-introspection" ,gobject-introspection)))))
+       ("gobject-introspection" ,gobject-introspection)))
+    (native-inputs
+     `(;; Use gcc-7 to work around an internal compiler error that happens
+       ;; when using gcc-5.5.0.  FIXME: Try removing this when the default
+       ;; compiler is no longer gcc-5.5.0.
+       ("gcc" ,gcc-7)
+       ("which" ,which)
+       ;for tests: dbus-run-session and glib-compile-schemas
+       ("dbus" ,dbus)
+       ("glib-bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("python-pytest" ,python2-pytest)))))
 
 (define-public perl-glib
   (package
