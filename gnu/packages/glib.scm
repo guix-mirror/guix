@@ -31,6 +31,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages file)
@@ -597,7 +598,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.24.1")
+    (version "3.28.2")
     (source
      (origin
        (method url-fetch)
@@ -606,7 +607,7 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "1zdzznrj2s1gsrv2z4r0n88fzba8zjc1n2r313xi77lhl1daja56"))))
+         "1jpjws4v17wv99lbhks0g0152w0f70mnwpdn8ibzzfgw2kykli5c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Use gcc-7 to work around an internal compiler error that happens
@@ -617,7 +618,8 @@ useful for C++.")
        ;for tests: dbus-run-session and glib-compile-schemas
        ("dbus" ,dbus)
        ("glib-bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python-pytest" ,python-pytest)))
     (inputs
      `(("python" ,python)
        ("python-pycairo" ,python-pycairo)
