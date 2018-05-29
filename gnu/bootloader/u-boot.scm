@@ -37,6 +37,7 @@
             u-boot-nintendo-nes-classic-edition-bootloader
             u-boot-novena-bootloader
             u-boot-pine64-plus-bootloader
+            u-boot-puma-rk3399-bootloader
             u-boot-wandboard-bootloader))
 
 (define install-u-boot
@@ -83,6 +84,15 @@
                               device (* 1 1024))
         (write-file-on-device u-boot (stat:size (stat u-boot))
                               device (* 69 1024)))))
+
+(define install-puma-rk3399-u-boot
+  #~(lambda (bootloader device mount-point)
+      (let ((spl (string-append bootloader "/libexec/u-boot-spl.rksd"))
+            (u-boot (string-append bootloader "/libexec/u-boot.itb")))
+        (write-file-on-device spl (stat:size (stat spl))
+                              device (* 64 512))
+        (write-file-on-device u-boot (stat:size (stat u-boot))
+                              device (* 512 512)))))
 
 
 
@@ -162,3 +172,9 @@
   (bootloader
    (inherit u-boot-allwinner64-bootloader)
    (package u-boot-pine64-plus)))
+
+(define u-boot-puma-rk3399-bootloader
+  (bootloader
+   (inherit u-boot-bootloader)
+   (package u-boot-puma-rk3399)
+   (installer install-puma-rk3399-u-boot)))
