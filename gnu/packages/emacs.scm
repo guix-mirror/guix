@@ -1791,6 +1791,7 @@ allows easily move between them.")
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
+       #:emacs ,emacs ; FIXME: tests fail with emacs-minimal
        #:test-command '("./run-tests.sh")))
     (home-page "https://github.com/magnars/s.el")
     (synopsis "Emacs string manipulation library")
