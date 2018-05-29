@@ -284,10 +284,14 @@ brushstrokes which is used by MyPaint and GIMP.")
                 "055j2rgkav2024zl6y5hxb2ra0vbx58607d6sz7ml2351r1bcjvh"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _ (invoke "sh" "./autogen.sh"))))))
+         (add-after 'unpack 'relax-dependency-version
+           (lambda _
+             (substitute* "autogen.sh"
+               (("automake-1.13") "automake")
+               (("aclocal-1.13") "aclocal"))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
