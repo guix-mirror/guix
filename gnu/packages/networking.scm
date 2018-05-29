@@ -603,7 +603,8 @@ of the same name.")
 #include <QStyleOption>"))
              (substitute* "ui/qt/wireless_frame.cpp"
                (("#include <QProcess>") "#include <QProcess>
-#include <QAbstractItemView>")))))))
+#include <QAbstractItemView>"))
+             #t)))))
     (synopsis "Network traffic analyzer")
     (description "Wireshark is a network protocol analyzer, or @dfn{packet
 sniffer}, that lets you capture and interactively browse the contents of
