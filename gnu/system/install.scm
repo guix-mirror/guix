@@ -53,6 +53,7 @@
             nintendo-nes-classic-edition-installation-os
             novena-installation-os
             pine64-plus-installation-os
+            rk3399-puma-installation-os
             wandboard-installation-os))
 
 ;;; Commentary:
@@ -448,6 +449,11 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
 
 (define pine64-plus-installation-os
   (embedded-installation-os u-boot-pine64-plus-bootloader
+                            "/dev/mmcblk0" ; SD card storage
+                            "ttyS0"))
+
+(define rk3399-puma-installation-os
+  (embedded-installation-os u-boot-puma-rk3399-bootloader
                             "/dev/mmcblk0" ; SD card storage
                             "ttyS0"))
 

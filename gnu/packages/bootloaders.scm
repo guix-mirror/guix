@@ -489,7 +489,7 @@ board-independent tools.")))
                (let* ((out (assoc-ref outputs "out"))
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
-                                    (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb)$")
+                                    (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb|rksd)$")
                                     (find-files "." "^(MLO|SPL)$"))))
                  (mkdir-p libexec)
                  (install-file ".config" libexec)
@@ -559,6 +559,37 @@ board-independent tools.")))
 
 (define-public u-boot-cubieboard
   (make-u-boot-package "Cubieboard" "arm-linux-gnueabihf"))
+
+(define-public u-boot-puma-rk3399
+  (let ((base (make-u-boot-package "puma-rk3399" "aarch64-linux-gnu")))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'set-environment
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Need to copy the firmware into u-boot build
+                 ;; directory.
+                 (copy-file (string-append (assoc-ref inputs "firmware")
+                                           "/bl31.bin") "bl31-rk3399.bin")
+                 (copy-file (string-append (assoc-ref inputs "firmware-m0")
+                                           "/rk3399m0.bin") "rk3399m0.bin")
+                 #t))
+             (add-after 'build 'build-itb
+               (lambda* (#:key make-flags #:allow-other-keys)
+                 ;; The u-boot.itb is not built by default.
+                 (apply invoke "make" `(,@make-flags ,"u-boot.itb"))))
+             (add-after 'build-itb 'build-rksd
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Build Rockchip SD card images.
+                 (invoke "./tools/mkimage" "-T" "rksd" "-n" "rk3399" "-d"
+                         "spl/u-boot-spl.bin" "u-boot-spl.rksd")))))))
+      (native-inputs
+       `(("firmware" ,arm-trusted-firmware-puma-rk3399)
+         ("firmware-m0" ,rk3399-cortex-m0)
+         ,@(package-native-inputs base))))))
 
 (define-public vboot-utils
   (package

@@ -404,3 +404,66 @@ such as:
           (sha256
            (base32
             "0r4xnlq7v9khjfcg6gqp7nmrmnw4z1r8bipwdr07png1dcbb8214")))))))
+
+(define-public arm-trusted-firmware-puma-rk3399
+  (let ((base (make-arm-trusted-firmware "rk3399"))
+        ;; Vendor's arm trusted firmware branch hasn't been upstreamed yet.
+        (commit "d71e6d83612df896774ec4c03d49500312d2c324")
+        (revision "1"))
+    (package
+      (inherit base)
+      (name "arm-trusted-firmware-puma-rk3399")
+      (version (git-version "1.3" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://git.theobroma-systems.com/arm-trusted-firmware.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "0vqhwqqh8h9qlkpybg2v94911091c1418bc4pnzq5fd7zf0fjkf8")))))))
+
+(define-public rk3399-cortex-m0
+  (package
+    (name "rk3399-cortex-m0")
+    (version "1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.theobroma-systems.com/rk3399-cortex-m0.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name "rk3399-cortex-m0" version))
+       (sha256
+        (base32
+         "02wz1vkf4j3zc8rx289z76xhrf71jhb2p05lvmygky393a9gjh9w"))))
+    (home-page "https://git.theobroma-systems.com/rk3399-cortex-m0.git/about/")
+    (synopsis "PMU Cortex M0 firmware for RK3399 Q7 (Puma)")
+    (description
+     "Cortex-M0 firmware used with the RK3399 to implement
+power-management functionality and helpers (e.g. DRAM frequency
+switching support).\n")
+    (license license:bsd-3)
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (mzerofiles (find-files "." "rk3399m0.(elf|bin)$")))
+               (for-each
+                 (lambda (file)
+                   (install-file file out))
+                 mzerofiles))
+             #t))
+         (add-before 'build 'setenv
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CROSS_COMPILE" "arm-none-eabi-")
+             #t)))))
+    (native-inputs `(("cross-gcc" ,(cross-gcc "arm-none-eabi" #:xgcc gcc-7))
+                     ("cross-binutils" ,(cross-binutils "arm-none-eabi"))))))

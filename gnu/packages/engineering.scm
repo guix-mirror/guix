@@ -110,6 +110,13 @@
                 (string-append "#include <boost/serialization/array_wrapper.hpp>\n"
                                line)))
              #t))
+         ;; Fix build against Qt 5.11.
+         (add-after 'unpack 'add-missing-headers
+           (lambda _
+             (substitute* "librecad/src/ui/generic/widgetcreator.cpp"
+               (("#include <QPushButton>") "#include <QPushButton>
+#include <QActionGroup>"))
+             #t))
          (add-after 'unpack 'patch-paths
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))

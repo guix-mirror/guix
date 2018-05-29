@@ -114,14 +114,14 @@
 (define-public emacs
   (package
     (name "emacs")
-    (version "25.3")
+    (version "26.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/emacs/emacs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "02y00y9q42g1iqgz5qhmsja75hwxd88yrn9zp14lanay0zkwafi5"))
+               "0b6k1wq44rc8gkvxhi1bbjxbz3cwg29qbq8mklq2az6p1hjgrx0w"))
              (patches (search-patches "emacs-exec-path.patch"
                                       "emacs-fix-scheme-indent-function.patch"
                                       "emacs-source-date-epoch.patch"))
@@ -160,7 +160,8 @@
                  #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f  ; no check target
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-/bin/pwd
            (lambda _
@@ -246,10 +247,11 @@ languages.")
     (synopsis "The extensible text editor (used only for byte-compilation)")
     (build-system gnu-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments emacs)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (delete 'install-site-start)))))
+     `(#:configure-flags (list "--with-gnutls=no")
+       ,@(substitute-keyword-arguments (package-arguments emacs)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (delete 'install-site-start))))))
     (inputs
      `(("ncurses" ,ncurses)))
     (native-inputs
@@ -1584,16 +1586,16 @@ and stored in memory.")
 (define-public emacs-dash
   (package
     (name "emacs-dash")
-    (version "2.13.0")
+    (version "2.14.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/magnars/dash.el/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/magnars/dash.el.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pjlkrzr8n45bnp3xs3dybvy0nz3gwamrfc7vsi1nhpkkw99ihhb"))))
+                "1kzijmjxjxgr7p8clphzvmm47vczckbs8mza9an77c25bn627ywl"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -1796,6 +1798,7 @@ allows easily move between them.")
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
+       #:emacs ,emacs ; FIXME: tests fail with emacs-minimal
        #:test-command '("./run-tests.sh")))
     (home-page "https://github.com/magnars/s.el")
     (synopsis "Emacs string manipulation library")
