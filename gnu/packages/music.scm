@@ -187,20 +187,20 @@ score, keyboard, guitar, drum and controller views.")
 ;; We don't use the latest release because it depends on Qt4.  Instead we
 ;; download the sources from the tip of the "qt5" branch.
 (define-public clementine
-  (let ((commit "0a59257dc334b8df60a4d7d90b04f1766747efcf")
-        (revision "1"))
+  (let ((commit "4619a4c1ab3b17b13d4b2327ad477912917eaf36")
+        (revision "2"))
     (package
       (name "clementine")
-      (version (string-append "1.3.1-" revision "." (string-take commit 7)))
+      (version (git-version "1.3.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/clementine-player/Clementine.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                   "0cdcj7di7j9jgzc1ihjna1a5df64f9hnmx7b9kh8rlg76hc0l0hi"))
+                  "1hximk3q0p8nw8is5w7215xgkb7k4flnfyr0pdz9svfwvcm05w1i"))
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
@@ -264,7 +264,6 @@ score, keyboard, guitar, drum and controller views.")
          ("gst-plugins-base" ,gst-plugins-base)
          ("libcdio" ,libcdio)
          ("libmygpo-qt" ,libmygpo-qt)
-         ("libechonest" ,libechonest)
          ;; TODO: Package libgpod.
          ("libmtp" ,libmtp)
          ("libxml2" ,libxml2)
@@ -3814,33 +3813,6 @@ OSC connections.")
 the electronic or dubstep genre.")
     (license license:gpl3+)))
 
-(define-public libechonest
-  (package
-    (name "libechonest")
-    (version "2.3.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://anongit.kde.org/libechonest.git")
-                    (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0xbavf9f355dl1d3qv59x4ryypqrdanh9xdvw2d0q66l008crdkq"))))
-    (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f                      ; Tests require Internet access
-       #:configure-flags '("-DBUILD_WITH_QT4=OFF")))
-    (inputs
-     `(("qtbase" ,qtbase)
-       ("qjson" ,qjson)))
-    (home-page "https://projects.kde.org/projects/playground/libs/libechonest")
-    (synopsis "C++/Qt classes to interface with The Echo Nest API")
-    (description "@code{libechonest} is a collection of C++/Qt classes
-designed to make a developer's life easy when trying to use the APIs provided
-by The Echo Nest.")
-    (license license:gpl2+)))
-
 (define-public libmygpo-qt
   (package
     (name "libmygpo-qt")
@@ -3851,12 +3823,19 @@ by The Echo Nest.")
                                   "libmygpo-qt/libmygpo-qt." version ".tar.gz"))
               (sha256
                (base32
-                "1kg18qrq2rsswgzhl65r3mlyx7kpqg4wwnbp4yiv6svvmadmlxl2"))))
+                "1kg18qrq2rsswgzhl65r3mlyx7kpqg4wwnbp4yiv6svvmadmlxl2"))
+              (patches (search-patches "libmygpo-qt-fix-qt-5.11.patch"
+                                       "libmygpo-qt-missing-qt5-modules.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("qt" ,qtbase)))
+    (arguments
+     `(#:configure-flags '("-DMYGPO_BUILD_TESTS=ON")
+       ;; TODO: Enable tests when https://github.com/gpodder/gpodder/issues/446
+       ;; is fixed.
+       #:tests? #f))
     (home-page "http://wiki.gpodder.org/wiki/Libmygpo-qt")
     (synopsis "Qt/C++ library wrapping the gpodder web service")
     (description "@code{libmygpo-qt} is a Qt/C++ library wrapping the

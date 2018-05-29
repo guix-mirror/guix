@@ -4968,7 +4968,7 @@ quotation from a collection of quotes.")
     (description
      "Xonotic-data provides the data files required by the game Xonotic.")
     (license (list license:gpl2+
-                   license:x11)))) ; server/rcon.pl
+                   (license:x11-style "file://server/rcon.pl")))))
 
 (define-public xonotic
   (package
@@ -5167,4 +5167,4 @@ development between them, and it aims to become the best possible
 open-source FPS of its kind.")
     (license (list license:gpl2+
                    license:bsd-3 ; /source/d0_blind_id folder and others
-                   license:x11-style))))
+                   (license:x11-style "" "See file rcon.pl.")))))

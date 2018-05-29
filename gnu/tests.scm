@@ -208,8 +208,7 @@ the system under test."
                  (bootloader grub-bootloader)
                  (target "/dev/sdX")))
     (file-systems (cons (file-system
-                          (device "my-root")
-                          (title 'label)
+                          (device (file-system-label "my-root"))
                           (mount-point "/")
                           (type "ext4"))
                         %base-file-systems))

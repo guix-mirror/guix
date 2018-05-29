@@ -131,13 +131,16 @@
   "Prepend extra arguments to KERNEL-ARGUMENTS that allow SYSTEM.DRV to be
 booted from ROOT-DEVICE"
   (cons* (string-append "--root="
-                        (if (uuid? root-device)
+                        (cond ((uuid? root-device)
 
-                            ;; Note: Always use the DCE format because that's
-                            ;; what (gnu build linux-boot) expects for the
-                            ;; '--root' kernel command-line option.
-                            (uuid->string (uuid-bytevector root-device) 'dce)
-                            root-device))
+                               ;; Note: Always use the DCE format because that's
+                               ;; what (gnu build linux-boot) expects for the
+                               ;; '--root' kernel command-line option.
+                               (uuid->string (uuid-bytevector root-device)
+                                             'dce))
+                              ((file-system-label? root-device)
+                               (file-system-label->string root-device))
+                              (else root-device)))
          #~(string-append "--system=" #$system.drv)
          #~(string-append "--load=" #$system.drv "/boot")
          kernel-arguments))
@@ -251,10 +254,16 @@ file system labels."
     (match-lambda
       (('uuid (? symbol? type) (? bytevector? bv))
        (bytevector->uuid bv type))
+      (('file-system-label (? string? label))
+       (file-system-label label))
       ((? bytevector? bv)                         ;old format
        (bytevector->uuid bv 'dce))
       ((? string? device)
-       device)))
+       ;; It used to be that we would not distinguish between labels and
+       ;; device names.  Try to infer the right thing here.
+       (if (string-prefix? "/dev/" device)
+           device
+           (file-system-label device)))))
 
   (match (read port)
     (('boot-parameters ('version 0)
@@ -377,7 +386,7 @@ marked as 'needed-for-boot'."
   (let ((target (string-append "/dev/mapper/" (mapped-device-target device))))
     (find (lambda (fs)
             (or (member device (file-system-dependencies fs))
-                (and (eq? 'device (file-system-title fs))
+                (and (string? (file-system-device fs))
                      (string=? (file-system-device fs) target))))
           file-systems)))
 
@@ -933,13 +942,6 @@ listed in OS.  The C library expects to find it under
       (bootloader-configuration-bootloader bootloader-conf))
      bootloader-conf (list entry) #:old-entries old-entries)))
 
-(define (fs->boot-device fs)
-  "Given FS, a <file-system> object, return a value suitable for use as the
-device in a <menu-entry>."
-  (case (file-system-title fs)
-    ((uuid label device) (file-system-device fs))
-    (else #f)))
-
 (define (operating-system-boot-parameters os system.drv root-device)
   "Return a monadic <boot-parameters> record that describes the boot parameters
 of OS.  SYSTEM.DRV is either a derivation or #f.  If it's a derivation, adds
@@ -961,7 +963,7 @@ kernel arguments for that derivation to <boot-parameters>."
                 (operating-system-user-kernel-arguments os)))
              (initrd initrd)
              (bootloader-name bootloader-name)
-             (store-device (ensure-not-/dev (fs->boot-device store)))
+             (store-device (ensure-not-/dev (file-system-device store)))
              (store-mount-point (file-system-mount-point store))))))
 
 (define (device->sexp device)
@@ -969,6 +971,8 @@ kernel arguments for that derivation to <boot-parameters>."
   (match device
     ((? uuid? uuid)
      `(uuid ,(uuid-type uuid) ,(uuid-bytevector uuid)))
+    ((? file-system-label? label)
+     `(file-system-label ,(file-system-label->string label)))
     (_
      device)))
 

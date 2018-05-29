@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -27,8 +27,7 @@
 
 (define %root-fs
   (file-system
-    (device "my-root")
-    (title 'label)
+    (device (file-system-label "my-root"))
     (mount-point "/")
     (type "ext4")))
 
@@ -114,7 +113,6 @@
      (inherit %os-with-mapped-device)
      (file-systems (cons (file-system
                            (device "/dev/mapper/my-luks-device")
-                           (title 'device)
                            (mount-point "/")
                            (type "ext4"))
                          %base-file-systems)))))

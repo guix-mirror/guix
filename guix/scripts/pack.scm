@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
@@ -93,7 +93,7 @@ found."
                                  (compressor (first %compressors))
                                  localstatedir?
                                  (symlinks '())
-                                 (tar tar))
+                                 (archiver tar))
   "Return a self-contained tarball containing a store initialized with the
 closure of PROFILE, a derivation.  The tarball contains /gnu/store; if
 LOCALSTATEDIR? is true, it also contains /var/guix, including /var/guix/db
@@ -142,7 +142,7 @@ added to the pack."
           ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
           ;; older and doesn't support it.
           (define tar-supports-sort?
-            (zero? (system* (string-append #+tar "/bin/tar")
+            (zero? (system* (string-append #+archiver "/bin/tar")
                             "cf" "/dev/null" "--files-from=/dev/null"
                             "--sort=name")))
 
@@ -151,7 +151,7 @@ added to the pack."
                   (string-append #$(if localstatedir?
                                        (file-append guix "/sbin:")
                                        "")
-                                 #$tar "/bin"))
+                                 #$archiver "/bin"))
 
           ;; Note: there is not much to gain here with deduplication and there
           ;; is the overhead of the '.links' directory, so turn it off.
@@ -214,13 +214,97 @@ added to the pack."
                     build
                     #:references-graphs `(("profile" ,profile))))
 
+(define* (squashfs-image name profile
+                         #:key target
+                         deduplicate?
+                         (compressor (first %compressors))
+                         localstatedir?
+                         (symlinks '())
+                         (archiver squashfs-tools-next))
+  "Return a squashfs image containing a store initialized with the closure of
+PROFILE, a derivation.  The image contains a subset of /gnu/store, empty mount
+points for virtual file systems (like procfs), and optional symlinks.
+
+SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
+added to the pack."
+  (define build
+    (with-imported-modules '((guix build utils)
+                             (guix build store-copy)
+                             (gnu build install))
+      #~(begin
+          (use-modules (guix build utils)
+                       (gnu build install)
+                       (guix build store-copy)
+                       (srfi srfi-1)
+                       (srfi srfi-26)
+                       (ice-9 match))
+
+          (setenv "PATH" (string-append #$archiver "/bin"))
+
+          ;; We need an empty file in order to have a valid file argument when
+          ;; we reparent the root file system.  Read on for why that's
+          ;; necessary.
+          (with-output-to-file ".empty" (lambda () (display "")))
+
+          ;; Create the squashfs image in several steps.
+          ;; Add all store items.  Unfortunately mksquashfs throws away all
+          ;; ancestor directories and only keeps the basename.  We fix this
+          ;; in the following invocations of mksquashfs.
+          (apply invoke "mksquashfs"
+                 `(,@(call-with-input-file "profile"
+                       read-reference-graph)
+                   ,#$output
+
+                   ;; Do not perform duplicate checking because we
+                   ;; don't have any dupes.
+                   "-no-duplicates"
+                   "-comp"
+                   ,#+(compressor-name compressor)))
+
+          ;; Here we reparent the store items.  For each sub-directory of
+          ;; the store prefix we need one invocation of "mksquashfs".
+          (for-each (lambda (dir)
+                      (apply invoke "mksquashfs"
+                             `(".empty"
+                               ,#$output
+                               "-root-becomes" ,dir)))
+                    (reverse (string-tokenize (%store-directory)
+                                              (char-set-complement (char-set #\/)))))
+
+          ;; Add symlinks and mount points.
+          (apply invoke "mksquashfs"
+                 `(".empty"
+                   ,#$output
+                   ;; Create SYMLINKS via pseudo file definitions.
+                   ,@(append-map
+                      (match-lambda
+                        ((source '-> target)
+                         (list "-p"
+                               (string-join
+                                ;; name s mode uid gid symlink
+                                (list source
+                                      "s" "777" "0" "0"
+                                      (string-append #$profile "/" target))))))
+                      '#$symlinks)
+
+                   ;; Create empty mount points.
+                   "-p" "/proc d 555 0 0"
+                   "-p" "/sys d 555 0 0"
+                   "-p" "/dev d 555 0 0")))))
+
+  (gexp->derivation (string-append name
+                                   (compressor-extension compressor)
+                                   ".squashfs")
+                    build
+                    #:references-graphs `(("profile" ,profile))))
+
 (define* (docker-image name profile
                        #:key target
                        deduplicate?
                        (compressor (first %compressors))
                        localstatedir?
                        (symlinks '())
-                       (tar tar))
+                       (archiver tar))
   "Return a derivation to construct a Docker image of PROFILE.  The
 image is a tarball conforming to the Docker Image Specification, compressed
 with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
@@ -268,7 +352,7 @@ the image."
 
           (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
 
-          (setenv "PATH" (string-append #$tar "/bin"))
+          (setenv "PATH" (string-append #$archiver "/bin"))
 
           (build-docker-image #$output
                               (call-with-input-file "profile"
@@ -462,6 +546,7 @@ please email '~a'~%")
 (define %formats
   ;; Supported pack formats.
   `((tarball . ,self-contained-tarball)
+    (squashfs . ,squashfs-image)
     (docker  . ,docker-image)))
 
 (define %options
@@ -626,9 +711,11 @@ Create a bundle of PACKAGE.\n"))
                (compressor  (if bootstrap?
                                 bootstrap-xz
                                 (assoc-ref opts 'compressor)))
-               (tar         (if bootstrap?
-                                %bootstrap-coreutils&co
-                                tar))
+               (archiver    (if (equal? pack-format 'squashfs)
+                                squashfs-tools-next
+                                (if bootstrap?
+                                    %bootstrap-coreutils&co
+                                    tar)))
                (symlinks    (assoc-ref opts 'symlinks))
                (build-image (match (assq-ref %formats pack-format)
                               ((? procedure? proc) proc)
@@ -654,8 +741,8 @@ Create a bundle of PACKAGE.\n"))
                                                    symlinks
                                                    #:localstatedir?
                                                    localstatedir?
-                                                   #:tar
-                                                   tar)))
+                                                   #:archiver
+                                                   archiver)))
               (mbegin %store-monad
                 (show-what-to-build* (list drv)
                                      #:use-substitutes?

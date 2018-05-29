@@ -328,8 +328,7 @@ You have been warned.  Thanks for being so brave.\x1b[0m
      ;; the appropriate one.
      (cons* (file-system
               (mount-point "/")
-              (device "GuixSD_image")
-              (title 'label)
+              (device (file-system-label "GuixSD_image"))
               (type "ext4"))
 
             ;; Make /tmp a tmpfs instead of keeping the overlayfs.  This
@@ -341,7 +340,6 @@ You have been warned.  Thanks for being so brave.\x1b[0m
             (file-system
               (mount-point "/tmp")
               (device "none")
-              (title 'device)
               (type "tmpfs")
               (check? #f))
 

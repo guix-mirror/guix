@@ -1,0 +1,39 @@
+From 0871db30bd73d112a434f54572d34cca28de61c5 Mon Sep 17 00:00:00 2001
+From: fis <ybbs.daans@hotmail.com>
+Date: Sat, 26 May 2018 22:58:37 +0800
+Subject: [PATCH 2/2] * CMakeLists.txt: Fix flags for gcc.
+
+---
+ CMakeLists.txt | 18 ++----------------
+ 1 file changed, 2 insertions(+), 16 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index eba147b..d60dcef 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -6,20 +6,6 @@ add_executable(unit src/fifo_map.hpp test/unit.cpp)
+ 
+ target_include_directories(unit PRIVATE "test" "src")
+ 
+-if(MSVC)
+-    set(CMAKE_CXX_FLAGS
+-        "/EHsc"
+-    )
++set(CMAKE_CXX_FLAGS "-std=c++11 -fpermissive")
+ 
+-    STRING(REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELEASE})
+-
+-    add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+-else(MSVC)
+-    set(CMAKE_CXX_FLAGS
+-        "-std=c++11 -stdlib=libc++"
+-    )
+-endif(MSVC)
+-
+-include_directories(
+-    src test
+-)
++include_directories(src test)
+-- 
+2.14.3
+

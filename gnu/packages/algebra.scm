@@ -27,7 +27,9 @@
 (define-module (gnu packages algebra)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages flex)
@@ -755,3 +757,37 @@ features, and more.")
     ;; Most of the code is MPLv2, with a few files under LGPLv2.1+ or BSD-3.
     ;; See 'COPYING.README' for details.
     (license license:mpl2.0)))
+
+(define-public xtensor
+  (package
+    (name "xtensor")
+    (version "0.15.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/QuantStack/xtensor/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0mlsw4p1w5mh7pscddfdamz27zq3wml5qla3vbzgvif34vsqc8ra"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("xtl" ,xtl)))
+    (arguments
+     `(#:configure-flags
+       '("-DBUILD_TESTS=ON")
+       #:test-target "xtest"))
+    (home-page "http://quantstack.net/xtensor")
+    (synopsis "C++ tensors with broadcasting and lazy computing")
+    (description "xtensor is a C++ library meant for numerical analysis with
+multi-dimensional array expressions.
+
+xtensor provides:
+@itemize
+@item an extensible expression system enabling lazy broadcasting.
+@item an API following the idioms of the C++ standard library.
+@item tools to manipulate array expressions and build upon xtensor.
+@end itemize")
+    (license license:bsd-3)))

@@ -1,0 +1,51 @@
+From 0d76d960727018bddf04c6cc89552af69aaa7e55 Mon Sep 17 00:00:00 2001
+From: Andreas Sturmlechner <andreas.sturmlechner@gmail.com>
+Date: Sun, 15 Apr 2018 22:20:34 +0200
+Subject: [PATCH] Add missing Qt5Network, Qt5Test, make BUILD_WITH_QT4 more
+ strict
+
+---
+ CMakeLists.txt | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2a1f652..eb006d9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -5,25 +5,25 @@ project( libmygpo-qt )
+ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_TO_ASCII" )
+ 
+-option(BUILD_WITH_QT4 "Build libmygpo-qt with Qt4 no matter if Qt5 was found" OFF)
++option(BUILD_WITH_QT4 "Build libmygpo-qt with Qt4" OFF)
+ 
+ if( NOT BUILD_WITH_QT4 )
+-    find_package(Qt5Core QUIET)
+-    if( Qt5Core_DIR )
+-        set(MYGPO_QT_VERSION_SUFFIX 5)
+-
+-        macro(qt_wrap_cpp)
+-            qt5_wrap_cpp(${ARGN})
+-        endmacro()
++    if( MYGPO_BUILD_TESTS )
++        find_package(Qt5 REQUIRED COMPONENTS Core Network Test CONFIG)
++    else()
++        find_package(Qt5 REQUIRED COMPONENTS Core Network CONFIG)
+     endif()
++    set(MYGPO_QT_VERSION_SUFFIX 5)
++
++    macro(qt_wrap_cpp)
++        qt5_wrap_cpp(${ARGN})
++    endmacro()
+ 
+     # pkg-config names of QtCore and QtNetwork are Qt5Core and Qt5Network for
+     # Qt5
+     set(MYGPO_QT_MAJOR_VERSION "5")
+     set(MYGPO_QT4_QJSON_DEP "")
+-endif()
+-
+-if( NOT Qt5Core_DIR )
++else()
+     message(STATUS "Could not find Qt5, searching for Qt4 instead...")
+     message(STATUS "Qt4 Support is deprecated, building with Qt4 is no longer officially supported")
+     if( MYGPO_BUILD_TESTS )

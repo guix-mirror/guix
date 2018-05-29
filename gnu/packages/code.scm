@@ -30,12 +30,16 @@
 (define-module (gnu packages code)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autogen)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages databases)
@@ -43,15 +47,13 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pcre)
-  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages autogen)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages autotools)
   #:use-module (gnu packages llvm)
-  #:use-module (gnu packages lua)
-  #:use-module (gnu packages bash))
+  #:use-module (gnu packages lua))
 
 ;;; Tools to deal with source code: metrics, cross-references, etc.
 
@@ -648,3 +650,49 @@ deal with incomplete or malformed syntax.  GNU indent offers several
 extensions over the standard utility.")
    (license license:gpl3+)
    (home-page "https://www.gnu.org/software/indent/")))
+
+(define-public amalgamate
+  (let* ((commit "c91f07eea1133aa184f652b8f1398eaf03586208")
+         (revision "0")
+         (version (git-version "1.1.1" revision commit)))
+    (package
+      (name "amalgamate")
+      (version version)
+      (home-page "https://github.com/edlund/amalgamate")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (sha256
+          (base32
+           "0cllaraw8mxs8q2nr28nhgzkb417gj2wcklqg59w84f4lc78k3yb"))
+         (file-name (git-file-name name version))
+         (modules '((guix build utils)))
+         (snippet
+          '(substitute* "test.sh"
+             (("test_command \"cc -Wall -Wextra -o source.out source.c\"" all)
+              "test_command \"gcc -Wall -Wextra -o source.out source.c\"")))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("python" ,python-wrapper)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "amalgamate.py" bin))))
+           (replace 'check
+             (lambda _
+               (invoke "./test.sh"))))))
+      (synopsis "Tool for amalgamating C source and header files")
+      ;; The package is indeed a script file, and the term "amalgamate.py" is
+      ;; used by upstream.
+      (description "amalgamate.py aims to make it easy to use SQLite-style C
+source and header amalgamation in projects.")
+      (license license:bsd-3))))

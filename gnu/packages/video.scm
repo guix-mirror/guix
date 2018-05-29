@@ -885,6 +885,13 @@ audio/video codec library.")
                ;; XXX Likely not needed for >2.2.6.
                (substitute* "modules/gui/qt4/components/interface_widgets.cpp"
                  (("<qx11info_x11.h>") "<QtX11Extras/qx11info_x11.h>"))
+               ;; Fix build against Qt 5.11.
+               (substitute* "modules/gui/qt4/actions_manager.cpp"
+                 (("#include <vlc_keys.h>") "#include <vlc_keys.h>
+#include <QAction>"))
+               (substitute* "modules/gui/qt4/components/simple_preferences.cpp"
+                 (("#include <QFont>") "#include <QFont>
+#include <QButtonGroup>"))
                #t)))
          (add-after 'install 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)

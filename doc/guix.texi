@@ -2843,6 +2843,7 @@ they can be placed anywhere in the file system hierarchy: in the example
 above, users can unpack your tarball in their home directory and
 directly run @file{./opt/gnu/bin/guile}.
 
+@cindex Docker, build an image with guix pack
 Alternatively, you can produce a pack in the Docker image format using
 the following command:
 
@@ -2855,6 +2856,22 @@ The result is a tarball that can be passed to the @command{docker load}
 command.  See the
 @uref{https://docs.docker.com/engine/reference/commandline/load/, Docker
 documentation} for more information.
+
+@cindex Singularity, build an image with guix pack
+@cindex SquashFS, build an image with guix pack
+Yet another option is to produce a SquashFS image with the following
+command:
+
+@example
+guix pack -f squashfs guile emacs geiser
+@end example
+
+@noindent
+The result is a SquashFS file system image that can either be mounted or
+directly be used as a file system container image with the
+@uref{http://singularity.lbl.gov, Singularity container execution
+environment}, using commands like @command{singularity shell} or
+@command{singularity exec}.
 
 Several command-line options allow you to customize your pack:
 
@@ -2874,6 +2891,11 @@ specified binaries and symlinks.
 This produces a tarball that follows the
 @uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
 Docker Image Specification}.
+
+@item squashfs
+This produces a SquashFS image containing all the specified binaries and
+symlinks, as well as empty mount points for virtual file systems like
+procfs.
 @end table
 
 @item --relocatable
@@ -9210,20 +9232,31 @@ This is a string specifying the type of the file system---e.g.,
 This designates the place where the file system is to be mounted.
 
 @item @code{device}
-This names the ``source'' of the file system.  By default it is the name
-of a node under @file{/dev}, but its meaning depends on the @code{title}
-field described below.
+This names the ``source'' of the file system.  It can be one of three
+things: a file system label, a file system UUID, or the name of a
+@file{/dev} node.  Labels and UUIDs offer a way to refer to file
+systems without having to hard-code their actual device
+name@footnote{Note that, while it is tempting to use
+@file{/dev/disk/by-uuid} and similar device names to achieve the same
+result, this is not recommended: These special device nodes are created
+by the udev daemon and may be unavailable at the time the device is
+mounted.}.
 
-@item @code{title} (default: @code{'device})
-This is a symbol that specifies how the @code{device} field is to be
-interpreted.
+@findex file-system-label
+File system labels are created using the @code{file-system-label}
+procedure, UUIDs are created using @code{uuid}, and @file{/dev} node are
+plain strings.  Here's an example of a file system referred to by its
+label, as shown by the @command{e2label} command:
 
-When it is the symbol @code{device}, then the @code{device} field is
-interpreted as a file name; when it is @code{label}, then @code{device}
-is interpreted as a file system label name; when it is @code{uuid},
-@code{device} is interpreted as a file system unique identifier (UUID).
+@example
+(file-system
+  (mount-point "/home")
+  (type "ext4")
+  (device (file-system-label "my-home")))
+@end example
 
-UUIDs may be converted from their string representation (as shown by the
+@findex uuid
+UUIDs are converted from their string representation (as shown by the
 @command{tune2fs -l} command) using the @code{uuid} form@footnote{The
 @code{uuid} form expects 16-byte UUIDs as defined in
 @uref{https://tools.ietf.org/html/rfc4122, RFC@tie{}4122}.  This is the
@@ -9235,22 +9268,13 @@ like this:
 (file-system
   (mount-point "/home")
   (type "ext4")
-  (title 'uuid)
   (device (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")))
 @end example
 
-The @code{label} and @code{uuid} options offer a way to refer to file
-systems without having to hard-code their actual device
-name@footnote{Note that, while it is tempting to use
-@file{/dev/disk/by-uuid} and similar device names to achieve the same
-result, this is not recommended: These special device nodes are created
-by the udev daemon and may be unavailable at the time the device is
-mounted.}.
-
-However, when the source of a file system is a mapped device (@pxref{Mapped
+When the source of a file system is a mapped device (@pxref{Mapped
 Devices}), its @code{device} field @emph{must} refer to the mapped
-device name---e.g., @file{/dev/mapper/root-partition}---and consequently
-@code{title} must be set to @code{'device}.  This is required so that
+device name---e.g., @file{"/dev/mapper/root-partition"}.
+This is required so that
 the system knows that mounting the file system depends on having the
 corresponding device mapping established.
 

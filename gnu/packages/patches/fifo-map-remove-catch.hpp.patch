@@ -1,0 +1,30 @@
+From 20dcf90fd02511f8d78ea7cc8ac82c121fd2f6cf Mon Sep 17 00:00:00 2001
+From: fis <ybbs.daans@hotmail.com>
+Date: Sat, 26 May 2018 22:56:29 +0800
+Subject: [PATCH 1/2] * CMakeLists.txt: Remove catch.hpp.
+
+---
+ CMakeLists.txt | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6603c7f..eba147b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2,11 +2,9 @@ cmake_minimum_required(VERSION 2.8)
+ 
+ project(fifo_map LANGUAGES CXX)
+ 
+-add_executable(unit
+-    src/fifo_map.hpp test/thirdparty/catch/catch.hpp test/unit.cpp
+-)
++add_executable(unit src/fifo_map.hpp test/unit.cpp)
+ 
+-target_include_directories(unit PRIVATE "test" "src" "test/thirdparty")
++target_include_directories(unit PRIVATE "test" "src")
+ 
+ if(MSVC)
+     set(CMAKE_CXX_FLAGS
+-- 
+2.14.3
+
