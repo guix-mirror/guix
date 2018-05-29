@@ -65,7 +65,8 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages web)
   #:use-module (gnu packages documentation)
-  #:use-module (gnu packages bash))
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages c))
 
 (define-public parted
   (package
@@ -690,4 +691,51 @@ removal, rebuild and display of properties for ATARAID/DDF1 metadata.
 
 @command{dmraid} uses @file{libdevmapper} and the device-mapper kernel runtime
 to create devices with respective mappings for the ATARAID sets discovered.")
+    (license license:gpl2+)))
+
+(define-public libblockdev
+  (package
+    (name "libblockdev")
+    (version "2.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/storaged-project/libblockdev/releases/download/"
+                                  version "-1/libblockdev-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1a3kpdr9s6g7nfibazi92i27wbv692b5gm2r24gimis6l6jq4pbh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("util-linux" ,util-linux)))
+    (inputs
+     `(("btrfs-progs" ,btrfs-progs)
+       ("cryptsetup" ,cryptsetup)
+       ("dosfstools" ,dosfstools)
+       ("dmraid" ,dmraid)
+       ("eudev" ,eudev)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("kmod" ,kmod)
+       ("libbytesize" ,libbytesize)
+       ("libyaml" ,libyaml)
+       ("lvm2" ,lvm2)
+       ("mdadm" ,mdadm)
+       ("ndctl" ,ndctl)
+       ("nss" ,nss)
+       ("parted" ,parted)
+       ("volume-key" ,volume-key)
+       ;; ("xfsprogs" ,xfsprogs) ; TODO: Package?
+       ))
+    (home-page "https://github.com/storaged-project/libblockdev")
+    (synopsis "Library for manipulating block devices")
+    (description
+     "libblockdev is a C library supporting GObject introspection for
+manipulation of block devices.  It has a plugin-based architecture where each
+technology (like LVM, Btrfs, MD RAID, Swap...) is implemented in a separate
+plugin, possibly with multiple implementations (e.g. using LVM CLI or the new
+LVM D-Bus API).")
+    ;; XXX: Copying says LGPL2.1, but the source files with license
+    ;; information are GPL2+.
     (license license:gpl2+)))
