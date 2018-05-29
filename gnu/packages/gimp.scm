@@ -23,6 +23,7 @@
 (define-module (gnu packages gimp)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
@@ -275,13 +276,14 @@ brushstrokes which is used by MyPaint and GIMP.")
     (name "mypaint-brushes")
     (version "1.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/Jehan/mypaint-brushes/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Jehan/mypaint-brushes.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "055j2rgkav2024zl6y5hxb2ra0vbx58607d6sz7ml2351r1bcjvh"))))
+                "1iz89z6v2mp8j1lrf942k561s8311i3s34ap36wh4rybb2lq15m0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
