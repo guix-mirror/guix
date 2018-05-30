@@ -627,7 +627,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.29")
+    (version "10.1.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -635,7 +635,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1m3ya6c3snnsyscd0waklayqfv0vhws52iizv2j5masj5xhdbfvk"))))
+                "0bax748j4srsyhw5cs5jvwigndh0zwmf4r2cjvhja31ckx8jqccl"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
