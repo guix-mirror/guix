@@ -527,31 +527,28 @@ cups server to be installed.")
      "Noice is a small curses-based file browser.")
     (license license:bsd-2)))
 
-;;; We want some commits that are more recent than the latest release, 0.2
 (define-public human
-  (let ((commit "50c80e6ba12823184b6866e06b955dbd2ccdc5d7")
-        (revision "1"))
-    (package
-      (name "human")
-      (version (string-append "0.2-" revision "." (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "git://git.2f30.org/human.git")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "18xngm4h9vsyip52zwd79rrp1irzg6rs462lpbp61amf7hj955gn"))))
+  (package
+    (name "human")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://git.2f30.org/human.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0y0bsmvpwfwb2lwspi6a799y34h1faxc6yfanyw6hygxc8661mga"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://git.2f30.org/human/")
     (synopsis "Convert bytes to human readable formats")
     (description
@@ -560,7 +557,7 @@ human readable format.  By default, it tries to detect the best
 factorisation, but you can force its output.
 You can adjust the number of decimals with the @code{SCALE}
 environment variable.")
-    (license license:wtfpl2))))
+    (license license:wtfpl2)))
 
 (define-public fortify-headers
   (package
