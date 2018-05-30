@@ -139,22 +139,19 @@ may also simplify input method development.")
 (define-public ibus-libpinyin
   (package
    (name "ibus-libpinyin")
-   (version "1.9.2")
+   (version "1.10.0")
    (source (origin
              (method url-fetch)
-             (uri (string-append "https://github.com/libpinyin/"
-                                 "ibus-libpinyin/archive/" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (uri (string-append "https://github.com/libpinyin/ibus-libpinyin/"
+                                 "releases/download/" version
+                                 "/ibus-libpinyin-" version ".tar.gz"))
              (sha256
               (base32
-               "0wpgs0m62l4zlis9f11b7xknhgnw2xw485nc2xrzk880s17pp1mr"))))
+               "0yq8aw4lddiviag8cnik6fp52vvk8lxv6bym13a3xya84c6zii3c"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'autogen
-          (lambda _ (and (zero? (system* "intltoolize"))
-                         (zero? (system* "autoreconf" "-vif")))))
         (add-after 'wrap-program 'wrap-with-additional-paths
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Make sure 'ibus-setup-libpinyin' runs with the correct
@@ -180,10 +177,7 @@ may also simplify input method development.")
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("intltool" ,intltool)
-      ("autoconf" ,autoconf)
-      ("automake" ,automake)
-      ("glib" ,glib "bin")
-      ("libtool" ,libtool)))
+      ("glib" ,glib "bin")))
    (synopsis "Chinese pinyin and ZhuYin input methods for IBus")
    (description
     "This package includes a Chinese pinyin input method and a Chinese
