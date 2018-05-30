@@ -312,19 +312,19 @@ point surf to another URI by setting its XProperties.")
 (define-public sent
   (package
     (name "sent")
-    (version "0.2")
+    (version "1")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/tarbomb)
               (uri (string-append "https://dl.suckless.org/tools/sent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0xhh752hwaa26k4q6wvrb9jnpbnylss2aw6z11j7l9rav7wn3fak"))))
+                "0cxysz5lp25mgww73jl0mgip68x7iyvialyzdbriyaff269xxwvv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (delete 'configure))  ;no configuration
-       #:tests? #f                      ;no test suite
+                  (delete 'configure))  ; no configuration
+       #:tests? #f                      ; no test suite
        #:make-flags (let ((pkg-config (lambda (flag)
                                         (string-append
                                          "$(shell pkg-config " flag " "
