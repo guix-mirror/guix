@@ -2127,12 +2127,24 @@ time.")
                                "--enable-udev_sync"
                                "--enable-udev_rules"
                                "--enable-pkgconfig"
+                               "--enable-cmdlib"
+                               "--enable-dmeventd" ; Requires '--enable-cmdlib'.
 
                                ;; Make sure programs such as 'dmsetup' can
                                ;; find libdevmapper.so.
                                (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib"))
+                                              "/lib,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/device-mapper")
+                               ;; TODO: Patch make.tmpl.in to take LDFLAGS
+                               ;; into account so that we don't need to also
+                               ;; set CLDFLAGS.
+                               (string-append "CLDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/device-mapper"))
 
        ;; The tests use 'mknod', which requires root access.
        #:tests? #f))
