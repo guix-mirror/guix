@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -1070,6 +1070,16 @@ API.")
               (patches (search-patches
                         "gtkglext-disable-disable-deprecated.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Fix a collision between a local variable and a definition from
+         ;; glibc's string.h.
+         (add-after 'unpack 'fix-collision
+           (lambda _
+             (substitute* "gdk/gdkglshapes.c"
+               ((" index") " triangle_index"))
+             #t)))))
     (inputs `(("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
               ("glu" ,glu)
