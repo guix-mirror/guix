@@ -20043,6 +20043,21 @@ The port to bind the server to.
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services
 
+@cindex fingerprint
+@subsubheading Fingerprint Service
+
+The @code{(gnu services fingerprint)} module provides a DBus service to
+read and identify fingerprints via a fingerprint sensor.
+
+@defvr {Scheme Variable} fprintd-service-type
+The service type for @command{fprintd}, which provides the fingerprint
+reading capability.
+
+@example
+(service fprintd-service-type)
+@end example
+@end defvr
+
 @cindex sysctl
 @subsubheading System Control Service
 
