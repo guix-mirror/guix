@@ -680,8 +680,8 @@ as -1, to be used instead of U+FFFD.
 
 ;; No release tarballs so far.
 (define-public lchat
-  (let ((revision "2")
-        (commit "25d90f4630b45e2b609d2e3daecb32cf5ff065fd"))
+  (let ((revision "3")
+        (commit "f95191970fd59c52a8b09cff32bd8d2135cbfc6b"))
     (package
       (name "lchat")
       (version (string-append "0.0.0-" revision "." (string-take commit 7)))
@@ -694,24 +694,26 @@ as -1, to be used instead of U+FFFD.
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0dvljyq3m7rxxkqv7rkmijak6vj8i4db3iq2z988bvf76chz268b"))))
+           "07pxzziczhzprmjy61k7nl9i1kxpgnad37qkjf5fn4wf06nqdxpl"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ; No tests
+       `(#:test-target "test"
          #:make-flags (list "CC=gcc"
                             (string-append "PREFIX=" %output))
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure) ; No configure script
+           (delete 'configure)          ; no configure script
            (add-before 'build 'libbsd
              (lambda _
                (substitute* "Makefile"
                  (("-lutf") "-lutf -lbsd"))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin")))
+               (let* ((out  (assoc-ref outputs "out"))
+                      (bin  (string-append out "/bin"))
+                      (man1 (string-append out "/share/man/man1")))
                  (install-file "lchat" bin)
+                 (install-file "lchat.1" man1)
                  #t))))))
       (inputs
        `(("grep" ,grep)
