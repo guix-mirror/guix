@@ -1407,6 +1407,7 @@ bootstrapping purposes.")
          ("coreutils" ,coreutils)
          ("diffutils" ,diffutils)       ;for tests
          ("gawk" ,gawk)
+         ("gcc" ,gcc-4.9) ; there's a segmentation fault when compiling with gcc-5
          ("grep" ,grep)
          ("libtool" ,libtool)
          ("pkg-config" ,pkg-config)
