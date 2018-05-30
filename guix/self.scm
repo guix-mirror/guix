@@ -193,7 +193,63 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
            (file-name->module-name (string-drop file prefix)))
          (scheme-files (string-append directory "/" sub-directory)))))
 
-(define* (guix-command modules #:key (dependencies '())
+(define* (sub-directory item sub-directory)
+  "Return SUB-DIRECTORY within ITEM, which may be a file name or a file-like
+object."
+  (match item
+    ((? string?)
+     ;; This is the optimal case: we return a new "source".  Thus, a
+     ;; derivation that depends on this sub-directory does not depend on ITEM
+     ;; itself.
+     (local-file (string-append item "/" sub-directory)
+                 #:recursive? #t))
+    ;; TODO: Add 'local-file?' case.
+    (_
+     ;; In this case, anything that refers to the result also depends on ITEM,
+     ;; which isn't great.
+     (file-append item "/" sub-directory))))
+
+(define* (locale-data source domain
+                      #:optional (directory domain))
+  "Return the locale data from 'po/DIRECTORY' in SOURCE, corresponding to
+DOMAIN, a gettext domain."
+  (define gettext
+    (module-ref (resolve-interface '(gnu packages gettext))
+                'gettext-minimal))
+
+  (define build
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils)
+                       (srfi srfi-26)
+                       (ice-9 match) (ice-9 ftw))
+
+          (define po-directory
+            #+(sub-directory source (string-append "po/" directory)))
+
+          (define (compile language)
+            (let ((gmo (string-append #$output "/" language "/LC_MESSAGES/"
+                                      #$domain ".mo")))
+              (mkdir-p (dirname gmo))
+              (invoke #+(file-append gettext "/bin/msgfmt")
+                      "-c" "--statistics" "--verbose"
+                      "-o" gmo
+                      (string-append po-directory "/" language ".po"))))
+
+          (define (linguas)
+            ;; Return the list of languages.  Note: don't read 'LINGUAS'
+            ;; because it contains things like 'en@boldquot' that do not have
+            ;; a corresponding .po file.
+            (map (cut basename <> ".po")
+                 (scandir po-directory
+                          (cut string-suffix? ".po" <>))))
+
+          (for-each compile (linguas)))))
+
+  (computed-file (string-append "guix-locale-" domain)
+                 build))
+
+(define* (guix-command modules #:key source (dependencies '())
                        (guile-version (effective-version)))
   "Return the 'guix' command such that it adds MODULES and DEPENDENCIES in its
 load path."
@@ -221,35 +277,43 @@ load path."
 
                     (let ((guix-main (module-ref (resolve-interface '(guix ui))
                                                  'guix-main)))
-                      ;; TODO: Compute locale data.
-                      ;; (bindtextdomain "guix" "@localedir@")
-                      ;; (bindtextdomain "guix-packages" "@localedir@")
+                      #$(if source
+                            #~(begin
+                                (bindtextdomain "guix"
+                                                #$(locale-data source "guix"))
+                                (bindtextdomain "guix-packages"
+                                                #$(locale-data source
+                                                               "guix-packages"
+                                                               "packages")))
+                            #t)
 
                       ;; XXX: It would be more convenient to change it to:
                       ;;   (exit (apply guix-main (command-line)))
                       (apply guix-main (command-line))))))
 
 (define* (whole-package name modules dependencies
-                        #:key (guile-version (effective-version)))
+                        #:key
+                        (guile-version (effective-version))
+                        (command (guix-command modules
+                                               #:dependencies dependencies
+                                               #:guile-version guile-version)))
   "Return the whole Guix package NAME that uses MODULES, a derivation of all
-the modules, and DEPENDENCIES, a list of packages depended on."
-  (let ((command (guix-command modules
-                               #:dependencies dependencies
-                               #:guile-version guile-version)))
-    ;; TODO: Move compiled modules to 'lib/guile' instead of 'share/guile'.
-    (computed-file name
-                   (with-imported-modules '((guix build utils))
-                     #~(begin
-                         (use-modules (guix build utils))
-                         (mkdir-p (string-append #$output "/bin"))
-                         (symlink #$command
-                                  (string-append #$output "/bin/guix"))
+the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
+'guix' program to use."
+  ;; TODO: Move compiled modules to 'lib/guile' instead of 'share/guile'.
+  (computed-file name
+                 (with-imported-modules '((guix build utils))
+                   #~(begin
+                       (use-modules (guix build utils))
+                       (mkdir-p (string-append #$output "/bin"))
+                       (symlink #$command
+                                (string-append #$output "/bin/guix"))
 
-                         (let ((modules (string-append #$output
-                                                       "/share/guile/site/"
-                                                       (effective-version))))
-                           (mkdir-p (dirname modules))
-                           (symlink #$modules modules)))))))
+                       (let ((modules (string-append #$output
+                                                     "/share/guile/site/"
+                                                     (effective-version))))
+                         (mkdir-p (dirname modules))
+                         (symlink #$modules modules))))))
 
 (define* (compiled-guix source #:key (version %guix-version)
                         (pull-version 1)
@@ -443,8 +507,13 @@ the modules, and DEPENDENCIES, a list of packages depended on."
   ;; Version 1 is when we return the full package.
   (cond ((= 1 pull-version)
          ;; The whole package, with a standard file hierarchy.
-         (whole-package name built-modules dependencies
-                        #:guile-version guile-version))
+         (let ((command (guix-command built-modules
+                                      #:source source
+                                      #:dependencies dependencies
+                                      #:guile-version guile-version)))
+           (whole-package name built-modules dependencies
+                          #:command command
+                          #:guile-version guile-version)))
         ((= 0 pull-version)
          ;; Legacy 'guix pull': just return the compiled modules.
          built-modules)
