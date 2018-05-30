@@ -25,6 +25,7 @@
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,6 +83,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages jemalloc)
@@ -96,6 +98,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openstack)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
@@ -6427,3 +6430,81 @@ compressed JSON header blocks.
 @item @command{inflatehd} converts such compressed headers back to JSON pairs.
 @end itemize\n")
     (license l:expat)))
+
+(define-public hpcguix-web
+  (let ((commit "3e3b9a3a406ee2dcd10c96cbedcc16ea378e8e8f"))
+    (package
+      (name "hpcguix-web")
+      (version (git-version "0.0.1" "0" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/UMCUGenetics/hpcguix-web.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "01888byi9mh7d3adcmwhmg44kg98g92r44ilc4wd7an66mjnxpry"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (srfi srfi-26)
+                    (ice-9 popen)
+                    (ice-9 rdelim))
+
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'autoconf
+             (lambda _
+               (setenv "GUILE_AUTO_COMPILE" "0")
+               (setenv "XDG_CACHE_HOME" (getcwd))
+               (invoke "autoreconf" "-vif")))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out      (assoc-ref outputs "out"))
+                      (guix     (assoc-ref inputs "guix"))
+                      (guile    (assoc-ref inputs "guile"))
+                      (json     (assoc-ref inputs "guile-json"))
+                      (guile-cm (assoc-ref inputs
+                                           "guile-commonmark"))
+                      (deps (list guile guile-cm guix json))
+                      (effective
+                       (read-line
+                        (open-pipe* OPEN_READ
+                                    (string-append guile "/bin/guile")
+                                    "-c" "(display (effective-version))")))
+                      (path   (string-join
+                               (map (cut string-append <>
+                                         "/share/guile/site/"
+                                         effective)
+                                    deps)
+                               ":"))
+                      (gopath (string-join
+                               (map (cut string-append <>
+                                         "/lib/guile/" effective
+                                         "/site-ccache")
+                                    deps)
+                               ":")))
+                 (wrap-program (string-append out "/bin/run")
+                   `("GUILE_LOAD_PATH" ":" prefix (,path))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))
+
+                 #t))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("uglify-js" ,uglify-js)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("guix" ,guix)))
+      (propagated-inputs
+       `(("guile" ,guile-2.2)
+         ("guile-commonmark" ,guile-commonmark)
+         ("guile-json" ,guile-json)))
+    (home-page "https://github.com/UMCUGenetics/hpcguix-web")
+      (synopsis "Web interface for cluster deployments of Guix")
+      (description "Hpcguix-web provides a web interface to the list of packages
+provided by Guix.  The list of packages is searchable and provides
+instructions on how to use Guix in a shared HPC environment.")
+    (license l:agpl3+))))
