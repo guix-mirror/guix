@@ -171,7 +171,7 @@ numbers of user-defined menu items efficiently.")
 (define-public spoon
   (package
     (name "spoon")
-    (version "0.3")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
@@ -179,16 +179,16 @@ numbers of user-defined menu items efficiently.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10c5i7ykpy7inzzfiw1dh0srpkljycr3blxhvd8160wsvplbws48"))))
+         "1jpmg9k9f4f3lpz0k3cphqjswlyf8lz2sm8ccifiip93kd4rrdj0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))))
     (inputs
      `(("libx11" ,libx11)
        ("libxkbfile" ,libxkbfile)
-       ("alsa-lib" ,alsa-lib)
+       ("alsa-lib" ,alsa-lib)           ; tinyalsa (unpackaged) would suffice
        ("libmpdclient" ,libmpdclient)))
     (home-page "https://git.2f30.org/spoon/")
     (synopsis "Set dwm status")
