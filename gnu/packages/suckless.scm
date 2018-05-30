@@ -724,6 +724,6 @@ as -1, to be used instead of U+FFFD.
       (synopsis "Line chat is a frontend for the irc client ii from suckless")
       (description
        "Lchat (line chat) is the little and small brother of cii.
-It is a front end for ii-like chat programs.  It uses tail(1) -f to get the
-chat output in background.")
+It is a front end for ii-like chat programs.  It uses @code{tail -f} to get the
+chat output in the background.")
       (license license:isc))))
