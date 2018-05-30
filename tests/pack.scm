@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +62,7 @@
                                         #:symlinks '(("/bin/Guile"
                                                       -> "bin/guile"))
                                         #:compressor %gzip-compressor
-                                        #:tar %tar-bootstrap))
+                                        #:archiver %tar-bootstrap))
        (check   (gexp->derivation
                  "check-tarball"
                  #~(let ((guile (string-append "." #$profile "/bin")))
