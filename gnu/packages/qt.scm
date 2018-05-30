@@ -1070,6 +1070,32 @@ between the host (QML/C++ application) and the client (HTML/JavaScript
 application).  The transport mechanism is supported out of the box by the two
 popular web engines, Qt WebKit 2 and Qt WebEngine.")))
 
+(define-public qtwebglplugin
+  (package (inherit qtsvg)
+    (name "qtwebglplugin")
+    (version "5.11.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-everywhere-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1al7dv7i9rg4z4p8vnipbjbbgc6113lbfjggxxap3sn6hqs986fm"))))
+    (native-inputs '())
+    (inputs
+     `(("mesa" ,mesa)
+       ("qtbase" ,qtbase)
+       ("qtwebsockets" ,qtwebsockets)))
+    (synopsis "QPA plugin for running an application via a browser using
+streamed WebGL commands")
+    (description "Qt back end that uses WebGL for rendering. It allows Qt
+applications (with some limitations) to run in a web browser that supports
+WebGL.  WebGL is a JavaScript API for rendering 2D and 3D graphics within any
+compatible web browser without the use of plug-ins.  The API is similar to
+OpenGL ES 2.0 and can be used in HTML5 canvas elements")))
+
 (define-public qtwebview
   (package (inherit qtsvg)
     (name "qtwebview")
