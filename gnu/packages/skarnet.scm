@@ -218,7 +218,7 @@ clock synchronization.")))
 (define-public s6-rc
   (package
    (name "s6-rc")
-   (version "0.4.0.0")
+   (version "0.4.0.1")
    (source
     (origin
      (method url-fetch)
@@ -226,7 +226,7 @@ clock synchronization.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "1fkg9635cvrf6gw055y346a3n634dy2xiwbypawi68flfprfgf4n"))))
+       "0p4yczbib626kygr3pdvvay0xwyha92rjnhn79cbx18ywc2n4jsb"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)
               ("execline" ,execline)
