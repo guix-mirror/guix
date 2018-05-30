@@ -653,3 +653,41 @@ libnvdimm (non-volatile memory device) sub-system in the Linux kernel.")
     ;; the effective license.  Note that some files under ccan/ are
     ;; covered by BSD-3 or public domain, see the individual folders.
     (license license:gpl2)))
+
+(define-public dmraid
+  (package
+    (name "dmraid")
+    (version "1.0.0.rc16-3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://people.redhat.com/~heinzm/sw/dmraid/src/dmraid-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1n7vsqvh7y6yvil682q129d21yhb0cmvd5fvsbkza7ypd78inhlk"))))
+    (build-system gnu-build-system)
+    (inputs `(("lvm2" ,lvm2)))
+    (native-inputs `(("which" ,which)))
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'change-directory
+                    (lambda _
+                      (chdir (string-append ,version "/dmraid"))
+                      (substitute* "make.tmpl.in"
+                        (("/bin/sh") (which "sh")))
+                      #t)))
+       #:configure-flags (list ;; Make sure programs such as 'dmevent_tool' can
+                               ;; find libdmraid.so.
+                               (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))))
+    (home-page "https://people.redhat.com/~heinzm/sw/dmraid/")
+    (synopsis "Device mapper RAID interface")
+    (description
+     "This software supports RAID device discovery, RAID set activation, creation,
+removal, rebuild and display of properties for ATARAID/DDF1 metadata.
+
+@command{dmraid} uses @file{libdevmapper} and the device-mapper kernel runtime
+to create devices with respective mappings for the ATARAID sets discovered.")
+    (license license:gpl2+)))
