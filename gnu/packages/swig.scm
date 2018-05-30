@@ -22,7 +22,6 @@
   #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages boost)
@@ -40,9 +39,7 @@
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0kf99ygrjs5616gsqhz1l7bib3a12izmxi7g48bwblbymr3z9ybw"))
-             (patches
-              (search-patches "swig-octave-patches.patch"))))
+               "0kf99ygrjs5616gsqhz1l7bib3a12izmxi7g48bwblbymr3z9ybw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
