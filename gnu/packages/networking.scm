@@ -546,7 +546,7 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
@@ -554,7 +554,7 @@ of the same name.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0zqip4ai18iar7sgialc3jmpng1yxxy4i9bphbaig23ss80py73i"))))
+         "126dvd6myjbxjr69dy9vzzdda2lmjy1wwwc6gcs5djb46jy5nvmb"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)

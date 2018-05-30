@@ -1,0 +1,1119 @@
+This patch represents the recently added support for Octave version 4.4 found
+here:
+
+https://github.com/swig/swig/commit/12c66f9b7d884020e896ce92b9783bc3bac95d2d
+
+diff -urN swig-3.0.12.old/CHANGES.current swig-3.0.12.new/CHANGES.current
+--- swig-3.0.12.old/CHANGES.current	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/CHANGES.current	2018-05-26 08:40:06.501850058 -0400
+@@ -4,6 +4,14 @@
+ Issue # numbers mentioned below can be found on Github. For more details, add
+ the issue number to the end of the URL: https://github.com/swig/swig/issues/
+ 
++Version 4.0.0 (in progress)
++===========================
++
++2018-05-12: kwwette
++            [Octave] add support for version 4.4
++            - Should not introduce any user-visible incompatibilities
++
++
+ Version 3.0.12 (27 Jan 2017)
+ ============================
+ 
+diff -urN swig-3.0.12.old/Examples/Makefile.in swig-3.0.12.new/Examples/Makefile.in
+--- swig-3.0.12.old/Examples/Makefile.in	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/Examples/Makefile.in	2018-05-26 08:39:16.510124553 -0400
+@@ -463,7 +463,7 @@
+ # -----------------------------------------------------------------
+ 
+ octave_run:
+-	OCTAVE_HISTFILE=/dev/null $(RUNTOOL) $(OCTAVE) $(OCTAVE_SCRIPT) $(RUNPIPE)
++	env OCTAVE_PATH= OCTAVE_HISTFILE=/dev/null $(RUNTOOL) $(OCTAVE) $(OCTAVE_SCRIPT) $(RUNPIPE)
+ 
+ # -----------------------------------------------------------------
+ # Version display
+diff -urN swig-3.0.12.old/Examples/octave/module_load/runme.m swig-3.0.12.new/Examples/octave/module_load/runme.m
+--- swig-3.0.12.old/Examples/octave/module_load/runme.m	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/Examples/octave/module_load/runme.m	2018-05-26 08:39:16.518124669 -0400
+@@ -5,63 +5,73 @@
+ 
+ # load module
+ clear all;
++assert(exist("swigexample") == 3);
+ swigexample;
++assert(isglobal("swigexample"));
+ assert(cvar.ivar == ifunc);
+-assert(exist("swigexample","var"));
+ clear all
++assert(exist("swigexample") == 3);
+ swigexample;
++assert(isglobal("swigexample"));
+ assert(cvar.ivar == ifunc);
+-assert(exist("swigexample","var"));
+ clear all
+ 
+ # load module in a function globally before base context
+ clear all;
+-function testme
++function testme_1
++  assert(exist("swigexample") == 3);
+   swigexample;
++  assert(isglobal("swigexample"));
+   assert(cvar.ivar == ifunc);
+-  assert(exist("swigexample","var"));
+ endfunction
+-testme
+-testme
++testme_1
++testme_1
++assert(exist("swigexample") == 3);
+ swigexample;
++assert(isglobal("swigexample"));
+ assert(cvar.ivar == ifunc);
+-assert(exist("swigexample","var"));
+ clear all
+-function testme
++function testme_2
++  assert(exist("swigexample") == 3);
+   swigexample;
++  assert(isglobal("swigexample"));
+   assert(cvar.ivar == ifunc);
+-  assert(exist("swigexample","var"));
+ endfunction
+-testme
+-testme
++testme_2
++testme_2
++assert(exist("swigexample") == 3);
+ swigexample;
++assert(isglobal("swigexample"));
+ assert(cvar.ivar == ifunc);
+-assert(exist("swigexample","var"));
+ clear all
+ 
+ # load module in a function globally after base context
+ clear all;
++assert(exist("swigexample") == 3);
+ swigexample;
++assert(isglobal("swigexample"));
+ assert(cvar.ivar == ifunc);
+-assert(exist("swigexample","var"));
+-function testme
++function testme_3
++  assert(exist("swigexample") == 3);
+   swigexample;
++  assert(isglobal("swigexample"));
+   assert(cvar.ivar == ifunc);
+-  assert(exist("swigexample","var"));
+ endfunction
+-testme
+-testme
++testme_3
++testme_3
+ clear all
++assert(exist("swigexample") == 3);
+ swigexample;
++assert(isglobal("swigexample"));
+ assert(cvar.ivar == ifunc);
+-assert(exist("swigexample","var"));
+-function testme
++function testme_4
++  assert(exist("swigexample") == 3);
+   swigexample;
++  assert(isglobal("swigexample"));
+   assert(cvar.ivar == ifunc);
+-  assert(exist("swigexample","var"));
+ endfunction
+-testme
+-testme
++testme_4
++testme_4
+ clear all
+ 
+ # octave 3.0.5 randomly crashes on the remaining tests
+@@ -71,13 +81,16 @@
+ 
+ # load module with no cvar
+ clear all;
++who;
++assert(exist("swigexample2") == 3);
+ swigexample2;
++assert(isglobal("swigexample2"));
+ assert(swigexample2.ivar == ifunc);
+-assert(exist("swigexample2","var"));
+-assert(!isglobal("cvar"))
++assert(!exist("cvar", "var"));
+ clear all
++assert(exist("swigexample2") == 3);
+ swigexample2;
++assert(isglobal("swigexample2"));
+ assert(swigexample2.ivar == ifunc);
+-assert(exist("swigexample2","var"));
+-assert(!isglobal("cvar"))
++assert(!exist("cvar", "var"));
+ clear all
+diff -urN swig-3.0.12.old/Examples/test-suite/octave/Makefile.in swig-3.0.12.new/Examples/test-suite/octave/Makefile.in
+--- swig-3.0.12.old/Examples/test-suite/octave/Makefile.in	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/Examples/test-suite/octave/Makefile.in	2018-05-26 08:39:16.511124567 -0400
+@@ -59,7 +59,7 @@
+ # a file is found which has _runme.m appended after the testcase name.
+ run_testcase = \
+ 	if [ -f $(SCRIPTDIR)/$(SCRIPTPREFIX)$*$(SCRIPTSUFFIX) ]; then \
+-	  env LD_LIBRARY_PATH=.:$$LD_LIBRARY_PATH OCTAVE_PATH=$(srcdir):$$OCTAVE_PATH $(RUNTOOL) $(OCTAVE) $(SCRIPTDIR)/$(SCRIPTPREFIX)$*$(SCRIPTSUFFIX); \
++	  env LD_LIBRARY_PATH=.:$$LD_LIBRARY_PATH OCTAVE_PATH=$(srcdir) OCTAVE_HISTFILE=/dev/null $(RUNTOOL) $(OCTAVE) $(SCRIPTDIR)/$(SCRIPTPREFIX)$*$(SCRIPTSUFFIX); \
+ 	fi
+ 
+ # Clean: remove the generated .m file
+diff -urN swig-3.0.12.old/Examples/test-suite/octave/Makefile.in.orig swig-3.0.12.new/Examples/test-suite/octave/Makefile.in.orig
+--- swig-3.0.12.old/Examples/test-suite/octave/Makefile.in.orig	1969-12-31 19:00:00.000000000 -0500
++++ swig-3.0.12.new/Examples/test-suite/octave/Makefile.in.orig	2017-01-27 18:52:02.000000000 -0500
+@@ -0,0 +1,92 @@
++#######################################################################
++# Makefile for octave test-suite
++#######################################################################
++
++LANGUAGE     = octave
++OCTAVE       = @OCTAVE@
++SCRIPTSUFFIX = _runme.m
++
++srcdir       = @srcdir@
++top_srcdir   = @top_srcdir@
++top_builddir = @top_builddir@
++
++CPP_TEST_CASES += \
++	li_std_pair_extra \
++	li_std_string_extra \
++	octave_cell_deref\
++	octave_dim
++
++CPP_TEST_BROKEN += \
++	implicittest \
++	li_implicit \
++	li_std_set \
++	li_std_stream
++
++#C_TEST_CASES +=
++
++#
++# This test only works with modern C compilers
++#
++#C_TEST_CASES += \
++#	complextest
++
++include $(srcdir)/../common.mk
++
++# Overridden variables here
++LIBS       = -L.
++CSRCS      = octave_empty.c
++
++# Custom tests - tests with additional commandline options
++# none!
++
++# Rules for the different types of tests
++%.cpptest:
++	$(setup)
++	+$(swig_and_compile_cpp)
++	$(run_testcase)
++
++%.ctest:
++	$(setup)
++	+$(swig_and_compile_c)
++	$(run_testcase)
++
++%.multicpptest:
++	$(setup)
++	+$(swig_and_compile_multi_cpp)
++	$(run_testcase)
++
++# Runs the testcase. A testcase is only run if
++# a file is found which has _runme.m appended after the testcase name.
++run_testcase = \
++	if [ -f $(SCRIPTDIR)/$(SCRIPTPREFIX)$*$(SCRIPTSUFFIX) ]; then \
++	  env LD_LIBRARY_PATH=.:$$LD_LIBRARY_PATH OCTAVE_PATH=$(srcdir):$$OCTAVE_PATH $(RUNTOOL) $(OCTAVE) $(SCRIPTDIR)/$(SCRIPTPREFIX)$*$(SCRIPTSUFFIX); \
++	fi
++
++# Clean: remove the generated .m file
++%.clean:
++	@rm -f hugemod.h hugemod_a.i hugemod_b.i hugemod_a.m hugemod_b.m hugemod_runme.m
++	@rm -f $*.m;
++
++clean:
++	$(MAKE) -f $(top_builddir)/$(EXAMPLES)/Makefile SRCDIR='$(SRCDIR)' octave_clean
++
++cvsignore:
++	@echo '*wrap* *.mc *.so *.dll *.exp *.lib'
++	@echo Makefile
++	@for i in ${CPP_TEST_CASES} ${C_TEST_CASES}; do echo $$i.m; done
++	@for i in ${CPP_TEST_CASES} ${C_TEST_CASES}; do if grep -q $${i}_runme.m CVS/Entries ; then echo $${i}_runme.m; fi; done
++	@echo clientdata_prop_a.m
++	@echo clientdata_prop_b.m
++	@echo imports_a.m
++	@echo imports_b.m
++	@echo mod_a.m mod_b.m
++	@echo hugemod.h hugemod_a.i hugemod_b.i hugemod_a.m hugemod_b.m hugemod_runme.m
++	@echo template_typedef_import.m
++
++
++hugemod:
++	perl hugemod.pl
++	$(MAKE) hugemod_a.cpptest
++	$(MAKE) hugemod_b.cpptest
++	time $(OCTAVE) hugemod_runme.m
++	time $(OCTAVE) hugemod_runme.m
+diff -urN swig-3.0.12.old/Examples/test-suite/register_par.i swig-3.0.12.new/Examples/test-suite/register_par.i
+--- swig-3.0.12.old/Examples/test-suite/register_par.i	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/Examples/test-suite/register_par.i	2018-05-26 08:40:28.146164544 -0400
+@@ -2,5 +2,5 @@
+ 
+ // bug # 924413
+ %inline {
+-  void clear_tree_flags(register struct tree *tp, register int i) {}
++  void clear_tree_flags(register struct swig_tree *tp, register int i) {}
+ }
+diff -urN swig-3.0.12.old/Examples/test-suite/register_par.i.orig swig-3.0.12.new/Examples/test-suite/register_par.i.orig
+--- swig-3.0.12.old/Examples/test-suite/register_par.i.orig	1969-12-31 19:00:00.000000000 -0500
++++ swig-3.0.12.new/Examples/test-suite/register_par.i.orig	2018-05-26 08:39:16.518124669 -0400
+@@ -0,0 +1,6 @@
++%module register_par
++
++// bug # 924413
++%inline {
++  void clear_tree_flags(register struct tree *tp, register int i) {}
++}
+diff -urN swig-3.0.12.old/Examples/test-suite/register_par.i.rej swig-3.0.12.new/Examples/test-suite/register_par.i.rej
+--- swig-3.0.12.old/Examples/test-suite/register_par.i.rej	1969-12-31 19:00:00.000000000 -0500
++++ swig-3.0.12.new/Examples/test-suite/register_par.i.rej	2018-05-26 08:39:16.518124669 -0400
+@@ -0,0 +1,15 @@
++--- Examples/test-suite/register_par.i
+++++ Examples/test-suite/register_par.i
++@@ -1,10 +1,10 @@
++ %module register_par
++ 
++ %{
++-struct tree;
+++struct swig_tree;
++ %}
++ 
++ // bug # 924413
++ %inline {
++-  void clear_tree_flags(register struct tree *tp, register int i) {}
+++  void clear_tree_flags(register struct swig_tree *tp, register int i) {}
++ }
+diff -urN swig-3.0.12.old/Lib/octave/octcontainer.swg swig-3.0.12.new/Lib/octave/octcontainer.swg
+--- swig-3.0.12.old/Lib/octave/octcontainer.swg	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/Lib/octave/octcontainer.swg	2018-05-26 08:39:16.488124234 -0400
+@@ -567,7 +567,11 @@
+ 	  if (seq) *seq = p;
+ 	  return SWIG_OLDOBJ;
+ 	}
++%#if SWIG_OCTAVE_PREREQ(4,4,0)
++      } else if (obj.iscell()) {
++%#else
+       } else if (obj.is_cell()) {
++%#endif
+ 	try {
+ 	  OctSequence_Cont<value_type> octseq(obj);
+ 	  if (seq) {
+diff -urN swig-3.0.12.old/Lib/octave/octprimtypes.swg swig-3.0.12.new/Lib/octave/octprimtypes.swg
+--- swig-3.0.12.old/Lib/octave/octprimtypes.swg	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/Lib/octave/octprimtypes.swg	2018-05-26 08:39:16.492124292 -0400
+@@ -18,7 +18,11 @@
+ SWIGINTERN int
+ SWIG_AsVal_dec(bool)(const octave_value& ov, bool *val)
+ {
++%#if SWIG_OCTAVE_PREREQ(4,4,0)
++  if (!ov.islogical())
++%#else
+   if (!ov.is_bool_type())
++%#endif
+     return SWIG_ERROR;
+   if (val)
+     *val = ov.bool_value();
+@@ -214,7 +218,13 @@
+ SWIGINTERN int
+ SWIG_AsCharPtrAndSize(octave_value ov, char** cptr, size_t* psize, int *alloc)
+ {
+-  if (ov.is_cell() && ov.rows() == 1 && ov.columns() == 1)
++  if (
++%#if SWIG_OCTAVE_PREREQ(4,4,0)
++    ov.iscell()
++%#else
++    ov.is_cell()
++%#endif
++    && ov.rows() == 1 && ov.columns() == 1)
+     ov = ov.cell_value()(0);
+   if (!ov.is_string())
+     return SWIG_TypeError;
+diff -urN swig-3.0.12.old/Lib/octave/octrun.swg swig-3.0.12.new/Lib/octave/octrun.swg
+--- swig-3.0.12.old/Lib/octave/octrun.swg	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/Lib/octave/octrun.swg	2018-05-26 08:39:16.509124538 -0400
+@@ -151,6 +151,67 @@
+     const swig_type_info **base;
+   };
+ 
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++  // in Octave 4.4 behaviour of octave_builtin() appears to have changed and 'self' argument is no longer passed
++  // to function (maybe because this is now a 'method'??) so need to create our own octave_function subclass
++#define SWIG_OCTAVE_BOUND_FUNC(func, args) octave_value(new octave_swig_bound_func(func, args))
++  class octave_swig_bound_func : public octave_function {
++  public:
++
++    octave_swig_bound_func(void) : octave_function(), method(0), first_args()
++      { }
++
++    octave_swig_bound_func(octave_function* _method, octave_value_list _first_args)
++      : octave_function("", ""), method(_method), first_args(_first_args)
++      { }
++
++    octave_swig_bound_func(const octave_swig_bound_func& f) = delete;
++
++    octave_swig_bound_func& operator= (const octave_swig_bound_func& f) = delete;
++
++    ~octave_swig_bound_func(void) = default;
++
++    bool is_function(void) const { return true; }
++
++    octave_function* function_value(bool = false) { return this; }
++
++    octave_value_list call(octave::tree_evaluator& tw, int nargout = 0, const octave_value_list& args = octave_value_list()) {
++      octave_value_list all_args;
++      all_args.append(first_args);
++      all_args.append(args);
++      return method->call(tw, nargout, all_args);
++    }
++
++    octave_value subsref(const std::string &ops, const std::list < octave_value_list > &idx) {
++      octave_value_list ovl = subsref(ops, idx, 1);
++      return ovl.length() ? ovl(0) : octave_value();
++    }
++
++    octave_value_list subsref(const std::string &ops, const std::list < octave_value_list > &idx, int nargout) {
++      assert(ops.size() > 0);
++      assert(ops.size() == idx.size());
++      if (ops != "(")
++        error("invalid function call");
++      octave::tree_evaluator& tw = octave::interpreter::the_interpreter()->get_evaluator();
++      return call(tw, nargout, *idx.begin());
++    }
++
++  protected:
++
++    octave_function* method;
++    octave_value_list first_args;
++
++    std::set<std::string> dispatch_classes;
++
++  private:
++
++    DECLARE_OV_TYPEID_FUNCTIONS_AND_DATA
++  };
++  DEFINE_OV_TYPEID_FUNCTIONS_AND_DATA(octave_swig_bound_func, "octave_swig_bound_func", "octave_swig_bound_func");
++#else
++#define SWIG_OCTAVE_BOUND_FUNC(func, args) octave_value(func)
++#endif
++
+   // octave_swig_type plays the role of both the shadow class and the class 
+   // representation within Octave, since there is no support for classes.
+   //
+@@ -323,13 +384,17 @@
+     }
+ 
+     octave_value_list member_deref(member_value_pair *m, const octave_value_list &args) {
+-      if (m->second.is_defined())
+-	return m->second;
+-      else if (m->first) {
++      if (m->second.is_defined()) {
++        if (m->second.is_function() || m->second.is_function_handle()) {
++          return SWIG_OCTAVE_BOUND_FUNC(m->second.function_value(), args);
++        } else {
++          return m->second;
++        }
++      } else if (m->first) {
+ 	if (m->first->get_method)
+ 	  return m->first->get_method(args, 1);
+ 	else if (m->first->method)
+-	  return octave_value(new octave_builtin(m->first->method));
++          return SWIG_OCTAVE_BOUND_FUNC(new octave_builtin(m->first->method), args);
+       }
+       error("undefined member");
+       return octave_value_list();
+@@ -383,7 +448,11 @@
+         return dim_vector(1,1);
+ 
+       // Return value should be cell or matrix of integers
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++      if (out.iscell()) {
++#else
+       if (out.is_cell()) {
++#endif
+         const Cell & c=out.cell_value();
+         int ndim = c.rows();
+         if (ndim==1 && c.columns()!=1) ndim = c.columns();
+@@ -401,7 +470,11 @@
+           if (error_state) return dim_vector(1,1);
+         }
+         return d;
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++      } else if (out.is_matrix_type() || out.isnumeric() ) {
++#else
+       } else if (out.is_matrix_type() || out.is_numeric_type() ) {
++#endif
+         if (out.rows()==1 || out.columns()==1) {
+            Array<int> a = out.int_vector_value();
+            if (error_state) return dim_vector(1,1);
+@@ -476,8 +549,12 @@
+       }
+       types.insert(types.end(), rhs.types.begin(), rhs.types.end());
+       members.insert(rhs.members.begin(), rhs.members.end());
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++      assign(rhs.swig_type_name(), rhs.as_value());
++#else
+       rhs.types.clear();
+       rhs.members.clear();
++#endif
+     }
+ 
+     typedef member_map::const_iterator swig_member_const_iterator;
+@@ -848,7 +925,14 @@
+       octave_function *fcn = is_valid_function(symbol, std::string(), false);
+       if (!fcn)
+ 	return false;
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++      octave::tree_evaluator& tw = octave::interpreter::the_interpreter()->get_evaluator();
++      octave_value_list retval = fcn->call(tw, 1, args);
++      if (retval.length() == 1)
++        ret = retval(0);
++#else
+       ret = fcn->do_multi_index_op(1, args)(0);
++#endif
+       return true;
+     }
+ 
+@@ -1238,7 +1322,13 @@
+   }
+ 
+   SWIGRUNTIME octave_swig_type *swig_value_deref(octave_value ov) {
+-    if (ov.is_cell() && ov.rows() == 1 && ov.columns() == 1)
++    if (
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++      ov.iscell()
++#else
++      ov.is_cell()
++#endif
++      && ov.rows() == 1 && ov.columns() == 1)
+       ov = ov.cell_value()(0);
+     return swig_value_deref(*ov.internal_rep());
+   }
+@@ -1261,12 +1351,24 @@
+ SWIGRUNTIME octave_value swig_binary_op_##name(const octave_base_value&lhs,const octave_base_value &rhs) { \
+   return octave_swig_type::dispatch_binary_op(lhs,rhs,#name); \
+ }
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++#define swigreg_unary_op(name) \
++if (!octave_value_typeinfo::lookup_unary_op(octave_value::op_##name,tid)) \
++typeinfo.register_unary_op(octave_value::op_##name,tid,swig_unary_op_##name);
++#else
+ #define swigreg_unary_op(name) \
+ if (!octave_value_typeinfo::lookup_unary_op(octave_value::op_##name,tid)) \
+ octave_value_typeinfo::register_unary_op(octave_value::op_##name,tid,swig_unary_op_##name);
++#endif
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++#define swigreg_binary_op(name) \
++if (!octave_value_typeinfo::lookup_binary_op(octave_value::op_##name,tid1,tid2)) \
++typeinfo.register_binary_op(octave_value::op_##name,tid1,tid2,swig_binary_op_##name);
++#else
+ #define swigreg_binary_op(name) \
+ if (!octave_value_typeinfo::lookup_binary_op(octave_value::op_##name,tid1,tid2)) \
+ octave_value_typeinfo::register_binary_op(octave_value::op_##name,tid1,tid2,swig_binary_op_##name);
++#endif
+ 
+   swig_unary_op(not);
+   swig_unary_op(uplus);
+@@ -1300,6 +1402,9 @@
+   swig_binary_op(el_or);
+ 
+   SWIGRUNTIME void SWIG_InstallUnaryOps(int tid) {
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++    octave::type_info& typeinfo = octave::interpreter::the_interpreter()->get_type_info();
++#endif
+     swigreg_unary_op(not);
+     swigreg_unary_op(uplus);
+     swigreg_unary_op(uminus);
+@@ -1309,6 +1414,9 @@
+     swigreg_unary_op(decr);
+   }
+   SWIGRUNTIME void SWIG_InstallBinaryOps(int tid1, int tid2) {
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++    octave::type_info& typeinfo = octave::interpreter::the_interpreter()->get_type_info();
++#endif
+     swigreg_binary_op(add);
+     swigreg_binary_op(sub);
+     swigreg_binary_op(mul);
+@@ -1357,7 +1465,13 @@
+ }
+ 
+ SWIGRUNTIME int SWIG_Octave_ConvertPtrAndOwn(octave_value ov, void **ptr, swig_type_info *type, int flags, int *own) {
+-  if (ov.is_cell() && ov.rows() == 1 && ov.columns() == 1)
++    if (
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++      ov.iscell()
++#else
++      ov.is_cell()
++#endif
++      && ov.rows() == 1 && ov.columns() == 1)
+     ov = ov.cell_value()(0);
+   if (!ov.is_defined() ||
+       (ov.is_matrix_type() && ov.rows() == 0 && ov.columns() == 0) ) {
+@@ -1390,14 +1504,30 @@
+ }
+ 
+ SWIGRUNTIMEINLINE octave_value SWIG_Octave_GetGlobalValue(std::string name) {
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++  octave::symbol_table& symtab = octave::interpreter::the_interpreter()->get_symbol_table();
++  return symtab.global_varval(name);
++#else
+   return get_global_value(name, true);
++#endif
+ }
+ 
+ SWIGRUNTIME void SWIG_Octave_SetGlobalValue(std::string name, const octave_value& value) {
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++  octave::symbol_table& symtab = octave::interpreter::the_interpreter()->get_symbol_table();
++  symtab.global_assign(name, value);
++#else
+   set_global_value(name, value);
++#endif
+ }
+ 
+ SWIGRUNTIME void SWIG_Octave_LinkGlobalValue(std::string name) {
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++  octave::symbol_table& symtab = octave::interpreter::the_interpreter()->get_symbol_table();
++  octave::symbol_scope symscope = octave::interpreter::the_interpreter()->get_current_scope();
++  symscope.assign(name, symtab.global_varval(name));
++  symscope.mark_global(name);
++#else
+ #if !SWIG_OCTAVE_PREREQ(3,2,0)
+   link_to_global_variable(curr_sym_tab->lookup(name, true));
+ #else
+@@ -1406,6 +1536,7 @@
+ #endif
+   symbol_table::mark_global(name);
+ #endif
++#endif
+ }
+ 
+ SWIGRUNTIME swig_module_info *SWIG_Octave_GetModule(void *clientdata) {
+diff -urN swig-3.0.12.old/Lib/octave/octruntime.swg swig-3.0.12.new/Lib/octave/octruntime.swg
+--- swig-3.0.12.old/Lib/octave/octruntime.swg	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/Lib/octave/octruntime.swg	2018-05-26 08:39:16.507124509 -0400
+@@ -139,7 +139,11 @@
+ #endif
+ #if SWIG_OCTAVE_PREREQ(4,2,0)
+     try {
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++      octave::feval(name, octave_value_list(), 0);
++#else
+       feval(name, octave_value_list(), 0);
++#endif
+       retn = true;
+     } catch (octave::execution_exception&) { }
+ #else
+@@ -170,7 +174,7 @@
+     frame.protect_var(discard_error_messages);          discard_error_messages = true;
+     frame.protect_var(discard_warning_messages);        discard_warning_messages = true;
+ #else
+-    unwind_protect::begin_frame("SWIG_Octave_LoadModule");
++    unwind_protect::begin_frame("SWIG_Octave_InstallFunction");
+     unwind_protect_int(error_state);                    error_state = 0;
+     unwind_protect_int(warning_state);                  warning_state = 0;
+     unwind_protect_bool(discard_error_messages);        discard_error_messages = true;
+@@ -181,7 +185,11 @@
+     args.append(octloadfcn->fcn_file_name());
+ #if SWIG_OCTAVE_PREREQ(4,2,0)
+     try {
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++      octave::feval("autoload", args, 0);
++#else
+       feval("autoload", args, 0);
++#endif
+       retn = true;
+     } catch (octave::execution_exception&) { }
+ #else
+@@ -312,6 +320,8 @@
+ Loads the SWIG-generated module `" SWIG_name_d "'.\n\
+ @end deftypefn";
+ 
++void __swig_atexit__(void) { ::_Exit(0); }
++
+ DEFUN_DLD( SWIG_name, args, nargout, SWIG_name_usage ) {
+ 
+   static octave_swig_type* module_ns = 0;
+@@ -322,7 +332,9 @@
+   // version 3.4.*, but reappeared in 4.2.*, so turn on for all versions after 3.2.*.
+   // can be turned off with macro definition.
+ #ifndef SWIG_OCTAVE_NO_SEGFAULT_HACK
+-#if SWIG_OCTAVE_PREREQ(3,2,0)
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++  atexit(__swig_atexit__);
++#elif SWIG_OCTAVE_PREREQ(3,2,0)
+   octave_exit = ::_Exit;
+ #endif
+ #endif
+@@ -351,15 +363,54 @@
+                      "__swig_atexit__; "
+                      "atexit(\"__swig_atexit__\", false); "
+                      "atexit(\"__swig_atexit__\")");
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++    octave::feval("evalin", eval_args, 0);
++#else
+     feval("evalin", eval_args, 0);
+ #endif
++#endif
+ 
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++    {
++      octave::type_info& typeinfo = octave::interpreter::the_interpreter()->get_type_info();
++      string_vector types = typeinfo.installed_type_names();
++      bool register_octave_swig_ref = true;
++      bool register_octave_swig_packed = true;
++      bool register_octave_swig_bound_func = true;
++      for (int i = 0; i < types.numel(); ++i) {
++        if (types(i) == octave_swig_ref::static_type_name()) {
++          register_octave_swig_ref = false;
++        }
++        if (types(i) == octave_swig_packed::static_type_name()) {
++          register_octave_swig_packed = false;
++        }
++        if (types(i) == octave_swig_bound_func::static_type_name()) {
++          register_octave_swig_bound_func = false;
++        }
++      }
++      if (register_octave_swig_ref) {
++        octave_swig_ref::register_type();
++      }
++      if (register_octave_swig_packed) {
++        octave_swig_packed::register_type();
++      }
++      if (register_octave_swig_bound_func) {
++        octave_swig_bound_func::register_type();
++      }
++    }
++#else
+     octave_swig_ref::register_type();
+     octave_swig_packed::register_type();
++#endif
+     SWIG_InitializeModule(0);
+     SWIG_PropagateClientData();
+ 
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++    octave::call_stack& stack = octave::interpreter::the_interpreter()->get_call_stack();
++    octave_function *me = stack.current();
++#else
+     octave_function *me = octave_call_stack::current();
++#endif
+ 
+     if (!SWIG_Octave_InstallFunction(me, "subclass")) {
+       return octave_value_list();
+@@ -426,10 +477,12 @@
+       }
+     }
+ 
+-#if !SWIG_OCTAVE_PREREQ(3,2,0)
+-    mlock(me->name());
+-#else
++#if SWIG_OCTAVE_PREREQ(4,4,0)
++    octave::interpreter::the_interpreter()->mlock();
++#elif SWIG_OCTAVE_PREREQ(3,2,0)
+     mlock();
++#else
++    mlock(me->name());
+ #endif
+ 
+   }
+diff -urN swig-3.0.12.old/Lib/octave/std_pair.i swig-3.0.12.new/Lib/octave/std_pair.i
+--- swig-3.0.12.old/Lib/octave/std_pair.i	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/Lib/octave/std_pair.i	2018-05-26 08:39:16.489124248 -0400
+@@ -38,7 +38,13 @@
+       }
+ 
+       static int asval(const octave_value& obj, std::pair<T,U> *val) {
+-	if (obj.is_cell()) {
++	if (
++%#if SWIG_OCTAVE_PREREQ(4,4,0)
++          obj.iscell()
++%#else
++          obj.is_cell()
++%#endif
++        ) {
+ 	  Cell c=obj.cell_value();
+ 	  if (c.numel()<2) {
+ 	    error("pair from Cell array requires at least two elements");
+@@ -96,7 +102,13 @@
+       }
+ 
+       static int asptr(const octave_value& obj, std::pair<T,U> **val) {
+-	if (obj.is_cell()) {
++	if (
++%#if SWIG_OCTAVE_PREREQ(4,4,0)
++          obj.iscell()
++%#else
++          obj.is_cell()
++%#endif
++        ) {
+ 	  Cell c=obj.cell_value();
+ 	  if (c.numel()<2) {
+ 	    error("pair from Cell array requires at least two elements");
+diff -urN swig-3.0.12.old/.travis.yml swig-3.0.12.new/.travis.yml
+--- swig-3.0.12.old/.travis.yml	2017-01-27 18:52:02.000000000 -0500
++++ swig-3.0.12.new/.travis.yml	2018-05-26 08:39:16.520124698 -0400
+@@ -92,6 +92,11 @@
+       dist: trusty
+     - compiler: gcc
+       os: linux
++      env: SWIGLANG=octave SWIGJOBS=-j2 VER=4.4 CPP11=1
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
+       env: SWIGLANG=perl5
+       sudo: required
+       dist: trusty
+diff -urN swig-3.0.12.old/.travis.yml.orig swig-3.0.12.new/.travis.yml.orig
+--- swig-3.0.12.old/.travis.yml.orig	1969-12-31 19:00:00.000000000 -0500
++++ swig-3.0.12.new/.travis.yml.orig	2017-01-27 18:52:02.000000000 -0500
+@@ -0,0 +1,334 @@
++language: cpp
++matrix:
++  include:
++    - compiler: clang
++      os: linux
++      env: SWIGLANG=
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=
++      sudo: required
++      dist: trusty
++    - os: linux
++      env: SWIGLANG= SWIG_CC=gcc-5 SWIG_CXX=g++-5 CPP11=1
++      sudo: required
++      dist: trusty
++    - os: linux
++      env: SWIGLANG= SWIG_CC=gcc-6 SWIG_CXX=g++-6
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=csharp
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=d
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=go
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=go VER=1.5
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=guile
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=java
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=javascript ENGINE=node
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=javascript ENGINE=jsc
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=javascript ENGINE=v8
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=lua
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=lua VER=5.3
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=octave SWIGJOBS=-j2 # 3.8
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=octave SWIGJOBS=-j2 VER=4.0
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=octave SWIGJOBS=-j2 VER=4.2 CPP11=1
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=perl5
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=php5
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=php VER=7.0
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=php VER=7.1
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python VER=2.4
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python VER=2.5
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python VER=2.6
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python # 2.7
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python PY3=3 VER=3.2
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python PY3=3 VER=3.3
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python PY3=3 VER=3.4
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python PY3=3 VER=3.5
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python SWIG_FEATURES=-builtin VER=2.6
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python SWIG_FEATURES=-builtin
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python SWIG_FEATURES=-builtin PY3=3 VER=3.4
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python SWIG_FEATURES=-builtin PY3=3 VER=3.5
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python SWIG_FEATURES=-builtin PY3=3 VER=3.5 SWIGOPTPY3=
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python SWIG_FEATURES=-O
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python SWIG_FEATURES=-classic
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=r
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=ruby VER=1.9.3
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=ruby VER=2.0.0
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=ruby VER=2.3.0
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=scilab
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=tcl
++      sudo: required
++      dist: trusty
++    - os: linux
++      env: SWIGLANG=csharp SWIG_CC=gcc-5 SWIG_CXX=g++-5 CPP11=1
++      sudo: required
++      dist: trusty
++    - os: linux
++      env: SWIGLANG=java SWIG_CC=gcc-5 SWIG_CXX=g++-5 CPP11=1
++      sudo: required
++      dist: trusty
++    - os: linux
++      env: SWIGLANG=python SWIG_CC=gcc-5 SWIG_CXX=g++-5 CPP11=1
++      sudo: required
++      dist: trusty
++    - os: linux
++      env: SWIGLANG=csharp SWIG_CC=gcc-6 SWIG_CXX=g++-6 CPP14=1
++      sudo: required
++      dist: trusty
++    - os: linux
++      env: SWIGLANG=java SWIG_CC=gcc-6 SWIG_CXX=g++-6 CPP14=1
++      sudo: required
++      dist: trusty
++    - os: linux
++      env: SWIGLANG=python SWIG_CC=gcc-6 SWIG_CXX=g++-6 CPP14=1
++      sudo: required
++      dist: trusty
++    - compiler: gcc
++      os: osx
++      env: SWIGLANG=
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=csharp
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=go
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=guile
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=java
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=lua
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=perl5
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=php5
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=python
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=python PY3=3
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=ruby
++    - compiler: clang
++      os: osx
++      env: SWIGLANG=tcl
++
++  allow_failures:
++    # Lots of failing tests currently
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=ocaml
++      sudo: required
++      dist: trusty
++    # Not quite working yet
++    - compiler: gcc
++      os: linux
++      env: SWIGLANG=python SWIG_FEATURES=-O
++      sudo: required
++      dist: trusty
++before_install:
++  - date -u
++  - uname -a
++  - if test "$TRAVIS_OS_NAME" = "linux"; then lscpu && cat /proc/cpuinfo | grep "model name" && cat /proc/meminfo | grep MemTotal; fi
++  - if test "$TRAVIS_OS_NAME" = "osx"; then sysctl -a | grep brand_string; fi
++    # Travis overrides CC environment with compiler predefined values
++  - if test -n "$SWIG_CC"; then export CC="$SWIG_CC"; fi
++  - if test -n "$SWIG_CXX"; then export CXX="$SWIG_CXX"; fi
++install:
++  - if test "$TRAVIS_OS_NAME" = "linux"; then source Tools/travis-linux-install.sh; fi
++  - if test "$TRAVIS_OS_NAME" = "osx"; then source Tools/travis-osx-install.sh; fi
++  - if test -n "$CPP11"; then CONFIGOPTS+=(--enable-cpp11-testing --without-maximum-compile-warnings "CXXFLAGS=-std=c++11 -Wall -Wextra" "CFLAGS=-std=c11 -Wall -Wextra") && export CSTD=c11 && export CPPSTD=c++11; fi
++  - if test -n "$CPP14"; then CONFIGOPTS+=(--enable-cpp11-testing --without-maximum-compile-warnings "CXXFLAGS=-std=c++14 -Wall -Wextra" "CFLAGS=-std=c11 -Wall -Wextra") && export CSTD=c11 && export CPPSTD=c++14; fi
++  - ls -la $(which $CC)
++  - ls -la $(which $CXX)
++  - $CC --version
++  - $CXX --version
++script:
++  - echo 'Configuring...' && echo -en 'travis_fold:start:script.1\\r'
++  - if test -n "$SWIGLANG"; then CONFIGOPTS+=(--without-alllang --with-$WITHLANG); fi
++  - echo "${CONFIGOPTS[@]}"
++  - ./autogen.sh && mkdir -p build/build && cd build/build && ../../configure "${CONFIGOPTS[@]}"
++  - echo -en 'travis_fold:end:script.1\\r'
++  - make -s $SWIGJOBS
++  - ./swig -version && ./swig -pcreversion
++  - if test -z "$SWIGLANG"; then make -s $SWIGJOBS check-ccache; fi
++  - if test -z "$SWIGLANG"; then make -s $SWIGJOBS check-errors-test-suite; fi
++  - echo 'Installing...' && echo -en 'travis_fold:start:script.2\\r'
++  - if test -z "$SWIGLANG"; then sudo make -s install && swig -version && ccache-swig -V; fi
++  - echo -en 'travis_fold:end:script.2\\r'
++  # Stricter compile flags for examples. Various headers and SWIG generated code prevents full use of -pedantic.
++  - if test -n "$SWIGLANG"; then cflags=$($TRAVIS_BUILD_DIR/Tools/testflags.py --language $SWIGLANG --cflags --std=$CSTD --compiler=$CC) && echo $cflags; fi
++  - if test -n "$SWIGLANG"; then cxxflags=$($TRAVIS_BUILD_DIR/Tools/testflags.py --language $SWIGLANG --cxxflags --std=$CPPSTD --compiler=$CC) && echo $cxxflags; fi
++  - if test -n "$SWIGLANG"; then make -s check-$SWIGLANG-version; fi
++  - if test -n "$SWIGLANG"; then make check-$SWIGLANG-enabled; fi
++  - if test -n "$SWIGLANG"; then make $SWIGJOBS check-$SWIGLANG-examples CFLAGS="$cflags" CXXFLAGS="$cxxflags"; fi
++  - if test -n "$SWIGLANG"; then make $SWIGJOBS check-$SWIGLANG-test-suite CFLAGS="$cflags" CXXFLAGS="$cxxflags"; fi
++  - echo 'Cleaning...' && echo -en 'travis_fold:start:script.3\\r'
++  - make check-maintainer-clean && ../../configure $CONFIGOPTS
++  - echo -en 'travis_fold:end:script.3\\r'

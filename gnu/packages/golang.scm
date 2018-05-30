@@ -1471,3 +1471,153 @@ Features include:
       (description "This package is atomic boolean library for Go code,
 optimized for performance yet simple to use.")
       (license license:expat))))
+
+(define-public go-github-com-urfave-cli
+  (let ((commit "cfb38830724cc34fedffe9a2a29fb54fa9169cd1")
+        (revision "0"))
+    (package
+      (name "go-github-com-urfave-cli")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/urfave/cli.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0y6f4sbzkiiwrxbl15biivj8c7qwxnvm3zl2dd3mw4wzg4x10ygj"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/urfave/cli"))
+      (home-page "https://github.com/urfave/cli")
+      (synopsis "Library for building command-line interfaces in Go")
+      (description "This package provides a library for building command-line
+interfaces in Go.")
+      (license license:expat))))
+
+(define-public go-github-com-blang-semver
+  (let ((commit "60ec3488bfea7cca02b021d106d9911120d25fe9")
+        (revision "0"))
+    (package
+      (name "go-github-com-blang-semver")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/blang/semver.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "19pli07y5592g4dyjyj0jq5rn548vc3fz0qg3624vm1j5828p1c2"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/blang/semver"))
+      (home-page "https://github.com/blang/semver")
+      (synopsis "Semantic versioning library written in Go")
+      (description "Semver is a library for Semantic versioning written in Go.")
+      (license license:expat))))
+
+(define-public go-github-com-emicklei-go-restful
+  (let ((commit "89ef8af493ab468a45a42bb0d89a06fccdd2fb22")
+        (revision "0"))
+    (package
+      (name "go-github-com-emicklei-go-restful")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emicklei/go-restful.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0rrlfcfq80fkxifpih6bq31vavb5mf4530xz51pp9pq1mn2fzjfh"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/emicklei/go-restful"))
+      (home-page "https://github.com/emicklei/go-restful")
+      (synopsis "Build REST-style web services using Go")
+      (description "This package provides @code{go-restful}, which helps
+developers to use @code{http} methods explicitly and in a way that's consistent
+with the HTTP protocol definition.")
+      (license license:expat))))
+
+(define-public go-github-com-google-cadvisor
+  (let ((commit "2ed7198f77395ee9a172878a0a7ab92ab59a2cfd")
+        (revision "0"))
+    (package
+      (name "go-github-com-google-cadvisor")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/google/cadvisor.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1w8p345z5j0gk3yiq5ah0znd5lfh348p2s624k5r10drz04p3f55"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/google/cadvisor"))
+      (home-page "https://github.com/google/cadvisor")
+      (synopsis "Analyze resource usage of running containers")
+      (description "The package provides @code{cadvisor}, which provides
+information about the resource usage and preformance characteristics of running
+containers.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-google-gofuzz
+  (let ((commit "fd52762d25a41827db7ef64c43756fd4b9f7e382")
+        (revision "0"))
+    (package
+      (name "go-github-com-google-gofuzz")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/google/gofuzz.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1yxmmr73h0lq7ryf3q9a7pcm2x5xrg4d5bxkq8n5pxwxwyq26kw8"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/google/gofuzz"))
+      (home-page "https://github.com/google/gofuzz")
+      (synopsis "Fuzz testing library for Go")
+      (description "Gofuzz is a library for populationg Go objects with random
+values for the purpose of fuzz testing.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-gorilla-context
+  (let ((commit "08b5f424b9271eedf6f9f0ce86cb9396ed337a42")
+        (revision "0"))
+    (package
+      (name "go-github-com-gorilla-context")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gorilla/context.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "03p4hn87vcmfih0p9w663qbx9lpsf7i7j3lc7yl7n84la3yz63m4"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gorilla/context"))
+      (home-page "https://github.com/gorilla/context")
+      (synopsis "Go registry for request variables")
+      (description "This package provides @code{gorilla/context}, which is a general purpose registry for global request variables in the Go programming language.")
+      (license license:bsd-3))))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -107,17 +107,17 @@ single file can be mounted.")
 (define-public disorderfs
   (package
     (name "disorderfs")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ReproducibleBuilds/disorderfs.git")
-             (commit "0.5.2")))
+             (url "https://salsa.debian.org/reproducible-builds/disorderfs.git")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1j028dq3d4m64mn9xmfamcnnc7i2drmra4pdmxdmqdsi8p7yj4sv"))))
+         "1nmhfvxpvz3xsfxl9wqnh6r2l5m7hjq6n0vpblsl5xdcvwaqcf50"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

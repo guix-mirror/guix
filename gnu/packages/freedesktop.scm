@@ -82,7 +82,7 @@
 (define-public xdg-utils
   (package
     (name "xdg-utils")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -91,7 +91,7 @@
                  version ".tar.gz"))
           (sha256
             (base32
-             "1k4b4m3aiyqn9k12a0ihcdahzlspl3zhskmm1d7228dvqvi546cm"))))
+             "1nai806smz3zcb2l5iny4x7li0fak0rzmjg6vlyhdqm8z25b166p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)

@@ -23,7 +23,6 @@
 
 (define-module (gnu system vm)
   #:use-module (guix config)
-  #:use-module (guix docker)
   #:use-module (guix store)
   #:use-module (guix gexp)
   #:use-module (guix derivations)

@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -36,6 +37,7 @@
   #:use-module (guix build-system r)
   #:use-module (guix git-download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -366,7 +368,7 @@ sample proximities between pairs of cases.")
 (define-public shogun
   (package
     (name "shogun")
-    (version "4.0.0")
+    (version "6.1.3")
     (source
      (origin
        (method url-fetch)
@@ -376,7 +378,7 @@ sample proximities between pairs of cases.")
              "/sources/shogun-" version ".tar.bz2"))
        (sha256
         (base32
-         "159nlijnb7mnrv9za80wnm1shwvy45hgrqzn51hxy7gw4z6d6fdb"))
+         "1rn9skm3nw6hr7mr3lgp2gfqhi7ii0lyxck7qmqnf8avq349s5jp"))
        (modules '((guix build utils)
                   (ice-9 rdelim)))
        (snippet
@@ -408,8 +410,20 @@ sample proximities between pairs of cases.")
                                    (and skipping? (not skip-next?)))
                            (display line out))
                          (loop (read-line in 'concat) skip-next?)))))))
-           (for-each delete-ifdefs (find-files "src/shogun/kernel/"
-                                               "^Kernel\\.(cpp|h)"))
+           (for-each delete-ifdefs
+                     (append
+                      (find-files "src/shogun/classifier/mkl"
+                                  "^MKLClassification\\.cpp")
+                      (find-files "src/shogun/classifier/svm"
+                                  "^SVMLightOneClass\\.(cpp|h)")
+                      (find-files "src/shogun/multiclass"
+                                  "^ScatterSVM\\.(cpp|h)")
+                      (find-files "src/shogun/kernel/"
+                                  "^(Kernel|CombinedKernel|ProductKernel)\\.(cpp|h)")
+                      (find-files "src/shogun/regression/svr"
+                                  "^(MKLRegression|SVRLight)\\.(cpp|h)")
+                      (find-files "src/shogun/transfer/domain_adaptation"
+                                  "^DomainAdaptationSVM\\.(cpp|h)")))
            #t))))
     (build-system cmake-build-system)
     (arguments
@@ -423,62 +437,59 @@ sample proximities between pairs of cases.")
                                      "applications/easysvm/data"
                                      "applications/msplicer/data"
                                      "applications/ocr/data"
-                                     "examples/documented/data"
-                                     "examples/documented/matlab_static"
-                                     "examples/documented/octave_static"
-                                     "examples/undocumented/data"
-                                     "examples/undocumented/matlab_static"
-                                     "examples/undocumented/octave_static"
-                                     "tests/integration/data"
-                                     "tests/integration/matlab_static"
-                                     "tests/integration/octave_static"
-                                     "tests/integration/python_modular/tests"))
+                                     "examples/meta/data"
+                                     "examples/undocumented/data"))
              #t))
          (add-after 'unpack 'change-R-target-path
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* '("src/interfaces/r_modular/CMakeLists.txt"
-                            "src/interfaces/r_static/CMakeLists.txt"
-                            "examples/undocumented/r_modular/CMakeLists.txt")
+             (substitute* '("src/interfaces/r/CMakeLists.txt"
+                            "examples/meta/r/CMakeLists.txt")
                (("\\$\\{R_COMPONENT_LIB_PATH\\}")
                 (string-append (assoc-ref outputs "out")
                                "/lib/R/library/")))
              #t))
          (add-after 'unpack 'fix-octave-modules
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* '("src/interfaces/octave_modular/CMakeLists.txt"
-                            "src/interfaces/octave_static/CMakeLists.txt")
+             (substitute* "src/interfaces/octave/CMakeLists.txt"
                (("^include_directories\\(\\$\\{OCTAVE_INCLUDE_DIRS\\}")
-                "include_directories(${OCTAVE_INCLUDE_DIRS} ${OCTAVE_INCLUDE_DIRS}/octave"))
-
-             ;; change target directory
-             (substitute* "src/interfaces/octave_modular/CMakeLists.txt"
+                "include_directories(${OCTAVE_INCLUDE_DIRS} ${OCTAVE_INCLUDE_DIRS}/octave")
+               ;; change target directory
                (("\\$\\{OCTAVE_OCT_LOCAL_API_FILE_DIR\\}")
                 (string-append (assoc-ref outputs "out")
                                "/share/octave/packages")))
+             (substitute* '("src/interfaces/octave/swig_typemaps.i"
+                            "src/interfaces/octave/sg_print_functions.cpp")
+               ;; "octave/config.h" and "octave/oct-obj.h" deprecated in Octave.
+               (("octave/config\\.h") "octave/octave-config.h")
+               (("octave/oct-obj.h") "octave/ovl.h"))
              #t))
+         (add-after 'unpack 'move-rxcpp
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((rxcpp-dir "shogun/third-party/rxcpp"))
+               (mkdir-p rxcpp-dir)
+               (install-file (assoc-ref inputs "rxcpp") rxcpp-dir)
+               #t)))
          (add-before 'build 'set-HOME
            ;; $HOME needs to be set at some point during the build phase
            (lambda _ (setenv "HOME" "/tmp") #t)))
        #:configure-flags
        (list "-DCMAKE_BUILD_WITH_INSTALL_RPATH=TRUE"
              "-DUSE_SVMLIGHT=OFF" ;disable proprietary SVMLIGHT
-             ;;"-DJavaModular=ON" ;requires unpackaged jblas
-             ;;"-DRubyModular=ON" ;requires unpackaged ruby-narray
-             ;;"-DPerlModular=ON" ;"FindPerlLibs" does not exist
-             ;;"-DLuaModular=ON"  ;fails because lua doesn't build pkgconfig file
-             "-DOctaveModular=ON"
-             "-DOctaveStatic=ON"
-             "-DPythonModular=ON"
-             "-DPythonStatic=ON"
-             "-DRModular=ON"
-             "-DRStatic=ON"
-             "-DCmdLineStatic=ON")))
+             "-DBUILD_META_EXAMPLES=OFF" ;requires unpackaged ctags
+             ;;"-DINTERFACE_JAVA=ON" ;requires unpackaged jblas
+             ;;"-DINTERFACE_RUBY=ON" ;requires unpackaged ruby-narray
+             ;;"-DINTERFACE_PERL=ON" ;"FindPerlLibs" does not exist
+             ;;"-DINTERFACE_LUA=ON"  ;fails because lua doesn't build pkgconfig file
+             "-DINTERFACE_OCTAVE=ON"
+             "-DINTERFACE_PYTHON=ON"
+             "-DINTERFACE_R=ON")))
     (inputs
      `(("python" ,python)
        ("numpy" ,python-numpy)
        ("r-minimal" ,r-minimal)
        ("octave" ,octave)
        ("swig" ,swig)
+       ("eigen" ,eigen)
        ("hdf5" ,hdf5)
        ("atlas" ,atlas)
        ("arpack" ,arpack-ng)
@@ -488,7 +499,8 @@ sample proximities between pairs of cases.")
        ("lzo" ,lzo)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("rxcpp" ,rxcpp)))
     ;; Non-portable SSE instructions are used so building fails on platforms
     ;; other than x86_64.
     (supported-systems '("x86_64-linux"))
@@ -501,6 +513,47 @@ combine multiple data representations, algorithm classes, and general purpose
 tools.  This enables both rapid prototyping of data pipelines and extensibility
 in terms of new algorithms.")
     (license license:gpl3+)))
+
+(define-public rxcpp
+  (package
+    (name "rxcpp")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ReactiveX/RxCpp/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0y2isr8dy2n1yjr9c5570kpc9lvdlch6jv0jvw000amwn5d3krsh"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-werror
+           (lambda _
+             (substitute* (find-files ".")
+               (("-Werror") ""))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "ctest"))))))
+    (native-inputs
+     `(("catch" ,catch-framework)))
+    (home-page "http://reactivex.io/")
+    (synopsis "Reactive Extensions for C++")
+    (description
+     "The Reactive Extensions for C++ (RxCpp) is a library of algorithms for
+values-distributed-in-time.  ReactiveX is a library for composing asynchronous
+and event-based programs by using observable sequences.
+
+It extends the observer pattern to support sequences of data and/or events and
+adds operators that allow you to compose sequences together declaratively while
+abstracting away concerns about things like low-level threading,
+synchronization, thread-safety, concurrent data structures, and non-blocking
+I/O.")
+    (license license:asl2.0)))
 
 (define-public r-adaptivesparsity
   (package

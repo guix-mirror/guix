@@ -2497,7 +2497,7 @@ killed threads.")
 (define-public pan
   (package
     (name "pan")
-    (version "0.144")
+    (version "0.145")
     (source
      (origin
        (method url-fetch)
@@ -2505,7 +2505,7 @@ killed threads.")
                            version "/source/" name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "0l07y75z8jxhbmfv28slw81gjncs7i89x7fq44zif7xhq5vy7yli"))))
+         "1b4wamv33hprghcjk903bpvnd233yxyrm18qnh13alc8h1553nk8"))))
     (arguments
      `(#:configure-flags '("--with-gtk3" "--with-gtkspell" "--with-gnutls"
                            "--enable-libnotify" "--enable-manual"
