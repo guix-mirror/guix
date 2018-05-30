@@ -25,7 +25,8 @@
  (and=> (or (getenv "XDG_CONFIG_HOME")
             (and=> (getenv "HOME")
                    (cut string-append <> "/.config")))
-        (cut string-append <> "/guix/latest")))
+        (cute string-append <> "/guix/current/share/guile/site/"
+              (effective-version))))
 
 (use-modules (guix) (guix ui)
              (guix git-download)

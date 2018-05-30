@@ -740,7 +740,7 @@ checking this by themselves in their 'check' procedure."
   ;; <http://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html> for
   ;; a discussion.
   (define latest
-    (string-append (config-directory) "/latest"))
+    (string-append (config-directory) "/current"))
 
   (unless (file-exists? latest)
     (warning (G_ "~a not found: 'guix pull' was never run~%") latest)

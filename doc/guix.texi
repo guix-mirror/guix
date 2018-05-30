@@ -2743,11 +2743,39 @@ Any user can update their Guix copy using @command{guix pull}, and the
 effect is limited to the user who run @command{guix pull}.  For
 instance, when user @code{root} runs @command{guix pull}, this has no
 effect on the version of Guix that user @code{alice} sees, and vice
-versa@footnote{Under the hood, @command{guix pull} updates the
-@file{~/.config/guix/latest} symbolic link to point to the latest Guix,
-and the @command{guix} command loads code from there.  Currently, the
-only way to roll back an invocation of @command{guix pull} is to
-manually update this symlink to point to the previous Guix.}.
+versa.
+
+The result of running @command{guix pull} is a @dfn{profile} available
+under @file{~/.config/guix/current} containing the latest Guix.  Thus,
+make sure to add it to the beginning of your search path so that you use
+the latest version, and similarly for the Info manual
+(@pxref{Documentation}):
+
+@example
+export PATH="$HOME/.config/guix/current/bin:$PATH"
+export INFOPATH="$HOME/.config/guix/current/share/info:$INFOPATH"
+@end example
+
+This @code{~/.config/guix/current} profile works like any other profile
+created by @command{guix package} (@pxref{Invoking guix package}).  That
+is, you can list generations, roll back to the previous
+generation---i.e., the previous Guix---and so on:
+
+@example
+$ guix package -p ~/.config/guix/current -l
+Generation 1	May 25 2018 10:06:41
+  guix	221951a	out	/gnu/store/i4dfk7vw5k112s49jrhl6hwsfnh6wr7l-guix-221951af4
+
+Generation 2	May 27 2018 19:07:47
+ + guix	2fbae00	out	/gnu/store/44cv9hyvxg34xf5kblf5dz57hc52y4bm-guix-2fbae006f
+ - guix	221951a	out	/gnu/store/i4dfk7vw5k112s49jrhl6hwsfnh6wr7l-guix-221951af4
+
+Generation 3	May 30 2018 16:11:39	(current)
+ + guix	a076f19	out	/gnu/store/332czkicwwg6lc3x4aqbw5q2mq12s7fj-guix-a076f1990
+ - guix	2fbae00	out	/gnu/store/44cv9hyvxg34xf5kblf5dz57hc52y4bm-guix-2fbae006f
+$ guix package -p ~/.config/guix/current --roll-back
+switched from generation 3 to 2
+@end example
 
 The @command{guix pull} command is usually invoked with no arguments,
 but it supports the following options:
