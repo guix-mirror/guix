@@ -227,7 +227,7 @@ numbers of user-defined menu items efficiently.")
 (define-public st
   (package
     (name "st")
-    (version "0.7")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -235,7 +235,7 @@ numbers of user-defined menu items efficiently.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "00309qiw20rc89696pk8bdr7ik4r1aarik7jxqk8k66cdj80v1zp"))))
+         "09k94v3n20gg32xy7y68p96x9dq5msl80gknf9gbvlyjp3i0zyy4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -247,14 +247,15 @@ numbers of user-defined menu items efficiently.")
          (add-after 'unpack 'inhibit-terminfo-install
                     (lambda _
                       (substitute* "Makefile"
-                        (("\t@tic -s st.info") ""))
+                        (("\ttic .*") ""))
                       #t)))))
     (inputs
      `(("libx11" ,libx11)
        ("libxft" ,libxft)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://st.suckless.org/")
     (synopsis "Simple terminal emulator")
     (description
