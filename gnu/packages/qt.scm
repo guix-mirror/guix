@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1068,6 +1069,29 @@ and others.")))
 between the host (QML/C++ application) and the client (HTML/JavaScript
 application).  The transport mechanism is supported out of the box by the two
 popular web engines, Qt WebKit 2 and Qt WebEngine.")))
+
+(define-public qtwebview
+  (package (inherit qtsvg)
+    (name "qtwebview")
+    (version "5.11.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-everywhere-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0a89v8mj5pb7a7whyhasf4ms0n34ghfmv2qp0pyxnq56f2bsjbl4"))))
+    (native-inputs
+     `(("perl" ,perl)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (synopsis "Display web content in a QML application")
+    (description "Qt WebView provides a way to display web content in a QML
+application without necessarily including a full web browser stack by using
+native APIs where it makes sense.")))
 
 (define-public qtlocation
   (package (inherit qtsvg)
