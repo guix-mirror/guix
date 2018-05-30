@@ -908,7 +908,8 @@ provides an optional IDE-like error list.")
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
-                  (guix build emacs-utils))
+                  (guix build emacs-utils)
+                  (ice-9 ftw))
        #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-utils))
 
@@ -971,13 +972,21 @@ provides an optional IDE-like error list.")
                     (man1 (string-append out "/share/man/man1")))
                (mkdir-p bin)
                (mkdir-p man1)
+
+               ;; Ensure that files are not rejected by gzip
+               (let ((early-1980 315619200)) ; 1980-01-02 UTC
+                 (ftw "." (lambda (file stat flag)
+                            (unless (<= early-1980 (stat:mtime stat))
+                              (utime file early-1980 early-1980))
+                            #t)))
                #t)))
          (add-after 'install 'post-install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (symlink "emms-auto.el"
                         (string-append out "/share/emacs/site-lisp/"
-                                       "emms-autoloads.el"))))))
+                                       "emms-autoloads.el")))
+             #t)))
        #:tests? #f))
     (native-inputs `(("emacs" ,emacs-minimal)    ;for (guix build emacs-utils)
                      ("texinfo" ,texinfo)))
