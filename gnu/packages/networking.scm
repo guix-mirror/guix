@@ -56,6 +56,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
@@ -1857,3 +1858,46 @@ eight bytes) tools
 @end itemize")
     ;; Either BSD-3 or GPL-2 can be used.
     (license (list license:bsd-3 license:gpl2))))
+
+(define-public asio
+  (package
+    (name "asio")
+    (version "1.12.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chriskohlhoff/asio.git")
+             (commit (string-join (cons name (string-split version #\.))
+                                  "-"))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "04dg8kpgriay7q62mqcq2gl439k5y4mf761zghsd6wfl0farh3mx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("boost" ,boost)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "--with-boost=" (assoc-ref %build-inputs "boost"))
+        (string-append "--with-openssl=" (assoc-ref %build-inputs "openssl")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-to-asio
+           (lambda _
+             (chdir "asio")))
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
+    (home-page "https://think-async.com/Asio")
+    (synopsis "C++ library for ASynchronous network I/O")
+    (description "Asio is a cross-platform C++ library for network and
+low-level I/O programming that provides developers with a consistent
+asynchronous model using a modern C++ approach.")
+    (license license:boost1.0)))
