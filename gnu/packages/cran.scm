@@ -2218,14 +2218,14 @@ Analysis with R\" by Michael Friendly and David Meyer (2015).")
 (define-public r-ica
   (package
     (name "r-ica")
-    (version "1.0-1")
+    (version "1.0-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ica" version))
        (sha256
         (base32
-         "1bkl4a72l0k6gm82l3jxnib898z20cw17zg81jj39l9dn65rlmcq"))))
+         "0ya1nph1zwhad0bfz4yxs27kl45yk1dhnphdlrq34p8pqrpmj8g7"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/ica/")
     (synopsis "Independent component analysis")
