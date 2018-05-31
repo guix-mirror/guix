@@ -1867,6 +1867,26 @@ variables, the option to use cluster-specific covariance matrices and to
 impute compatibly with the substantive model.")
     (license license:gpl2)))
 
+(define-public r-pan
+  (package
+    (name "r-pan")
+    (version "1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pan" version))
+       (sha256
+        (base32
+         "1p3nigmhrnlch86g89hn7l0wvkifx3k9n59g0psi95yck43kza76"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/pan/")
+    (synopsis "Multiple imputation for multivariate panel or clustered data")
+    (description
+     "This package implements multiple imputation for multivariate panel or
+clustered data.")
+    (license license:gpl3)))
+
 (define-public r-mice
   (package
     (name "r-mice")
