@@ -36,6 +36,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
@@ -4151,3 +4152,29 @@ bootstrap using a truncated geometric distribution, a comprehensive test for
 weak stationarity, column means by group, weighted biplots, and a heuristic to
 obtain a better initial configuration in non-metric MDS.")
     (license license:gpl2)))
+
+(define-public r-reticulate
+  (package
+    (name "r-reticulate")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "reticulate" version))
+       (sha256
+        (base32
+         "1ghhc4hbmwpp79ilbdbshynhs61i8sv8z6p1al04jy7ij0lcglxy"))))
+    (build-system r-build-system)
+    (inputs `(("python" ,python)))
+    (propagated-inputs
+     `(("r-jsonlite" ,r-jsonlite)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://github.com/rstudio/reticulate")
+    (synopsis "R interface to Python")
+    (description
+     "This package provides an interface from R to Python modules, classes,
+and functions.  When calling into Python, R data types are automatically
+converted to their equivalent Python types.  When values are returned from
+Python to R they are converted back to R types.")
+    (license license:asl2.0)))
