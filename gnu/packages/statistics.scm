@@ -3165,20 +3165,24 @@ path-wise fashion.")
 (define-public r-pkgmaker
   (package
     (name "r-pkgmaker")
-    (version "0.22")
+    (version "0.27")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgmaker" version))
        (sha256
         (base32
-         "0vrqnd3kg6liqvpbd969jjsdx0f0rvmmxgdbwwrp6xfmdg0pib8r"))))
+         "0spcamjncj78kzjps2rw4v1a4494yazv6xvhn0vmdflnypc8k8hp"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-codetools" ,r-codetools)
+     `(("r-bibtex" ,r-bibtex)
+       ("r-codetools" ,r-codetools)
        ("r-digest" ,r-digest)
+       ("r-magrittr" ,r-magrittr)
        ("r-registry" ,r-registry)
+       ("r-stringi" ,r-stringi)
        ("r-stringr" ,r-stringr)
+       ("r-withr" ,r-withr)
        ("r-xtable" ,r-xtable)))
     (home-page "https://renozao.github.io/pkgmaker")
     (synopsis "Package development utilities")
