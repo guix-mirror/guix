@@ -3837,6 +3837,26 @@ measuring the accuracy of ABC estimates, and to calculate the
 misclassification probabilities of different models.")
     (license license:gpl3+)))
 
+(define-public r-zip
+  (package
+    (name "r-zip")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "zip" version))
+       (sha256
+        (base32
+         "0rgr9pcdhdq3k8n29h2ircp3ri1ibhrx81gja1y7331v15xyrabg"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/gaborcsardi/zip")
+    (synopsis "Cross-platform Zip compression")
+    (description
+     "This package provides a cross-platform Zip compression library for R.
+It is a replacement for the @code{zip} function, that does not require any
+additional external tools on any platform.")
+    (license license:cc0)))
+
 (define-public r-openxlsx
   (package
     (name "r-openxlsx")
