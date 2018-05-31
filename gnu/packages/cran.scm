@@ -1841,6 +1841,32 @@ can be computed between character vectors while taking proper care of encoding
 or between integer vectors representing generic sequences.")
     (license license:gpl3+)))
 
+(define-public r-jomo
+  (package
+    (name "r-jomo")
+    (version "2.6-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "jomo" version))
+       (sha256
+        (base32
+         "0zyqwa2y08asj9xqwnngh6da1b9cqcx8pzc9cxwrmgnxd5nnsjb7"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lme4" ,r-lme4)
+       ("r-survival" ,r-survival)))
+    (home-page "https://cran.r-project.org/web/packages/jomo/")
+    (synopsis "Multilevel Joint Modelling Multiple Imputation")
+    (description
+     "Similarly to Schafer's package pan, jomo is a package for multilevel
+joint modelling multiple imputation @url{Carpenter and Kenward (2013),
+http://doi.org/10.1002/9781119942283}.  Novel aspects of jomo are the
+possibility of handling binary and categorical data through latent normal
+variables, the option to use cluster-specific covariance matrices and to
+impute compatibly with the substantive model.")
+    (license license:gpl2)))
+
 (define-public r-mice
   (package
     (name "r-mice")
