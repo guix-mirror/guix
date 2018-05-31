@@ -1647,3 +1647,29 @@ values for the purpose of fuzz testing.")
        "Gorilla/Mux implements a request router and dispatcher for matching
 incoming requests with their respective handler.")
       (license license:bsd-3))))
+
+(define-public go-github-com-jonboulle-clockwork
+  (let ((commit "e3653ace2d63753697e0e5b07b9393971c0bba9d")
+        (revision "0"))
+    (package
+      (name "go-github-com-jonboulle-clockwork")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/jonboulle/clockwork.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "1avzqhks12a8x2yzpvjsf3k0gv9cy7zx2z88hn0scacnxkphisvc"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/jonboulle/clockwork"))
+      (home-page "https://github.com/jonboulle/clockwork")
+      (synopsis "Fake clock library for Go")
+      (description
+       "Replace uses of the @code{time} package with the
+@code{clockwork.Clock} interface instead.")
+      (license license:asl2.0))))
