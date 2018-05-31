@@ -3306,14 +3306,14 @@ bigmemory and synchronicity packages.")
 (define-public r-synchronicity
   (package
     (name "r-synchronicity")
-    (version "1.3.2")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "synchronicity" version))
        (sha256
         (base32
-         "1idrjzl7nkamf1ip55s6qcf64s63xs9j8z9jv3r89p6r5lw7k5mv"))))
+         "1km5hx82gy71m5nc6pkcksv0dn32fylhg2axpdsnarrxva14mgdg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
