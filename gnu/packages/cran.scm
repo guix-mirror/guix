@@ -1316,14 +1316,14 @@ samples.")
 (define-public r-cvst
   (package
     (name "r-cvst")
-    (version "0.2-1")
+    (version "0.2-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "CVST" version))
        (sha256
         (base32
-         "17xacyi8cf37rr2xswx96qy7pwkaqq394awdlswykz3qlyzx4zx2"))))
+         "05l3yzkfrbds09ah9cdwn2sn4ryhq78lz33ryzrgkv176jc8qjw5"))))
     (properties `((upstream-name . "CVST")))
     (build-system r-build-system)
     (propagated-inputs
