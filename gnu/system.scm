@@ -317,8 +317,8 @@ file system labels."
          (_                                       ;the old format
           "/")))))
     (x                                            ;unsupported format
-     (warning (G_ "unrecognized boot parameters for '~a'~%")
-              system)
+     (warning (G_ "unrecognized boot parameters at '~a'~%")
+              (port-filename port))
      #f)))
 
 (define (read-boot-parameters-file system)
