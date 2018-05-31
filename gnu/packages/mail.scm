@@ -1369,7 +1369,8 @@ hashing schemes plugin for @code{Dovecot}.")
      `(("perl" ,perl)))
     (inputs
      `(("bdb" ,bdb)
-       ("openssl" ,openssl)))
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
     (home-page "http://isync.sourceforge.net/")
     (synopsis "Mailbox synchronization program")
     (description

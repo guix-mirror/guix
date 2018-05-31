@@ -67,6 +67,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages fltk)
@@ -4062,16 +4063,16 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad-data
   (package
     (name "0ad-data")
-    (version "0.0.22-alpha")
+    (version "0.0.23-alpha")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://releases.wildfiregames.com/0ad-"
+       (uri (string-append "https://releases.wildfiregames.com/0ad-"
                            version "-unix-data.tar.xz"))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0vknk9ay9h2p34r7mym2g066f3s3c5d5vmap0ckcs5b86h5cscjc"))
+         "1b6qcvd8yyyxavgdwpcs7asmln3xgnvjkglz6ggvwb956x37ggzx"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -4115,19 +4116,18 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad
   (package
     (name "0ad")
-    (version "0.0.22-alpha")
+    (version "0.0.23-alpha")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://releases.wildfiregames.com/0ad-"
+       (uri (string-append "https://releases.wildfiregames.com/0ad-"
                            version "-unix-build.tar.xz"))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1cgmr4g5g9wv36v7ylbrvqhsjwgcsdgbqwc8zlqmnayk9zgkdpgx"))
+         "0qz1sg4n5y766qwgi63drrrx6k17kk0rcnn9a4a9crllk2vf78fg"))))
        ;; A snippet here would cause a build failure because of timestamps
        ;; reset.  See https://bugs.gnu.org/26734.
-       ))
     (inputs
      `(("0ad-data" ,0ad-data)
        ("curl" ,curl)
@@ -4135,6 +4135,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        ("gloox" ,gloox)
        ("icu4c" ,icu4c)
        ("libpng" ,libpng)
+       ("libsodium" ,libsodium)
        ("libvorbis" ,libvorbis)
        ("libxcursor" ,libxcursor)
        ("libxml2" ,libxml2)

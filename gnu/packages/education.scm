@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -216,7 +217,7 @@ Currently available boards include:
                (substitute* "def/defines.h"
                  (("\"/usr/") (string-append "\"" out "/")))
                ;; Recreate Makefile
-               (zero? (system* "qmake"))))))))
+               (invoke "qmake")))))))
     (inputs
      `(("qt4" ,qt-4)
        ("sqlite" ,sqlite)))

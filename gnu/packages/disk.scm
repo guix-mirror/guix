@@ -464,15 +464,15 @@ a card with a smaller capacity than stated.")
 (define-public duperemove
   (package
     (name "duperemove")
-    (version "v0.11.beta4")
+    (version "0.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/markfasheh/duperemove/archive/"
+                    "https://github.com/markfasheh/duperemove/archive/v"
                     version ".tar.gz"))
               (sha256
                (base32
-                "1h5nk03kflfnzihvn2rvfz1h623x1zpkn9hp29skd7n3f2bc5k7x"))
+                "0rjmmh42yqw9a5j6sp31cqwxk3s97dsi4xz0wpxpllj7bsp3aiw5"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -481,11 +481,10 @@ a card with a smaller capacity than stated.")
      `(("glib" ,glib)
        ("sqlite" ,sqlite)))
     (arguments
-     `(#:tests? #f                                ;no test suite
+     `(#:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
-         ;; no configure script
-         (delete 'configure))
+         (delete 'configure))           ; no configure script
        #:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")))
     (home-page "https://github.com/markfasheh/duperemove")

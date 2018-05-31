@@ -171,7 +171,7 @@ numbers of user-defined menu items efficiently.")
 (define-public spoon
   (package
     (name "spoon")
-    (version "0.3")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
@@ -179,16 +179,16 @@ numbers of user-defined menu items efficiently.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10c5i7ykpy7inzzfiw1dh0srpkljycr3blxhvd8160wsvplbws48"))))
+         "1jpmg9k9f4f3lpz0k3cphqjswlyf8lz2sm8ccifiip93kd4rrdj0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))))
     (inputs
      `(("libx11" ,libx11)
        ("libxkbfile" ,libxkbfile)
-       ("alsa-lib" ,alsa-lib)
+       ("alsa-lib" ,alsa-lib)           ; tinyalsa (unpackaged) would suffice
        ("libmpdclient" ,libmpdclient)))
     (home-page "https://git.2f30.org/spoon/")
     (synopsis "Set dwm status")
@@ -227,7 +227,7 @@ numbers of user-defined menu items efficiently.")
 (define-public st
   (package
     (name "st")
-    (version "0.7")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -235,7 +235,7 @@ numbers of user-defined menu items efficiently.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "00309qiw20rc89696pk8bdr7ik4r1aarik7jxqk8k66cdj80v1zp"))))
+         "09k94v3n20gg32xy7y68p96x9dq5msl80gknf9gbvlyjp3i0zyy4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -247,14 +247,15 @@ numbers of user-defined menu items efficiently.")
          (add-after 'unpack 'inhibit-terminfo-install
                     (lambda _
                       (substitute* "Makefile"
-                        (("\t@tic -s st.info") ""))
+                        (("\ttic .*") ""))
                       #t)))))
     (inputs
      `(("libx11" ,libx11)
        ("libxft" ,libxft)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://st.suckless.org/")
     (synopsis "Simple terminal emulator")
     (description
@@ -311,19 +312,19 @@ point surf to another URI by setting its XProperties.")
 (define-public sent
   (package
     (name "sent")
-    (version "0.2")
+    (version "1")
     (source (origin
-              (method url-fetch)
+              (method url-fetch/tarbomb)
               (uri (string-append "https://dl.suckless.org/tools/sent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0xhh752hwaa26k4q6wvrb9jnpbnylss2aw6z11j7l9rav7wn3fak"))))
+                "0cxysz5lp25mgww73jl0mgip68x7iyvialyzdbriyaff269xxwvv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (delete 'configure))  ;no configuration
-       #:tests? #f                      ;no test suite
+                  (delete 'configure))  ; no configuration
+       #:tests? #f                      ; no test suite
        #:make-flags (let ((pkg-config (lambda (flag)
                                         (string-append
                                          "$(shell pkg-config " flag " "
@@ -526,31 +527,28 @@ cups server to be installed.")
      "Noice is a small curses-based file browser.")
     (license license:bsd-2)))
 
-;;; We want some commits that are more recent than the latest release, 0.2
 (define-public human
-  (let ((commit "50c80e6ba12823184b6866e06b955dbd2ccdc5d7")
-        (revision "1"))
-    (package
-      (name "human")
-      (version (string-append "0.2-" revision "." (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "git://git.2f30.org/human.git")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "18xngm4h9vsyip52zwd79rrp1irzg6rs462lpbp61amf7hj955gn"))))
+  (package
+    (name "human")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://git.2f30.org/human.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0y0bsmvpwfwb2lwspi6a799y34h1faxc6yfanyw6hygxc8661mga"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://git.2f30.org/human/")
     (synopsis "Convert bytes to human readable formats")
     (description
@@ -559,7 +557,7 @@ human readable format.  By default, it tries to detect the best
 factorisation, but you can force its output.
 You can adjust the number of decimals with the @code{SCALE}
 environment variable.")
-    (license license:wtfpl2))))
+    (license license:wtfpl2)))
 
 (define-public fortify-headers
   (package
@@ -682,8 +680,8 @@ as -1, to be used instead of U+FFFD.
 
 ;; No release tarballs so far.
 (define-public lchat
-  (let ((revision "2")
-        (commit "25d90f4630b45e2b609d2e3daecb32cf5ff065fd"))
+  (let ((revision "3")
+        (commit "f95191970fd59c52a8b09cff32bd8d2135cbfc6b"))
     (package
       (name "lchat")
       (version (string-append "0.0.0-" revision "." (string-take commit 7)))
@@ -696,24 +694,26 @@ as -1, to be used instead of U+FFFD.
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0dvljyq3m7rxxkqv7rkmijak6vj8i4db3iq2z988bvf76chz268b"))))
+           "07pxzziczhzprmjy61k7nl9i1kxpgnad37qkjf5fn4wf06nqdxpl"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ; No tests
+       `(#:test-target "test"
          #:make-flags (list "CC=gcc"
                             (string-append "PREFIX=" %output))
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure) ; No configure script
+           (delete 'configure)          ; no configure script
            (add-before 'build 'libbsd
              (lambda _
                (substitute* "Makefile"
                  (("-lutf") "-lutf -lbsd"))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (bin (string-append out "/bin")))
+               (let* ((out  (assoc-ref outputs "out"))
+                      (bin  (string-append out "/bin"))
+                      (man1 (string-append out "/share/man/man1")))
                  (install-file "lchat" bin)
+                 (install-file "lchat.1" man1)
                  #t))))))
       (inputs
        `(("grep" ,grep)
@@ -724,6 +724,6 @@ as -1, to be used instead of U+FFFD.
       (synopsis "Line chat is a frontend for the irc client ii from suckless")
       (description
        "Lchat (line chat) is the little and small brother of cii.
-It is a front end for ii-like chat programs.  It uses tail(1) -f to get the
-chat output in background.")
+It is a front end for ii-like chat programs.  It uses @code{tail -f} to get the
+chat output in the background.")
       (license license:isc))))

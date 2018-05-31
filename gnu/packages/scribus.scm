@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,20 @@
        '("-DWANT_GRAPHICSMAGICK=1")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             ;; Fix build against Qt 5.11.
+             (substitute* "scribus/plugins/tools/lenseffects/lensdialog.cpp"
+               (("#include <cmath>") "#include <cmath>
+#include <QStyleOptionGraphicsItem>"))
+             (substitute* "scribus/plugins/tools/2geomtools/meshdistortion/meshdistortiondialog.cpp"
+               (("#include <QGraphicsItem>") "#include <QGraphicsItem>
+#include <QStyleOptionGraphicsItem>"))
+             (substitute* "scribus/sclistboxpixmap.h"
+               (("#include <QVariant>") "#include <QVariant>
+#include <QStyleOptionViewItem>
+#include <QAbstractItemDelegate>"))
+             #t))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Fix "ImportError: No module named _sysconfigdata_nd" where

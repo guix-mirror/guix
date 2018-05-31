@@ -686,8 +686,8 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
          (add-after 'wrap-program 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (with-directory-excursion "data"
-               (zero? (system* (string-append (assoc-ref outputs "out") "/bin/ktImportText")
-                               "ec.tsv"))))))))
+               (invoke (string-append (assoc-ref outputs "out") "/bin/ktImportText")
+                       "ec.tsv")))))))
    (inputs
     `(("perl" ,perl)))
    (home-page "https://github.com/marbl/Krona/wiki")
@@ -851,7 +851,7 @@ UTS#46.")
                       ;; source tree.
                       (copy-recursively "build/gnuauto" ".")
                       (setenv "AUTOMAKE" "automake --foreign")
-                      (zero? (system* "autoreconf" "-vfi")))))))
+                      (invoke "autoreconf" "-vfi"))))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
@@ -1232,11 +1232,9 @@ minimum to provide high performance operation.")
            (delete 'configure)
            (add-after 'unpack 'unpack-libsass-and-set-path
              (lambda* (#:key inputs #:allow-other-keys)
-               (and (zero? (system* "tar" "xvf" (assoc-ref inputs "libsass")))
-                    (begin
-                      (setenv "SASS_LIBSASS_PATH"
-                              (string-append (getcwd) "/libsass-" ,version))
-                      #t)))))))
+               (invoke "tar" "xvf" (assoc-ref inputs "libsass"))
+               (setenv "SASS_LIBSASS_PATH"
+                       (string-append (getcwd) "/libsass-" ,version)))))))
       (inputs
        `(("libsass" ,libsass)))
       (synopsis "CSS pre-processor")
@@ -4781,7 +4779,7 @@ handling many of the web standards in use today.")
              (let* ((out (assoc-ref %outputs "out"))
                     (man (string-append out "/share/man/man1")))
                (with-directory-excursion man
-                 (zero? (system* "gzip" "elvi.1sr")))))))))
+                 (invoke "gzip" "elvi.1sr"))))))))
     (inputs
      `(("perl" ,perl)
        ("perl-www-opensearch" ,perl-www-opensearch)
@@ -4886,8 +4884,8 @@ on the fly.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (home-page "http://www.nocrew.org/software/httptunnel.html")
     (synopsis "Tunnel data connections through HTTP requests")
     (description "httptunnel creates a bidirectional virtual data connection
@@ -4900,7 +4898,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.45")
+  (version "5.46")
   (source
     (origin
       (method url-fetch)
@@ -4908,7 +4906,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1qrfb418skdcm7b3v30ixng1ng907f4rfv54zvgz8jwakf1l90jl"))))
+        "1iw4gap9ysag8iww2ik029scmdllk7jdzcpnnbj7hgbl526b9akn"))))
   (build-system gnu-build-system)
   (inputs `(("openssl" ,openssl)))
   (arguments
@@ -5237,12 +5235,12 @@ command-line arguments or read from stdin.")
              (add-installed-pythonpath inputs outputs)
              (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
                                            ":" (getenv "PATH")))
-             (zero? (system* "py.test" "-v" "-k"
-                             (string-append
-                              ;; These tests attempt to make a connection to
-                              ;; an external web service.
-                              "not test_get_item_with_kwargs"
-                              " and not test_ia"))))))))
+             (invoke "py.test" "-v" "-k"
+                     (string-append
+                      ;; These tests attempt to make a connection to
+                      ;; an external web service.
+                      "not test_get_item_with_kwargs"
+                      " and not test_ia")))))))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-jsonpatch" ,python-jsonpatch-0.4)
@@ -5303,14 +5301,15 @@ internetarchive python module for programatic access to archive.org.")
          (modify-phases %standard-phases
            (add-after 'unpack 'get-tests
              (lambda _
-               (copy-file (assoc-ref %build-inputs "test-clf") "test_clf.py")))
+               (copy-file (assoc-ref %build-inputs "test-clf") "test_clf.py")
+               #t))
            (replace 'check
              (lambda _
-               (zero? (system* "nosetests"
-                               ;; These tests require internet connection
-                               "--exclude=test_browse"
-                               "--exclude=test_command"
-                               "--exclude=test_search")))))))
+               (invoke "nosetests"
+                       ;; These tests require an Internet connection.
+                       "--exclude=test_browse"
+                       "--exclude=test_command"
+                       "--exclude=test_search"))))))
       (home-page "https://github.com/ncrocfer/clf")
       (synopsis "Search code snippets on @url{https://commandlinefu.com}")
       (description "@code{clf} is a command line tool for searching code
@@ -5545,8 +5544,7 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
                                  %build-inputs))
            (mkdir-p share-rss-bridge)
            (invoke "tar" "xvf" (assoc-ref %build-inputs "source")
-                   "--strip-components" "1" "-C" share-rss-bridge)
-           #t))))
+                   "--strip-components" "1" "-C" share-rss-bridge)))))
     (home-page "https://github.com/RSS-Bridge/rss-bridge")
     (synopsis "Generate Atom feeds for social networking websites")
     (description "rss-bridge generates Atom feeds for social networking
