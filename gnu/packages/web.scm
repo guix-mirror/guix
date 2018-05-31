@@ -3826,21 +3826,19 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.9")
+    (version "0.10")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0bs0i5mjfzxfshqz8i30nhn7kvgwly4fqn5bfq6dqfdrn7biai2x"))))
+                "0yz3igqsiyqnjj1ngh199zicg3spx4kbmvl0wc8i8xahk6l9g06v"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
        ("r-jsonlite" ,r-jsonlite)
        ("r-mime" ,r-mime)
        ("r-xfun" ,r-xfun)))
-    (native-inputs
-     `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/yihui/servr")
     (synopsis "Simple HTTP server to serve static files or dynamic documents")
     (description
