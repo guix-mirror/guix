@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -349,7 +349,17 @@ many event types, including timers, signals, and the classic file descriptor eve
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1d591ny4j4s409s2afjv4fn7inqlclr0zlyclw3619rkbaixlzm8"))))
+                "1d591ny4j4s409s2afjv4fn7inqlclr0zlyclw3619rkbaixlzm8"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each (lambda (file)
+                              ;; Delete everything except the build tools.
+                              (unless (or (string-prefix? "third_party/waf" file)
+                                          (string-suffix? "wscript" file))
+                                (delete-file file)))
+                            (find-files "third_party"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
