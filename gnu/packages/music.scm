@@ -1184,6 +1184,19 @@ add_library( rapidjson INTERFACE IMPORTED )"))
                (("boost::rational<int> duration\\(4, pos.getDurationType\\(\\)\\);")
                 "boost::rational<int> duration(4, static_cast<int>(pos.getDurationType()));"))
              #t))
+         ;; Fix build with Qt 5.11.
+         (add-after 'unpack 'add-missing-headers
+           (lambda _
+             (substitute* (find-files "source/dialogs/" "\\.h$")
+               (("#include <QDialog>" m)
+                (string-append m "\n#include <QButtonGroup>")))
+             (substitute* "source/widgets/mixer/mixeritem.h"
+               (("#include <QWidget>" m)
+                (string-append m "\n#include <QStyle>")))
+             (substitute* "source/widgets/playback/playbackwidget.h"
+               (("#include <QWidget>" m)
+                (string-append m "\n#include <QButtonGroup>\n#include <QAction>")))
+             #t))
          (add-before 'configure 'remove-third-party-libs
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Link with required static libraries, because we're not
