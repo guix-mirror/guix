@@ -9687,13 +9687,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0kp3lw1s896zkjd6x2wp8qcg7wnm5b40g8vihps13f1m7j4nx7r0"))
+                "0hi59rgdrr2iqfvx5bq7yq02hbjxkjl1fzidqj14z0ypq0nzbjys"))
               ;; Delete pre-built jar.
               (snippet
                '(begin (delete-file "inst/java/ModularityOptimizer.jar")
@@ -9737,7 +9737,6 @@ Main-Class: ModularityOptimizer\n")))
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggridges" ,r-ggridges)
        ("r-gplots" ,r-gplots)
-       ("r-gridextra" ,r-gridextra)
        ("r-hmisc" ,r-hmisc)
        ("r-ica" ,r-ica)
        ("r-igraph" ,r-igraph)
@@ -9758,6 +9757,7 @@ Main-Class: ModularityOptimizer\n")))
        ("r-rcppeigen" ,r-rcppeigen)
        ("r-rcppprogress" ,r-rcppprogress)
        ("r-reshape2" ,r-reshape2)
+       ("r-reticulate" ,r-reticulate)
        ("r-rocr" ,r-rocr)
        ("r-rtsne" ,r-rtsne)
        ("r-sdmtools" ,r-sdmtools)
