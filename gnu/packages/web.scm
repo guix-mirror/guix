@@ -3909,14 +3909,14 @@ applications.")
 (define-public r-htmltable
   (package
     (name "r-htmltable")
-    (version "1.11.2")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "htmlTable" version))
        (sha256
         (base32
-         "1lbpi0kkk8b41w10scmlf27dg5azcv51a4q3p5bpqyphrnqp78k4"))))
+         "1n5136vb7mi4rxl5jgwdmdhn4mwv2pcqyw2mrj406ih4hy6hpxa2"))))
     (properties `((upstream-name . "htmlTable")))
     (build-system r-build-system)
     (propagated-inputs
