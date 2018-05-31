@@ -1386,19 +1386,20 @@ generation in R using Literate Programming techniques.")
 (define-public r-knitrbootstrap
   (package
     (name "r-knitrbootstrap")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "knitrBootstrap" version))
        (sha256
         (base32
-         "089147g7nqp99rwdxxsfmklsrwc8aia09sr8ndmrc335r33v6r6p"))))
+         "1aj60j7f0gcs120fdrnfbnb7vk7lfn1phil0mghg6a5zldz4cqs3"))))
     (properties `((upstream-name . "knitrBootstrap")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-knitr" ,r-knitr)
-       ("r-rmarkdown" ,r-rmarkdown)))
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-markdown" ,r-markdown)))
     (home-page "https://github.com/jimhester/knitrBootstrap")
     (synopsis "Knitr bootstrap framework")
     (description
