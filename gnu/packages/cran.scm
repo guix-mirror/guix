@@ -2417,20 +2417,20 @@ constants, and control debugging of packages via environment variables.")
 (define-public r-processx
   (package
     (name "r-processx")
-    (version "2.0.0.1")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "processx" version))
        (sha256
         (base32
-         "0yw23lp9xjvbpswzghkmjiayw7p19hbvmgv58k3i6b8g5nav4qcg"))))
+         "0wjr3cqwvnjxbvln25szffmkns5w0xysivdjr6chxap4nh515b0i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-crayon" ,r-crayon)
-       ("r-debugme" ,r-debugme)
-       ("r-r6" ,r-r6)))
+       ("r-r6" ,r-r6)
+       ("r-testthat" ,r-testthat)))
     (home-page "https://github.com/r-lib/processx3")
     (synopsis "Execute and control system processes")
     (description
