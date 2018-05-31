@@ -4178,3 +4178,22 @@ and functions.  When calling into Python, R data types are automatically
 converted to their equivalent Python types.  When values are returned from
 Python to R they are converted back to R types.")
     (license license:asl2.0)))
+
+(define-public r-bibtex
+  (package
+    (name "r-bibtex")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bibtex" version))
+       (sha256
+        (base32
+         "0wl3925ryd54g1nv3ncwllc493d39dpgy5md61940h69c0van1hz"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/romainfrancois/bibtex")
+    (synopsis "Bibtex parser")
+    (description "This package provides a utility for R to parse a bibtex
+file.")
+    (license license:gpl2+)))
