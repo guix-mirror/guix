@@ -169,21 +169,18 @@ such as copy/paste from an R session.")
 (define-public r-callr
   (package
     (name "r-callr")
-    (version "2.0.3")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "callr" version))
        (sha256
         (base32
-         "1k3mflgn10hcvy74y4pbigpv74zb66fz1phfd3c8isqmn88xbxzi"))))
+         "1053qqq632z94pqq2v5dynjpgyv1b1c8zvidmcllw7zn8zha8gqf"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-assertthat" ,r-assertthat)
-       ("r-crayon" ,r-crayon)
-       ("r-debugme" ,r-debugme)
-       ("r-r6" ,r-r6)
-       ("r-testthat" ,r-testthat)))
+     `(("r-r6" ,r-r6)
+       ("r-processx" ,r-processx)))
     (home-page "https://github.com/r-lib/callr#readme")
     (synopsis "Call R from R")
     (description
