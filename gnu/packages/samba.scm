@@ -342,14 +342,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.3.3")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14gsrm7dvyjpbpnc60z75j6fz2p187abm2h353lq95kx2bv70c1b"))))
+                "1d591ny4j4s409s2afjv4fn7inqlclr0zlyclw3619rkbaixlzm8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -372,7 +372,8 @@ many event types, including timers, signals, and the classic file descriptor eve
      `(("talloc" ,talloc)
        ("tdb" ,tdb)))
     (inputs
-     `(("popt" ,popt)
+     `(("lmdb" ,lmdb)
+       ("popt" ,popt)
        ("tevent" ,tevent)))
     (synopsis "LDAP-like embedded database")
     (home-page "https://ldb.samba.org/")
