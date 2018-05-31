@@ -2328,14 +2328,14 @@ plots in @code{ggplot2}.")
 (define-public r-ggjoy
   (package
     (name "r-ggjoy")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggjoy" version))
        (sha256
         (base32
-         "1s24zn7gmk52bvjjhanxby7rxbnc2yfl0nx5nv7x7z0zja8gg7nb"))))
+         "012md2m0jqfcccb933j423m3ck31v3p0pd41gjxpyg9082y7ixyj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
