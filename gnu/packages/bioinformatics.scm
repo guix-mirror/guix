@@ -6119,20 +6119,20 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.5-1")
+    (version "2.5-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "0pynr02d1xngda6c3va8fc4nxpgfkawhzcnz1ws4dnarp9b1w90r"))))
+         "13pyqvlpz64qibi8k5d109v7q09j06mbv6ndix3n4cn21mjx391c"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
-       ("r-knitr" ,r-knitr)
+       ("r-knitr" ,r-knitr) ; needed for vignettes
        ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
