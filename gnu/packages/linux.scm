@@ -423,18 +423,9 @@ git/stable/linux-stable.git/patch/?id=3e496be2038a100fc53627238fe120dc4c948719")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.104"
-                    "0b6y24vfsjhiv7qq7xqx7h9krc81c49dqh0189nm1lhfwciyir57"
+  (make-linux-libre "4.9.105"
+                    "0kzznalr69c3z63y4gs38zs6cb0jmn41ggvz4i1gp2sqpmjm6ybb"
                     %intel-compatible-systems
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            ;; The sole fix in the 4.9.105 release.
-                            (method url-fetch)
-                            (uri "https://git.kernel.org/pub/scm/linux/kernel/\
-git/stable/linux-stable.git/patch/?id=98d69fb3b175855cdd4c37d41a4b477a0860b1a0")
-                            (sha256
-                             (base32 "1r52fr0w94fgw7nfxrysjk0mljlnqwqsnl0cp84c1sly466i79dv"))))
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
