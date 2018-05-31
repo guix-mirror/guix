@@ -3824,21 +3824,19 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.9")
+    (version "0.10")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0bs0i5mjfzxfshqz8i30nhn7kvgwly4fqn5bfq6dqfdrn7biai2x"))))
+                "0yz3igqsiyqnjj1ngh199zicg3spx4kbmvl0wc8i8xahk6l9g06v"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
        ("r-jsonlite" ,r-jsonlite)
        ("r-mime" ,r-mime)
        ("r-xfun" ,r-xfun)))
-    (native-inputs
-     `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/yihui/servr")
     (synopsis "Simple HTTP server to serve static files or dynamic documents")
     (description
@@ -3907,14 +3905,14 @@ applications.")
 (define-public r-htmltable
   (package
     (name "r-htmltable")
-    (version "1.11.2")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "htmlTable" version))
        (sha256
         (base32
-         "1lbpi0kkk8b41w10scmlf27dg5azcv51a4q3p5bpqyphrnqp78k4"))))
+         "1n5136vb7mi4rxl5jgwdmdhn4mwv2pcqyw2mrj406ih4hy6hpxa2"))))
     (properties `((upstream-name . "htmlTable")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3998,14 +3996,14 @@ objects in HTML format.")
 (define-public r-rjson
   (package
     (name "r-rjson")
-    (version "0.2.18")
+    (version "0.2.19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rjson" version))
        (sha256
         (base32
-         "18myz05ana8zlyqxi6i4xjs5vmafxln8459ab3ws5kk59c1ardfn"))))
+         "1g29vp3gfbh73a5br68jydsrigia4vnr5avc84avgwl6353749jw"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/rjson")
     (synopsis "JSON library for R")
@@ -5322,16 +5320,17 @@ snippets on @url{https://commandlinefu.com}.")
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.0.3")
+    (version "1.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/rstudio/shiny/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rstudio/shiny.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0z2v2s4hd44mvzjn7r70549kdzkrrch9nxhp27r6x2cy6micizm3"))))
+         "041q2gzvzs13syfhbirmkik96asdji8dxnnbs63j7v1ks97hrvvz"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build r-build-system)
@@ -5396,7 +5395,8 @@ snippets on @url{https://commandlinefu.com}.")
                               "jquery.min.js")))))
              #t)))))
     (propagated-inputs
-     `(("r-httpuv" ,r-httpuv)
+     `(("r-crayon" ,r-crayon)
+       ("r-httpuv" ,r-httpuv)
        ("r-mime" ,r-mime)
        ("r-jsonlite" ,r-jsonlite)
        ("r-xtable" ,r-xtable)

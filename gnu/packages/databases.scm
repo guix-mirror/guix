@@ -28,7 +28,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -2061,14 +2061,14 @@ and web services platform functionality.")
 (define-public r-rmysql
   (package
     (name "r-rmysql")
-    (version "0.10.14")
+    (version "0.10.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RMySQL" version))
        (sha256
         (base32
-         "01891kn263b02y6addgpy3gn5axg7m10bqbqv7dg9yx9k85am590"))))
+         "0bmc7w5fnkjaf333sgc0hskiy332m9gmfaxg0yzkjxscpizdw43n"))))
     (properties `((upstream-name . "RMySQL")))
     (build-system r-build-system)
     (native-inputs

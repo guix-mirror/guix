@@ -404,52 +404,25 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.46")
-(define %linux-libre-4.14-hash "17imkhqk3m3djdj0m5h4lqs9cfdh9zq1cz83q8ldyald56rbn622")
+(define %linux-libre-4.14-version "4.14.47")
+(define %linux-libre-4.14-hash "1hm1vk6cdrwr971g5rcbq425fadn49580xa27zp1h6jz40n119wd")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
                     %linux-libre-4.14-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux")
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            ;; The sole fix in the 4.14.47 release.
-                            (method url-fetch)
-                            (uri "https://git.kernel.org/pub/scm/linux/kernel/\
-git/stable/linux-stable.git/patch/?id=3e496be2038a100fc53627238fe120dc4c948719")
-                            (sha256
-                             (base32 "1hk1qd6v97zf8an3zww60zhsah1wwax22b3bpdzmfjhhbndyram9"))))
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.104"
-                    "0b6y24vfsjhiv7qq7xqx7h9krc81c49dqh0189nm1lhfwciyir57"
+  (make-linux-libre "4.9.105"
+                    "0kzznalr69c3z63y4gs38zs6cb0jmn41ggvz4i1gp2sqpmjm6ybb"
                     %intel-compatible-systems
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            ;; The sole fix in the 4.9.105 release.
-                            (method url-fetch)
-                            (uri "https://git.kernel.org/pub/scm/linux/kernel/\
-git/stable/linux-stable.git/patch/?id=98d69fb3b175855cdd4c37d41a4b477a0860b1a0")
-                            (sha256
-                             (base32 "1r52fr0w94fgw7nfxrysjk0mljlnqwqsnl0cp84c1sly466i79dv"))))
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.134"
-                    "137mklzyv56yhc48l5h5i0h01gm1q40x2a8nk51lwhbjv592xr8x"
+  (make-linux-libre "4.4.135"
+                    "0jdf5yx8b6q4zw7q9k8vv0ky8wlvclr9qz70wgrrvmm5dh1662j9"
                     %intel-compatible-systems
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            ;; The sole fix in the 4.4.135 release.
-                            (method url-fetch)
-                            (uri "https://git.kernel.org/pub/scm/linux/kernel/\
-git/stable/linux-stable.git/patch/?id=393e9b3c30d571c2f655aa24b0dee5be9ce249b5")
-                            (sha256
-                             (base32 "02wk036v525qwqs42ndqqj4mv8xfkpavibfg5ns6hkg2wc5a1jid"))))
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.1
@@ -470,15 +443,6 @@ git/stable/linux-stable.git/patch/?id=393e9b3c30d571c2f655aa24b0dee5be9ce249b5")
                     %linux-libre-4.14-hash
                     '("armhf-linux")
                     #:defconfig "multi_v7_defconfig"
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            ;; The sole fix in the 4.14.47 release.
-                            (method url-fetch)
-                            (uri "https://git.kernel.org/pub/scm/linux/kernel/\
-git/stable/linux-stable.git/patch/?id=3e496be2038a100fc53627238fe120dc4c948719")
-                            (sha256
-                             (base32 "1hk1qd6v97zf8an3zww60zhsah1wwax22b3bpdzmfjhhbndyram9"))))
                     #:extra-version "arm-generic"))
 
 (define-public linux-libre-arm-omap2plus
@@ -493,15 +457,6 @@ git/stable/linux-stable.git/patch/?id=3e496be2038a100fc53627238fe120dc4c948719")
                     %linux-libre-4.14-hash
                     '("armhf-linux")
                     #:defconfig "omap2plus_defconfig"
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            ;; The sole fix in the 4.14.47 release.
-                            (method url-fetch)
-                            (uri "https://git.kernel.org/pub/scm/linux/kernel/\
-git/stable/linux-stable.git/patch/?id=3e496be2038a100fc53627238fe120dc4c948719")
-                            (sha256
-                             (base32 "1hk1qd6v97zf8an3zww60zhsah1wwax22b3bpdzmfjhhbndyram9"))))
                     #:extra-version "arm-omap2plus"))
 
 

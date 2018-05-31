@@ -6134,20 +6134,20 @@ information as possible.")
 (define-public r-vegan
   (package
     (name "r-vegan")
-    (version "2.5-1")
+    (version "2.5-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vegan" version))
        (sha256
         (base32
-         "0pynr02d1xngda6c3va8fc4nxpgfkawhzcnz1ws4dnarp9b1w90r"))))
+         "13pyqvlpz64qibi8k5d109v7q09j06mbv6ndix3n4cn21mjx391c"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
     (propagated-inputs
      `(("r-cluster" ,r-cluster)
-       ("r-knitr" ,r-knitr)
+       ("r-knitr" ,r-knitr) ; needed for vignettes
        ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
@@ -9702,13 +9702,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0kp3lw1s896zkjd6x2wp8qcg7wnm5b40g8vihps13f1m7j4nx7r0"))
+                "0hi59rgdrr2iqfvx5bq7yq02hbjxkjl1fzidqj14z0ypq0nzbjys"))
               ;; Delete pre-built jar.
               (snippet
                '(begin (delete-file "inst/java/ModularityOptimizer.jar")
@@ -9752,7 +9752,6 @@ Main-Class: ModularityOptimizer\n")))
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggridges" ,r-ggridges)
        ("r-gplots" ,r-gplots)
-       ("r-gridextra" ,r-gridextra)
        ("r-hmisc" ,r-hmisc)
        ("r-ica" ,r-ica)
        ("r-igraph" ,r-igraph)
@@ -9773,6 +9772,7 @@ Main-Class: ModularityOptimizer\n")))
        ("r-rcppeigen" ,r-rcppeigen)
        ("r-rcppprogress" ,r-rcppprogress)
        ("r-reshape2" ,r-reshape2)
+       ("r-reticulate" ,r-reticulate)
        ("r-rocr" ,r-rocr)
        ("r-rtsne" ,r-rtsne)
        ("r-sdmtools" ,r-sdmtools)
