@@ -1887,6 +1887,31 @@ impute compatibly with the substantive model.")
 clustered data.")
     (license license:gpl3)))
 
+(define-public r-mitml
+  (package
+    (name "r-mitml")
+    (version "0.3-5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mitml" version))
+       (sha256
+        (base32
+         "1s888r9y2ri39b48h1iypps6lddqkqv3g31l2sjmi2pvyccfpkwb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-haven" ,r-haven)
+       ("r-jomo" ,r-jomo)
+       ("r-pan" ,r-pan)))
+    (home-page "https://cran.r-project.org/web/packages/mitml/")
+    (synopsis "Tools for multiple imputation in multilevel modeling")
+    (description
+     "This package provides tools for multiple imputation of missing data in
+multilevel modeling.  It includes a user-friendly interface to the packages
+pan and jomo, and several functions for visualization, data management and the
+analysis of multiply imputed data sets.")
+    (license license:gpl2+)))
+
 (define-public r-mice
   (package
     (name "r-mice")
