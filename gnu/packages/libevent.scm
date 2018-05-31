@@ -121,14 +121,14 @@ limited support for fork events.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.20.2")
+    (version "1.20.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "08h39zhg75lmfmk4lx17hpxqrr5yjgnc9b5rpchcankc3lcsqxbb"))))
+                "0yc569q47gidqsdsbx30l6i60lwh97pavdnwac0gv9f72vcsmdrv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
