@@ -219,7 +219,7 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
   (define dependencies
     (match (append-map (lambda (package)
                          (cons (list "x" package)
-                               (package-transitive-inputs package)))
+                               (package-transitive-propagated-inputs package)))
                        (list guile-git guile-json guile-ssh))
       (((labels packages _ ...) ...)
        packages)))
