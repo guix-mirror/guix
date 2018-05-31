@@ -1621,3 +1621,29 @@ values for the purpose of fuzz testing.")
       (synopsis "Go registry for request variables")
       (description "This package provides @code{gorilla/context}, which is a general purpose registry for global request variables in the Go programming language.")
       (license license:bsd-3))))
+
+(define-public go-github-com-gorilla-mux
+  (let ((commit "599cba5e7b6137d46ddf58fb1765f5d928e69604")
+        (revision "0"))
+    (package
+      (name "go-github-com-gorilla-mux")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gorilla/mux.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0wd6jjii1kg5s0nk3ri6gqriz6hbd6bbcn6x4jf8n7ncrb8qsxyz"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gorilla/mux"))
+      (home-page "https://github.com/gorilla/mux")
+      (synopsis "URL router and dispatcher for Go")
+      (description
+       "Gorilla/Mux implements a request router and dispatcher for matching
+incoming requests with their respective handler.")
+      (license license:bsd-3))))
