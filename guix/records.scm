@@ -63,22 +63,25 @@
 (set-exception-printer! 'record-abi-mismatch-error
                         print-record-abi-mismatch-error)
 
-(define (current-abi-identifier type)
-  "Return an identifier unhygienically derived from TYPE for use as its
-\"current ABI\" variable."
-  (let ((type-name (syntax->datum type)))
-    (datum->syntax
-     type
-     (string->symbol
-      (string-append "% " (symbol->string type-name)
-                     " abi-cookie")))))
+(eval-when (expand load eval)
+  ;; The procedures below are needed both at run time and at expansion time.
 
-(define (abi-check type cookie)
-  "Return syntax that checks that the current \"application binary
+  (define (current-abi-identifier type)
+    "Return an identifier unhygienically derived from TYPE for use as its
+\"current ABI\" variable."
+    (let ((type-name (syntax->datum type)))
+      (datum->syntax
+       type
+       (string->symbol
+        (string-append "% " (symbol->string type-name)
+                       " abi-cookie")))))
+
+  (define (abi-check type cookie)
+    "Return syntax that checks that the current \"application binary
 interface\" (ABI) for TYPE is equal to COOKIE."
-  (with-syntax ((current-abi (current-abi-identifier type)))
-    #`(unless (eq? current-abi #,cookie)
-        (throw 'record-abi-mismatch-error #,type))))
+    (with-syntax ((current-abi (current-abi-identifier type)))
+      #`(unless (eq? current-abi #,cookie)
+          (throw 'record-abi-mismatch-error #,type)))))
 
 (define-syntax make-syntactic-constructor
   (syntax-rules ()
