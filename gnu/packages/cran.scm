@@ -2623,14 +2623,14 @@ packages maintained by Yihui Xie.")
 (define-public r-utf8
   (package
     (name "r-utf8")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "utf8" version))
        (sha256
         (base32
-         "03s4j6059q0nly68vpk6wy3p3f5ypakw93fj35kzd82b4z1r9cs3"))))
+         "0m0ywg8k3blfiahxvh1i4zn9dksrlc937d2lbza5fc38zjnrrnpn"))))
     (build-system r-build-system)
     (home-page "https://github.com/patperry/r-utf8")
     (synopsis "Unicode text processing")
