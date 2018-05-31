@@ -1917,20 +1917,24 @@ analysis of multiply imputed data sets.")
 (define-public r-mice
   (package
     (name "r-mice")
-    (version "2.46.0")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mice" version))
        (sha256
         (base32
-         "1gjvlk67zvgipfczsca8zqk97vg3sivv82hblsdwp14s7smhjcax"))))
+         "1p8a5ham90iaak4w17114pdnw535r2l9sxr402yrkc4gbwfbpdlq"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-lattice" ,r-lattice)
+     `(("r-broom" ,r-broom)
+       ("r-dplyr" ,r-dplyr)
+       ("r-lattice" ,r-lattice)
        ("r-mass" ,r-mass)
+       ("r-mitml" ,r-mitml)
        ("r-nnet" ,r-nnet)
        ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
        ("r-rpart" ,r-rpart)
        ("r-survival" ,r-survival)))
     (home-page "https://cran.r-project.org/web/packages/mice/")
