@@ -249,6 +249,99 @@ DOMAIN, a gettext domain."
   (computed-file (string-append "guix-locale-" domain)
                  build))
 
+(define (info-manual source)
+  "Return the Info manual built from SOURCE."
+  (define texinfo
+    (module-ref (resolve-interface '(gnu packages texinfo))
+                'texinfo))
+
+  (define graphviz
+    (module-ref (resolve-interface '(gnu packages graphviz))
+                'graphviz))
+
+  (define documentation
+    (sub-directory source "doc"))
+
+  (define examples
+    (sub-directory source "gnu/system/examples"))
+
+  (define build
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils))
+
+          (mkdir #$output)
+
+          ;; Create 'version.texi'.
+          ;; XXX: Can we use a more meaningful version string yet one that
+          ;; doesn't change at each commit?
+          (call-with-output-file "version.texi"
+            (lambda (port)
+              (let ((version "0.0-git)"))
+                (format port "
+@set UPDATED 1 January 1970
+@set UPDATED-MONTH January 1970
+@set EDITION ~a
+@set VERSION ~a\n" version version))))
+
+          ;; Copy configuration templates that the manual includes.
+          (for-each (lambda (template)
+                      (copy-file template
+                                 (string-append
+                                  "os-config-"
+                                  (basename template ".tmpl")
+                                  ".texi")))
+                    (find-files #$examples "\\.tmpl$"))
+
+          ;; Build graphs.
+          (mkdir-p (string-append #$output "/images"))
+          (for-each (lambda (dot-file)
+                      (invoke #+(file-append graphviz "/bin/dot")
+                              "-Tpng" "-Gratio=.9" "-Gnodesep=.005"
+                              "-Granksep=.00005" "-Nfontsize=9"
+                              "-Nheight=.1" "-Nwidth=.1"
+                              "-o" (string-append #$output "/images/"
+                                                  (basename dot-file ".dot")
+                                                  ".png")
+                              dot-file))
+                    (find-files (string-append #$documentation "/images")
+                                "\\.dot$"))
+
+          ;; Copy other PNGs.
+          (for-each (lambda (png-file)
+                      (install-file png-file
+                                    (string-append #$output "/images")))
+                    (find-files (string-append #$documentation "/images")
+                                "\\.png$"))
+
+          ;; Finally build the manual.  Copy it the Texinfo files to $PWD and
+          ;; add a symlink to the 'images' directory so that 'makeinfo' can
+          ;; see those images and produce image references in the Info output.
+          (copy-recursively #$documentation "."
+                            #:log (%make-void-port "w"))
+          (delete-file-recursively "images")
+          (symlink (string-append #$output "/images") "images")
+
+          (for-each (lambda (texi)
+                      (unless (string=? "guix.texi" texi)
+                        ;; Create 'version-LL.texi'.
+                        (let* ((base (basename texi ".texi"))
+                               (dot  (string-index base #\.))
+                               (tag  (string-drop base (+ 1 dot))))
+                          (symlink "version.texi"
+                                   (string-append "version-" tag ".texi"))))
+
+                      (invoke #+(file-append texinfo "/bin/makeinfo")
+                              texi "-I" #$documentation
+                              "-I" "."
+                              "-o" (string-append #$output "/"
+                                                  (basename texi ".texi")
+                                                  ".info")))
+                    (cons "guix.texi"
+                          (find-files "." "^guix\\.[a-z]{2}\\.texi$"))))))
+
+  (computed-file "guix-manual" build))
+
 (define* (guix-command modules #:key source (dependencies '())
                        (guile-version (effective-version)))
   "Return the 'guix' command such that it adds MODULES and DEPENDENCIES in its
@@ -294,12 +387,13 @@ load path."
 (define* (whole-package name modules dependencies
                         #:key
                         (guile-version (effective-version))
+                        info
                         (command (guix-command modules
                                                #:dependencies dependencies
                                                #:guile-version guile-version)))
   "Return the whole Guix package NAME that uses MODULES, a derivation of all
 the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
-'guix' program to use."
+'guix' program to use; INFO is the Info manual."
   ;; TODO: Move compiled modules to 'lib/guile' instead of 'share/guile'.
   (computed-file name
                  (with-imported-modules '((guix build utils))
@@ -311,9 +405,14 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
 
                        (let ((modules (string-append #$output
                                                      "/share/guile/site/"
-                                                     (effective-version))))
+                                                     (effective-version)))
+                             (info    #$info))
                          (mkdir-p (dirname modules))
-                         (symlink #$modules modules))))))
+                         (symlink #$modules modules)
+                         (when info
+                           (symlink #$info
+                                    (string-append #$output
+                                                   "/share/info"))))))))
 
 (define* (compiled-guix source #:key (version %guix-version)
                         (pull-version 1)
@@ -513,6 +612,7 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                                       #:guile-version guile-version)))
            (whole-package name built-modules dependencies
                           #:command command
+                          #:info (info-manual source)
                           #:guile-version guile-version)))
         ((= 0 pull-version)
          ;; Legacy 'guix pull': just return the compiled modules.
