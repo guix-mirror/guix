@@ -56,13 +56,19 @@
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
@@ -72,6 +78,7 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages web)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
@@ -1170,3 +1177,187 @@ already have their data files.  The clever part about this: ScummVM
 just replaces the executables shipped with the games, allowing you to
 play them on systems for which they were never designed!")
     (license license:gpl2+)))
+
+(define-public mame
+  (package
+    (name "mame")
+    (version "0.198")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mamedev/mame.git")
+             (commit (apply string-append "mame" (string-split version #\.)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0kl7qll8d6xlx7bj5920ljs888a6nc1fj2kfw1fz0r8za3m7wiq9"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove bundled libraries.
+        '(begin
+           (with-directory-excursion "3rdparty"
+             (for-each delete-file-recursively
+                       '("asio" "expat" "glm" "libflac" "libjpeg" "lua"
+                         "portaudio" "portmidi" "pugixml" "rapidjson" "SDL2"
+                         "SDL2-override" "sqlite3" "utf8proc" "zlib")))
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (cons*
+        (string-append "QT_HOME=" (assoc-ref %build-inputs "qtbase"))
+        (string-append "SDL_INI_PATH="
+                       (assoc-ref %outputs "out")
+                       "/share/mame/ini")
+        (map (lambda (lib)
+               (string-append "USE_SYSTEM_LIB_" (string-upcase lib) "=1"))
+             '("asio" "expat" "flac" "glm" "jpeg" "lua" "portaudio" "portmidi"
+               "pugixml" "rapidjson" "sqlite3" "utf8proc" "zlib")))
+       #:tests? #f                      ;no test in regular release
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'build 'build-documentation
+           (lambda _ (invoke "make" "-C" "docs" "man" "info")))
+         (replace 'install
+           ;; Upstream does not provide an installation phase.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/mame")))
+               ;; Install data.
+               (for-each (lambda (dir)
+                           (copy-recursively dir (string-append share "/" dir)))
+                         '("artwork" "bgfx" "ctrlr" "hash" "ini" "language"
+                           "plugins" "samples"))
+               (let ((keymaps (string-append share "/keymaps")))
+                 (for-each (lambda (file) (install-file file keymaps))
+                           (find-files "keymaps" ".*LINUX\\.map")))
+               (let ((fonts (string-append share "/fonts")))
+                 (install-file "uismall.bdf" fonts))
+               (rename-file "mame64" "mame")
+               (install-file "mame" (string-append out "/bin")))
+             #t))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man/man1"))
+                    (info (string-append out "/share/info")))
+               (install-file "docs/build/man/MAME.1" man)
+               (install-file "docs/build/texinfo/MAME.info" info))
+             #t))
+         (add-after 'install 'install-ini-file
+           ;; Generate an ini file so as to set some directories (e.g., roms)
+           ;; to a writable location, i.e., "$HOME/.mame/" and "$HOME/mame/".
+           ;;
+           ;; XXX: We need to insert absolute references to the store.  It can
+           ;; be an issue if they leak into user's home directory, e.g., with
+           ;; "mame -createconfig" and the package is later GC'ed.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/mame"))
+                    (ini (string-append share "/ini")))
+               (with-output-to-file (string-append ini "/mame.ini")
+                 (lambda _
+                   (format #t
+                           "inipath              $HOME/.mame;~a/ini~@
+                            homepath             $HOME/mame~@
+                            rompath              $HOME/mame/roms~@
+                            samplepath           $HOME/mame/samples;~a/samples~@
+                            cheatpath            $HOME/mame/cheat~@
+                            artpath              $HOME/mame/artwork;~a/artwork~@
+                            crosshairpath        $HOME/mame/crosshair~@
+                            snapshot_directory   $HOME/mame/snapshots~@
+                            hashpath             ~a/hash~@
+                            fontpath             $HOME/mame/fonts;~a/fonts~@
+                            ctrlrpath            $HOME/mame/ctrlr;~a/ctrlr~@
+                            bgfx_path            ~a/bgfx~@
+                            pluginspath          $HOME/mame/plugins;~a/plugins~@
+                            languagepath         ~a/language~@
+                            cfg_directory        $HOME/.mame/cfg~@
+                            nvram_directory      $HOME/.mame/nvram~@
+                            input_directory      $HOME/.mame/inp~@
+                            state_directory      $HOME/.mame/sta~@
+                            diff_directory       $HOME/.mame/diff~@
+                            comment_directory    $HOME/.mame/comments~%"
+                           share share share share share share share share
+                           share)))
+               (with-output-to-file (string-append ini "/ui.ini")
+                 (lambda _
+                   (format #t
+                           "historypath          $HOME/mame/history~@
+                            categorypath         $HOME/mame/folders~@
+                            cabinets_directory   $HOME/mame/cabinets~@
+                            cpanels_directory    $HOME/mame/cpanel~@
+                            pcbs_directory       $HOME/mame/pcb~@
+                            flyers_directory     $HOME/mame/flyers~@
+                            titles_directory     $HOME/mame/titles~@
+                            ends_directory       $HOME/mame/ends~@
+                            marquees_directory   $HOME/mame/marquees~@
+                            artwork_preview_directory $HOME/mame/artpreview~@
+                            bosses_directory     $HOME/mame/bosses~@
+                            logos_directory      $HOME/mame/logo~@
+                            scores_directory     $HOME/mame/scores~@
+                            versus_directory     $HOME/mame/versus~@
+                            gameover_directory   $HOME/mame/gameover~@
+                            howto_directory      $HOME/mame/howto~@
+                            select_directory     $HOME/mame/select~@
+                            icons_directory      $HOME/mame/icons~@
+                            covers_directory     $HOME/mame/covers~@
+                            ui_path              $HOME/.mame/ui~%")))
+               #t)))
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (desktop (string-append out "/share/applications"))
+                    (executable (string-append out "/bin/mame")))
+               (mkdir-p desktop)
+               (with-output-to-file (string-append desktop "/mame.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                           Name=mame~@
+                           Comment=Multi-purpose emulation framework~@
+                           Exec=~a~@
+                           TryExec=~@*~a~@
+                           Terminal=false~@
+                           Type=Application~@
+                           Categories=Game;Emulator;~@
+                           Keywords=Game;Emulator;Arcade;~%"
+                           executable)))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("pugixml" ,pugixml)
+       ("python-sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("asio" ,asio)
+       ("expat" ,expat)
+       ("flac" ,flac)
+       ("fontconfig" ,fontconfig)
+       ("glm" ,glm)
+       ("libjpeg" ,libjpeg-8)    ;jpeg_read_header argument error in libjpeg-9
+       ("libxinerama" ,libxinerama)
+       ("lua" ,lua)
+       ("portaudio" ,portaudio)
+       ("portmidi" ,portmidi)
+       ("python-wrapper" ,python-wrapper)
+       ("qtbase" ,qtbase)
+       ("rapidjson" ,rapidjson)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-ttf)))
+       ("sqlite" ,sqlite)
+       ("utf8proc" ,utf8proc)
+       ("zlib" ,zlib)))
+    (home-page "http://mamedev.org/")
+    (synopsis "Multi-purpose emulation framework")
+    (description "MAME's purpose is to preserve decades of software
+history.  As electronic technology continues to rush forward, MAME
+prevents this important @emph{vintage} software from being lost and
+forgotten.  This is achieved by documenting the hardware and how it
+functions.  The source code to MAME serves as this documentation.")
+    ;; The MAME project as a whole is distributed under the terms of GPL2+.
+    ;; However, over 90% of the files are under Expat license.  Also, artwork,
+    ;; keymaps, languages and samples are under CC0.
+    (license (list license:gpl2+ license:expat license:cc0))))
