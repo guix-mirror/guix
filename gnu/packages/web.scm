@@ -5326,16 +5326,17 @@ snippets on @url{https://commandlinefu.com}.")
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.0.3")
+    (version "1.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/rstudio/shiny/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rstudio/shiny.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0z2v2s4hd44mvzjn7r70549kdzkrrch9nxhp27r6x2cy6micizm3"))))
+         "041q2gzvzs13syfhbirmkik96asdji8dxnnbs63j7v1ks97hrvvz"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build r-build-system)
@@ -5400,7 +5401,8 @@ snippets on @url{https://commandlinefu.com}.")
                               "jquery.min.js")))))
              #t)))))
     (propagated-inputs
-     `(("r-httpuv" ,r-httpuv)
+     `(("r-crayon" ,r-crayon)
+       ("r-httpuv" ,r-httpuv)
        ("r-mime" ,r-mime)
        ("r-jsonlite" ,r-jsonlite)
        ("r-xtable" ,r-xtable)
