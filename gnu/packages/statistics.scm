@@ -3965,14 +3965,14 @@ conversion of R objects to LaTeX code, and recoding variables.")
 (define-public r-runit
   (package
     (name "r-runit")
-    (version "0.4.31")
+    (version "0.4.32")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RUnit" version))
        (sha256
         (base32
-         "1jqr871jkll2xmk7wk5hv1z3a36hyn2ibgivw7bwk4b346940xlx"))))
+         "1wc1gwb7yw7phf8b0gkig6c23klya3ax11c6i4s0f049k42r78r3"))))
     (properties `((upstream-name . "RUnit")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/RUnit")
