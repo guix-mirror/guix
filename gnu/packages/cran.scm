@@ -1235,14 +1235,14 @@ data).  Weighted versions of MLE, MME and QME are available.")
 (define-public r-energy
   (package
     (name "r-energy")
-    (version "1.7-2")
+    (version "1.7-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "energy" version))
        (sha256
         (base32
-         "19c7bgjnm4ggf7w5mk64c5shkma3sa9wc8x117iqv7pk1bvvyy3p"))))
+         "12skvlridfq4jd5mh0yxl79ps0zi2xnlh4hsdgxad0gm7qky8awd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
