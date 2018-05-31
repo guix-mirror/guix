@@ -404,22 +404,13 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.46")
-(define %linux-libre-4.14-hash "17imkhqk3m3djdj0m5h4lqs9cfdh9zq1cz83q8ldyald56rbn622")
+(define %linux-libre-4.14-version "4.14.47")
+(define %linux-libre-4.14-hash "1hm1vk6cdrwr971g5rcbq425fadn49580xa27zp1h6jz40n119wd")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
                     %linux-libre-4.14-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux")
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            ;; The sole fix in the 4.14.47 release.
-                            (method url-fetch)
-                            (uri "https://git.kernel.org/pub/scm/linux/kernel/\
-git/stable/linux-stable.git/patch/?id=3e496be2038a100fc53627238fe120dc4c948719")
-                            (sha256
-                             (base32 "1hk1qd6v97zf8an3zww60zhsah1wwax22b3bpdzmfjhhbndyram9"))))
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
@@ -452,15 +443,6 @@ git/stable/linux-stable.git/patch/?id=3e496be2038a100fc53627238fe120dc4c948719")
                     %linux-libre-4.14-hash
                     '("armhf-linux")
                     #:defconfig "multi_v7_defconfig"
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            ;; The sole fix in the 4.14.47 release.
-                            (method url-fetch)
-                            (uri "https://git.kernel.org/pub/scm/linux/kernel/\
-git/stable/linux-stable.git/patch/?id=3e496be2038a100fc53627238fe120dc4c948719")
-                            (sha256
-                             (base32 "1hk1qd6v97zf8an3zww60zhsah1wwax22b3bpdzmfjhhbndyram9"))))
                     #:extra-version "arm-generic"))
 
 (define-public linux-libre-arm-omap2plus
@@ -475,15 +457,6 @@ git/stable/linux-stable.git/patch/?id=3e496be2038a100fc53627238fe120dc4c948719")
                     %linux-libre-4.14-hash
                     '("armhf-linux")
                     #:defconfig "omap2plus_defconfig"
-                    #:patches
-                    (list %boot-logo-patch
-                          (origin
-                            ;; The sole fix in the 4.14.47 release.
-                            (method url-fetch)
-                            (uri "https://git.kernel.org/pub/scm/linux/kernel/\
-git/stable/linux-stable.git/patch/?id=3e496be2038a100fc53627238fe120dc4c948719")
-                            (sha256
-                             (base32 "1hk1qd6v97zf8an3zww60zhsah1wwax22b3bpdzmfjhhbndyram9"))))
                     #:extra-version "arm-omap2plus"))
 
 
