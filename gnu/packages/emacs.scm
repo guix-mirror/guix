@@ -10637,3 +10637,32 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
      "This Emacs package configures Ediff to be friendlier to users of Vi-like
 keybindings.  Consult the help buffer for more information.")
     (license license:gpl3+)))
+
+(define-public emacs-evil-magit
+  (let ((commit "dbf5a646a7ce1c35c229dfdc423bd5ecd927a3a8"))
+    (package
+      (name "emacs-evil-magit")
+      (version (git-version "0.4.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-evil/evil-magit")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0ya0dkviq4pi92ab69a4j674y5r1hc1x3x7r7hlm97ag3a6zfkav"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)
+         ("magit" ,magit)))
+      (home-page
+       "https://github.com/emacs-evil/evil-magit")
+      (synopsis "Evil-based key bindings for Magit")
+      (description
+       "This Emacs library configures Magit and Evil to play well with each other.
+For some background see @url{https://github.com/magit/evil-magit/issues/1}.
+See the README at @url{https://github.com/justbur/evil-magit} for a table
+describing the key binding changes.")
+      (license license:gpl3+))))
