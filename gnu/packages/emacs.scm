@@ -10692,3 +10692,32 @@ describing the key binding changes.")
      "Use keybindings for the mu4e mail reader in Emacs that make sense for
 Evil users.")
     (license license:gpl3+)))
+
+(define-public emacs-evil-multiedit
+  (let ((commit "ea3d9177b74ab0bc65e55df9cc0a0b42e4ef815d"))
+    (package
+      (name "emacs-evil-multiedit")
+      (version (git-version "1.3.9" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hlissner/evil-multiedit")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "17zm35r474z8ras4xy7124pcb972d385pbdv4jxyj5vq042vq07w"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)
+         ("emacs-iedit" ,emacs-iedit)))
+      (home-page
+       "https://github.com/hlissner/evil-multiedit")
+      (synopsis "Multiple cursors for Evil mode")
+      (description
+       "This plugin was an answer to the lack of proper multiple cursor support
+in Emacs+Evil.  It allows you to select and edit matches interactively,
+integrating @code{iedit-mode} into Evil mode with an attempt at sensible
+defaults.")
+    (license license:gpl3+))))
