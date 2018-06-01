@@ -502,7 +502,8 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
   ;; We're just copying files around, no need to substitute or offload it.
   (computed-file name build
                  #:options '(#:local-build? #t
-                             #:substitutable? #f)))
+                             #:substitutable? #f
+                             #:env-vars (("COLUMNS" . "200")))))
 
 (define* (compiled-modules name module-tree modules
                            #:optional
