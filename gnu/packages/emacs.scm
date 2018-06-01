@@ -10721,3 +10721,37 @@ in Emacs+Evil.  It allows you to select and edit matches interactively,
 integrating @code{iedit-mode} into Evil mode with an attempt at sensible
 defaults.")
     (license license:gpl3+))))
+
+(define-public emacs-evil-org
+  (let ((commit "b6d652a9163d3430a9e0933a554bdbee5244bbf6"))
+    (package
+      (name "emacs-evil-org")
+      (version (git-version "0.1.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Somelauw/evil-org-mode")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "176hrw7y7nczffbyhsa167b8rvfacsmcafm2gpkrdjqlrikbmrhl"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page
+       "https://github.com/Somelauw/evil-org-mode")
+      (synopsis "Evil keybindings for Org mode")
+      (description
+       "This package adds supplemental Evil mode key-bindings to Emacs
+Org-mode.  It features:
+@itemize
+@item normal, visual and insert mode bindings;
+@item key bindings organised in key themes;
+@item operators like > and < to work on headings;
+@item text objects;
+@item table support;
+@item calendar (date selection) support;
+@item agenda support.
+@end itemize\n")
+      (license license:gpl3+))))
