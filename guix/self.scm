@@ -171,7 +171,8 @@ must be present in the search path."
          (source (imported-files (string-append name "-source")
                                  (append module-files extra-files))))
     (node name modules source dependencies
-          (compiled-modules name source modules
+          (compiled-modules name source
+                            (map car module-files)
                             (map node-source dependencies)
                             (map node-compiled dependencies)
                             #:extensions extensions
@@ -505,7 +506,7 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                              #:substitutable? #f
                              #:env-vars (("COLUMNS" . "200")))))
 
-(define* (compiled-modules name module-tree modules
+(define* (compiled-modules name module-tree module-files
                            #:optional
                            (dependencies '())
                            (dependencies-compiled '())
@@ -513,6 +514,9 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                            (extensions '())       ;full-blown Guile packages
                            parallel?
                            guile-for-build)
+  "Build all the MODULE-FILES from MODULE-TREE.  MODULE-FILES must be a list
+like '(\"guix/foo.scm\" \"gnu/bar.scm\") and MODULE-TREE is the directory
+containing MODULE-FILES and possibly other files as well."
   ;; This is a non-monadic, enhanced version of 'compiled-file' from (guix
   ;; gexp).
   (define build
@@ -543,16 +547,13 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                     (* 100. (/ completed total)) total)
             (force-output))
 
-          (define (process-directory directory output)
-            (let ((files  (find-files directory "\\.scm$"))
-                  (prefix (+ 1 (string-length directory))))
-              ;; Hide compilation warnings.
-              (parameterize ((current-warning-port (%make-void-port "w")))
-                (compile-files directory #$output
-                               (map (cut string-drop <> prefix) files)
-                               #:workers (parallel-job-count)
-                               #:report-load report-load
-                               #:report-compilation report-compilation))))
+          (define (process-directory directory files output)
+            ;; Hide compilation warnings.
+            (parameterize ((current-warning-port (%make-void-port "w")))
+              (compile-files directory #$output files
+                             #:workers (parallel-job-count)
+                             #:report-load report-load
+                             #:report-compilation report-compilation)))
 
           (setvbuf (current-output-port) _IONBF)
           (setvbuf (current-error-port) _IONBF)
@@ -580,7 +581,7 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
 
           (mkdir #$output)
           (chdir #+module-tree)
-          (process-directory "." #$output)
+          (process-directory "." '#+module-files #$output)
           (newline))))
 
   (computed-file name build
