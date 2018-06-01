@@ -484,7 +484,17 @@ security standards.")
         (mozilla-patch "icecat-bug-1459206-pt2.patch"    "9ad16112044a" "0ayya67sx7avcb8bplfdxb92l9g4mjrb1s3hby283llhqv0ikg9b")
         (mozilla-patch "icecat-bug-1459162.patch"        "11d8a87fb6d6" "1rkmdk18llw0x1jakix75hlhy0hpsmlminnflagbzrzjli81gwm1")
         (mozilla-patch "icecat-bug-1451297.patch"        "407b10ad1273" "16qzsfirw045xag96f1qvpdlibm8lwdj9l1mlli4n1vz0db91v9q")
-        (mozilla-patch "icecat-bug-1462682.patch"        "e76e2e481b17" "0hnx13msjy28n3bpa2c24kpzalam4bdk5gnp0f9k671l48rs9yb3")))
+        (mozilla-patch "icecat-bug-1462682.patch"        "e76e2e481b17" "0hnx13msjy28n3bpa2c24kpzalam4bdk5gnp0f9k671l48rs9yb3")
+        (mozilla-patch "icecat-bug-1450688.patch"        "2c75bfcd465c" "1pjinj8qypafqm2fk68s3hzcbzcijn09qzrpcxvzq6bl1yfc1xfd")
+        (mozilla-patch "icecat-bug-1456975.patch"        "042f80f3befd" "0av918kin4bkrq7gnjz0h9w8kkq8rk9l93250lfl5kqrinza1gsk")
+        (mozilla-patch "icecat-bugs-1442722+1455071+1433642+1456604+1458320.patch"
+                                                         "bb0451c9c4a0" "1lhm1b2a7c6jwhzsg3c830hfhp17p8j9zbcmgchpb8c5jkc3vw0x")
+        (mozilla-patch "icecat-bug-1465108-pt1.patch"    "8189b262e3b9" "13rh86ddwmj1bhv3ibbil3sv5xbqq1c9v1czgbsna5hxxkzc1y3b")
+        (mozilla-patch "icecat-bug-1465108-pt2.patch"    "9f81ae3f6e1d" "05vfg8a8jrzd93n1wvncmvdmqgf9cgsl8ryxgjs3032gbbjkga7q")
+        (mozilla-patch "icecat-bug-1459693.patch"        "face7a3dd5d7" "0jclw30mf693w8lrmvn0iankggj21nh4j3zh51q5363rj5xncdzx")
+        (mozilla-patch "icecat-bug-1464829.patch"        "7afb58c046c8" "1r0569r76712x7x1sw6xr0x06ilv6iw3fncb0f8r8b9mp6wrpx34")
+        (mozilla-patch "icecat-bug-1452375-pt1.patch"    "f1a745f8c42d" "11q73pb7a8f09xjzil4rhg5nr49zrnz1vb0prni0kqvrnppf5s40")
+        (mozilla-patch "icecat-bug-1452375-pt2.patch"    "1f9a430881cc" "0f79rv7njliqxx33z07n60b50jg0a596d1km7ayz2hivbl2d0168")))
       (modules '((guix build utils)))
       (snippet
        '(begin
