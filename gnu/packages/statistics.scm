@@ -113,10 +113,10 @@ be output in text, PostScript, PDF or HTML.")
 ;; Update this package together with the set of recommended packages: r-boot,
 ;; r-class, r-cluster, r-codetools, r-foreign, r-kernsmooth, r-lattice,
 ;; r-mass, r-matrix, r-mgcv, r-nlme, r-nnet, r-rpart, r-spatial, r-survival.
-(define-public r-minimal
+(define r-with-tests
   (package
-    (name "r-minimal")
-    (version "3.4.4")
+    (name "r-with-tests")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -124,7 +124,7 @@ be output in text, PostScript, PDF or HTML.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dq3jsnwsb5j3fhl0wi3p5ycv8avf8s5j1y4ap3d2mkjmcppvsdk"))))
+                "0w38865laqg28cdhikxdxhx4rfp0kgcn72gakwypsy91br9ja5zx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
@@ -217,11 +217,9 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
          (add-after 'build 'install-info
           (lambda _ (zero? (system* "make" "install-info")))))
        #:configure-flags
-       `(;; Do not build the recommended packages.  The build system creates
-         ;; random temporary directories and embeds their names in some
-         ;; package files.  We build these packages with the r-build-system
-         ;; instead.
-         "--without-recommended-packages"
+       `(;; We build the recommended packages here, because they are needed in
+         ;; order to run the test suite.  We disable them in the r-minimal
+         ;; package.
          "--with-cairo"
          "--with-blas=-lopenblas"
          "--with-libpng"
@@ -291,6 +289,19 @@ and clustering.  It also provides robust support for producing
 publication-quality data plots.  A large amount of 3rd-party packages are
 available, greatly increasing its breadth and scope.")
     (license license:gpl3+)))
+
+(define-public r-minimal
+  (package (inherit r-with-tests)
+    (name "r-minimal")
+    (arguments
+     `(#:tests? #f
+       ,@(substitute-keyword-arguments (package-arguments r-with-tests)
+           ((#:configure-flags flags)
+            ;; Do not build the recommended packages.  The build system creates
+            ;; random temporary directories and embeds their names in some
+            ;; package files.  We build these packages with the r-build-system
+            ;; instead.
+            `(cons "--without-recommended-packages" ,flags)))))))
 
 (define-public rmath-standalone
   (package (inherit r-minimal)
