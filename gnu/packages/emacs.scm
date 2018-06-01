@@ -10614,3 +10614,26 @@ This code is still alpha.")
 and the Zotero research assistant: Insertion of links to Zotero items into an
 Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
     (license license:gpl3+)))
+
+(define-public emacs-evil-ediff
+  (package
+    (name "emacs-evil-ediff")
+    (version "20170724")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/emacs-evil/evil-ediff/archive/"
+             "67b0e69f65c196eff5b39dacb7a9ec05bb919c74"
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0j2x26zfc6md54mjf76qpybil4yal70lp5bifcz62l1f8fc1vvlq"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+    (home-page "https://github.com/emacs-evil/evil-ediff")
+    (synopsis "Make Ediff a little evil")
+    (description
+     "This Emacs package configures Ediff to be friendlier to users of Vi-like
+keybindings.  Consult the help buffer for more information.")
+    (license license:gpl3+)))
