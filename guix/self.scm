@@ -314,7 +314,12 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                        *extra-modules* *core-modules*)
                  #:extensions dependencies
                  #:extra-files
-                 (file-imports source "gnu/system/examples" (const #t))
+                 (append (file-imports source "gnu/system/examples"
+                                       (const #t))
+
+                         ;; Build-side code that we don't build.  Some of
+                         ;; these depend on guile-rsvg, the Shepherd, etc.
+                         (file-imports source "gnu/build" (const #t)))
                  #:guile-for-build
                  guile-for-build))
 
@@ -482,6 +487,11 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
 (define (imported-files name files)
   ;; This is a non-monadic, simplified version of 'imported-files' from (guix
   ;; gexp).
+  (define same-target?
+    (match-lambda*
+      (((file1 . _) (file2 . _))
+       (string=? file1 file2))))
+
   (define build
     (with-imported-modules (source-module-closure
                             '((guix build utils)))
@@ -498,7 +508,7 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                        ;; symlinks, as this makes a difference for
                        ;; 'add-to-store'.
                        (copy-file store-path final-path)))
-                    '#$files))))
+                    '#$(delete-duplicates files same-target?)))))
 
   ;; We're just copying files around, no need to substitute or offload it.
   (computed-file name build
