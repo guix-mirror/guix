@@ -82,6 +82,8 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("guile-json" (ref '(gnu packages guile) 'guile-json))
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))
+      ("guile-gdbm-ffi" (ref '(gnu packages guile) 'guile-gdbm-ffi))
+      ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
       ("libgcrypt"  (ref '(gnu packages gnupg) 'libgcrypt))
       ("zlib"       (ref '(gnu packages compression) 'zlib))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
@@ -92,6 +94,8 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("guile2.0-json" (ref '(gnu packages guile) 'guile2.0-json))
       ("guile2.0-ssh"  (ref '(gnu packages ssh) 'guile2.0-ssh))
       ("guile2.0-git"  (ref '(gnu packages guile) 'guile2.0-git))
+      ("guile2.0-gdbm-ffi" (ref '(gnu packages guile) 'guile2.0-gdbm-ffi))
+      ;; XXX: No "guile2.0-sqlite3".
       (_               #f))))                     ;no such package
 
 
@@ -215,12 +219,23 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                        "guile-git"
                        "guile2.0-git"))
 
+  (define guile-gdbm-ffi
+    (package-for-guile guile-version
+                       "guile-gdbm-ffi"
+                       "guile2.0-gdbm-ffi"))
+
+
+  (define guile-sqlite3
+    (package-for-guile guile-version
+                       "guile-sqlite3"
+                       "guile2.0-sqlite3"))
 
   (define dependencies
     (match (append-map (lambda (package)
                          (cons (list "x" package)
-                               (package-transitive-inputs package)))
-                       (list guile-git guile-json guile-ssh))
+                               (package-transitive-propagated-inputs package)))
+                       (list guile-git guile-json guile-ssh
+                             guile-gdbm-ffi guile-sqlite3))
       (((labels packages _ ...) ...)
        packages)))
 
@@ -573,7 +588,11 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                  `(#:local-build? #f              ;allow substitutes
 
                    ;; Don't annoy people about _IONBF deprecation.
-                   #:env-vars (("GUILE_WARN_DEPRECATED" . "no")))))
+                   ;; Initialize 'terminal-width' in (system repl debug)
+                   ;; to a large-enough value to make backtrace more
+                   ;; verbose.
+                   #:env-vars (("GUILE_WARN_DEPRECATED" . "no")
+                               ("COLUMNS" . "200")))))
 
 
 ;;;

@@ -5243,6 +5243,29 @@ more advanced mathematics.")
 (define-public python2-mpmath
   (package-with-python2 python-mpmath))
 
+(define-public python-bigfloat
+  (package
+    (name "python-bigfloat")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bigfloat" version))
+       (sha256
+        (base32 "0xd7q4l7v0f463diznjv4k9wlaks80pn9drdqmfifi7zx8qvybi6"))))
+    (build-system python-build-system)
+    (inputs
+     `(("mpfr" ,mpfr)))
+    (home-page "https://github.com/mdickinson/bigfloat")
+    (synopsis "Arbitrary precision floating-point arithmetic for Python")
+    (description
+     "This packages provides a Python interface to the MPFR library for
+multiprecision arithmetic.")
+    (license license:lgpl3+)))
+
+(define-public python2-bigfloat
+  (package-with-python2 python-bigfloat))
+
 (define-public python-sympy
   (package
     (name "python-sympy")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -18,15 +18,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu build svg)
+  #:use-module (rsvg)
+  #:use-module (cairo)
   #:use-module (srfi srfi-11)
   #:export (svg->png))
-
-;; We need Guile-RSVG and Guile-Cairo.  Load them lazily, at run time, to
-;; allow compilation to proceed.  See also <http://bugs.gnu.org/12202>.
-(module-autoload! (current-module)
-                  '(rsvg) '(rsvg-handle-new-from-file))
-(module-autoload! (current-module)
-                  '(cairo) '(cairo-image-surface-create))
 
 (define* (downscaled-surface surface
                              #:key

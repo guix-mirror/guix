@@ -499,8 +499,8 @@ were found."
 
   (match spec
     ((? string?)
-     ;; Nothing to do.
-     spec)
+     ;; Nothing to do, but wait until SPEC shows up.
+     (resolve identity spec identity))
     ((? file-system-label?)
      ;; Resolve the label.
      (resolve find-partition-by-label

@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,6 +85,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages xml)
@@ -1993,3 +1995,130 @@ venerable RCS, hence the anagrammatic acronym.  The design is tuned for use
 cases like all those little scripts in your @file{~/bin} directory, or a
 directory full of HOWTOs.")
     (license license:bsd-2)))
+
+(define-public git-annex
+  (package
+    (name "git-annex")
+    (version "6.20170818")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "git-annex/git-annex-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ybxixbqvy4rx6mq9s02rh349rbr04hb17z4bfayin0qwa5kzpvx"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags
+       '("--flags=-Android -Assistant -Pairing -S3 -Webapp -WebDAV")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-shell
+           (lambda _
+             (substitute* "Utility/Shell.hs"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-before 'configure 'factor-setup
+           (lambda _
+             ;; Factor out necessary build logic from the provided
+             ;; `Setup.hs' script.  The script as-is does not work because
+             ;; it cannot find its dependencies, and there is no obvious way
+             ;; to tell it where to look.  Note that we do not preserve the
+             ;; code that installs man pages here.
+             (call-with-output-file "PreConf.hs"
+               (lambda (out)
+                 (format out "import qualified Build.Configure as Configure~%")
+                 (format out "main = Configure.run Configure.tests~%")))
+             (call-with-output-file "Setup.hs"
+               (lambda (out)
+                 (format out "import Distribution.Simple~%")
+                 (format out "main = defaultMain~%")))
+             #t))
+         (add-before 'configure 'pre-configure
+           (lambda _
+             (invoke "runhaskell" "PreConf.hs")
+             #t))
+         (replace 'check
+           (lambda _
+             ;; We need to set the path so that Git recognizes
+             ;; `git annex' as a custom command.
+             (setenv "PATH" (string-append (getenv "PATH") ":"
+                                           (getcwd) "/dist/build/git-annex"))
+             (with-directory-excursion "dist/build/git-annex"
+               (symlink "git-annex" "git-annex-shell"))
+             (invoke "git-annex" "test")
+             #t))
+         (add-after 'install 'install-symlinks
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (symlink (string-append bin "/git-annex")
+                        (string-append bin "/git-annex-shell"))
+               (symlink (string-append bin "/git-annex")
+                        (string-append bin "/git-remote-tor-annex"))
+               #t))))))
+    (inputs
+     `(("curl" ,curl)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-async" ,ghc-async)
+       ("ghc-bloomfilter" ,ghc-bloomfilter)
+       ("ghc-byteable" ,ghc-byteable)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-crypto-api" ,ghc-crypto-api)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-disk-free-space" ,ghc-disk-free-space)
+       ("ghc-dlist" ,ghc-dlist)
+       ("ghc-edit-distance" ,ghc-edit-distance)
+       ("ghc-esqueleto" ,ghc-esqueleto)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-feed" ,ghc-feed)
+       ("ghc-free" ,ghc-free)
+       ("ghc-hslogger" ,ghc-hslogger)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-conduit" ,ghc-http-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-ifelse" ,ghc-ifelse)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-monad-logger" ,ghc-monad-logger)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-network" ,ghc-network)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-persistent" ,ghc-persistent)
+       ("ghc-persistent-sqlite" ,ghc-persistent-sqlite)
+       ("ghc-persistent-template" ,ghc-persistent-template)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-random" ,ghc-random)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-safesemaphore" ,ghc-safesemaphore)
+       ("ghc-sandi" ,ghc-sandi)
+       ("ghc-securemem" ,ghc-securemem)
+       ("ghc-socks" ,ghc-socks)
+       ("ghc-split" ,ghc-split)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-stm-chans" ,ghc-stm-chans)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-uuid" ,ghc-uuid)
+       ("git" ,git)
+       ("rsync" ,rsync)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-rerun" ,ghc-tasty-rerun)))
+    (home-page "https://git-annex.branchable.com/")
+    (synopsis "Manage files with Git, without checking in their contents")
+    (description "This package allows managing files with Git, without
+checking the file contents into Git.  It can store files in many places,
+such as local hard drives and cloud storage services.  It can also be
+used to keep a folder in sync between computers.")
+    ;; The web app is released under the AGPLv3+.
+    (license (list license:gpl3+
+                   license:agpl3+))))

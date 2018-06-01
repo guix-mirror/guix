@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,8 @@
   #:use-module (guix store)
   #:export (%test-httpd
             %test-nginx
-            %test-php-fpm))
+            %test-php-fpm
+            %test-hpcguix-web))
 
 (define %index.html-contents
   ;; Contents of the /index.html file.
@@ -281,3 +283,81 @@ HTTP-PORT, along with php-fpm."
    (name "php-fpm")
    (description "Test PHP-FPM through nginx.")
    (value (run-php-fpm-test))))
+
+
+;;;
+;;; hpcguix-web
+;;;
+
+(define* (run-hpcguix-web-server-test name test-os)
+  "Run tests in %HPCGUIX-WEB-OS, which has hpcguix-web running."
+  (define os
+    (marionette-operating-system
+     test-os
+     #:imported-modules '((gnu services herd)
+                          (guix combinators))))
+
+  (define vm
+    (virtual-machine
+     (operating-system os)
+     (port-forwardings '((8080 . 5000)))))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-11) (srfi srfi-64)
+                       (gnu build marionette)
+                       (web uri)
+                       (web client)
+                       (web response))
+
+          (define marionette
+            (make-marionette (list #$vm)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin #$name)
+
+          (test-assert "hpcguix-web running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (match (start-service 'hpcguix-web)
+                  (#f #f)
+                  (('service response-parts ...)
+                   (match (assq-ref response-parts 'running)
+                     ((pid) (number? pid))))))
+             marionette))
+
+          (test-equal "http-get"
+            200
+            (begin
+              (wait-for-tcp-port 5000 marionette)
+              (let-values (((response text)
+                            (http-get "http://localhost:8080")))
+                (response-code response))))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation (string-append name "-test") test))
+
+(define %hpcguix-web-specs
+  ;; Server config gexp.
+  #~(define site-config
+      (hpcweb-configuration
+       (title-prefix "[TEST] HPCGUIX-WEB"))))
+
+(define %hpcguix-web-os
+  (simple-operating-system
+   (dhcp-client-service)
+   (service hpcguix-web-service-type
+            (hpcguix-web-configuration
+             (specs %hpcguix-web-specs)))))
+
+(define %test-hpcguix-web
+  (system-test
+   (name "hpcguix-web")
+   (description "Connect to a running hpcguix-web server.")
+   (value (run-hpcguix-web-server-test name %hpcguix-web-os))))

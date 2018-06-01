@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -65,17 +65,17 @@
                                         #:archiver %tar-bootstrap))
        (check   (gexp->derivation
                  "check-tarball"
-                 #~(let ((guile (string-append "." #$profile "/bin")))
+                 #~(let ((bin (string-append "." #$profile "/bin")))
                      (setenv "PATH"
                              (string-append #$%tar-bootstrap "/bin"))
                      (system* "tar" "xvf" #$tarball)
                      (mkdir #$output)
                      (exit
-                      (and (file-exists? (string-append guile "/guile"))
+                      (and (file-exists? (string-append bin "/guile"))
                            (string=? (string-append #$%bootstrap-guile "/bin")
-                                     (readlink guile))
-                           (string=? (string-append (string-drop guile 1)
-                                                    "/guile")
+                                     (readlink bin))
+                           (string=? (string-append ".." #$profile
+                                                    "/bin/guile")
                                      (readlink "bin/Guile"))))))))
     (built-derivations (list check))))
 

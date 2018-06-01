@@ -1196,41 +1196,39 @@ the entries in MANIFEST."
 
   (define build
     (with-imported-modules modules
-      #~(begin
-          (add-to-load-path (string-append #$gdbm-ffi "/share/guile/site/"
-                                           (effective-version)))
+      (with-extensions (list gdbm-ffi)            ;for (guix man-db)
+        #~(begin
+            (use-modules (guix man-db)
+                         (guix build utils)
+                         (srfi srfi-1)
+                         (srfi srfi-19))
 
-          (use-modules (guix man-db)
-                       (guix build utils)
-                       (srfi srfi-1)
-                       (srfi srfi-19))
+            (define (compute-entries)
+              (append-map (lambda (directory)
+                            (let ((man (string-append directory "/share/man")))
+                              (if (directory-exists? man)
+                                  (mandb-entries man)
+                                  '())))
+                          '#$(manifest-inputs manifest)))
 
-          (define (compute-entries)
-            (append-map (lambda (directory)
-                          (let ((man (string-append directory "/share/man")))
-                            (if (directory-exists? man)
-                                (mandb-entries man)
-                                '())))
-                        '#$(manifest-inputs manifest)))
+            (define man-directory
+              (string-append #$output "/share/man"))
 
-          (define man-directory
-            (string-append #$output "/share/man"))
+            (mkdir-p man-directory)
 
-          (mkdir-p man-directory)
-
-          (format #t "Creating manual page database...~%")
-          (force-output)
-          (let* ((start    (current-time))
-                 (entries  (compute-entries))
-                 (_        (write-mandb-database (string-append man-directory
-                                                                "/index.db")
-                                                 entries))
-                 (duration (time-difference (current-time) start)))
-            (format #t "~a entries processed in ~,1f s~%"
-                    (length entries)
-                    (+ (time-second duration)
-                       (* (time-nanosecond duration) (expt 10 -9))))
-            (force-output)))))
+            (format #t "Creating manual page database...~%")
+            (force-output)
+            (let* ((start    (current-time))
+                   (entries  (compute-entries))
+                   (_        (write-mandb-database (string-append man-directory
+                                                                  "/index.db")
+                                                   entries))
+                   (duration (time-difference (current-time) start)))
+              (format #t "~a entries processed in ~,1f s~%"
+                      (length entries)
+                      (+ (time-second duration)
+                         (* (time-nanosecond duration) (expt 10 -9))))
+              (force-output))))))
 
   (gexp->derivation "manual-database" build
 

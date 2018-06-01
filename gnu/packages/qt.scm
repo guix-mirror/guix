@@ -489,6 +489,16 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                   out "/share/doc/qt5/examples")
                  "-opensource"
                  "-confirm-license"
+
+                 ;; These features require higher versions of Linux than the
+                 ;; minimum version of the glibc.  See
+                 ;; src/corelib/global/minimum-linux_p.h.  By disabling these
+                 ;; features Qt5 applications can be used on the oldest
+                 ;; kernels that the glibc supports, including the RHEL6
+                 ;; (2.6.32) and RHEL7 (3.10) kernels.
+                 "-no-feature-getentropy"  ; requires Linux 3.17
+                 "-no-feature-renameat2"   ; requires Linux 3.16
+
                  ;; Do not build examples; if desired, these could go
                  ;; into a separate output, but for the time being, we
                  ;; prefer to save the space and build time.

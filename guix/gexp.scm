@@ -33,6 +33,7 @@
   #:export (gexp
             gexp?
             with-imported-modules
+            with-extensions
 
             gexp-input
             gexp-input?
@@ -118,10 +119,11 @@
 
 ;; "G expressions".
 (define-record-type <gexp>
-  (make-gexp references modules proc)
+  (make-gexp references modules extensions proc)
   gexp?
   (references gexp-references)                    ;list of <gexp-input>
   (modules    gexp-self-modules)                  ;list of module names
+  (extensions gexp-self-extensions)               ;list of lowerable things
   (proc       gexp-proc))                         ;procedure
 
 (define (write-gexp gexp port)
@@ -492,25 +494,37 @@ whether this should be considered a \"native\" input or not."
 
 (set-record-type-printer! <gexp-output> write-gexp-output)
 
-(define (gexp-modules gexp)
-  "Return the list of Guile module names GEXP relies on.  If (gexp? GEXP) is
-false, meaning that GEXP is a plain Scheme object, return the empty list."
+(define (gexp-attribute gexp self-attribute)
+  "Recurse on GEXP and the expressions it refers to, summing the items
+returned by SELF-ATTRIBUTE, a procedure that takes a gexp."
   (if (gexp? gexp)
       (delete-duplicates
-       (append (gexp-self-modules gexp)
+       (append (self-attribute gexp)
                (append-map (match-lambda
                              (($ <gexp-input> (? gexp? exp))
-                              (gexp-modules exp))
+                              (gexp-attribute exp self-attribute))
                              (($ <gexp-input> (lst ...))
                               (append-map (lambda (item)
                                             (if (gexp? item)
-                                                (gexp-modules item)
+                                                (gexp-attribute item
+                                                                self-attribute)
                                                 '()))
                                           lst))
                              (_
                               '()))
                            (gexp-references gexp))))
       '()))                                       ;plain Scheme data type
+
+(define (gexp-modules gexp)
+  "Return the list of Guile module names GEXP relies on.  If (gexp? GEXP) is
+false, meaning that GEXP is a plain Scheme object, return the empty list."
+  (gexp-attribute gexp gexp-self-modules))
+
+(define (gexp-extensions gexp)
+  "Return the list of Guile extensions (packages) GEXP relies on.  If (gexp?
+GEXP) is false, meaning that GEXP is a plain Scheme object, return the empty
+list."
+  (gexp-attribute gexp gexp-self-extensions))
 
 (define* (lower-inputs inputs
                        #:key system target)
@@ -577,6 +591,7 @@ names and file names suitable for the #:allowed-references argument to
                            (modules '())
                            (module-path %load-path)
                            (guile-for-build (%guile-for-build))
+                           (effective-version "2.2")
                            (graft? (%graft?))
                            references-graphs
                            allowed-references disallowed-references
@@ -594,6 +609,9 @@ make MODULES available in the evaluation context of EXP; MODULES is a list of
 names of Guile modules searched in MODULE-PATH to be copied in the store,
 compiled, and made available in the load path during the execution of
 EXP---e.g., '((guix build utils) (guix build gnu-build-system)).
+
+EFFECTIVE-VERSION determines the string to use when adding extensions of
+EXP (see 'with-extensions') to the search path---e.g., \"2.2\".
 
 GRAFT? determines whether packages referred to by EXP should be grafted when
 applicable.
@@ -630,7 +648,7 @@ The other arguments are as for 'derivation'."
   (define (graphs-file-names graphs)
     ;; Return a list of (FILE-NAME . STORE-PATH) pairs made from GRAPHS.
     (map (match-lambda
-          ;; TODO: Remove 'derivation?' special cases.
+           ;; TODO: Remove 'derivation?' special cases.
            ((file-name (? derivation? drv))
             (cons file-name (derivation->output-path drv)))
            ((file-name (? derivation? drv) sub-drv)
@@ -639,7 +657,13 @@ The other arguments are as for 'derivation'."
             (cons file-name thing)))
          graphs))
 
-  (mlet* %store-monad (;; The following binding forces '%current-system' and
+  (define (extension-flags extension)
+    `("-L" ,(string-append (derivation->output-path extension)
+                           "/share/guile/site/" effective-version)
+      "-C" ,(string-append (derivation->output-path extension)
+                           "/lib/guile/" effective-version "/site-ccache")))
+
+  (mlet* %store-monad ( ;; The following binding forces '%current-system' and
                        ;; '%current-target-system' to be looked up at >>=
                        ;; time.
                        (graft?    (set-grafting graft?))
@@ -660,6 +684,11 @@ The other arguments are as for 'derivation'."
                                              #:target target))
                        (builder  (text-file script-name
                                             (object->string sexp)))
+                       (extensions -> (gexp-extensions exp))
+                       (exts     (mapm %store-monad
+                                       (lambda (obj)
+                                         (lower-object obj system))
+                                       extensions))
                        (modules  (if (pair? %modules)
                                      (imported-modules %modules
                                                        #:system system
@@ -672,6 +701,7 @@ The other arguments are as for 'derivation'."
                                      (compiled-modules %modules
                                                        #:system system
                                                        #:module-path module-path
+                                                       #:extensions extensions
                                                        #:guile guile-for-build
                                                        #:deprecation-warnings
                                                        deprecation-warnings)
@@ -704,6 +734,7 @@ The other arguments are as for 'derivation'."
                               `("-L" ,(derivation->output-path modules)
                                 "-C" ,(derivation->output-path compiled))
                               '())
+                        ,@(append-map extension-flags exts)
                         ,builder)
                       #:outputs outputs
                       #:env-vars env-vars
@@ -713,6 +744,7 @@ The other arguments are as for 'derivation'."
                                  ,@(if modules
                                        `((,modules) (,compiled) ,@inputs)
                                        inputs)
+                                 ,@(map list exts)
                                  ,@(match graphs
                                      (((_ . inputs) ...) inputs)
                                      (_ '())))
@@ -861,6 +893,17 @@ environment."
                          (identifier-syntax modules)))
     body ...))
 
+(define-syntax-parameter current-imported-extensions
+  ;; Current list of extensions.
+  (identifier-syntax '()))
+
+(define-syntax-rule (with-extensions extensions body ...)
+  "Mark the gexps defined in BODY... as requiring EXTENSIONS in their
+execution environment."
+  (syntax-parameterize ((current-imported-extensions
+                         (identifier-syntax extensions)))
+    body ...))
+
 (define-syntax gexp
   (lambda (s)
     (define (collect-escapes exp)
@@ -957,6 +1000,7 @@ environment."
               (refs    (map escape->ref escapes)))
          #`(make-gexp (list #,@refs)
                       current-imported-modules
+                      current-imported-extensions
                       (lambda #,formals
                         #,sexp)))))))
 
@@ -1071,11 +1115,20 @@ last one is created from the given <scheme-file> object."
                            (system (%current-system))
                            (guile (%guile-for-build))
                            (module-path %load-path)
+                           (extensions '())
                            (deprecation-warnings #f))
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other."
   (define total (length modules))
+
+  (define build-utils-hack?
+    ;; To avoid a full rebuild, we limit the fix below to the case where
+    ;; MODULE-PATH is different from %LOAD-PATH.  This happens when building
+    ;; modules for 'compute-guix-derivation' upon 'guix pull'.  TODO: Make
+    ;; this unconditional on the next rebuild cycle.
+    (and (member '(guix build utils) modules)
+         (not (equal? module-path %load-path))))
 
   (mlet %store-monad ((modules (imported-modules modules
                                                  #:system system
@@ -1122,7 +1175,47 @@ they can refer to each other."
          (setvbuf (current-output-port)
                   (cond-expand (guile-2.2 'line) (else _IOLBF)))
 
+         (ungexp-splicing
+          (if build-utils-hack?
+              (gexp ((define mkdir-p
+                       ;; Capture 'mkdir-p'.
+                       (@ (guix build utils) mkdir-p))))
+              '()))
+
+         ;; Add EXTENSIONS to the search path.
+         ;; TODO: Remove the outer 'ungexp-splicing' on the next rebuild cycle.
+         (ungexp-splicing
+          (if (null? extensions)
+              '()
+              (gexp ((set! %load-path
+                       (append (map (lambda (extension)
+                                      (string-append extension
+                                                     "/share/guile/site/"
+                                                     (effective-version)))
+                                    '((ungexp-native-splicing extensions)))
+                               %load-path))
+                     (set! %load-compiled-path
+                       (append (map (lambda (extension)
+                                      (string-append extension "/lib/guile/"
+                                                     (effective-version)
+                                                     "/site-ccache"))
+                                    '((ungexp-native-splicing extensions)))
+                               %load-compiled-path))))))
+
          (set! %load-path (cons (ungexp modules) %load-path))
+
+         (ungexp-splicing
+          (if build-utils-hack?
+              ;; Above we loaded our own (guix build utils) but now we may
+              ;; need to load a compile a different one.  Thus, force a
+              ;; reload.
+              (gexp ((let ((utils (ungexp
+                                   (file-append modules
+                                                "/guix/build/utils.scm"))))
+                       (when (file-exists? utils)
+                         (load utils)))))
+              '()))
+
          (mkdir (ungexp output))
          (chdir (ungexp modules))
          (process-directory "." (ungexp output) 0))))
@@ -1154,20 +1247,34 @@ they can refer to each other."
   (module-ref (resolve-interface '(gnu packages guile))
               'guile-2.2))
 
-(define* (load-path-expression modules #:optional (path %load-path))
+(define* (load-path-expression modules #:optional (path %load-path)
+                               #:key (extensions '()))
   "Return as a monadic value a gexp that sets '%load-path' and
 '%load-compiled-path' to point to MODULES, a list of module names.  MODULES
 are searched for in PATH."
   (mlet %store-monad ((modules  (imported-modules modules
                                                   #:module-path path))
                       (compiled (compiled-modules modules
+                                                  #:extensions extensions
                                                   #:module-path path)))
     (return (gexp (eval-when (expand load eval)
                     (set! %load-path
-                      (cons (ungexp modules) %load-path))
+                      (cons (ungexp modules)
+                            (append (map (lambda (extension)
+                                           (string-append extension
+                                                          "/share/guile/site/"
+                                                          (effective-version)))
+                                         '((ungexp-native-splicing extensions)))
+                                    %load-path)))
                     (set! %load-compiled-path
                       (cons (ungexp compiled)
-                            %load-compiled-path)))))))
+                            (append (map (lambda (extension)
+                                           (string-append extension
+                                                          "/lib/guile/"
+                                                          (effective-version)
+                                                          "/site-ccache"))
+                                         '((ungexp-native-splicing extensions)))
+                                    %load-compiled-path))))))))
 
 (define* (gexp->script name exp
                        #:key (guile (default-guile))
@@ -1176,7 +1283,9 @@ are searched for in PATH."
 imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
   (mlet %store-monad ((set-load-path
                        (load-path-expression (gexp-modules exp)
-                                             module-path)))
+                                             module-path
+                                             #:extensions
+                                             (gexp-extensions exp))))
     (gexp->derivation name
                       (gexp
                        (call-with-output-file (ungexp output)
@@ -1205,35 +1314,38 @@ the resulting file.
 When SET-LOAD-PATH? is true, emit code in the resulting file to set
 '%load-path' and '%load-compiled-path' to honor EXP's imported modules.
 Lookup EXP's modules in MODULE-PATH."
-  (match (if set-load-path? (gexp-modules exp) '())
-    (()                                           ;zero modules
-     (gexp->derivation name
-                       (gexp
-                        (call-with-output-file (ungexp output)
-                          (lambda (port)
-                            (for-each (lambda (exp)
-                                        (write exp port))
-                                      '(ungexp (if splice?
-                                                   exp
-                                                   (gexp ((ungexp exp)))))))))
-                       #:local-build? #t
-                       #:substitutable? #f))
-    ((modules ...)
-     (mlet %store-monad ((set-load-path (load-path-expression modules
-                                                              module-path)))
-       (gexp->derivation name
-                         (gexp
-                          (call-with-output-file (ungexp output)
-                            (lambda (port)
-                              (write '(ungexp set-load-path) port)
-                              (for-each (lambda (exp)
-                                          (write exp port))
-                                        '(ungexp (if splice?
-                                                     exp
-                                                     (gexp ((ungexp exp)))))))))
-                         #:module-path module-path
-                         #:local-build? #t
-                         #:substitutable? #f)))))
+  (define modules (gexp-modules exp))
+  (define extensions (gexp-extensions exp))
+
+  (if (or (not set-load-path?)
+          (and (null? modules) (null? extensions)))
+      (gexp->derivation name
+                        (gexp
+                         (call-with-output-file (ungexp output)
+                           (lambda (port)
+                             (for-each (lambda (exp)
+                                         (write exp port))
+                                       '(ungexp (if splice?
+                                                    exp
+                                                    (gexp ((ungexp exp)))))))))
+                        #:local-build? #t
+                        #:substitutable? #f)
+      (mlet %store-monad ((set-load-path
+                           (load-path-expression modules module-path
+                                                 #:extensions extensions)))
+        (gexp->derivation name
+                          (gexp
+                           (call-with-output-file (ungexp output)
+                             (lambda (port)
+                               (write '(ungexp set-load-path) port)
+                               (for-each (lambda (exp)
+                                           (write exp port))
+                                         '(ungexp (if splice?
+                                                      exp
+                                                      (gexp ((ungexp exp)))))))))
+                          #:module-path module-path
+                          #:local-build? #t
+                          #:substitutable? #f))))
 
 (define* (text-file* name #:rest text)
   "Return as a monadic value a derivation that builds a text file containing

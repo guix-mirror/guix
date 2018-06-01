@@ -26,6 +26,7 @@
             make-marionette
             marionette-eval
             wait-for-file
+            wait-for-tcp-port
             marionette-control
             marionette-screen-text
             wait-for-screen-text
@@ -186,6 +187,32 @@ FILE has not shown up after TIMEOUT seconds, raise an error."
      result)
     ('failure
      (error "file didn't show up" file))))
+
+(define* (wait-for-tcp-port port marionette
+                            #:key (timeout 20))
+  "Wait for up to TIMEOUT seconds for PORT to accept connections in
+MARIONETTE.  Raise an error on failure."
+  ;; Note: The 'connect' loop has to run within the guest because, when we
+  ;; forward ports to the host, connecting to the host never raises
+  ;; ECONNREFUSED.
+  (match (marionette-eval
+          `(begin
+             (let ((sock (socket PF_INET SOCK_STREAM 0)))
+               (let loop ((i 0))
+                 (catch 'system-error
+                   (lambda ()
+                     (connect sock AF_INET INADDR_LOOPBACK ,port)
+                     'success)
+                   (lambda args
+                     (if (< i ,timeout)
+                         (begin
+                           (sleep 1)
+                           (loop (+ 1 i)))
+                         'failure))))))
+          marionette)
+    ('success #t)
+    ('failure
+     (error "nobody's listening on port" port))))
 
 (define (marionette-control command marionette)
   "Run COMMAND in the QEMU monitor of MARIONETTE.  COMMAND is a string such as

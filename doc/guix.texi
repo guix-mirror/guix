@@ -47,7 +47,8 @@ Copyright @copyright{} 2017, 2018 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018 Oleg Pykhalov@*
-Copyright @copyright{} 2018 Mike Gerwitz
+Copyright @copyright{} 2018 Mike Gerwitz@*
+Copyright @copyright{} 2018 Pierre-Antoine Rouby
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -5063,6 +5064,23 @@ headers, which comes in handy in this case:
                         @dots{})))
 @end example
 
+@cindex extensions, for gexps
+@findex with-extensions
+In the same vein, sometimes you want to import not just pure-Scheme
+modules, but also ``extensions'' such as Guile bindings to C libraries
+or other ``full-blown'' packages.  Say you need the @code{guile-json}
+package available on the build side, here's how you would do it:
+
+@example
+(use-modules (gnu packages guile))  ;for 'guile-json'
+
+(with-extensions (list guile-json)
+  (gexp->derivation "something-with-json"
+                    #~(begin
+                        (use-modules (json))
+                        @dots{})))
+@end example
+
 The syntactic form to construct gexps is summarized below.
 
 @deffn {Scheme Syntax} #~@var{exp}
@@ -5146,6 +5164,18 @@ directly defined in @var{body}@dots{}, but not on those defined, say, in
 procedures called from @var{body}@dots{}.
 @end deffn
 
+@deffn {Scheme Syntax} with-extensions @var{extensions} @var{body}@dots{}
+Mark the gexps defined in @var{body}@dots{} as requiring
+@var{extensions} in their build and execution environment.
+@var{extensions} is typically a list of package objects such as those
+defined in the @code{(gnu packages guile)} module.
+
+Concretely, the packages listed in @var{extensions} are added to the
+load path while compiling imported modules in @var{body}@dots{}; they
+are also added to the load path of the gexp returned by
+@var{body}@dots{}.
+@end deffn
+
 @deffn {Scheme Procedure} gexp? @var{obj}
 Return @code{#t} if @var{obj} is a G-expression.
 @end deffn
@@ -5160,6 +5190,7 @@ information about monads.)
        [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:module-path @var{%load-path}] @
+       [#:effective-version "2.2"] @
        [#:references-graphs #f] [#:allowed-references #f] @
        [#:disallowed-references #f] @
        [#:leaked-env-vars #f] @
@@ -5179,6 +5210,9 @@ make @var{modules} available in the evaluation context of @var{exp};
 @var{module-path} to be copied in the store, compiled, and made available in
 the load path during the execution of @var{exp}---e.g., @code{((guix
 build utils) (guix build gnu-build-system))}.
+
+@var{effective-version} determines the string to use when adding extensions of
+@var{exp} (see @code{with-extensions}) to the search path---e.g., @code{"2.2"}.
 
 @var{graft?} determines whether packages referred to by @var{exp} should be grafted when
 applicable.
@@ -16157,6 +16191,64 @@ A simple setup for cat-avatar-generator can look like this:
                     (server-name '("example.com"))))
                  ...
                  %base-services))
+@end example
+
+@subsubheading Hpcguix-web
+
+@cindex hpcguix-web
+The @uref{hpcguix-web, https://github.com/UMCUGenetics/hpcguix-web/}
+program is a customizable web interface to browse Guix packages,
+initially designed for users of high-performance computing (HPC)
+clusters.
+
+@defvr {Scheme Variable} hpcguix-web-service-type
+The service type for @code{hpcguix-web}.
+@end defvr
+
+@deftp {Data Type} hpcguix-web-configuration
+Data type for the hpcguix-web service configuration.
+
+@table @asis
+@item @code{specs}
+A gexp (@pxref{G-Expressions}) specifying the hpcguix-web service
+configuration.  The main items available in this spec are:
+
+@table @asis
+@item @code{title-prefix} (default: @code{"hpcguix | "})
+The page title prefix.
+
+@item @code{guix-command} (default: @code{"guix"})
+The @command{guix} command.
+
+@item @code{package-filter-proc} (default: @code{(const #t)})
+A procedure specifying how to filter packages that are displayed.
+
+@item @code{package-page-extension-proc} (default: @code{(const '())})
+Extension package for @code{hpcguix-web}.
+
+@item @code{menu} (default: @code{'()})
+Additional entry in page @code{menu}.
+@end table
+
+See the hpcguix-web repository for a
+@uref{https://github.com/UMCUGenetics/hpcguix-web/blob/master/hpcweb-configuration.scm,
+complete example}.
+
+@item @code{package} (default: @code{hpcguix-web})
+The hpcguix-web package to use.
+@end table
+@end deftp
+
+A typical hpcguix-web service declaration looks like this:
+
+@example
+(service hpcguix-web-service-type
+         (hpcguix-web-configuration
+          (specs
+           #~(define site-config
+               (hpcweb-configuration
+                (title-prefix "Guix-HPC - ")
+                (menu '(("/about" "ABOUT"))))))))
 @end example
 
 @node Certificate Services
