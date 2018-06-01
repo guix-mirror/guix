@@ -107,6 +107,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages shells)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -10755,3 +10756,40 @@ Org-mode.  It features:
 @item agenda support.
 @end itemize\n")
       (license license:gpl3+))))
+
+(define-public emacs-fish-completion
+  (package
+    (name "emacs-fish-completion")
+    (version "20180329")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/Ambrevar/emacs-fish-completion/archive/"
+             "3e3ed1f19fa778b7c35ad88e033dce5a6b1fc153"
+             ".tar.gz"))
+       (sha256
+        (base32
+         "16329py7fvid0bap1qhqxhdc68m9qqy1p8gc2bhng81zhm5a5zsm"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("fish" ,fish)))
+    (home-page
+     "https://github.com/Ambrevar/emacs-fish-completion")
+    (synopsis "Fish completion for Emacs pcomplete")
+    (description
+     "This package provides completion for the Fish shell to pcomplete (used
+by shell and Eshell).  You can set it up globally with:
+
+@example
+(when (and (executable-find \"fish\")
+           (require 'fish-completion nil t))
+  (global-fish-completion-mode))
+@end example
+
+Alternatively, you can call the @code{fish-completion-mode} manually or in
+shell/Eshell mode hook.
+
+The package @code{emacs-bash-completion} is an optional dependency: if available,
+@code{fish-completion-complete} can be configured to fall back on bash to further
+try completing.  See @code{fish-completion-fallback-on-bash-p}.")
+    (license license:gpl3+)))
