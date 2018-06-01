@@ -11050,3 +11050,40 @@ See @code{helm-exwm-switch-browser} for an example.")
       (description
        "This integrates Flycheck with Helm.")
       (license license:gpl3+))))
+
+(define-public emacs-helm-ls-git
+  (let ((commit "76654c776a7f6e2e5290645e748aac2a746f7daa"))
+    (package
+      (name "emacs-helm-ls-git")
+      (version (git-version "1.9.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-helm/helm-ls-git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0vsq1n3xl3ghy5zik2scm7jrs501n4kybdqd6yw6j0cv4jxdqbr0"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/emacs-helm/helm-ls-git")
+      (synopsis "Helm interface for listing the files in a Git repository")
+      (description
+       "This package provides a Helm interface for Git files.
+@itemize
+@item Display the open buffers in project.
+@item Display a status source showing state of project (modified files etc.).
+@item Display a list of all files in project under git control.
+@item Quickly look at diffs of modified files.
+@item Allow switching to @code{git status} with your preferred frontend
+(vc-dir, Magit,etc.).
+@item Full integration of git-grep, also allow usage of @code{helm-grep} (you
+can use ack-grep instead of grep).
+@item Integrate usage of gid from id-utils.
+@item Full integration with @code{helm-find-files}, allow you to browse
+projects unrelated to current-buffer.
+@item In addition, all actions of type files and buffers are provided.
+@end itemize\n")
+      (license license:gpl3+))))
