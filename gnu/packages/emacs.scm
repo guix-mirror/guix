@@ -10912,3 +10912,31 @@ on-line service.")
        "This is a Helm interface to company-mode, a text completion
 framework.")
       (license license:gpl3+))))
+
+(define-public emacs-helm-descbinds
+  (let ((commit "033be73f21778633813264ce1634a6e1ad873d8e"))
+    (package
+      (name "emacs-helm-descbinds")
+      (version (git-version "1.13" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-helm/helm-descbinds")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1n89p56qwa243w1c85i5awnaf7piwjsvfi7nmnsrwm33hix5dknk"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/emacs-helm/helm-descbinds")
+      (synopsis "Convenient @code{describe-bindings} with Helm")
+      (description
+       "This package is a replacement of @code{describe-bindings} for Helm.
+@code{describe-bindings} is replaced with @code{helm-descbinds}.  As usual,
+type @code{C-h b}, or any incomplete key sequence plus @code{C-h}, to run
+@code{helm-descbinds}.  The bindings are presented in a similar way as
+@code{describe-bindings} does, but you can use completion to find the command
+you searched for and execute it, or view its documentation.")
+    (license license:gpl3+))))
