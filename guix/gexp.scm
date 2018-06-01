@@ -1075,6 +1075,14 @@ last one is created from the given <scheme-file> object."
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other."
+  (define build-utils-hack?
+    ;; To avoid a full rebuild, we limit the fix below to the case where
+    ;; MODULE-PATH is different from %LOAD-PATH.  This happens when building
+    ;; modules for 'compute-guix-derivation' upon 'guix pull'.  TODO: Make
+    ;; this unconditional on the next rebuild cycle.
+    (and (member '(guix build utils) modules)
+         (not (equal? module-path %load-path))))
+
   (mlet %store-monad ((modules (imported-modules modules
                                                  #:system system
                                                  #:guile guile
@@ -1114,7 +1122,27 @@ they can refer to each other."
                                              %auto-compilation-options))))
                        entries)))
 
+         (ungexp-splicing
+          (if build-utils-hack?
+              (gexp ((define mkdir-p
+                       ;; Capture 'mkdir-p'.
+                       (@ (guix build utils) mkdir-p))))
+              '()))
+
          (set! %load-path (cons (ungexp modules) %load-path))
+
+         (ungexp-splicing
+          (if build-utils-hack?
+              ;; Above we loaded our own (guix build utils) but now we may
+              ;; need to load a compile a different one.  Thus, force a
+              ;; reload.
+              (gexp ((let ((utils (ungexp
+                                   (file-append modules
+                                                "/guix/build/utils.scm"))))
+                       (when (file-exists? utils)
+                         (load utils)))))
+              '()))
+
          (mkdir (ungexp output))
          (chdir (ungexp modules))
          (process-directory "." (ungexp output)))))
