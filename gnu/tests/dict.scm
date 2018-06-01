@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,22 +96,7 @@
           ;; Wait until dicod is actually listening.
           ;; TODO: Use a PID file instead.
           (test-assert "connect inside"
-            (marionette-eval
-             '(begin
-                (use-modules (ice-9 rdelim))
-                (let ((sock (socket PF_INET SOCK_STREAM 0)))
-                  (let loop ((i 0))
-                    (pk 'try i)
-                    (catch 'system-error
-                      (lambda ()
-                        (connect sock AF_INET INADDR_LOOPBACK 2628))
-                      (lambda args
-                        (pk 'connection-error args)
-                        (when (< i 20)
-                          (sleep 1)
-                          (loop (+ 1 i))))))
-                  (read-line sock 'concat)))
-             marionette))
+            (wait-for-tcp-port 2628 marionette))
 
           (test-assert "connect"
             (let ((addr (make-socket-address AF_INET INADDR_LOOPBACK 8000)))
