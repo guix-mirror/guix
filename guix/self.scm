@@ -588,7 +588,11 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                  `(#:local-build? #f              ;allow substitutes
 
                    ;; Don't annoy people about _IONBF deprecation.
-                   #:env-vars (("GUILE_WARN_DEPRECATED" . "no")))))
+                   ;; Initialize 'terminal-width' in (system repl debug)
+                   ;; to a large-enough value to make backtrace more
+                   ;; verbose.
+                   #:env-vars (("GUILE_WARN_DEPRECATED" . "no")
+                               ("COLUMNS" . "200")))))
 
 
 ;;;
