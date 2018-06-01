@@ -10886,3 +10886,29 @@ the GIF result.")
        "This packages provides an Emacs interface to the Google Translate
 on-line service.")
       (license license:gpl3+))))
+
+(define-public emacs-helm-company
+  (let ((commit "acc9c7901e094c1591327a0db1ec7a439f67a84d"))
+    (package
+      (name "emacs-helm-company")
+      (version (git-version "0.2.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Sodel-the-Vociferous/helm-company")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1d4q9clp0q56br80c21a4wz1gc4jw3mdy97z9mq07x9i8rhlppzs"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-company" ,emacs-company)))
+      (home-page "https://github.com/Sodel-the-Vociferous/helm-company")
+      (synopsis "Helm interface for company-mode")
+      (description
+       "This is a Helm interface to company-mode, a text completion
+framework.")
+      (license license:gpl3+))))
