@@ -10940,3 +10940,29 @@ type @code{C-h b}, or any incomplete key sequence plus @code{C-h}, to run
 @code{describe-bindings} does, but you can use completion to find the command
 you searched for and execute it, or view its documentation.")
     (license license:gpl3+))))
+
+(define-public emacs-helm-emms
+  (let ((commit "d3f9bdef8ff0d093eaf6e26af50ea905ab53fdec"))
+    (package
+      (name "emacs-helm-emms")
+      (version (git-version "1.3" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-helm/helm-emms")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0bdb8xp0yp3gijpa9i2rc17gfzjhzlm92vdzw93i10qpd1xhj4aa"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-emms" ,emms)))
+      (home-page
+       "https://github.com/emacs-helm/helm-emms")
+      (synopsis "Emms for Helm")
+      (description "Helm interface for Emms to browse all tracks and all folders
+from @code{emms-source-file-default-directory}.")
+      (license license:gpl3+))))
