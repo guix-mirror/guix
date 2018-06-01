@@ -11175,3 +11175,29 @@ provided by other Emacs packages dealing with pass:
        "Image+ provides keybindings allowing you to zoom in or zoom out of an
 image, rotate it, save modified images, and more.")
       (license license:gpl3+))))
+
+(define-public emacs-package-lint
+  (let ((commit "69bb89d00ba212b734c676ad056aa793c450b288"))
+    (package
+      (name "emacs-package-lint")
+      (version (git-version "0.5" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/purcell/package-lint")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1hfricsgmy3x9snnd2p4xq6vnnv94qdsxxnxp07b3hqc9bhw31rq"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/purcell/package-lint")
+      (synopsis "Linting library for elisp package authors")
+      (description
+       "This provides a list of issues with the Emacs package metadata of a file,
+e.g. the package dependencies it requires.  See function
+@code{package-lint-buffer}.  Checks will currently be enabled only if a
+\"Package-Requires:\" or \"Package-Version:\" header is present in the
+file.")
+      (license license:gpl3+))))
