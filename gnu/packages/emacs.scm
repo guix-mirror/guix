@@ -10995,3 +10995,29 @@ from @code{emms-source-file-default-directory}.")
 switch between the various windows of one or several specific applications.
 See @code{helm-exwm-switch-browser} for an example.")
       (license license:gpl3+))))
+
+(define-public emacs-helm-flycheck
+  (let ((commit "3cf7d3bb194acacc6395f88360588013d92675d6"))
+    (package
+      (name "emacs-helm-flycheck")
+      (version (git-version "0.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/yasuyk/helm-flycheck")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1a2yfxhz04klwhcandqvfzysxp6b7bxyxx1xk1x3kds5hif5fkl4"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-flycheck" ,flycheck)
+         ("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/yasuyk/helm-flycheck")
+      (synopsis "Show Flycheck errors with Helm")
+      (description
+       "This integrates Flycheck with Helm.")
+      (license license:gpl3+))))
