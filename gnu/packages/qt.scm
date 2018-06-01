@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Quiliro <quiliro@fsfla.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -487,6 +487,16 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                   out "/share/doc/qt5/examples")
                  "-opensource"
                  "-confirm-license"
+
+                 ;; These features require higher versions of Linux than the
+                 ;; minimum version of the glibc.  See
+                 ;; src/corelib/global/minimum-linux_p.h.  By disabling these
+                 ;; features Qt5 applications can be used on the oldest
+                 ;; kernels that the glibc supports, including the RHEL6
+                 ;; (2.6.32) and RHEL7 (3.10) kernels.
+                 "-no-feature-getentropy"  ; requires Linux 3.17
+                 "-no-feature-renameat2"   ; requires Linux 3.16
+
                  ;; Do not build examples; if desired, these could go
                  ;; into a separate output, but for the time being, we
                  ;; prefer to save the space and build time.
