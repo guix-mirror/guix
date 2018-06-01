@@ -11151,3 +11151,27 @@ provided by other Emacs packages dealing with pass:
 @code{pass}, included in Emacs 26+).
 @end itemize\n")
       (license license:gpl3+))))
+
+(define-public emacs-image+
+  (let ((commit "6834d0c09bb4df9ecc0d7a559bd7827fed48fffc"))
+    (package
+      (name "emacs-image+")
+      (version (git-version "0.6.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mhayashi1120/Emacs-imagex")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0v66wk9nh0raih4jhrzmmyi5lbysjnmbv791vm2230ffi2hmwxnd"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("imagemagick" ,imagemagick)))
+      (home-page "https://github.com/mhayashi1120/Emacs-imagex")
+      (synopsis "Image manipulation extensions for Emacs")
+      (description
+       "Image+ provides keybindings allowing you to zoom in or zoom out of an
+image, rotate it, save modified images, and more.")
+      (license license:gpl3+))))
