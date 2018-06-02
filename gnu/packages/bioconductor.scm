@@ -110,14 +110,14 @@ region sets and other genomic features.")
 (define-public r-diffbind
   (package
     (name "r-diffbind")
-    (version "2.6.6")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DiffBind" version))
        (sha256
         (base32
-         "1sm5h6nq77hjfis6kr1nqyizcxgfz87dgpqc4fxlfqkmsd9n3vkp"))))
+         "1w1hybzd732ccg3q8zhirwfilq8sx3frv1x98zfyj3svzw98fish"))))
     (properties `((upstream-name . "DiffBind")))
     (build-system r-build-system)
     (inputs
@@ -129,6 +129,8 @@ region sets and other genomic features.")
        ("r-dplyr" ,r-dplyr)
        ("r-edger" ,r-edger)
        ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
        ("r-ggrepel" ,r-ggrepel)
        ("r-gplots" ,r-gplots)
        ("r-iranges" ,r-iranges)
@@ -139,6 +141,7 @@ region sets and other genomic features.")
        ("r-rcpp" ,r-rcpp)
        ("r-rsamtools" ,r-rsamtools)
        ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-systempiper" ,r-systempiper)
        ("r-zlibbioc" ,r-zlibbioc)))
     (home-page "http://bioconductor.org/packages/DiffBind")
