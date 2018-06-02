@@ -10384,24 +10384,26 @@ several related annotation packages.")
 (define-public r-erma
   (package
     (name "r-erma")
-    (version "0.10.1")
+    (version "0.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "erma" version))
        (sha256
         (base32
-         "1fi8nc6fbd7i4p9i9hli31xplmdpsxqcdrb8v3nf8fx9klllbdav"))))
+         "1ka68n18yizlyvb8bpwwcl4hqbsasg8hw8jb3vgy3cd4szji87hh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
-       ("r-foreach" ,r-foreach)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicfiles" ,r-genomicfiles)
        ("r-genomicranges" ,r-genomicranges)
        ("r-ggplot2" ,r-ggplot2)
        ("r-homo-sapiens" ,r-homo-sapiens)
+       ("r-iranges" ,r-iranges)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-shiny" ,r-shiny)
