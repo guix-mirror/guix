@@ -8110,14 +8110,14 @@ annotations for the genome of the model mouse Mus musculus.")
 (define-public r-seqlogo
   (package
     (name "r-seqlogo")
-    (version "1.44.0")
+    (version "1.46.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "seqLogo" version))
        (sha256
         (base32
-         "1ql4q4vx0j61a893dqc3c8zxmgs8sqhy3j1qhyfdvbd01vw9w1kq"))))
+         "16xvqcdknix9vjm8mrixi6nyfsr45jm844jh1x90m8044lwrsic1"))))
     (properties `((upstream-name . "seqLogo")))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/seqLogo")
