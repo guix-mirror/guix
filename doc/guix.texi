@@ -16405,7 +16405,11 @@ saved to @code{/etc/letsencrypt/live/@var{name}/privkey.pem}.
 The @code{(gnu services dns)} module provides services related to the
 @dfn{domain name system} (DNS).  It provides a server service for hosting
 an @emph{authoritative} DNS server for multiple zones, slave or master.
-This service uses @uref{https://www.knot-dns.cz/, Knot DNS}.
+This service uses @uref{https://www.knot-dns.cz/, Knot DNS}.  And also a
+caching and forwarding DNS server for the LAN, which uses
+@uref{http://www.thekelleys.org.uk/dnsmasq/doc.html, dnsmasq}.
+
+@subsubheading Knot Service
 
 An example configuration of an authoritative server for two zones, one master
 and one slave, is:
@@ -16800,6 +16804,59 @@ The list of knot-zone-configuration used by this configuration.
 @end table
 @end deftp
 
+@subsubheading Dnsmasq Service
+
+@deffn {Scheme Variable} dnsmasq-service-type
+This is the type of the dnsmasq service, whose value should be an
+@code{dnsmasq-configuration} object as in this example:
+
+@example
+(service dnsmasq-service-type
+         (dnsmasq-configuration
+           (no-resolv? #t)
+           (servers '("192.168.1.1"))))
+@end example
+@end deffn
+
+@deftp {Data Type} dnsmasq-configuration
+Data type representing the configuration of dnsmasq.
+
+@table @asis
+@item @code{package} (default: @var{dnsmasq})
+Package object of the dnsmasq server.
+
+@item @code{no-hosts?} (default: @code{#f})
+When true, don't read the hostnames in /etc/hosts.
+
+@item @code{port} (default: @code{53})
+The port to listen on.  Setting this to zero completely disables DNS
+funtion, leaving only DHCP and/or TFTP.
+
+@item @code{local-service?} (default: @code{#t})
+Accept DNS queries only from hosts whose address is on a local subnet,
+ie a subnet for which an interface exists on the server.
+
+@item @code{listen-addresses} (default: @code{'()})
+Listen on the given IP addresses.
+
+@item @code{resolv-file} (default: @code{"/etc/resolv.conf"})
+The file to read the IP address of the upstream nameservers from.
+
+@item @code{no-resolv?} (default: @code{#f})
+When true, don't read @var{resolv-file}.
+
+@item @code{servers} (default: @code{'()})
+Specify IP address of upstream servers directly.
+
+@item @code{cache-size} (default: @code{150})
+Set the size of dnsmasq's cache.  Setting the cache size to zero
+disables caching.
+
+@item @code{no-negcache?} (default: @code{#f})
+When true, disable negative caching.
+
+@end table
+@end deftp
 
 @node VPN Services
 @subsubsection VPN Services
