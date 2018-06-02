@@ -8450,14 +8450,14 @@ secondary structure and comparative analysis in R.")
 (define-public r-rhtslib
   (package
     (name "r-rhtslib")
-    (version "1.10.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhtslib" version))
        (sha256
         (base32
-         "1dw3p44bfr0m7w39ckc2k37sjcp1zz0b9g12mr8am15jaj6v0q2j"))))
+         "16ywnb8cmr2xabd1i21b92rfziw7xfbv25yv16ipw617p41wa39z"))))
     (properties `((upstream-name . "Rhtslib")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8465,7 +8465,7 @@ secondary structure and comparative analysis in R.")
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
-     `(("autoconf" ,autoconf)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/nhayden/Rhtslib")
     (synopsis "High-throughput sequencing library as an R package")
     (description
