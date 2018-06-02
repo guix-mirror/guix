@@ -7565,18 +7565,19 @@ files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.4.1")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "0s7h2giyvz04cg6248kbbzpwhxdrpnsvl2s8k5c8ricisd9aaz4b"))))
+                "0n3w57cwy911q812wc8658y0v3xgpmg379sj98kfqdxa80z1mxdf"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
        ("r-s4vectors" ,r-s4vectors)
        ("r-iranges" ,r-iranges)
        ("r-matrixstats" ,r-matrixstats)))
