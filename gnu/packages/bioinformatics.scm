@@ -9953,14 +9953,14 @@ microarrays or GRanges for sequencing data.")
 (define-public r-keggrest
   (package
     (name "r-keggrest")
-    (version "1.18.1")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "KEGGREST" version))
        (sha256
         (base32
-         "02gwmm79djj55a90dzc80hlgwc6bafl7xd7fnx2q59pk945k3z9c"))))
+         "1349vidgl9m10l1rbrp3pkwwgi2xcbsw9h9z2xqbvg97lmqc4r8j"))))
     (properties `((upstream-name . "KEGGREST")))
     (build-system r-build-system)
     (propagated-inputs
