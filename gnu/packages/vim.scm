@@ -128,6 +128,7 @@ configuration files.")
              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
                (install-file "xxd" bin)
                #t))))))
+    (inputs `())
     (synopsis "Hexdump utility from vim")
     (description "This package provides the Hexdump utility xxd that comes
 with the editor vim.")))
