@@ -10724,14 +10724,14 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.0.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "0kkc4rprjbqn2wvbx4d49kk9l91vihccxbl4843qr1wqk6v33r1w"))))
+         "1y59acac6v8hrhv84gghn9ifsni9xxxacaj177rrl4frmkrz4x3c"))))
     (properties `((upstream-name . "Rhdf5lib")))
     (build-system r-build-system)
     (arguments
@@ -10742,10 +10742,10 @@ block processing.")
              (for-each delete-file '("configure" "configure.ac"))
              ;; Do not make other packages link with the proprietary libsz.
              (substitute* "R/zzz.R"
-               (("'%s/libhdf5_cpp.a %s/libhdf5.a %s/libsz.a'")
-                "'%s/libhdf5_cpp.a %s/libhdf5.a %s/libhdf5.a'")
-               (("'%s/libhdf5.a %s/libsz.a'")
-                "'%s/libhdf5.a %s/libhdf5.a'"))
+               (("'%s/libhdf5_cpp.a %s/libhdf5.a %s/libsz.a -lz'")
+                "'%s/libhdf5_cpp.a %s/libhdf5.a %s/libhdf5.a -lz'")
+               (("'%s/libhdf5.a %s/libsz.a -lz'")
+                "'%s/libhdf5.a %s/libhdf5.a -lz'"))
              (with-directory-excursion "src"
                (invoke "tar" "xvf" (assoc-ref inputs "hdf5-source"))
                (rename-file (string-append "hdf5-" ,(package-version hdf5))
@@ -10772,8 +10772,7 @@ block processing.")
                  (("HDF5_INCLUDE=.*") "HDF5_INCLUDE=./hdf5/src\n")
                  ;; szip is non-free software
                  (("cp \\$\\{SZIP_LIB\\}.*") "")
-                 (("PKG_LIBS = \\$\\{HDF5_LIB\\} \\$\\{SZIP_LIB\\}")
-                  "PKG_LIBS = ${HDF5_LIB}\n")))
+                 (("\\$\\{USER_LIB_DIR\\}libsz.a") "")))
              #t)))))
     (inputs
      `(("zlib" ,zlib)))
