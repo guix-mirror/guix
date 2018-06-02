@@ -6559,14 +6559,14 @@ annotation infrastructure.")
 (define-public r-grohmm
   (package
     (name "r-grohmm")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "groHMM" version))
        (sha256
         (base32
-         "0cjkj0ypyc4dfi9s8dh88kh6q4xlpnc0wal7njg4b4gqj0l2hva7"))))
+         "1kjb14apyly44qdlx2ld6gr69wlazd4mbhs58l35hir12aphgrzp"))))
     (properties `((upstream-name . "groHMM")))
     (build-system r-build-system)
     (propagated-inputs
