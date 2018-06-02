@@ -6199,14 +6199,14 @@ penalized least squares regression method.")
 (define-public r-geneplotter
   (package
     (name "r-geneplotter")
-    (version "1.56.0")
+    (version "1.58.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "geneplotter" version))
        (sha256
         (base32
-         "1z3g7frc1iviwrsv2dlm4nqvkc0685h4va0388yfxn102ln8wwma"))))
+         "055g28xgiazl4l0gkg8xiamks64f5yckjjyvw1abd6d6qjavwx0g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotate" ,r-annotate)
