@@ -7905,13 +7905,13 @@ microarray data, using nearest neighbor averaging.")
 (define-public r-seqpattern
   (package
     (name "r-seqpattern")
-    (version "1.10.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "seqPattern" version))
               (sha256
                (base32
-                "1kcm5w83q7w0v0vs7nyp4gq5z86c6n6pqy9zmyyhxcrns7f597pm"))))
+                "0dw0yldfcf0ibvpqxlpx1ijnjf9lma47w9w22siszzhw09i0wp3w"))))
     (properties
      `((upstream-name . "seqPattern")))
     (build-system r-build-system)
