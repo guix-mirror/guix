@@ -9395,14 +9395,14 @@ proteomics packages.")
 (define-public r-mzr
   (package
     (name "r-mzr")
-    (version "2.12.0")
+    (version "2.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzR" version))
        (sha256
         (base32
-         "1x3gp30sfxz2v3k3swih9kff9b2rvk7hzhnlkp6ywlnn2wgb0q8c"))
+         "190m2bq5bqxhljaj4f7vz9wj5h5laaxd8zp5jampnql6xc4zmarg"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -9424,12 +9424,14 @@ proteomics packages.")
              #t)))))
     (inputs
      `(("boost" ,boost) ; use this instead of the bundled boost sources
-       ("netcdf" ,netcdf)))
+       ("netcdf" ,netcdf)
+       ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-protgenerics" ,r-protgenerics)
        ("r-rcpp" ,r-rcpp)
+       ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-zlibbioc" ,r-zlibbioc)))
     (home-page "https://github.com/sneumann/mzR/")
     (synopsis "Parser for mass spectrometry data files")
