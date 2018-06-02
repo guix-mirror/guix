@@ -8775,13 +8775,13 @@ kernels, including: gkmSVM, kmer-SVM, mismatch kernel and wildcard kernel.")
 (define-public r-tximport
   (package
     (name "r-tximport")
-    (version "1.6.0")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "tximport" version))
               (sha256
                (base32
-                "1gyqcm91hxg1kgjqcz2qw1n56yp9pymjzs50rwcpb2893dr8sp2h"))))
+                "1qjc7ah9dzccpvcjrp9k4qnaz13x6kvy1c1xpdj503km6k528lip"))))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/tximport")
     (synopsis "Import and summarize transcript-level estimates for gene-level analysis")
