@@ -10844,27 +10844,27 @@ libraries.")
 (define-public r-scater
   (package
     (name "r-scater")
-    (version "1.6.3")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "scater" version))
               (sha256
                (base32
-                "0q3s96gf8saa1dq2fvmpl0jyj7bx3wrdfck3hanb8pxkcir2p7dn"))))
+                "0bhpikgz3b9f510dawsay4zry9rlp8vjx5n6zvwbcpwrd94p3903"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
-       ("r-biomart" ,r-biomart)
        ("r-data-table" ,r-data-table)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
        ("r-dplyr" ,r-dplyr)
        ("r-edger" ,r-edger)
        ("r-ggbeeswarm" ,r-ggbeeswarm)
        ("r-ggplot2" ,r-ggplot2)
        ("r-limma" ,r-limma)
        ("r-matrix" ,r-matrix)
-       ("r-matrixstats" ,r-matrixstats)
        ("r-plyr" ,r-plyr)
        ("r-rcpp" ,r-rcpp)
        ("r-reshape2" ,r-reshape2)
