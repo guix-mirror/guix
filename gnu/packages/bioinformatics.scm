@@ -10698,14 +10698,14 @@ problems in genomics, brain imaging, astrophysics, and data mining.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "0kcdza41saqv6vlpvqd841awbiwkg84lh0plx6c7fmfgbqv7a0jh"))))
+         "1l0276qxkhgdxsfck3jmi8jvnsr20g10gjki53g0mqa45wnhm3ck"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
     (propagated-inputs
