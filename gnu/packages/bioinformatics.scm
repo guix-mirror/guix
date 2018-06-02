@@ -10930,14 +10930,14 @@ variable and significantly correlated genes.")
 (define-public r-delayedmatrixstats
   (package
     (name "r-delayedmatrixstats")
-    (version "1.0.3")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DelayedMatrixStats" version))
        (sha256
         (base32
-         "1cxjbjdq9hg9cm95rci0al7a4pk2h73ym276ahw9q4977zbg6381"))))
+         "1dasghfy8x27zzmd0igag4mc1gxxxbchsl4hpc1050dj3wnw9w3y"))))
     (properties
      `((upstream-name . "DelayedMatrixStats")))
     (build-system r-build-system)
