@@ -9499,14 +9499,14 @@ analysis.")
 (define-public r-vsn
   (package
     (name "r-vsn")
-    (version "3.46.0")
+    (version "3.48.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "vsn" version))
        (sha256
         (base32
-         "18y62phzirj75gg6v5l41jwybmk23ia6w7qhch0kxc4bl2rysw6j"))))
+         "0k6mah3g3zqbfap31xmvig4fn452a18xwwa5y0mfj5mj8588p57h"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-affy" ,r-affy)
