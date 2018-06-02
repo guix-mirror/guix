@@ -61,7 +61,7 @@
 (define-public vim
   (package
     (name "vim")
-    (version "8.0.1428")
+    (version "8.1.0026")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/vim/vim/archive/v"
@@ -69,7 +69,7 @@
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "08hzx843cxr5b2llc3332wxpgh3gjrs7jgd6s3sdrxnvg0s0y7s8"))))
+               "14q99dn113czp522j34p71za6g1mkriy04xxwcbm3axnrrpv1y52"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -81,7 +81,8 @@
              (substitute* "runtime/tools/mve.awk"
                (("/usr/bin/nawk") (which "gawk")))
              (substitute* '("src/testdir/Makefile"
-                            "src/testdir/test_normal.vim")
+                            "src/testdir/test_normal.vim"
+                            "src/testdir/test_terminal.vim")
                (("/bin/sh") (which "sh")))
              #t))
          (add-before 'check 'patch-failing-test
@@ -93,7 +94,6 @@
              #t)))))
     (inputs
      `(("gawk" ,gawk)
-       ("inetutils" ,inetutils)
        ("ncurses" ,ncurses)
        ("perl" ,perl)
        ("tcsh" ,tcsh))) ; For runtime/tools/vim32
