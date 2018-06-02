@@ -8797,39 +8797,18 @@ of gene-level counts.")
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
-    (version "2.22.0")
+    (version "2.24.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rhdf5" version))
               (sha256
                (base32
-                "145858qg1xan6imxcbprzq3yn3mdf532aahdr6cibvdjg47hs4c1"))))
+                "15cmmchhk8bnp94gxg0zk9qyzdjx5kv16dzpbnb62mkq7ydmifx6"))))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'unpack-smallhdf5
-           (lambda* (#:key outputs #:allow-other-keys)
-             (system* "tar" "-xzvf"
-                      "src/hdf5source/hdf5small.tgz" "-C" "src/" )
-             (substitute* "src/hdf5/configure"
-               (("/bin/mv") "mv"))
-             ;; Remove timestamp and host system information to make
-             ;; the build reproducible.
-             (substitute* "src/hdf5/src/libhdf5.settings.in"
-               (("Configured on: @CONFIG_DATE@")
-                "Configured on: Guix")
-               (("Uname information:.*")
-                "Uname information: Linux\n")
-               ;; Remove unnecessary store reference.
-               (("C Compiler:.*")
-                "C Compiler: GCC\n"))
-             #t)))))
     (propagated-inputs
-     `(("r-zlibbioc" ,r-zlibbioc)))
+     `(("r-rhdf5lib" ,r-rhdf5lib)))
     (inputs
-     `(("perl" ,perl)
-       ("zlib" ,zlib)))
+     `(("zlib" ,zlib)))
     (home-page "https://bioconductor.org/packages/rhdf5")
     (synopsis "HDF5 interface to R")
     (description
