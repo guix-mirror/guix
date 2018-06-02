@@ -56,6 +56,14 @@
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib"))
+
+       ;; Disable tests on MIPS (without changing
+       ;; the arguments list on other systems).
+       ,@(if (string-prefix? "mips" (or (%current-target-system)
+                                        (%current-system)))
+             '(#:tests? #f)
+             '())
+
        #:phases
        (modify-phases %standard-phases
          ;; No reason has been found for this test to reliably fail on aarch64-linux.
