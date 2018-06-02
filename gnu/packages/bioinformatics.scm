@@ -9127,14 +9127,14 @@ common bioinformatics tools.")
 (define-public r-chipseq
   (package
     (name "r-chipseq")
-    (version "1.28.0")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "chipseq" version))
        (sha256
         (base32
-         "1ymcq77krwjzrkzzcw7i9909cmkqa7c0675z9wzvrrk81hgdssfq"))))
+         "09f8dgl5ni75qkf7nvvppwr3irpplv4xb3ks59ld7l8i2mplcrx7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
