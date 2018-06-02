@@ -281,16 +281,15 @@ enrichedGO (addGeneIDs).")
 (define-public r-marray
   (package
     (name "r-marray")
-    (version "1.56.0")
+    (version "1.58.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "marray" version))
               (sha256
-               (base32 "14c93i86yc7jn4ax8p4l0z6v9xisw1bv7gzb4a0gbxhxn7mddaic"))))
+               (base32 "0539flh3y1qy5b1bamkfwbskis765c5s33v1y9j51n33mxb9h08d"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-biobase" ,r-biobase)
-       ("r-limma" ,r-limma)))
+     `(("r-limma" ,r-limma)))
     (home-page "http://bioconductor.org/packages/marray")
     (synopsis "Exploratory analysis for two-color spotted microarray data")
     (description "This package contains class definitions for two-color spotted
