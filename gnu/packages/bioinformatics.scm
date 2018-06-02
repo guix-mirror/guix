@@ -9471,14 +9471,14 @@ CDF file formats.")
 (define-public r-affy
   (package
     (name "r-affy")
-    (version "1.56.0")
+    (version "1.58.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "affy" version))
        (sha256
         (base32
-         "0jmbkimma5ffsdkk3xp03g4lpz84gd95nkqakif2nqq6wmx0syrj"))))
+         "0sxq875sigm21sf3qncrfrwfdz9nqw1vldxn3d3hj6aq64jg1ki6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-affyio" ,r-affyio)
@@ -9487,6 +9487,8 @@ CDF file formats.")
        ("r-biocinstaller" ,r-biocinstaller)
        ("r-preprocesscore" ,r-preprocesscore)
        ("r-zlibbioc" ,r-zlibbioc)))
+    (inputs
+     `(("zlib" ,zlib)))
     (home-page "https://bioconductor.org/packages/affy")
     (synopsis "Methods for affymetrix oligonucleotide arrays")
     (description
