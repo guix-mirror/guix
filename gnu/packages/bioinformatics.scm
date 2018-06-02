@@ -7660,13 +7660,13 @@ alignments.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.38.3")
+    (version "1.40.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "1khzfczm35k5lq9h0jlqrq01192spzjyh8s6is89spj006flwn4k"))))
+                "0l90jn4df3akxl0n1i9wvnbjqrzjc0d15r8vqr7b15q2117mrn5r"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -7678,6 +7678,8 @@ alignments.")
              (substitute* "NAMESPACE"
                (("import\\(zlibbioc\\)") ""))
              #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("zlib" ,zlib)))
     (propagated-inputs
