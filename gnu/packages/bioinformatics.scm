@@ -10422,17 +10422,18 @@ by Ernst and Kellis.")
 (define-public r-ldblock
   (package
     (name "r-ldblock")
-    (version "1.8.1")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ldblock" version))
        (sha256
         (base32
-         "1q8dz8wcq1r7kr635s9q21g36sxkdybk8khhpa4p57qv8r0gppl0"))))
+         "0c24zvnwsp39d3q0bps13sc441jj9ms2zi34xsb8c392lqmbypvd"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-erma" ,r-erma)
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-erma" ,r-erma)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicfiles" ,r-genomicfiles)
        ("r-go-db" ,r-go-db)
