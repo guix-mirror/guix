@@ -226,23 +226,27 @@ expressed genes in DNA microarray experiments.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.12.7")
+    (version "3.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "1zab489d7a6bh6ylc68x6yn47gdkmr7p3677grx9l2qafrryjr04"))))
+         "1kcnc3cnmrhdk1x7q3y6zsz09pgd3xn9xy1hfbxz48cajlb18ad0"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-delayedarray" ,r-delayedarray)
        ("r-go-db" ,r-go-db)
        ("r-biomart" ,r-biomart)
        ("r-bsgenome" ,r-bsgenome)
        ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
        ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-iranges" ,r-iranges)
        ("r-matrixstats" ,r-matrixstats)
        ("r-annotationdbi" ,r-annotationdbi)
        ("r-limma" ,r-limma)
@@ -254,6 +258,7 @@ expressed genes in DNA microarray experiments.")
        ("r-dbi" ,r-dbi)
        ("r-ensembldb" ,r-ensembldb)
        ("r-biobase" ,r-biobase)
+       ("r-s4vectors" ,r-s4vectors)
        ("r-seqinr" ,r-seqinr)
        ("r-idr" ,r-idr)
        ("r-genomicalignments" ,r-genomicalignments)
