@@ -6471,14 +6471,14 @@ testing and other simple calculations.")
 (define-public r-shortread
   (package
     (name "r-shortread")
-    (version "1.36.1")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ShortRead" version))
        (sha256
         (base32
-         "1cyv47632m9ljkxfsvnvmd19sb607ys5kz8fwh6v39dnw16g0a6m"))))
+         "038z3z7qaw5bpgjzy91sjkybsny6jwjjsrnnq4gdqdw9ss1qy1fb"))))
     (properties `((upstream-name . "ShortRead")))
     (build-system r-build-system)
     (inputs
