@@ -10290,14 +10290,14 @@ organisms via the @code{g:Profiler} toolkit.")
 (define-public r-gqtlbase
   (package
     (name "r-gqtlbase")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gQTLBase" version))
        (sha256
         (base32
-         "1756vfcj2dkkgcmfkkg7qdaig36dv9gfvpypn9rbrky56wm1p035"))))
+         "1m3ajpqjhw1nwwsn372r44xfxq0a9a0pzsnrprzdjp6mh52p9b5m"))))
     (properties `((upstream-name . "gQTLBase")))
     (build-system r-build-system)
     (propagated-inputs
