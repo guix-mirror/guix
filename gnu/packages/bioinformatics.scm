@@ -10454,14 +10454,14 @@ defining LD blocks.")
 (define-public r-gqtlstats
   (package
     (name "r-gqtlstats")
-    (version "1.10.1")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gQTLstats" version))
        (sha256
         (base32
-         "0gvq1sf2zjbkk431x40z6wql3c1rpclnnwa2f1hvykb8mmw70kmq"))))
+         "19g8qhfgngdc14cw9k4i44cxhs3qva87x56gjzmn25k1yj8qgsp1"))))
     (properties `((upstream-name . "gQTLstats")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10484,8 +10484,8 @@ defining LD blocks.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-gqtlbase" ,r-gqtlbase)
        ("r-hardyweinberg" ,r-hardyweinberg)
+       ("r-homo-sapiens" ,r-homo-sapiens)
        ("r-iranges" ,r-iranges)
-       ("r-ldblock" ,r-ldblock)
        ("r-limma" ,r-limma)
        ("r-mgcv" ,r-mgcv)
        ("r-plotly" ,r-plotly)
