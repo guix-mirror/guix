@@ -121,7 +121,8 @@ configuration files.")
          (delete 'configure)
          (add-after 'unpack 'chdir
            (lambda _
-             (chdir "src/xxd")))
+             (chdir "src/xxd")
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
