@@ -7470,13 +7470,13 @@ powerful online queries from gene annotation to database mining.")
 (define-public r-biocparallel
   (package
     (name "r-biocparallel")
-    (version "1.12.0")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocParallel" version))
               (sha256
                (base32
-                "13ng3n2wsgl3fh0v6jnz3vg51k5c1sh44pqdvblcrcd1qyjmmqhd"))))
+                "00qg1kg2l9qqpyjaw5q910cmf84vwfiw1fhsx3ig784gwinwgj6n"))))
     (properties
      `((upstream-name . "BiocParallel")))
     (build-system r-build-system)
