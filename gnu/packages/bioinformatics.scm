@@ -10214,14 +10214,14 @@ effort and encourages consistency.")
 (define-public r-ggbio
   (package
     (name "r-ggbio")
-    (version "1.26.1")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ggbio" version))
        (sha256
         (base32
-         "1xlmlngn27iwnr21s9di4059kav1a7c1sajx08wja8yn8f7j06hp"))))
+         "0wszh3w8yia5zw758h837i1q35k99sn444y2hahcxqbdmmlbf7in"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
