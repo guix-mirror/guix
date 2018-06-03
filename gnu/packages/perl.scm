@@ -5177,15 +5177,15 @@ implementations.")
 (define-public perl-module-install
   (package
     (name "perl-module-install")
-    (version "1.14")
+    (version "1.19")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Module-Install-" version ".tar.gz"))
        (sha256
         (base32
-         "0j8dz87k60i1khd9xadd8kl6bgm9s5s5zl86rzsz5bq36siz00iz"))))
+         "06q12cm97yh4p7qbm0a2p96996ii6ss59qy57z0f7f9svy6sflqs"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-yaml-tiny" ,perl-yaml-tiny)))
