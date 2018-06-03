@@ -59,6 +59,16 @@
 (define %cargo-reference-hash
   "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 
+(define* (nix-system->gnu-triplet-for-rust
+          #:optional (system (%current-system)))
+  (match system
+    ("x86_64-linux"   "x86_64-unknown-linux-gnu")
+    ("i686-linux"     "i686-unknown-linux-gnu")
+    ("armhf-linux"    "armv7-unknown-linux-gnueabihf")
+    ("aarch64-linux"  "aarch64-unknown-linux-gnu")
+    ("mips64el-linux" "mips64el-unknown-linux-gnuabi64")
+    (_                (nix-system->gnu-triplet system))))
+
 (define rust-bootstrap
   (package
     (name "rust-bootstrap")
@@ -76,10 +86,11 @@
            (method url-fetch)
            (uri (string-append
                  "https://static.rust-lang.org/dist/"
-                 "rust-" version "-" (nix-system->gnu-triplet) ".tar.gz"))
+                 "rust-" version "-" (nix-system->gnu-triplet-for-rust)
+                 ".tar.gz"))
            (sha256
             (base32
-             (match (nix-system->gnu-triplet)
+             (match (nix-system->gnu-triplet-for-rust)
                ("i686-unknown-linux-gnu"
                 "15zqbx86nm13d5vq2gm69b7av4vg479f74b5by64hs3bcwwm08pr")
                ("x86_64-unknown-linux-gnu"
@@ -119,7 +130,8 @@
                (invoke "bash" "install.sh"
                         (string-append "--prefix=" out)
                         (string-append "--components=rustc,"
-                                       "rust-std-" ,(nix-system->gnu-triplet)))
+                                       "rust-std-"
+                                       ,(nix-system->gnu-triplet-for-rust)))
                ;; Instal cargo
                (invoke "bash" "install.sh"
                         (string-append "--prefix=" cargo-out)
@@ -321,8 +333,7 @@ safety and thread safety guarantees.")
                  (("^RUSTC_TARGET := x86_64-unknown-linux-gnu")
                   (string-append "RUSTC_TARGET := "
                                  ,(or (%current-target-system)
-                                      (nix-system->gnu-triplet
-                                       (%current-system))))))
+                                      (nix-system->gnu-triplet-for-rust)))))
                (invoke "tar" "xf" (assoc-ref inputs "rustc"))
                (chdir "rustc-1.19.0-src")
                (invoke "patch" "-p0" "../rust_src.patch")
@@ -445,7 +456,7 @@ rpath = true
 # codegen/mainsubprogram.rs and codegen/mainsubprogramstart.rs
 # This tests required patched LLVM
 codegen-tests = false
-[target." ,(nix-system->gnu-triplet) "]
+[target." ,(nix-system->gnu-triplet-for-rust) "]
 llvm-config = \"" llvm "/bin/llvm-config" "\"
 cc = \"" gcc "/bin/gcc" "\"
 cxx = \"" gcc "/bin/g++" "\"
