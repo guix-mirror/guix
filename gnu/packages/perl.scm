@@ -6977,7 +6977,7 @@ used for writing documentation for Perl and for Perl modules.")
 (define-public perl-posix-strftime-compiler
   (package
     (name "perl-posix-strftime-compiler")
-    (version "0.41")
+    (version "0.42")
     (source
      (origin
        (method url-fetch)
@@ -6985,10 +6985,10 @@ used for writing documentation for Perl and for Perl modules.")
                            "POSIX-strftime-Compiler-" version ".tar.gz"))
        (sha256
         (base32
-         "0f9p3hx0vqx8zg5v24pz0s4zc8ln100c7c91ks681wq02phqj2v7"))))
+         "04dcn2n4rfkj8p24vj2p17vvis40l87pf2vdqp0vqm5jg3fjnn16"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (arguments `(#:tests? #f))          ;TODO: Timezone test failures
+    (arguments `(#:tests? #f))          ; TODO: Timezone test failures
     (home-page "http://search.cpan.org/dist/POSIX-strftime-Compiler/")
     (synopsis "GNU C library compatible strftime for loggers and servers")
     (description "POSIX::strftime::Compiler provides GNU C library compatible
