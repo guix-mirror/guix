@@ -3080,7 +3080,7 @@ errors are rethrown automatically.")
 (define-public perl-exception-class
   (package
     (name "perl-exception-class")
-    (version "1.39")
+    (version "1.44")
     (source
      (origin
        (method url-fetch)
@@ -3088,7 +3088,7 @@ errors are rethrown automatically.")
                            "Exception-Class-" version ".tar.gz"))
        (sha256
         (base32
-         "10r06v6568s33p6h9f9ml0iabc07id86mjkf74gy7ld6d5m7b741"))))
+         "03gf4cdgrjnljgrlxkvbh2cahsyzn0zsh2zcli7b1lrqn7wgpwrk"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-devel-stacktrace" ,perl-devel-stacktrace)
