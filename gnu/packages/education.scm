@@ -115,7 +115,7 @@ of categories with some of the activities available in that category.
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "0.90")
+    (version "0.91")
     (source
       (origin
         (method url-fetch)
@@ -124,11 +124,18 @@ of categories with some of the activities available in that category.
                version ".tar.xz"))
         (sha256
          (base32
-          "1i5adxnhig849qxwi3c4v7r84q6agx1zxkd69fh4y7lcmq2qiaza"))))
+          "09h098w9q79hnzla1pcpqlnnr6dbafm4q6zmdp7wlk11ym8n9kvg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-for-qt5.11
+           (lambda _
+             (substitute* "src/core/CMakeLists.txt"
+               (("qt5_use_modules") "target_link_libraries")
+               (("Qml Quick Gui Multimedia Network XmlPatterns Svg Xml Sensors Core")
+                "Qt5::Qml Qt5::Quick Qt5::Gui Qt5::Multimedia Qt5::Core Qt5::Svg Qt5::Xml Qt5::XmlPatterns Qt5::Sensors"))
+             #t))
          (add-after 'install 'wrap-executable
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
