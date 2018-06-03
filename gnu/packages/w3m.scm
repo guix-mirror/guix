@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,10 +25,12 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix git-download)
@@ -61,7 +64,9 @@
                        (("@PERL@") (which "perl")))
              #t)))))
     (inputs
-     `(("libgc" ,libgc)
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("libgc" ,libgc)
+       ("libx11" ,libx11)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
