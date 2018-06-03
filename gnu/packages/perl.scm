@@ -3488,7 +3488,7 @@ file system.")
 (define-public perl-file-pushd
   (package
     (name "perl-file-pushd")
-    (version "1.014")
+    (version "1.016")
     (source
      (origin
        (method url-fetch)
@@ -3498,7 +3498,7 @@ file system.")
              ".tar.gz"))
        (sha256
         (base32
-         "02rlqvyy7gly3dsqwaa81aisyy9c791b8xvwzczcbgmcwgzkgaxm"))))
+         "1p3wz5jnddd87wkwl4x3fc3ncprahdxdzwqd4scb10r98h4pyfnp"))))
     (build-system perl-build-system)
     (home-page
      "http://search.cpan.org/dist/File-pushd/")
