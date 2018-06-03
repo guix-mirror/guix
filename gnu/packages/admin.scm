@@ -2473,7 +2473,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
       (method url-fetch)
@@ -2481,25 +2481,15 @@ make it a perfect utility on modern distros.")
                           version ".tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256 (base32
-               "0isgmav3z3nb5bsdya8m3haqhzj1lyfjx7i812cqfjrh2a9msin4"))))
+               "15a6vb67y5wsmf0irrq7sxam18yqpz64130k83ryf24mp40h661b"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after
-                   'unpack 'autogen.sh-and-fix-paths
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let ((out (assoc-ref outputs "out")))
-                       ;; XXX this can probably be removed after version 1.7.1.
-                       ;; upstartconfir is hardcoded to /etc/init and the build
-                       ;; system tries to mkdir that.  We don't even need upstart
-                       ;; files at all; this is a fast and kludgy workaround
-                       (substitute* "data/Makefile.am"
-                         (("upstartconfdir = /etc/init")
-                          (string-append "upstartconfdir = "
-                                         out "/etc/init")))
-                       ;; Now run autogen
-                       (invoke "sh" "autogen.sh")
-                       #t))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (invoke "sh" "autogen.sh")
+             #t)))
        #:configure-flags
        (let ((out      (assoc-ref %outputs "out")))
          (list (string-append "--sysconfdir="
@@ -2521,7 +2511,7 @@ make it a perfect utility on modern distros.")
     (synopsis "CPU scaling for thermal management")
     (description "The Linux Thermal Daemon helps monitor and control temperature
 on systems running the Linux kernel.")
-    ;; arm and aarch64 don't have cpuid.h
+    ;; arm and aarch64 don't have cpuid.h.
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:gpl2+)))
 
