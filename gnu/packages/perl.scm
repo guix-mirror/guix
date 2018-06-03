@@ -4913,15 +4913,15 @@ return values, trading space for time.")
 (define-public perl-memoize-expirelru
   (package
     (name "perl-memoize-expirelru")
-    (version "0.55")
+    (version "0.56")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BP/BPOWERS/"
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Memoize-ExpireLRU-" version ".tar.gz"))
        (sha256
         (base32
-         "0klk0vj78lr259mnv1rbxib8gzf2cfp4zhkhbcxyhadkkl73myvj"))))
+         "1xnp3jqabl4il5kfadlqimbxhzsbm7gpwrgw0m5s5fdsrc0n70zf"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Memoize-ExpireLRU/")
     (synopsis "Expiry plug-in for Memoize that adds LRU cache expiration")
