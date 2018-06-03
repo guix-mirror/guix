@@ -107,6 +107,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages shells)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -10633,4 +10634,182 @@ This code is still alpha.")
     (description "This package provides two integration features between Emacs
 and the Zotero research assistant: Insertion of links to Zotero items into an
 Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
+    (license license:gpl3+)))
+
+(define-public emacs-evil-ediff
+  (package
+    (name "emacs-evil-ediff")
+    (version "20170724")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/emacs-evil/evil-ediff/archive/"
+             "67b0e69f65c196eff5b39dacb7a9ec05bb919c74"
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0j2x26zfc6md54mjf76qpybil4yal70lp5bifcz62l1f8fc1vvlq"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+    (home-page "https://github.com/emacs-evil/evil-ediff")
+    (synopsis "Make Ediff a little evil")
+    (description
+     "This Emacs package configures Ediff to be friendlier to users of Vi-like
+keybindings.  Consult the help buffer for more information.")
+    (license license:gpl3+)))
+
+(define-public emacs-evil-magit
+  (let ((commit "dbf5a646a7ce1c35c229dfdc423bd5ecd927a3a8"))
+    (package
+      (name "emacs-evil-magit")
+      (version (git-version "0.4.2" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-evil/evil-magit")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0ya0dkviq4pi92ab69a4j674y5r1hc1x3x7r7hlm97ag3a6zfkav"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)
+         ("magit" ,magit)))
+      (home-page
+       "https://github.com/emacs-evil/evil-magit")
+      (synopsis "Evil-based key bindings for Magit")
+      (description
+       "This Emacs library configures Magit and Evil to play well with each other.
+For some background see @url{https://github.com/magit/evil-magit/issues/1}.
+See the README at @url{https://github.com/justbur/evil-magit} for a table
+describing the key binding changes.")
+      (license license:gpl3+))))
+
+(define-public emacs-evil-mu4e
+  (package
+    (name "emacs-evil-mu4e")
+    (version "0.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/JorisE/evil-mu4e/archive/"
+             "c03a0e11afda3092eb1461be09fa6a61ebc0e4f6"
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1k3z5h04bqslrkq13paqf8pv9r0rf0zjl0zbb57ly043ds3nvxr2"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-evil" ,emacs-evil)
+       ("mu" ,mu)))
+    (home-page "https://github.com/JorisE/evil-mu4e")
+    (synopsis "Evil-based key bindings for mu4e")
+    (description
+     "Use keybindings for the mu4e mail reader in Emacs that make sense for
+Evil users.")
+    (license license:gpl3+)))
+
+(define-public emacs-evil-multiedit
+  (let ((commit "ea3d9177b74ab0bc65e55df9cc0a0b42e4ef815d"))
+    (package
+      (name "emacs-evil-multiedit")
+      (version (git-version "1.3.9" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hlissner/evil-multiedit")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "17zm35r474z8ras4xy7124pcb972d385pbdv4jxyj5vq042vq07w"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)
+         ("emacs-iedit" ,emacs-iedit)))
+      (home-page
+       "https://github.com/hlissner/evil-multiedit")
+      (synopsis "Multiple cursors for Evil mode")
+      (description
+       "This plugin was an answer to the lack of proper multiple cursor support
+in Emacs+Evil.  It allows you to select and edit matches interactively,
+integrating @code{iedit-mode} into Evil mode with an attempt at sensible
+defaults.")
+    (license license:gpl3+))))
+
+(define-public emacs-evil-org
+  (let ((commit "b6d652a9163d3430a9e0933a554bdbee5244bbf6"))
+    (package
+      (name "emacs-evil-org")
+      (version (git-version "0.1.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Somelauw/evil-org-mode")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "176hrw7y7nczffbyhsa167b8rvfacsmcafm2gpkrdjqlrikbmrhl"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page
+       "https://github.com/Somelauw/evil-org-mode")
+      (synopsis "Evil keybindings for Org mode")
+      (description
+       "This package adds supplemental Evil mode key-bindings to Emacs
+Org-mode.  It features:
+@itemize
+@item normal, visual and insert mode bindings;
+@item key bindings organised in key themes;
+@item operators like > and < to work on headings;
+@item text objects;
+@item table support;
+@item calendar (date selection) support;
+@item agenda support.
+@end itemize\n")
+      (license license:gpl3+))))
+
+(define-public emacs-fish-completion
+  (package
+    (name "emacs-fish-completion")
+    (version "20180329")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/Ambrevar/emacs-fish-completion/archive/"
+             "3e3ed1f19fa778b7c35ad88e033dce5a6b1fc153"
+             ".tar.gz"))
+       (sha256
+        (base32
+         "16329py7fvid0bap1qhqxhdc68m9qqy1p8gc2bhng81zhm5a5zsm"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("fish" ,fish)))
+    (home-page
+     "https://github.com/Ambrevar/emacs-fish-completion")
+    (synopsis "Fish completion for Emacs pcomplete")
+    (description
+     "This package provides completion for the Fish shell to pcomplete (used
+by shell and Eshell).  You can set it up globally with:
+
+@example
+(when (and (executable-find \"fish\")
+           (require 'fish-completion nil t))
+  (global-fish-completion-mode))
+@end example
+
+Alternatively, you can call the @code{fish-completion-mode} manually or in
+shell/Eshell mode hook.
+
+The package @code{emacs-bash-completion} is an optional dependency: if available,
+@code{fish-completion-complete} can be configured to fall back on bash to further
+try completing.  See @code{fish-completion-fallback-on-bash-p}.")
     (license license:gpl3+)))

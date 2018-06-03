@@ -82,7 +82,6 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("guile-json" (ref '(gnu packages guile) 'guile-json))
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))
-      ("guile-gdbm-ffi" (ref '(gnu packages guile) 'guile-gdbm-ffi))
       ("guile-sqlite3" (ref '(gnu packages guile) 'guile-sqlite3))
       ("libgcrypt"  (ref '(gnu packages gnupg) 'libgcrypt))
       ("zlib"       (ref '(gnu packages compression) 'zlib))
@@ -94,7 +93,6 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("guile2.0-json" (ref '(gnu packages guile) 'guile2.0-json))
       ("guile2.0-ssh"  (ref '(gnu packages ssh) 'guile2.0-ssh))
       ("guile2.0-git"  (ref '(gnu packages guile) 'guile2.0-git))
-      ("guile2.0-gdbm-ffi" (ref '(gnu packages guile) 'guile2.0-gdbm-ffi))
       ;; XXX: No "guile2.0-sqlite3".
       (_               #f))))                     ;no such package
 
@@ -220,12 +218,6 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                        "guile-git"
                        "guile2.0-git"))
 
-  (define guile-gdbm-ffi
-    (package-for-guile guile-version
-                       "guile-gdbm-ffi"
-                       "guile2.0-gdbm-ffi"))
-
-
   (define guile-sqlite3
     (package-for-guile guile-version
                        "guile-sqlite3"
@@ -235,8 +227,7 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
     (match (append-map (lambda (package)
                          (cons (list "x" package)
                                (package-transitive-propagated-inputs package)))
-                       (list guile-git guile-json guile-ssh
-                             guile-gdbm-ffi guile-sqlite3))
+                       (list guile-git guile-json guile-ssh guile-sqlite3))
       (((labels packages _ ...) ...)
        packages)))
 
@@ -264,12 +255,19 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                                          (specification->package
                                           "libgcrypt"))))
 
+                 ;; (guix man-db) is needed at build-time by (guix profiles)
+                 ;; but we don't need to compile it; not compiling it allows
+                 ;; us to avoid an extra dependency on guile-gdbm-ffi.
+                 #:extra-files
+                 `(("guix/man-db.scm" ,(local-file "../guix/man-db.scm")))
+
                  #:guile-for-build guile-for-build))
 
   (define *extra-modules*
     (scheme-node "guix-extra"
                  (filter-map (match-lambda
                                (('guix 'scripts _ ..1) #f)
+                               (('guix 'man-db) #f)
                                (name name))
                              (scheme-modules* source "guix"))
                  (list *core-modules*)
