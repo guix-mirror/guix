@@ -1473,7 +1473,7 @@ and writing of @code{.ini}-style configuration files.")
 (define-public perl-context-preserve
   (package
     (name "perl-context-preserve")
-    (version "0.02")
+    (version "0.03")
     (source
      (origin
        (method url-fetch)
@@ -1481,7 +1481,7 @@ and writing of @code{.ini}-style configuration files.")
                            "Context-Preserve-" version ".tar.gz"))
        (sha256
         (base32
-         "0qkjj1qifr87zlfpfnn21gdyrpfgilh8zp3b53008m2ax02k87gc"))))
+         "07zxgmb11bn4zj3w9g1zwbb9iv4jyk5q7hc0nv59knvv5i64m489"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)
