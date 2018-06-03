@@ -5551,7 +5551,7 @@ overloads will \"just work\".")
 (define-public perl-moosex-methodattributes
   (package
     (name "perl-moosex-methodattributes")
-    (version "0.29")
+    (version "0.31")
     (source
      (origin
        (method url-fetch)
@@ -5559,7 +5559,7 @@ overloads will \"just work\".")
                            "MooseX-MethodAttributes-" version ".tar.gz"))
        (sha256
         (base32
-         "1pz3i67gadfmgzj87m1xp2ilcg3yhppdylcng2h6c11dy0a06hdk"))))
+         "1whd10w7bm3dwaj7gpgw40bci9vvb2zmxs4349ifji91hvinwqck"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
