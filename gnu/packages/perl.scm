@@ -1139,7 +1139,7 @@ loaded class.")
 (define-public perl-class-load
   (package
     (name "perl-class-load")
-    (version "0.23")
+    (version "0.24")
     (source
      (origin
        (method url-fetch)
@@ -1147,12 +1147,13 @@ loaded class.")
                            "Class-Load-" version ".tar.gz"))
        (sha256
         (base32
-         "13xjfh4fadq4pkq7fcj42b26544jl7gqdg2y3imnra9fwxwsbg7j"))))
+         "0dnacm959vi5819h6cdl5qpi89fr81p6smbsqx7m6in18vd87f8b"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
        ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+       ("perl-test-needs" ,perl-test-needs)
+       ("perl-test-without-module" ,perl-test-without-module)))
     (propagated-inputs
      `(("perl-package-stash" ,perl-package-stash)
        ("perl-data-optlist" ,perl-data-optlist)
