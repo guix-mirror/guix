@@ -8151,15 +8151,15 @@ used to justify strings to various alignment styles.")
 (define-public perl-text-balanced
   (package
     (name "perl-text-balanced")
-    (version "2.02")
+    (version "2.03")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+       (uri (string-append "mirror://cpan/authors/id/S/SH/SHAY/"
                            "Text-Balanced-" version ".tar.gz"))
        (sha256
         (base32
-         "1d3mba2sjpp044h16pkf231cksa34ripaz6rmgxp0ygpl917az57"))))
+         "1j4jjw6bg6ik8cn1mimw54rvg4h0qf4hm9k63y9572sny3w56xq5"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Text-Balanced/")
     (synopsis "Extract delimited text sequences from strings")
