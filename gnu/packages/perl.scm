@@ -2456,7 +2456,7 @@ the DateTime.pm class.")
 (define-public perl-datetime-timezone
   (package
     (name "perl-datetime-timezone")
-    (version "2.17")
+    (version "2.19")
     (source
      (origin
        (method url-fetch)
@@ -2464,7 +2464,7 @@ the DateTime.pm class.")
                            "DateTime-TimeZone-" version ".tar.gz"))
        (sha256
         (base32
-         "1ckhjw7h545306b02p6ra60y8zxqnbqr2lsy7c1wib8libf0l2hx"))))
+         "1y54bsgq886sg35fgmxgj8wwmgs4l83qhwa0g3zv8w9d43z2w6dr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
