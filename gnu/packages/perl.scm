@@ -9229,7 +9229,7 @@ recursive-descent text parsers from simple yacc-like grammar specifications.")
 (define-public perl-parse-yapp
   (package
     (name "perl-parse-yapp")
-    (version "1.2")
+    (version "1.21")
     (source
      (origin
        (method url-fetch)
@@ -9239,7 +9239,7 @@ recursive-descent text parsers from simple yacc-like grammar specifications.")
              ".tar.gz"))
        (sha256
         (base32
-         "16p4qgqg28cy76ylcf4wq1r693gqpx8xq0w32b3564i67h49zljb"))))
+         "1r8kbyk0qd4ficmabj753kjpq0ib0csk01169w7jxflg62cfj41q"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Parse-Yapp/")
     (synopsis "Generate and use LALR parsers")
