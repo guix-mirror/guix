@@ -3962,15 +3962,15 @@ merged.")
 (define-public perl-hash-multivalue
   (package
     (name "perl-hash-multivalue")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+       (uri (string-append "mirror://cpan/authors/id/A/AR/ARISTOTLE/"
                            "Hash-MultiValue-" version ".tar.gz"))
        (sha256
         (base32
-         "1jc37kwpa1fl88va8bd1p95h0vjv1gsvmn7pc2pxj62ga6x0wpc0"))))
+         "1x3k7h542xnigz0b8vsfiq580p5r325wi5b8mxppiqk8mbvis636"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Hash-MultiValue/")
     (synopsis "Store multiple values per key")
