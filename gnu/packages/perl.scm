@@ -1170,7 +1170,7 @@ names, not Class::Name.  For that, this module provides \"load_class
 (define-public perl-class-load-xs
   (package
     (name "perl-class-load-xs")
-    (version "0.09")
+    (version "0.10")
     (source
      (origin
        (method url-fetch)
@@ -1178,11 +1178,12 @@ names, not Class::Name.  For that, this module provides \"load_class
                            "Class-Load-XS-" version ".tar.gz"))
        (sha256
         (base32
-         "1aivalms81s3a2cj053ncgnmkpgl7vspna8ajlkqir7rdn8kpv5v"))))
+         "1ldd4a306hjagm5v9j0gjg8y7km4v3q45bxxqmj2bzgb6vsjrhjv"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+       ("perl-test-needs" ,perl-test-needs)
+       ("perl-test-without-module" ,perl-test-without-module)))
     (inputs `(("perl-class-load" ,perl-class-load)))
     (home-page "http://search.cpan.org/dist/Class-Load-XS/")
     (synopsis "XS implementation of parts of Class::Load")
