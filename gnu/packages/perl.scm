@@ -4619,7 +4619,7 @@ one: logging, exceptions, and translations.")
 (define-public perl-libintl-perl
   (package
     (name "perl-libintl-perl")
-    (version "1.28")
+    (version "1.29")
     (source
      (origin
        (method url-fetch)
@@ -4627,7 +4627,7 @@ one: logging, exceptions, and translations.")
                            "libintl-perl-" version ".tar.gz"))
        (sha256
         (base32
-         "1gafrfvicjclqlz6i62jx2iqbq878yn3ws86waz2sqbd3gxz5svv"))))
+         "1cgvrgh4axd8jlr6497ndgphgvgnqc1axd306460hskdvc85z4vq"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
