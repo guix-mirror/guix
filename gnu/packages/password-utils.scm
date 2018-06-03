@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
@@ -110,7 +110,17 @@ human.")
     (arguments
      '(#:configure-flags '("-DWITH_XC_NETWORKING=YES"
                            "-DWITH_XC_BROWSER=YES"
-                           "-DWITH_XC_SSHAGENT=YES")))
+                           "-DWITH_XC_SSHAGENT=YES")
+       #:phases
+       (modify-phases %standard-phases
+         ;; should be fixed in 2.3.3+, see:
+         ;; https://github.com/keepassxreboot/keepassxc/pull/1964
+         (add-after 'unpack 'patch-sources
+           (lambda _
+             (substitute* "src/gui/entry/EditEntryWidget.cpp"
+               (("#include <QColorDialog>") "#include <QColorDialog>
+#include <QButtonGroup>"))
+             #t)))))
     (inputs
      `(("argon2" ,argon2)
        ("curl" ,curl) ; XC_NETWORKING
