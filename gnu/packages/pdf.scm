@@ -982,7 +982,7 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
 (define-public pdfgrep
   (package
     (name "pdfgrep")
-    (version "2.0.1")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
@@ -990,7 +990,7 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "07llkrkcfjwd3ybai9ad10ybhr0biffcplmy7lw4fb87nd2dfw03"))))
+         "02qcl5kmr5qzjfc99qpbpfb1890bxlrq3r208gnding51zrmb09c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
