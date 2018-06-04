@@ -615,6 +615,7 @@
                                                 `(("graph" ,two))
                                                 #:modules
                                                 '((guix build store-copy)
+                                                  (guix sets)
                                                   (guix build utils))))
                          (ok? (built-derivations (list drv)))
                          (out -> (derivation->output-path drv)))
@@ -815,21 +816,25 @@
        (two (gexp->derivation "two"
                               #~(symlink #$one #$output:chbouib)))
        (build -> (with-imported-modules '((guix build store-copy)
+                                          (guix sets)
                                           (guix build utils))
                    #~(begin
                        (use-modules (guix build store-copy))
                        (with-output-to-file #$output
                          (lambda ()
-                           (write (call-with-input-file "guile"
-                                    read-reference-graph))))
+                           (write (map store-info-item
+                                       (call-with-input-file "guile"
+                                         read-reference-graph)))))
                        (with-output-to-file #$output:one
                          (lambda ()
-                           (write (call-with-input-file "one"
-                                    read-reference-graph))))
+                           (write (map store-info-item
+                                       (call-with-input-file "one"
+                                         read-reference-graph)))))
                        (with-output-to-file #$output:two
                          (lambda ()
-                           (write (call-with-input-file "two"
-                                    read-reference-graph)))))))
+                           (write (map store-info-item
+                                       (call-with-input-file "two"
+                                         read-reference-graph))))))))
        (drv (gexp->derivation "ref-graphs" build
                               #:references-graphs `(("one" ,one)
                                                     ("two" ,two "chbouib")

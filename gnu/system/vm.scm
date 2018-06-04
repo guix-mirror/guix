@@ -466,8 +466,10 @@ should set REGISTER-CLOSURES? to #f."
                 (build-docker-image
                  (string-append "/xchg/" #$name) ;; The output file.
                  (cons* root-directory
-                        (call-with-input-file (string-append "/xchg/" #$graph)
-                          read-reference-graph))
+                        (map store-info-item
+                             (call-with-input-file
+                                 (string-append "/xchg/" #$graph)
+                               read-reference-graph)))
                  #$os-drv
                  #:compressor '(#+(file-append gzip "/bin/gzip") "-9n")
                  #:creation-time (make-time time-utc 0 1)

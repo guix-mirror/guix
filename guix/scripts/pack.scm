@@ -251,8 +251,9 @@ added to the pack."
           ;; ancestor directories and only keeps the basename.  We fix this
           ;; in the following invocations of mksquashfs.
           (apply invoke "mksquashfs"
-                 `(,@(call-with-input-file "profile"
-                       read-reference-graph)
+                 `(,@(map store-info-item
+                          (call-with-input-file "profile"
+                            read-reference-graph))
                    ,#$output
 
                    ;; Do not perform duplicate checking because we
@@ -352,8 +353,9 @@ the image."
             (setenv "PATH" (string-append #$archiver "/bin"))
 
             (build-docker-image #$output
-                                (call-with-input-file "profile"
-                                  read-reference-graph)
+                                (map store-info-item
+                                     (call-with-input-file "profile"
+                                       read-reference-graph))
                                 #$profile
                                 #:system (or #$target (utsname:machine (uname)))
                                 #:symlinks '#$symlinks
