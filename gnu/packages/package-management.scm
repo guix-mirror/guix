@@ -213,12 +213,13 @@
                         (let* ((out    (assoc-ref outputs "out"))
                                (guile  (assoc-ref inputs "guile"))
                                (json   (assoc-ref inputs "guile-json"))
+                               (sqlite (assoc-ref inputs "guile-sqlite3"))
                                (git    (assoc-ref inputs "guile-git"))
                                (bs     (assoc-ref inputs
                                                   "guile-bytestructures"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
-                               (deps   (list json gnutls git bs ssh))
+                               (deps   (list json sqlite gnutls git bs ssh))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
@@ -275,6 +276,7 @@
       (propagated-inputs
        `(("gnutls" ,gnutls)
          ("guile-json" ,guile-json)
+         ("guile-sqlite3" ,guile-sqlite3)
          ("guile-ssh" ,guile-ssh)
          ("guile-git" ,guile-git)))
 

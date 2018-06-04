@@ -615,6 +615,9 @@ later, including 2.2.x;
 Guile,, gnutls-guile, GnuTLS-Guile});
 @item
 @c FIXME: Specify a version number once a release has been made.
+@uref{https://notabug.org/civodul/guile-sqlite3, Guile-SQLite3};
+@item
+@c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
 2017 or later;
 @item @url{http://zlib.net, zlib};

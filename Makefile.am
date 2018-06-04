@@ -262,11 +262,7 @@ STORE_MODULES =					\
   guix/store/database.scm			\
   guix/store/deduplication.scm
 
-if HAVE_GUILE_SQLITE3
 MODULES += $(STORE_MODULES)
-else
-MODULES_NOT_COMPILED += $(STORE_MODULES)
-endif !HAVE_GUILE_SQLITE3
 
 # Internal modules with test suite support.
 dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
@@ -379,7 +375,9 @@ SCM_TESTS =					\
   tests/scripts-build.scm			\
   tests/containers.scm				\
   tests/pack.scm				\
-  tests/import-utils.scm
+  tests/import-utils.scm			\
+  tests/store-database.scm			\
+  tests/store-deduplication.scm
 
 if HAVE_GUILE_JSON
 
@@ -388,14 +386,6 @@ SCM_TESTS += 					\
   tests/cpan.scm				\
   tests/gem.scm					\
   tests/crate.scm
-
-endif
-
-if HAVE_GUILE_SQLITE3
-
-SCM_TESTS +=					\
-  tests/store-database.scm			\
-  tests/store-deduplication.scm
 
 endif
 
