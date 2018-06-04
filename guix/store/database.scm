@@ -88,7 +88,7 @@ If FILE doesn't exist, create it and initialize it as a new database."
   ;; XXX: (sqlite3) currently lacks bindings for 'sqlite3_last_insert_rowid'.
   ;; Work around that.
   (let* ((stmt   (sqlite-prepare db "SELECT last_insert_rowid();"
-                               #:cache? #t))
+                                 #:cache? #t))
          (result (sqlite-fold cons '() stmt)))
     (sqlite-finalize stmt)
     (match result
@@ -157,7 +157,8 @@ ids of items referred to."
 
 ;; XXX figure out caching of statement and database objects... later
 (define* (sqlite-register #:key db-file path (references '())
-                          deriver hash nar-size)
+                          deriver hash nar-size
+                          (schema (sql-schema)))
   "Registers this stuff in a database specified by DB-FILE. PATH is the string
 path of some store item, REFERENCES is a list of string paths which the store
 item PATH refers to (they need to be already registered!), DERIVER is a string
@@ -167,16 +168,17 @@ base16-encoded sha256 hash of the store item denoted by PATH (prefixed with
 bytes of the store item denoted by PATH after being converted to nar form.
 
 Every store item in REFERENCES must already be registered."
-  (with-database db-file db
-    (let ((id (update-or-insert db #:path path
-                                #:deriver deriver
-                                #:hash hash
-                                #:nar-size nar-size
-                                #:time (time-second (current-time time-utc)))))
-      ;; Call 'path-id' on each of REFERENCES.  This ensures we get a
-      ;; "non-NULL constraint" failure if one of REFERENCES is unregistered.
-      (add-references db id
-                      (map (cut path-id db <>) references)))))
+  (parameterize ((sql-schema schema))
+    (with-database db-file db
+      (let ((id (update-or-insert db #:path path
+                                  #:deriver deriver
+                                  #:hash hash
+                                  #:nar-size nar-size
+                                  #:time (time-second (current-time time-utc)))))
+        ;; Call 'path-id' on each of REFERENCES.  This ensures we get a
+        ;; "non-NULL constraint" failure if one of REFERENCES is unregistered.
+        (add-references db id
+                        (map (cut path-id db <>) references))))))
 
 
 ;;;
@@ -221,7 +223,8 @@ it's a directory."
 
 (define* (register-path path
                         #:key (references '()) deriver prefix
-                        state-directory (deduplicate? #t))
+                        state-directory (deduplicate? #t)
+                        (schema (sql-schema)))
   ;; Priority for options: first what is given, then environment variables,
   ;; then defaults. %state-directory, %store-directory, and
   ;; %store-database-directory already handle the "environment variables /
@@ -267,6 +270,7 @@ be used internally by the daemon's build hook."
       (reset-timestamps real-path)
       (sqlite-register
        #:db-file (string-append db-dir "/db.sqlite")
+       #:schema schema
        #:path to-register
        #:references references
        #:deriver deriver
