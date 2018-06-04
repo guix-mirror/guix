@@ -24,6 +24,7 @@
   #:use-module (guix store deduplication)
   #:use-module (guix base16)
   #:use-module (guix build syscalls)
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -268,6 +269,7 @@ be used internally by the daemon's build hook."
     (let-values (((hash nar-size)
                   (nar-sha256 real-path)))
       (reset-timestamps real-path)
+      (mkdir-p db-dir)
       (sqlite-register
        #:db-file (string-append db-dir "/db.sqlite")
        #:schema schema
