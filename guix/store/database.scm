@@ -27,6 +27,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
+  #:use-module (srfi srfi-26)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
   #:use-module (system foreign)
@@ -139,13 +140,11 @@ of course. Returns the row id of the row that was modified or inserted."
           (last-insert-row-id db)))))
 
 (define add-reference-sql
-  "INSERT OR IGNORE INTO Refs (referrer, reference) SELECT :referrer, id
-FROM ValidPaths WHERE path = :reference")
+  "INSERT INTO Refs (referrer, reference) VALUES (:referrer, :reference);")
 
 (define (add-references db referrer references)
   "REFERRER is the id of the referring store item, REFERENCES is a list
-containing store items being referred to.  Note that all of the store items in
-REFERENCES must already be registered."
+ids of items referred to."
   (let ((stmt (sqlite-prepare db add-reference-sql #:cache? #t)))
     (for-each (lambda (reference)
                 (sqlite-reset stmt)
@@ -164,15 +163,20 @@ path of some store item, REFERENCES is a list of string paths which the store
 item PATH refers to (they need to be already registered!), DERIVER is a string
 path of the derivation that created the store item PATH, HASH is the
 base16-encoded sha256 hash of the store item denoted by PATH (prefixed with
-\"sha256:\") after being converted to nar form, and nar-size is the size in
-bytes of the store item denoted by PATH after being converted to nar form."
+\"sha256:\") after being converted to nar form, and NAR-SIZE is the size in
+bytes of the store item denoted by PATH after being converted to nar form.
+
+Every store item in REFERENCES must already be registered."
   (with-database db-file db
     (let ((id (update-or-insert db #:path path
                                 #:deriver deriver
                                 #:hash hash
                                 #:nar-size nar-size
                                 #:time (time-second (current-time time-utc)))))
-      (add-references db id references))))
+      ;; Call 'path-id' on each of REFERENCES.  This ensures we get a
+      ;; "non-NULL constraint" failure if one of REFERENCES is unregistered.
+      (add-references db id
+                      (map (cut path-id db <>) references)))))
 
 
 ;;;

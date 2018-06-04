@@ -74,4 +74,24 @@
          (list (path-id db "/gnu/foo")
                (path-id db "/gnu/bar")))))))
 
+(test-assert "register-path with unregistered references"
+  ;; Make sure we get a "NOT NULL constraint failed: Refs.reference" error
+  ;; when we try to add references that are not registered yet.  Better safe
+  ;; than sorry.
+  (call-with-temporary-output-file
+   (lambda (db-file port)
+     (delete-file db-file)
+     (catch 'sqlite-error
+       (lambda ()
+         (sqlite-register #:db-file db-file
+                          #:path "/gnu/foo"
+                          #:references '("/gnu/bar")
+                          #:deriver "/gnu/foo.drv"
+                          #:hash (string-append "sha256:" (make-string 64 #\e))
+                          #:nar-size 1234)
+         #f)
+       (lambda args
+         (pk 'welcome-exception! args)
+         #t)))))
+
 (test-end "store-database")
