@@ -300,6 +300,7 @@ EXAMPLES =					\
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
 
 nobase_dist_guilemodule_DATA =					\
+  guix/store/schema.sql						\
   $(MODULES) $(MODULES_NOT_COMPILED) $(AUX_FILES) $(EXAMPLES)	\
   $(MISC_DISTRO_FILES)
 nobase_nodist_guilemodule_DATA = guix/config.scm

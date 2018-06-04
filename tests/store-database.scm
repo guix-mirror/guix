@@ -20,6 +20,7 @@
   #:use-module (guix tests)
   #:use-module ((guix store) #:hide (register-path))
   #:use-module (guix store database)
+  #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64))
 
@@ -50,5 +51,27 @@
            (equal? (references %store file) (list ref))
            (null? (valid-derivers %store file))
            (null? (referrers %store file))))))
+
+(test-equal "new database"
+  (list 1 2)
+  (call-with-temporary-output-file
+   (lambda (db-file port)
+     (delete-file db-file)
+     (sqlite-register #:db-file db-file
+                      #:path "/gnu/foo"
+                      #:references '()
+                      #:deriver "/gnu/foo.drv"
+                      #:hash (string-append "sha256:" (make-string 64 #\e))
+                      #:nar-size 1234)
+     (sqlite-register #:db-file db-file
+                      #:path "/gnu/bar"
+                      #:references '("/gnu/foo")
+                      #:deriver "/gnu/bar.drv"
+                      #:hash (string-append "sha256:" (make-string 64 #\a))
+                      #:nar-size 4321)
+     (let ((path-id (@@ (guix store database) path-id)))
+       (with-database db-file db
+         (list (path-id db "/gnu/foo")
+               (path-id db "/gnu/bar")))))))
 
 (test-end "store-database")

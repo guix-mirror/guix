@@ -24,24 +24,64 @@
   #:use-module (guix store deduplication)
   #:use-module (guix base16)
   #:use-module (guix build syscalls)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
+  #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
-  #:export (sqlite-register
+  #:use-module (system foreign)
+  #:export (sql-schema
+            with-database
+            sqlite-register
             register-path
             reset-timestamps))
 
 ;;; Code for working with the store database directly.
 
+(define sql-schema
+  ;; Name of the file containing the SQL scheme or #f.
+  (make-parameter #f))
 
-(define-syntax-rule (with-database file db exp ...)
-  "Open DB from FILE and close it when the dynamic extent of EXP... is left."
-  (let ((db (sqlite-open file)))
+(define sqlite-exec
+  ;; XXX: This is was missing from guile-sqlite3 until
+  ;; <https://notabug.org/civodul/guile-sqlite3/commit/b87302f9bcd18a286fed57b2ea521845eb1131d7>.
+  (let ((exec (pointer->procedure
+               int
+               (dynamic-func "sqlite3_exec" (@@ (sqlite3) libsqlite3))
+               '(* * * * *))))
+    (lambda (db text)
+      (let ((ret (exec ((@@ (sqlite3) db-pointer) db)
+                       (string->pointer text)
+                       %null-pointer %null-pointer %null-pointer)))
+        (unless (zero? ret)
+          ((@@ (sqlite3) sqlite-error) db "sqlite-exec" ret))))))
+
+(define (initialize-database db)
+  "Initializing DB, an empty database, by creating all the tables and indexes
+as specified by SQL-SCHEMA."
+  (define schema
+    (or (sql-schema)
+        (search-path %load-path "guix/store/schema.sql")))
+
+  (sqlite-exec db (call-with-input-file schema get-string-all)))
+
+(define (call-with-database file proc)
+  "Pass PROC a database record corresponding to FILE.  If FILE doesn't exist,
+create it and initialize it as a new database."
+  (let ((new? (not (file-exists? file)))
+        (db   (sqlite-open file)))
     (dynamic-wind noop
                   (lambda ()
-                    exp ...)
+                    (when new?
+                      (initialize-database db))
+                    (proc db))
                   (lambda ()
                     (sqlite-close db)))))
+
+(define-syntax-rule (with-database file db exp ...)
+  "Open DB from FILE and close it when the dynamic extent of EXP... is left.
+If FILE doesn't exist, create it and initialize it as a new database."
+  (call-with-database file (lambda (db) exp ...)))
 
 (define (last-insert-row-id db)
   ;; XXX: (sqlite3) currently lacks bindings for 'sqlite3_last_insert_rowid'.

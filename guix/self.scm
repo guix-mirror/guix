@@ -482,7 +482,9 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                  ;; but we don't need to compile it; not compiling it allows
                  ;; us to avoid an extra dependency on guile-gdbm-ffi.
                  #:extra-files
-                 `(("guix/man-db.scm" ,(local-file "../guix/man-db.scm")))
+                 `(("guix/man-db.scm" ,(local-file "../guix/man-db.scm"))
+                   ("guix/store/schema.sql"
+                    ,(local-file "../guix/store/schema.sql")))
 
                  #:guile-for-build guile-for-build))
 

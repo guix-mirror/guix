@@ -163,7 +163,7 @@ noinst_HEADERS =						\
   $(libformat_headers) $(libutil_headers) $(libstore_headers)	\
   $(guix_daemon_headers)
 
-%D%/libstore/schema.sql.hh: %D%/libstore/schema.sql
+%D%/libstore/schema.sql.hh: guix/store/schema.sql
 	$(AM_V_GEN)$(GUILE) --no-auto-compile -c		\
 	  "(use-modules (rnrs io ports))			\
 	   (call-with-output-file \"$@\"			\
