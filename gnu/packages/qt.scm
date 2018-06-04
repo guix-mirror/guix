@@ -1521,7 +1521,7 @@ message.")))
 (define-public python-sip
   (package
     (name "python-sip")
-    (version "4.19.3")
+    (version "4.19.8")
     (source
       (origin
         (method url-fetch)
@@ -1530,7 +1530,7 @@ message.")))
                          "sip-" version "/sip-" version ".tar.gz"))
         (sha256
          (base32
-          "0x2bghbprwl3az1ni3p87i0bq8r99694la93kg65vi0cz12gh3bl"))))
+          "1g4pq9vj753r2s061jc4y9ydzgb48ibhc9bdvmb8mlyllwp7mbvy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
@@ -1584,7 +1584,7 @@ module provides support functions to the automatically generated code.")
 (define-public python-pyqt
   (package
     (name "python-pyqt")
-    (version "5.9")
+    (version "5.10.1")
     (source
       (origin
         (method url-fetch)
@@ -1594,7 +1594,7 @@ module provides support functions to the automatically generated code.")
                          version ".tar.gz"))
         (sha256
          (base32
-          "15hh4z5vd45dcswjla58q6rrfr6ic7jfz2n7c8lwfb10rycpj3mb"))
+          "1vz9c4v0k8azk2b08swwybrshzw32x8djjpq13mf9v15x1qyjclr"))
        (patches (search-patches "pyqt-configure.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -1613,7 +1613,7 @@ module provides support functions to the automatically generated code.")
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)
        ("qtwebchannel" ,qtwebchannel)
-       ("qtwebkit" ,qtwebkit)
+       ;("qtwebkit" ,qtwebkit)
        ("qtwebsockets" ,qtwebsockets)
        ("qtx11extras" ,qtx11extras)
        ("qtxmlpatterns" ,qtxmlpatterns)))
@@ -1622,6 +1622,12 @@ module provides support functions to the automatically generated code.")
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-qt-5.11
+           ;; See: https://bugs.gentoo.org/654742
+           (lambda _
+             (substitute* "sip/QtTest/qtestmouse.sip"
+               (("void waitForEvents\\(\\) /ReleaseGIL/;") ""))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

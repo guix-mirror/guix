@@ -74,6 +74,7 @@
         (sha256
          (base32
           "1qkl3sb4ijx4k17m0c42j2p5bc4jymypwhmplm942rbrzm6mg50q"))
+        (patches (search-patches "quassel-qt-5.11.patch"))
         (modules '((guix build utils)))
         ;; We don't want to install the bundled scripts.
         (snippet
@@ -92,7 +93,7 @@
                            "-DUSE_QT5=ON" ; default is qt4
                            "-DWITH_KDE=OFF" ; no to kde integration ...
                            "-DWITH_OXYGEN=ON" ; therefore we install bundled icons
-                           "-DWITH_WEBKIT=OFF") ; qtwebkit isn't packaged
+                           "-DWITH_WEBKIT=OFF") ; we don't depend on qtwebkit
        #:tests? #f)) ; no test target
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
