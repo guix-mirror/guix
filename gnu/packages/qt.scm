@@ -1519,7 +1519,7 @@ message.")))
 (define-public python-sip
   (package
     (name "python-sip")
-    (version "4.19.3")
+    (version "4.19.8")
     (source
       (origin
         (method url-fetch)
@@ -1528,7 +1528,7 @@ message.")))
                          "sip-" version "/sip-" version ".tar.gz"))
         (sha256
          (base32
-          "0x2bghbprwl3az1ni3p87i0bq8r99694la93kg65vi0cz12gh3bl"))))
+          "1g4pq9vj753r2s061jc4y9ydzgb48ibhc9bdvmb8mlyllwp7mbvy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
