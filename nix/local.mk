@@ -22,7 +22,7 @@
 #
 
 BUILT_SOURCES += %D%/libstore/schema.sql.hh
-CLEANFILES += $(BUILT_SOURCES)
+CLEANFILES += %D%/libstore/schema.sql.hh
 
 noinst_LIBRARIES = libformat.a libutil.a libstore.a
 
