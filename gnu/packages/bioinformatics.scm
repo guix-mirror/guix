@@ -3211,6 +3211,8 @@ VCF.")
                   (sxml xpath))
        #:phases
        (modify-phases %standard-phases
+         ;; FIXME: this phase fails with "duplicate entry: htsjdk/samtools/AbstractBAMFileIndex$1.class"
+         (delete 'generate-jar-indices)
          (add-after 'unpack 'remove-useless-build.xml
            (lambda _ (delete-file "build.xml") #t))
          ;; This is necessary to ensure that htsjdk is found when using
