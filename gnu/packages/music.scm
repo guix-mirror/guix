@@ -1972,7 +1972,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.7")
+    (version "1.5.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -1980,7 +1980,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "1w916mmi6hh547a7icrgx6qr2kwxlxwlm6ampql427rshcz9r61k"))))
+                "0gwsr5srzy28hwqhfzrc8pswysmyra8kbww3bxfx8bq4mdjifdj6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
