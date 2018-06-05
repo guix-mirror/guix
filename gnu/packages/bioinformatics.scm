@@ -13185,3 +13185,54 @@ Extinction), \"QuaSSE\", \"GeoSSE\", and \"BiSSE-ness\" Other included methods
 include Markov models of discrete and continuous trait evolution and constant
 rate speciation and extinction.")
     (license license:gpl2+)))
+
+(define-public sjcount
+  ;; There is no tag for version 3.2, nor is there a release archive.
+  (let ((commit "292d3917cadb3f6834c81e509c30e61cd7ead6e5")
+        (revision "1"))
+    (package
+      (name "sjcount")
+      (version (git-version "3.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pervouchine/sjcount-full.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0gdgj35j249f04rqgq8ymcc1xg1vi9kzbajnjqpaq2wpbh8bl234"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; requires a 1.4G test file
+         #:make-flags
+         (list (string-append "SAMTOOLS_DIR="
+                              (assoc-ref %build-inputs "samtools")
+                              "/lib/"))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "makefile"
+                 (("-I \\$\\{SAMTOOLS_DIR\\}")
+                  (string-append "-I" (assoc-ref inputs "samtools")
+                                 "/include/samtools"))
+                 (("-lz ") "-lz -lpthread "))
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each (lambda (tool)
+                           (install-file tool
+                                         (string-append (assoc-ref outputs "out")
+                                                        "/bin")))
+                         '("j_count" "b_count" "sjcount"))
+               #t)))))
+      (inputs
+       `(("samtools" ,samtools-0.1)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/pervouchine/sjcount-full/")
+      (synopsis "Annotation-agnostic splice junction counting pipeline")
+      (description "Sjcount is a utility for fast quantification of splice
+junctions in RNA-seq data.  It is annotation-agnostic and offset-aware.  This
+version does count multisplits.")
+      (license license:gpl3+))))

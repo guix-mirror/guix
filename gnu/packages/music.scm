@@ -1987,7 +1987,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.7")
+    (version "1.5.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -1995,7 +1995,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "1w916mmi6hh547a7icrgx6qr2kwxlxwlm6ampql427rshcz9r61k"))))
+                "0gwsr5srzy28hwqhfzrc8pswysmyra8kbww3bxfx8bq4mdjifdj6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -2189,16 +2189,28 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.0")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "03892177k3jn2bsi366dhq28rcdsc1p9v5qqc0k6hg3cnrkh23na"))))
+                "07csbqr7q4m1j0pqg89kn7jdw0snd5lwna5rha0986s4plq4z1qb"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f)) ; no "check" target
+    (arguments
+     `(#:tests? #f  ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-qt-5.11
+           (lambda _
+             (substitute* "src/qtractorMeter.h"
+               (("#include <QFrame>" m)
+                (string-append "#include <QAction>\n" m)))
+             (substitute* "src/qtractorTrackButton.h"
+               (("#include <QPushButton>" m)
+                (string-append "#include <QAction>\n" m)))
+             #t)))))
     (inputs
      `(("qt" ,qtbase)
        ("qtx11extras" ,qtx11extras)

@@ -27,6 +27,7 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
@@ -41,7 +42,10 @@
             knot-configuration
             define-zone-entries
             zone-file
-            zone-entry))
+            zone-entry
+
+            dnsmasq-service-type
+            dnsmasq-configuration))
 
 ;;;
 ;;; Knot DNS.
@@ -591,3 +595,76 @@
                                            knot-activation)
                         (service-extension account-service-type
                                            (const %knot-accounts))))))
+
+
+;;;
+;;; Dnsmasq.
+;;;
+
+(define-record-type* <dnsmasq-configuration>
+  dnsmasq-configuration make-dnsmasq-configuration
+  dnsmasq-configuration?
+  (package          dnsmasq-configuration-package
+                    (default dnsmasq))  ;package
+  (no-hosts?        dnsmasq-configuration-no-hosts?
+                    (default #f))       ;boolean
+  (port             dnsmasq-configuration-port
+                    (default 53))       ;integer
+  (local-service?   dnsmasq-configuration-local-service?
+                    (default #t))       ;boolean
+  (listen-addresses dnsmasq-configuration-listen-address
+                    (default '()))      ;list of string
+  (resolv-file      dnsmasq-configuration-resolv-file
+                    (default "/etc/resolv.conf")) ;string
+  (no-resolv?       dnsmasq-configuration-no-resolv?
+                    (default #f))       ;boolean
+  (servers          dnsmasq-configuration-servers
+                    (default '()))      ;list of string
+  (cache-size       dnsmasq-configuration-cache-size
+                    (default 150))      ;integer
+  (no-negcache?     dnsmasq-configuration-no-negcache?
+                    (default #f)))      ;boolean
+
+(define dnsmasq-shepherd-service
+  (match-lambda
+    (($ <dnsmasq-configuration> package
+                                no-hosts?
+                                port local-service? listen-addresses
+                                resolv-file no-resolv? servers
+                                cache-size no-negcache?)
+     (shepherd-service
+      (provision '(dnsmasq))
+      (requirement '(networking))
+      (documentation "Run the dnsmasq DNS server.")
+      (start #~(make-forkexec-constructor
+                '(#$(file-append package "/sbin/dnsmasq")
+                  "--keep-in-foreground"
+                  "--pid-file=/run/dnsmasq.pid"
+                  #$@(if no-hosts?
+                         '("--no-hosts")
+                         '())
+                  #$(format #f "--port=~a" port)
+                  #$@(if local-service?
+                         '("--local-service")
+                         '())
+                  #$@(map (cut format #f "--listen-address=~a" <>)
+                          listen-addresses)
+                  #$(format #f "--resolv-file=~a" resolv-file)
+                  #$@(if no-resolv?
+                         '("--no-resolv")
+                         '())
+                  #$@(map (cut format #f "--server=~a" <>)
+                          servers)
+                  #$(format #f "--cache-size=~a" cache-size)
+                  #$@(if no-negcache?
+                         '("--no-negcache")
+                         '()))
+                #:pid-file "/run/dnsmasq.pid"))
+      (stop #~(make-kill-destructor))))))
+
+(define dnsmasq-service-type
+  (service-type
+   (name 'dnsmasq)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             (compose list dnsmasq-shepherd-service))))))
