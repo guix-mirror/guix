@@ -2585,6 +2585,7 @@ iVAT).")
        ("r-ggplot2" ,r-ggplot2)
        ("r-gplots" ,r-gplots)
        ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-knitr" ,r-knitr) ; needed for vignettes
        ("r-magrittr" ,r-magrittr)
        ("r-plotly" ,r-plotly)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
