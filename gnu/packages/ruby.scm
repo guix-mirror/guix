@@ -1346,13 +1346,13 @@ disable tests, have before and after blocks that run once and more.")
 (define-public ruby-connection-pool
   (package
     (name "ruby-connection-pool")
-    (version "2.2.1")
+    (version "2.2.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "connection_pool" version))
               (sha256
                (base32
-                "17vpaj6kyf2i8bimaxz7rg1kyadf4d10642ja67qiqlhwgczl2w7"))))
+                "0lflx29mlznf1hn0nihkgllzbj8xp5qasn8j7h838465pi399k68"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
