@@ -73,6 +73,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
@@ -5563,28 +5564,23 @@ Instagram and YouTube.")
 (define-public linkchecker
   (package
     (name "linkchecker")
-    (version "9.3")
+    (version "9.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "LinkChecker" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linkchecker/linkchecker")
+             (commit (string-append "v" version))))
        (sha256
         (base32
-         "0v8pavf0bx33xnz1kwflv0r7lxxwj7vg3syxhy2wzza0wh6sc2pf"))))
+         "03ihjmc4bqxxqv71bb43r2f23sx0xnbq1k2fsg9fw05qa5s9x187"))))
     (build-system python-build-system)
     (inputs
-     `(("python2-requests" ,python2-requests)))
+     `(("python2-dnspython" ,python2-dnspython)
+       ("python2-pyxdg" ,python2-pyxdg)
+       ("python2-requests" ,python2-requests)))
     (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         ;; Remove faulty python-requests version check. This has been fixed
-         ;; upstream, and can be removed in version 9.4.
-         (add-after 'unpack 'remove-python-requests-version
-           (lambda _
-             (substitute* "linkcheck/__init__.py"
-               (("requests.__version__ <= '2.2.0'") "False"))
-             #t)))))
+     `(#:python ,python-2))
     (home-page "https://linkcheck.github.io/linkchecker")
     (synopsis "Check websites for broken links")
     (description "LinkChecker is a website validator.  It checks for broken
@@ -5593,15 +5589,10 @@ colored or normal text, HTML, SQL, CSV, XML or as a sitemap graph.  It
 supports checking HTTP/1.1, HTTPS, FTP, mailto, news, nntp, telnet and local
 file links.")
     (license (list l:gpl2+
-                   l:bsd-2 ; linkcheck/better_exchook2.py
-                   l:bsd-3 ; linkcheck/colorama.py
-                   l:psfl  ; linkcheck/gzip2.py
-                   l:expat ; linkcheck/mem.py
-                   ;; FIXME: Unbundle dnspython and miniboa
-                   ;; This issue has been raised upstream
-                   ;; https://github.com/wummel/linkchecker/issues/729
-                   l:isc   ; third_party/dnspython
-                   l:asl2.0)))) ; third_party/miniboa
+                   l:bsd-2              ; linkcheck/better_exchook2.py
+                   l:bsd-3              ; linkcheck/colorama.py
+                   l:psfl               ; linkcheck/gzip2.py
+                   l:expat))))          ; linkcheck/mem.py
 
 (define-public cadaver
   (package
