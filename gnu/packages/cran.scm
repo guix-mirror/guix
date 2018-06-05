@@ -2936,14 +2936,14 @@ financial trading strategies.")
 (define-public r-tseries
   (package
     (name "r-tseries")
-    (version "0.10-44")
+    (version "0.10-45")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tseries" version))
        (sha256
         (base32
-         "0nz6v76hsxcprpgf84al5r0p08sr9qacqal4adndz9wmg604l4ag"))))
+         "14s1glh5zzdvdl05a2z7ymhgf962svxf8xircghg5sc649lb33n0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quadprog" ,r-quadprog)
