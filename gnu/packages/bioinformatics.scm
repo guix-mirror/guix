@@ -13071,7 +13071,7 @@ methylation and segmentation.")
        ("perl" ,perl)
        ("dropseq-tools" ,dropseq-tools)
        ("fastqc" ,fastqc)
-       ("java-picard" ,java-picard)
+       ("java-picard" ,java-picard-2.10.3) ; same as for dropseq
        ("java" ,icedtea-8)
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)
