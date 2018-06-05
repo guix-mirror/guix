@@ -3694,14 +3694,14 @@ application.")
 (define-public ruby-eventmachine
   (package
     (name "ruby-eventmachine")
-    (version "1.2.6")
+    (version "1.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "eventmachine" version))
        (sha256
         (base32
-         "08477hl609rmmngwfy8dmsqz5zvsg8xrsrrk6xi70jf48majwli0"))))
+         "0wh9aqb0skz80fhfn66lbpr4f86ya2z5rx6gm5xlfhd05bj1ch4r"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f))               ; test suite tries to connect to google.com
