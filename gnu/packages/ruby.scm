@@ -3713,7 +3713,8 @@ application.")
 communications.  EventMachine wraps all interactions with sockets, allowing
 programs to concentrate on the implementation of network protocols.  It can be
 used to create both network servers and clients.")
-    (home-page "http://rubyeventmachine.com")
+    ;; The ‘official’ rubyeventmachine.com domain is now registrar-squatted.
+    (home-page "https://github.com/eventmachine/eventmachine")
     (license (list license:ruby license:gpl3)))) ; GPLv3 only AFAICT
 
 (define-public ruby-ruby-engine
