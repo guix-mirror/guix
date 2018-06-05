@@ -2290,6 +2290,8 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
          #:jdk ,icedtea-8
          #:phases
          (modify-phases %standard-phases
+           ;; FIXME: this build phase fails.
+           (delete 'generate-jar-indices)
            ;; Don't erase results from the build phase when building tests.
            (add-after 'unpack 'separate-test-target-from-clean
              (lambda _
