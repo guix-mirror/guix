@@ -3303,6 +3303,8 @@ VCF.")
        (list "-Dsamjdk.intel_deflater_so_path=lib/jni/libIntelDeflater.so")
        #:phases
        (modify-phases %standard-phases
+         ;; FIXME: This phase fails.
+         (delete 'generate-jar-indices)
          ;; Do not use bundled ant bzip2.
          (add-after 'unpack 'use-ant-bzip
            (lambda* (#:key inputs #:allow-other-keys)
