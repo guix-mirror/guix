@@ -76,7 +76,7 @@
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                 (add-before 'patch-source-shebangs 'bootstrap
+                 (replace 'bootstrap
                   (lambda _
                     (setenv "NOCONFIGURE" "true")
                     (invoke "sh" "autogen.sh"))))))
