@@ -11,7 +11,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -6433,6 +6433,12 @@ functionality and behavior.")
                (base32
                 "0igxpngnkf1wpsg872a9jg3c9f5z8afm312yfbillz16mk8w39cw"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; autogen.sh calls configure at the end of the script.
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vfi"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
