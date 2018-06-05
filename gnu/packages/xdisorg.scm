@@ -907,7 +907,7 @@ Escape key when Left Control is pressed and released on its own.")
      ;; libwacom includes header files that include GLib, and libinput uses
      ;; those header files.
      `(("glib" ,glib)))
-    (home-page "http://linuxwacom.sourceforge.net/")
+    (home-page "https://linuxwacom.github.io/")
     (synopsis "Helper library for Wacom tablet settings")
     (description
      "Libwacom is a library to help implement Wacom tablet settings.  It is
@@ -945,7 +945,7 @@ Wacom tablet applet.")
        ("libxinerama" ,libxinerama)
        ("libxi" ,libxi)
        ("eudev" ,eudev)))
-    (home-page "http://linuxwacom.sourceforge.net/")
+    (home-page "https://linuxwacom.github.io/")
     (synopsis "Wacom input driver for X")
     (description
      "The xf86-input-wacom driver is the wacom-specific X11 input driver for
