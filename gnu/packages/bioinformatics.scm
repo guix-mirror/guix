@@ -7675,13 +7675,13 @@ alignments.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.40.2")
+    (version "1.40.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "0l90jn4df3akxl0n1i9wvnbjqrzjc0d15r8vqr7b15q2117mrn5r"))))
+                "0kvsjdaypn1jnxbnsxpycildwdyxwnjkigfq8qm8mlyfc4ahdgy3"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -8492,14 +8492,14 @@ of other R packages who wish to make use of HTSlib.")
 (define-public r-bamsignals
   (package
     (name "r-bamsignals")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bamsignals" version))
        (sha256
         (base32
-         "09l4v414ijkjpkvcv2580v13v18ky196f0lv27ldblpa8bddvmns"))))
+         "141q3p4lzwiqk1mfxi8q1q84axjl0gyiqg59xd3sp4viny4jqmgv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -9234,13 +9234,13 @@ number detection tools.")
 (define-public r-methylkit
   (package
     (name "r-methylkit")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "methylKit" version))
               (sha256
                (base32
-                "01qmndm5z21p78w7xfp8ynan6jpfg54rnkpj8b86rc081qh0sgjj"))))
+                "1hr2czi5ybdf7hdmqsv39d17f3mvmw94wa38bc14zzm9mgy9gfy7"))))
     (properties `((upstream-name . "methylKit")))
     (build-system r-build-system)
     (propagated-inputs
