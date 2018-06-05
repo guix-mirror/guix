@@ -3154,6 +3154,8 @@ manipulating HTS data.")
        #:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
+         ;; FIXME: this phase fails with "duplicate entry: htsjdk/samtools/AbstractBAMFileIndex$1.class"
+         (delete 'generate-jar-indices)
          (add-after 'unpack 'use-our-htsjdk
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build.xml"
