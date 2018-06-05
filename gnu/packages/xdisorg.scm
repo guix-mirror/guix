@@ -920,15 +920,16 @@ Wacom tablet applet.")
 (define-public xf86-input-wacom
   (package
     (name "xf86-input-wacom")
-    (version "0.36.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/linuxwacom/xf86-input-wacom/"
-                    name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1xi39hl8ddgj9m7m2k2ll2r3wh0k0aq45fvrsv43651bhz9cbrza"))))
+    (version "0.36.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/linuxwacom/xf86-input-wacom/releases/download/"
+             name "-" version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "029y8varbricba2dzhzhy0ndd7lbfif411ca8c3wxzni9qmbj1ij"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
