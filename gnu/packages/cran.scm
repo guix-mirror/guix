@@ -1289,14 +1289,14 @@ George Marsaglia are included.")
 (define-public r-ksamples
   (package
     (name "r-ksamples")
-    (version "1.2-7")
+    (version "1.2-8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "kSamples" version))
        (sha256
         (base32
-         "0f19rjngk0lg6s8c6h5l55qpxp8sl4vxj3kpi05cizzncny9b9bj"))))
+         "15d5q5vpp4wx5rk5kjxjdxpwc8mkq5sbdz8gi07iscrvhzb5rzfr"))))
     (properties `((upstream-name . "kSamples")))
     (build-system r-build-system)
     (propagated-inputs
