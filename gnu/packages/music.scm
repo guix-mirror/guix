@@ -2592,9 +2592,12 @@ Songs can be searched by artist, name or even by a part of the song text.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-HOME
-           (lambda _ (setenv "HOME" (string-append (getcwd) "/tmp"))))
+           (lambda _
+             (setenv "HOME" (string-append (getcwd) "/tmp"))
+             #t))
          (replace 'check
-           (lambda _ (zero? (system* "nosetests" "-v")))))))
+           (lambda _
+             (invoke "nosetests" "-v"))))))
     (native-inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-flask" ,python-flask)

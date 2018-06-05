@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
@@ -57,8 +57,8 @@
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://alioth.debian.org/frs/download.php/file/4238/"
-                    "ccid-" version ".tar.bz2"))
+                    "https://ccid.apdu.fr/files/"
+                    name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "0kdqmbma6sclsrbxy9w85h7cs0v11if4nc2r9v09613k8pl2lhx5"))))
@@ -79,7 +79,7 @@
     (inputs
      `(("libusb" ,libusb)
        ("pcsc-lite" ,pcsc-lite)))
-    (home-page "https://pcsclite.alioth.debian.org/ccid.html")
+    (home-page "https://ccid.apdu.fr/")
     (synopsis "PC/SC driver for USB smart card devices")
     (description
      "This package provides a PC/SC IFD handler implementation for devices
@@ -157,8 +157,8 @@ the low-level development kit for the Yubico YubiKey authentication device.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://alioth.debian.org/frs/download.php/file/4235/"
-                    "pcsc-lite-" version ".tar.bz2"))
+                    "https://pcsclite.apdu.fr/files/"
+                    name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "1jc9ws5ra6v3plwraqixin0w0wfxj64drahrbkyrrwzghqjjc9ss"))))
@@ -171,7 +171,7 @@ the low-level development kit for the Yubico YubiKey authentication device.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libudev" ,eudev)))
-    (home-page "https://pcsclite.alioth.debian.org/pcsclite.html")
+    (home-page "https://pcsclite.apdu.fr/")
     (synopsis "Middleware to access a smart card using PC/SC")
     (description
      "pcsc-lite provides an interface to communicate with smartcards and

@@ -3244,7 +3244,7 @@ on the ALSA software PCM plugin.")
                 "1vm0dy5qlycqkima7y5ajzvazyjybifa803fabjcpncjz08c26vp"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
+     `(#:tests? #f                      ; no tests
        #:out-of-source? #f              ; for the 'install-doc' phase
        #:configure-flags
        (let* ((out (assoc-ref %outputs "out"))
@@ -3256,13 +3256,13 @@ on the ALSA software PCM plugin.")
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (docdir (string-append out "/share/doc/snd")))
-               (mkdir-p docdir)
+                    (doc (string-append out "/share/doc/"
+                                        ,name "-" ,version)))
                (for-each
                 (lambda (f)
-                  (install-file f docdir))
+                  (install-file f doc))
                 (find-files "." "\\.html$|COPYING"))
-               (copy-recursively "pix" (string-append docdir "/pix"))
+               (copy-recursively "pix" (string-append doc "/pix"))
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

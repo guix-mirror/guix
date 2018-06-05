@@ -1369,6 +1369,7 @@ hashing schemes plugin for @code{Dovecot}.")
      `(("perl" ,perl)))
     (inputs
      `(("bdb" ,bdb)
+       ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "http://isync.sourceforge.net/")

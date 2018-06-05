@@ -1236,7 +1236,7 @@ plan, or not, and things will still Just Work.")
 (define-public perl-test-without-module
   (package
     (name "perl-test-without-module")
-    (version "0.18")
+    (version "0.20")
     (source
      (origin
        (method url-fetch)
@@ -1244,7 +1244,7 @@ plan, or not, and things will still Just Work.")
                            "Test-Without-Module-" version ".tar.gz"))
        (sha256
         (base32
-         "0zwc2dk5srd02j4p049w77m89iw5nbff381rmhcbaz8x2w5kdhz2"))))
+         "0955ib9cz1naz7a2v6lx78kj29q7ihmdn51im6wd1im669yfp6lf"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Test-Without-Module/")
     (synopsis "Test fallback behaviour in absence of modules")

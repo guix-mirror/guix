@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages w3m)
   #:use-module (gnu packages xml))
 
 (define-public parted
@@ -516,12 +518,28 @@ Duperemove can also take input from the @command{fdupes} program.")
                (base32
                 "1lnzkrxcnlwnyi3z0v8ybyp8d5rm26qm35rr68kbs2lbs06inha0"))))
     (build-system python-build-system)
+    (inputs
+     `(("w3m" ,w3m)))
     (native-inputs                      ;for tests
      `(("python-pytest" ,python-pytest)
        ("python-pylint" ,python-pylint)
        ("python-flake8" ,python-flake8)
        ("which" ,which)))
-    (arguments '(#:test-target "test"))
+    (arguments
+     '(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'wrap-program
+           ;; Tell 'ranger' where 'w3mimgdisplay' is.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (ranger (string-append out "/bin/ranger"))
+                    (w3m (assoc-ref inputs "w3m"))
+                    (w3mimgdisplay (string-append w3m
+                                   "/libexec/w3m/w3mimgdisplay")))
+               (wrap-program ranger
+                 `("W3MIMGDISPLAY_PATH" ":" prefix (,w3mimgdisplay)))
+               #t))))))
     (home-page "https://ranger.github.io/")
     (synopsis "Console file manager")
     (description "ranger is a console file manager with Vi key bindings.  It

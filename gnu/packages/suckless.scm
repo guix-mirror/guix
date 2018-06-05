@@ -341,8 +341,8 @@ point surf to another URI by setting its XProperties.")
        ("libx11" ,libx11)
        ("libxft" ,libxft)
        ("fontconfig" ,fontconfig)))
-    (synopsis "Plaintext presentation tool")
-    (description "Sent uses plaintext files and PNG images to create slideshow
+    (synopsis "Plain-text presentation tool")
+    (description "Sent uses plain-text files and PNG images to create slideshow
 presentations.  Each paragraph represents a slide in the presentation.
 Especially for presentations using the Takahashi method this is very nice and
 allows you to write down the presentation for a quick lightning talk within a
