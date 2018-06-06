@@ -698,7 +698,7 @@ line of code.")
   (description
     "Asciidoctor is a text processor and publishing toolchain for converting
 AsciiDoc content to HTML5, DocBook 5 (or 4.5) and other formats.")
-  (home-page "http://asciidoctor.org")
+  (home-page "https://asciidoctor.org")
   (license license:expat)))
 
 (define-public ruby-sporkmonger-rack-mount
