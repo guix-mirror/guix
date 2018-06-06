@@ -1995,7 +1995,9 @@ transfer protocols.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "10bsfsnlg9d9i6l2izdnxp05s3ri8fvwzqxvx1jmarc852382619"))))
+                "10bsfsnlg9d9i6l2izdnxp05s3ri8fvwzqxvx1jmarc852382619"))
+              ;; Fixed upstream: <github.com/OpenSMTPD/OpenSMTPD/pull/835>.
+              (patches (search-patches "opensmtpd-fix-crash.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
