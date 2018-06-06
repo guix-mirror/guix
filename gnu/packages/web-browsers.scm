@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -130,7 +131,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
 (define-public lynx
   (package
     (name "lynx")
-    (version "2.8.9dev.18")
+    (version "2.8.9dev.19")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -138,7 +139,7 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
                     "/lynx" version ".tar.bz2"))
               (sha256
                (base32
-                "08v3n58hlrwncfvz6g76v061xwcbjgabiy5gv7ainf1li5akjwz5"))))
+                "17wfiad2ha4y15pmwv55j0l9z1z1pcgcasrc6hwbgv0hhdpp08q2"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))

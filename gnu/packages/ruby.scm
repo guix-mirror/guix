@@ -669,14 +669,14 @@ line of code.")
 (define-public ruby-asciidoctor
   (package
   (name "ruby-asciidoctor")
-  (version "1.5.6.2")
+  (version "1.5.7.1")
   (source
     (origin
       (method url-fetch)
       (uri (rubygems-uri "asciidoctor" version))
       (sha256
         (base32
-          "0zq3az4836nxkc8g5wnnbzmarw7663s1ky6gf8pc04sfpa8n2l3f"))))
+          "0v52bzc72cvg7zfgq27pa4mgyf29dx9m20fghrw1xmvwgd519n1w"))))
   (build-system ruby-build-system)
   (arguments
    `(#:test-target "test:all"
@@ -698,7 +698,7 @@ line of code.")
   (description
     "Asciidoctor is a text processor and publishing toolchain for converting
 AsciiDoc content to HTML5, DocBook 5 (or 4.5) and other formats.")
-  (home-page "http://asciidoctor.org")
+  (home-page "https://asciidoctor.org")
   (license license:expat)))
 
 (define-public ruby-sporkmonger-rack-mount
@@ -1346,13 +1346,13 @@ disable tests, have before and after blocks that run once and more.")
 (define-public ruby-connection-pool
   (package
     (name "ruby-connection-pool")
-    (version "2.2.1")
+    (version "2.2.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "connection_pool" version))
               (sha256
                (base32
-                "17vpaj6kyf2i8bimaxz7rg1kyadf4d10642ja67qiqlhwgczl2w7"))))
+                "0lflx29mlznf1hn0nihkgllzbj8xp5qasn8j7h838465pi399k68"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
@@ -3694,14 +3694,14 @@ application.")
 (define-public ruby-eventmachine
   (package
     (name "ruby-eventmachine")
-    (version "1.2.6")
+    (version "1.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "eventmachine" version))
        (sha256
         (base32
-         "08477hl609rmmngwfy8dmsqz5zvsg8xrsrrk6xi70jf48majwli0"))))
+         "0wh9aqb0skz80fhfn66lbpr4f86ya2z5rx6gm5xlfhd05bj1ch4r"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f))               ; test suite tries to connect to google.com
@@ -3713,7 +3713,8 @@ application.")
 communications.  EventMachine wraps all interactions with sockets, allowing
 programs to concentrate on the implementation of network protocols.  It can be
 used to create both network servers and clients.")
-    (home-page "http://rubyeventmachine.com")
+    ;; The ‘official’ rubyeventmachine.com domain is now registrar-squatted.
+    (home-page "https://github.com/eventmachine/eventmachine")
     (license (list license:ruby license:gpl3)))) ; GPLv3 only AFAICT
 
 (define-public ruby-ruby-engine

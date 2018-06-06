@@ -35,7 +35,7 @@
 (define-public cfitsio
   (package
     (name "cfitsio")
-    (version "3.420")
+    (version "3.450")
     (source
      (origin
        (method url-fetch)
@@ -43,7 +43,7 @@
              "http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/"
              name (string-replace-substring version "." "") ".tar.gz"))
        (sha256
-        (base32 "1f0nmki45h9kw7vxpxiav9cb6vs3qqi6zrp2lpci5yhqc5isl43c"))))
+        (base32 "0bmrkw6w65zb0k3mszaaqy1f4zjm2hl7njww74nb5v38wvdi4q5z"))))
     (build-system gnu-build-system)
     ;; XXX Building with curl currently breaks wcslib.  It doesn't use
     ;; pkg-config and hence won't link with -lcurl.
@@ -81,12 +81,17 @@ in FITS files.")
      `(("cfitsio" ,cfitsio)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'patch-/bin/sh
-                    (lambda _
-                      (substitute* "makedefs.in"
-                        (("/bin/sh") "sh"))
-                      #t)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/sh
+           (lambda _
+             (substitute* "makedefs.in"
+               (("/bin/sh") "sh"))
+             #t))
+         (delete 'install-license-files)) ; installed by ‘make install’
+       ;; Both the build and tests fail randomly when run in parallel.
+       #:parallel-build? #f
+       #:parallel-tests? #f))
     (home-page "https://www.atnf.csiro.au/people/mcalabre/WCS")
     (synopsis "Library which implements the FITS WCS standard")
     (description "The FITS \"World Coordinate System\" (@dfn{WCS}) standard
@@ -98,7 +103,7 @@ header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
@@ -106,7 +111,7 @@ header.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "10lxzxyrf30hj3bqdgprvaj9phzdi816khjmr0vmjf8pmsr8bqqr"))))
+         "16a212j9ghdirm11d25s5q5qw32bkjrxsh3rblfyyv29djch34w6"))))
     (inputs
      `(("cfitsio" ,cfitsio)
        ("gsl" ,gsl)

@@ -2661,23 +2661,22 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.04-1")
+      (version "3.0.11-1")
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/smxi/inxi"
-                             "/archive/" version "/inxi.tar.gz"))
-         (file-name (string-append real-name "-" version ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/smxi/inxi")
+               (commit version)))
          (sha256
           (base32
-           "14zxdsjgh9dbijmpp0hhvg2yiqqfwnqgcc6x8dpl1v15z1h1r7pc"))))
+           "07wihl4gsamq98mhxvm6k4vpphym75467cxfa19b3g5ggpyq894g"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash)
          ("perl" ,perl)))
       (native-inputs
-       `(("gzip" ,gzip)
-         ("tar" ,tar)))
+       `(("gzip" ,gzip)))
       (arguments
        `(#:modules
          ((guix build utils)
@@ -2691,9 +2690,9 @@ Python loading in HPC environments.")
            (setenv "PATH" (string-append
                            (assoc-ref %build-inputs "bash") "/bin" ":"
                            (assoc-ref %build-inputs "gzip") "/bin" ":"
-                           (assoc-ref %build-inputs "perl") "/bin" ":"
-                           (assoc-ref %build-inputs "tar") "/bin" ":"))
-           (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
+                           (assoc-ref %build-inputs "perl") "/bin" ":"))
+           (copy-recursively (assoc-ref %build-inputs "source")
+                             ,(string-append real-name "-" version))
            (with-directory-excursion ,(string-append real-name "-" version)
              (with-fluids ((%default-port-encoding #f))
                (substitute* "inxi" (("/usr/bin/env perl") (which "perl"))))
@@ -2725,7 +2724,7 @@ Python loading in HPC environments.")
                           %build-inputs)))))
              (invoke "gzip" "inxi.1")
              (install-file "inxi.1.gz"
-                           (string-append %output "/share/doc/man/man1")))
+                           (string-append %output "/share/man/man1")))
            #t)))
       (home-page "https://smxi.org/docs/inxi.htm")
       (synopsis "Full featured system information script")

@@ -536,7 +536,7 @@ and keep up to date translations of documentation.")
 (define-public gnome-disk-utility
   (package
     (name "gnome-disk-utility")
-    (version "3.28.2")
+    (version "3.28.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -544,7 +544,7 @@ and keep up to date translations of documentation.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1j3l4b1prbnixzy6srvcsjfg1dx5nqys2lmygm31ygfdq7svp3m6"))))
+                "11ajz4cbsdns81kihd6242b6pwxbw8bkr9qqkf4qnb4kp363a38m"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")
@@ -2743,7 +2743,7 @@ more fun.")
 (define-public gnome-terminal
   (package
     (name "gnome-terminal")
-    (version "3.28.1")
+    (version "3.28.2")
     (source
      (origin
        (method url-fetch)
@@ -2752,7 +2752,7 @@ more fun.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1hqwh12hiy73mazqgvyrq8jk4c669x2fb4nh8mwby3qbk8ca19pp"))))
+         "0ybjansg6lr279191w8z8r45gy4rxwzw1ajm98cgkv0fk2jdr0x2"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -4180,7 +4180,7 @@ a secret password store, an adblocker, and a modern UI.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.28.1")
+    (version "3.28.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4188,7 +4188,7 @@ a secret password store, an adblocker, and a modern UI.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0zvxrwlswxadq4zbr4f73ms141d08j0lhi6rzmj83j1s3gan88md"))))
+                "0ba0qqsbg3cv1k1pcj971y7l8kqib5l7kbr743x9a7hbmkqfk95s"))))
 
     (build-system meson-build-system)
     (arguments
@@ -4683,7 +4683,7 @@ javascript engine and the GObject introspection framework.")
 (define-public gedit
   (package
     (name "gedit")
-    (version "3.28.0")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4691,7 +4691,7 @@ javascript engine and the GObject introspection framework.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0pyam0zi44xq776x20ycqnvmf86l98jns8ldv4m81gnp9wnhmycv"))))
+                "0791r07d3ixmmfk68lvhp3d5i4vnlrnx10csxwgpfqyfb04vwx7i"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases

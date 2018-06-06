@@ -112,7 +112,7 @@ contains the archive keys used for that.")
 (define-public debootstrap
   (package
     (name "debootstrap")
-    (version "1.0.95")
+    (version "1.0.101")
     (source
       (origin
         (method url-fetch)
@@ -120,7 +120,7 @@ contains the archive keys used for that.")
                             name "_" version ".tar.gz"))
         (sha256
          (base32
-          "1xpd1yblcgwhri64hzgxhalpf5j8gqbmkrsm1fs0pbwiy0wdz0ry"))))
+          "1p1a81s8hq73byd7256iljdls389x2q7w6srgrgfmx5bl1csnzp3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

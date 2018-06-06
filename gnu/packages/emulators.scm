@@ -156,7 +156,7 @@
                       (string-append (assoc-ref inputs "font-wqy-microhei")
                                      "/share/fonts/truetype/wqy-microhei.ttc"))
                      (libvulkan
-                      (string-append (assoc-ref inputs "vulkan-icd-loader")
+                      (string-append (assoc-ref inputs "vulkan-loader")
                                      "/lib/libvulkan.so")))
                  (chdir "docs")
                  (invoke "bash" "-c" "g++ -O2 -std=c++11 $(freetype-config \
@@ -219,7 +219,7 @@
          ("sfml" ,sfml)
          ("soil" ,soil)
          ("soundtouch" ,soundtouch)
-         ("vulkan-icd-loader" ,vulkan-icd-loader)
+         ("vulkan-loader" ,vulkan-loader)
          ("wxwidgets" ,wxwidgets-gtk2-3.1)
          ("zlib" ,zlib)))
       (home-page "https://dolphin-emu.org/")
@@ -1072,7 +1072,7 @@ emulation community.  It provides highly accurate emulation.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (etc (string-append out "/etc"))
-                    (vulkan (assoc-ref inputs "vulkan-icd-loader")))
+                    (vulkan (assoc-ref inputs "vulkan-loader")))
                ;; Hard-code the path to libvulkan.so.
                (substitute* "gfx/common/vulkan_common.c"
                  (("libvulkan.so") (string-append vulkan "/lib/libvulkan.so")))
@@ -1099,7 +1099,7 @@ emulation community.  It provides highly accurate emulation.")
        ("qtbase" ,qtbase)
        ("sdl" ,sdl2)
        ("udev" ,eudev)
-       ("vulkan-icd-loader" ,vulkan-icd-loader)
+       ("vulkan-loader" ,vulkan-loader)
        ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (native-inputs

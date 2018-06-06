@@ -1927,13 +1927,13 @@ etc., and an SQL engine for performing simple SQL queries.")
 (define-public python-lmdb
   (package
     (name "python-lmdb")
-    (version "0.93")
+    (version "0.94")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lmdb" version))
               (sha256
                (base32
-                "0xdpb298fyl68acadbwv5801wcwfpnhc7sm4bnrq1x4bd5dhhsql"))
+                "1zh38gvkqw1jm5105if6rr7ccbgyxr7k2rm5ygb9ab3bq82pyaww"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled lmdb source files.

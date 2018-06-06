@@ -882,14 +882,15 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "0.29")
+    (version "0.30")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/linuxwacom/libwacom/"
-                                  name "-" version ".tar.bz2"))
+              (uri (string-append
+                    "https://github.com/linuxwacom/libwacom/releases/download/"
+                    name "-" version "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1diklgcjhmvcxi9p1ifp6wcnyr6k7z9jhrlzfhzjqd6zipk01slw"))))
+                "0n9294f2534qcgfry4n7vmr6vy49iqym0y74a88g1h0l0ml0hd2j"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -902,7 +903,7 @@ Escape key when Left Control is pressed and released on its own.")
      ;; libwacom includes header files that include GLib, and libinput uses
      ;; those header files.
      `(("glib" ,glib)))
-    (home-page "http://linuxwacom.sourceforge.net/")
+    (home-page "https://linuxwacom.github.io/")
     (synopsis "Helper library for Wacom tablet settings")
     (description
      "Libwacom is a library to help implement Wacom tablet settings.  It is
@@ -914,15 +915,16 @@ Wacom tablet applet.")
 (define-public xf86-input-wacom
   (package
     (name "xf86-input-wacom")
-    (version "0.36.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/linuxwacom/xf86-input-wacom/"
-                    name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1xi39hl8ddgj9m7m2k2ll2r3wh0k0aq45fvrsv43651bhz9cbrza"))))
+    (version "0.36.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/linuxwacom/xf86-input-wacom/releases/download/"
+             name "-" version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "029y8varbricba2dzhzhy0ndd7lbfif411ca8c3wxzni9qmbj1ij"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
@@ -940,7 +942,7 @@ Wacom tablet applet.")
        ("libxinerama" ,libxinerama)
        ("libxi" ,libxi)
        ("eudev" ,eudev)))
-    (home-page "http://linuxwacom.sourceforge.net/")
+    (home-page "https://linuxwacom.github.io/")
     (synopsis "Wacom input driver for X")
     (description
      "The xf86-input-wacom driver is the wacom-specific X11 input driver for
