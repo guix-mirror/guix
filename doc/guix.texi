@@ -6661,6 +6661,12 @@ in Guix.
 @cindex crate
 Import metadata from the crates.io Rust package repository
 @uref{https://crates.io, crates.io}.
+
+@item opam
+@cindex OPAM
+@cindex OCaml
+Import metadata from the @uref{https://opam.ocaml.org/, OPAM} package
+repository used by the OCaml community.
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be
