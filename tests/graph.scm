@@ -293,7 +293,7 @@ edges."
   (run-with-store %store
     (let ((packages (fold-packages cons '())))
       (mlet %store-monad ((edges (node-edges %package-node-type packages)))
-        (return (and (null? (edges sed))
+        (return (and (null? (edges hello))
                      (lset= eq?
                             (edges guile-2.0)
                             (match (package-direct-inputs guile-2.0)
