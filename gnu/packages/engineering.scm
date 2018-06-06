@@ -531,35 +531,17 @@ ready for production.")
 (define-public gerbv
   (package
     (name "gerbv")
-    (version "2.6.1")
+    (version "2.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gerbv/gerbv/gerbv-"
                                   version "/gerbv-" version ".tar.gz"))
               (sha256
                (base32
-                "0v6ry0mxi5qym4z0y0lpblxsw9dfjpgxs4c4v2ngg7yw4b3a59ks"))))
+                "1cw8k6ni0q8kswad03kha86fk7n06vq8p0wzsfhcnalsdshrn17i"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             ;; Build rules contain references to Russian translation, but the
-             ;; needed files are missing; see
-             ;; http://sourceforge.net/p/gerbv/bugs/174/
-             (delete-file "po/LINGUAS")
-             (substitute* "man/Makefile.am"
-               (("PO_FILES= gerbv.ru.1.in.po") "")
-               (("man_MANS = gerbv.1 gerbv.ru.1") "man_MANS = gerbv.1"))
-             (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("gettext" ,gettext-minimal)
-       ("po4a" ,po4a)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
        ("gtk" ,gtk+-2)
