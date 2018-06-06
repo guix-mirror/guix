@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -1629,9 +1629,8 @@ program's primary purpose.")
        (file-name (string-append name "-" version "-checkout"))))
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'autoconf
-                   (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+                  (replace 'bootstrap
+                   (lambda _ (invoke "autoreconf" "-vfi"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
