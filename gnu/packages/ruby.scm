@@ -697,7 +697,7 @@ line of code.")
   (synopsis "Converter from AsciiDoc content to other formats")
   (description
     "Asciidoctor is a text processor and publishing toolchain for converting
-AsciiDoc content to HTML5, DocBook 5 (or 4.5) and other formats.")
+AsciiDoc content to HTML5, DocBook 5 (or 4.5), PDF, and other formats.")
   (home-page "https://asciidoctor.org")
   (license license:expat)))
 
