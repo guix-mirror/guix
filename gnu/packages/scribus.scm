@@ -82,6 +82,7 @@
        ("libtiff" ,libtiff)
        ("libvisio" ,libvisio)
        ("libxml2" ,libxml2)
+       ("libzmf" ,libzmf)
        ("openssl" ,openssl)
        ("podofo" ,podofo)
        ("poppler" ,poppler)
