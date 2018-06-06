@@ -10813,3 +10813,53 @@ The package @code{emacs-bash-completion} is an optional dependency: if available
 @code{fish-completion-complete} can be configured to fall back on bash to further
 try completing.  See @code{fish-completion-fallback-on-bash-p}.")
     (license license:gpl3+)))
+
+(define-public emacs-gif-screencast
+  (let ((commit "825e606950ec842304bf75cf85baef707b853b03"))
+    (package
+      (name "emacs-gif-screencast")
+      (version (git-version "20180309" "1" commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://github.com/Ambrevar/emacs-gif-screencast/archive/"
+               commit
+               ".tar.gz"))
+         (sha256
+          (base32
+           "1f83sdx4qj4g6byvbdq7aayissbcy5lqm43djp8h0lq455nf7jkc"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("scrot" ,scrot)
+         ("imagemagick" ,imagemagick)
+         ("gifsicle" ,gifsicle)))
+     (arguments
+      `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((scrot (assoc-ref inputs "scrot"))
+                   (imagemagick (assoc-ref inputs "imagemagick"))
+                   (gifsicle (assoc-ref inputs "gifsicle")))
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (emacs-substitute-variables
+                   "gif-screencast.el"
+                 ("gif-screencast-program"
+                  (string-append scrot "/bin/scrot"))
+                 ("gif-screencast-convert-program"
+                  (string-append imagemagick "/bin/convert"))
+                 ("gif-screencast-cropping-program"
+                  (string-append imagemagick "/bin/mogrify"))
+                 ("gif-screencast-optimize-program"
+                  (string-append imagemagick "/bin/gifsicle")))))))))
+      (home-page
+       "https://github.com/Ambrevar/emacs-gif-screencast")
+      (synopsis "One-frame-per-action GIF recording")
+      (description
+       "Call @code{gif-screencast} to start a recording.
+A screenshot is taken for every user action.  Call
+@code{gif-screencast-stop} (<f9> by default) to finish recording and create
+the GIF result.")
+      (license license:gpl3+))))
