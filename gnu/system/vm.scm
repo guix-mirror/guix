@@ -151,12 +151,24 @@ based on the size of the closure of REFERENCES-GRAPHS.
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs, as for `derivation'.  The files containing the reference graphs are
 made available under the /xchg CIFS share."
+  (define user-builder
+    (program-file "builder-in-linux-vm" exp))
+
+  (define loader
+    ;; Invoke USER-BUILDER instead using 'primitive-load'.  The reason for
+    ;; this is to allow USER-BUILDER to dlopen stuff by using a full-featured
+    ;; Guile, which it couldn't do using the statically-linked guile used in
+    ;; the initrd.  See example at
+    ;; <https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00233.html>.
+    (program-file "linux-vm-loader"
+                  ;; When USER-BUILDER succeeds, reboot (indicating a
+                  ;; success), otherwise die, which causes a kernel panic
+                  ;; ("Attempted to kill init!").
+                  #~(when (zero? (system* #$user-builder))
+                      (reboot))))
+
   (mlet* %store-monad
-      ((user-builder (gexp->file "builder-in-linux-vm" exp))
-       (loader       (gexp->file "linux-vm-loader"
-                                 #~(primitive-load #$user-builder)))
-       (coreutils -> (canonical-package coreutils))
-       (initrd       (if initrd                   ; use the default initrd?
+      ((initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
                          (base-initrd file-systems
                                       #:on-error 'backtrace
@@ -257,8 +269,7 @@ INPUTS is a list of inputs (as for packages)."
                                #:closures graphs
                                #:volume-id #$file-system-label
                                #:volume-uuid #$(and=> file-system-uuid
-                                                      uuid-bytevector))
-           (reboot))))
+                                                      uuid-bytevector)))))
    #:system system
 
    ;; Keep a local file system for /tmp so that we can populate it directly as
@@ -384,8 +395,7 @@ the image."
                                    #:bootcfg-location
                                    #$(bootloader-configuration-file bootloader)
                                    #:bootloader-installer
-                                   #$(bootloader-installer bootloader))
-             (reboot)))))
+                                   #$(bootloader-installer bootloader))))))
    #:system system
    #:make-disk-image? #t
    #:disk-image-size disk-image-size
@@ -475,20 +485,7 @@ should set REGISTER-CLOSURES? to #f."
                  #:creation-time (make-time time-utc 0 1)
                  #:transformations `((,root-directory -> ""))))))))
     (expression->derivation-in-linux-vm
-     name
-     ;; The VM's initrd Guile doesn't support dlopen, but our "build" gexp
-     ;; needs to be run by a Guile that can dlopen libgcrypt.  The following
-     ;; hack works around that problem by putting the "build" gexp into an
-     ;; executable script (created by program-file) which, when executed, will
-     ;; run using a Guile that supports dlopen.  That way, the VM's initrd
-     ;; Guile can just execute it via invoke, without using dlopen.  See:
-     ;; https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00233.html
-     (with-imported-modules `((guix build utils))
-       #~(begin
-           (use-modules (guix build utils))
-           ;; If we use execl instead of invoke here, the VM will crash with a
-           ;; kernel panic.
-           (invoke #$(program-file "build-docker-image" build))))
+     name build
      #:make-disk-image? #f
      #:single-file-output? #t
      #:references-graphs `((,graph ,os-drv)))))
