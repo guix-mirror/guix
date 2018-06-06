@@ -3157,15 +3157,15 @@ and retry a few times.")
 (define-public perl-net-http
   (package
     (name "perl-net-http")
-    (version "6.07")
+    (version "6.18")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/M/MS/MSCHILLI/Net-HTTP-"
-                   version ".tar.gz"))
+                   "mirror://cpan/authors/id/O/OA/OALDERS/"
+                   "Net-HTTP-" version ".tar.gz"))
              (sha256
               (base32
-               "0r034hhci0yqbrkrh1gv6vi5g3i0kpd1k84z62nk02asb8rf0ccz"))))
+               "074mp9s37q1j290xa3qj1wwgalzla328i2zpnh73xkmdnwnxyhky"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
