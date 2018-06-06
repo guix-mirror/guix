@@ -358,14 +358,14 @@ no man page, refer to the home page for usage details.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dyne.org/tomb/"
                                   "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "1hv1w79as7swqj0n137vz8n8mwvcgwlvd91sdyssz41jarg7f1vr"))))
+                "12c6qldngaw520gvb02inzkhnxbl4k0dwmddrgnaf7xashy6j0wc"))))
     (build-system gnu-build-system)
     (native-inputs `(("sudo" ,sudo)))   ;presence needed for 'check' phase
     (inputs
@@ -377,7 +377,8 @@ no man page, refer to the home page for usage details.")
        ("mlocate" ,mlocate)
        ("pinentry" ,pinentry)
        ("qrencode" ,qrencode)
-       ("steghide" ,steghide)))
+       ("steghide" ,steghide)
+       ("util-linux" ,util-linux)))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        ;; TODO: Build and install gtk and qt trays
@@ -400,7 +401,7 @@ no man page, refer to the home page for usage details.")
                                  (error "program not found:" program)))
                            '("seq" "mkfs.ext4" "pinentry" "sudo"
                              "gpg" "cryptsetup" "gettext"
-                             "qrencode" "steghide")))))
+                             "qrencode" "steghide" "findmnt")))))
                #t)))
          (delete 'check)
          (add-after 'wrap 'check
