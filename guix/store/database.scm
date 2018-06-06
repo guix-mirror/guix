@@ -225,6 +225,7 @@ it's a directory."
 (define* (register-path path
                         #:key (references '()) deriver prefix
                         state-directory (deduplicate? #t)
+                        (reset-timestamps? #t)
                         (schema (sql-schema)))
   ;; Priority for options: first what is given, then environment variables,
   ;; then defaults. %state-directory, %store-directory, and
@@ -268,7 +269,8 @@ be used internally by the daemon's build hook."
          (real-path (string-append store-dir "/" (basename path))))
     (let-values (((hash nar-size)
                   (nar-sha256 real-path)))
-      (reset-timestamps real-path)
+      (when reset-timestamps?
+        (reset-timestamps real-path))
       (mkdir-p db-dir)
       (sqlite-register
        #:db-file (string-append db-dir "/db.sqlite")
