@@ -81,12 +81,17 @@ in FITS files.")
      `(("cfitsio" ,cfitsio)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'patch-/bin/sh
-                    (lambda _
-                      (substitute* "makedefs.in"
-                        (("/bin/sh") "sh"))
-                      #t)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/sh
+           (lambda _
+             (substitute* "makedefs.in"
+               (("/bin/sh") "sh"))
+             #t))
+         (delete 'install-license-files)) ; installed by ‘make install’
+       ;; Both the build and tests fail randomly when run in parallel.
+       #:parallel-build? #f
+       #:parallel-tests? #f))
     (home-page "https://www.atnf.csiro.au/people/mcalabre/WCS")
     (synopsis "Library which implements the FITS WCS standard")
     (description "The FITS \"World Coordinate System\" (@dfn{WCS}) standard
