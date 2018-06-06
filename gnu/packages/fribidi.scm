@@ -27,7 +27,7 @@
 (define-public fribidi
   (package
     (name "fribidi")
-    (version "1.0.2")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
@@ -36,7 +36,7 @@
                         "/download/v" version "/fribidi-" version
                          ".tar.bz2"))
         (sha256
-          (base32 "0aw3i1g96axbr96flw4543dvhb8zlgb0w8314ks6cq2g1i9invdx"))))
+          (base32 "1gipy8fjyn6i4qrhima02x8xs493d21f22dijp88nk807razxgcl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
