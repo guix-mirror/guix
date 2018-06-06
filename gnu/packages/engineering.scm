@@ -777,7 +777,7 @@ render model libraries.")
 (define-public linsmith
   (package
     (name "linsmith")
-    (version "0.99.30")
+    (version "0.99.31")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -785,7 +785,7 @@ render model libraries.")
                     version "/linsmith-" version ".tar.gz"))
               (sha256
                (base32
-                "18qslhr2r45rhpj4v6bjcqx189vs0bflvsj271wr7w8kvh69qwvn"))))
+                "13qj7n9826qc9shkkgd1p6vcpj78v4h9d67wbg45prg7rbnzkzds"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
