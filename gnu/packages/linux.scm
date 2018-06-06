@@ -295,6 +295,12 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                  (or (%current-target-system) (%current-system)))
            ((or "x86_64" "i386")
             `(("gcc" ,gcc-7)))
+           ("arm64"
+            ;; Work around a binutils 2.30 bug where some kernel symbols would
+            ;; be incorrectly marked as relocatable:
+            ;; <https://sourceware.org/bugzilla/show_bug.cgi?id=22764>.
+            `(("ld-wrapper" ,(make-ld-wrapper "ld-wrapper"
+                                              #:binutils binutils/fixed))))
            (_
             '()))
        ,@(match (and configuration-file
