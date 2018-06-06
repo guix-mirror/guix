@@ -791,7 +791,7 @@ render model libraries.")
      `(("pkg-config" ,pkg-config)
        ("gtk" ,gtk+-2)
        ("libgnome" ,libgnomeui)))
-    (home-page "http://jcoppens.com/soft/linsmith/index.en.php")
+    (home-page "https://jcoppens.com/soft/linsmith/index.en.php")
     (synopsis "Smith Charting program")
     (description "LinSmith is a Smith Charting program, mainly designed for
 educational use.  As such, there is an emphasis on capabilities that improve
