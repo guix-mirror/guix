@@ -32,6 +32,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages databases)
@@ -217,7 +218,7 @@ communication.")
 (define-public encfs
   (package
     (name "encfs")
-    (version "1.9.1")
+    (version "1.9.5")
     (source
      (origin
        (method url-fetch)
@@ -226,13 +227,13 @@ communication.")
                        version "/encfs-" version ".tar.gz"))
        (sha256
         (base32
-         "1906254dg5hwljh0h4gyrw09ms3b57dlhjfzhfzffv50yzpkl837"))
+         "0qzxavvv20577bxvly8s7d3y7bqasqclc2mllp0ddfncjm9z02a7"))
        (modules '((guix build utils)))
        ;; Remove bundled dependencies in favour of proper inputs.
        (snippet '(begin
                    (for-each delete-file-recursively
-                             (find-files "internal" "^tinyxml2-[0-9]"
-                                         #:directories? #t))
+                             '("vendor/github.com/leethomason/tinyxml2"
+                               "vendor/github.com/google/googletest"))
                    #t))))
     (build-system cmake-build-system)
     (native-inputs
@@ -240,6 +241,7 @@ communication.")
 
        ;; Test dependencies.
        ("expect" ,expect)
+       ("googletest-source" ,(package-source googletest))
        ("perl" ,perl)))
     (inputs
      `(("attr" ,attr)
@@ -247,7 +249,18 @@ communication.")
        ("openssl" ,openssl)
        ("tinyxml2" ,tinyxml2)))
     (arguments
-     `(#:configure-flags (list "-DUSE_INTERNAL_TINYXML=OFF")))
+     `(#:configure-flags (list "-DUSE_INTERNAL_TINYXML=OFF")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-googletest
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "vendor/github.com/google/googletest")
+             (invoke "tar" "xvf" (assoc-ref inputs "googletest-source")
+                     "-C" "vendor/github.com/google/googletest"
+                     "--strip-components=1")))
+         (add-before 'check 'make-unittests
+           (lambda _
+             (invoke "make" "unittests"))))))
     (home-page "https://vgough.github.io/encfs")
     (synopsis "Encrypted virtual file system")
     (description
