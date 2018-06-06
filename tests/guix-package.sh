@@ -60,12 +60,12 @@ test -L "$profile" && test -L "$profile-1-link"
 ! test -f "$profile-2-link"
 test -f "$profile/bin/guile"
 
-# Collisions are properly flagged (in this case, 'python-wrapper' propagates
-# python@3, which conflicts with python@2.)
-if guix package --bootstrap -n -p "$profile" -i python@2 python-wrapper
+# Collisions are properly flagged (in this case, 'g-wrap' propagates
+# guile@2.2, which conflicts with guile@2.0.)
+if guix package --bootstrap -n -p "$profile" -i g-wrap guile@2.0
 then false; else true; fi
 
-guix package --bootstrap -n -p "$profile" -i python@2 python-wrapper \
+guix package --bootstrap -n -p "$profile" -i g-wrap guile@2.0 \
      --allow-collisions
 
 # No search path env. var. here.
