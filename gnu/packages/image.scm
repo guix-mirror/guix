@@ -487,8 +487,9 @@ arithmetic ops.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://downloads.ghostscript.com/public/" name "/"
-                            name "-" version ".tar.gz"))
+        (uri
+         (string-append "https://github.com/ArtifexSoftware/ghostpdl-downloads/"
+                        "releases/download/gs922/" name "-" version ".tar.gz"))
         (sha256
           (base32 "0k01hp0q4275fj4rbr1gy64svfraw5w7wvwl08yjhvsnpb1rid11"))
         (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
@@ -504,7 +505,7 @@ This is a decoder only implementation, and currently is in the alpha
 stage, meaning it doesn't completely work yet.  However, it is
 maintaining parity with available encoders, so it is useful for real
 work.")
-    (home-page "http://www.ghostscript.com/jbig2dec.html")
+    (home-page "https://jbig2dec.com")
     (license license:gpl2+)))
 
 (define-public openjpeg
