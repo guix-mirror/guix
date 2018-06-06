@@ -1286,41 +1286,41 @@ XCB util-xrm module provides the following libraries:
 (define-public xcalib
   (package
     (name "xcalib")
-    (version "0.8")
+    (version "0.10")
+    (home-page "https://github.com/OpenICC/xcalib")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/xcalib/xcalib/" version
-                                  "/xcalib-source-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
               (sha256
                (base32
-                "1rh6xb51c5xz926dnn82a2fn643g0sr4a8z66rn6yi7523kjw4ca"))))
-    (build-system gnu-build-system)
+                "05fzdjmhiafgi2jf0k41i3nm0837a78sb6yv59cwc23nla8g0bhr"))
+              (patches
+               (list
+                ;; Add missing documentation for the new --output option.
+                ;; This upstream patch can be removed on the next update.
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        home-page "/commit/"
+                        "ae03889b91fe984b18e925ad2b5e6f2f7354e058.patch"))
+                  (file-name "xcalib-update-man-page.patch")
+                  (sha256
+                   (base32
+                    "0f7b4d5484x4b9n1bwhqmar0kcaa029ffff7bp3xpr734n1qgqb6")))))))
+    (build-system cmake-build-system)
     (arguments
-     '(#:make-flags '("CC=gcc")
-       #:tests? #f   ; No test suite
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin")))
-                        (install-file "xcalib" bin))))
-                  (add-after 'install 'install-doc
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((doc (string-append(assoc-ref outputs "out")
-                                               "/share/doc/xcalib")))
-                        (install-file "README" doc)
-                        ;; Avoid unspecified return value.
-                        #t))))))
+     '(#:tests? #f))                    ; no test suite
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
+              ("libxrandr" ,libxrandr)
               ("libxxf86vm" ,libxxf86vm)))
     (synopsis "Tiny monitor calibration loader for XFree86 (or X.org)")
     (description "xcalib is a tiny tool to load the content of vcgt-Tags in ICC
 profiles to the video card's gamma ramp.  It does work with most video card
 drivers except the generic VESA driver.  Alter brightness, contrast, RGB, and
 invert colors on a specific display/screen.")
-    (home-page "http://xcalib.sourceforge.net/")
     (license license:gpl2)))
 
 (define-public nxbelld
