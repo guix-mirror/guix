@@ -2655,10 +2655,10 @@ Python loading in HPC environments.")
       (version "3.0.04-1")
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/smxi/inxi"
-                             "/archive/" version "/inxi.tar.gz"))
-         (file-name (string-append real-name "-" version ".tar.gz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/smxi/inxi")
+               (commit version)))
          (sha256
           (base32
            "14zxdsjgh9dbijmpp0hhvg2yiqqfwnqgcc6x8dpl1v15z1h1r7pc"))))
@@ -2667,8 +2667,7 @@ Python loading in HPC environments.")
        `(("bash" ,bash)
          ("perl" ,perl)))
       (native-inputs
-       `(("gzip" ,gzip)
-         ("tar" ,tar)))
+       `(("gzip" ,gzip)))
       (arguments
        `(#:modules
          ((guix build utils)
@@ -2682,9 +2681,9 @@ Python loading in HPC environments.")
            (setenv "PATH" (string-append
                            (assoc-ref %build-inputs "bash") "/bin" ":"
                            (assoc-ref %build-inputs "gzip") "/bin" ":"
-                           (assoc-ref %build-inputs "perl") "/bin" ":"
-                           (assoc-ref %build-inputs "tar") "/bin" ":"))
-           (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
+                           (assoc-ref %build-inputs "perl") "/bin" ":"))
+           (copy-recursively (assoc-ref %build-inputs "source")
+                             ,(string-append real-name "-" version))
            (with-directory-excursion ,(string-append real-name "-" version)
              (with-fluids ((%default-port-encoding #f))
                (substitute* "inxi" (("/usr/bin/env perl") (which "perl"))))
