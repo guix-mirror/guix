@@ -141,7 +141,7 @@ of course. Returns the row id of the row that was modified or inserted."
           (last-insert-row-id db)))))
 
 (define add-reference-sql
-  "INSERT INTO Refs (referrer, reference) VALUES (:referrer, :reference);")
+  "INSERT OR REPLACE INTO Refs (referrer, reference) VALUES (:referrer, :reference);")
 
 (define (add-references db referrer references)
   "REFERRER is the id of the referring store item, REFERENCES is a list
