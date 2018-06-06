@@ -1175,14 +1175,14 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
   ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=27344#236>.
   (package
     (name "libngspice")
-    (version "27")
+    (version "28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
                                   version "/ngspice-" version ".tar.gz"))
               (sha256
                (base32
-                "15862npsy5sj56z5yd1qiv3y0fgicrzj7wwn8hbcy89fgbawf20c"))
+                "0rnz2rdgyav16w7wfn3sfrk2lwvvgz1fh0l9107zkcldijklz04l"))
               (modules '((guix build utils)))
               ;; We remove the non-free cider and build without it.
               (snippet
