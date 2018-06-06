@@ -2716,7 +2716,7 @@ Python loading in HPC environments.")
                           %build-inputs)))))
              (invoke "gzip" "inxi.1")
              (install-file "inxi.1.gz"
-                           (string-append %output "/share/doc/man/man1")))
+                           (string-append %output "/share/man/man1")))
            #t)))
       (home-page "https://smxi.org/docs/inxi.htm")
       (synopsis "Full featured system information script")
