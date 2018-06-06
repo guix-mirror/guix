@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,14 +79,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.63.0")
+   (version "0.64.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "04d1z1ygyb3llzc6s6c99wxafvljj2sc5b76djif34f7mzfqmk17"))))
+              "1cb4gz3h7cfqyphhx71qc9mp417bdphchbfghmvhcy4zm4ngj7dj"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no

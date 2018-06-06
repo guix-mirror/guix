@@ -43,7 +43,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.11.0")
+    (version "3.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cmake.org/files/v"
@@ -51,7 +51,7 @@
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "0sv5k9q6braa8hhw0y3w19avqn0xn5czv5jf5fz5blnlf7ivw4y3"))
+                "033x45q0lyaqr32pv92pv87pw20nja6i9794hmijrm6ilinbrgjp"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -86,6 +86,13 @@
            " --exclude-regex ^\\(" (string-join skipped-tests "\\|") "\\)$")))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'split-package
+           ;; Remove files that have been packaged in other package recipes.
+           (lambda _
+             (delete-file "Auxiliary/cmake-mode.el")
+             (substitute* "Auxiliary/CMakeLists.txt"
+               ((".*cmake-mode.el.*") ""))
+             #t))
          (add-before 'configure 'patch-bin-sh
            (lambda _
              ;; Replace "/bin/sh" by the right path in... a lot of

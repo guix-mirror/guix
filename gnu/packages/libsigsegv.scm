@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -38,20 +38,23 @@
    (home-page "https://www.gnu.org/software/libsigsegv/")
    (synopsis "Library for handling page faults")
    (arguments
-    ;; On MIPS, work around this error:
-    ;;
-    ;; In file included from fault-linux-mips-old.h:18:0,
-    ;;    [...]
-    ;; linux-libre-headers-cross-mips64el-linux-gnu-3.3.8/include/asm/sigcontext.h:57:8: error: redefinition of 'struct sigcontext'
-    (if (string-contains (or (%current-target-system) (%current-system))
-                         "mips64el")
-        `(#:phases (modify-phases %standard-phases
-                     (add-before 'configure 'patch-mips-old-h
-                       (lambda _
-                         (substitute* "src/fault-linux-mips-old.h"
-                           (("#include <asm/sigcontext\\.h>") ""))
-                         #t))))
-        '()))
+    `(;; The shared library isn't built by default but some packages need it.
+      #:configure-flags '("--enable-shared")
+
+      ;; On MIPS, work around this error:
+      ;;
+      ;; In file included from fault-linux-mips-old.h:18:0,
+      ;;    [...]
+      ;; linux-libre-headers-cross-mips64el-linux-gnu-3.3.8/include/asm/sigcontext.h:57:8: error: redefinition of 'struct sigcontext'
+      ,@(if (string-contains (or (%current-target-system) (%current-system))
+                             "mips64el")
+            `(#:phases (modify-phases %standard-phases
+                         (add-before 'configure 'patch-mips-old-h
+                           (lambda _
+                             (substitute* "src/fault-linux-mips-old.h"
+                               (("#include <asm/sigcontext\\.h>") ""))
+                             #t))))
+            '())))
    (description
     "GNU libsigsegv is a library to handle page faults, which occur when a
 program tries to access an unavailable region of memory, in user mode.  By

@@ -111,14 +111,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.14.10")
+   (version "1.14.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "02banr0wxckq62nbhc3mqidfdh2q956i2r7w2hd9bjgjb238g1vy"))
+              "05mzyxkvsfc1annjw2dja8vka01ampp9pp93lg09j8hba06g144c"))
             (patches (search-patches "cairo-CVE-2016-9082.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
@@ -216,7 +216,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.42.0")
+   (version "1.42.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -224,7 +224,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0illn78nfwpa8y5knh9ir74wa1skc2hi8f3ny19zgpyf7n5dh94r"))))
+              "0cnfgcya3wbs9m8g44cl5ww6wbp6qbw96qvsgkr8ymwqn9b6fnli"))))
    (build-system gnu-build-system)
    (propagated-inputs
     ;; These are all in Requires or Requires.private of the '.pc' files.

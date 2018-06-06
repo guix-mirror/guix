@@ -621,6 +621,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/crossmap-allow-system-pysam.patch	\
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cube-nocheck.patch			\
+  %D%/packages/patches/cups-fix-builds-without-PAM.patch	\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-2017-12836.patch			\
   %D%/packages/patches/cyrus-sasl-CVE-2013-4122.patch		\
@@ -806,7 +807,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/java-xerces-bootclasspath.patch	\
   %D%/packages/patches/java-xerces-build_dont_unzip.patch	\
   %D%/packages/patches/java-xerces-xjavac_taskdef.patch	\
-  %D%/packages/patches/jemalloc-arm-address-bits.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/json-glib-fix-tests-32bit.patch		\
   %D%/packages/patches/jq-CVE-2015-8863.patch			\
@@ -856,7 +856,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
   %D%/packages/patches/libgnome-encoding.patch			\
   %D%/packages/patches/libgnomeui-utf8.patch			\
-  %D%/packages/patches/libgpg-error-aarch64-logging-fix.patch	\
   %D%/packages/patches/libgxps-CVE-2017-11590.patch		\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\

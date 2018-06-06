@@ -135,7 +135,7 @@ for example libraries only needed for the tests."
                                             (find-files dir elf-pred))
                                           existing-elf-dirs))))
          (for-each (lambda (elf-file)
-                     (system* "patchelf" "--shrink-rpath" elf-file)
+                     (strip-runpath elf-file)
                      (handle-file elf-file elf-list))
                    elf-list)))))
   (for-each handle-output outputs)

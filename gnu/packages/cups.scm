@@ -50,7 +50,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.20.1")
+    (version "1.20.3")
     (source(origin
               (method url-fetch)
               (uri
@@ -58,7 +58,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0qix1whz5n4ijnl6d44f1v8nzkpv99wqjyrby8vx6xnpskw5hsxk"))
+                "1g18qkvl9zdxickiblgs2vvkip4b6p2jalw4d30zzz3hh8f1g6iv"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -173,7 +173,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (version "2.2.6")
+    (version "2.2.7")
     (source
      (origin
        (method url-fetch)
@@ -181,7 +181,10 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                            version "/cups-" version "-source.tar.gz"))
        (sha256
         (base32
-         "16qn41b84xz6khrr2pa2wdwlqxr29rrrkjfi618gbgdkq9w5ff20"))))
+         "0spaqv943bzzq31gqdp73934jgyhhlbzdmgvrmf5cxvhfdxn6jrw"))
+       ;; “PAM will soon [in 2.3.x] be required for authentication, period.”
+       ;; <https://github.com/apple/cups/pull/5253#issuecomment-368066917>
+       (patches (search-patches "cups-fix-builds-without-PAM.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

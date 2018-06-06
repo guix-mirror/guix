@@ -80,7 +80,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.12.6")
+    (version "1.12.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -88,7 +88,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "05picaq8j60wlwyi84qvw5liw3nd0cws9va3krnc3pms0wm906v2"))
+                "1cvfi7jiby12h0f5gbysphhk99m6mch87ab3cqxkj0w36gkrkp72"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -150,7 +150,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.56.0")
+   (version "2.56.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -158,7 +158,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1iqgi90fmpl3l23jm2iv44qp7hqsxvnv7978s18933bvx4bnxvzc"))
+              "138b3hi7glfpbia49gi07lyz1dh9k0jl9vpd3aiwflf6y923zvs0"))
             (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
@@ -303,14 +303,14 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.56.0")
+    (version "1.56.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "1y50pbn5qqbcv2h9rkz96wvv5jls2gma9bkqjq6wapmaszx5jw0d"))
+              (base32 "0jx2kryjd7l0vl5gb3qp1qjfy3cjiizvcd1snsm7pzwrzz67aa2v"))
              (modules '((guix build utils)))
              (snippet
               '(begin
