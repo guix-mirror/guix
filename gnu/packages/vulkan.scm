@@ -157,19 +157,19 @@ interpretation of the specifications for these languages.")
                      ;; include/SPIRV/{bitutils,hex_float}.h are Apache 2.0.
                      license:asl2.0)))))
 
-(define-public vulkan-icd-loader
+(define-public vulkan-loader
   (package
-    (name "vulkan-icd-loader")
+    (name "vulkan-loader")
     (version "1.1.73.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers/"
+             "https://github.com/KhronosGroup/Vulkan-Loader/"
              "archive/sdk-" version ".tar.gz"))
        (sha256
         (base32
-         "1qb34j2zrc04fgs96m3k76vi4nx3sygbdcyg7pbwasr45cbdhsxb"))))
+         "0lvdpy6ybx5h7w15m9s2n9q3167q618clra2k7yi2cbm397ci4hn"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".

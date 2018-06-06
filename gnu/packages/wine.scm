@@ -285,7 +285,7 @@ integrate Windows applications into your desktop.")
               ("python" ,python)
               ("sdl2" ,sdl2)
               ("util-linux" ,util-linux) ; for hexdump
-              ("vulkan-icd-loader" ,vulkan-icd-loader)
+              ("vulkan-loader" ,vulkan-loader)
               ("wine-staging-patchset-data" ,wine-staging-patchset-data)
               ,@(package-inputs wine)))
     (arguments

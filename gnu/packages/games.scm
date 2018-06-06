@@ -4467,7 +4467,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
     (arguments
      `(#:make-flags
        (let ((vulkanlib (string-append (assoc-ref %build-inputs
-                                                  "vulkan-icd-loader") "/lib")))
+                                                  "vulkan-loader") "/lib")))
          (list "CC=gcc"
                "MP3LIB=mpg123"
                "USE_CODEC_FLAC=1"
@@ -4480,7 +4480,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                   (add-after 'unpack 'fix-makefile-paths
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((vulkan (assoc-ref %build-inputs
-                                               "vulkan-icd-loader"))
+                                               "vulkan-loader"))
                             (out (assoc-ref outputs "out")))
                         (mkdir-p (string-append out "/bin"))
                         (substitute* "Quake/Makefile" ((" /usr")
@@ -4491,7 +4491,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                         #t))))
        ,@(strip-keyword-arguments '(#:make-flags #:phases)
                                   (package-arguments quakespasm))))
-    (inputs `(("vulkan-icd-loader" ,vulkan-icd-loader)
+    (inputs `(("vulkan-loader" ,vulkan-loader)
               ,@(package-inputs quakespasm)))
     (description "vkquake is a modern engine for id software's Quake 1.
 It includes support for 64 bit CPUs, custom music playback, a new sound driver,
