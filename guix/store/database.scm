@@ -127,7 +127,7 @@ of course. Returns the row id of the row that was modified or inserted."
     (if id
         (let ((stmt (sqlite-prepare db update-sql #:cache? #t)))
           (sqlite-bind-arguments stmt #:id id
-                                 #:path path #:deriver deriver
+                                 #:deriver deriver
                                  #:hash hash #:size nar-size #:time time)
           (sqlite-fold cons '() stmt)
           (sqlite-finalize stmt)
