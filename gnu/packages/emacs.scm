@@ -11087,3 +11087,34 @@ projects unrelated to current-buffer.
 @item In addition, all actions of type files and buffers are provided.
 @end itemize\n")
       (license license:gpl3+))))
+
+(define-public emacs-helm-mu
+  (let ((commit "77e6fea24e01481418738421dbcfe28ef1bd63cf"))
+    (package
+      (name "emacs-helm-mu")
+      (version (git-version  "20180513" "1" commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://github.com/emacs-helm/helm-mu/archive/"
+               commit
+               ".tar.gz"))
+         (sha256
+          (base32
+           "0qm4xi3i957scm50nar398pv4x8y03si10l77jb9ckjaviyq2hj9"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("mu" ,mu)))
+      (home-page
+       "https://github.com/emacs-helm/helm-mu")
+      (synopsis
+       "Helm sources for searching emails and contacts")
+      (description
+       "Helm sources for searching emails and contacts using @code{mu} and
+@code{mu4e}.  Mu is an indexer for maildirs and mu4e is a mutt-like MUA for
+Emacs build on top of mu.  Mu is highly efficient making it possible to get
+instant results even for huge maildirs.  It also provides search operators,
+e.g: @code{from:Peter to:Anne flag:attach search term}.")
+      (license license:gpl3+))))
