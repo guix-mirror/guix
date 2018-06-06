@@ -10966,3 +10966,32 @@ you searched for and execute it, or view its documentation.")
       (description "Helm interface for Emms to browse all tracks and all folders
 from @code{emms-source-file-default-directory}.")
       (license license:gpl3+))))
+
+(define-public emacs-helm-exwm
+  (let ((commit "82a856c80c8d295e3be522a01c5a15af50d08990"))
+    (package
+      (name "emacs-helm-exwm")
+      (version (git-version "20180523" "1" commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://github.com/emacs-helm/helm-exwm/archive/"
+               commit
+               ".tar.gz"))
+         (sha256
+          (base32
+           "1xsg2lar1vh7jmj5lnnyi14vssxkgy95sv9r8pbfhbnkjkbjm9pb"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-exwm" ,emacs-exwm)))
+      (home-page
+       "https://github.com/emacs-helm/helm-exwm")
+      (synopsis "Helm for EXWM buffers")
+      (description
+       "@code{helm-exwm} runs a Helm session over the list of EXWM buffers.
+@code{helm-exwm-switch} is a convenience X application launcher using Helm to
+switch between the various windows of one or several specific applications.
+See @code{helm-exwm-switch-browser} for an example.")
+      (license license:gpl3+))))
