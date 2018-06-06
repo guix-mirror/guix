@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2014, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
@@ -811,7 +811,14 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       ("python2-sphinx" ,python2-sphinx)))
    (arguments
     `(#:test-target "check"
-      #:parallel-build? #f ; parallel builds trigger an ICE
+      #:phases
+      (modify-phases %standard-phases
+        ;; See https://github.com/ukoethe/vigra/issues/432
+        (add-after 'unpack 'disable-broken-test
+          (lambda _
+            (substitute* "test/fourier/CMakeLists.txt"
+              (("VIGRA_ADD_TEST.*") ""))
+            #t)))
       #:configure-flags
         (list "-Wno-dev" ; suppress developer mode with lots of warnings
               (string-append "-DVIGRANUMPY_INSTALL_DIR="
