@@ -4695,7 +4695,7 @@ Github or Gitlab.")
 (define-public colobot
   (package
     (name "colobot")
-    (version "0.1.11-alpha")
+    (version "0.1.11.1-alpha")
     (source
      (origin
        (method url-fetch)
@@ -4703,7 +4703,7 @@ Github or Gitlab.")
                            "colobot-gold-" version ".tar.gz"))
        (sha256
         (base32
-         "160rq9fp5vd0qaqr3jvzvzrcxk9cac532y8vx4cvq0a8hgylrbad"))))
+         "0h6f4icarramhjkxxbzz6siv3v11z5r8ghqisgr1rscw217vhmwf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -4741,7 +4741,7 @@ Github or Gitlab.")
                  "colobot-gold-" version ".tar.gz"))
            (sha256
             (base32
-             "1pdpsyr41g7xmk03k2g76l214f53ahk04qnkzmsv1fdbbaq7p109"))))
+             "0riznycx2jbxmg4m9nn3mcpqws2c0s7cn2m9skz9zj1w39r5qpjy"))))
        ("colobot-music"
         ,(origin
            (method url-fetch)
