@@ -1839,6 +1839,7 @@ networks using zeromq.  It has these key characteristics:
                                          (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
+         (delete 'bootstrap)
          (delete 'configure))))
     (home-page "https://github.com/linux-can/can-utils")
     (synopsis "CAN utilities")
