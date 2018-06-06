@@ -2727,10 +2727,10 @@ Python loading in HPC environments.")
                            (string-append %output "/share/man/man1")))
            #t)))
       (home-page "https://smxi.org/docs/inxi.htm")
-      (synopsis "Full featured system information script")
+      (synopsis "Full-featured system information script")
       (description "Inxi is a system information script that can display
 various things about your hardware and software to users in an IRC chatroom or
-support forum.  It runs with the /exec command in most IRC clients.")
+support forum.  It runs with the @code{/exec} command in most IRC clients.")
       (license license:gpl3+))))
 
 (define-public inxi
