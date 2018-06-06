@@ -1206,7 +1206,7 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
          (add-after 'unpack 'patch-timestamps
            (lambda _
              (substitute* "configure"
-               (("`date`") "Do 1. Jan 00:00:00 UTC 1970"))
+               (("`date`") "Thu Jan  1 00:00:01 UTC 1970"))
              #t))
          (add-after 'unpack 'delete-program-manuals
            (lambda _
