@@ -34,6 +34,7 @@
   #:use-module (guix utils)
   #:use-module (guix hash)
   #:use-module (guix base32)
+  #:use-module ((guix self) #:select (make-config.scm))
 
   #:use-module ((gnu build vm)
                 #:select (qemu-command))
@@ -50,7 +51,6 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages zile)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages package-management)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
   #:use-module (gnu packages admin)
@@ -116,6 +116,19 @@
           (options "trans=virtio")
           (check? #f))))
 
+(define not-config?
+  ;; Select (guix …) and (gnu …) modules, except (guix config).
+  (match-lambda
+    (('guix 'config) #f)
+    (('guix rest ...) #t)
+    (('gnu rest ...) #t)
+    (rest #f)))
+
+(define guile-sqlite3&co
+  ;; Guile-SQLite3 and its propagated inputs.
+  (cons guile-sqlite3
+        (package-transitive-propagated-inputs guile-sqlite3)))
+
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
                                              (system (%current-system))
@@ -151,6 +164,10 @@ based on the size of the closure of REFERENCES-GRAPHS.
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs, as for `derivation'.  The files containing the reference graphs are
 made available under the /xchg CIFS share."
+  (define config
+    ;; (guix config) module for consumption by (guix gcrypt).
+    (make-config.scm #:libgcrypt libgcrypt))
+
   (define user-builder
     (program-file "builder-in-linux-vm" exp))
 
@@ -178,40 +195,44 @@ made available under the /xchg CIFS share."
 
     (define builder
       ;; Code that launches the VM that evaluates EXP.
-      (with-imported-modules (source-module-closure '((guix build utils)
-                                                      (gnu build vm)))
-        #~(begin
-            (use-modules (guix build utils)
-                         (gnu build vm))
+      (with-extensions guile-sqlite3&co
+        (with-imported-modules `(,@(source-module-closure
+                                    '((guix build utils)
+                                      (gnu build vm))
+                                    #:select? not-config?)
+                                 ((guix config) => ,config))
+          #~(begin
+              (use-modules (guix build utils)
+                           (gnu build vm))
 
-            (let* ((inputs  '#$(list qemu coreutils))
-                   (linux   (string-append #$linux "/"
-                                           #$(system-linux-image-file-name)))
-                   (initrd  (string-append #$initrd "/initrd"))
-                   (loader  #$loader)
-                   (graphs  '#$(match references-graphs
-                                 (((graph-files . _) ...) graph-files)
-                                 (_ #f)))
-                   (size    #$(if (eq? 'guess disk-image-size)
-                                  #~(+ (* 70 (expt 2 20)) ;ESP
-                                       (estimated-partition-size graphs))
-                                  disk-image-size)))
+              (let* ((inputs  '#$(list qemu (canonical-package coreutils)))
+                     (linux   (string-append #$linux "/"
+                                             #$(system-linux-image-file-name)))
+                     (initrd  (string-append #$initrd "/initrd"))
+                     (loader  #$loader)
+                     (graphs  '#$(match references-graphs
+                                   (((graph-files . _) ...) graph-files)
+                                   (_ #f)))
+                     (size    #$(if (eq? 'guess disk-image-size)
+                                    #~(+ (* 70 (expt 2 20)) ;ESP
+                                         (estimated-partition-size graphs))
+                                    disk-image-size)))
 
-              (set-path-environment-variable "PATH" '("bin") inputs)
+                (set-path-environment-variable "PATH" '("bin") inputs)
 
-              (load-in-linux-vm loader
-                                #:output #$output
-                                #:linux linux #:initrd initrd
-                                #:memory-size #$memory-size
-                                #:make-disk-image? #$make-disk-image?
-                                #:single-file-output? #$single-file-output?
-                                ;; FIXME: ‘target-arm32?’ may not operate on
-                                ;; the right system/target values.  Rewrite
-                                ;; using ‘let-system’ when available.
-                                #:target-arm32? #$(target-arm32?)
-                                #:disk-image-format #$disk-image-format
-                                #:disk-image-size size
-                                #:references-graphs graphs)))))
+                (load-in-linux-vm loader
+                                  #:output #$output
+                                  #:linux linux #:initrd initrd
+                                  #:memory-size #$memory-size
+                                  #:make-disk-image? #$make-disk-image?
+                                  #:single-file-output? #$single-file-output?
+                                  ;; FIXME: ‘target-arm32?’ may not operate on
+                                  ;; the right system/target values.  Rewrite
+                                  ;; using ‘let-system’ when available.
+                                  #:target-arm32? #$(target-arm32?)
+                                  #:disk-image-format #$disk-image-format
+                                  #:disk-image-size size
+                                  #:references-graphs graphs))))))
 
     (gexp->derivation name builder
                       ;; TODO: Require the "kvm" feature.
@@ -234,42 +255,56 @@ made available under the /xchg CIFS share."
   "Return a bootable, stand-alone iso9660 image.
 
 INPUTS is a list of inputs (as for packages)."
+  (define config
+    (make-config.scm #:libgcrypt libgcrypt))
+
+  (define schema
+    (and register-closures?
+         (local-file (search-path %load-path
+                                  "guix/store/schema.sql"))))
+
   (expression->derivation-in-linux-vm
    name
-   (with-imported-modules (source-module-closure '((gnu build vm)
-                                                   (guix build utils)))
-     #~(begin
-         (use-modules (gnu build vm)
-                      (guix build utils))
+   (with-extensions guile-sqlite3&co
+     (with-imported-modules `(,@(source-module-closure '((gnu build vm)
+                                                         (guix store database)
+                                                         (guix build utils))
+                                                       #:select? not-config?)
+                              ((guix config) => ,config))
+       #~(begin
+           (use-modules (gnu build vm)
+                        (guix store database)
+                        (guix build utils))
 
-         (let ((inputs
-                '#$(append (list qemu parted e2fsprogs dosfstools xorriso)
-                           (map canonical-package
-                                (list sed grep coreutils findutils gawk))
-                           (if register-closures? (list guix) '())))
+           (sql-schema #$schema)
+
+           (let ((inputs
+                  '#$(append (list qemu parted e2fsprogs dosfstools xorriso)
+                             (map canonical-package
+                                  (list sed grep coreutils findutils gawk))))
 
 
-               (graphs     '#$(match inputs
-                                   (((names . _) ...)
-                                    names)))
-               ;; This variable is unused but allows us to add INPUTS-TO-COPY
-               ;; as inputs.
-               (to-register
-                '#$(map (match-lambda
-                          ((name thing) thing)
-                          ((name thing output) `(,thing ,output)))
-                        inputs)))
+                 (graphs     '#$(match inputs
+                                  (((names . _) ...)
+                                   names)))
+                 ;; This variable is unused but allows us to add INPUTS-TO-COPY
+                 ;; as inputs.
+                 (to-register
+                  '#$(map (match-lambda
+                            ((name thing) thing)
+                            ((name thing output) `(,thing ,output)))
+                          inputs)))
 
-           (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
-           (make-iso9660-image #$(bootloader-package bootloader)
-                               #$bootcfg-drv
-                               #$os-drv
-                               "/xchg/guixsd.iso"
-                               #:register-closures? #$register-closures?
-                               #:closures graphs
-                               #:volume-id #$file-system-label
-                               #:volume-uuid #$(and=> file-system-uuid
-                                                      uuid-bytevector)))))
+             (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+             (make-iso9660-image #$(bootloader-package bootloader)
+                                 #$bootcfg-drv
+                                 #$os-drv
+                                 "/xchg/guixsd.iso"
+                                 #:register-closures? #$register-closures?
+                                 #:closures graphs
+                                 #:volume-id #$file-system-label
+                                 #:volume-uuid #$(and=> file-system-uuid
+                                                        uuid-bytevector))))))
    #:system system
 
    ;; Keep a local file system for /tmp so that we can populate it directly as
@@ -312,90 +347,104 @@ INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
 the image."
+  (define config
+    (make-config.scm #:libgcrypt libgcrypt))
+
+  (define schema
+    (and register-closures?
+         (local-file (search-path %load-path
+                                  "guix/store/schema.sql"))))
+
   (expression->derivation-in-linux-vm
    name
-   (with-imported-modules (source-module-closure '((gnu build bootloader)
-                                                   (gnu build vm)
-                                                   (guix build utils)))
-     #~(begin
-         (use-modules (gnu build bootloader)
-                      (gnu build vm)
-                      (guix build utils)
-                      (srfi srfi-26)
-                      (ice-9 binary-ports))
+   (with-extensions guile-sqlite3&co
+     (with-imported-modules `(,@(source-module-closure '((gnu build vm)
+                                                         (gnu build bootloader)
+                                                         (guix store database)
+                                                         (guix build utils))
+                                                       #:select? not-config?)
+                              ((guix config) => ,config))
+       #~(begin
+           (use-modules (gnu build bootloader)
+                        (gnu build vm)
+                        (guix store database)
+                        (guix build utils)
+                        (srfi srfi-26)
+                        (ice-9 binary-ports))
 
-         (let ((inputs
-                '#$(append (list qemu parted e2fsprogs dosfstools)
-                           (map canonical-package
-                                (list sed grep coreutils findutils gawk))
-                           (if register-closures? (list guix) '())))
+           (sql-schema #$schema)
 
-               ;; This variable is unused but allows us to add INPUTS-TO-COPY
-               ;; as inputs.
-               (to-register
-                '#$(map (match-lambda
-                          ((name thing) thing)
-                          ((name thing output) `(,thing ,output)))
-                        inputs)))
+           (let ((inputs
+                  '#$(append (list qemu parted e2fsprogs dosfstools)
+                             (map canonical-package
+                                  (list sed grep coreutils findutils gawk))))
 
-           (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+                 ;; This variable is unused but allows us to add INPUTS-TO-COPY
+                 ;; as inputs.
+                 (to-register
+                  '#$(map (match-lambda
+                            ((name thing) thing)
+                            ((name thing output) `(,thing ,output)))
+                          inputs)))
 
-           (let* ((graphs     '#$(match inputs
-                                   (((names . _) ...)
-                                    names)))
-                  (initialize (root-partition-initializer
-                               #:closures graphs
-                               #:copy-closures? #$copy-inputs?
-                               #:register-closures? #$register-closures?
-                               #:system-directory #$os-drv))
-                  (root-size  #$(if (eq? 'guess disk-image-size)
-                                    #~(max
-                                       ;; Minimum 20 MiB root size
-                                       (* 20 (expt 2 20))
-                                       (estimated-partition-size
-                                        (map (cut string-append "/xchg/" <>)
-                                             graphs)))
-                                    (- disk-image-size
-                                       (* 50 (expt 2 20)))))
-                  (partitions
-                   (append
-                    (list (partition
-                           (size root-size)
-                           (label #$file-system-label)
-                           (uuid #$(and=> file-system-uuid
-                                          uuid-bytevector))
-                           (file-system #$file-system-type)
-                           (flags '(boot))
-                           (initializer initialize)))
-                    ;; Append a small EFI System Partition for use with UEFI
-                    ;; bootloaders if we are not targeting ARM because UEFI
-                    ;; support in U-Boot is experimental.
-                    ;;
-                    ;; FIXME: ‘target-arm32?’ may be not operate on the right
-                    ;; system/target values.  Rewrite using ‘let-system’ when
-                    ;; available.
-                    (if #$(target-arm32?)
-                        '()
-                        (list (partition
-                               ;; The standalone grub image is about 10MiB, but
-                               ;; leave some room for custom or multiple images.
-                               (size (* 40 (expt 2 20)))
-                               (label "GNU-ESP")             ;cosmetic only
-                               ;; Use "vfat" here since this property is used
-                               ;; when mounting. The actual FAT-ness is based
-                               ;; on file system size (16 in this case).
-                               (file-system "vfat")
-                               (flags '(esp))))))))
-             (initialize-hard-disk "/dev/vda"
-                                   #:partitions partitions
-                                   #:grub-efi #$grub-efi
-                                   #:bootloader-package
-                                   #$(bootloader-package bootloader)
-                                   #:bootcfg #$bootcfg-drv
-                                   #:bootcfg-location
-                                   #$(bootloader-configuration-file bootloader)
-                                   #:bootloader-installer
-                                   #$(bootloader-installer bootloader))))))
+             (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+
+             (let* ((graphs     '#$(match inputs
+                                     (((names . _) ...)
+                                      names)))
+                    (initialize (root-partition-initializer
+                                 #:closures graphs
+                                 #:copy-closures? #$copy-inputs?
+                                 #:register-closures? #$register-closures?
+                                 #:system-directory #$os-drv))
+                    (root-size  #$(if (eq? 'guess disk-image-size)
+                                      #~(max
+                                         ;; Minimum 20 MiB root size
+                                         (* 20 (expt 2 20))
+                                         (estimated-partition-size
+                                          (map (cut string-append "/xchg/" <>)
+                                               graphs)))
+                                      (- disk-image-size
+                                         (* 50 (expt 2 20)))))
+                    (partitions
+                     (append
+                      (list (partition
+                             (size root-size)
+                             (label #$file-system-label)
+                             (uuid #$(and=> file-system-uuid
+                                            uuid-bytevector))
+                             (file-system #$file-system-type)
+                             (flags '(boot))
+                             (initializer initialize)))
+                      ;; Append a small EFI System Partition for use with UEFI
+                      ;; bootloaders if we are not targeting ARM because UEFI
+                      ;; support in U-Boot is experimental.
+                      ;;
+                      ;; FIXME: ‘target-arm32?’ may be not operate on the right
+                      ;; system/target values.  Rewrite using ‘let-system’ when
+                      ;; available.
+                      (if #$(target-arm32?)
+                          '()
+                          (list (partition
+                                 ;; The standalone grub image is about 10MiB, but
+                                 ;; leave some room for custom or multiple images.
+                                 (size (* 40 (expt 2 20)))
+                                 (label "GNU-ESP") ;cosmetic only
+                                 ;; Use "vfat" here since this property is used
+                                 ;; when mounting. The actual FAT-ness is based
+                                 ;; on file system size (16 in this case).
+                                 (file-system "vfat")
+                                 (flags '(esp))))))))
+               (initialize-hard-disk "/dev/vda"
+                                     #:partitions partitions
+                                     #:grub-efi #$grub-efi
+                                     #:bootloader-package
+                                     #$(bootloader-package bootloader)
+                                     #:bootcfg #$bootcfg-drv
+                                     #:bootcfg-location
+                                     #$(bootloader-configuration-file bootloader)
+                                     #:bootloader-installer
+                                     #$(bootloader-installer bootloader)))))))
    #:system system
    #:make-disk-image? #t
    #:disk-image-size disk-image-size
@@ -413,49 +462,41 @@ makes sense when you want to build a GuixSD Docker image that has Guix
 installed inside of it.  If you don't need Guix (e.g., your GuixSD Docker
 image just contains a web server that is started by the Shepherd), then you
 should set REGISTER-CLOSURES? to #f."
-  (define not-config?
-    (match-lambda
-      (('guix 'config) #f)
-      (('guix rest ...) #t)
-      (('gnu rest ...) #t)
-      (rest #f)))
-
   (define config
     ;; (guix config) module for consumption by (guix gcrypt).
-    (scheme-file "gcrypt-config.scm"
-                 #~(begin
-                     (define-module (guix config)
-                       #:export (%libgcrypt))
+    (make-config.scm #:libgcrypt libgcrypt))
 
-                     ;; XXX: Work around <http://bugs.gnu.org/15602>.
-                     (eval-when (expand load eval)
-                       (define %libgcrypt
-                         #+(file-append libgcrypt "/lib/libgcrypt"))))))
+  (define schema
+    (and register-closures?
+         (local-file (search-path %load-path
+                                  "guix/store/schema.sql"))))
 
   (mlet %store-monad ((os-drv (operating-system-derivation os #:container? #t))
                       (name -> (string-append name ".tar.gz"))
                       (graph -> "system-graph"))
     (define build
-      (with-extensions (list guile-json)          ;for (guix docker)
+      (with-extensions (cons guile-json          ;for (guix docker)
+                             guile-sqlite3&co)   ;for (guix store database)
         (with-imported-modules `(,@(source-module-closure
                                     '((guix docker)
+                                      (guix store database)
                                       (guix build utils)
+                                      (guix build store-copy)
                                       (gnu build vm))
                                     #:select? not-config?)
-                                 (guix build store-copy)
                                  ((guix config) => ,config))
           #~(begin
               (use-modules (guix docker)
                            (guix build utils)
                            (gnu build vm)
                            (srfi srfi-19)
-                           (guix build store-copy))
+                           (guix build store-copy)
+                           (guix store database))
 
-              (let* ((inputs '#$(append (list tar)
-                                        (if register-closures?
-                                            (list guix)
-                                            '())))
-                     ;; This initializer requires elevated privileges that are
+              ;; Set the SQL schema location.
+              (sql-schema #$schema)
+
+              (let* (;; This initializer requires elevated privileges that are
                      ;; not normally available in the build environment (e.g.,
                      ;; it needs to create device nodes).  In order to obtain
                      ;; such privileges, we run it as root in a VM.
@@ -470,7 +511,7 @@ should set REGISTER-CLOSURES? to #f."
                      ;; lack of privileges if we use a root-directory that is on
                      ;; a file system that is shared with the host (e.g., /tmp).
                      (root-directory "/guixsd-system-root"))
-                (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+                (set-path-environment-variable "PATH" '("bin" "sbin") '(#+tar))
                 (mkdir root-directory)
                 (initialize root-directory)
                 (build-docker-image

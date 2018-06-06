@@ -354,6 +354,7 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
       (for-each (lambda (closure)
                   (register-closure target
                                     (string-append "/xchg/" closure)
+                                    #:reset-timestamps? copy-closures?
                                     #:deduplicate? deduplicate?))
                 closures)
       (unless copy-closures?

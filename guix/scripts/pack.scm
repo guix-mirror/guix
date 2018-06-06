@@ -35,6 +35,7 @@
   #:use-module (guix search-paths)
   #:use-module (guix build-system gnu)
   #:use-module (guix scripts build)
+  #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
@@ -101,113 +102,133 @@ with a properly initialized store database.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
+  (define not-config?
+    (match-lambda
+      (('guix 'config) #f)
+      (('guix _ ...) #t)
+      (('gnu _ ...) #t)
+      (_ #f)))
+
+  (define libgcrypt
+    (module-ref (resolve-interface '(gnu packages gnupg))
+                'libgcrypt))
+
+  (define schema
+    (and localstatedir?
+         (local-file (search-path %load-path
+                                  "guix/store/schema.sql"))))
+
   (define build
-    (with-imported-modules (source-module-closure
-                            '((guix build utils)
-                              (guix build union)
-                              (guix build store-copy)
-                              (gnu build install)))
-      #~(begin
-          (use-modules (guix build utils)
-                       ((guix build union) #:select (relative-file-name))
-                       (gnu build install)
-                       (srfi srfi-1)
-                       (srfi srfi-26)
-                       (ice-9 match))
+    (with-imported-modules `(((guix config)
+                              => ,(make-config.scm
+                                   #:libgcrypt libgcrypt))
+                             ,@(source-module-closure
+                                `((guix build utils)
+                                  (guix build union)
+                                  (guix build store-copy)
+                                  (gnu build install))
+                                #:select? not-config?))
+      (with-extensions (cons guile-sqlite3
+                             (package-transitive-propagated-inputs
+                              guile-sqlite3))
+        #~(begin
+            (use-modules (guix build utils)
+                         ((guix build union) #:select (relative-file-name))
+                         (gnu build install)
+                         (srfi srfi-1)
+                         (srfi srfi-26)
+                         (ice-9 match))
 
-          (define %root "root")
+            (define %root "root")
 
-          (define symlink->directives
-            ;; Return "populate directives" to make the given symlink and its
-            ;; parent directories.
-            (match-lambda
-              ((source '-> target)
-               (let ((target (string-append #$profile "/" target))
-                     (parent (dirname source)))
-                 ;; Never add a 'directory' directive for "/" so as to
-                 ;; preserve its ownnership when extracting the archive (see
-                 ;; below), and also because this would lead to adding the
-                 ;; same entries twice in the tarball.
-                 `(,@(if (string=? parent "/")
-                         '()
-                         `((directory ,parent)))
-                   (,source
-                    -> ,(relative-file-name parent target)))))))
+            (define symlink->directives
+              ;; Return "populate directives" to make the given symlink and its
+              ;; parent directories.
+              (match-lambda
+                ((source '-> target)
+                 (let ((target (string-append #$profile "/" target))
+                       (parent (dirname source)))
+                   ;; Never add a 'directory' directive for "/" so as to
+                   ;; preserve its ownnership when extracting the archive (see
+                   ;; below), and also because this would lead to adding the
+                   ;; same entries twice in the tarball.
+                   `(,@(if (string=? parent "/")
+                           '()
+                           `((directory ,parent)))
+                     (,source
+                      -> ,(relative-file-name parent target)))))))
 
-          (define directives
-            ;; Fully-qualified symlinks.
-            (append-map symlink->directives '#$symlinks))
+            (define directives
+              ;; Fully-qualified symlinks.
+              (append-map symlink->directives '#$symlinks))
 
-          ;; The --sort option was added to GNU tar in version 1.28, released
-          ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
-          ;; older and doesn't support it.
-          (define tar-supports-sort?
-            (zero? (system* (string-append #+archiver "/bin/tar")
-                            "cf" "/dev/null" "--files-from=/dev/null"
-                            "--sort=name")))
+            ;; The --sort option was added to GNU tar in version 1.28, released
+            ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
+            ;; older and doesn't support it.
+            (define tar-supports-sort?
+              (zero? (system* (string-append #+archiver "/bin/tar")
+                              "cf" "/dev/null" "--files-from=/dev/null"
+                              "--sort=name")))
 
-          ;; We need Guix here for 'guix-register'.
-          (setenv "PATH"
-                  (string-append #$(if localstatedir?
-                                       (file-append guix "/sbin:")
-                                       "")
-                                 #$archiver "/bin"))
+            ;; Add 'tar' to the search path.
+            (setenv "PATH" #+(file-append archiver "/bin"))
 
-          ;; Note: there is not much to gain here with deduplication and there
-          ;; is the overhead of the '.links' directory, so turn it off.
-          ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
-          ;; with hard links:
-          ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
-          (populate-single-profile-directory %root
-                                             #:profile #$profile
-                                             #:closure "profile"
-                                             #:deduplicate? #f
-                                             #:register? #$localstatedir?)
+            ;; Note: there is not much to gain here with deduplication and there
+            ;; is the overhead of the '.links' directory, so turn it off.
+            ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
+            ;; with hard links:
+            ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
+            (populate-single-profile-directory %root
+                                               #:profile #$profile
+                                               #:closure "profile"
+                                               #:deduplicate? #f
+                                               #:register? #$localstatedir?
+                                               #:schema #$schema)
 
-          ;; Create SYMLINKS.
-          (for-each (cut evaluate-populate-directive <> %root)
-                    directives)
+            ;; Create SYMLINKS.
+            (for-each (cut evaluate-populate-directive <> %root)
+                      directives)
 
-          ;; Create the tarball.  Use GNU format so there's no file name
-          ;; length limitation.
-          (with-directory-excursion %root
-            (exit
-             (zero? (apply system* "tar"
-                           "-I"
-                           (string-join '#+(compressor-command compressor))
-                           "--format=gnu"
+            ;; Create the tarball.  Use GNU format so there's no file name
+            ;; length limitation.
+            (with-directory-excursion %root
+              (exit
+               (zero? (apply system* "tar"
+                             "-I"
+                             (string-join '#+(compressor-command compressor))
+                             "--format=gnu"
 
-                           ;; Avoid non-determinism in the archive.  Use
-                           ;; mtime = 1, not zero, because that is what the
-                           ;; daemon does for files in the store (see the
-                           ;; 'mtimeStore' constant in local-store.cc.)
-                           (if tar-supports-sort? "--sort=name" "--mtime=@1")
-                           "--mtime=@1"           ;for files in /var/guix
-                           "--owner=root:0"
-                           "--group=root:0"
+                             ;; Avoid non-determinism in the archive.  Use
+                             ;; mtime = 1, not zero, because that is what the
+                             ;; daemon does for files in the store (see the
+                             ;; 'mtimeStore' constant in local-store.cc.)
+                             (if tar-supports-sort? "--sort=name" "--mtime=@1")
+                             "--mtime=@1"         ;for files in /var/guix
+                             "--owner=root:0"
+                             "--group=root:0"
 
-                           "--check-links"
-                           "-cvf" #$output
-                           ;; Avoid adding / and /var to the tarball, so
-                           ;; that the ownership and permissions of those
-                           ;; directories will not be overwritten when
-                           ;; extracting the archive.  Do not include /root
-                           ;; because the root account might have a
-                           ;; different home directory.
-                           #$@(if localstatedir?
-                                  '("./var/guix")
-                                  '())
+                             "--check-links"
+                             "-cvf" #$output
+                             ;; Avoid adding / and /var to the tarball, so
+                             ;; that the ownership and permissions of those
+                             ;; directories will not be overwritten when
+                             ;; extracting the archive.  Do not include /root
+                             ;; because the root account might have a
+                             ;; different home directory.
+                             #$@(if localstatedir?
+                                    '("./var/guix")
+                                    '())
 
-                           (string-append "." (%store-directory))
+                             (string-append "." (%store-directory))
 
-                           (delete-duplicates
-                            (filter-map (match-lambda
-                                          (('directory directory)
-                                           (string-append "." directory))
-                                          ((source '-> _)
-                                           (string-append "." source))
-                                          (_ #f))
-                                        directives)))))))))
+                             (delete-duplicates
+                              (filter-map (match-lambda
+                                            (('directory directory)
+                                             (string-append "." directory))
+                                            ((source '-> _)
+                                             (string-append "." source))
+                                            (_ #f))
+                                          directives))))))))))
 
   (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
