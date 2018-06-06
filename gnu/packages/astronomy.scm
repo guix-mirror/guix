@@ -103,7 +103,7 @@ header.")
 (define-public gnuastro
   (package
     (name "gnuastro")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
@@ -111,7 +111,7 @@ header.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "10lxzxyrf30hj3bqdgprvaj9phzdi816khjmr0vmjf8pmsr8bqqr"))))
+         "16a212j9ghdirm11d25s5q5qw32bkjrxsh3rblfyyv29djch34w6"))))
     (inputs
      `(("cfitsio" ,cfitsio)
        ("gsl" ,gsl)
