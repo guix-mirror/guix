@@ -24,7 +24,8 @@
   #:use-module (guix store deduplication)
   #:use-module (guix base16)
   #:use-module (guix build syscalls)
-  #:use-module ((guix build utils) #:select (mkdir-p))
+  #:use-module ((guix build utils)
+                #:select (mkdir-p executable-file?))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -189,11 +190,12 @@ Every store item in REFERENCES must already be registered."
 ;; TODO: Factorize with that in (gnu build install).
 (define (reset-timestamps file)
   "Reset the modification time on FILE and on all the files it contains, if
-it's a directory."
+it's a directory.  While at it, canonicalize file permissions."
   (let loop ((file file)
              (type (stat:type (lstat file))))
     (case type
       ((directory)
+       (chmod file #o555)
        (utime file 0 0 0 0)
        (let ((parent file))
          (for-each (match-lambda
@@ -212,15 +214,8 @@ it's a directory."
        ;; symlinks.
        #f)
       (else
+       (chmod file (if (executable-file? file) #o555 #o444))
        (utime file 0 0 0 0)))))
-
-;; TODO: make this canonicalize store items that are registered. This involves
-;; setting permissions and timestamps, I think. Also, run a "deduplication
-;; pass", whatever that involves. Also, handle databases not existing yet
-;; (what should the default behavior be?  Figuring out how the C++ stuff
-;; currently does it sounds like a lot of grepping for global
-;; variables...). Also, return #t on success like the documentation says we
-;; should.
 
 (define* (register-path path
                         #:key (references '()) deriver prefix
