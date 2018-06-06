@@ -669,14 +669,14 @@ line of code.")
 (define-public ruby-asciidoctor
   (package
   (name "ruby-asciidoctor")
-  (version "1.5.6.2")
+  (version "1.5.7.1")
   (source
     (origin
       (method url-fetch)
       (uri (rubygems-uri "asciidoctor" version))
       (sha256
         (base32
-          "0zq3az4836nxkc8g5wnnbzmarw7663s1ky6gf8pc04sfpa8n2l3f"))))
+          "0v52bzc72cvg7zfgq27pa4mgyf29dx9m20fghrw1xmvwgd519n1w"))))
   (build-system ruby-build-system)
   (arguments
    `(#:test-target "test:all"
