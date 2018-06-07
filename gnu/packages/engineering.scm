@@ -1531,6 +1531,14 @@ parallel computing platforms.  It also supports serial execution.")
       (arguments
        `(#:phases
          (modify-phases %standard-phases
+           (add-before 'bootstrap 'patch-bootstrap
+             (lambda _
+               (for-each patch-shebang
+                         '("bootstrap"
+                           "qucs/bootstrap"
+                           "qucs-doc/bootstrap"
+                           "qucs-core/bootstrap"))
+               #t))
            (add-before 'configure 'patch-configure
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "qucs/configure"
