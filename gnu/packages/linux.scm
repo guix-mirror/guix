@@ -4827,3 +4827,26 @@ libpfm4 provides support for the @code{perf_events} interface, which was
 introduced in Linux 2.6.31.")
     (home-page "http://perfmon2.sourceforge.net/")
     (license license:expat)))
+
+(define-public libnfnetlink
+  (package
+    (name "libnfnetlink")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.netfilter.org/projects/libnfnetlink/files/"
+                    "libnfnetlink-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "06mm2x4b01k3m7wnrxblk9j0mybyr4pfz28ml7944xhjx6fy2w7j"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.netfilter.org/projects/libnfnetlink/")
+    (synopsis "Low-level netfilter netlink communication library")
+    (description
+     "@code{libnfnetlink} is the low-level library for netfilter related
+kernel/userspace communication.  It provides a generic messaging
+infrastructure for in-kernel netfilter subsystems (such as nfnetlink_log,
+nfnetlink_queue, nfnetlink_conntrack) and their respective users and/or
+management tools in userspace.")
+    (license license:gpl2)))
