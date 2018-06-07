@@ -864,6 +864,33 @@ and to return information on pronunciations, meanings and synonyms.")
     (license (non-copyleft "file://COPYING"
                            "See COPYING in the distribution."))))
 
+(define-public libqxp
+  (package
+    (name "libqxp")
+    (version "0.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://dev-www.libreoffice.org/src/libqxp/"
+                                  "libqxp-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0wswz49y0lqwqw2nj9j7jaj5ag88hapcz8czgkxax57zhihpy9cc"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("icu4c" ,icu4c)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("librevenge" ,librevenge))) ; mentioned in Requires field
+    (home-page "https://www.libreoffice.org")
+    (synopsis "Library and tools for the QuarkXPress file format")
+    (description "libqxp is a library and a set of tools for reading and
+converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
+    (license mpl2.0)))
+
 (define-public libreoffice
   (package
     (name "libreoffice")
