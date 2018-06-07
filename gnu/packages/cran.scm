@@ -4166,3 +4166,27 @@ Python to R they are converted back to R types.")
     (description "This package provides a utility for R to parse a bibtex
 file.")
     (license license:gpl2+)))
+
+(define-public r-ggseqlogo
+  (package
+    (name "r-ggseqlogo")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggseqlogo" version))
+       (sha256
+        (base32
+         "13q6kcpxrqxqbji889fx63p0nsi08lk5yymkchig75r5k1d18ky1"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://github.com/omarwagih/ggseqlogo")
+    (synopsis "ggplot2 extension for drawing genetic sequence logos")
+    (description
+     "The range of functions provided by this package makes it possible to
+draw highly versatile genomic sequence logos.  Features include, but are not
+limited to, modifying colour schemes and fonts used to draw the logo,
+generating multiple logo plots, and aiding the visualisation with annotations.
+Sequence logos can easily be combined with other ggplot2 plots.")
+    ;; Unspecified version of the LGPL.
+    (license license:lgpl3+)))
