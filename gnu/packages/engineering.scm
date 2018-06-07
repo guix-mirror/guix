@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
@@ -1503,104 +1503,113 @@ parallel computing platforms.  It also supports serial execution.")
                    license:lgpl2.0+)))) ; freehdl's libraries
 
 (define-public qucs
-  (package
-    (name "qucs")
-    (version "0.0.19")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "https://sourceforge.net/projects/qucs/files/qucs/" version
-                "/qucs-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0giv9gfyfdizvjhq56x2pdncrlyv3k15lrsh6pk37i94vr7l7ij5"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "qucs/configure"
-               (("\\$QTDIR") (assoc-ref inputs "qt4")))
-             #t))
-         (add-after 'patch-configure 'patch-scripts
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* '("qucs/qucs/qucsdigi"
-                            "qucs/qucs/qucsdigilib"
-                            "qucs/qucs/qucsveri")
-               (("\\$BINDIR")
-                (string-append (assoc-ref outputs "out") "/bin"))
-               (("freehdl-config")
-                (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-config"))
-               (("freehdl-v2cc")
-                (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-v2cc"))
-               (("cp ")
-                (string-append (assoc-ref inputs "coreutils") "/bin/cp "))
-               (("glibtool")
-                (string-append (assoc-ref inputs "libtool") "/bin/libtool"))
-               (("sed")
-                (string-append (assoc-ref inputs "sed") "/bin/sed"))
-               (("iverilog")
-                (string-append (assoc-ref inputs "iverilog") "/bin/iverilog"))
-               (("vvp")
-                (string-append (assoc-ref inputs "iverilog") "/bin/vvp")))
-             #t))
-         (add-before 'check 'pre-check
-           (lambda _
-             ;; The test suite requires a running X server.
-             (system "Xvfb :1 &")
-             (setenv "DISPLAY" ":1")
-             #t))
-         (add-after 'install 'make-wrapper
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; 'qucs' directly invokes gcc, hence this wrapping.
-               (wrap-program (string-append out "/bin/qucs")
-                 `("CPLUS_INCLUDE_PATH" ":" prefix
-                   (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                    "/include")))
-                 `("PATH" ":" prefix
-                   (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                    "/bin")))
-                 `("LIBRARY_PATH" ":" prefix
-                   (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                    "/lib")))
-                 `("ADMSXMLBINDIR" ":" prefix
-                   (,(string-append (assoc-ref inputs "adms") "/bin")))
-                 `("ASCOBINDIR" ":" prefix
-                   (,(string-append (assoc-ref inputs "asco") "/bin")))
-                 `("QUCS_OCTAVE" ":" prefix
-                   (,(string-append (assoc-ref inputs "octave") "/bin/octave")))))
-             #t)))
-       #:parallel-build? #f ; race condition
-       #:configure-flags '("--disable-doc"))) ; we need octave-epstk
-    (native-inputs
-     `(("gperf" ,gperf)
-       ("libtool-native" ,libtool)
-       ("python" ,python-2) ; for tests
-       ("matplotlib" ,python2-matplotlib) ; for tests
-       ("numpy" ,python2-numpy) ; for tests
-       ("xorg-server" ,xorg-server))) ; for tests
-    (inputs
-     `(("adms" ,adms)
-       ("asco" ,asco)
-       ("coreutils" ,coreutils)
-       ("freehdl" ,freehdl)
-       ("gcc-toolchain" ,gcc-toolchain)
-       ("iverilog" ,iverilog)
-       ("libtool" ,libtool)
-       ("octave" ,octave)
-       ("qt4" ,qt-4)
-       ("sed" ,sed)))
-    (home-page "http://qucs.sourceforge.net/")
-    (synopsis "Circuit simulator with graphical user interface")
-    (description
-     "Qucs is a circuit simulator with graphical user interface.  The software
+  ;; Qucs 0.0.19 segfaults when using glibc-2.26. Temporarily build from git.
+  ;; TODO: When qucs-0.0.20 is released, revert the commit that introduced this
+  ;; comment and update the package.
+  (let ((commit "b4f27d9222568066cd59e4c387c51a35056c99d8")
+        (revision "0"))
+    (package
+      (name "qucs")
+      (version (git-version "0.0.19" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Qucs/qucs")
+                      (commit commit)))
+                (sha256
+                 (base32 "10bclay9xhkffmsh4j4l28kj1qpxx0pnxja5vx6305cllnq4r3gb"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'patch-configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "qucs/configure"
+                 (("\\$QTDIR") (assoc-ref inputs "qt4")))
+               #t))
+           (add-after 'patch-configure 'patch-scripts
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (substitute* '("qucs/qucs/qucsdigi"
+                              "qucs/qucs/qucsdigilib"
+                              "qucs/qucs/qucsveri")
+                 (("\\$BINDIR")
+                  (string-append (assoc-ref outputs "out") "/bin"))
+                 (("freehdl-config")
+                  (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-config"))
+                 (("freehdl-v2cc")
+                  (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-v2cc"))
+                 (("cp ")
+                  (string-append (assoc-ref inputs "coreutils") "/bin/cp "))
+                 (("glibtool")
+                  (string-append (assoc-ref inputs "libtool") "/bin/libtool"))
+                 (("sed")
+                  (string-append (assoc-ref inputs "sed") "/bin/sed"))
+                 (("iverilog")
+                  (string-append (assoc-ref inputs "iverilog") "/bin/iverilog"))
+                 (("vvp")
+                  (string-append (assoc-ref inputs "iverilog") "/bin/vvp")))
+               #t))
+           (add-before 'check 'pre-check
+             (lambda _
+               ;; The test suite requires a running X server.
+               (system "Xvfb :1 &")
+               (setenv "DISPLAY" ":1")
+               #t))
+           (add-after 'install 'make-wrapper
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; 'qucs' directly invokes gcc, hence this wrapping.
+                 (wrap-program (string-append out "/bin/qucs")
+                   `("CPLUS_INCLUDE_PATH" ":" prefix
+                     (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                      "/include")))
+                   `("PATH" ":" prefix
+                     (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                      "/bin")))
+                   `("LIBRARY_PATH" ":" prefix
+                     (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                      "/lib")))
+                   `("ADMSXMLBINDIR" ":" prefix
+                     (,(string-append (assoc-ref inputs "adms") "/bin")))
+                   `("ASCOBINDIR" ":" prefix
+                     (,(string-append (assoc-ref inputs "asco") "/bin")))
+                   `("QUCS_OCTAVE" ":" prefix
+                     (,(string-append (assoc-ref inputs "octave") "/bin/octave")))))
+               #t)))
+         #:parallel-build? #f ; race condition
+         #:configure-flags '("--disable-doc"))) ; we need octave-epstk
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("bison" ,bison)
+         ("flex" ,flex)
+         ("gperf" ,gperf)
+         ("libtool-native" ,libtool)
+         ("pkg-config" ,pkg-config)
+         ("python" ,python-2) ; for tests
+         ("matplotlib" ,python2-matplotlib) ; for tests
+         ("numpy" ,python2-numpy) ; for tests
+         ("xorg-server" ,xorg-server))) ; for tests
+      (inputs
+       `(("adms" ,adms)
+         ("asco" ,asco)
+         ("coreutils" ,coreutils)
+         ("freehdl" ,freehdl)
+         ("gcc-toolchain" ,gcc-toolchain)
+         ("iverilog" ,iverilog)
+         ("libtool" ,libtool)
+         ("octave" ,octave)
+         ("qt4" ,qt-4)
+         ("sed" ,sed)))
+      (home-page "http://qucs.sourceforge.net/")
+      (synopsis "Circuit simulator with graphical user interface")
+      (description
+       "Qucs is a circuit simulator with graphical user interface.  The software
 aims to support all kinds of circuit simulation types---e.g. DC, AC,
 S-parameter, transient, noise and harmonic balance analysis.  Pure digital
 simulations are also supported.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public qucs-s
   (package
