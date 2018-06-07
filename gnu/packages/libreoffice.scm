@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -222,6 +223,34 @@ Broad Band eBook, eReader .pdb, FictionBook v. 2 (including zipped files),
 PalmDoc Ebook, Plucker .pdb, QiOO (mobile format, for java-enabled
 cellphones), TCR (simple compressed text format), TealDoc, zTXT,
 ZVR (simple compressed text format).")
+    (license mpl2.0)))
+
+(define-public libepubgen
+  (package
+    (name "libepubgen")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/libepubgen/libepubgen-"
+                           version "/libepubgen-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1b8mc9zzrqypj1v9zdy3ybc48pw0rfr06cyi7n6grvybjjwq9q03"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("boost" ,boost)))
+    (propagated-inputs         ; in Requires field of .pkg
+     `(("librevenge" ,librevenge)))
+    (home-page "https://sourceforge.net/projects/libepubgen/")
+    (synopsis "EPUB generator library for librevenge")
+    (description "libepubgen is an EPUB generator for librevenge.  It supports
+librevenge's text document interface and--currently in a very limited
+way--presentation and vector drawing interfaces.")
     (license mpl2.0)))
 
 (define-public libwpg
