@@ -209,6 +209,9 @@ and the ICD.")
                    (license:x11-style "file://COPYRIGHT.txt")
                    license:bsd-3))))
 
+(define-public vulkan-icd-loader
+  (deprecated-package "vulkan-icd-loader" vulkan-loader))
+
 (define-public shaderc
   (let ((commit "773ec22d49f40b7161820f29d953be4a7e40190d")
         (revision "1"))
