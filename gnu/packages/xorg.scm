@@ -2942,7 +2942,7 @@ It supports a variety of Intel graphics chipsets.")
 (define-public xf86-video-mach64
   (package
     (name "xf86-video-mach64")
-    (version "6.9.5")
+    (version "6.9.6")
     (source
       (origin
         (method url-fetch)
@@ -2952,7 +2952,7 @@ It supports a variety of Intel graphics chipsets.")
                ".tar.bz2"))
         (sha256
           (base32
-           "07xlf5nsjm0x18ij5gyy4lf8hwpl10i8chi3skpqjh84drdri61y"))
+           "171wg8r6py1l138s58rlapin3rlpwsg9spmvhc7l68mm3g3hf1vs"))
         (patches (search-patches "xf86-video-mach64-glibc-2.20.patch"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
