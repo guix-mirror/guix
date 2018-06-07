@@ -57,20 +57,20 @@
   (call-with-temporary-output-file
    (lambda (db-file port)
      (delete-file db-file)
-     (sqlite-register #:db-file db-file
-                      #:path "/gnu/foo"
-                      #:references '()
-                      #:deriver "/gnu/foo.drv"
-                      #:hash (string-append "sha256:" (make-string 64 #\e))
-                      #:nar-size 1234)
-     (sqlite-register #:db-file db-file
-                      #:path "/gnu/bar"
-                      #:references '("/gnu/foo")
-                      #:deriver "/gnu/bar.drv"
-                      #:hash (string-append "sha256:" (make-string 64 #\a))
-                      #:nar-size 4321)
-     (let ((path-id (@@ (guix store database) path-id)))
-       (with-database db-file db
+     (with-database db-file db
+       (sqlite-register db
+                        #:path "/gnu/foo"
+                        #:references '()
+                        #:deriver "/gnu/foo.drv"
+                        #:hash (string-append "sha256:" (make-string 64 #\e))
+                        #:nar-size 1234)
+       (sqlite-register db
+                        #:path "/gnu/bar"
+                        #:references '("/gnu/foo")
+                        #:deriver "/gnu/bar.drv"
+                        #:hash (string-append "sha256:" (make-string 64 #\a))
+                        #:nar-size 4321)
+       (let ((path-id (@@ (guix store database) path-id)))
          (list (path-id db "/gnu/foo")
                (path-id db "/gnu/bar")))))))
 
@@ -83,12 +83,12 @@
      (delete-file db-file)
      (catch 'sqlite-error
        (lambda ()
-         (sqlite-register #:db-file db-file
-                          #:path "/gnu/foo"
-                          #:references '("/gnu/bar")
-                          #:deriver "/gnu/foo.drv"
-                          #:hash (string-append "sha256:" (make-string 64 #\e))
-                          #:nar-size 1234)
+         (with-database db-file db
+           (sqlite-register db #:path "/gnu/foo"
+                            #:references '("/gnu/bar")
+                            #:deriver "/gnu/foo.drv"
+                            #:hash (string-append "sha256:" (make-string 64 #\e))
+                            #:nar-size 1234))
          #f)
        (lambda args
          (pk 'welcome-exception! args)
