@@ -158,6 +158,7 @@ deduplicates files common to CLOSURE and the rest of PREFIX."
                     #:prefix prefix
                     #:deduplicate? deduplicate?
                     #:reset-timestamps? reset-timestamps?
+                    #:registration-time %epoch
                     #:schema schema)))
 
 (define* (populate-single-profile-directory directory

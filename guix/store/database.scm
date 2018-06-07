@@ -39,6 +39,7 @@
             sqlite-register
             register-path
             register-items
+            %epoch
             reset-timestamps))
 
 ;;; Code for working with the store database directly.
@@ -160,19 +161,22 @@ ids of items referred to."
               references)))
 
 (define* (sqlite-register db #:key path (references '())
-                          deriver hash nar-size)
+                          deriver hash nar-size time)
   "Registers this stuff in DB.  PATH is the store item to register and
 REFERENCES is the list of store items PATH refers to; DERIVER is the '.drv'
 that produced PATH, HASH is the base16-encoded Nix sha256 hash of
 PATH (prefixed with \"sha256:\"), and NAR-SIZE is the size in bytes PATH after
-being converted to nar form.
+being converted to nar form.  TIME is the registration time to be recorded in
+the database or #f, meaning \"right now\".
 
 Every store item in REFERENCES must already be registered."
   (let ((id (update-or-insert db #:path path
                               #:deriver deriver
                               #:hash hash
                               #:nar-size nar-size
-                              #:time (time-second (current-time time-utc)))))
+                              #:time (time-second
+                                      (or time
+                                          (current-time time-utc))))))
     ;; Call 'path-id' on each of REFERENCES.  This ensures we get a
     ;; "non-NULL constraint" failure if one of REFERENCES is unregistered.
     (add-references db id
@@ -232,15 +236,21 @@ be used internally by the daemon's build hook."
                   #:reset-timestamps? reset-timestamps?
                   #:schema schema))
 
+(define %epoch
+  ;; When it all began.
+  (make-time time-utc 0 1))
+
 (define* (register-items items
                          #:key prefix state-directory
                          (deduplicate? #t)
                          (reset-timestamps? #t)
+                         registration-time
                          (schema (sql-schema)))
   "Register all of ITEMS, a list of <store-info> records as returned by
 'read-reference-graph', in the database under PREFIX/STATE-DIRECTORY.  ITEMS
 must be in topological order (with leaves first.)  If the database is
-initially empty, apply SCHEMA to initialize it."
+initially empty, apply SCHEMA to initialize it.  REGISTRATION-TIME must be the
+registration time to be recorded in the database; #f means \"now\"."
 
   ;; Priority for options: first what is given, then environment variables,
   ;; then defaults. %state-directory, %store-directory, and
@@ -284,7 +294,8 @@ initially empty, apply SCHEMA to initialize it."
                        #:deriver (store-info-deriver item)
                        #:hash (string-append "sha256:"
                                              (bytevector->base16-string hash))
-                       #:nar-size nar-size)
+                       #:nar-size nar-size
+                       #:time registration-time)
       (when deduplicate?
         (deduplicate real-file-name hash #:store store-dir))))
 
