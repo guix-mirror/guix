@@ -222,7 +222,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "18.0.4")
+    (version "18.0.5")
     (source
       (origin
         (method url-fetch)
@@ -234,7 +234,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "03wjlb5qy1mn8d6zm0q1pq35x60agrfxyh9bmq6w59ghrvkwyfqz"))
+          "0szwqjr5x2q4r6gcwb862s18wl4s0z34w4rd0vr7isiasylbp1si"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
