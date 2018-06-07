@@ -105,22 +105,23 @@ their dependencies automatically upon calculation.")
 (define-public orcus
   (package
     (name "orcus")
-    (version "0.12.1")
+    (version "0.13.4")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "http://kohei.us/files/" name "/src/lib"
-                          name "-" version ".tar.xz"))
-      (sha256 (base32
-               "171bmqa9hkk4xygz20qda5900rs4kq9fgl424ldkxlj4d733dffi"))))
+       (method url-fetch)
+       (uri (string-append "http://kohei.us/files/" name "/src/lib"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1r42waglxwmvvwl20fy49vzgfp1sis4j703f81iswzdyzqalq75p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-     (inputs
-      `(("ixion" ,ixion)
-        ("mdds" ,mdds)
-        ("python" ,python)
-        ("zlib" ,zlib)))
+    (inputs
+     `(("ixion" ,ixion)
+       ("mdds" ,mdds)
+       ("python" ,python)
+       ("zlib" ,zlib)))
     (home-page "https://gitlab.com/orcus/orcus")
     (synopsis "File import filter library for spreadsheet documents")
     (description "Orcus is a library that provides a collection of standalone
