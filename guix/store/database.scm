@@ -183,7 +183,6 @@ Every store item in REFERENCES must already be registered."
 ;;; High-level interface.
 ;;;
 
-;; TODO: Factorize with that in (gnu build install).
 (define (reset-timestamps file)
   "Reset the modification time on FILE and on all the files it contains, if
 it's a directory.  While at it, canonicalize file permissions."

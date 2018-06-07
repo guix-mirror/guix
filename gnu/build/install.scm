@@ -26,7 +26,6 @@
   #:export (install-boot-config
             evaluate-populate-directive
             populate-root-file-system
-            reset-timestamps
             register-closure
             populate-single-profile-directory))
 
@@ -144,20 +143,6 @@ includes /etc, /var, /run, /bin/sh, etc., and all the symlinks to SYSTEM."
                 (delete-file generation-1)
                 (try))
               (apply throw args)))))))
-
-(define (reset-timestamps directory)
-  "Reset the timestamps of all the files under DIRECTORY, so that they appear
-as created and modified at the Epoch."
-  (display "clearing file timestamps...\n")
-  (for-each (lambda (file)
-              (let ((s (lstat file)))
-                ;; XXX: Guile uses libc's 'utime' function (not 'futime'), so
-                ;; the timestamp of symlinks cannot be changed, and there are
-                ;; symlinks here pointing to /gnu/store, which is the host,
-                ;; read-only store.
-                (unless (eq? (stat:type s) 'symlink)
-                  (utime file 0 0 0 0))))
-            (find-files directory #:directories? #t)))
 
 (define* (register-closure prefix closure
                            #:key

@@ -25,6 +25,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build store-copy)
   #:use-module (guix build syscalls)
+  #:use-module ((guix store database) #:select (reset-timestamps))
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
   #:use-module (gnu system uuid)
