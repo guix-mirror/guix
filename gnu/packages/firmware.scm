@@ -262,36 +262,26 @@ coreboot.")
                (setenv "PATH" (string-append (getenv "PATH") ":" bin))
                ; FIXME: The below script errors out. When using 'invoke' instead
                ; of 'system*' this causes the build to fail.
-               (system* "bash" "edksetup.sh" "BaseTools")
+               (system* "bash" "edksetup.sh")
                (substitute* "Conf/target.txt"
                  (("^TARGET[ ]*=.*$") "TARGET = RELEASE\n")
-                 (("^TOOL_CHAIN_TAG[ ]*=.*$") "TOOL_CHAIN_TAG = GCC49\n")
                  (("^MAX_CONCURRENT_THREAD_NUMBER[ ]*=.*$")
                   (format #f "MAX_CONCURRENT_THREAD_NUMBER = ~a~%"
                           (number->string (parallel-job-count)))))
                ;; Build build support.
                (setenv "BUILD_CC" "gcc")
-               (invoke "make" "-C" (string-append tools "/Source/C"))
+               (invoke "make" "-C" tools)
                #t)))
-         (add-after 'build 'build-ia32
+         (replace 'build
            (lambda _
-             (substitute* "Conf/target.txt"
-               (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = IA32\n")
-               (("^ACTIVE_PLATFORM[ ]*=.*$")
-                "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgIa32.dsc\n"))
-             (invoke "build")
-             #t))
+             (invoke "build" "-a" "IA32" "-t" "GCC49"
+                     "-p" "OvmfPkg/OvmfPkgIa32.dsc")))
          ,@(if (string=? "x86_64-linux" (%current-system))
              '((add-after 'build 'build-x64
                 (lambda _
-                  (substitute* "Conf/target.txt"
-                    (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = X64\n")
-                    (("^ACTIVE_PLATFORM[ ]*=.*$")
-                     "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgX64.dsc\n"))
-                  (invoke "build")
-                  #t)))
+                  (invoke "build" "-a" "X64" "-t" "GCC49"
+                          "-p" "OvmfPkg/OvmfPkgX64.dsc"))))
              '())
-         (delete 'build)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
