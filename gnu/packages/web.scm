@@ -2133,6 +2133,30 @@ string generation and manipulation, and processing and preparing HTTP
 headers.")
     (license l:perl-license)))
 
+(define-public perl-cgi-formbuilder
+  (package
+    (name "perl-cgi-formbuilder")
+    (version "3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://cpan.metacpan.org/authors/id/B/BI/BIGPRESH/"
+             "CGI-FormBuilder-" version ".tar.gz"))
+       (sha256
+        (base32
+         "163ixq9kninqq094z2rnkg9pv3bcmvjphlww4vksfrzhq3h9pjdf"))))
+    (build-system perl-build-system)
+    (inputs `(("perl-cgi" ,perl-cgi)))
+    (home-page
+     "https://metacpan.org/release/CGI-FormBuilder")
+    (synopsis
+     "Generate and process stateful forms")
+    (description
+     "@code{CGI::FormBuilder} provides an easy way to generate and process CGI
+form-based applications.")
+    (license l:perl-license)))
+
 (define-public perl-cgi-session
   (package
     (name "perl-cgi-session")
