@@ -169,16 +169,11 @@ produced by #:references-graphs..  As a side effect, if RESET-TIMESTAMPS? is
 true, reset timestamps on store files and, if DEDUPLICATE? is true,
 deduplicates files common to CLOSURE and the rest of PREFIX."
   (let ((items (call-with-input-file closure read-reference-graph)))
-    ;; TODO: Add a procedure to register all of ITEMS at once.
-    (for-each (lambda (item)
-                (register-path (store-info-item item)
-                               #:references (store-info-references item)
-                               #:deriver (store-info-deriver item)
-                               #:prefix prefix
-                               #:deduplicate? deduplicate?
-                               #:reset-timestamps? reset-timestamps?
-                               #:schema schema))
-              items)))
+    (register-items items
+                    #:prefix prefix
+                    #:deduplicate? deduplicate?
+                    #:reset-timestamps? reset-timestamps?
+                    #:schema schema)))
 
 (define* (populate-single-profile-directory directory
                                             #:key profile closure

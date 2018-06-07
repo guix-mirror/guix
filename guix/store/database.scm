@@ -26,6 +26,7 @@
   #:use-module (guix build syscalls)
   #:use-module ((guix build utils)
                 #:select (mkdir-p executable-file?))
+  #:use-module (guix build store-copy)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -37,6 +38,7 @@
             with-database
             sqlite-register
             register-path
+            register-items
             reset-timestamps))
 
 ;;; Code for working with the store database directly.
@@ -216,11 +218,6 @@ it's a directory.  While at it, canonicalize file permissions."
                         state-directory (deduplicate? #t)
                         (reset-timestamps? #t)
                         (schema (sql-schema)))
-  ;; Priority for options: first what is given, then environment variables,
-  ;; then defaults. %state-directory, %store-directory, and
-  ;; %store-database-directory already handle the "environment variables /
-  ;; defaults" question, so we only need to choose between what is given and
-  ;; those.
   "Register PATH as a valid store file, with REFERENCES as its list of
 references, and DERIVER as its deriver (.drv that led to it.)  If PREFIX is
 given, it must be the name of the directory containing the new store to
@@ -230,47 +227,69 @@ Return #t on success.
 
 Use with care as it directly modifies the store!  This is primarily meant to
 be used internally by the daemon's build hook."
-  (let* ((db-dir (cond
-                  (state-directory
-                   (string-append state-directory "/db"))
-                  (prefix
-                   ;; If prefix is specified, the value of NIX_STATE_DIR
-                   ;; (which affects %state-directory) isn't supposed to
-                   ;; affect db-dir, only the compile-time-customized
-                   ;; default should.
-                   (string-append prefix %localstatedir "/guix/db"))
-                  (else
-                   %store-database-directory)))
-         (store-dir (if prefix
-                        ;; same situation as above
-                        (string-append prefix %storedir)
-                        %store-directory))
-         (to-register (if prefix
-                          (string-append %storedir "/" (basename path))
-                          ;; note: we assume here that if path is, for
-                          ;; example, /foo/bar/gnu/store/thing.txt and prefix
-                          ;; isn't given, then an environment variable has
-                          ;; been used to change the store directory to
-                          ;; /foo/bar/gnu/store, since otherwise real-path
-                          ;; would end up being /gnu/store/thing.txt, which is
-                          ;; probably not the right file in this case.
-                          path))
-         (real-path (string-append store-dir "/" (basename path))))
-    (let-values (((hash nar-size)
-                  (nar-sha256 real-path)))
-      (when reset-timestamps?
-        (reset-timestamps real-path))
-      (mkdir-p db-dir)
-      (parameterize ((sql-schema schema))
-        (with-database (string-append db-dir "/db.sqlite") db
-          (sqlite-register
-           db
-           #:path to-register
-           #:references references
-           #:deriver deriver
-           #:hash (string-append "sha256:"
-                                 (bytevector->base16-string hash))
-           #:nar-size nar-size)))
+  (register-items (list (store-info path deriver references))
+                  #:prefix prefix #:state-directory state-directory
+                  #:deduplicate? deduplicate?
+                  #:reset-timestamps? reset-timestamps?
+                  #:schema schema))
 
+(define* (register-items items
+                         #:key prefix state-directory
+                         (deduplicate? #t)
+                         (reset-timestamps? #t)
+                         (schema (sql-schema)))
+  "Register all of ITEMS, a list of <store-info> records as returned by
+'read-reference-graph', in the database under PREFIX/STATE-DIRECTORY.  ITEMS
+must be in topological order (with leaves first.)  If the database is
+initially empty, apply SCHEMA to initialize it."
+
+  ;; Priority for options: first what is given, then environment variables,
+  ;; then defaults. %state-directory, %store-directory, and
+  ;; %store-database-directory already handle the "environment variables /
+  ;; defaults" question, so we only need to choose between what is given and
+  ;; those.
+
+  (define db-dir
+    (cond (state-directory
+           (string-append state-directory "/db"))
+          (prefix
+           (string-append prefix %localstatedir "/guix/db"))
+          (else
+           %store-database-directory)))
+
+  (define store-dir
+    (if prefix
+        (string-append prefix %storedir)
+        %store-directory))
+
+  (define (register db item)
+    (define to-register
+      (if prefix
+          (string-append %storedir "/" (basename (store-info-item item)))
+          ;; note: we assume here that if path is, for example,
+          ;; /foo/bar/gnu/store/thing.txt and prefix isn't given, then an
+          ;; environment variable has been used to change the store directory
+          ;; to /foo/bar/gnu/store, since otherwise real-path would end up
+          ;; being /gnu/store/thing.txt, which is probably not the right file
+          ;; in this case.
+          (store-info-item item)))
+
+    (define real-file-name
+      (string-append store-dir "/" (basename (store-info-item item))))
+
+    (let-values (((hash nar-size) (nar-sha256 real-file-name)))
+      (when reset-timestamps?
+        (reset-timestamps real-file-name))
+      (sqlite-register db #:path to-register
+                       #:references (store-info-references item)
+                       #:deriver (store-info-deriver item)
+                       #:hash (string-append "sha256:"
+                                             (bytevector->base16-string hash))
+                       #:nar-size nar-size)
       (when deduplicate?
-        (deduplicate real-path hash #:store store-dir)))))
+        (deduplicate real-file-name hash #:store store-dir))))
+
+  (mkdir-p db-dir)
+  (parameterize ((sql-schema schema))
+    (with-database (string-append db-dir "/db.sqlite") db
+      (for-each (cut register db <>) items))))
