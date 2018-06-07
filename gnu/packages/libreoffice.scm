@@ -896,7 +896,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.4.7.2")
+    (version "6.0.5.1")
     (source
      (origin
       (method url-fetch)
@@ -906,7 +906,8 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256
        (base32
-        "0s9s4nhp2whwxis54jbxrf1dwpnpl95b9781d1pdj4xk5z9v90fv"))))
+        "0vnmb231hyhxm7klaqd8vp3rmvix145bq8iqzv19jgl1yaqkxl21"))
+      (patches (search-patches "libreoffice-icu.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -938,6 +939,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("libcmis" ,libcmis)
        ("libjpeg-turbo" ,libjpeg-turbo)
        ("libe-book" ,libe-book)
+       ("libepubgen" ,libepubgen)
        ("libetonyek" ,libetonyek)
        ("libexttextcat" ,libexttextcat)
        ("libfreehand" ,libfreehand)
@@ -948,6 +950,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("libmwaw" ,libmwaw)
        ("libodfgen" ,libodfgen)
        ("libpagemaker" ,libpagemaker)
+       ("libqxp" ,libqxp)
        ("libstaroffice" ,libstaroffice)
        ("libvisio" ,libvisio)
        ("libwpg" ,libwpg)
@@ -985,34 +988,23 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
          (modify-phases %standard-phases
            (add-before 'configure 'prepare-src
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((gpgme (assoc-ref inputs "gpgme")))
-                 (substitute*
-                   "sdext/source/pdfimport/xpdfwrapper/pdfioutdev_gpl.cxx"
-                   ;; This header was renamed in Poppler 0.62.0.
-                   (("UTF8.h") "UnicodeMapFuncs.h")
-                   ;; And mapUCS2() was renamed to mapUTF16().
-                   (("UCS2") "UTF16"))
-                 (substitute*
+               (substitute*
                    (list "sysui/CustomTarget_share.mk"
                          "solenv/gbuild/gbuild.mk"
                          "solenv/gbuild/platform/unxgcc.mk")
-                   (("/bin/sh") (which "sh")))
+                 (("/bin/sh") (which "sh")))
 
-                 ;; GPGME++ headers are installed in a gpgme++ subdirectory,
-                 ;; but files in "xmlsecurity/source/gpg/" expect to find them
-                 ;; on the include path without a prefix.
-                 (substitute* "xmlsecurity/Library_xsec_xmlsec.mk"
-                   (("\\$\\$\\(INCLUDE\\)")
-                    (string-append "$$(INCLUDE) -I" gpgme "/include/gpgme++")))
+               ;; GPGME++ headers are installed in a gpgme++ subdirectory, but
+               ;; files in "xmlsecurity/source/gpg/" and elsewhere expect to
+               ;; find them on the include path without a prefix.
+               (substitute* '("xmlsecurity/Library_xsec_xmlsec.mk"
+                              "comphelper/Library_comphelper.mk")
+                 (("\\$\\$\\(INCLUDE\\)")
+                  (string-append "$$(INCLUDE) -I"
+                                 (assoc-ref inputs "gpgme")
+                                 "/include/gpgme++")))
 
-                 ;; XXX: When GTK2 is disabled, one header file is not included.
-                 ;; This is likely fixed in later versions.  See also
-                 ;; <https://bugs.gentoo.org/641812>.
-                 (substitute* "vcl/unx/gtk3/gtk3gtkframe.cxx"
-                   (("#include <unx/gtk/gtkgdi.hxx>")
-                    "#include <unx/gtk/gtkgdi.hxx>\n#include <unx/gtk/gtksalmenu.hxx>"))
-
-                 #t)))
+               #t))
            (add-after 'install 'bin-and-desktop-install
              ;; Create 'soffice' and 'libreoffice' symlinks to the executable
              ;; script.
