@@ -83,7 +83,7 @@
       (string-append %localstatedir "/guix")))
 
 (define %store-database-directory
-  (or (and=> (getenv "NIX_DB_DIR") canonicalize-path)
+  (or (getenv "NIX_DB_DIR")
       (string-append %state-directory "/db")))
 
 (define %config-directory
