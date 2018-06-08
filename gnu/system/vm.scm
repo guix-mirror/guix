@@ -125,6 +125,8 @@
                                              (env-vars '())
                                              (guile-for-build
                                               (%guile-for-build))
+                                             (file-systems
+                                              %linux-vm-file-systems)
 
                                              (single-file-output? #f)
                                              (make-disk-image? #f)
@@ -134,8 +136,9 @@
                                              (disk-image-size 'guess))
   "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD (a
 derivation).  The virtual machine runs with MEMORY-SIZE MiB of memory.  In the
-virtual machine, EXP has access to all its inputs from the store; it should
-put its output file(s) in the '/xchg' directory.
+virtual machine, EXP has access to FILE-SYSTEMS, which, by default, includes a
+9p share of the store, the '/xchg' where EXP should put its output file(s),
+and a 9p share of /tmp.
 
 If SINGLE-FILE-OUTPUT? is true, copy a single file from '/xchg' to OUTPUT.
 Otherwise, copy the contents of /xchg to a new directory OUTPUT.
@@ -155,7 +158,7 @@ made available under the /xchg CIFS share."
        (coreutils -> (canonical-package coreutils))
        (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
-                         (base-initrd %linux-vm-file-systems
+                         (base-initrd file-systems
                                       #:on-error 'backtrace
                                       #:linux linux
                                       #:linux-modules %base-initrd-modules
