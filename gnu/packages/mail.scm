@@ -2030,12 +2030,12 @@ transfer protocols.")
          ;; historical interfaces such as sendmail, newaliases or makemap, the
          ;; smtpctl utility can operate in compatibility mode if called with the
          ;; historical name.
-         (add-after 'install 'install-compabilitymode
-           (lambda _
-             (let* ((out (assoc-ref %outputs "out"))
+         (add-after 'install 'install-compability-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
                     (sbin (string-append out "/sbin/")))
-               (for-each (lambda (cmd)
-                           (symlink "smtpctl" (string-append sbin cmd)))
+               (for-each (lambda (command)
+                           (symlink "smtpctl" (string-append sbin command)))
                          '("makemap" "sendmail" "send-mail"
                            "newaliases" "mailq")))
              #t)))))
