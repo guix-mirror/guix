@@ -198,7 +198,7 @@ TARGET, and register them."
                   bootcfg bootcfg-file)
   "Copy the closure of BOOTCFG, which includes the output of OS-DRV, to
 directory TARGET.  TARGET must be an absolute directory name since that's what
-'guix-register' expects.
+'register-path' expects.
 
 When INSTALL-BOOTLOADER? is true, install bootloader using BOOTCFG."
   (define (maybe-copy to-copy)

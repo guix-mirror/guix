@@ -405,13 +405,6 @@ SH_TESTS =					\
   tests/guix-graph.sh				\
   tests/guix-lint.sh
 
-if BUILD_DAEMON
-
-SH_TESTS += tests/guix-register.sh
-
-endif BUILD_DAEMON
-
-
 TESTS = $(SCM_TESTS) $(SH_TESTS)
 
 AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)" GUILE_AUTO_COMPILE=0

@@ -69,7 +69,6 @@
 /etc/guix-publish.conf
 /etc/guix-publish.service
 /guix-daemon
-/guix-register
 /guix/config.scm
 /libformat.a
 /libstore.a

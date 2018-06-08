@@ -110,9 +110,6 @@ STORE."
 
     ("/var/guix/gcroots/booted-system" -> "/run/booted-system")
     ("/var/guix/gcroots/current-system" -> "/run/current-system")
-
-    ;; XXX: 'guix-register' creates this symlink with a wrong target, so
-    ;; create it upfront to be sure.
     ("/var/guix/gcroots/profiles" -> "/var/guix/profiles")
 
     (directory "/bin")

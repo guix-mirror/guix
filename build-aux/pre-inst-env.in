@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2017 Eric Bavier <bavier@cray.com>
 #
 # This file is part of GNU Guix.
@@ -54,10 +54,6 @@ NIX_BUILD_HOOK="$abs_top_builddir/nix/scripts/offload"
 @BUILD_DAEMON_OFFLOAD_TRUE@export NIX_BUILD_HOOK
 @BUILD_DAEMON_OFFLOAD_FALSE@# No offloading support.
 @BUILD_DAEMON_OFFLOAD_FALSE@unset NIX_BUILD_HOOK
-
-# The 'guix-register' program.
-GUIX_REGISTER="$abs_top_builddir/guix-register"
-export GUIX_REGISTER
 
 # The following variables need only be defined when compiling Guix
 # modules, but we define them to be on the safe side in case of

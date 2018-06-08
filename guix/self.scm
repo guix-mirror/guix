@@ -89,8 +89,6 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
-      ("guix"       (ref '(gnu packages package-management)
-                         'guix-register))
       ("guile2.0-json" (ref '(gnu packages guile) 'guile2.0-json))
       ("guile2.0-ssh"  (ref '(gnu packages ssh) 'guile2.0-ssh))
       ("guile2.0-git"  (ref '(gnu packages guile) 'guile2.0-git))
@@ -565,7 +563,6 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                                          #:gzip gzip
                                          #:bzip2 bzip2
                                          #:xz xz
-                                         #:guix guix
                                          #:package-name
                                          %guix-package-name
                                          #:package-version
@@ -630,8 +627,7 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
 
 (define %dependency-variables
   ;; (guix config) variables corresponding to dependencies.
-  '(%libgcrypt %libz %xz %gzip %bzip2 %nix-instantiate
-    %sbindir %guix-register-program))
+  '(%libgcrypt %libz %xz %gzip %bzip2 %nix-instantiate))
 
 (define %persona-variables
   ;; (guix config) variables that define Guix's persona.
@@ -653,7 +649,7 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
           (string<? (symbol->string (car name+value1))
                     (symbol->string (car name+value2))))))
 
-(define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2 guix
+(define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
                           (package-name "GNU Guix")
                           (package-version "0")
                           (bug-report-address "bug-guix@gnu.org")
@@ -669,8 +665,6 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                                %guix-version
                                %guix-bug-report-address
                                %guix-home-page-url
-                               %sbindir
-                               %guix-register-program
                                %libgcrypt
                                %libz
                                %gzip
@@ -687,17 +681,6 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                    (define %guix-version #$package-version)
                    (define %guix-bug-report-address #$bug-report-address)
                    (define %guix-home-page-url #$home-page-url)
-
-                   (define %sbindir
-                     ;; This is used to define '%guix-register-program'.
-                     ;; TODO: Use a derivation that builds nothing but the
-                     ;; C++ part.
-                     #+(and guix (file-append guix "/sbin")))
-
-                   (define %guix-register-program
-                     (or (getenv "GUIX_REGISTER")
-                         (and %sbindir
-                              (string-append %sbindir "/guix-register"))))
 
                    (define %gzip
                      #+(and gzip (file-append gzip "/bin/gzip")))

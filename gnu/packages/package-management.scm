@@ -294,42 +294,6 @@ the Nix package manager.")
 ;; Alias for backward compatibility.
 (define-public guix-devel guix)
 
-(define-public guix-register
-  ;; This package is for internal consumption: it allows us to quickly build
-  ;; the 'guix-register' program, which is referred to by (guix config).
-  ;; TODO: Remove this hack when 'guix-register' has been superseded by Scheme
-  ;; code.
-  (package
-    (inherit guix)
-    (properties `((hidden? . #t)))
-    (name "guix-register")
-
-    ;; Use a minimum set of dependencies.
-    (native-inputs
-     (fold alist-delete (package-native-inputs guix)
-           '("po4a" "graphviz" "help2man")))
-    (propagated-inputs
-     `(("gnutls" ,gnutls)
-       ("guile-git" ,guile-git)))
-
-    (arguments
-     (substitute-keyword-arguments (package-arguments guix)
-       ((#:tests? #f #f)
-        #f)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (replace 'build
-             (lambda _
-               (invoke "make" "nix/libstore/schema.sql.hh")
-               (invoke "make" "-j" (number->string
-                                    (parallel-job-count))
-                       "guix-register")))
-           (delete 'copy-bootstrap-guile)
-           (replace 'install
-             (lambda _
-               (invoke "make" "install-sbinPROGRAMS")))
-           (delete 'wrap-program)))))))
-
 (define-public guile2.0-guix
   (package
     (inherit guix)
