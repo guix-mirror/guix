@@ -3417,17 +3417,17 @@ testing libraries to build on.")
 (define-public ruby-rack-protection
   (package
     (name "ruby-rack-protection")
-    (version "2.0.1")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rack-protection" version))
        (sha256
         (base32
-         "0ywmgh7x8ljf7jfnq5hmfzki3f803waji3fcvi107w7mlyflbng7"))))
+         "0fik7c77rhzs55ip3s8fwa6b0yvmy6313720cqkjx38w34yn2889"))))
     (build-system ruby-build-system)
     (arguments
-     '(;; Tests missing from the gem
+     '(;; Tests missing from the gem.
        #:tests? #f))
     (propagated-inputs
      `(("ruby-rack" ,ruby-rack)))
