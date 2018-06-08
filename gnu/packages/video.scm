@@ -1865,7 +1865,12 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
            (add-before 'check 'check-setup
              (lambda _
                (setenv "HOME" (getcwd)) ;Needs to write to ‘$HOME’.
-               #t)))))
+               #t))
+           (add-after 'install 'install-rofi-plugin
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "plugins/rofi-twitchy"
+                             (string-append (assoc-ref outputs "out")
+                                            "/bin")))))))
       (inputs
        `(("python-requests" ,python-requests)
          ("streamlink" ,streamlink)))
