@@ -27,7 +27,6 @@
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
-  #:use-module (gnu packages)
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix import utils)
   #:use-module (guix http-client)
