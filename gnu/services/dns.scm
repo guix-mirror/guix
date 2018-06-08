@@ -667,4 +667,6 @@
    (name 'dnsmasq)
    (extensions
     (list (service-extension shepherd-root-service-type
-                             (compose list dnsmasq-shepherd-service))))))
+                             (compose list dnsmasq-shepherd-service))))
+   (default-value (dnsmasq-configuration))
+   (description "Run the dnsmasq DNS server.")))
