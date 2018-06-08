@@ -8585,7 +8585,7 @@ library implementing most of the pipeline's features.")
 (define-public rcas-web
   (package
     (name "rcas-web")
-    (version "0.0.4")
+    (version "0.0.5")
     (source
      (origin
        (method url-fetch)
@@ -8594,7 +8594,7 @@ library implementing most of the pipeline's features.")
                            "/rcas-web-" version ".tar.gz"))
        (sha256
         (base32
-         "1p16frfys41a8yaa4gkm457nzkqhqs2pc3lkac0ds457w9w5j1gm"))))
+         "0igz7jpcf7cm9800zcag6p3gd1i649figrhbdba6cjkm8f4gfspr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
