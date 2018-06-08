@@ -122,8 +122,6 @@
 
             current-build-output-port
 
-            register-path
-
             %store-monad
             store-bind
             store-return
@@ -1300,33 +1298,6 @@ The result is always the empty list unless the daemon was started with
 
 This makes sense only when the daemon was started with '--cache-failures'."
   boolean)
-
-(define* (register-path path
-                        #:key (references '()) deriver prefix
-                        state-directory)
-  "Register PATH as a valid store file, with REFERENCES as its list of
-references, and DERIVER as its deriver (.drv that led to it.)  If PREFIX is
-not #f, it must be the name of the directory containing the new store to
-initialize; if STATE-DIRECTORY is not #f, it must be a string containing the
-absolute file name to the state directory of the store being initialized.
-Return #t on success.
-
-Use with care as it directly modifies the store!  This is primarily meant to
-be used internally by the daemon's build hook."
-  ;; Currently this is implemented by calling out to the fine C++ blob.
-  (let ((pipe (apply open-pipe* OPEN_WRITE %guix-register-program
-                     `(,@(if prefix
-                             `("--prefix" ,prefix)
-                             '())
-                       ,@(if state-directory
-                             `("--state-directory" ,state-directory)
-                             '())))))
-    (and pipe
-         (begin
-           (format pipe "~a~%~a~%~a~%"
-                   path (or deriver "") (length references))
-           (for-each (cut format pipe "~a~%" <>) references)
-           (zero? (close-pipe pipe))))))
 
 
 ;;;

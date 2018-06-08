@@ -18,7 +18,7 @@
 
 (define-module (test-store-database)
   #:use-module (guix tests)
-  #:use-module ((guix store) #:hide (register-path))
+  #:use-module (guix store)
   #:use-module (guix store database)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:use-module (srfi srfi-26)

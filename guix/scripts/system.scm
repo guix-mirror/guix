@@ -23,6 +23,7 @@
   #:use-module (guix config)
   #:use-module (guix ui)
   #:use-module (guix store)
+  #:autoload   (guix store database) (register-path)
   #:use-module (guix grafts)
   #:use-module (guix gexp)
   #:use-module (guix derivations)
