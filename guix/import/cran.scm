@@ -25,7 +25,6 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
-  #:use-module (srfi srfi-41)
   #:use-module (ice-9 receive)
   #:use-module (web uri)
   #:use-module (guix memoization)
@@ -43,7 +42,7 @@
   #:use-module (gnu packages)
   #:export (cran->guix-package
             bioconductor->guix-package
-            recursive-import
+            cran-recursive-import
             %cran-updater
             %bioconductor-updater
 
@@ -231,13 +230,7 @@ empty list when the FIELD cannot be found."
         "translations"
         "utils"))
 
-(define (guix-name name)
-  "Return a Guix package name for a given R package name."
-  (string-append "r-" (string-map (match-lambda
-                                    (#\_ #\-)
-                                    (#\. #\-)
-                                    (chr (char-downcase chr)))
-                                  name)))
+(define cran-guix-name (cut guix-name "r-" <>))
 
 (define (needs-fortran? tarball)
   "Check if the TARBALL contains Fortran source files."
@@ -318,7 +311,7 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                                                  (listify meta "Depends"))))))
     (values
      `(package
-        (name ,(guix-name name))
+        (name ,(cran-guix-name name))
         (version ,version)
         (source (origin
                   (method url-fetch)
@@ -327,12 +320,12 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                    (base32
                     ,(bytevector->nix-base32-string (file-sha256 tarball))))))
         ,@(if (not (equal? (string-append "r-" name)
-                           (guix-name name)))
+                           (cran-guix-name name)))
               `((properties ,`(,'quasiquote ((,'upstream-name . ,name)))))
               '())
         (build-system r-build-system)
         ,@(maybe-inputs sysdepends)
-        ,@(maybe-inputs (map guix-name propagate) 'propagated-inputs)
+        ,@(maybe-inputs (map cran-guix-name propagate) 'propagated-inputs)
         ,@(maybe-inputs
            `(,@(if (needs-fortran? tarball)
                    '("gfortran") '())
@@ -356,63 +349,10 @@ s-expression corresponding to that package, or #f on failure."
      (and=> (fetch-description repo package-name)
             (cut description->package repo <>)))))
 
-(define* (recursive-import package-name #:optional (repo 'cran))
-  "Generate a stream of package expressions for PACKAGE-NAME and all its
-dependencies."
-  (receive (package . dependencies)
-      (cran->guix-package package-name repo)
-    (if (not package)
-        stream-null
-
-        ;; Generate a lazy stream of package expressions for all unknown
-        ;; dependencies in the graph.
-        (let* ((make-state (lambda (queue done)
-                             (cons queue done)))
-               (next       (match-lambda
-                             (((next . rest) . done) next)))
-               (imported   (match-lambda
-                             ((queue . done) done)))
-               (done?      (match-lambda
-                             ((queue . done)
-                              (zero? (length queue)))))
-               (unknown?   (lambda* (dependency #:optional (done '()))
-                             (and (not (member dependency
-                                               done))
-                                  (null? (find-packages-by-name
-                                          (guix-name dependency))))))
-               (update     (lambda (state new-queue)
-                             (match state
-                               (((head . tail) . done)
-                                (make-state (lset-difference
-                                             equal?
-                                             (lset-union equal? new-queue tail)
-                                             done)
-                                            (cons head done)))))))
-          (stream-cons
-           package
-           (stream-unfold
-            ;; map: produce a stream element
-            (lambda (state)
-              (cran->guix-package (next state) repo))
-
-            ;; predicate
-            (negate done?)
-
-            ;; generator: update the queue
-            (lambda (state)
-              (receive (package . dependencies)
-                  (cran->guix-package (next state) repo)
-                (if package
-                    (update state (filter (cut unknown? <>
-                                               (cons (next state)
-                                                     (imported state)))
-                                          (car dependencies)))
-                    ;; TODO: Try the other archives before giving up
-                    (update state (imported state)))))
-
-            ;; initial state
-            (make-state (filter unknown? (car dependencies))
-                        (list package-name))))))))
+(define* (cran-recursive-import package-name #:optional (repo 'gnu))
+  (recursive-import package-name repo
+                    #:repo->guix-package cran->guix-package
+                    #:guix-name cran-guix-name))
 
 
 ;;;

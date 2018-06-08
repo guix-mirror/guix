@@ -99,8 +99,10 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
                    `(define-public ,(string->symbol name)
                       ,pkg))
                   (_ #f))
-                (reverse (stream->list (recursive-import package-name
-                                                         (or (assoc-ref opts 'repo) 'cran)))))
+                (reverse
+                 (stream->list
+                  (cran-recursive-import package-name
+                                         (or (assoc-ref opts 'repo) 'cran)))))
            ;; Single import
            (let ((sexp (cran->guix-package package-name
                                            (or (assoc-ref opts 'repo) 'cran))))
