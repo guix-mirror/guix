@@ -2018,6 +2018,13 @@ transfer protocols.")
              "--with-path-CAfile=/etc/ssl/certs/ca-certificates.crt")
        #:phases
        (modify-phases %standard-phases
+         ;; Fix some incorrectly hard-coded external tool file names.
+         (add-after 'unpack 'patch-FHS-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "smtpd/smtpctl.c"
+               (("/bin/cat") (which "cat"))
+               (("/bin/sh") (which "sh")))
+             #t))
          ;; OpenSMTPD provides a single utility smtpctl to control the daemon and
          ;; the local submission subsystem.  To accomodate systems that require
          ;; historical interfaces such as sendmail, newaliases or makemap, the
