@@ -260,6 +260,14 @@ INPUTS is a list of inputs (as for packages)."
                                                       uuid-bytevector))
            (reboot))))
    #:system system
+
+   ;; Keep a local file system for /tmp so that we can populate it directly as
+   ;; root and have files owned by root.  See <https://bugs.gnu.org/31752>.
+   #:file-systems (remove (lambda (file-system)
+                            (string=? (file-system-mount-point file-system)
+                                      "/tmp"))
+                          %linux-vm-file-systems)
+
    #:make-disk-image? #f
    #:single-file-output? #t
    #:references-graphs inputs))
