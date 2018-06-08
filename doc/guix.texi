@@ -16858,8 +16858,8 @@ Specify IP address of upstream servers directly.
 Set the size of dnsmasq's cache.  Setting the cache size to zero
 disables caching.
 
-@item @code{no-negcache?} (default: @code{#f})
-When true, disable negative caching.
+@item @code{negative-cache?} (default: @code{#t})
+When false, disable negative caching.
 
 @end table
 @end deftp
