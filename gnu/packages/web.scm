@@ -6445,10 +6445,10 @@ compressed JSON header blocks.
     (license l:expat)))
 
 (define-public hpcguix-web
-  (let ((commit "3e3b9a3a406ee2dcd10c96cbedcc16ea378e8e8f"))
+  (let ((commit "87cb51611c0f1fd3863b830614ab1364599cf1ca"))
     (package
       (name "hpcguix-web")
-      (version (git-version "0.0.1" "0" commit))
+      (version (git-version "0.0.1" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -6457,7 +6457,7 @@ compressed JSON header blocks.
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "01888byi9mh7d3adcmwhmg44kg98g92r44ilc4wd7an66mjnxpry"))))
+                  "0p66fl8r3v73v13fqg9rbqbzbdzvyznchxbq2s1jwq6qfsn2w3gr"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
