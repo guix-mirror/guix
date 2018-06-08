@@ -11825,6 +11825,44 @@ resolutions---e.g., @code{((1024 768) (640 480))}.
 Last, @var{extra-config} is a list of strings or objects appended to the
 configuration file.  It is used to pass extra text to be added verbatim to
 the configuration file.
+
+@cindex keymap
+@cindex keyboard layout
+This procedure is especially useful to configure a different keyboard layout
+than the default US keymap.  For instance, to use the ``bépo'' keymap by
+default on the display manager:
+
+@example
+(define bepo-evdev
+  "Section \"InputClass\"
+        Identifier \"evdev keyboard catchall\"
+        Driver \"evdev\"
+        MatchIsKeyboard \"on\"
+        Option \"xkb_layout\" \"fr\"
+        Option \"xkb_variant\" \"bepo\"
+EndSection")
+
+(operating-system
+  ...
+  (services
+    (modify-services %desktop-services
+      (slim-service-type config =>
+        (slim-configuration
+          (inherit config)
+          (startx (xorg-start-command
+                   #:configuration-file
+                   (xorg-configuration-file
+                     #:extra-config
+                     (list bepo-evdev)))))))))
+@end example
+
+The @code{MatchIsKeyboard} line specifies that we only apply the
+configuration to keyboards.  Without this line, other devices such as
+touchpad may not work correctly because they will be attached to the wrong
+driver.  In this example, the user typically used @code{setxkbmap fr bepo}
+to set their favorite keymap once logged in.  The first argument corresponds
+to the layout, while the second argument corresponds to the variant.  The
+@code{xkb_variant} line can be omitted to select the default variant.
 @end deffn
 
 @deffn {Scheme Procedure} screen-locker-service @var{package} [@var{program}]
@@ -16669,8 +16707,8 @@ Specify IP address of upstream servers directly.
 Set the size of dnsmasq's cache.  Setting the cache size to zero disables
 caching.
 
-@item @code{no-negcache?} (default: @code{#f})
-When true, disable negative caching.
+@item @code{negative-cache?} (default: @code{#t})
+When false, disable negative caching.
 
 @end table
 @end deftp
