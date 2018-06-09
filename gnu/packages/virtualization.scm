@@ -864,3 +864,48 @@ packaged according to the
 Container Initiative (OCI) format} and is a compliant implementation of the
 Open Container Initiative specification.")
     (license asl2.0)))
+
+(define-public umoci
+  (package
+    (name "umoci")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/openSUSE/umoci/releases/download/v"
+                    version "/umoci.tar.xz"))
+              (file-name (string-append "umoci-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0hg7hs4dagj2fgymm4b4s68k1v2k2093s3jg0d94j0ixhfmyg9nd"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/openSUSE/umoci"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source import-path #:allow-other-keys)
+             ;; Unpack the tarball into 'umoci' instead of "runc-${version}".
+             (let ((dest (string-append "src/" import-path)))
+               (mkdir-p dest)
+               (invoke "tar" "-C" (string-append "src/" import-path)
+                       "--strip-components=1"
+                       "-xvf" source))))
+         (replace 'build
+           (lambda* (#:key import-path #:allow-other-keys)
+             (chdir (string-append "src/" import-path))
+             ;; TODO: build manpages with 'go-md2man'.
+             (invoke "make" "SHELL=bash")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bindir (string-append out "/bin")))
+               (install-file "umoci" bindir)
+               #t))))))
+    (home-page "https://umo.ci/")
+    (synopsis "Tool for modifying Open Container images")
+    (description
+     "@command{umoci} is a tool that allows for high-level modification of an
+Open Container Initiative (OCI) image layout and its tagged images.")
+    (license asl2.0)))
