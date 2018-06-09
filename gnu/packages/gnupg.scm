@@ -354,6 +354,7 @@ libskba (working with X.509 certificates and CMS data).")
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
+              (patches (search-patches "gnupg-1.4-CVE-2018-12020.patch"))
               (sha256
                (base32
                 "1d1hz4szh1kvwhsw7w2zxa6q5ndrk3qy6hj289l1b8k3xi5s554m"))))
