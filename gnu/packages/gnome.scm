@@ -3750,6 +3750,17 @@ which can read a large number of file formats.")
             (uri (string-append "mirror://gnome/sources/" name "/"
                                 (version-major+minor version) "/"
                                 name "-" version ".tar.xz"))
+            (patches
+             (list
+              ;; fmradio: Fix build with GStreamer master
+              (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://gitlab.gnome.org/GNOME/rhythmbox/commit/"
+                      "b182c6b9e1d09e601bac0b703cc5f8b159ebbc3a.patch"))
+                (sha256
+                 (base32
+                  "17j45vyyr071ka3nckj2gycgyyv1j08fyrxw89jfdq2442nzrsiy")))))
             (sha256
              (base32
               "0hzcns8gf5yb0rm4ss8jd8qzarcaplp5cylk6plwilsqfvxj4xn2"))))
