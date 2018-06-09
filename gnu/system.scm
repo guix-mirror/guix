@@ -602,7 +602,7 @@ directory."
 # because they would require combining both profiles.
 # FIXME: See <http://bugs.gnu.org/20255>.
 export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
-export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
+export INFOPATH=$HOME/.config/guix/current/share/info:$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
 export XDG_DATA_DIRS=$HOME/.guix-profile/share:/run/current-system/profile/share
 export XDG_CONFIG_DIRS=$HOME/.guix-profile/etc/xdg:/run/current-system/profile/etc/xdg
 
@@ -630,16 +630,19 @@ then
   export `cat /etc/environment | cut -d= -f1`
 fi
 
-if [ -f \"$HOME/.guix-profile/etc/profile\" ]
-then
-  # Load the user profile's settings.
-  GUIX_PROFILE=\"$HOME/.guix-profile\" ; \\
-  . \"$HOME/.guix-profile/etc/profile\"
-else
-  # At least define this one so that basic things just work
-  # when the user installs their first package.
-  export PATH=\"$HOME/.guix-profile/bin:$PATH\"
-fi
+for profile in \"$HOME/.config/guix/current\" \"$HOME/.guix-profile\"
+do
+  if [ -f \"$profile/etc/profile\" ]
+  then
+    # Load the user profile's settings.
+    GUIX_PROFILE=\"$profile\" ; \\
+    . \"$profile/etc/profile\"
+  else
+    # At least define this one so that basic things just work
+    # when the user installs their first package.
+    export PATH=\"$profile/bin:$PATH\"
+  fi
+done
 
 # Set the umask, notably for users logging in via 'lsh'.
 # See <http://bugs.gnu.org/22650>.
