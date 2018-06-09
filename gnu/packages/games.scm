@@ -2001,6 +2001,16 @@ world}, @uref{http://evolonline.org, Evol Online} and
      (origin (method url-fetch)
              (uri (string-append "http://binaries.openttd.org/releases/"
                                  version "/openttd-" version "-source.tar.xz"))
+             (patches
+              (list
+               (origin (method url-fetch)
+                       (uri (string-append
+                             "https://github.com/OpenTTD/OpenTTD/commit/"
+                             "19076c24c1f3baf2a22d1fa832d5688216cf54a3.patch"))
+                       (file-name "openttd-fix-compilation-with-ICU-61.patch")
+                       (sha256
+                        (base32
+                         "02d1xmb75yv4x6rfnvxk3vvq4l3lvvwr2pfsdzn7lzalic51ziqh")))))
              (sha256
               (base32
                "0dhv5bbbg1dmmq7fi3xss0a9jq2rqgb5sf9fsqzlsjcdm590j6b1"))
