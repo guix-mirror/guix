@@ -199,8 +199,10 @@ modules in the old ~/.config/guix/latest style."
                  (list guile-json guile-git guile-bytestructures
                        guile-ssh gnutls)))
 
-(define (derivation->manifest-entry drv commit)
-  "Return a manifest entry for DRV, which represents Guix at COMMIT."
+(define* (derivation->manifest-entry drv
+                                     #:key url branch commit)
+  "Return a manifest entry for DRV, which represents Guix at COMMIT.  Record
+URL, BRANCH, and COMMIT as a property in the manifest entry."
   (mbegin %store-monad
     (what-to-build (list drv))
     (built-derivations (list drv))
@@ -212,10 +214,16 @@ modules in the old ~/.config/guix/latest style."
                           drv
                           (whole-package-for-legacy (string-append name "-"
                                                                    version)
-                                                    drv))))))))
+                                                    drv)))
+                (properties
+                 `((source (repository
+                            (version 0)
+                            (url ,url)
+                            (branch ,branch)
+                            (commit ,commit))))))))))
 
 (define* (build-and-install source config-dir
-                            #:key verbose? commit)
+                            #:key verbose? url branch commit)
   "Build the tool from SOURCE, and install it in CONFIG-DIR."
   (define update-profile
     (store-lift build-and-use-profile))
@@ -223,7 +231,10 @@ modules in the old ~/.config/guix/latest style."
   (mlet* %store-monad ((drv   (build-from-source source
                                                  #:commit commit
                                                  #:verbose? verbose?))
-                       (entry (derivation->manifest-entry drv commit)))
+                       (entry (derivation->manifest-entry drv
+                                                          #:url url
+                                                          #:branch branch
+                                                          #:commit commit)))
     (update-profile (string-append config-dir "/current")
                     (manifest (list entry)))))
 
@@ -306,6 +317,11 @@ certificates~%"))
                                     (canonical-package guile-2.2)))))
                  (run-with-store store
                    (build-and-install checkout (config-directory)
+                                      #:url url
+                                      #:branch (match ref
+                                                 (('branch . branch)
+                                                  branch)
+                                                 (_ #f))
                                       #:commit commit
                                       #:verbose?
                                       (assoc-ref opts 'verbose?))))))))))))
