@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
@@ -1224,7 +1224,7 @@ gone wild and are suddenly taking up your bandwidth.")
 (define-public nzbget
   (package
     (name "nzbget")
-    (version "19.1")
+    (version "20.0")
     (source
      (origin
        (method url-fetch)
@@ -1233,7 +1233,7 @@ gone wild and are suddenly taking up your bandwidth.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0y713g7gd4n5chbhr8lv7k50rxkmzysrg13sscxam3s386mmlb1r"))
+         "0q93aqqyzccn5r9sny38499rmg846qdh9pi2v5kvf9m23v54yk60"))
        (modules '((guix build utils)))
        (snippet
         ;; Reported upstream as <https://github.com/nzbget/nzbget/pull/414>.
