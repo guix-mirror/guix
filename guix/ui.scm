@@ -42,11 +42,12 @@
   #:use-module ((guix build syscalls)
                 #:select (free-disk-space terminal-columns))
   #:use-module ((guix build utils)
-                #:select (invoke-error? invoke-error-program
-                                        invoke-error-arguments
-                                        invoke-error-exit-status
-                                        invoke-error-term-signal
-                                        invoke-error-stop-signal))
+                ;; XXX: All we need are the bindings related to
+                ;; '&invoke-error'.  However, to work around the bug described
+                ;; in 5d669883ecc104403c5d3ba7d172e9c02234577c, #:hide
+                ;; unwanted bindings instead of #:select'ing the needed
+                ;; bindings.
+                #:hide (package-name->name+version))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
