@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,9 +27,12 @@
 (define-module (gnu packages package-management)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages attr)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -36,6 +40,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -883,3 +888,57 @@ Microsoft cabinet (.@dfn{CAB}) files.")
 and sign Windows@tie{}Installer (.@dfn{MSI}) files.  It aims to be a solution
 for packaging and deployment of cross-compiled Windows applications.")
     (license license:lgpl2.1+)))
+
+(define-public libostree
+  (package
+    (name "libostree")
+    (version "2018.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ostreedev/ostree/releases/download/v"
+                    version "/libostree-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0q82d6rvp119nx7ck7j63a591kz8vg7v465kf9ygh8kzg875l3xd"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Don't try to use the non-existing '/var/tmp' as test
+             ;; directory.
+             (setenv "TEST_TMPDIR" (getenv "TMPDIR"))
+             #t)))
+       ;; XXX: fails with:
+       ;;     tap-driver.sh: internal error getting exit status
+       ;;     tap-driver.sh: fatal: I/O or internal error
+       #:tests? #f))
+    (native-inputs
+     `(("attr" ,attr)                   ; for tests
+       ("bison" ,bison)
+       ("glib:bin" ,glib "bin")          ; for 'glib-mkenums'
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("avahi" ,avahi)
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("e2fsprogs" ,e2fsprogs)
+       ("fuse" ,fuse)
+       ("glib" ,glib)
+       ("gpgme" ,gpgme)
+       ("libarchive" ,libarchive)
+       ("libsoup" ,libsoup)
+       ("nettle" ,nettle)               ; required by 'libarchive.la'
+       ("util-linux" ,util-linux)))
+    (home-page "https://ostree.readthedocs.io/en/latest/")
+    (synopsis "Operating system and container binary deployment and upgrades")
+    (description
+     "@code{libostree} is both a shared library and suite of command line
+tools that combines a \"git-like\" model for committing and downloading
+bootable filesystem trees, along with a layer for deploying them and managing
+the bootloader configuration.")
+    (license license:lgpl2.0+)))
