@@ -3256,6 +3256,7 @@ and copy/paste text in the console and in xterm.")
                        (invoke "make"
                                (string-append "bindir=" staticbin)
                                "install-static")))))
+       #:tests? #f            ; XXX: require the 'btrfs' kernel module.
        #:test-target "test"
        #:parallel-tests? #f)) ; tests fail when run in parallel
     (inputs `(("e2fsprogs" ,e2fsprogs)
