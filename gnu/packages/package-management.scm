@@ -33,6 +33,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
@@ -376,41 +377,24 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "1.11.9")
+    (version "2.0.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "1qg7qrfr60dysmyfg3ijgani71l23p1kqadhjs8kz11pgwkkx50f"))))
+               "0ss9svxlh1pvrdmnqjvjyqjmbqmrdbyfarvbb14i9d4bggzl0r8n"))))
     (build-system gnu-build-system)
-    ;; XXX: Should we pass '--with-store-dir=/gnu/store'?  But then we'd also
-    ;; need '--localstatedir=/var'.  But then!  The thing would use /var/nix
-    ;; instead of /var/guix.  So in the end, we do nothing special.
-    (arguments
-     '(#:configure-flags
-       ;; Set the prefixes of Perl libraries to avoid propagation.
-       (let ((perl-libdir (lambda (p)
-                            (string-append
-                             (assoc-ref %build-inputs p)
-                             "/lib/perl5/site_perl"))))
-         (list (string-append "--with-dbi="
-                              (perl-libdir "perl-dbi"))
-               (string-append "--with-dbd-sqlite="
-                              (perl-libdir "perl-dbd-sqlite"))
-               (string-append "--with-www-curl="
-                              (perl-libdir "perl-www-curl"))))))
-    (native-inputs `(("perl" ,perl)
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("curl" ,curl)
-              ("openssl" ,openssl)
-              ("libgc" ,libgc)
-              ("sqlite" ,sqlite)
               ("bzip2" ,bzip2)
-              ("perl-www-curl" ,perl-www-curl)
-              ("perl-dbi" ,perl-dbi)
-              ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
+              ("libgc" ,libgc)
+              ("libseccomp" ,libseccomp)
+              ("libsodium" ,libsodium)
+              ("openssl" ,openssl)
+              ("sqlite" ,sqlite)
+              ("xz" ,xz)))
     (home-page "https://nixos.org/nix/")
     (synopsis "The Nix package manager")
     (description
