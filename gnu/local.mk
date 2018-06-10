@@ -938,6 +938,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-shell-version.patch		\
   %D%/packages/patches/mozjs38-tracelogger.patch		\
   %D%/packages/patches/mozjs38-version-detection.patch		\
+  %D%/packages/patches/mumble-1.2.19-abs.patch			\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \

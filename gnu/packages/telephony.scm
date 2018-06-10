@@ -387,6 +387,7 @@ address of one of the participants.")
               (sha256
                (base32
                 "1s60vaici3v034jzzi20x23hsj6mkjlc0glipjq4hffrg9qgnizh"))
+              (patches (search-patches "mumble-1.2.19-abs.patch"))
               (modules '((guix build utils)))
               (snippet
                `(begin
