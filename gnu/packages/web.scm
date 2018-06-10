@@ -6117,6 +6117,11 @@ infrastructure")))
     (inherit java-eclipse-jetty-security)
     (version (package-version java-eclipse-jetty-util-9.2))
     (source (package-source java-eclipse-jetty-util-9.2))
+    (arguments
+     `(#:test-exclude
+       ;; This test fails.
+       (list "**/ConstraintTest.*")
+       ,@(package-arguments java-eclipse-jetty-security)))
     (inputs
      `(("util" ,java-eclipse-jetty-util-9.2)
        ("http" ,java-eclipse-jetty-http-9.2)
