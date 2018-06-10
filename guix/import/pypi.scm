@@ -51,8 +51,8 @@
 (define (pypi-fetch name)
   "Return an alist representation of the PyPI metadata for the package NAME,
 or #f on failure."
-  (json-fetch (string-append "https://pypi.python.org/pypi/"
-                             name "/json")))
+  (json-fetch-alist (string-append "https://pypi.python.org/pypi/"
+                                   name "/json")))
 
 ;; For packages found on PyPI that lack a source distribution.
 (define-condition-type &missing-source-error &error
