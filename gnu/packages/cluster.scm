@@ -24,6 +24,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls))
 
 (define-public keepalived
@@ -48,10 +49,29 @@
              ;; output of 'pkg-config'.
              (substitute* "configure"
                (("PKG_CONFIG --libs") "PKG_CONFIG --libs-only-l"))
-             #t)))))
+             #t))
+         (add-after 'build 'build-info
+           (lambda _
+             (invoke "make" "-C" "doc" "texinfo")
+             ;; Put images in a subdirectory as recommended by 'texinfo'.
+             (install-file "doc/build/texinfo/software_design.png"
+                           "doc/build/texinfo/keepalived-figures")
+             (substitute* "doc/build/texinfo/keepalived.texi"
+               (("@image\\{software_design,")
+                "@image{keepalived-figures/software_design,"))
+             (invoke "make" "-C" "doc/build/texinfo")))
+         (add-after 'install 'install-info
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (infodir (string-append out "/share/info")))
+               (install-file "doc/build/texinfo/keepalived.info" infodir)
+               (install-file "doc/build/texinfo/software_design.png"
+                             (string-append infodir "/keepalived-figures"))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-sphinx" ,python-sphinx)))
+       ("python-sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
     (inputs
      `(("openssl" ,openssl)
        ("libnfnetlink" ,libnfnetlink)
