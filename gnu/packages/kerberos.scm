@@ -6,6 +6,7 @@
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,7 +47,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.16")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -58,7 +59,7 @@
                                    "/krb5-" version ".tar.gz")))
               (sha256
                (base32
-                "024yjr15ij0qdnay0bcqfpclgfri0qa8iw4r5zdlryxhhdgi5szs"))))
+                "05qis9l93hhxaknbp0a2v5cr24fsy52fqx20aqqcgl1s9qwzwkr1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
