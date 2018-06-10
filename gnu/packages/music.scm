@@ -3536,7 +3536,10 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
      `(#:make-flags
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "USE_SYSTEM_FREETYPE=ON"
-         "DOWNLOAD_SOUNDFONT=OFF")
+         "DOWNLOAD_SOUNDFONT=OFF"
+         ;; The following is not supported since Qt 5.11.  Can be
+         ;; removed in Musescore 2.2.2+.
+         "BUILD_WEBKIT=OFF")
        ;; There are tests, but no simple target to run.  The command
        ;; used to run them is:
        ;;
@@ -3548,6 +3551,14 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         ;; Fix Qt 5.11 upgrade.  Should be fixed in 2.2.2+, see:
+         ;; <https://github.com/musescore/MuseScore/commit/d10e70415c8e52e2ba9d45de564467e42f66c102>
+         (add-after 'unpack 'patch-sources
+           (lambda _
+             (substitute* "all.h"
+               (("#include <QRadioButton>") "#include <QRadioButton>
+#include <QButtonGroup>"))
+             #t))
          (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -3565,7 +3576,6 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        ("qtdeclarative" ,qtdeclarative)
        ("qtscript" ,qtscript)
        ("qtsvg" ,qtsvg)
-       ("qtwebkit" ,qtwebkit)
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (native-inputs
      `(("cmake" ,cmake)
