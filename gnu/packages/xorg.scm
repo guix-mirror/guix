@@ -999,7 +999,7 @@ of new capabilities and controls for text keyboards.")
 (define-public libdmx
   (package
     (name "libdmx")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -1009,7 +1009,7 @@ of new capabilities and controls for text keyboards.")
                ".tar.bz2"))
         (sha256
           (base32
-            "00djlxas38kbsrglcmwmxfbmxjdchlbj95pqwjvdg8jn5rns6zf9"))))
+            "0hvjfhrcym770cr0zpqajdy3cda30aiwbjzv16iafkqkbl090gr5"))))
     (build-system gnu-build-system)
     (inputs
       `(("xextproto" ,xextproto)
