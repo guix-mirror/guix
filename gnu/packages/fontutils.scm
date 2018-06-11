@@ -54,14 +54,13 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.9")
+   (version "2.9.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "12jcdz1in20yaa55izxalg3hm1pf7nydfrzps5bzb4zgihybmzz6"))
-            (patches (search-patches "freetype-CVE-2018-6942.patch"))))
+                     "0kg8w6qyiizlyzh4a8lpzslipcbv96hcg3rqqpnxba8ffbm8g3fv"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
