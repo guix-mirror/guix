@@ -27,6 +27,7 @@
   #:use-module (guix build-system meson)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
@@ -211,8 +212,8 @@ and the ICD.")
   (deprecated-package "vulkan-icd-loader" vulkan-loader))
 
 (define-public shaderc
-  (let ((commit "773ec22d49f40b7161820f29d953be4a7e40190d")
-        (revision "1"))
+  (let ((commit "be8e0879750303a1de09385465d6b20ecb8b380d")
+        (revision "2"))
     (package
       (name "shaderc")
       (version (git-version "0.0.0" revision commit))
@@ -225,11 +226,10 @@ and the ICD.")
          (file-name (string-append name "-" version ".tar.gz"))
          (sha256
           (base32
-           "0b41inb1czxv3mciip0lfdxv19ccx2ys31fivfywjn2q8va1gd1f"))))
+           "16p25ry2i4zrj00zihfpf210f8xd7g398ffbw25igvi9mbn4nbfd"))))
       (build-system meson-build-system)
       (arguments
-       `(#:tests? #f                    ; tests don't work yet.
-         #:phases
+       `(#:phases
          (modify-phases %standard-phases
            (replace 'configure
              (lambda* (#:key outputs #:allow-other-keys)
@@ -267,7 +267,8 @@ and the ICD.")
                  (copy-recursively glslang-source "third_party/glslang")
                  #t))))))
       (inputs
-       `(("python" ,python)))
+       `(("googletest" ,googletest)
+         ("python" ,python)))
       (native-inputs
        `(("cmake" ,cmake)
          ("glslang-source" ,(package-source glslang))
