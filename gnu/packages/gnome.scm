@@ -937,14 +937,14 @@ guidelines.")
 (define-public shared-mime-info
   (package
     (name "shared-mime-info")
-    (version "1.8")
+    (version "1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://freedesktop.org/~hadess/"
                                  "shared-mime-info-" version ".tar.xz"))
              (sha256
               (base32
-               "1sc96lv9dp1lkvs8dh3ngm3hbjb274d363dl9avhb61il3qmxx9a"))))
+               "10ywzhzg8v1xmb9sz5xbqaci90id38knswigynyl33i29vn360aw"))))
     (build-system gnu-build-system)
     (arguments
      ;; The build system appears not to be parallel-safe.
