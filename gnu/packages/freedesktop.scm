@@ -473,7 +473,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public wayland-protocols
   (package
     (name "wayland-protocols")
-    (version "1.13")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -481,7 +481,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "wayland-protocols-" version ".tar.xz"))
               (sha256
                (base32
-                "0f4gqvmz53q9d8h0ilhf4z773nb4vskzx11a3d1jycym120bqn07"))))
+                "1xknjcfhqvdi1s4iq4kk1q61fg2rar3g8q4vlqarpd324imqjj4n"))))
     (build-system gnu-build-system)
     (inputs
      `(("wayland" ,wayland)))
