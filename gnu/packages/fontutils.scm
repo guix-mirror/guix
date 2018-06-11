@@ -28,6 +28,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
@@ -53,14 +54,14 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.8.1")
-   (replacement freetype/fixed)
+   (version "2.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "0y3xrimgp0k39gwq1vdi7b7wjy0z9fhwmzafisxqfardw015yhz5"))))
+                     "12jcdz1in20yaa55izxalg3hm1pf7nydfrzps5bzb4zgihybmzz6"))
+            (patches (search-patches "freetype-CVE-2018-6942.patch"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
@@ -78,13 +79,6 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "https://www.freetype.org/")))
-
-(define freetype/fixed
-  (package/inherit freetype
-                   (source
-                    (origin
-                      (inherit (package-source freetype))
-                      (patches (search-patches "freetype-CVE-2018-6942.patch"))))))
 
 (define-public ttfautohint
   (package
@@ -238,18 +232,19 @@ fonts to/from the WOFF2 format.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.12.6")
+   (version "2.13.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
-            (patches (search-patches "fontconfig-remove-debug-printf.patch"))
             (sha256 (base32
-                     "05zh65zni11kgnhg726gjbrd55swspdvhqbcnj5a5xh8gn03036g"))))
+                     "1fgf28zgsqh7x6dw30n6zi9z679gx6dyfyahp55z7dsm454yipci"))))
    (build-system gnu-build-system)
+   ;; In Requires or Requires.private of fontconfig.pc.
    (propagated-inputs `(("expat" ,expat)
-                        ("freetype" ,freetype)))
+                        ("freetype" ,freetype)
+                        ("libuuid" ,util-linux)))
    (inputs `(("gs-fonts" ,gs-fonts)))
    (native-inputs
     `(("gperf" ,gperf)
@@ -274,9 +269,9 @@ fonts to/from the WOFF2 format.")
         (replace 'install
                  (lambda _
                    ;; Don't try to create /var/cache/fontconfig.
-                   (zero? (system* "make" "install"
-                                   "fc_cachedir=$(TMPDIR)"
-                                   "RUN_FC_CACHE_TEST=false")))))))
+                   (invoke "make" "install"
+                           "fc_cachedir=$(TMPDIR)"
+                           "RUN_FC_CACHE_TEST=false"))))))
    (synopsis "Library for configuring and customizing font access")
    (description
     "Fontconfig can discover new fonts when installed automatically;
@@ -378,16 +373,15 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.10")
+   (version "1.3.11")
    (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/silnrsi/graphite/releases/"
                            "download/" version "/" name "-" version ".tgz"))
-       (patches (search-patches "graphite2-ffloat-store.patch"))
        (sha256
         (base32
-         "1bm1rl2ww0m8rvmknh8fpajyz9xqv43qs9qrzf7xd5gaz6rf7zch"))))
+         "0z5dcgh8r3678awq6fb8igik7xmar5m6z9xxwpkkhradhk8jxfds"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests
@@ -495,11 +489,6 @@ smooth contours with constant curvature at the spline joins.")
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("libtool" ,libtool)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-vi")))))))
     (synopsis "Unicode names and annotation list")
     (description
      "LibUniNamesList holds www.unicode.org Nameslist.txt data which can be
@@ -561,7 +550,8 @@ definitions.")
                           "libxml2" "zlib" "libspiro" "freetype"
                           "pango" "cairo" "fontconfig")))
                 ;; Checks for potrace program at runtime
-                `("PATH" ":" prefix (,potrace)))))))
+                `("PATH" ":" prefix (,potrace)))
+              #t))))
 
       ;; Skip test 40 "FontForge .sfd file open check" to work around
       ;; <https://github.com/fontforge/fontforge/issues/3246>.

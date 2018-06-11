@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -19,6 +19,8 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +85,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages xml)
@@ -141,14 +144,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
    ;; to be updated as well.
-   (version "2.17.0")
+   (version "2.17.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1ismz7nsz8dgjmk782xr9s0mr2qh06f72pdcgbxfmnw1bvlya5p9"))))
+              "0pm6bdnrrm165k3krnazxcxadifk2gqi30awlbcf9fism1x6w4vr"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -161,7 +164,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "09rpjj0m97h5lpzpwk47m6xsz9gb8wqf1s3dfqma3mwav2pb3njb"))))))
+            "0m7grrwsqaihdgcgaicxiy4rlqjpa75n5wl6hi2qhi33xa34gmc3"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -346,7 +349,9 @@ as well as the classic centralized workflow.")
               (wrap-program git-sm
                 `("PATH" ":" prefix
                   (,(string-append (assoc-ref inputs "perl")
-                                   "/bin")))))))
+                                   "/bin"))))
+
+              #t)))
         (add-after 'split 'install-man-pages
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
@@ -354,7 +359,7 @@ as well as the classic centralized workflow.")
                    (manpages (assoc-ref inputs "git-manpages")))
               (mkdir-p man)
               (with-directory-excursion man
-                (zero? (system* "tar" "xvf" manpages)))))))))
+                (invoke "tar" "xvf" manpages))))))))
 
    (native-search-paths
     ;; For HTTPS access, Git needs a single-file certificate bundle, specified
@@ -391,7 +396,9 @@ everything from small to very large projects with speed and efficiency.")
               (patches (search-patches "libgit2-0.25.1-mtime-0.patch"))
 
               ;; Remove bundled software.
-              (snippet '(delete-file-recursively "deps"))
+              (snippet '(begin
+                          (delete-file-recursively "deps")
+                          #t))
               (modules '((guix build utils)))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
@@ -551,6 +558,21 @@ collaboration using typical untrusted file hosts or services.")
                 (quoted-file-name (assoc-ref inputs "bzip2") "/bin/bzip2"))
                (("\"xz\"")
                 (quoted-file-name (assoc-ref inputs "xz") "/bin/xz")))
+
+             (substitute* "filters/about-formatting.sh"
+               (("$\\(dirname $0\\)") (string-append (assoc-ref outputs "out")
+                                                     "/lib/cgit/filters"))
+               (("\\| tr") (string-append "| " (which "tr"))))
+
+             (substitute* "filters/html-converters/txt2html"
+               (("sed") (which "sed")))
+
+             (substitute* "filters/html-converters/man2html"
+               (("groff") (which "groff")))
+
+             (substitute* "filters/html-converters/rst2html"
+               (("rst2html\\.py") (which "rst2html.py")))
+
              #t))
          (delete 'configure) ; no configure script
          (add-after 'build 'build-man
@@ -569,7 +591,17 @@ collaboration using typical untrusted file hosts or services.")
                     ;; to get it stripped.
                     (rename-file (string-append out "/share/cgit/cgit.cgi")
                                  (string-append out "/lib/cgit/cgit.cgi"))
-                    #t)))))))
+                    #t))))
+         (add-after 'install 'wrap-python-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each
+              (lambda (file)
+                (wrap-program (string-append (assoc-ref outputs "out")
+                                             "/lib/cgit/filters/" file)
+                  `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))
+              '("syntax-highlighting.py"
+                "html-converters/md2html"))
+             #t)))))
     (native-inputs
      ;; For building manpage.
      `(("asciidoc" ,asciidoc)
@@ -588,6 +620,11 @@ collaboration using typical untrusted file hosts or services.")
             (base32
              "1r2aa19gnrvm2y4fqcvpw1g9l72n48axqmpgv18s6d0y2p72vhzj"))))
        ("openssl" ,openssl)
+       ("groff" ,groff)
+       ("python" ,python)
+       ("python-docutils" ,python-docutils)
+       ("python-markdown" ,python-markdown)
+       ("python-pygments" ,python-pygments)
        ("zlib" ,zlib)))
     (home-page "https://git.zx2c4.com/cgit/")
     (synopsis "Web frontend for git repositories")
@@ -694,13 +731,13 @@ allowing to handle large objects with a small memory footprint.")
 (define-public python-gitpython
   (package
     (name "python-gitpython")
-    (version "2.1.9")
+    (version "2.1.10")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "GitPython" version))
               (sha256
                (base32
-                "0a9in1jfv9ssxhckl6sasw45bhm762y2r5ikgb2pk2g8yqdc6z64"))))
+                "00bk48s5szh296r7zyvdpv3sd7q9j2cb9sqdc9diwcjayrf082xn"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;XXX: Tests can only be run within the GitPython repository.
@@ -1107,23 +1144,21 @@ following features:
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Follow the instructions from 'subversion/bindings/swig/INSTALL'.
              (let ((out (assoc-ref outputs "out")))
-               (and (zero? (system* "make" "swig-pl-lib"))
-                    ;; FIXME: Test failures.
-                    ;; (zero? (system* "make" "check-swig-pl"))
-                    (zero? (system* "make" "install-swig-pl-lib"))
+               (invoke "make" "swig-pl-lib")
+               ;; FIXME: Test failures.
+               ;; (invoke "make" "check-swig-pl")
+               (invoke "make" "install-swig-pl-lib")
 
-                    ;; Set the right installation prefix.
-                    (with-directory-excursion
-                        "subversion/bindings/swig/perl/native"
-                      (and (zero?
-                            (system* "perl" "Makefile.PL"
-                                     "NO_PERLLOCAL=1"
-                                     (string-append "PREFIX=" out)))
-                           (zero?
-                            (system* "make" "install"
-                                     (string-append "OTHERLDFLAGS="
-                                                    "-Wl,-rpath="
-                                                    out "/lib"))))))))))))
+               ;; Set the right installation prefix.
+               (with-directory-excursion
+                   "subversion/bindings/swig/perl/native"
+                 (invoke "perl" "Makefile.PL"
+                         "NO_PERLLOCAL=1"
+                         (string-append "PREFIX=" out))
+                 (invoke "make" "install"
+                         (string-append "OTHERLDFLAGS="
+                                        "-Wl,-rpath="
+                                        out "/lib")))))))))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ;; For the Perl bindings.
@@ -1468,7 +1503,8 @@ any project with more than one developer, is one of Aegis's major functions.")
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "reposurgeon-mode.el"
                            (string-append (assoc-ref outputs "out")
-                                          "/share/emacs/site-lisp")))))))
+                                          "/share/emacs/site-lisp"))
+             #t)))))
     (inputs
      `(("python" ,python-wrapper)
        ("tzdata" ,tzdata)))
@@ -1546,11 +1582,6 @@ output of the 'git' command.")
                (base32
                 "1ydis4y0amkgfr4y60sn076f1l41ya2kn89kfd9fqf44f9ccgb5r"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
-                    (lambda _
-                      (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)))
     (home-page "https://github.com/0-wiz-0/findnewest/releases")
@@ -1572,7 +1603,8 @@ modification time.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "10q7lpx152xnkk701fscn4dq99q9znnmv3bc2482khhjg7z8rps0"))))
+        (base32 "10q7lpx152xnkk701fscn4dq99q9znnmv3bc2482khhjg7z8rps0"))
+       (patches (search-patches "myrepos-CVE-2018-7032.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl)))
@@ -1622,7 +1654,7 @@ repository\" with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "2.4")
+    (version "2.5")
     (source
      (origin
        (method url-fetch)
@@ -1636,7 +1668,7 @@ repository\" with git-annex.")
               "fossil-src-" version ".tar.gz")))
        (sha256
         (base32
-         "0add35lk2ac4qg29d7ygj7pskv8lfln33f3kgf6x3548msv9hd6j"))))
+         "1lxawkhr1ki9fqw8076fxib2b1w673449yzb6vxjshqzh5h77c7r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)                     ;for configuration only
@@ -1728,7 +1760,8 @@ be served with a HTTP file server of your choice.")
              (("__TIME__") "\"00:00:00\""))
            (substitute* "src/impossible.h"
              (("__DATE__") "\"\"")
-             (("__TIME__") "\"\""))))))
+             (("__TIME__") "\"\""))
+           #t))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
@@ -1962,3 +1995,130 @@ venerable RCS, hence the anagrammatic acronym.  The design is tuned for use
 cases like all those little scripts in your @file{~/bin} directory, or a
 directory full of HOWTOs.")
     (license license:bsd-2)))
+
+(define-public git-annex
+  (package
+    (name "git-annex")
+    (version "6.20170818")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "git-annex/git-annex-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ybxixbqvy4rx6mq9s02rh349rbr04hb17z4bfayin0qwa5kzpvx"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags
+       '("--flags=-Android -Assistant -Pairing -S3 -Webapp -WebDAV")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-shell
+           (lambda _
+             (substitute* "Utility/Shell.hs"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-before 'configure 'factor-setup
+           (lambda _
+             ;; Factor out necessary build logic from the provided
+             ;; `Setup.hs' script.  The script as-is does not work because
+             ;; it cannot find its dependencies, and there is no obvious way
+             ;; to tell it where to look.  Note that we do not preserve the
+             ;; code that installs man pages here.
+             (call-with-output-file "PreConf.hs"
+               (lambda (out)
+                 (format out "import qualified Build.Configure as Configure~%")
+                 (format out "main = Configure.run Configure.tests~%")))
+             (call-with-output-file "Setup.hs"
+               (lambda (out)
+                 (format out "import Distribution.Simple~%")
+                 (format out "main = defaultMain~%")))
+             #t))
+         (add-before 'configure 'pre-configure
+           (lambda _
+             (invoke "runhaskell" "PreConf.hs")
+             #t))
+         (replace 'check
+           (lambda _
+             ;; We need to set the path so that Git recognizes
+             ;; `git annex' as a custom command.
+             (setenv "PATH" (string-append (getenv "PATH") ":"
+                                           (getcwd) "/dist/build/git-annex"))
+             (with-directory-excursion "dist/build/git-annex"
+               (symlink "git-annex" "git-annex-shell"))
+             (invoke "git-annex" "test")
+             #t))
+         (add-after 'install 'install-symlinks
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (symlink (string-append bin "/git-annex")
+                        (string-append bin "/git-annex-shell"))
+               (symlink (string-append bin "/git-annex")
+                        (string-append bin "/git-remote-tor-annex"))
+               #t))))))
+    (inputs
+     `(("curl" ,curl)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-async" ,ghc-async)
+       ("ghc-bloomfilter" ,ghc-bloomfilter)
+       ("ghc-byteable" ,ghc-byteable)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-crypto-api" ,ghc-crypto-api)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-disk-free-space" ,ghc-disk-free-space)
+       ("ghc-dlist" ,ghc-dlist)
+       ("ghc-edit-distance" ,ghc-edit-distance)
+       ("ghc-esqueleto" ,ghc-esqueleto)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-feed" ,ghc-feed)
+       ("ghc-free" ,ghc-free)
+       ("ghc-hslogger" ,ghc-hslogger)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-conduit" ,ghc-http-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-ifelse" ,ghc-ifelse)
+       ("ghc-memory" ,ghc-memory)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-monad-logger" ,ghc-monad-logger)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-network" ,ghc-network)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-persistent" ,ghc-persistent)
+       ("ghc-persistent-sqlite" ,ghc-persistent-sqlite)
+       ("ghc-persistent-template" ,ghc-persistent-template)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-random" ,ghc-random)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-safesemaphore" ,ghc-safesemaphore)
+       ("ghc-sandi" ,ghc-sandi)
+       ("ghc-securemem" ,ghc-securemem)
+       ("ghc-socks" ,ghc-socks)
+       ("ghc-split" ,ghc-split)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-stm-chans" ,ghc-stm-chans)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-uuid" ,ghc-uuid)
+       ("git" ,git)
+       ("rsync" ,rsync)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-rerun" ,ghc-tasty-rerun)))
+    (home-page "https://git-annex.branchable.com/")
+    (synopsis "Manage files with Git, without checking in their contents")
+    (description "This package allows managing files with Git, without
+checking the file contents into Git.  It can store files in many places,
+such as local hard drives and cloud storage services.  It can also be
+used to keep a folder in sync between computers.")
+    ;; The web app is released under the AGPLv3+.
+    (license (list license:gpl3+
+                   license:agpl3+))))

@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -112,7 +112,8 @@ the Linux kernel CIFS client.")
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("Makefile" "test/Makefile")
                (("/usr/lib")
-                (string-append (assoc-ref outputs "out") "/lib")))))
+                (string-append (assoc-ref outputs "out") "/lib")))
+             #t))
          (replace 'build
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "libiniparser.so.1"
@@ -136,7 +137,8 @@ the Linux kernel CIFS client.")
                (for-each (install html)
                          (find-files "html" ".*"))
                (for-each (install doc)
-                         '("AUTHORS" "INSTALL" "LICENSE" "README.md"))))))))
+                         '("AUTHORS" "INSTALL" "LICENSE" "README.md"))
+               #t))))))
     (home-page "https://github.com/ndevilla/iniparser")
     (synopsis "Standalone ini file parsing library")
     (description
@@ -148,14 +150,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.7.7")
+    (version "4.8.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "0c81x2ncnvz3mi6fjj81clm1mh049d3ip3fj031l44qclxpx3yi9"))))
+               "08mz29jmjxqvyyhm6pa388paagw1i2i21lc7pd2aprj9dllm5rb2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -190,8 +192,8 @@ anywhere.")
          (add-before 'install 'disable-etc-samba-directory-creation
            (lambda _
              (substitute* "dynconfig/wscript"
-               (("bld\\.INSTALL_DIRS\\(\"\",[[:blank:]]{1,}\"\\$\\{CONFIGDIR\\}[[:blank:]]{1,}")
-                "bld.INSTALL_DIRS(\"\", \""))
+               (("bld\\.INSTALL_DIR\\(\"\\$\\{CONFIGDIR\\}\"\\)")
+                ""))
              #t)))
        ;; XXX: The test infrastructure attempts to set password with
        ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
@@ -204,14 +206,16 @@ anywhere.")
        ("gnutls" ,gnutls)
        ("iniparser" ,iniparser)
        ("libaio" ,libaio)
-       ("ldb" ,ldb)
        ("linux-pam" ,linux-pam)
        ("openldap" ,openldap)
        ("popt" ,popt)
        ("readline" ,readline)
-       ("talloc" ,talloc)
-       ("tevent" ,tevent)
        ("tdb" ,tdb)))
+    (propagated-inputs
+     ;; In Requires or Requires.private of pkg-config files.
+     `(("ldb" ,ldb)
+       ("talloc" ,talloc)
+       ("tevent" ,tevent)))
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)    ;for generating manpages
        ("xsltproc" ,libxslt)           ;ditto
@@ -338,14 +342,24 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.3.2")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1avn4fl393kc80krbc47phbp0argdkys62ycs8vm934a6nvz0gnf"))))
+                "1d591ny4j4s409s2afjv4fn7inqlclr0zlyclw3619rkbaixlzm8"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each (lambda (file)
+                              ;; Delete everything except the build tools.
+                              (unless (or (string-prefix? "third_party/waf" file)
+                                          (string-suffix? "wscript" file))
+                                (delete-file file)))
+                            (find-files "third_party"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -368,7 +382,8 @@ many event types, including timers, signals, and the classic file descriptor eve
      `(("talloc" ,talloc)
        ("tdb" ,tdb)))
     (inputs
-     `(("popt" ,popt)
+     `(("lmdb" ,lmdb)
+       ("popt" ,popt)
        ("tevent" ,tevent)))
     (synopsis "LDAP-like embedded database")
     (home-page "https://ldb.samba.org/")

@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -19,13 +19,14 @@
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -137,9 +139,11 @@
              (snippet
               ;; For a rebuild of the Flex/Bison byproducts touched by the
               ;; patch above.
-              '(for-each delete-file
-                         '("mh/mh_alias_lex.c"
-                           "libmailutils/cfg/parser.c")))))
+              '(begin
+                 (for-each delete-file
+                           '("mh/mh_alias_lex.c"
+                             "libmailutils/cfg/parser.c"))
+                 #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -257,14 +261,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.9.5")
+    (version "1.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "0lsp72lm3cw490x7lhzia7h8f591bab2mr7qpscaj22fmrj7wqdz"))
+               "0nskymwr2cdapxlfv0ysz3bjwhb4kcvl5a3c39237k7r1vwva582"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -395,7 +399,7 @@ It adds a large amount of new and improved features to mutt.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "2.6.23")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -403,7 +407,7 @@ It adds a large amount of new and improved features to mutt.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "0slzlzcr3h8jikpz5a5amqd0csqh2m40gdk910ws2hnaf5m6hjbi"))))
+                "1q6palbpf6lh6bvy9ly26q5apl5k0z0r4mvl6zzqh90rz4rn1v3m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -427,7 +431,8 @@ It adds a large amount of new and improved features to mutt.")
                  (let* ((base (basename prog-path))
                         (prog (which base)))
                    (string-append pre
-                                  (or prog (error "not found: " base))))))))))))
+                                  (or prog (error "not found: " base)))))))
+            #t)))))
     (home-page "http://spruce.sourceforge.net/gmime/")
     (synopsis "MIME message parser and creator library")
     (description
@@ -435,6 +440,20 @@ It adds a large amount of new and improved features to mutt.")
 the creation and parsing of messages using the Multipurpose Internet Mail
 Extension (MIME).")
     (license (list lgpl2.1+ gpl2+ gpl3+))))
+
+;; Some packages are not ready for GMime 3 yet.
+(define-public gmime-2.6
+  (package
+    (inherit gmime)
+    (version "2.6.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gmime/"
+                                  (version-major+minor version)
+                                  "/gmime-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0slzlzcr3h8jikpz5a5amqd0csqh2m40gdk910ws2hnaf5m6hjbi"))))))
 
 (define-public bogofilter
   (package
@@ -595,7 +614,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
      `(("xapian" ,xapian)
        ("guile" ,guile-2.2)
        ("glib" ,glib)
-       ("gmime" ,gmime)))
+       ("gmime" ,gmime-2.6)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -1119,6 +1138,7 @@ delivery.")
        ("bzip2" ,bzip2)
        ("xz" ,xz)
        ("perl" ,perl)
+       ("libnsl" ,libnsl)
        ("libxt" ,libxt)
        ("libxaw" ,libxaw)))
     (native-inputs
@@ -1352,11 +1372,13 @@ hashing schemes plugin for @code{Dovecot}.")
      `(("perl" ,perl)))
     (inputs
      `(("bdb" ,bdb)
-       ("openssl" ,openssl)))
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
     (home-page "http://isync.sourceforge.net/")
     (synopsis "Mailbox synchronization program")
     (description
-     "isync/mbsync is command line tool for two-way synchronization of
+     "isync/mbsync is a command-line tool for two-way synchronization of
 mailboxes.  Currently Maildir and IMAP are supported types.")
     (license gpl2+)))
 
@@ -1610,9 +1632,8 @@ program's primary purpose.")
        (file-name (string-append name "-" version "-checkout"))))
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'autoconf
-                   (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+                  (replace 'bootstrap
+                   (lambda _ (invoke "autoreconf" "-vfi"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1816,7 +1837,7 @@ in Perl.")
            (mkdir-p bin)
            (with-directory-excursion bin
              (copy-file source "mb2md.gz")
-             (system* (string-append gzip "/bin/gzip") "-d" "mb2md.gz")
+             (invoke (string-append gzip "/bin/gzip") "-d" "mb2md.gz")
              (substitute* "mb2md"
                (("#!/usr/bin/perl")
                 (string-append "#!/usr/bin/perl -I " perl5lib)))
@@ -1977,7 +1998,9 @@ transfer protocols.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "10bsfsnlg9d9i6l2izdnxp05s3ri8fvwzqxvx1jmarc852382619"))))
+                "10bsfsnlg9d9i6l2izdnxp05s3ri8fvwzqxvx1jmarc852382619"))
+              ;; Fixed upstream: <github.com/OpenSMTPD/OpenSMTPD/pull/835>.
+              (patches (search-patches "opensmtpd-fix-crash.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -1998,17 +2021,24 @@ transfer protocols.")
              "--with-path-CAfile=/etc/ssl/certs/ca-certificates.crt")
        #:phases
        (modify-phases %standard-phases
+         ;; Fix some incorrectly hard-coded external tool file names.
+         (add-after 'unpack 'patch-FHS-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "smtpd/smtpctl.c"
+               (("/bin/cat") (which "cat"))
+               (("/bin/sh") (which "sh")))
+             #t))
          ;; OpenSMTPD provides a single utility smtpctl to control the daemon and
          ;; the local submission subsystem.  To accomodate systems that require
          ;; historical interfaces such as sendmail, newaliases or makemap, the
          ;; smtpctl utility can operate in compatibility mode if called with the
          ;; historical name.
-         (add-after 'install 'install-compabilitymode
-           (lambda _
-             (let* ((out (assoc-ref %outputs "out"))
+         (add-after 'install 'install-compability-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
                     (sbin (string-append out "/sbin/")))
-               (for-each (lambda (cmd)
-                           (symlink "smtpctl" (string-append sbin cmd)))
+               (for-each (lambda (command)
+                           (symlink "smtpctl" (string-append sbin command)))
                          '("makemap" "sendmail" "send-mail"
                            "newaliases" "mailq")))
              #t)))))
@@ -2426,7 +2456,7 @@ tools and applications:
      `(("cyrus-sasl" ,cyrus-sasl)
        ("enchant" ,enchant)
        ("gdk-pixbuf" ,gdk-pixbuf)
-       ("gmime" ,gmime)
+       ("gmime" ,gmime-2.6)
        ("gnutls" ,gnutls)
        ("gpgme" ,gpgme)
        ("gtk+" ,gtk+)
@@ -2480,7 +2510,7 @@ killed threads.")
 (define-public pan
   (package
     (name "pan")
-    (version "0.144")
+    (version "0.145")
     (source
      (origin
        (method url-fetch)
@@ -2488,7 +2518,7 @@ killed threads.")
                            version "/source/" name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "0l07y75z8jxhbmfv28slw81gjncs7i89x7fq44zif7xhq5vy7yli"))))
+         "1b4wamv33hprghcjk903bpvnd233yxyrm18qnh13alc8h1553nk8"))))
     (arguments
      `(#:configure-flags '("--with-gtk3" "--with-gtkspell" "--with-gnutls"
                            "--enable-libnotify" "--enable-manual"
@@ -2503,7 +2533,7 @@ killed threads.")
                                             "/bin/gpg\"")))
              #t)))))
     (inputs
-     `(("gmime" ,gmime)
+     `(("gmime" ,gmime-2.6)
        ("gnupg" ,gnupg)
        ("gnutls" ,gnutls)
        ("gtk+" ,gtk+)

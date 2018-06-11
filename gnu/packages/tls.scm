@@ -1,15 +1,15 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
@@ -65,8 +65,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.12")
-    (replacement libtasn1/fixed)
+    (version "4.13")
     (source
      (origin
       (method url-fetch)
@@ -74,8 +73,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0ls7jdq3y5fnrwg0pzhq11m21r8pshac2705bczz6mqjc8pdllv7"))
-      (patches (search-patches "libtasn1-CVE-2017-10790.patch"))))
+        "1jlc1iahj8k3haz28j55nzg7sgni5h41vqy461i1bpbx6668wlky"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/libtasn1/")
@@ -86,14 +84,6 @@ for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
     (license license:lgpl2.0+)))
-
-(define libtasn1/fixed
-  (package
-    (inherit libtasn1)
-    (source (origin
-              (inherit (package-source libtasn1))
-              (patches (search-patches "libtasn1-CVE-2017-10790.patch"
-                                       "libtasn1-CVE-2018-6003.patch"))))))
 
 (define-public asn1c
   (package
@@ -125,7 +115,7 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.10")
+    (version "0.23.12")
     (source
      (origin
       (method url-fetch)
@@ -133,7 +123,7 @@ in intelligent transportation networks.")
                           "download/" version "/p11-kit-" version ".tar.gz"))
       (sha256
        (base32
-        "0hxfwnyb5yllvlsh0cj6favcph36gm94b6df7zhl7xay48zjl8gr"))))
+        "00ylbx2gxrm9bv6w4y3qf8z30vpdkqaa8z1y22hy27fv34py5fjq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -141,7 +131,17 @@ in intelligent transportation networks.")
      `(("libffi" ,libffi)
        ("libtasn1" ,libtasn1)))
     (arguments
-     `(#:configure-flags '("--without-trust-paths")))
+     `(#:configure-flags '("--without-trust-paths")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'prepare-tests
+                    (lambda _
+                      ;; "test-runtime" expects XDG_RUNTIME_DIR to be set up
+                      ;; and looks for .cache and other directories (only).
+                      ;; For simplicity just drop it since it is irrelevant
+                      ;; in the build container.
+                      (substitute* "Makefile"
+                        (("test-runtime\\$\\(EXEEXT\\)") ""))
+                      #t)))))
     (home-page "https://p11-glue.freedesktop.org/p11-kit.html")
     (synopsis "PKCS#11 library")
     (description
@@ -155,7 +155,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.5.13")
+    (version "3.5.18")
     (source (origin
              (method url-fetch)
              (uri
@@ -169,7 +169,7 @@ living in the same process.")
                               "gnutls-skip-pkgconfig-test.patch"))
              (sha256
               (base32
-               "15ihq6p0hnnhs8cnjrkj40dmlcaa1jjg8xg0g2ydbnlqs454ixbr"))))
+               "0d02x28fwkkx7xzn7807nww6idchizzq3plx8sfcyiw7wzclh8mf"))))
     (build-system gnu-build-system)
     (arguments
      `(; Ensure we don't keep a reference to this buggy software.
@@ -255,8 +255,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (replacement openssl-1.0.2o)
-   (version "1.0.2n")
+   (version "1.0.2o")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -268,14 +267,7 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "1zm82pyq5a9jm10q6iv7d3dih3xwjds4x30fqph3k317byvsn2rp"))
-             (snippet
-              '(begin
-                 ;; Remove ELF files.  'substitute*' can't read them.
-                 (delete-file "test/ssltest_old")
-                 (delete-file "test/v3ext")
-                 (delete-file "test/x509aux")
-                 #t))
+               "0kcy13l701054nhpbd901mz32v1kn4g311z0nifd83xs2jbmqgzc"))
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
@@ -308,26 +300,25 @@ required structures.")
          'configure
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((out (assoc-ref outputs "out")))
-             (zero?
-              (system* "./config"
-                       "shared"                   ;build shared libraries
-                       "--libdir=lib"
+             (invoke "./config"
+                     "shared"                 ;build shared libraries
+                     "--libdir=lib"
 
-                       ;; The default for this catch-all directory is
-                       ;; PREFIX/ssl.  Change that to something more
-                       ;; conventional.
-                       (string-append "--openssldir=" out
-                                      "/share/openssl-" ,version)
+                     ;; The default for this catch-all directory is
+                     ;; PREFIX/ssl.  Change that to something more
+                     ;; conventional.
+                     (string-append "--openssldir=" out
+                                    "/share/openssl-" ,version)
 
-                       (string-append "--prefix=" out)
+                     (string-append "--prefix=" out)
 
-                       ;; XXX FIXME: Work around a code generation bug in GCC
-                       ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                       ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                       ,@(if (and (not (%current-target-system))
-                                  (string-prefix? "armhf" (%current-system)))
-                             '("-mfpu=vfpv3")
-                             '()))))))
+                     ;; XXX FIXME: Work around a code generation bug in GCC
+                     ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
+                     ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
+                     ,@(if (and (not (%current-target-system))
+                                (string-prefix? "armhf" (%current-system)))
+                           '("-mfpu=vfpv3")
+                           '())))))
         (add-after
          'install 'make-libraries-writable
          (lambda* (#:key outputs #:allow-other-keys)
@@ -400,27 +391,6 @@ required structures.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
 
-(define openssl-1.0.2o
-  (package
-    (inherit openssl)
-    (name "openssl")
-    (version "1.0.2o")
-    (source (origin
-              (inherit (package-source openssl))
-              (uri (list (string-append "https://www.openssl.org/source/openssl-"
-                                        version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/"
-                                        name "-" version ".tar.gz")
-                         (string-append "ftp://ftp.openssl.org/source/old/"
-                                        (string-trim-right version char-set:letter)
-                                        "/" name "-" version ".tar.gz")))
-              (sha256
-               (base32
-                "0kcy13l701054nhpbd901mz32v1kn4g311z0nifd83xs2jbmqgzc"))
-              ;; Erase the inherited snippet, which isn't applicable to
-              ;; OpenSSL 1.0.2o.
-              (snippet #f)))))
-
 (define-public openssl-next
   (package
     (inherit openssl)
@@ -454,27 +424,26 @@ required structures.")
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (lib (string-append out "/lib")))
-                 (zero?
-                  (system* "./config"
-                           "shared"                   ;build shared libraries
-                           "--libdir=lib"
+                 (invoke "./config"
+                         "shared"       ;build shared libraries
+                         "--libdir=lib"
 
-                           ;; The default for this catch-all directory is
-                           ;; PREFIX/ssl.  Change that to something more
-                           ;; conventional.
-                           (string-append "--openssldir=" out
-                                          "/share/openssl-" ,version)
+                         ;; The default for this catch-all directory is
+                         ;; PREFIX/ssl.  Change that to something more
+                         ;; conventional.
+                         (string-append "--openssldir=" out
+                                        "/share/openssl-" ,version)
 
-                           (string-append "--prefix=" out)
-                           (string-append "-Wl,-rpath," lib)
+                         (string-append "--prefix=" out)
+                         (string-append "-Wl,-rpath," lib)
 
-                           ;; XXX FIXME: Work around a code generation bug in GCC
-                           ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                           ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                           ,@(if (and (not (%current-target-system))
-                                      (string-prefix? "armhf" (%current-system)))
-                                 '("-mfpu=vfpv3")
-                                 '()))))))
+                         ;; XXX FIXME: Work around a code generation bug in GCC
+                         ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
+                         ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
+                         ,@(if (and (not (%current-target-system))
+                                    (string-prefix? "armhf" (%current-system)))
+                               '("-mfpu=vfpv3")
+                               '())))))
 
            ;; XXX: Duplicate this phase to make sure 'version' evaluates
            ;; in the current scope and not the inherited one.
@@ -490,14 +459,14 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.7.2")
+    (version "2.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1589f0kg7kj51j9hid542s4isb96s1azjaqsfprpy5s2qdwqfyli"))))
+                "1597kj9jy3jyw52ys19sd4blg2gkam5q0rqdxbnrnvnyw67hviqn"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
@@ -534,13 +503,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.23.0")
+    (version "0.24.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "0l257dq1i2gka6ynldidpwaz1aa726643crqqckga1w5awsndh88"))))
+                "1jq1nlly5146k08dw31fc1pw78plya5jswznnd512c08giif0mfn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -589,7 +558,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0gh5fr61c3mj5vdkn68k17wcvri9rdj506cmmz6631i2l5flrzvc"))))
+                "0w3dbz74rpabjnc3l3ybnzjdypbr65lsjqf9yn243b5kid9d8wm0"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -644,14 +613,14 @@ certificates for free.")
 (define-public perl-net-ssleay
   (package
     (name "perl-net-ssleay")
-    (version "1.82")
+    (version "1.85")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MI/MIKEM/"
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "1rf78z1macgmp6mwd7c2xq4yfw6wpf28hfwfz1d5wslqr4cwb5aq"))))
+                "1j5h4ycm8538397l204d2d5fkm9595aj174pj7bkpbhwzfwqi0cx"))))
     (build-system perl-build-system)
     (inputs `(("openssl" ,openssl)))
     (arguments
@@ -675,18 +644,20 @@ servers or clients for more complicated applications.")
 (define-public perl-crypt-openssl-rsa
  (package
   (name "perl-crypt-openssl-rsa")
-  (version "0.28")
+  (version "0.30")
   (source
     (origin
       (method url-fetch)
       (uri (string-append
-             "mirror://cpan/authors/id/P/PE/PERLER/Crypt-OpenSSL-RSA-"
+             "mirror://cpan/authors/id/T/TO/TODDR/Crypt-OpenSSL-RSA-"
              version
              ".tar.gz"))
       (sha256
         (base32
-          "1gnpvv09b2gpifwdzc5jnhama3d1a4c39lzj9hcaicsb8rvzjmsk"))))
+          "1b19kaaw4wda8dy6kjiwqa2prpbs2dqcyjyj9zdh5wbs74qkbq93"))))
   (build-system perl-build-system)
+  (native-inputs
+   `(("perl-crypt-openssl-guess" ,perl-crypt-openssl-guess)))
   (inputs
     `(("perl-crypt-openssl-bignum" ,perl-crypt-openssl-bignum)
       ("perl-crypt-openssl-random" ,perl-crypt-openssl-random)
@@ -834,7 +805,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.7.2")
+    (version "2.7.3")
     (source
      (origin
        (method url-fetch)
@@ -844,7 +815,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1mvkqlxxvl6yp1g5g9dk4l7h3wl6149p3pfwgwzgs7xybyxw4f7x"))))
+         "0rfpcc4i01qsl66iy1z9vaw00s34h4qgx3r41i1v5vazv7vjla05"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

@@ -64,10 +64,10 @@
                                                 "/share/xsessions/")))
                         (mkdir-p dst)
                         (copy-file (assoc-ref inputs rpd)
-                                   (string-append dst rpd))))))))
+                                   (string-append dst rpd))
+                        #t))))))
     (inputs
-     `(("inputproto" ,inputproto)
-       ("fontconfig" ,fontconfig)
+     `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("libXft" ,libxft)
        ("libXi" ,libxi)
@@ -77,7 +77,7 @@
        ("libXtst" ,libxtst)
        ("libX11" ,libx11)
        ("readline" ,readline)
-       ("xextproto" ,xextproto)))
+       ("xorgproto" ,xorgproto)))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)

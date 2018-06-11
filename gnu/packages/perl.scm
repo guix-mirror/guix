@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
@@ -111,7 +111,7 @@
          (replace 'configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (format #t "Perl configure flags: ~s~%" configure-flags)
-             (zero? (apply system* "./Configure" configure-flags))))
+             (apply invoke "./Configure" configure-flags)))
          (add-before
           'strip 'make-shared-objects-writable
           (lambda* (#:key outputs #:allow-other-keys)
@@ -121,7 +121,8 @@
                    (lib (string-append out "/lib")))
               (for-each (lambda (dso)
                           (chmod dso #o755))
-                        (find-files lib "\\.so$")))))
+                        (find-files lib "\\.so$"))
+              #t)))
 
          (add-after 'install 'remove-extra-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -1139,7 +1140,7 @@ loaded class.")
 (define-public perl-class-load
   (package
     (name "perl-class-load")
-    (version "0.23")
+    (version "0.24")
     (source
      (origin
        (method url-fetch)
@@ -1147,12 +1148,13 @@ loaded class.")
                            "Class-Load-" version ".tar.gz"))
        (sha256
         (base32
-         "13xjfh4fadq4pkq7fcj42b26544jl7gqdg2y3imnra9fwxwsbg7j"))))
+         "0dnacm959vi5819h6cdl5qpi89fr81p6smbsqx7m6in18vd87f8b"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
        ("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+       ("perl-test-needs" ,perl-test-needs)
+       ("perl-test-without-module" ,perl-test-without-module)))
     (propagated-inputs
      `(("perl-package-stash" ,perl-package-stash)
        ("perl-data-optlist" ,perl-data-optlist)
@@ -1169,7 +1171,7 @@ names, not Class::Name.  For that, this module provides \"load_class
 (define-public perl-class-load-xs
   (package
     (name "perl-class-load-xs")
-    (version "0.09")
+    (version "0.10")
     (source
      (origin
        (method url-fetch)
@@ -1177,11 +1179,12 @@ names, not Class::Name.  For that, this module provides \"load_class
                            "Class-Load-XS-" version ".tar.gz"))
        (sha256
         (base32
-         "1aivalms81s3a2cj053ncgnmkpgl7vspna8ajlkqir7rdn8kpv5v"))))
+         "1ldd4a306hjagm5v9j0gjg8y7km4v3q45bxxqmj2bzgb6vsjrhjv"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+       ("perl-test-needs" ,perl-test-needs)
+       ("perl-test-without-module" ,perl-test-without-module)))
     (inputs `(("perl-class-load" ,perl-class-load)))
     (home-page "http://search.cpan.org/dist/Class-Load-XS/")
     (synopsis "XS implementation of parts of Class::Load")
@@ -1471,7 +1474,7 @@ and writing of @code{.ini}-style configuration files.")
 (define-public perl-context-preserve
   (package
     (name "perl-context-preserve")
-    (version "0.02")
+    (version "0.03")
     (source
      (origin
        (method url-fetch)
@@ -1479,7 +1482,7 @@ and writing of @code{.ini}-style configuration files.")
                            "Context-Preserve-" version ".tar.gz"))
        (sha256
         (base32
-         "0qkjj1qifr87zlfpfnn21gdyrpfgilh8zp3b53008m2ax02k87gc"))))
+         "07zxgmb11bn4zj3w9g1zwbb9iv4jyk5q7hc0nv59knvv5i64m489"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)
@@ -2153,7 +2156,7 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.46")
+    (version "1.49")
     (source
      (origin
        (method url-fetch)
@@ -2161,7 +2164,7 @@ hours, minutes, seconds, and time zones.")
                            "DateTime-" version ".tar.gz"))
        (sha256
         (base32
-         "1247d2q2gm912bxj88a0sr5gvj2nx4a7n6z1smkq16iy21cziz79"))))
+         "0hbw4zq1562slnz7g7hyhfhyq98dzkk3i5g21x3xra5cvfix93kh"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
@@ -2454,7 +2457,7 @@ the DateTime.pm class.")
 (define-public perl-datetime-timezone
   (package
     (name "perl-datetime-timezone")
-    (version "2.17")
+    (version "2.19")
     (source
      (origin
        (method url-fetch)
@@ -2462,7 +2465,7 @@ the DateTime.pm class.")
                            "DateTime-TimeZone-" version ".tar.gz"))
        (sha256
         (base32
-         "1ckhjw7h545306b02p6ra60y8zxqnbqr2lsy7c1wib8libf0l2hx"))))
+         "1y54bsgq886sg35fgmxgj8wwmgs4l83qhwa0g3zv8w9d43z2w6dr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -3078,7 +3081,7 @@ errors are rethrown automatically.")
 (define-public perl-exception-class
   (package
     (name "perl-exception-class")
-    (version "1.39")
+    (version "1.44")
     (source
      (origin
        (method url-fetch)
@@ -3086,7 +3089,7 @@ errors are rethrown automatically.")
                            "Exception-Class-" version ".tar.gz"))
        (sha256
         (base32
-         "10r06v6568s33p6h9f9ml0iabc07id86mjkf74gy7ld6d5m7b741"))))
+         "03gf4cdgrjnljgrlxkvbh2cahsyzn0zsh2zcli7b1lrqn7wgpwrk"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-devel-stacktrace" ,perl-devel-stacktrace)
@@ -3486,7 +3489,7 @@ file system.")
 (define-public perl-file-pushd
   (package
     (name "perl-file-pushd")
-    (version "1.014")
+    (version "1.016")
     (source
      (origin
        (method url-fetch)
@@ -3496,7 +3499,7 @@ file system.")
              ".tar.gz"))
        (sha256
         (base32
-         "02rlqvyy7gly3dsqwaa81aisyy9c791b8xvwzczcbgmcwgzkgaxm"))))
+         "1p3wz5jnddd87wkwl4x3fc3ncprahdxdzwqd4scb10r98h4pyfnp"))))
     (build-system perl-build-system)
     (home-page
      "http://search.cpan.org/dist/File-pushd/")
@@ -3960,15 +3963,15 @@ merged.")
 (define-public perl-hash-multivalue
   (package
     (name "perl-hash-multivalue")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+       (uri (string-append "mirror://cpan/authors/id/A/AR/ARISTOTLE/"
                            "Hash-MultiValue-" version ".tar.gz"))
        (sha256
         (base32
-         "1jc37kwpa1fl88va8bd1p95h0vjv1gsvmn7pc2pxj62ga6x0wpc0"))))
+         "1x3k7h542xnigz0b8vsfiq580p5r325wi5b8mxppiqk8mbvis636"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Hash-MultiValue/")
     (synopsis "Store multiple values per key")
@@ -4617,7 +4620,7 @@ one: logging, exceptions, and translations.")
 (define-public perl-libintl-perl
   (package
     (name "perl-libintl-perl")
-    (version "1.28")
+    (version "1.29")
     (source
      (origin
        (method url-fetch)
@@ -4625,7 +4628,7 @@ one: logging, exceptions, and translations.")
                            "libintl-perl-" version ".tar.gz"))
        (sha256
         (base32
-         "1gafrfvicjclqlz6i62jx2iqbq878yn3ws86waz2sqbd3gxz5svv"))))
+         "1cgvrgh4axd8jlr6497ndgphgvgnqc1axd306460hskdvc85z4vq"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -4911,15 +4914,15 @@ return values, trading space for time.")
 (define-public perl-memoize-expirelru
   (package
     (name "perl-memoize-expirelru")
-    (version "0.55")
+    (version "0.56")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BP/BPOWERS/"
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Memoize-ExpireLRU-" version ".tar.gz"))
        (sha256
         (base32
-         "0klk0vj78lr259mnv1rbxib8gzf2cfp4zhkhbcxyhadkkl73myvj"))))
+         "1xnp3jqabl4il5kfadlqimbxhzsbm7gpwrgw0m5s5fdsrc0n70zf"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Memoize-ExpireLRU/")
     (synopsis "Expiry plug-in for Memoize that adds LRU cache expiration")
@@ -5175,15 +5178,15 @@ implementations.")
 (define-public perl-module-install
   (package
     (name "perl-module-install")
-    (version "1.14")
+    (version "1.19")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BI/BINGOS/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Module-Install-" version ".tar.gz"))
        (sha256
         (base32
-         "0j8dz87k60i1khd9xadd8kl6bgm9s5s5zl86rzsz5bq36siz00iz"))))
+         "06q12cm97yh4p7qbm0a2p96996ii6ss59qy57z0f7f9svy6sflqs"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-yaml-tiny" ,perl-yaml-tiny)))
@@ -5549,7 +5552,7 @@ overloads will \"just work\".")
 (define-public perl-moosex-methodattributes
   (package
     (name "perl-moosex-methodattributes")
-    (version "0.29")
+    (version "0.31")
     (source
      (origin
        (method url-fetch)
@@ -5557,7 +5560,7 @@ overloads will \"just work\".")
                            "MooseX-MethodAttributes-" version ".tar.gz"))
        (sha256
         (base32
-         "1pz3i67gadfmgzj87m1xp2ilcg3yhppdylcng2h6c11dy0a06hdk"))))
+         "1whd10w7bm3dwaj7gpgw40bci9vvb2zmxs4349ifji91hvinwqck"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build-tiny" ,perl-module-build-tiny)
@@ -6002,7 +6005,7 @@ building is done in @code{MooX::ConfigFromFile::Role}---using
 (define-public perl-moox-file-configdir
   (package
     (name "perl-moox-file-configdir")
-    (version "0.006")
+    (version "0.007")
     (source
      (origin
        (method url-fetch)
@@ -6010,7 +6013,7 @@ building is done in @code{MooX::ConfigFromFile::Role}---using
                            "MooX-File-ConfigDir-" version ".tar.gz"))
        (sha256
         (base32
-         "0f808sq3627ymgf63zwgh705vv0nhwclxp89clhx8yl6hybcv7kx"))))
+         "074v150wrbddhy1n0qc8s80zrb71l3c4is968cnr06ac5l9kmshz"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-configdir" ,perl-file-configdir)
@@ -6975,7 +6978,7 @@ used for writing documentation for Perl and for Perl modules.")
 (define-public perl-posix-strftime-compiler
   (package
     (name "perl-posix-strftime-compiler")
-    (version "0.41")
+    (version "0.42")
     (source
      (origin
        (method url-fetch)
@@ -6983,10 +6986,10 @@ used for writing documentation for Perl and for Perl modules.")
                            "POSIX-strftime-Compiler-" version ".tar.gz"))
        (sha256
         (base32
-         "0f9p3hx0vqx8zg5v24pz0s4zc8ln100c7c91ks681wq02phqj2v7"))))
+         "04dcn2n4rfkj8p24vj2p17vvis40l87pf2vdqp0vqm5jg3fjnn16"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (arguments `(#:tests? #f))          ;TODO: Timezone test failures
+    (arguments `(#:tests? #f))          ; TODO: Timezone test failures
     (home-page "http://search.cpan.org/dist/POSIX-strftime-Compiler/")
     (synopsis "GNU C library compatible strftime for loggers and servers")
     (description "POSIX::strftime::Compiler provides GNU C library compatible
@@ -7838,7 +7841,8 @@ TODO: {
     local $TODO = \"/proc/cpuinfo doesn't always report 'model name' or 'machine' ...\";
     $type = &Sys::CPU::cpu_type();
     ok( defined($type), \"CPU Type:  $type\" );
-}~%")))))))
+}~%")))
+                  #t))))
     (build-system perl-build-system)
     (synopsis "Perl extension for getting CPU information")
     (description
@@ -8149,15 +8153,15 @@ used to justify strings to various alignment styles.")
 (define-public perl-text-balanced
   (package
     (name "perl-text-balanced")
-    (version "2.02")
+    (version "2.03")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/A/AD/ADAMK/"
+       (uri (string-append "mirror://cpan/authors/id/S/SH/SHAY/"
                            "Text-Balanced-" version ".tar.gz"))
        (sha256
         (base32
-         "1d3mba2sjpp044h16pkf231cksa34ripaz6rmgxp0ygpl917az57"))))
+         "1j4jjw6bg6ik8cn1mimw54rvg4h0qf4hm9k63y9572sny3w56xq5"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Text-Balanced/")
     (synopsis "Extract delimited text sequences from strings")
@@ -8235,7 +8239,7 @@ generally slower on larger files.")
 (define-public perl-text-format
   (package
     (name "perl-text-format")
-    (version "0.60")
+    (version "0.61")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8243,7 +8247,7 @@ generally slower on larger files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1f52jak0a2gwi4qcisp4nfbniq04dmmv5j8zkvzj8ik0f0sk2kv6"))))
+                "0axfyiml3zwawwd127z8rl2lm53z6dlsflzmp80m3j0myn7kp2mv"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -9227,7 +9231,7 @@ recursive-descent text parsers from simple yacc-like grammar specifications.")
 (define-public perl-parse-yapp
   (package
     (name "perl-parse-yapp")
-    (version "1.2")
+    (version "1.21")
     (source
      (origin
        (method url-fetch)
@@ -9237,7 +9241,7 @@ recursive-descent text parsers from simple yacc-like grammar specifications.")
              ".tar.gz"))
        (sha256
         (base32
-         "16p4qgqg28cy76ylcf4wq1r693gqpx8xq0w32b3564i67h49zljb"))))
+         "1r8kbyk0qd4ficmabj753kjpq0ib0csk01169w7jxflg62cfj41q"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Parse-Yapp/")
     (synopsis "Generate and use LALR parsers")

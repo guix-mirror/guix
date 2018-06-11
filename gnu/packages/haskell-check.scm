@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -450,6 +451,19 @@ which functions should satisfy, and QuickCheck then tests that the properties
 hold in a large number of randomly generated cases.  Specifications are
 expressed in Haskell, using combinators defined in the QuickCheck library.")
     (license license:bsd-3)))
+
+(define-public ghc-quickcheck-2.9
+  (package
+    (inherit ghc-quickcheck)
+    (name "ghc-quickcheck")
+    (version "2.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/QuickCheck-2.9.2/QuickCheck-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "119np67qvx8hyp9vkg4gr2wv3lj3j6ay2vl4hxspkg43ymb1cp0m"))))))
 
 (define-public ghc-quickcheck-latest
   (package (inherit ghc-quickcheck)

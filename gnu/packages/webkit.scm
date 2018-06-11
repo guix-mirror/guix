@@ -55,14 +55,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.20.1")
+    (version "2.20.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0nc9dj05dbk31ciip08b3rdsfja7ckc5mgagrj030fafza2k5r23"))))
+                "1n0dy94bm7wvxln4jis1gp8plv8n4a01g41724zsf5psg1yk16sp"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -100,7 +100,8 @@
                     (string-append (getenv "C_INCLUDE_PATH")
                                    ":"
                                    (assoc-ref inputs "gst-plugins-base")
-                                   "/include/gstreamer-1.0")))))))
+                                   "/include/gstreamer-1.0"))
+            #t)))))
     (native-inputs
      `(("bison" ,bison)
        ("gettext" ,gettext-minimal)
@@ -148,50 +149,3 @@ HTML/CSS applications to full-fledged web browsers.")
                    license:lgpl2.1+
                    license:bsd-2
                    license:bsd-3))))
-
-;; Latest release of the stable 2.4 series, with WebKit1 support.
-(define-public webkitgtk-2.4
-  (package (inherit webkitgtk)
-    (name "webkitgtk")
-    (version "2.4.11")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.webkitgtk.org/releases/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1xsvnvyvlywwyf6m9ainpsg87jkxjmd37q6zgz9cxb7v3c2ym2jq"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f ; no tests
-       ;; FIXME: Disabling parallel building is a quick hack to avoid the
-       ;; failure described in
-       ;; https://lists.gnu.org/archive/html/guix-devel/2016-01/msg00837.html
-       ;; A more structural fix is needed.
-       #:parallel-build? #f
-       #:phases (modify-phases %standard-phases
-                  (add-after
-                   'unpack 'set-gcc
-                   (lambda _ (setenv "CC" "gcc") #t)))))
-    (native-inputs
-     `(("flex" ,flex)
-       ("which" ,which)
-       ,@(package-native-inputs webkitgtk)))))
-
-;; Last GTK+2 port, required by GnuCash.
-(define-public webkitgtk/gtk+-2
-  (package (inherit webkitgtk-2.4)
-    (name "webkitgtk-gtk2")
-    (arguments
-     `(;; FIXME: Disabling parallel building is a quick hack to avoid the
-       ;; failure described in
-       ;; https://lists.gnu.org/archive/html/guix-devel/2016-01/msg00837.html
-       ;; A more structural fix is needed.
-       #:parallel-build? #f
-       #:configure-flags
-       '("--enable-webkit2=no"
-         "--with-gtk=2.0")
-       ,@(package-arguments webkitgtk-2.4)))
-    (propagated-inputs
-     `(("gtk+-2" ,gtk+-2)
-       ("libsoup" ,libsoup)))))

@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -44,20 +44,21 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ssh)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web))
 
 (define-public curl
   (package
    (name "curl")
-   (version "7.57.0")
-   (replacement curl-7.59.0)
+   (version "7.59.0")
+   (replacement curl-7.60.0)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0y3qbjjcxhcvm1yawp3spfssjbskv0g6gyzld6ckif5pf8ygvxpm"))))
+              "1z310hrjm2vmbcpkyp81dcmj9rk127zkjyawpy2pah0nz6yslkp4"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -66,6 +67,7 @@
              ("libidn" ,libidn)
              ("libssh2" ,libssh2)
              ("openldap" ,openldap)
+             ("nghttp2" ,nghttp2 "lib")
              ("zlib" ,zlib)))
    (native-inputs
      `(("perl" ,perl)
@@ -125,7 +127,7 @@
            ;; The top-level "make check" does "make -C tests quiet-test", which
            ;; is too quiet.  Use the "test" target instead, which is more
            ;; verbose.
-           (zero? (system* "make" "-C" "tests" "test")))))))
+           (invoke "make" "-C" "tests" "test"))))))
    (synopsis "Command line tool for transferring data with URL syntax")
    (description
     "curl is a command line tool for transferring data with URL syntax,
@@ -139,10 +141,10 @@ tunneling, and so on.")
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
 
-(define-public curl-7.59.0
+(define-public curl-7.60.0
   (package
     (inherit curl)
-    (version "7.59.0")
+    (version "7.60.0")
     (source
       (origin
         (method url-fetch)
@@ -150,7 +152,7 @@ tunneling, and so on.")
                             version ".tar.xz"))
         (sha256
          (base32
-          "1z310hrjm2vmbcpkyp81dcmj9rk127zkjyawpy2pah0nz6yslkp4"))))))
+          "1876ck0smbqz3xakm7s6q6gh4zarh9pv3izf4vlzgpc9xn6zydl7"))))))
 
 (define-public kurly
   (package

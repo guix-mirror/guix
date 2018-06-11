@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +41,7 @@
 (define-public openldap
   (package
    (name "openldap")
-   (version "2.4.45")
+   (version "2.4.46")
    (source (origin
             (method url-fetch)
 
@@ -57,7 +58,7 @@
                         "openldap-release/openldap-" version ".tgz")))
             (sha256
              (base32
-              "091qvwk5dkcpp17ziabcnh3rg3m7qwzw2pihfcd1d5fdxgywzmnd"))))
+              "0bab1km8f2nan1x0zgwliknbxg0zlf2pafxrr867kblrdfwdr44s"))))
    (build-system gnu-build-system)
    (inputs `(("bdb" ,bdb-5.3)
              ("cyrus-sasl" ,cyrus-sasl)

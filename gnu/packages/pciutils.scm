@@ -72,7 +72,7 @@
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install the commands, library, and .pc files.
-             (zero? (system* "make" "install" "install-lib")))))
+             (invoke "make" "install" "install-lib"))))
 
        ;; Make sure programs have an RPATH so they can find libpciutils.so.
        #:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="

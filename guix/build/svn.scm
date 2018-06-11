@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,23 +35,24 @@
                     (password #f))
   "Fetch REVISION from URL into DIRECTORY.  REVISION must be an integer, and a
 valid Subversion revision.  Return #t on success, #f otherwise."
-  (and (zero? (apply system* svn-command
-                     "checkout" "--non-interactive"
-                     ;; Trust the server certificate.  This is OK as we
-                     ;; verify the checksum later.  This can be removed when
-                     ;; ca-certificates package is added.
-                     "--trust-server-cert" "-r" (number->string revision)
-                     `(,@(if (and user-name password)
-                             (list (string-append "--username=" user-name)
-                                   (string-append "--password=" password))
-                             '())
-                       ,url ,directory)))
-       (with-directory-excursion directory
-         (begin
-           ;; The contents of '.svn' vary as a function of the current status
-           ;; of the repo.  Since we want a fixed output, this directory needs
-           ;; to be taken out.
-           (delete-file-recursively ".svn")
-           #t))))
+  (apply invoke svn-command
+         "checkout" "--non-interactive"
+         ;; Trust the server certificate.  This is OK as we
+         ;; verify the checksum later.  This can be removed when
+         ;; ca-certificates package is added.
+         "--trust-server-cert" "-r" (number->string revision)
+         `(,@(if (and user-name password)
+                 (list (string-append "--username=" user-name)
+                       (string-append "--password=" password))
+                 '())
+           ,url ,directory))
+
+  ;; The contents of '.svn' vary as a function of the current status
+  ;; of the repo.  Since we want a fixed output, this directory needs
+  ;; to be taken out.
+  (with-directory-excursion directory
+    (delete-file-recursively ".svn"))
+
+  #t)
 
 ;;; svn.scm ends here

@@ -59,36 +59,49 @@
 (define %cargo-reference-hash
   "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 
+(define* (nix-system->gnu-triplet-for-rust
+          #:optional (system (%current-system)))
+  (match system
+    ("x86_64-linux"   "x86_64-unknown-linux-gnu")
+    ("i686-linux"     "i686-unknown-linux-gnu")
+    ("armhf-linux"    "armv7-unknown-linux-gnueabihf")
+    ("aarch64-linux"  "aarch64-unknown-linux-gnu")
+    ("mips64el-linux" "mips64el-unknown-linux-gnuabi64")
+    (_                (nix-system->gnu-triplet system))))
+
 (define rust-bootstrap
   (package
     (name "rust-bootstrap")
     (version "1.22.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://static.rust-lang.org/dist/"
-                    "rust-" version "-" %host-type ".tar.gz"))
-              (sha256
-               (base32
-                (match %host-type
-                  ("i686-unknown-linux-gnu"
-                   "15zqbx86nm13d5vq2gm69b7av4vg479f74b5by64hs3bcwwm08pr")
-                  ("x86_64-unknown-linux-gnu"
-                   "1yll78x6b3abnvgjf2b66gvp6mmcb9y9jdiqcwhmgc0z0i0fix4c")
-                  ("armv7-unknown-linux-gnueabihf"
-                   "138a8l528kzp5wyk1mgjaxs304ac5ms8vlpq0ggjaznm6bn2j7a5")
-                  ("aarch64-unknown-linux-gnu"
-                   "0z6m9m1rx4d96nvybbfmpscq4dv616m615ijy16d5wh2vx0p4na8")
-                  ("mips64el-unknown-linux-gnuabi64"
-                   "07k4pcv7jvfa48cscdj8752lby7m7xdl88v3a6na1vs675lhgja2")
-                  (_ ""))))))
+    (source #f)
     (build-system gnu-build-system)
     (native-inputs
      `(("patchelf" ,patchelf)))
     (inputs
      `(("gcc" ,(canonical-package gcc))
        ("gcc:lib" ,(canonical-package gcc) "lib")
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("source"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://static.rust-lang.org/dist/"
+                 "rust-" version "-" (nix-system->gnu-triplet-for-rust)
+                 ".tar.gz"))
+           (sha256
+            (base32
+             (match (nix-system->gnu-triplet-for-rust)
+               ("i686-unknown-linux-gnu"
+                "15zqbx86nm13d5vq2gm69b7av4vg479f74b5by64hs3bcwwm08pr")
+               ("x86_64-unknown-linux-gnu"
+                "1yll78x6b3abnvgjf2b66gvp6mmcb9y9jdiqcwhmgc0z0i0fix4c")
+               ("armv7-unknown-linux-gnueabihf"
+                "138a8l528kzp5wyk1mgjaxs304ac5ms8vlpq0ggjaznm6bn2j7a5")
+               ("aarch64-unknown-linux-gnu"
+                "0z6m9m1rx4d96nvybbfmpscq4dv616m615ijy16d5wh2vx0p4na8")
+               ("mips64el-unknown-linux-gnuabi64"
+                "07k4pcv7jvfa48cscdj8752lby7m7xdl88v3a6na1vs675lhgja2")
+               (_ ""))))))))
     (outputs '("out" "cargo"))
     (arguments
      `(#:tests? #f
@@ -117,7 +130,8 @@
                (invoke "bash" "install.sh"
                         (string-append "--prefix=" out)
                         (string-append "--components=rustc,"
-                                       "rust-std-" %host-type))
+                                       "rust-std-"
+                                       ,(nix-system->gnu-triplet-for-rust)))
                ;; Instal cargo
                (invoke "bash" "install.sh"
                         (string-append "--prefix=" cargo-out)
@@ -138,7 +152,7 @@
     (home-page "https://www.rust-lang.org")
     (synopsis "Prebuilt rust compiler and cargo package manager")
     (description "This package provides a pre-built @command{rustc} compiler
-and a pre-built @command{cargo} package manaer, which can
+and a pre-built @command{cargo} package manager, which can
 in turn be used to build the final Rust.")
     (license license:asl2.0)))
 
@@ -196,6 +210,12 @@ in turn be used to build the final Rust.")
                  ;; This test is known to fail on aarch64 and powerpc64le:
                  ;; https://github.com/rust-lang/rust/issues/45410
                  (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
+               ;; nm doesn't recognize the file format because of the
+               ;; nonstandard sections used by the Rust compiler, but readelf
+               ;; ignores them.
+               (substitute* "src/test/run-make/atomic-lock-free/Makefile"
+                 (("\tnm ")
+                  "\treadelf -c "))
                #t)))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda* _
@@ -237,8 +257,21 @@ in turn be used to build the final Rust.")
        ("llvm" ,llvm-3.9.1)
        ("openssl" ,openssl)
        ("libcurl" ,curl))) ; For "cargo"
+
     ;; rustc invokes gcc, so we need to set its search paths accordingly.
-    (native-search-paths (package-native-search-paths gcc))
+    ;; Note: duplicate its value here to cope with circular dependencies among
+    ;; modules (see <https://bugs.gnu.org/31392>).
+    (native-search-paths
+     (list (search-path-specification
+            (variable "C_INCLUDE_PATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "CPLUS_INCLUDE_PATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "LIBRARY_PATH")
+            (files '("lib" "lib64")))))
+
     (synopsis "Compiler for the Rust progamming language")
     (description "Rust is a systems programming language that provides memory
 safety and thread safety guarantees.")
@@ -259,8 +292,8 @@ safety and thread safety guarantees.")
                                    (package-native-inputs base-rust))))))
 
 (define-public mrustc
-  (let ((commit "4f98e4322ef7aabd3bbef8cd93c0980cd6eeeed1")
-        (revision "1")
+  (let ((commit "b5b70897015ee70d62ddda9711c256ca7c720e0f")
+        (revision "3")
         (rustc-version "1.19.0"))
     (package
       (name "mrustc")
@@ -273,7 +306,7 @@ safety and thread safety guarantees.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1hk1x2iv64il5g2n3z06d6h219hnxg1w84lj7vi1lydqa65qk92p"))))
+                  "1d6jr6agiy598ab8lax0h9dfn9n67wg906y1f46l1c27sz3w82lb"))))
       (outputs '("out" "cargo"))
       (build-system gnu-build-system)
       (inputs
@@ -300,14 +333,16 @@ safety and thread safety guarantees.")
                  (("^RUSTC_TARGET := x86_64-unknown-linux-gnu")
                   (string-append "RUSTC_TARGET := "
                                  ,(or (%current-target-system)
-                                      (nix-system->gnu-triplet
-                                       (%current-system))))))
+                                      (nix-system->gnu-triplet-for-rust)))))
                (invoke "tar" "xf" (assoc-ref inputs "rustc"))
                (chdir "rustc-1.19.0-src")
                (invoke "patch" "-p0" "../rust_src.patch")
                (chdir "..")
                #t))
-           (delete 'configure)
+           (replace 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+               #t))
            (add-after 'build 'build-minicargo
              (lambda _
                (for-each (lambda (target)
@@ -370,6 +405,10 @@ safety and thread safety guarantees.")
                (substitute* "src/tools/cargo/tests/death.rs"
                 ;; This is stuck when built in container.
                 (("fn ctrl_c_kills_everyone") "#[ignore]\nfn ctrl_c_kills_everyone"))
+               ;; Prints test output in the wrong order when built on
+               ;; i686-linux.
+               (substitute* "src/tools/cargo/tests/test.rs"
+                 (("fn cargo_test_env") "#[ignore]\nfn cargo_test_env"))
                #t))
            (add-after 'patch-cargo-tests 'fix-mtime-bug
              (lambda* _
@@ -417,7 +456,7 @@ rpath = true
 # codegen/mainsubprogram.rs and codegen/mainsubprogramstart.rs
 # This tests required patched LLVM
 codegen-tests = false
-[target." %host-type "]
+[target." ,(nix-system->gnu-triplet-for-rust) "]
 llvm-config = \"" llvm "/bin/llvm-config" "\"
 cc = \"" gcc "/bin/gcc" "\"
 cxx = \"" gcc "/bin/g++" "\"
@@ -440,8 +479,10 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              (invoke "./x.py" "build" "src/tools/cargo")))
          (replace 'check
            (lambda* _
-             (invoke "./x.py" "test")
-             (invoke "./x.py" "test" "src/tools/cargo")))
+             ;; Disable parallel execution to prevent EAGAIN errors when
+             ;; running tests.
+             (invoke "./x.py" "-j1" "test")
+             (invoke "./x.py" "-j1" "test" "src/tools/cargo")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "./x.py" "install")

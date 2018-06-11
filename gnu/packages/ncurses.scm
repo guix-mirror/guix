@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
@@ -40,7 +40,7 @@
 (define-public ncurses
   (package
     (name "ncurses")
-    (version "6.0-20170930")
+    (version "6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
@@ -48,7 +48,7 @@
                                   ".tar.gz"))
               (sha256
                (base32
-                "0q3jck7lna77z5r42f13c4xglc7azd19pxfrjrpgp2yf615w4lgm"))))
+                "05qdmbmrrn88ii9f66rkcmcyzp1kb1ymkx7g040lfkd1nkp7w1da"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                ;1 MiB of man pages
@@ -56,7 +56,8 @@
      (let ((patch-makefile-phase
             '(lambda _
                (for-each patch-makefile-SHELL
-                         (find-files "." "Makefile.in"))))
+                         (find-files "." "Makefile.in"))
+               #t))
            (configure-phase
             ;; The 'configure' script does not understand '--docdir', so we must
             ;; override that and use '--mandir' instead.
@@ -64,21 +65,27 @@
                        #:allow-other-keys)
                (let ((out (assoc-ref outputs "out"))
                      (doc (assoc-ref outputs "doc")))
-                 (zero? (apply system* "./configure"
-                               (string-append "SHELL=" (which "sh"))
-                               (string-append "--build=" build)
-                               (string-append "--prefix=" out)
-                               (string-append "--mandir=" doc "/share/man")
-                               (if target
-                                   (cons (string-append "--host=" target)
-                                         configure-flags)
-                                   configure-flags))))))
+                 (apply invoke "./configure"
+                        (string-append "SHELL=" (which "sh"))
+                        (string-append "--build=" build)
+                        (string-append "--prefix=" out)
+                        (string-append "--mandir=" doc "/share/man")
+                        (if target
+                            (cons (string-append "--host=" target)
+                                  configure-flags)
+                            configure-flags))
+                 #t)))
            (apply-rollup-patch-phase
+            ;; Ncurses distributes "stable" patchsets to be applied on top
+            ;; of the release tarball.  These are only available as shell
+            ;; scripts(!) so we decompress and apply them in a phase.
+            ;; See <https://invisible-mirror.net/archives/ncurses/6.1/README>.
             '(lambda* (#:key inputs native-inputs #:allow-other-keys)
                (copy-file (assoc-ref (or native-inputs inputs) "rollup-patch")
                           (string-append (getcwd) "/rollup-patch.sh.bz2"))
-               (and (zero? (system* "bzip2" "-d" "rollup-patch.sh.bz2"))
-                    (zero? (system* "sh" "rollup-patch.sh")))))
+               (invoke "bzip2" "-d" "rollup-patch.sh.bz2")
+               (invoke "sh" "rollup-patch.sh")
+               #t))
            (remove-shebang-phase
             '(lambda _
                ;; To avoid retaining a reference to the bootstrap Bash via the
@@ -149,7 +156,8 @@
                                            (when (file-exists? packagew.pc)
                                              (symlink packagew.pc package.pc))))
                                        '())))
-                             '("curses" "ncurses" "form" "panel" "menu")))))))
+                             '("curses" "ncurses" "form" "panel" "menu")))
+                 #t))))
        `(#:configure-flags
          ,(cons*
            'quasiquote
@@ -170,12 +178,17 @@
               ;; correct RUNPATH.
               ,(list 'unquote '(string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out")
                                               "/lib"))
+
+              ;; Starting from ncurses 6.1, "make install" runs "install -s"
+              ;; by default, which doesn't work for cross-compiled binaries
+              ;; because it invokes 'strip' instead of 'TRIPLET-strip'.  Work
+              ;; around this.
+              ,@(if (%current-target-system) '("--disable-stripping") '())
+
               ;; MinGW: Use term-driver created for the MinGW port.
               ,@(if (target-mingw?) '("--enable-term-driver") '()))))
          #:tests? #f                  ; no "check" target
          #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'apply-rollup-patch
-                      ,apply-rollup-patch-phase)
                     (replace 'configure ,configure-phase)
                     (add-after 'install 'post-install
                       ,post-install-phase)
@@ -185,22 +198,7 @@
                       ,remove-shebang-phase)))))
     (self-native-input? #t)           ; for `tic'
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-
-       ;; Ncurses distributes "stable" patchsets to be applied on top
-       ;; of the release tarball.  These are only available as shell
-       ;; scripts(!) so we decompress and apply them in a phase.
-       ;; See <https://invisible-mirror.net/archives/ncurses/6.0/README>.
-       ("rollup-patch"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                 "https://invisible-mirror.net/archives/ncurses/"
-                 (car (string-split version #\-))
-                 "/ncurses-" version "-patch.sh.bz2"))
-           (sha256
-            (base32
-             "08a1pp8wnj1fwpa1pz3fgrmd6xwp21idniswqz8lx3w3z2nb4ydi"))))))
+     `(("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification
             (variable "TERMINFO_DIRS")

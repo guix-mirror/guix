@@ -55,19 +55,20 @@ Return #t on success, #f otherwise."
   ;; Use "-z0" because enabling compression leads to hangs during checkout on
   ;; certain repositories, such as
   ;; ":pserver:anonymous@cvs.savannah.gnu.org:/sources/gnustandards".
-  (and (zero? (system* cvs-command "-z0"
-                       "-d" cvs-root-directory
-                       "checkout"
-                       (if (string-match "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" revision)
-                           "-D" "-r")
-                       revision
-                       module))
-       ;; Copy rather than rename in case MODULE and DIRECTORY are on
-       ;; different devices.
-       (copy-recursively module directory)
+  (invoke cvs-command "-z0"
+          "-d" cvs-root-directory
+          "checkout"
+          (if (string-match "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" revision)
+              "-D" "-r")
+          revision
+          module)
 
-       (with-directory-excursion directory
-         (for-each delete-file-recursively (find-cvs-directories)))
-       #t))
+  ;; Copy rather than rename in case MODULE and DIRECTORY are on
+  ;; different devices.
+  (copy-recursively module directory)
+
+  (with-directory-excursion directory
+    (for-each delete-file-recursively (find-cvs-directories)))
+  #t)
 
 ;;; cvs.scm ends here

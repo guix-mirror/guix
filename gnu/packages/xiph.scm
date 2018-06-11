@@ -80,17 +80,14 @@ periodic timestamps for seeking.")
 (define libvorbis
   (package
    (name "libvorbis")
-   (version "1.3.5")
-   (replacement libvorbis-1.3.6)
+   (version "1.3.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://downloads.xiph.org/releases/vorbis/"
                                 "libvorbis-" version ".tar.xz"))
-            (patches (search-patches "libvorbis-CVE-2017-14633.patch"
-                                     "libvorbis-CVE-2017-14632.patch"))
             (sha256
              (base32
-              "1lg1n3a6r41492r7in0fpvzc7909mc5ir9z0gd3qh2pz4yalmyal"))))
+              "05dlzjkdpv46zb837wysxqyn8l636x3dw8v8ymlrwz2fg1dbn05g"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("libogg" ,libogg)))
    (arguments `(#:configure-flags '("LDFLAGS=-lm")
@@ -105,18 +102,6 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
    (license (license:non-copyleft "file://COPYING"
                                "See COPYING in the distribution."))
    (home-page "https://xiph.org/vorbis/")))
-
-;; For CVE-2018-5146.
-(define-public libvorbis-1.3.6
-  (package/inherit libvorbis
-    (version "1.3.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://downloads.xiph.org/releases/vorbis/"
-                                  "libvorbis-" version ".tar.xz"))
-              (sha256
-               (base32
-                "05dlzjkdpv46zb837wysxqyn8l636x3dw8v8ymlrwz2fg1dbn05g"))))))
 
 (define libtheora
   (package

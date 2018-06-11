@@ -96,7 +96,8 @@ instance.")))
                      ;; expect it.
                      (mkdir-p (string-append out "/share"))
                      (symlink (string-append in "/share/aclocal")
-                              (string-append out "/share/aclocal"))))))
+                              (string-append out "/share/aclocal"))
+                     #t))))
     (native-inputs `(("pkg-config" ,%pkg-config)))
 
     ;; Ignore native inputs, and set `PKG_CONFIG_PATH' for target inputs.

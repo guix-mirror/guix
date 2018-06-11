@@ -31,7 +31,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages golang)
-  #:use-module (gnu packages indent)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pretty-print)
@@ -300,10 +300,7 @@ down the road.")
                             (which "sh"))))))
              (add-before 'configure 'repack-make
                (lambda _
-                 (zero? (system* "tar" "cJf" "./make.tar.xz" ,make-dir))))
-             (add-after 'unpack 'bootstrap
-               (lambda _
-                 (zero? (system* "autoreconf" "-vfi"))))))))
+                 (zero? (system* "tar" "cJf" "./make.tar.xz" ,make-dir))))))))
       (home-page "https://github.com/losalamos/stress-make")
       (synopsis "Expose race conditions in Makefiles")
       (description

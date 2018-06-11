@@ -79,7 +79,8 @@ a flexible and convenient way.")
                              (("#! /bin/sh")
                               (string-append "#!" (which "sh")))))
                          (remove file-is-directory?
-                                 (find-files "src/tests" ".*"))))))
+                                 (find-files "src/tests" ".*")))
+               #t)))
          (add-after 'unpack 'patch-iconv-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/man.c"
@@ -150,7 +151,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "4.15")
+    (version "4.16")
     (source (origin
               (method url-fetch)
               (uri
@@ -163,7 +164,7 @@ the traditional flat-text whatis databases.")
                     "man-pages-" version ".tar.xz")))
               (sha256
                (base32
-                "01n1rq1kvambax85xamriawbga94mh63s5mgjmjljjgf50m7yw6f"))))
+                "1d2d6llazg3inwjiz22cn46mbm5ydpbyh9qb55z4j3nm4w6wrzs7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -189,7 +190,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
 (define-public help2man
   (package
     (name "help2man")
-    (version "1.47.5")
+    (version "1.47.6")
     (source
      (origin
       (method url-fetch)
@@ -197,7 +198,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "1cb14kp380jzk1yi4i7x9d8qplc8c5mgcbgycgs9ggpx34jhp9kw"))))
+        "0vz4dlrvy4vc6l7w0a7n668pfa0rdm73wr2gar58wqranyah46yr"))))
     (build-system gnu-build-system)
     (arguments `(;; There's no `check' target.
                  #:tests? #f))

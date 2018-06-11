@@ -13,6 +13,8 @@
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Tonton <tonton@riseup.net>
+;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -282,9 +284,11 @@ top of CLISP.")
                   (mkdir-p libtinfo-dir)
                   (symlink
                    (string-append ncurses-lib "/libncursesw.so."
-                                  ;; Extract "6.0" from "6.0-20170930".
+                                  ;; Extract "6.0" from "6.0-20170930" if a
+                                  ;; dash-separated version tag exists.
                                   ,(let* ((v (package-version ncurses))
-                                          (d (string-index v #\-)))
+                                          (d (or (string-index v #\-)
+                                                 (string-length v))))
                                      (version-major+minor (string-take v d))))
                    (string-append libtinfo-dir "/libtinfo.so.5"))
 
@@ -1822,7 +1826,7 @@ bindings are a direct translation of the C bindings.")
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("libx11" ,libx11)
        ("libxft" ,libxft)
-       ("xproto" ,xproto)))
+       ("xorgproto" ,xorgproto)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (build-system haskell-build-system)
@@ -1935,6 +1939,30 @@ case with other forms of concurrent communication, such as locks or
     (synopsis "Parallel programming library")
     (description
      "This package provides a library for parallel programming.")
+    (license license:bsd-3)))
+
+(define-public ghc-safesemaphore
+  (package
+    (name "ghc-safesemaphore")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "SafeSemaphore/SafeSemaphore-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rpg9j6fy70i0b9dkrip9d6wim0nac0snp7qzbhykjkqlcvvgr91"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-stm" ,ghc-stm)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/ChrisKuklewicz/SafeSemaphore")
+    (synopsis "Exception safe semaphores")
+    (description "This library provides exception safe semaphores that can be
+used in place of @code{QSem}, @code{QSemN}, and @code{SampleVar}, all of which
+are not exception safe and can be broken by @code{killThread}.")
     (license license:bsd-3)))
 
 (define-public ghc-text
@@ -2987,6 +3015,35 @@ online}.")
     (description "This package provides a simple XML library for Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-feed
+  (package
+    (name "ghc-feed")
+    (version "0.3.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "feed/feed-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hkrsinspg70bbm3hwqdrvivws6zya1hyk0a3awpaz82j4xnlbfc"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-time-locale-compat" ,ghc-time-locale-compat)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-xml" ,ghc-xml)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (home-page "https://github.com/bergmark/feed")
+    (synopsis "Haskell package for handling various syndication formats")
+    (description "This Haskell package includes tools for generating and
+consuming feeds in both RSS (Really Simple Syndication) and Atom format.")
+    (license license:bsd-3)))
+
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
@@ -3572,6 +3629,31 @@ vector types are supported.  Specific instances are provided for unboxed,
 boxed and storable vectors.")
     (license license:bsd-3)))
 
+(define-public ghc-bloomfilter
+  (package
+    (name "ghc-bloomfilter")
+    (version "2.0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "bloomfilter/bloomfilter-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03vrmncg1c10a2wcg5skq30m1yiknn7nwxz2gblyyfaxglshspkc"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-random" ,ghc-random)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/bos/bloomfilter")
+    (synopsis "Pure and impure Bloom filter implementations")
+    (description "This package provides both mutable and immutable Bloom
+filter data types, along with a family of hash functions and an easy-to-use
+interface.")
+    (license license:bsd-3)))
+
 (define-public ghc-network
   (package
     (name "ghc-network")
@@ -3755,6 +3837,27 @@ with various performance characteristics.")
     (description
      "This library provides monad morphism utilities, most commonly used for
 manipulating monad transformer stacks.")
+    (license license:bsd-3)))
+
+(define-public ghc-ifelse
+  (package
+    (name "ghc-ifelse")
+    (version "0.85")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "IfElse/IfElse-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kfx1bwfjczj93a8yqz1n8snqiq5655qgzwv1lrycry8wb1vzlwa"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "http://hackage.haskell.org/package/IfElse")
+    (synopsis "Monadic control flow with anaphoric variants")
+    (description "This library provides functions for control flow inside of
+monads with anaphoric variants on @code{if} and @code{when} and a C-like
+@code{switch} function.")
     (license license:bsd-3)))
 
 (define-public ghc-monad-control
@@ -7735,6 +7838,44 @@ converting between Haskell values and JSON.
 JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
     (license license:bsd-3)))
 
+(define-public ghc-esqueleto
+  (package
+    (name "ghc-esqueleto")
+    (version "2.5.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "esqueleto/esqueleto-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10n49rzqmblky7pwjnysalyy6nacmxfms8dqbsdv6hlyzr8pb69x"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-monad-logger" ,ghc-monad-logger)
+       ("ghc-persistent" ,ghc-persistent)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-persistent-sqlite" ,ghc-persistent-sqlite)
+       ("ghc-persistent-template" ,ghc-persistent-template)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/bitemyapp/esqueleto")
+    (synopsis "Type-safe embedded domain specific language for SQL queries")
+    (description "This library provides a type-safe embedded domain specific
+language (EDSL) for SQL queries that works with SQL backends as provided by
+@code{ghc-persistent}.  Its language closely resembles SQL, so you don't have
+to learn new concepts, just new syntax, and it's fairly easy to predict the
+generated SQL and optimize it for your backend.")
+    (license license:bsd-3)))
+
 (define-public shellcheck
   (package
     (name "shellcheck")
@@ -7833,6 +7974,8 @@ bytestrings and their hexademical representation.")
         (base32
          "0n39s1i88j6s7vvsdhpbhcr3gpbwlzabwcc3nbd7nqb4kb4i0sls"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-hashable" ,ghc-hashable)))
     (native-inputs
@@ -9464,6 +9607,75 @@ system dependencies.")
     (description
      "This Haskell package provides a validator that can validate an email
 address string against RFC 5322.")
+    (license license:bsd-3)))
+
+(define-public ghc-semigroupoids-5.2.2
+  (package
+    (inherit ghc-semigroupoids)
+    (name "ghc-semigroupoids")
+    (version "5.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hackage.haskell.org/package/"
+                                  "semigroupoids-" version "/semigroupoids-"
+                                   version ".tar.gz"))
+              (sha256
+               (base32
+                "17i96y4iqj8clcs090lf6k0ij3j16nj14vsfwz0mm9nd6i4gbpp4"))))
+    (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
+              ,@(package-inputs ghc-semigroupoids)))))
+
+(define-public ghc-bytes
+  (package
+   (name "ghc-bytes")
+   (version "0.15.4")
+   (source
+    (origin
+     (method url-fetch)
+     (uri
+      (string-append "https://hackage.haskell.org/package/bytes-"
+                     version "/bytes-"
+                     version ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32
+       "121x3iqlm8pghw8cd9g30cnqbl7jrdpfjxdanmqdqllajw6xivrm"))))
+   (build-system haskell-build-system)
+   (inputs `(("ghc-cereal" ,ghc-cereal)
+             ("cabal-doctest" ,cabal-doctest)
+             ("ghc-doctest" ,ghc-doctest-0.13)
+             ("ghc-mtl" ,ghc-mtl)
+             ("ghc-scientific" ,ghc-scientific)
+             ("ghc-text" ,ghc-text)
+             ("ghc-transformers-compat" ,ghc-transformers-compat)
+             ("ghc-unordered-containers" ,ghc-unordered-containers)
+             ("ghc-void" ,ghc-void)
+             ("ghc-vector" ,ghc-vector)))
+   (synopsis "Serialization between @code{binary} and @code{cereal}")
+   (description "This package provides a simple compatibility shim that lets
+you work with both @code{binary} and @code{cereal} with one chunk of
+serialization code.")
+   (home-page "https://hackage.haskell.org/package/bytes")
+   (license license:bsd-3)))
+
+(define-public ghc-disk-free-space
+  (package
+    (name "ghc-disk-free-space")
+    (version "0.1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "disk-free-space/disk-free-space-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "07rqj8k1vh3cykq9yidpjxhgh1f7vgmjs6y1nv5kq2217ff4yypi"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/redneb/disk-free-space")
+    (synopsis "Retrieve information about disk space usage")
+    (description "A cross-platform library for retrieving information about
+disk space usage.")
     (license license:bsd-3)))
 
 ;;; haskell.scm ends here

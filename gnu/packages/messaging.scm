@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -131,7 +132,7 @@ keys, no previous conversation is compromised.")
 (define-public libsignal-protocol-c
   (package
   (name "libsignal-protocol-c")
-  (version "2.3.1")
+  (version "2.3.2")
   (source (origin
            (method url-fetch)
            (uri (string-append "https://github.com/WhisperSystems/"
@@ -140,7 +141,7 @@ keys, no previous conversation is compromised.")
            (file-name (string-append name "-" version ".tar.gz"))
            (sha256
             (base32
-             "1klz9jvbnmfc3qy2x6qcswzw14a7kyzs51dlg18yllvir1f1kz0s"))))
+             "0380hl6fw3ppf265fg897pyrpqygpx4m9j8ifq118bim8lq6z0pk"))))
   (arguments
    `(;; Required for proper linking and for tests to run.
      #:configure-flags '("-DBUILD_SHARED_LIBS=on" "-DBUILD_TESTING=1")))
@@ -181,6 +182,9 @@ end-to-end encryption.")
          (add-after 'install 'install-etc
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
              (zero? (apply system* "make" "install-etc" make-flags))))
+         (add-after 'install-etc 'install-lib
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (zero? (apply system* "make" "install-dev" make-flags))))
          (replace 'configure
            ;; bitlbee's configure script does not tolerate many of the
            ;; variable settings that Guix would pass to it.
@@ -198,6 +202,49 @@ microblogging network (plus all other Twitter API compatible services like
 identi.ca and status.net).")
     (home-page "http://www.bitlbee.org/")
     (license (list license:gpl2+ license:bsd-2))))
+
+(define-public bitlbee-discord
+  (package
+    (name "bitlbee-discord")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/sm00th/bitlbee-discord/"
+                              "archive/" version ".tar.gz"))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1bwqxlg6fwj3749y7w69n9jwsdzf5nl9xqiszbpv9k8x1422i1y1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (let ((sh (which "sh")))
+               (substitute* "autogen.sh" (("/bin/sh") sh))
+               (setenv "CONFIG_SHELL" sh)
+               (zero? (system* "./autogen.sh")))))
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (invoke "./configure"
+                     (string-append "--with-plugindir="
+                                    (assoc-ref outputs "out")
+                                    "/lib/bitlbee/")))))))
+    (inputs `(("glib" ,glib)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("texinfo" ,texinfo)
+                     ("libtool" ,libtool)
+                     ("bitlbee" ,bitlbee)         ;needs bitlbee headers
+                     ("bash" ,bash)))
+    (synopsis "Discord plugin for Bitlbee")
+    (description "Bitlbee-discord is a plugin for Bitlbee witch provides
+access to servers running the Discord protocol.")
+    (home-page "https://github.com/sm00th/bitlbee-discord/")
+    (license license:gpl2+)))
 
 (define-public hexchat
   (package
@@ -440,32 +487,48 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.6.6")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "09cmsnxvi7jg9a0dicf60fxnxdff4aprw7h8vjqlj5ywf6y43f3z"))))
+                "0vxra50418bsjfdpf8vl70fijv8syvasjqdxfyjliff6k91k2zn0"))))
+    ;; TODO: autotools support has been deprecated, and new features like i18n
+    ;; are only supported when building with cmake.
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unpack-googletest
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "tar" "xf"
-                             (assoc-ref inputs "googletest-source"))))))
+             (mkdir-p "googletest")
+             (copy-recursively (assoc-ref inputs "googletest-source")
+                               "googletest")
+             #t)))
        #:configure-flags '("--enable-python"
                            "--enable-perl"
                            "--enable-cyrus"
-                           ,(string-append "--with-gtest="
-                                          "googletest-release-"
-                                          (package-version googletest)
-                                          "/googletest"))
+                           "--with-gmock=googletest/googlemock"
+                           "--with-gtest=googletest/googletest")
        #:test-target "test"))
     (native-inputs
-     `(("googletest-source" ,(package-source googletest))
+     `(("googletest-source"
+        ;; ZNC 1.7 needs a newer, unreleased googletest (a release is planned
+        ;; <https://github.com/google/googletest/issues/1583>, so don't update
+        ;; the public GOOGLETEST to an unstable version).  The commit is taken
+        ;; from ‘third_party/googletest’ in the ZNC git repository.
+        ,(let ((commit "9737e63c69e94ac5777caa0bc77c77d5206467f3"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/google/googletest")
+                   (commit commit)))
+             (file-name (git-file-name "googletest-for-znc" commit))
+             (sha256
+              (base32
+               "0ya36n8d62zbxk6p22yffgx43mqhx2fz41gqqwbpdshjryf3wvxj")))))
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ("python" ,python)))
@@ -476,23 +539,23 @@ compromised.")
        ("cyrus-sasl" ,cyrus-sasl)))
     (home-page "https://znc.in")
     (synopsis "IRC network bouncer")
-    (description "ZNC is an IRC network bouncer or BNC.  It can detach the
-client from the actual IRC server, and also from selected channels.  Multiple
-clients from different locations can connect to a single ZNC account
+    (description "ZNC is an @dfn{IRC network bouncer} or @dfn{BNC}.  It can
+detach the client from the actual IRC server, and also from selected channels.
+Multiple clients from different locations can connect to a single ZNC account
 simultaneously and therefore appear under the same nickname on IRC.")
     (license license:asl2.0)))
 
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.4")
+    (version "0.6.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "12rfmp613alh3mi8f94008sx7x1a8c1izs3icrvw7bf4gnf2pi31"))))
+         "0bp60syqc3qp2i28phvadxlpwizjbr6bxw4m363p9yn5fl687qnh"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -510,7 +573,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "1.0.1")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -518,7 +581,7 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "16ynws10vhx6rhjjjmzw6iyb3hc19823xhx4gsb14hrc7l8vzd1c"))))
+                "0ds4rqwfrpj89a489w6yih8gx5zi7qa4ffgld950fk7s0qxvcfnb"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -564,7 +627,15 @@ was initially a fork of xmpppy, but uses non-blocking sockets.")
                (with-directory-excursion icons
                  (symlink adwaita "Adwaita")
                  (copy-recursively hicolor "hicolor")))
-             #t)))))
+             #t))
+         (add-after 'install-icons 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/gajim")
+               ;; For GtkFileChooserDialog.
+               `("GSETTINGS_SCHEMA_DIR" =
+                 (,(string-append (assoc-ref inputs "gtk+")
+                                  "/share/glib-2.0/schemas")))))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("xorg-server" ,xorg-server)))
@@ -665,14 +736,14 @@ a graphical desktop environment like GNOME.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.10.0")
+    (version "0.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "1644jy5dk46vahmh6nna36s79k8k668sbi3qamjb4q3c4m3y853l"))))
+                "13knr7izscw0zx648b9582dx11aap4cq9bzfiqh5ykd7wwsz1dbm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -1104,7 +1175,9 @@ into existing applications.")
          "1lw6807qrbmvzbrjn1rna1dhir2k70xpcjvyjn45y35hav333a42"))
        ;; psycmp3 currently depends on MP3::List and rxaudio (shareware),
        ;; we can add it back when this is no longer the case.
-       (snippet '(delete-file "contrib/psycmp3"))))
+       (snippet '(begin
+                   (delete-file "contrib/psycmp3")
+                   #t))))
     (build-system perl-build-system)
     (inputs
      `(("perl-curses" ,perl-curses)
@@ -1409,12 +1482,6 @@ is also scriptable and extensible via Guile.")
                (base32
                 "0iaj56fkd5bjvqpvq3324ni895rmbj1akbfqipjydnghfwaym4z6"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
-           (lambda _
-             (zero? (system* "./bootstrap.sh")))))))
     (inputs
      `(("expat" ,expat)
        ("openssl" ,openssl)))
@@ -1444,12 +1511,6 @@ manual SSL certificate verification.")
                (base32
                 "0vxfcyfnhnlaj6spm2b0ljw5i3knbphy6mvzpl5zv9b52ny4b08m"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'bootstrap
-           (lambda _
-             (zero? (system* "./bootstrap.sh")))))))
     (inputs
      `(("expat" ,expat)
        ("openssl" ,openssl)))

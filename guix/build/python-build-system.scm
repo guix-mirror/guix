@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,14 +121,15 @@
          (format #t "running \"python setup.py\" with command ~s and parameters ~s~%"
                 command params)
          (if use-setuptools?
-             (zero? (apply system* "python" "-c" setuptools-shim
-                           command params))
-             (zero? (apply system* "python" "./setup.py" command params))))
+             (apply invoke "python" "-c" setuptools-shim
+                    command params)
+             (apply invoke "python" "./setup.py" command params)))
       (error "no setup.py found")))
 
 (define* (build #:key use-setuptools? #:allow-other-keys)
   "Build a given Python package."
-  (call-setuppy "build" '() use-setuptools?))
+  (call-setuppy "build" '() use-setuptools?)
+  #t)
 
 (define* (check #:key tests? test-target use-setuptools? #:allow-other-keys)
   "Run the test suite of a given Python package."
@@ -137,15 +139,12 @@
       ;; (given with `package_dir`). This will by copied to the output, too,
       ;; so we need to remove.
       (let ((before (find-files "build" "\\.egg-info$" #:directories? #t)))
-        (if (call-setuppy test-target '() use-setuptools?)
-            (let* ((after (find-files "build" "\\.egg-info$" #:directories? #t))
-                   (inter (lset-difference eqv? after before)))
-              (for-each delete-file-recursively inter)
-              #t)
-            #f))
-      (begin
-        (format #t "test suite not run~%")
-        #t)))
+        (call-setuppy test-target '() use-setuptools?)
+        (let* ((after (find-files "build" "\\.egg-info$" #:directories? #t))
+               (inter (lset-difference string=? after before)))
+          (for-each delete-file-recursively inter)))
+      (format #t "test suite not run~%"))
+  #t)
 
 (define (get-python-version python)
   (let* ((version     (last (string-split python #\-)))
@@ -182,7 +181,8 @@ when running checks after installing the package."
                                     "--root=/")
                              '())
                          configure-flags)))
-    (call-setuppy "install" params use-setuptools?)))
+    (call-setuppy "install" params use-setuptools?)
+    #t))
 
 (define* (wrap #:key inputs outputs #:allow-other-keys)
   (define (list-of-files dir)
@@ -211,7 +211,8 @@ when running checks after installing the package."
                 (let ((files (list-of-files dir)))
                   (for-each (cut wrap-program <> var)
                             files)))
-              bindirs)))
+              bindirs)
+    #t))
 
 (define* (rename-pth-file #:key name inputs outputs #:allow-other-keys)
   "Rename easy-install.pth to NAME.pth to avoid conflicts between packages
@@ -243,10 +244,21 @@ installed with setuptools."
                #t))
     #t))
 
+(define* (enable-bytecode-determinism #:rest _)
+  "Improve determinism of pyc files."
+  ;; Set DETERMINISTIC_BUILD to override the embedded mtime in pyc files.
+  (setenv "DETERMINISTIC_BUILD" "1")
+  ;; Use deterministic hashes for strings, bytes, and datetime objects.
+  (setenv "PYTHONHASHSEED" "0")
+  #t)
+
 (define %standard-phases
   ;; 'configure' phase is not needed.
   (modify-phases gnu:%standard-phases
     (add-after 'unpack 'ensure-no-mtimes-pre-1980 ensure-no-mtimes-pre-1980)
+    (add-after 'ensure-no-mtimes-pre-1980 'enable-bytecode-determinism
+      enable-bytecode-determinism)
+    (delete 'bootstrap)
     (delete 'configure)
     (replace 'install install)
     (replace 'check check)

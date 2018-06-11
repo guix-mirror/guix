@@ -112,7 +112,7 @@ contains the archive keys used for that.")
 (define-public debootstrap
   (package
     (name "debootstrap")
-    (version "1.0.95")
+    (version "1.0.101")
     (source
       (origin
         (method url-fetch)
@@ -120,7 +120,7 @@ contains the archive keys used for that.")
                             name "_" version ".tar.gz"))
         (sha256
          (base32
-          "1xpd1yblcgwhri64hzgxhalpf5j8gqbmkrsm1fs0pbwiy0wdz0ry"))))
+          "1p1a81s8hq73byd7256iljdls389x2q7w6srgrgfmx5bl1csnzp3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -129,6 +129,7 @@ contains the archive keys used for that.")
          (add-after 'unpack 'patch-source
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out    (assoc-ref outputs "out"))
+                   (coreutils (assoc-ref inputs "coreutils"))
                    (wget   (assoc-ref inputs "wget"))
                    (debian (assoc-ref inputs "debian-keyring"))
                    (ubuntu (assoc-ref inputs "ubuntu-keyring")))
@@ -141,6 +142,7 @@ contains the archive keys used for that.")
                (substitute* "scripts/gutsy"
                  (("/usr") ubuntu))
                (substitute* "debootstrap"
+                 (("chroot ") (string-append coreutils "/bin/chroot "))
                  (("=/usr") (string-append "=" out)))
                (substitute* "functions"
                  (("wget ") (string-append wget "/bin/wget ")))
@@ -154,7 +156,8 @@ contains the archive keys used for that.")
        #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
        #:tests? #f)) ; no tests
     (inputs
-     `(("debian-keyring" ,debian-archive-keyring)
+     `(("coreutils" ,coreutils)
+       ("debian-keyring" ,debian-archive-keyring)
        ("ubuntu-keyring" ,ubuntu-keyring)
        ("wget" ,wget)))
     ;; The following are required for debootstrap to work correctly

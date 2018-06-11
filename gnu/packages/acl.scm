@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,8 +48,20 @@
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tests"
+       #:modules ((ice-9 ftw)
+                  ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
+         ;; XXX After repacking the sources the timestamps are reset to the
+         ;; epoch, which leads to a failure in gzipping the CHANGES file.
+         (add-after 'unpack 'ensure-no-mtimes-pre-1980
+           (lambda _
+             (let ((early-1980 315619200)) ; 1980-01-02 UTC
+               (ftw "." (lambda (file stat flag)
+                          (unless (<= early-1980 (stat:mtime stat))
+                            (utime file early-1980 early-1980))
+                          #t))
+               #t)))
          (add-after 'build 'patch-exec-bin-sh
            (lambda _
              (substitute* "test/run"
@@ -64,10 +77,11 @@
              ;; this user does not exist within Guix's build environment.
              (for-each (lambda (file)
                          (delete-file (string-append "test/" file)))
-                       '("setfacl-X.test" "cp.test" "misc.test"))))
+                       '("setfacl-X.test" "cp.test" "misc.test"))
+             #t))
          (replace 'install
            (lambda _
-             (zero? (system* "make" "install" "install-lib" "install-dev")))))))
+             (invoke "make" "install" "install-lib" "install-dev"))))))
     (inputs `(("attr" ,attr)))
     (native-inputs
      `(("gettext" ,gettext-minimal)

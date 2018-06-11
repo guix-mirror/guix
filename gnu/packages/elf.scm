@@ -56,6 +56,14 @@
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
                                               "/lib"))
+
+       ;; Disable tests on MIPS (without changing
+       ;; the arguments list on other systems).
+       ,@(if (string-prefix? "mips" (or (%current-target-system)
+                                        (%current-system)))
+             '(#:tests? #f)
+             '())
+
        #:phases
        (modify-phases %standard-phases
          ;; No reason has been found for this test to reliably fail on aarch64-linux.
@@ -98,13 +106,12 @@ Executable and Linkable Format (@dfn{ELF}).  This includes @command{ld},
              ;; variables passed as arguments.
              (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
                        ,@(if (string=? "aarch64-linux"
                                        (%current-system))
                              '("--host=aarch64-unknown-linux-gnu")
-                             '())))))))))
+                             '()))))))))
     (home-page "http://www.mr511.de/software/english.html")
     (synopsis "ELF object file access library")
     (description "Libelf is a C library to access ELF object files.")

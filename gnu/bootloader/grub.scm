@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -31,6 +31,7 @@
   #:use-module (gnu system)
   #:use-module (gnu bootloader)
   #:use-module (gnu system uuid)
+  #:use-module (gnu system file-systems)
   #:autoload   (gnu packages bootloaders) (grub)
   #:autoload   (gnu packages compression) (gzip)
   #:autoload   (gnu packages gtk) (guile-cairo guile-rsvg)
@@ -120,25 +121,14 @@ otherwise."
 
 (define* (svg->png svg #:key width height)
   "Build a PNG of HEIGHT x WIDTH from SVG."
-  ;; Note: Guile-RSVG & co. are now built for Guile 2.2, so we use 2.2 here.
-  ;; TODO: Remove #:guile-for-build when 2.2 has become the default.
-  (mlet %store-monad ((guile (package->derivation guile-2.2 #:graft? #f)))
-    (gexp->derivation "grub-image.png"
-                      (with-imported-modules '((gnu build svg))
+  (gexp->derivation "grub-image.png"
+                    (with-imported-modules '((gnu build svg))
+                      (with-extensions (list guile-rsvg guile-cairo)
                         #~(begin
-                            ;; We need these two libraries.
-                            (add-to-load-path (string-append #+guile-rsvg
-                                                             "/share/guile/site/"
-                                                             (effective-version)))
-                            (add-to-load-path (string-append #+guile-cairo
-                                                             "/share/guile/site/"
-                                                             (effective-version)))
-
                             (use-modules (gnu build svg))
                             (svg->png #+svg #$output
                                       #:width #$width
-                                      #:height #$height)))
-                      #:guile-for-build guile)))
+                                      #:height #$height))))))
 
 (define* (grub-background-image config #:key (width 1024) (height 768))
   "Return the GRUB background image defined in CONFIG with a ratio of
@@ -303,9 +293,10 @@ code."
         ((? uuid? uuid)
          (format #f "search --fs-uuid --set ~a"
                  (uuid->string device)))
-        ((? string? label)
-         (format #f "search --label --set ~a" label))
-        (#f
+        ((? file-system-label? label)
+         (format #f "search --label --set ~a"
+                 (file-system-label->string label)))
+        ((or #f (? string?))
          #~(format #f "search --file --set ~a" #$file)))))
 
 (define* (grub-configuration-file config entries

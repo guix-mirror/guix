@@ -88,7 +88,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.20.19")
+    (version "0.20.20")
     (source (origin
               (method url-fetch)
               (uri
@@ -97,7 +97,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "1hsng4mnaz1jr2s3fy3q78vf2f6102lwphjdls7qln0pj8dyzk81"))))
+                "111m4z7zaz60xfxvz5xkxs1al4vzb8g2wwp7kmj65pvww335ir59"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -119,9 +119,10 @@ interfacing MPD in the C, C++ & Objective C languages.")
               ("flac" ,flac)
               ("glib" ,glib)
               ("icu4c" ,icu4c)
+              ;; The LAME decoder comes from FFmpeg, but is added here so that
+              ;; configure picks up the LAME encoder.
               ("lame" ,lame)
               ("libid3tag" ,libid3tag)
-              ("libmad" ,libmad)
               ("libmpdclient" ,libmpdclient)
               ("libsamplerate" ,libsamplerate)
               ("libsndfile" ,libsndfile)
@@ -162,7 +163,7 @@ protocol.")
 (define-public mpd-mpc
   (package
     (name "mpd-mpc")
-    (version "0.29")
+    (version "0.30")
     (source (origin
               (method url-fetch)
               (uri
@@ -171,7 +172,7 @@ protocol.")
                               "/mpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1lxr0z5i5yx4lcvy9nyxj6q32qlz473j3zm6va68zd1cj3ndmw82"))))
+                "1kkzhrypkp0v6xv4d6db415pd0h6jqki29kfpsnfkvrhhh55pz35"))))
     (build-system meson-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)))
     (native-inputs `(("pkg-config" ,pkg-config)))

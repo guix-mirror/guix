@@ -50,7 +50,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.17.9")
+    (version "1.20.1")
     (source(origin
               (method url-fetch)
               (uri
@@ -58,7 +58,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0i7mvvnq7ayhxn1ajci8h7l3cijzwr9d50p58h0rbsh9hf63zblq"))
+                "0qix1whz5n4ijnl6d44f1v8nzkpv99wqjyrby8vx6xnpskw5hsxk"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -79,7 +79,8 @@
                   ;; output directory, not CUPS's prefix.
                   (substitute* "configure"
                     (("\\{CUPS_DATADIR\\}/data")
-                     "{prefix}/share/cups/data"))))))
+                     "{prefix}/share/cups/data"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output))
@@ -197,7 +198,8 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
            (lambda _
              (substitute* "Makedefs.in"
                (("INITDIR.*=.*@INITDIR@") "INITDIR = @prefix@/@INITDIR@")
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          ;; Make the compressed manpages writable so that the
          ;; reset-gzip-timestamps phase does not error out.
          (add-before 'reset-gzip-timestamps 'make-manpages-writable
@@ -205,12 +207,14 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
              (let* ((out (assoc-ref outputs "out"))
                     (man (string-append out "/share/man")))
                (for-each (lambda (file) (chmod file #o644))
-                         (find-files man "\\.gz")))))
+                         (find-files man "\\.gz"))
+               #t)))
          (add-before 'build 'patch-tests
            (lambda _
              (substitute* "test/ippserver.c"
                (("#  else /\\* HAVE_AVAHI \\*/")
-                "#elif defined(HAVE_AVAHI)")))))))
+                "#elif defined(HAVE_AVAHI)"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -248,7 +252,8 @@ device-specific programs to convert and print many types of files.")
            (lambda _
              (substitute* "Makedefs.in"
                (("INITDIR.*=.*@INITDIR@") "INITDIR = @prefix@/@INITDIR@")
-               (("/bin/sh") (which "sh")))))
+               (("/bin/sh") (which "sh")))
+             #t))
          (add-before 'check 'patch-tests
            (lambda _
              (let ((filters (assoc-ref %build-inputs "cups-filters"))
@@ -306,7 +311,8 @@ device-specific programs to convert and print many types of files.")
                  (("cupsFileFind\\(\"cat\", \"/bin\"")
                   (string-append "cupsFileFind(\"cat\", \"" catpath "\""))
                  (("cupsFileFind\\(\"cat\", \"/bin:/usr/bin\"")
-                  (string-append "cupsFileFind(\"cat\", \"" catpath "\""))))))
+                  (string-append "cupsFileFind(\"cat\", \"" catpath "\"")))
+               #t)))
          ;; Make the compressed manpages writable so that the
          ;; reset-gzip-timestamps phase does not error out.
          (add-before 'reset-gzip-timestamps 'make-manpages-writable
@@ -314,7 +320,8 @@ device-specific programs to convert and print many types of files.")
              (let* ((out (assoc-ref outputs "out"))
                     (man (string-append out "/share/man")))
                (for-each (lambda (file) (chmod file #o644))
-                         (find-files man "\\.gz")))))
+                         (find-files man "\\.gz"))
+               #t)))
          (add-after 'install 'install-cups-filters-symlinks
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -360,7 +367,9 @@ device-specific programs to convert and print many types of files.")
                (let ((data "/share/cups/data"))
                  (delete-file-recursively (string-append out data))
                  (symlink (string-append cups-filters data)
-                          (string-append out data)))))))))
+                          (string-append out data)))
+
+               #t))))))
     (inputs
      `(("avahi" ,avahi)
        ("gnutls" ,gnutls)
@@ -381,8 +390,10 @@ device-specific programs to convert and print many types of files.")
               (modules '((guix build utils)))
               (snippet
                ;; Fix type mismatch.
-               '(substitute* "prnt/hpcups/genPCLm.cpp"
-                  (("boolean") "bool")))))
+               '(begin
+                  (substitute* "prnt/hpcups/genPCLm.cpp"
+                    (("boolean") "bool"))
+                  #t))))
     (build-system gnu-build-system)
     (home-page "http://hplipopensource.com/")
     (synopsis "HP Printer Drivers")

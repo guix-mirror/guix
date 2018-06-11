@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -18,6 +18,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +57,7 @@
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -133,7 +135,7 @@ tools have full access to view and control running applications.")
     `(("ghostscript" ,ghostscript)
       ("libspectre" ,libspectre)
       ("poppler" ,poppler)
-      ("xextproto" ,xextproto)
+      ("xorgproto" ,xorgproto)
       ("zlib" ,zlib)))
    (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -176,7 +178,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.7.3")
+   (version "1.7.6")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -184,7 +186,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1zh5n3q3mb6y6kr5m7zz1ags9z1vjwai57d6warx8qhzfrwn8lyd"))))
+               "16rf7qwgy1gza74v2ws79zdwwb1lpvgz2abwwm8ws9j82cwysyys"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -198,7 +200,8 @@ affine transformation (scale, rotation, shear, etc.).")
    (native-inputs
     `(("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
-      ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
+      ("python" ,python-wrapper)
+      ("which" ,which)))
    (arguments
     `(#:configure-flags `("--with-graphite2"
                           "--with-gobject"
@@ -214,7 +217,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.40.14")
+   (version "1.42.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -222,13 +225,18 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1qqpd8x1pl483ynj3mc5q4n8y2pxqhg2bv19vd94r7mzlzm1pbwh"))))
+              "0illn78nfwpa8y5knh9ir74wa1skc2hi8f3ny19zgpyf7n5dh94r"))))
    (build-system gnu-build-system)
    (propagated-inputs
+    ;; These are all in Requires or Requires.private of the '.pc' files.
     `(("cairo" ,cairo)
+      ("fontconfig" ,fontconfig)
+      ("freetype" ,freetype)
+      ("glib" ,glib)
       ("harfbuzz" ,harfbuzz)))
    (inputs
-    `(("zlib" ,zlib)
+    `(("fribidi" ,fribidi)
+      ("zlib" ,zlib)
 
       ;; Some packages, such as Openbox, expect Pango to be built with the
       ;; optional libxft support.
@@ -507,8 +515,10 @@ in the GNOME project.")
                       (find-files librsvg "^libpixbufloader-.*\\.so$")))
                     (gdk-pixbuf-query-loaders
                      (string-append out "/bin/gdk-pixbuf-query-loaders")))
-               (zero? (apply system* `(,gdk-pixbuf-query-loaders
-                                       "--update-cache" ,@loaders)))))))))
+               (apply invoke
+                      gdk-pixbuf-query-loaders
+                      "--update-cache"
+                      loaders)))))))
     (synopsis
      "GNOME image loading and manipulation library, with SVG support")))
 
@@ -538,7 +548,7 @@ in the GNOME project.")
                  (lambda _
                    ;; Don't fail on missing  '/etc/machine-id'.
                    (setenv "DBUS_FATAL_WARNINGS" "0")
-                   (zero? (system* "dbus-launch" "make" "check")))))))
+                   (invoke "dbus-launch" "make" "check"))))))
    (propagated-inputs
     ;; atspi-2.pc refers to all these.
     `(("dbus" ,dbus)
@@ -577,7 +587,7 @@ is part of the GNOME accessibility project.")
                  ;; Run test-suite under a dbus session.
                  (lambda _
                    (setenv "DBUS_FATAL_WARNINGS" "0")
-                   (zero? (system* "dbus-launch" "make" "check")))))))
+                   (invoke "dbus-launch" "make" "check"))))))
    (propagated-inputs
     `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
    (inputs
@@ -640,7 +650,8 @@ is part of the GNOME accessibility project.")
        (lambda _
          ;; FIXME: re-enable tests requiring an X server
          (substitute* "gtk/Makefile.in"
-           (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits .")))
+           (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits ."))
+         #t)
        %standard-phases)))
    (native-search-paths
     (list (search-path-specification
@@ -839,16 +850,18 @@ exceptions, macros, and a dynamic programming environment.")
                 (patches (search-patches "guile-rsvg-pkgconfig.patch"))
                 (modules '((guix build utils)))
                 (snippet
-                 '(substitute* (find-files "." "Makefile\\.am")
-                    (("/share/guile/site")
-                     "/share/guile/site/@GUILE_EFFECTIVE_VERSION@")))
+                 '(begin
+                    (substitute* (find-files "." "Makefile\\.am")
+                      (("/share/guile/site")
+                       "/share/guile/site/@GUILE_EFFECTIVE_VERSION@"))
+                    #t))
                 (file-name (string-append name "-" version ".tar.gz"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
+                    (replace 'bootstrap
                       (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))))
+                        (invoke "autoreconf" "-vfi"))))))
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,autoconf)
                        ("automake" ,automake)
@@ -879,9 +892,11 @@ images onto Cairo surfaces.")
               (patches (search-patches "guile-present-coding.patch"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile.in"
-                  (("godir = .*$")
-                   "godir = $(moddir)\n")))))
+               '(begin
+                  (substitute* "Makefile.in"
+                    (("godir = .*$")
+                     "godir = $(moddir)\n"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1158,32 +1173,22 @@ printing and other features typical of a source code editor.")
 (define-public python-pycairo
   (package
     (name "python-pycairo")
-    (version "1.10.0")
+    (version "1.16.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://cairographics.org/releases/pycairo-"
-                          version ".tar.bz2"))
+      (uri (string-append "https://github.com/pygobject/pycairo/releases/download/v"
+                          version "/pycairo-" version ".tar.gz"))
       (sha256
        (base32
-        "1gjkf8x6hyx1skq3hhwcbvwifxvrf9qxis5vx8x5igmmgs70g94s"))
-      (patches (search-patches "pycairo-wscript.patch"))))
-    (build-system waf-build-system)
+        "1xq1bwhyi5imca5kvd28szh2rdzi8g0kaspwaqgsbczqskjj3csv"))))
+    (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python-waf" ,python-waf)))
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs                  ;pycairo.pc references cairo
      `(("cairo" ,cairo)))
-    (arguments
-     `(#:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before
-          'configure 'patch-waf
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; The bundled `waf' doesn't work with python-3.4.x.
-            (copy-file (assoc-ref %build-inputs "python-waf") "./waf"))))))
-    (home-page "http://cairographics.org/pycairo/")
+    (home-page "https://cairographics.org/pycairo/")
     (synopsis "Python bindings for cairo")
     (description
      "Pycairo is a set of Python bindings for the Cairo graphics library.")
@@ -1191,26 +1196,15 @@ printing and other features typical of a source code editor.")
     (properties `((python2-variant . ,(delay python2-pycairo))))))
 
 (define-public python2-pycairo
-  (package (inherit (strip-python2-variant python-pycairo))
-    (name "python2-pycairo")
-    (version "1.10.0")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "http://cairographics.org/releases/py2cairo-"
-                          version ".tar.bz2"))
-      (sha256
-       (base32
-        "0cblk919wh6w0pgb45zf48xwxykfif16qk264yga7h9fdkq3j16k"))))
-    (arguments
-     `(#:python ,python-2
-       ,@(substitute-keyword-arguments (package-arguments python-pycairo)
-           ((#:phases phases)
-            `(modify-phases ,phases (delete 'patch-waf)))
-           ((#:native-inputs native-inputs)
-            `(alist-delete "python-waf" ,native-inputs)))))
-    ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
-    (license (list license:lgpl2.1 license:mpl1.1))))
+  (let ((pycairo (package-with-python2
+                  (strip-python2-variant python-pycairo))))
+    (package
+      (inherit pycairo)
+      (propagated-inputs
+       `(("python2-funcsigs" ,python2-funcsigs)
+         ,@(package-propagated-inputs pycairo)))
+      ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
+      (license (list license:lgpl2.1 license:mpl1.1)))))
 
 (define-public python2-pygtk
   (package

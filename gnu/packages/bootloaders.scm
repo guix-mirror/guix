@@ -33,6 +33,7 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages firmware)
@@ -49,6 +50,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web)
@@ -338,7 +340,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2018.01")
+    (version "2018.05")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -346,11 +348,15 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "1nidnnjprgxdhiiz7gmaj8cgcf52l5gbv64cmzjq4gmkjirmk3wk"))))
+                "0j60p4iskzb4hamxgykc6gd7xchxfka1zwh8hv08r9rrc4m3r8ad"))))
     (native-inputs
      `(("bc" ,bc)
-       ;("dtc" ,dtc) ; they have their own incompatible copy.
+       ("dtc" ,dtc)
+       ("openssl" ,openssl)
        ("python-2" ,python-2)
+       ("python2-coverage" ,python2-coverage)
+       ("python2-pytest" ,python2-pytest)
+       ("sdl" ,sdl)
        ("swig" ,swig)))
     (build-system  gnu-build-system)
     (home-page "http://www.denx.de/wiki/U-Boot/")
@@ -358,6 +364,80 @@ tree binary files.  These are board description files used by Linux and BSD.")
     (description "U-Boot is a bootloader used mostly for ARM boards. It
 also initializes the boards (RAM etc).")
     (license license:gpl2+)))
+
+(define-public u-boot-tools
+  (package
+    (inherit u-boot)
+    (name "u-boot-tools")
+    (arguments
+     `(#:make-flags '("HOSTCC=gcc")
+       #:test-target "tests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makefile"
+              (("/bin/pwd") (which "pwd"))
+              (("/bin/false") (which "false")))
+             (substitute* "tools/dtoc/fdt_util.py"
+              (("'cc'") "'gcc'"))
+             (substitute* "test/run"
+              ;; Make it easier to find test failures.
+              (("#!/bin/bash") "#!/bin/bash -x")
+              ;; pytest doesn't find it otherwise.
+              (("test/py/tests/test_ofplatdata.py")
+               "tests/test_ofplatdata.py")
+              ;; This test would require git.
+              (("\\./tools/patman/patman") (which "true"))
+              ;; This test would require internet access.
+              (("\\./tools/buildman/buildman") (which "true")))
+             (substitute* "test/py/tests/test_sandbox_exit.py"
+              (("def test_ctrl_c")
+               "@pytest.mark.skip(reason='Guix has problems with SIGINT')
+def test_ctrl_c"))
+             (substitute* "tools/binman/binman.py"
+              (("100%") "99%")) ; TODO: Find out why that is needed.
+             #t))
+         (replace 'configure
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (call-with-output-file "configs/tools_defconfig"
+               (lambda (port)
+                 (display "CONFIG_SYS_TEXT_BASE=0\n" port)))
+             (apply invoke "make" "tools_defconfig" make-flags)))
+         (replace 'build
+           (lambda* (#:key inputs make-flags #:allow-other-keys)
+             (apply invoke "make" "tools-only" make-flags)
+             (apply invoke "make" "envtools" make-flags)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (name)
+                           (install-file name bin))
+                         '("tools/netconsole"
+                           "tools/jtagconsole"
+                           "tools/gen_eth_addr"
+                           "tools/gen_ethaddr_crc"
+                           "tools/img2srec"
+                           "tools/mkenvimage"
+                           "tools/dumpimage"
+                           "tools/mkimage"
+                           "tools/proftool"
+                           "tools/fdtgrep"
+                           "tools/env/fw_printenv"))
+               #t)))
+           (delete 'check)
+           (add-after 'install 'check
+             (lambda* (#:key make-flags test-target #:allow-other-keys)
+               (apply invoke "make" "mrproper" make-flags)
+               (setenv "SDL_VIDEODRIVER" "dummy")
+               (setenv "PAGER" "cat")
+               (apply invoke "make" test-target make-flags)
+               (symlink "build-sandbox_spl" "sandbox")
+               (invoke "test/image/test-imagetools.sh"))))))
+    (description "U-Boot is a bootloader used mostly for ARM boards.  It
+also initializes the boards (RAM etc).  This package provides its
+board-independent tools.")))
 
 (define (make-u-boot-package board triplet)
   "Returns a u-boot package for BOARD cross-compiled for TRIPLET."
@@ -392,25 +472,29 @@ also initializes the boards (RAM etc).")
                  (if (file-exists? (string-append "configs/" config-name))
                      (zero? (apply system* "make" `(,@make-flags ,config-name)))
                      (begin
-                       (display "Invalid board name. Valid board names are:")
-                       (let ((suffix-len (string-length "_defconfig")))
-                         (scandir "configs"
-                                  (lambda (file-name)
-                                    (when (string-suffix? "_defconfig" file-name)
-                                      (format #t
-                                              "- ~A\n"
-                                              (string-drop-right file-name
-                                                                 suffix-len))))))
+                       (display "Invalid board name. Valid board names are:"
+                                (current-error-port))
+                       (let ((suffix-len (string-length "_defconfig"))
+                             (entries (scandir "configs")))
+                         (for-each (lambda (file-name)
+                                     (when (string-suffix? "_defconfig" file-name)
+                                       (format (current-error-port)
+                                               "- ~A\n"
+                                               (string-drop-right file-name
+                                                                  suffix-len))))
+                                   (sort entries string-ci<)))
                        #f)))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
-                                    (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb)$")
+                                    (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb|rksd)$")
                                     (find-files "." "^(MLO|SPL)$"))))
                  (mkdir-p libexec)
                  (install-file ".config" libexec)
+                 ;; Useful for "qemu -kernel".
+                 (install-file "u-boot" libexec)
                  (for-each
                   (lambda (file)
                     (let ((target-file (string-append libexec "/" file)))
@@ -440,9 +524,10 @@ also initializes the boards (RAM etc).")
                   (let ((bl31 (string-append (assoc-ref inputs "firmware")
                                              "/bl31.bin")))
                     (setenv "BL31" bl31)
-                    ;; This is necessary while we're using the bundled dtc.
-                    (setenv "PATH" (string-append (getenv "PATH") ":"
-                                                  "scripts/dtc")))
+                    ;; This is necessary when we're using the bundled dtc.
+                    ;(setenv "PATH" (string-append (getenv "PATH") ":"
+                    ;                              "scripts/dtc"))
+                    )
                   #t))))))
       (native-inputs
        `(("firmware" ,arm-trusted-firmware-pine64-plus)
@@ -468,6 +553,43 @@ also initializes the boards (RAM etc).")
 
 (define-public u-boot-mx6cuboxi
   (make-u-boot-package "mx6cuboxi" "arm-linux-gnueabihf"))
+
+(define-public u-boot-novena
+  (make-u-boot-package "novena" "arm-linux-gnueabihf"))
+
+(define-public u-boot-cubieboard
+  (make-u-boot-package "Cubieboard" "arm-linux-gnueabihf"))
+
+(define-public u-boot-puma-rk3399
+  (let ((base (make-u-boot-package "puma-rk3399" "aarch64-linux-gnu")))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'set-environment
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Need to copy the firmware into u-boot build
+                 ;; directory.
+                 (copy-file (string-append (assoc-ref inputs "firmware")
+                                           "/bl31.bin") "bl31-rk3399.bin")
+                 (copy-file (string-append (assoc-ref inputs "firmware-m0")
+                                           "/rk3399m0.bin") "rk3399m0.bin")
+                 #t))
+             (add-after 'build 'build-itb
+               (lambda* (#:key make-flags #:allow-other-keys)
+                 ;; The u-boot.itb is not built by default.
+                 (apply invoke "make" `(,@make-flags ,"u-boot.itb"))))
+             (add-after 'build-itb 'build-rksd
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Build Rockchip SD card images.
+                 (invoke "./tools/mkimage" "-T" "rksd" "-n" "rk3399" "-d"
+                         "spl/u-boot-spl.bin" "u-boot-spl.rksd")))))))
+      (native-inputs
+       `(("firmware" ,arm-trusted-firmware-puma-rk3399)
+         ("firmware-m0" ,rk3399-cortex-m0)
+         ,@(package-native-inputs base))))))
 
 (define-public vboot-utils
   (package

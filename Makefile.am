@@ -96,6 +96,7 @@ MODULES =					\
   guix/workers.scm				\
   guix/zlib.scm					\
   guix/build-system.scm				\
+  guix/build-system/android-ndk.scm		\
   guix/build-system/ant.scm			\
   guix/build-system/cargo.scm			\
   guix/build-system/cmake.scm			\
@@ -128,6 +129,7 @@ MODULES =					\
   guix/svn-download.scm				\
   guix/i18n.scm					\
   guix/ui.scm					\
+  guix/build/android-ndk-build-system.scm	\
   guix/build/ant-build-system.scm		\
   guix/build/download.scm			\
   guix/build/download-nar.scm			\
@@ -255,15 +257,27 @@ MODULES +=					\
 
 endif BUILD_DAEMON_OFFLOAD
 
+# Scheme implementation of the build daemon and related functionality.
+STORE_MODULES =					\
+  guix/store/database.scm			\
+  guix/store/deduplication.scm
+
+if HAVE_GUILE_SQLITE3
+MODULES += $(STORE_MODULES)
+else
+MODULES_NOT_COMPILED += $(STORE_MODULES)
+endif !HAVE_GUILE_SQLITE3
+
 # Internal modules with test suite support.
 dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/4.16-arm.conf	\
-  gnu/packages/aux-files/linux-libre/4.16-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.16-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.17-arm.conf	\
+  gnu/packages/aux-files/linux-libre/4.17-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/4.17-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.17-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.14-arm.conf	\
   gnu/packages/aux-files/linux-libre/4.14-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.14-x86_64.conf	\
@@ -272,7 +286,8 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/4.4-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.4-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.1-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.1-x86_64.conf
+  gnu/packages/aux-files/linux-libre/4.1-x86_64.conf	\
+  gnu/packages/aux-files/run-in-namespace.c
 
 # Templates, examples.
 EXAMPLES =					\
@@ -372,6 +387,14 @@ SCM_TESTS += 					\
   tests/cpan.scm				\
   tests/gem.scm					\
   tests/crate.scm
+
+endif
+
+if HAVE_GUILE_SQLITE3
+
+SCM_TESTS +=					\
+  tests/store-database.scm			\
+  tests/store-deduplication.scm
 
 endif
 

@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -31,14 +31,15 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
-  #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -59,7 +60,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "2.26")
+    (version "2.26.3")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -67,7 +68,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "11kckzwk3b734l0n4j41k40liq1v2lbbj1gzir5qc386g7fvzmmi"))))
+                "08aagymgajcvciagwy2zdxhicvdfnjmd2xyx9bqjy7l1n16ydwrz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -231,43 +232,36 @@ it and customize it for your needs.")
 (define-public viewnior
   (package
     (name "viewnior")
-    (version "1.6")
+    (version "1.7")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://github.com/xsisqox/Viewnior/archive/"
+        (uri (string-append "https://github.com/hellosiyan/Viewnior/archive/"
                             name "-" version ".tar.gz"))
         (sha256
          (base32
-          "18309qjgwak3kn228z3p3nx7yxasqgzx69v3rgc23hf161nky0c9"))))
-    (build-system gnu-build-system)
+          "1rpkk721s3xas125q3g0fl11b5zsrmzv9pzl6ddzcy4sj2rd7ymr"))))
+    (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (zero? (system* "sh" "autogen.sh"))))
-         (add-before 'install 'skip-gtk-update-icon-cache
+         (add-after 'unpack 'patch-source
            (lambda _
              ;; Don't create 'icon-theme.cache'
-             (substitute* (find-files "data" "^Makefile$")
-               (("gtk-update-icon-cache") (which "true")))
-             #t)))))
+             (substitute* "meson.build"
+               (("meson.add_install_script*") ""))
+             #t)))
+       #:tests? #f)) ; no tests
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)
-       ("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
        ("glib" ,glib "bin") ; glib-genmarshal
-       ("gnome-common" ,gnome-common)
-       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
-       ("shared-mime-info" ,shared-mime-info)
-       ("which" ,which)))
+       ("shared-mime-info" ,shared-mime-info)))
     (inputs
      `(("exiv2" ,exiv2)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gtk+-2" ,gtk+-2)))
-    (home-page "http://siyanpanayotov.com/project/viewnior/")
+    (home-page "http://siyanpanayotov.com/project/viewnior")
     (synopsis "Simple, fast and elegant image viewer")
     (description "Viewnior is an image viewer program.  Created to be simple,
 fast and elegant.  Its minimalistic interface provides more screenspace for

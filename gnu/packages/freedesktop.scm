@@ -3,13 +3,13 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@pobox.com>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -38,6 +38,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
@@ -81,7 +82,7 @@
 (define-public xdg-utils
   (package
     (name "xdg-utils")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -90,7 +91,7 @@
                  version ".tar.gz"))
           (sha256
             (base32
-             "1k4b4m3aiyqn9k12a0ihcdahzlspl3zhskmm1d7228dvqvi546cm"))))
+             "1nai806smz3zcb2l5iny4x7li0fak0rzmjg6vlyhdqm8z25b166p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)
@@ -236,6 +237,7 @@ the freedesktop.org XDG Base Directory specification.")
               (sha256
                (base32
                 "1qcxian48z2dj5gfmp7brrngdydqf2jm00f4rjr5sy1myh8fy931"))
+              (patches (search-patches "elogind-glibc-2.27.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -243,7 +245,8 @@ the freedesktop.org XDG Base Directory specification.")
                   (substitute* "Makefile.am"
                     ;; Avoid validation against DTD because the DTDs for
                     ;; both doctype 4.2 and 4.5 are needed.
-                    (("XSLTPROC_FLAGS = ") "XSLTPROC_FLAGS = --novalid"))))))
+                    (("XSLTPROC_FLAGS = ") "XSLTPROC_FLAGS = --novalid"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;FIXME: "make check" in the "po" directory fails.
@@ -274,11 +277,12 @@ the freedesktop.org XDG Base Directory specification.")
              ;; Fix compilation with glibc >= 2.26, which removed xlocale.h.
              ;; This can be removed for elogind 234.
              (substitute* "src/basic/parse-util.c"
-               (("xlocale\\.h") "locale.h"))))
-         (add-before 'configure 'autogen
+               (("xlocale\\.h") "locale.h"))
+             #t))
+         (replace 'bootstrap
            (lambda _
-             (and (zero? (system* "intltoolize" "--force" "--automake"))
-                  (zero? (system* "autoreconf" "-vif")))))
+             (invoke "intltoolize" "--force" "--automake")
+             (invoke "autoreconf" "-vif")))
          (add-before 'build 'fix-service-file
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Fix the file name of the 'elogind' binary in the D-Bus
@@ -286,7 +290,8 @@ the freedesktop.org XDG Base Directory specification.")
              (substitute* "src/login/org.freedesktop.login1.service"
                (("^Exec=.*")
                 (string-append "Exec=" (assoc-ref %outputs "out")
-                               "/libexec/elogind/elogind\n")))))
+                               "/libexec/elogind/elogind\n")))
+             #t))
          (add-after 'install 'add-libcap-to-search-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Add a missing '-L' for libcap in libelogind.la.  See
@@ -414,10 +419,11 @@ manager for the current system.")
              ;; AssertionError: 'x-apple-ios-png' != 'png'
              (substitute* "test/test-mime.py"
                (("self.check_mimetype\\(imgpng, 'image', 'png'\\)") "#"))
-             (zero? (system* "nosetests" "-v")))))))
+             (invoke "nosetests" "-v"))))))
     (native-inputs
-     `(("shared-mime-info" ,shared-mime-info) ;for tests
-       ("hicolor-icon-theme" ,hicolor-icon-theme) ;for tests
+     ;; For tests.
+     `(("shared-mime-info" ,shared-mime-info)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("python-nose" ,python-nose)))
     (home-page "https://www.freedesktop.org/wiki/Software/pyxdg")
     (synopsis "Implementations of freedesktop.org standards in Python")
@@ -490,7 +496,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public weston
   (package
     (name "weston")
-    (version "3.0.0")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -498,7 +504,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "weston-" version ".tar.xz"))
               (sha256
                (base32
-                "19936zlkb75xcaidd8fag4ah8000wrh2ziqy7nxkq36pimgdbqfd"))))
+                "0n2big8xw6g6n46zm1jyf00dv9r4d84visdz5b8vxpw3xzkhmz50"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -524,6 +530,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
              (string-append "--with-xserver-path="
                             (assoc-ref %build-inputs "xorg-server-xwayland")
                             "/bin/Xwayland"))
+       #:parallel-tests? #f ; Parallel tests cause failures.
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'use-elogind
@@ -792,7 +799,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.14.2")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -800,8 +807,10 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0h009bzss4bal47nk21lyp4s3mmlcivhhaaj7r9229qvx85bi0v2"))))
+                "1d3fca477sdwbv4bsq1cl98qc8sixrzp0gqjcmjj8mlwfk9qqhi1"))))
     (build-system gnu-build-system)
+    (inputs
+     `(("libgudev" ,libgudev)))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("pkg-config" ,pkg-config)
@@ -833,7 +842,11 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
-       `(,(string-append "--with-udev-base-dir=" %output "/lib/udev"))))
+       `(,(string-append "--with-udev-base-dir=" %output "/lib/udev")
+         ;; FIXME: Without this flag the build fails with "error: assignment
+         ;; from incompatible pointer type" whenever the return value of
+         ;; "g_object_ref" is assigned to "ctx->self".
+         "--disable-more-warnings")))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -112,7 +112,8 @@ reliability in mind.")
                   ;; This is free software, avoid any confusion.
                   (substitute* (find-files "." "\\.c$")
                     (("a freeware program")
-                     "free software"))))))
+                     "free software"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -156,11 +157,6 @@ FTP browser, as well as non-interactive commands such as 'ncftpput' and
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
        ("gettext" ,gettext-minimal)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
     (home-page "http://weex.sourceforge.net/")
     (synopsis "Non-interactive client for FTP synchronization")
     (description
@@ -173,7 +169,7 @@ as required.")
 (define-public libfilezilla
   (package
     (name "libfilezilla")
-    (version "0.12.1")
+    (version "0.12.3")
     (source
      (origin
        (method url-fetch)
@@ -181,7 +177,7 @@ as required.")
                            name "/" name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "1gbqm42dd0m3fvqz3bk53889479dvn8679zp6ba8a9q2br2wkvv0"))))
+         "1v606kcz2rdmmlwxrv3xvwh7ia1nh6jfc9bhjw2r4ai3rm16gch5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)

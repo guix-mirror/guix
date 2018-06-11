@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +35,7 @@
 
             elf-dynamic-info
             elf-dynamic-info?
-            elf-dynamic-info-sopath
+            elf-dynamic-info-soname
             elf-dynamic-info-needed
             elf-dynamic-info-rpath
             elf-dynamic-info-runpath

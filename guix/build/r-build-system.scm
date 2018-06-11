@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,7 @@
   #:use-module (ice-9 popen)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-35)
   #:export (%standard-phases
             r-build))
 
@@ -34,12 +35,19 @@
 ;; Code:
 
 (define (invoke-r command params)
-  (zero? (apply system* "R" "CMD" command params)))
+  (apply invoke "R" "CMD" command params))
 
 (define (pipe-to-r command params)
   (let ((port (apply open-pipe* OPEN_WRITE "R" params)))
     (display command port)
-    (zero? (status:exit-val (close-pipe port)))))
+    (let ((code (status:exit-val (close-pipe port))))
+      (unless (zero? code)
+        (raise (condition ((@@ (guix build utils) &invoke-error)
+                           (program "R")
+                           (arguments (string-append params " " command))
+                           (exit-status (status:exit-val code))
+                           (term-signal (status:term-sig code))
+                           (stop-signal (status:stop-sig code)))))))))
 
 (define (generate-site-path inputs)
   (string-join (map (match-lambda
@@ -68,13 +76,12 @@
          (pkg-name  (car (scandir libdir (negate (cut member <> '("." ".."))))))
          (testdir   (string-append libdir pkg-name "/" test-target))
          (site-path (string-append libdir ":" (generate-site-path inputs))))
-    (if (and tests? (file-exists? testdir))
-        (begin
-          (setenv "R_LIBS_SITE" site-path)
-          (pipe-to-r (string-append "tools::testInstalledPackage(\"" pkg-name "\", "
-                                    "lib.loc = \"" libdir "\")")
-                     '("--no-save" "--slave")))
-        #t)))
+    (when (and tests? (file-exists? testdir))
+      (setenv "R_LIBS_SITE" site-path)
+      (pipe-to-r (string-append "tools::testInstalledPackage(\"" pkg-name "\", "
+                                "lib.loc = \"" libdir "\")")
+                 '("--no-save" "--slave")))
+    #t))
 
 (define* (install #:key outputs inputs (configure-flags '())
                   #:allow-other-keys)
@@ -99,6 +106,7 @@
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (delete 'configure)
     (delete 'build)
     (delete 'check) ; tests must be run after installation

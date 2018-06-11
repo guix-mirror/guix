@@ -55,7 +55,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module ((srfi srfi-1) #:hide (zip)))
 
 (define-public glu
   (package
@@ -105,7 +106,7 @@ as ASCII text.")
               ("libxi" ,libxi)
               ("libxrandr" ,libxrandr)
               ("libxxf86vm" ,libxxf86vm)
-              ("inputproto" ,inputproto)
+              ("xorgproto" ,xorgproto)
               ("xinput" ,xinput)))
     (propagated-inputs
      ;; Headers from Mesa and GLU are needed.
@@ -211,7 +212,8 @@ also known as DXTn or DXTC) for Mesa.")
     (package
       (inherit libva)
       (name "libva-without-mesa")
-      (inputs (alist-delete "mesa" (package-inputs libva)))
+      (inputs `(,@(fold alist-delete (package-inputs libva)
+                        '("mesa" "wayland"))))
       (arguments
        (strip-keyword-arguments
         '(#:make-flags)
@@ -239,19 +241,17 @@ also known as DXTn or DXTC) for Mesa.")
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("glproto" ,glproto)
-        ;; The following are in the Requires.private field of gl.pc.
+      `(;; The following are in the Requires.private field of gl.pc.
         ("libdrm" ,libdrm)
         ("libvdpau" ,libvdpau)
         ("libx11" ,libx11)
         ("libxdamage" ,libxdamage)
         ("libxfixes" ,libxfixes)
         ("libxshmfence" ,libxshmfence)
-        ("libxxf86vm" ,libxxf86vm)))
+        ("libxxf86vm" ,libxxf86vm)
+        ("xorgproto" ,xorgproto)))
     (inputs
       `(("expat" ,expat)
-        ("dri2proto" ,dri2proto)
-        ("dri3proto" ,dri3proto)
         ("libelf" ,libelf)    ;required for r600 when using llvm
         ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
@@ -263,7 +263,6 @@ also known as DXTn or DXTC) for Mesa.")
             (_
              `()))
         ("makedepend" ,makedepend)
-        ("presentproto" ,presentproto)
         ("wayland" ,wayland)
         ("wayland-protocols" ,wayland-protocols)))
     (native-inputs
@@ -409,10 +408,11 @@ from software emulation to complete hardware acceleration for modern GPUs.")
          (delete 'build)
          (delete 'check)
          (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (copy-recursively "include" (string-append
-                                                 (assoc-ref outputs "out")
-                                                 "/include")))))))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (copy-recursively "include" (string-append
+                                          (assoc-ref outputs "out")
+                                          "/include"))
+             #t)))))))
 
 ;;; The mesa-demos distribution contains non-free files, many files with no
 ;;; clear license information, and many demos that aren't useful for most
@@ -449,7 +449,8 @@ from software emulation to complete hardware acceleration for modern GPUs.")
                (lambda (file)
                  (copy-file file (string-append out "/bin/" (basename file))))
                '("src/xdemos/glxdemo" "src/xdemos/glxgears"
-                 "src/xdemos/glxinfo" "src/xdemos/glxheads"))))))))
+                 "src/xdemos/glxinfo" "src/xdemos/glxheads"))
+              #t))))))
     (home-page "http://mesa3d.org/")
     (synopsis "Utility tools for Mesa")
     (description
@@ -471,9 +472,11 @@ glxgears, glxheads, and glxinfo.")
                 "0r37fg2s1f0jrvwh6c8cz5x6v4wqmhq42qm15cs9qs349q5c6wn5"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "config/Makefile.linux"
-                  (("= cc") "= gcc")
-                  (("/lib64") "/lib")))))
+               '(begin
+                  (substitute* "config/Makefile.linux"
+                    (("= cc") "= gcc")
+                    (("/lib64") "/lib"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))

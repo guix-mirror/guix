@@ -189,8 +189,10 @@ interface to the Tk widget system.")
        (modules '((guix build utils)))
        (snippet
         ;; Add ecl-bundle-systems to 'default-system-source-registry'.
-        `(substitute* "contrib/asdf/asdf.lisp"
-           ,@(asdf-substitutions name)))))
+        `(begin
+           (substitute* "contrib/asdf/asdf.lisp"
+             ,@(asdf-substitutions name))
+           #t))))
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
     (native-inputs `(("which" ,which)))
@@ -313,8 +315,10 @@ an interpreter, a compiler, a debugger, and much more.")
        (modules '((guix build utils)))
        (snippet
         ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
-        `(substitute* "contrib/asdf/asdf.lisp"
-           ,@(asdf-substitutions name)))))
+        `(begin
+           (substitute* "contrib/asdf/asdf.lisp"
+             ,@(asdf-substitutions name))
+           #t))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     ;; Bootstrap with CLISP.
@@ -607,10 +611,11 @@ The core is 12 builtin special forms and 33 builtin functions.")
        (snippet
         '(begin
            (substitute* "src/unix.c"
-               (("\\{ \"LUSH_DATE\", __DATE__ \\},") "")
-               (("\\{ \"LUSH_TIME\", __TIME__ \\},") ""))
-             (substitute* "src/main.c"
-               (("\" \\(built \" __DATE__ \"\\)\"") ""))))
+             (("\\{ \"LUSH_DATE\", __DATE__ \\},") "")
+             (("\\{ \"LUSH_TIME\", __TIME__ \\},") ""))
+           (substitute* "src/main.c"
+             (("\" \\(built \" __DATE__ \"\\)\"") ""))
+           #t))
        (sha256
         (base32
          "02pkfn3nqdkm9fm44911dbcz0v3r0l53vygj8xigl6id5g3iwi4k"))))
@@ -909,7 +914,8 @@ ANSI-compliant Common Lisp implementations.")
              (delete-file-recursively "demo")
              (delete-file "test/trapezoid.lisp")
              (substitute* "clx.asd"
-               (("\\(:file \"trapezoid\"\\)") ""))))))
+               (("\\(:file \"trapezoid\"\\)") ""))
+             #t))))
       (build-system asdf-build-system/sbcl)
       (home-page "http://www.cliki.net/portable-clx")
       (synopsis "X11 client library for Common Lisp")
@@ -1037,12 +1043,12 @@ productive, customizable lisp based systems.")
              (rename-file "contrib" "slynk/contrib")
              ;; Move slynk's contents into the base directory for easier
              ;; access
-             (for-each
-              (lambda (file)
-                (unless (string-prefix? "." file)
-                  (rename-file (string-append "slynk/" file)
-                               (string-append "./" (basename file)))))
-              (scandir "slynk"))))))
+             (for-each (lambda (file)
+                         (unless (string-prefix? "." file)
+                           (rename-file (string-append "slynk/" file)
+                                        (string-append "./" (basename file)))))
+                       (scandir "slynk"))
+             #t))))
       (build-system asdf-build-system/sbcl)
       (arguments
        `(#:tests? #f ; No test suite
@@ -1214,7 +1220,8 @@ multiple inspectors with independent history.")
                          (assoc-ref %outputs "image")
                          "/bin/slynk")
                         %outputs
-                        #:dependencies ',slynk-systems)))))))
+                        #:dependencies ',slynk-systems))
+         #t)))))
 
 (define-public ecl-slynk
   (package
@@ -1236,7 +1243,8 @@ multiple inspectors with independent history.")
          (match %build-inputs
            (((names . paths) ...)
             (union-build (assoc-ref %outputs "out")
-                         paths))))))))
+                         paths)
+            #t)))))))
 
 (define-public sbcl-stumpwm+slynk
   (package

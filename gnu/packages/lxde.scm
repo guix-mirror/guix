@@ -48,7 +48,7 @@
 (define-public libfm
   (package
     (name "libfm")
-    (version "1.3.0")
+    (version "1.3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcmanfm/"
@@ -56,7 +56,7 @@
                                   "%29/LibFM/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "151jyy8ipmp2h829gd9s4s429qafv1zxl7j6zaj1k1gzm9s5rmnb"))))
+                "0wkwbi1nyvqza3r1dhrq846axiiq0fy0dqgngnagh76fjrwnzl0q"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("gtk+" ,gtk+-2)))
@@ -363,7 +363,8 @@ in LXDE.")
                    (and (string-suffix? ".c" file)
                         (file-exists? (c->vala file))))))
            (for-each delete-file
-                     (find-files "." generated-c-file?))))))
+                     (find-files "." generated-c-file?))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -447,7 +448,7 @@ in LXDE.")
     (version (package-version lxde-common))
     (source #f)
     (build-system trivial-build-system)
-    (arguments '(#:builder (mkdir %output)))
+    (arguments '(#:builder (begin (mkdir %output) #t)))
     (propagated-inputs
      ;; TODO:
      ;; lxshortcut, lxsession-edit

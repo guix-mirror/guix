@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +19,7 @@
 (define-module (guix man-db)
   #:use-module (guix zlib)
   #:use-module ((guix build utils) #:select (find-files))
+  #:use-module (gdbm)                             ;gdbm-ffi
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -43,9 +44,6 @@
 ;;; produce deterministic output.  See <https://bugs.gnu.org/29654>.
 ;;;
 ;;; Code:
-
-;; Load 'gdbm-ffi' at run time to simplify the job of 'imported-modules' & co.
-(module-autoload! (current-module) '(gdbm) '(gdbm-open GDBM_WRCREAT))
 
 (define-record-type <mandb-entry>
   (mandb-entry file-name name section synopsis kind)

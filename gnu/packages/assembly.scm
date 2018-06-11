@@ -60,7 +60,7 @@
              #t))
          (add-after 'install 'install-info
            (lambda _
-             (zero? (system* "make" "install_doc")))))))
+             (invoke "make" "install_doc"))))))
     (home-page "http://www.nasm.us/")
     (synopsis "80x86 and x86-64 assembler")
     (description

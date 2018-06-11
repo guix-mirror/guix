@@ -507,9 +507,15 @@ upon error."
            (error "pre-mount actions failed")))
 
        (if root
-           (mount-root-file-system (canonicalize-device-spec root)
-                                   root-fs-type
-                                   #:volatile-root? volatile-root?)
+           ;; The "--root=SPEC" kernel command-line option always provides a
+           ;; string, but the string can represent a device, a UUID, or a
+           ;; label.  So check for all three.
+           (let ((root (cond ((string-prefix? "/" root) root)
+                             ((uuid root) => identity)
+                             (else (file-system-label root)))))
+             (mount-root-file-system (canonicalize-device-spec root)
+                                     root-fs-type
+                                     #:volatile-root? volatile-root?))
            (mount "none" "/root" "tmpfs"))
 
        ;; Mount the specified file systems.

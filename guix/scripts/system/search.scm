@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,10 +60,8 @@ provided TYPE has a default value."
 
 (define (service-type-shepherd-names type)
   "Return the default names of Shepherd services created for TYPE."
-  (match (map shepherd-service-provision
-              (service-type-default-shepherd-services type))
-    (((names . _) ...)
-     names)))
+  (append-map shepherd-service-provision
+              (service-type-default-shepherd-services type)))
 
 (define* (service-type->recutils type port
                                  #:optional (width (%text-width))

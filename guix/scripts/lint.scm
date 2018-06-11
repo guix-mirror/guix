@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -809,15 +809,6 @@ descriptions maintained upstream."
      (emit-warning package (G_ "invalid license field")
                    'license))))
 
-(define (patch-file-name patch)
-  "Return the basename of PATCH's file name, or #f if the file name could not
-be determined."
-  (match patch
-    ((? string?)
-     (basename patch))
-    ((? origin?)
-     (and=> (origin-actual-file-name patch) basename))))
-
 (define (call-with-networking-fail-safe message error-value proc)
   "Call PROC catching any network-related errors.  Upon a networking error,
 display a message including MESSAGE and return ERROR-VALUE."
@@ -878,20 +869,14 @@ the NIST server non-fatal."
       (()
        #t)
       ((vulnerabilities ...)
-       (let* ((patches   (filter-map patch-file-name
-                                     (or (and=> (package-source package)
-                                                origin-patches)
-                                         '())))
+       (let* ((patched    (package-patched-vulnerabilities package))
               (known-safe (or (assq-ref (package-properties package)
                                         'lint-hidden-cve)
                               '()))
               (unpatched (remove (lambda (vuln)
                                    (let ((id (vulnerability-id vuln)))
-                                     (or
-                                       (find (cute string-contains
-                                                   <> id)
-                                             patches)
-                                       (member id known-safe))))
+                                     (or (member id patched)
+                                         (member id known-safe))))
                                  vulnerabilities)))
          (unless (null? unpatched)
            (emit-warning package
@@ -1037,7 +1022,7 @@ them for PACKAGE."
      (check       check-inputs-should-be-native))
    (lint-checker
      (name        'inputs-should-not-be-input)
-     (description "Identify inputs that should be inputs at all")
+     (description "Identify inputs that shouldn't be inputs at all")
      (check       check-inputs-should-not-be-an-input-at-all))
    (lint-checker
      (name        'patch-file-names)

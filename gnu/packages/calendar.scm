@@ -5,6 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,13 +96,13 @@ data units.")
 (define-public khal
   (package
     (name "khal")
-    (version "0.9.8")
+    (version "0.9.9")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "khal" version))
              (sha256
               (base32
-               "1blx3gxnv7sj302biqphfw7i6ilzl2xlmvzp130n3113scg9w17y"))))
+               "0dq9aqb9pqjfqrnfg43mhpb7m0szmychxy1ydb3lwzf3500c9rsh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -110,24 +111,24 @@ data units.")
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Make installed package available for running the tests
             (add-installed-pythonpath inputs outputs)
-            (and
-              (zero? (system* "make" "--directory=doc/" "man"))
-              (install-file
-                "doc/build/man/khal.1"
-                (string-append (assoc-ref outputs "out") "/share/man/man1")))))
+            (invoke "make" "--directory=doc/" "man")
+            (install-file
+             "doc/build/man/khal.1"
+             (string-append (assoc-ref outputs "out") "/share/man/man1"))
+            #t))
         (replace 'check
           (lambda* (#:key inputs #:allow-other-keys)
             ;; The tests require us to choose a timezone.
             (setenv "TZ"
                     (string-append (assoc-ref inputs "tzdata")
                                    "/share/zoneinfo/Zulu"))
-            (zero? (system* "py.test" "tests" "-k"
-                            (string-append
-                              ;; These tests are known to fail in when not
-                              ;; running in a TTY:
-                              ;; https://github.com/pimutils/khal/issues/683
-                              "not test_printics_read_from_stdin "
-                              "and not test_import_from_stdin"))))))))
+            (invoke "py.test" "tests" "-k"
+                    (string-append
+                     ;; These tests are known to fail in when not
+                     ;; running in a TTY:
+                     ;; https://github.com/pimutils/khal/issues/683
+                     "not test_printics_read_from_stdin "
+                     "and not test_import_from_stdin")))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,7 +70,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.27")
+    (version "1.28")
     (source
      (origin
       (method url-fetch)
@@ -77,7 +78,8 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1li95ni122fzinzlmxbln63nmgij63irxfvi52ws4zfbzv3am4sg"))))
+        "0jfsfnh9bxlxiwxws60yah4ybjw2hshmvqp31pri4m4h8ivrbnry"))
+      (patches (search-patches "libgpg-error-aarch64-logging-fix.patch"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -90,17 +92,31 @@ Daemon and possibly more in the future.")
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgpg-error")))))
 
+;; Some packages (e.g. GPGME) require a newer libgpg-error to deal with
+;; error codes from recent GnuPG.  Remove this in the next rebuild cycle.
+(define-public libgpg-error-1.31
+  (package
+    (inherit libgpg-error)
+    (version "1.31")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/libgpg-error/libgpg-error-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1vx4nw6rxh2biy3h8n96fyr86q29h8gjl6837437i51jr4isil20"))))))
+
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1cvqd9jk5qshbh48yh3ixw4zyr4n5k50r3475rrh20xfn7w7aa3s"))))
+               "01sca9m8hm6b5v8hmqsfdjhyz013869p1f0fxw9ln52qfnp4q1n8"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
@@ -215,14 +231,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.6")
+    (version "2.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "110rf476l3cgn52gh9ia5y0y06y2ialq9dqc12jkhnfhl9gqqkg6"))))
+                "1k8dnnfs9888yp713l7kg2jg110lw47s4krx0njna6fjrsw4qyvp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -338,6 +354,7 @@ libskba (working with X.509 certificates and CMS data).")
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
+              (patches (search-patches "gnupg-1.4-CVE-2018-12020.patch"))
               (sha256
                (base32
                 "1d1hz4szh1kvwhsw7w2zxa6q5ndrk3qy6hj289l1b8k3xi5s554m"))))
@@ -354,12 +371,13 @@ libskba (working with X.509 certificates and CMS data).")
          (add-after 'unpack 'patch-check-sh
            (lambda _
              (substitute* "checks/Makefile.in"
-               (("/bin/sh") (which "sh"))))))))))
+               (("/bin/sh") (which "sh")))
+             #t)))))))
 
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.10.0")
+    (version "1.11.1")
     (source
      (origin
       (method url-fetch)
@@ -367,13 +385,13 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "14q619lxbk64vz7lih5gjb928qm28jrnn1h3yhsrrff3jw8yv3qs"))))
+        "0vxx5xaag3rhp4g2arp5qm77gvz4kj0m3hnpvhkdvqyjfhbi26rd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnupg" ,gnupg)))
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
-     `(("libgpg-error" ,libgpg-error)))
+     `(("libgpg-error" ,libgpg-error-1.31)))
     (inputs
      `(("libassuan" ,libassuan)))
     (home-page "https://www.gnupg.org/related_software/gpgme/")
@@ -575,10 +593,12 @@ signing, decryption, verification, and key-listing parsing.")
                   version "/pius-" version ".tar.bz2"))
             (sha256
              (base32
-              "1893hzpx3zv724drqv48csrn0cm98xw4ymb1zmhs2jvjj1778zfj"))))
+              "1893hzpx3zv724drqv48csrn0cm98xw4ymb1zmhs2jvjj1778zfj"))
+            (patches (search-patches "pius.patch"))))
    (build-system python-build-system)
    (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
-             ("gpg" ,gnupg)))
+             ("gpg" ,gnupg)
+             ("python-six" ,python2-six)))
    (arguments
     `(#:tests? #f
       #:python ,python-2                     ;uses the Python 2 'print' syntax
@@ -606,84 +626,87 @@ PGP keysigning parties.")
    (home-page "https://www.phildev.net/pius/index.shtml")))
 
 (define-public signing-party
-  (package
-   (name "signing-party")
-   (version "2.6")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://debian/pool/main/s/signing-party/"
-                                "signing-party_" version ".orig.tar.gz"))
-            (sha256 (base32
-                     "1n5bpcfpl9vg1xp6r1jhbyahrgdyxp05b5pria1rh4m0qnv8sifr"))))
-   (build-system gnu-build-system)
-   (native-inputs
-    `(("autoconf" ,autoconf-wrapper)
-      ("automake" ,automake)))
-   (inputs `(("perl" ,perl)
-             ("perl-text-template" ,perl-text-template)
-             ("perl-mime-tools" ,perl-mime-tools)
-             ("perl-gnupg-interface" ,perl-gnupg-interface)
-             ("perl-net-idn-encode" ,perl-net-idn-encode)
-             ("libmd" ,libmd)))
-   (arguments
-    `(#:tests? #f
-      #:phases
-      (modify-phases %standard-phases
-        (add-before 'configure 'change-directory
-          (lambda _
-            ;; The build system in the unpack phase changes to a less useful
-            ;; subdirectory, so move up one level
-            (chdir (dirname (getcwd)))))
-        (replace 'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (substitute* "keyanalyze/Makefile"
-                (("LDLIBS") (string-append "CC=" (which "gcc") "\nLDLIBS")))
-              (substitute* "keyanalyze/Makefile"
-                (("\\./configure") (string-append "./configure --prefix=" out)))
-              (substitute* "gpgwrap/src/Makefile"
-                (("\\} clean")
-                 (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "
-                                out "/bin/gpgwrap\n")))
-              (substitute* '("gpgsigs/Makefile" "keyanalyze/Makefile"
-                             "keylookup/Makefile" "sig2dot/Makefile"
-                             "springgraph/Makefile")
-                (("/usr") out))
-              (setenv "CONFIG_SHELL" (which "sh")))))
-        (replace 'install
-          (lambda* (#:key outputs #:allow-other-keys #:rest args)
-            (let ((out (assoc-ref outputs "out"))
-                  (install (assoc-ref %standard-phases 'install)))
-              (apply install args)
-              (for-each
-                (lambda (dir file)
-                  (copy-file (string-append dir "/" file)
-                             (string-append out "/bin/" file)))
-                '("caff" "caff" "caff" "gpgdir" "gpg-key2ps"
-                  "gpglist" "gpg-mailkeys" "gpgparticipants")
-                '("caff" "pgp-clean" "pgp-fixkey" "gpgdir" "gpg-key2ps"
-                  "gpglist" "gpg-mailkeys" "gpgparticipants"))
-              (for-each
-                (lambda (dir file)
-                  (copy-file (string-append dir "/" file)
-                             (string-append out "/share/man/man1/" file)))
-                '("caff" "caff" "caff" "gpgdir"
-                  "gpg-key2ps" "gpglist" "gpg-mailkeys"
-                  "gpgparticipants" "gpgsigs" "gpgwrap/doc"
-                  "keyanalyze" "keyanalyze/pgpring" "keyanalyze")
-                '("caff.1" "pgp-clean.1" "pgp-fixkey.1" "gpgdir.1"
-                  "gpg-key2ps.1" "gpglist.1" "gpg-mailkeys.1"
-                  "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
-                  "process_keys.1" "pgpring.1" "keyanalyze.1")))))
-        (add-after 'install 'wrap-programs
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out")))
-              (wrap-program
-                  (string-append out "/bin/caff")
-                `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB"))))))))))
-   (synopsis "Collection of scripts for simplifying gnupg key signing")
-   (description
-    "Signing-party is a collection for all kinds of PGP/GnuPG related things,
+  ;; Upstream moved from alioth.debian.org to salsa.debian.org but the
+  ;; automatic svn import did not preserve tags apparently, so there's no real
+  ;; version number.
+  (let ((commit "d6f2296325605ee96ddf9f5b156e5e3f667a6df3")
+        (revision "0"))
+    (package
+      (name "signing-party")
+      (version (git-version "2.6" revision commit))
+      (home-page "https://salsa.debian.org/stappers/pgp-tools")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "00f7zasbwcbjzd92br2j10pyjxv0aw1qb4540qfz2dxzxgmdscrz"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf-wrapper)
+         ("automake" ,automake)))
+      (inputs `(("perl" ,perl)
+                ("perl-text-template" ,perl-text-template)
+                ("perl-mime-tools" ,perl-mime-tools)
+                ("perl-gnupg-interface" ,perl-gnupg-interface)
+                ("perl-net-idn-encode" ,perl-net-idn-encode)
+                ("libmd" ,libmd)))
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* "keyanalyze/Makefile"
+                   (("LDLIBS") (string-append "CC=" (which "gcc") "\nLDLIBS")))
+                 (substitute* "keyanalyze/Makefile"
+                   (("\\./configure") (string-append "./configure --prefix=" out)))
+                 (substitute* "gpgwrap/Makefile"
+                   (("\\} clean")
+                    (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "
+                                   out "/bin/gpgwrap\n")))
+                 (substitute* '("gpgsigs/Makefile" "keyanalyze/Makefile"
+                                "keylookup/Makefile" "sig2dot/Makefile"
+                                "springgraph/Makefile")
+                   (("/usr") out))
+                 (setenv "CONFIG_SHELL" (which "sh")))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys #:rest args)
+               (let ((out (assoc-ref outputs "out"))
+                     (install (assoc-ref %standard-phases 'install)))
+                 (apply install args)
+                 (for-each
+                  (lambda (dir file)
+                    (copy-file (string-append dir "/" file)
+                               (string-append out "/bin/" file)))
+                  '("caff" "caff" "caff" "gpgdir" "gpg-key2ps"
+                    "gpglist" "gpg-mailkeys" "gpgparticipants")
+                  '("caff" "pgp-clean" "pgp-fixkey" "gpgdir" "gpg-key2ps"
+                    "gpglist" "gpg-mailkeys" "gpgparticipants"))
+                 (for-each
+                  (lambda (dir file)
+                    (copy-file (string-append dir "/" file)
+                               (string-append out "/share/man/man1/" file)))
+                  '("caff" "caff" "caff" "gpgdir"
+                    "gpg-key2ps" "gpglist" "gpg-mailkeys"
+                    "gpgparticipants" "gpgsigs" "gpgwrap/doc"
+                    "keyanalyze" "keyanalyze/pgpring" "keyanalyze")
+                  '("caff.1" "pgp-clean.1" "pgp-fixkey.1" "gpgdir.1"
+                    "gpg-key2ps.1" "gpglist.1" "gpg-mailkeys.1"
+                    "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
+                    "process_keys.1" "pgpring.1" "keyanalyze.1")))))
+           (add-after 'install 'wrap-programs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (wrap-program
+                     (string-append out "/bin/caff")
+                   `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB"))))))))))
+      (synopsis "Collection of scripts for simplifying gnupg key signing")
+      (description
+       "Signing-party is a collection for all kinds of PGP/GnuPG related things,
 including tools for signing keys, keyring analysis, and party preparation.
 @enumerate
 @item caff: CA - Fire and Forget signs and mails a key
@@ -701,11 +724,10 @@ including tools for signing keys, keyring analysis, and party preparation.
 @item sig2dot: converts a list of GnuPG signatures to a .dot file
 @item springgraph: creates a graph from a .dot file
 @end enumerate")
-   ;; gpl2+ for almost all programs, except for keyanalyze: gpl2
-   ;; and caff and gpgsigs: bsd-3, see
-   ;; http://packages.debian.org/changelogs/pool/main/s/signing-party/current/copyright
-   (license license:gpl2)
-   (home-page "https://pgp-tools.alioth.debian.org/")))
+      ;; gpl2+ for almost all programs, except for keyanalyze: gpl2
+      ;; and caff and gpgsigs: bsd-3, see
+      ;; http://packages.debian.org/changelogs/pool/main/s/signing-party/current/copyright
+      (license license:gpl2))))
 
 (define-public pinentry-tty
   (package

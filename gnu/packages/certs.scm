@@ -63,7 +63,8 @@
               (("crt") "pem"))
             (mkdir-p bin)
             (copy-file "certdata2pem.py"
-                       (string-append bin "/certdata2pem.py"))))))
+                       (string-append bin "/certdata2pem.py"))
+            #t))))
    (synopsis "Python script to extract .pem data from certificate collection")
    (description
     "certdata2pem.py is a Python script to transform X.509 certificate
@@ -121,7 +122,7 @@
                (mkdir-p certsdir)
                (with-directory-excursion "nss/lib/ckfw/builtins/"
                  ;; extract single certificates from blob
-                 (system* "certdata2pem.py" "certdata.txt")
+                 (invoke "certdata2pem.py" "certdata.txt")
                  ;; copy selected .pem files into the output
                  (for-each maybe-install-cert
                            (find-files "." ".*\\.pem")))
@@ -170,10 +171,9 @@ taken from the NSS package and thus ultimately from the Mozilla project.")
            ;; Create hash symlinks suitable for OpenSSL ('SSL_CERT_DIR' and
            ;; similar.)
            (chdir (string-append %output "/etc/ssl/certs"))
-           (unless (zero? (system* (string-append perl "/bin/perl")
-                                   (string-append openssl "/bin/c_rehash")
-                                   "."))
-             (error "'c_rehash' failed" openssl))))))
+           (invoke (string-append perl "/bin/perl")
+                   (string-append openssl "/bin/c_rehash")
+                   ".")))))
     (native-inputs
      `(("openssl" ,openssl)
        ("perl" ,perl)))                           ;for 'c_rehash'

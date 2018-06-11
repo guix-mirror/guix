@@ -393,9 +393,11 @@ it atomically, and then run OS's activation script."
                   "~Y-~m-~d ~H:~M")))
 
 (define* (profile-boot-parameters #:optional (profile %system-profile)
-                                  (numbers (generation-numbers profile)))
-  "Return a list of 'boot-parameters' for the generations of PROFILE specified by
-NUMBERS, which is a list of generation numbers."
+                                  (numbers
+                                   (reverse (generation-numbers profile))))
+  "Return a list of 'boot-parameters' for the generations of PROFILE specified
+by NUMBERS, which is a list of generation numbers. The list is ordered from
+the most recent to the oldest profiles."
   (define (system->boot-parameters system number time)
     (unless-file-not-found
      (let* ((params           (read-boot-parameters-file system))
@@ -590,17 +592,17 @@ any, are available.  Raise an error if they're not."
 
   (define labeled
     (filter (lambda (fs)
-              (eq? (file-system-title fs) 'label))
+              (file-system-label? (file-system-device fs)))
             relevant))
 
   (define literal
     (filter (lambda (fs)
-              (eq? (file-system-title fs) 'device))
+              (string? (file-system-device fs)))
             relevant))
 
   (define uuid
     (filter (lambda (fs)
-              (eq? (file-system-title fs) 'uuid))
+              (uuid? (file-system-device fs)))
             relevant))
 
   (define fail? #f)
@@ -628,15 +630,15 @@ any, are available.  Raise an error if they're not."
                              (strerror errno))
                       (unless (string-prefix? "/" device)
                         (display-hint (format #f (G_ "If '~a' is a file system
-label, you need to add @code{(title 'label)} to your @code{file-system}
-definition.")
-                                              device)))))))
+label, write @code{(file-system-label ~s)} in your @code{device} field.")
+                                              device device)))))))
               literal)
     (for-each (lambda (fs)
-                (unless (find-partition-by-label (file-system-device fs))
-                  (error (G_ "~a: error: file system with label '~a' not found~%")
-                         (file-system-location* fs)
-                         (file-system-device fs))))
+                (let ((label (file-system-label->string
+                              (file-system-device fs))))
+                  (unless (find-partition-by-label label)
+                    (error (G_ "~a: error: file system with label '~a' not found~%")
+                           (file-system-location* fs) label))))
               labeled)
     (for-each (lambda (fs)
                 (unless (find-partition-by-uuid (file-system-device fs))
@@ -677,10 +679,13 @@ available in the initrd.  Note that mapped devices are responsible for
 checking this by themselves in their 'check' procedure."
   (define (file-system-/dev fs)
     (let ((device (file-system-device fs)))
-      (match (file-system-title fs)
-        ('device device)
-        ('uuid   (find-partition-by-uuid device))
-        ('label  (find-partition-by-label device)))))
+      (match device
+        ((? string?)
+         device)
+        ((? uuid?)
+         (find-partition-by-uuid device))
+        ((? file-system-label?)
+         (find-partition-by-label (file-system-label->string device))))))
 
   (define file-systems
     (filter file-system-needed-for-boot?
@@ -735,7 +740,7 @@ checking this by themselves in their 'check' procedure."
   ;; <http://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html> for
   ;; a discussion.
   (define latest
-    (string-append (config-directory) "/latest"))
+    (string-append (config-directory) "/current"))
 
   (unless (file-exists? latest)
     (warning (G_ "~a not found: 'guix pull' was never run~%") latest)

@@ -491,7 +491,7 @@ converters, will completely supplant the older patterns.")
                                       cwd "/config")))
              (mkdir "build")
              (with-directory-excursion "build"
-               (zero? (system* "inimf" "mf.mf")))))
+               (invoke "inimf" "mf.mf"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -579,17 +579,18 @@ documents.")
                        (string-append (getcwd) ":"
                                       mf "/share/texmf-dist/metafont/base")))
              (mkdir "build")
-             (every (lambda (font)
-                      (format #t "building font ~a\n" font)
-                      (zero? (system* "mf" "-progname=mf"
-                                      "-output-directory=build"
-                                      (string-append "\\"
-                                                     "mode:=ljfour; "
-                                                     "mag:=1; "
-                                                     "batchmode; "
-                                                     "input "
-                                                     (basename font ".mf")))))
-                    (find-files "." "cm(.*[0-9]+.*|inch)\\.mf$"))))
+             (for-each (lambda (font)
+                         (format #t "building font ~a\n" font)
+                         (invoke "mf" "-progname=mf"
+                                 "-output-directory=build"
+                                 (string-append "\\"
+                                                "mode:=ljfour; "
+                                                "mag:=1; "
+                                                "batchmode; "
+                                                "input "
+                                                (basename font ".mf"))))
+                       (find-files "." "cm(.*[0-9]+.*|inch)\\.mf$"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -648,13 +649,13 @@ display, and mathematical fonts in a range of styles, based on Monotype Modern
                        (string-append (getcwd) ":"
                                       mf "/share/texmf-dist/metafont/base")))
              (mkdir "build")
-             (zero? (system* "mf" "-progname=mf"
-                             "-output-directory=build"
-                             (string-append "\\"
-                                            "mode:=ljfour; "
-                                            "mag:=1; "
-                                            "batchmode; "
-                                            "input manfnt")))))
+             (invoke "mf" "-progname=mf"
+                     "-output-directory=build"
+                     (string-append "\\"
+                                    "mode:=ljfour; "
+                                    "mag:=1; "
+                                    "batchmode; "
+                                    "input manfnt"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -714,20 +715,21 @@ fonts.")
                                       (assoc-ref inputs "texlive-fonts-cm")
                                       "/share/texmf-dist/fonts/source/public/cm")))
              (mkdir "build")
-             (every (lambda (font)
-                      (format #t "building font ~a\n" font)
-                      (zero? (system* "mf" "-progname=mf"
-                                      "-output-directory=build"
-                                      (string-append "\\"
-                                                     "mode:=ljfour; "
-                                                     "mag:=1; "
-                                                     "batchmode; "
-                                                     "input " font))))
-                    '("icmcsc10" "icmex10" "icmmi8" "icmsy8" "icmtt8"
-                      "ilasy8" "ilcmss8" "ilcmssb8" "ilcmssi8"
-                      "lasy5" "lasy6" "lasy7" "lasy8" "lasy9" "lasy10" "lasyb10"
-                      "lcircle10" "lcirclew10" "lcmss8" "lcmssb8" "lcmssi8"
-                      "line10" "linew10"))))
+             (for-each (lambda (font)
+                         (format #t "building font ~a\n" font)
+                         (invoke "mf" "-progname=mf"
+                                 "-output-directory=build"
+                                 (string-append "\\"
+                                                "mode:=ljfour; "
+                                                "mag:=1; "
+                                                "batchmode; "
+                                                "input " font)))
+                       '("icmcsc10" "icmex10" "icmmi8" "icmsy8" "icmtt8"
+                         "ilasy8" "ilcmss8" "ilcmssb8" "ilcmssi8"
+                         "lasy5" "lasy6" "lasy7" "lasy8" "lasy9" "lasy10" "lasyb10"
+                         "lcircle10" "lcirclew10" "lcmss8" "lcmssb8" "lcmssi8"
+                         "line10" "linew10"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -796,19 +798,20 @@ symbol fonts.")
                                       (assoc-ref inputs "texlive-fonts-cm")
                                       "/share/texmf-dist/fonts/source/public/cm")))
              (mkdir "build")
-             (every (lambda (font)
-                      (format #t "building font ~a\n" (basename font ".mf"))
-                      (with-directory-excursion (dirname font)
-                        (zero? (system* "mf" "-progname=mf"
-                                        "-output-directory=../build"
-                                        (string-append "\\"
-                                                       "mode:=ljfour; "
-                                                       "mag:=1; "
-                                                       "nonstopmode; "
-                                                       "input "
-                                                       (getcwd) "/"
-                                                       (basename font ".mf"))))))
-                    (find-files "." "[0-9]+\\.mf$"))))
+             (for-each (lambda (font)
+                         (format #t "building font ~a\n" (basename font ".mf"))
+                         (with-directory-excursion (dirname font)
+                           (invoke "mf" "-progname=mf"
+                                   "-output-directory=../build"
+                                   (string-append "\\"
+                                                  "mode:=ljfour; "
+                                                  "mag:=1; "
+                                                  "nonstopmode; "
+                                                  "input "
+                                                  (getcwd) "/"
+                                                  (basename font ".mf")))))
+                       (find-files "." "[0-9]+\\.mf$"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -969,37 +972,35 @@ book).")
 
                (mkdir "build")
                (mkdir "web2c")
-               (and (invoke "luatex" "-ini" "-interaction=batchmode"
-                            "-output-directory=build" "unpack.ins")
-                    (invoke "tex" "-ini" "-interaction=batchmode"
-                            "-output-directory=web2c" "tex.ini")
-                    ;; LaTeX, pdfetex/pdftex, and XeTeX require e-TeX, which
-                    ;; is enabled only in extended mode (activated with a
-                    ;; leading asterisk).  We should not use luatex here,
-                    ;; because that would make the generated format files
-                    ;; incompatible with any other TeX engine.
-                    (every
-                     (lambda (format)
-                       (invoke "latex" "-ini" "-interaction=batchmode"
-                               "-output-directory=web2c"
-                               "-translate-file=cp227.tcx"
-                               (string-append "*" format ".ini")))
-                     '("latex"
-                       "pdflatex"
-                       "pdfetex"))
-                    (every
-                     (lambda (format)
-                       (invoke format "-ini" "-interaction=batchmode"
-                               "-output-directory=web2c"
-                               (string-append "*" format ".ini")))
-                     '("xetex"
-                       "xelatex"))
-                    (every
-                     (lambda (format)
-                       (invoke "luatex" "-ini" "-interaction=batchmode"
-                               "-output-directory=web2c"
-                               (string-append format ".ini")))
-                     '("dviluatex" "dvilualatex" "luatex" "lualatex")))))
+               (invoke "luatex" "-ini" "-interaction=batchmode"
+                       "-output-directory=build" "unpack.ins")
+               (invoke "tex" "-ini" "-interaction=batchmode"
+                       "-output-directory=web2c" "tex.ini")
+               ;; LaTeX, pdfetex/pdftex, and XeTeX require e-TeX, which
+               ;; is enabled only in extended mode (activated with a
+               ;; leading asterisk).  We should not use luatex here,
+               ;; because that would make the generated format files
+               ;; incompatible with any other TeX engine.
+               (for-each (lambda (format)
+                           (invoke "latex" "-ini" "-interaction=batchmode"
+                                   "-output-directory=web2c"
+                                   "-translate-file=cp227.tcx"
+                                   (string-append "*" format ".ini")))
+                         '("latex"
+                           "pdflatex"
+                           "pdfetex"))
+               (for-each (lambda (format)
+                           (invoke format "-ini" "-interaction=batchmode"
+                                   "-output-directory=web2c"
+                                   (string-append "*" format ".ini")))
+                         '("xetex"
+                           "xelatex"))
+               (for-each (lambda (format)
+                           (invoke "luatex" "-ini" "-interaction=batchmode"
+                                   "-output-directory=web2c"
+                                   (string-append format ".ini")))
+                         '("dviluatex" "dvilualatex" "luatex" "lualatex"))
+               #t))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -2934,16 +2935,17 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
                                       (assoc-ref inputs "texlive-fonts-cm")
                                       "/share/texmf-dist/fonts/source/public/cm")))
              (mkdir "build")
-             (every (lambda (font)
-                      (format #t "building font ~a\n" font)
-                      (invoke "mf" "-progname=mf"
-                              "-output-directory=build"
-                              (string-append "\\"
-                                             "mode:=ljfour; "
-                                             "mag:=1; "
-                                             "batchmode; "
-                                             "input " (basename font ".mf"))))
-                    (find-files "." "[0-9]+\\.mf$"))))
+             (for-each (lambda (font)
+                         (format #t "building font ~a\n" font)
+                         (invoke "mf" "-progname=mf"
+                                 "-output-directory=build"
+                                 (string-append "\\"
+                                                "mode:=ljfour; "
+                                                "mag:=1; "
+                                                "batchmode; "
+                                                "input " (basename font ".mf"))))
+                       (find-files "." "[0-9]+\\.mf$"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3016,16 +3018,17 @@ texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
                                       (assoc-ref inputs "texlive-fonts-cm")
                                       "/share/texmf-dist/fonts/source/public/cm")))
              (mkdir "build")
-             (every (lambda (font)
-                      (format #t "building font ~a\n" font)
-                      (invoke "mf" "-progname=mf"
-                              "-output-directory=build"
-                              (string-append "\\"
-                                             "mode:=ljfour; "
-                                             "mag:=1; "
-                                             "batchmode; "
-                                             "input " (basename font ".mf"))))
-                    (find-files "." "[0-9]+\\.mf$"))))
+             (for-each (lambda (font)
+                         (format #t "building font ~a\n" font)
+                         (invoke "mf" "-progname=mf"
+                                 "-output-directory=build"
+                                 (string-append "\\"
+                                                "mode:=ljfour; "
+                                                "mag:=1; "
+                                                "batchmode; "
+                                                "input " (basename font ".mf"))))
+                       (find-files "." "[0-9]+\\.mf$"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3539,9 +3542,10 @@ TeX metrics (VF and TFM files) and macros for use with LaTeX.")
                                       "/share/texmf-dist/"))
                (unzip  (string-append (assoc-ref %build-inputs "unzip")
                                       "/bin/unzip")))
-           (system* unzip (assoc-ref %build-inputs "source"))
+           (invoke unzip (assoc-ref %build-inputs "source"))
            (mkdir-p target)
-           (copy-recursively "iwona" target)))))
+           (copy-recursively "iwona" target)
+           #t))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "http://jmn.pl/en/kurier-i-iwona/")
@@ -3948,7 +3952,7 @@ directly generate PDF documents instead of DVI.")
             (lambda* (#:key outputs #:allow-other-keys)
               (let ((share (string-append (assoc-ref outputs "out") "/share")))
                 (mkdir-p share)
-                (system* "mv" "texmf-dist" share))))
+                (invoke "mv" "texmf-dist" share))))
           (add-after 'install 'texmf-config
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
@@ -3976,9 +3980,9 @@ directly generate PDF documents instead of DVI.")
                 ;; http://slackbuilds.org/repository/13.37/office/texlive/
                 (setenv "PATH" (string-append (getenv "PATH") ":" texbin))
                 (setenv "TEXMFCNF" texmfroot)
-                (system* "updmap-sys" "--nohash" "--syncwithtrees")
-                (system* "mktexlsr")
-                (system* "fmtutil-sys" "--all")))))))
+                (invoke "updmap-sys" "--nohash" "--syncwithtrees")
+                (invoke "mktexlsr")
+                (invoke "fmtutil-sys" "--all")))))))
    (properties `((max-silent-time . 9600))) ; don't time out while grafting
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
@@ -4041,7 +4045,8 @@ This package contains the complete tree of texmf-dist data.")
                    (for-each
                      (lambda (name)
                        (symlink (string-append texmf "/share/" name) name))
-                     '("texmf-dist" "texmf-var"))))))))
+                     '("texmf-dist" "texmf-var"))))
+               #t))))
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
@@ -4224,12 +4229,12 @@ PDF documents.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "qmake"
-                               (string-append "PREFIX=" out)
-                               (string-append "DESKTOPDIR=" out
-                                              "/share/applications")
-                               (string-append "ICONDIR=" out "/share/pixmaps")
-                               "texmaker.pro"))))))))
+               (invoke "qmake"
+                       (string-append "PREFIX=" out)
+                       (string-append "DESKTOPDIR=" out
+                                      "/share/applications")
+                       (string-append "ICONDIR=" out "/share/pixmaps")
+                       "texmaker.pro")))))))
     (inputs
      `(("poppler-qt5" ,poppler-qt5)
        ("qtbase" ,qtbase)

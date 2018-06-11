@@ -52,7 +52,7 @@
 (define-public dash
   (package
     (name "dash")
-    (version "0.5.9.1")
+    (version "0.5.10.2")
     (source
      (origin
        (method url-fetch)
@@ -60,7 +60,7 @@
                            "dash-" version ".tar.gz"))
        (sha256
         (base32
-         "0ng695mq5ngg43h7ljhxvbjm46ym3nayj6ssn47d2gm9fbm5pkay"))
+         "0wb0bwmqc661hylqcfdp7l7x12myw3vpqk513ncyqrjwvhckjriw"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -103,9 +103,10 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                 "0nhc3yc5lnnan7zmxqqxm07rdpwjww5ijy45ll2njdc6fnfb2az4"))
               (modules '((guix build utils)))
               ;; Don't try to install /etc/fish/config.fish.
-              (snippet
-               '(substitute* "Makefile.in"
-                  ((".*INSTALL.*sysconfdir.*fish.*") "")))))
+              (snippet '(begin
+                          (substitute* "Makefile.in"
+                            ((".*INSTALL.*sysconfdir.*fish.*") ""))
+                          #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)))
@@ -264,7 +265,7 @@ written by Paul Haahr and Byron Rakitzis.")
               (substitute* "tests/syntax.at"
                 (("; other_script.csh") "; /bin/sh other_script.csh"))
               ;; Now, let's generate the test suite and patch it
-              (system* "make" "tests/testsuite")
+              (invoke "make" "tests/testsuite")
 
               ;; This file is ISO-8859-1 encoded.
               (with-fluids ((%default-port-encoding #f))
@@ -355,14 +356,14 @@ ksh, and tcsh.")
 (define-public xonsh
   (package
     (name "xonsh")
-    (version "0.6.1")
+    (version "0.6.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xonsh" version))
         (sha256
           (base32
-            "09rrfcwpirbxmjjqnsbyn7lwm1wyn41z5zhkbnv57i5hcgs72kx6"))
+            "0c2bbmdg0n10q54vq9k1z5n53l0mh1hb1q5xprfhilvrbr6hlcwr"))
         (modules '((guix build utils)))
         (snippet
          `(begin

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +38,8 @@
             string-tokenize*
             evaluate-search-paths
             environment-variable-definition
-            search-path-definition))
+            search-path-definition
+            set-search-paths))
 
 ;;; Commentary:
 ;;;
@@ -195,5 +196,15 @@ prefix/suffix."
      (environment-variable-definition variable value
                                       #:kind kind
                                       #:separator separator))))
+
+(define* (set-search-paths search-paths directories
+                           #:key (setenv setenv))
+  "Set the search path environment variables specified by SEARCH-PATHS for the
+given directories."
+  (for-each (match-lambda
+              ((spec . value)
+               (setenv (search-path-specification-variable spec)
+                       value)))
+            (evaluate-search-paths search-paths directories)))
 
 ;;; search-paths.scm ends here

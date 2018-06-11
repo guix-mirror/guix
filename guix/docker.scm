@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -26,6 +26,7 @@
                           delete-file-recursively
                           with-directory-excursion
                           invoke))
+  #:use-module (json)                             ;guile-json
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module ((texinfo string-utils)
@@ -33,9 +34,6 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:export (build-docker-image))
-
-;; Load Guile-JSON at run time to simplify the job of 'imported-modules' & co.
-(module-use! (current-module) (resolve-interface '(json)))
 
 ;; Generate a 256-bit identifier in hexadecimal encoding for the Docker image.
 (define docker-id

@@ -131,13 +131,16 @@
   "Prepend extra arguments to KERNEL-ARGUMENTS that allow SYSTEM.DRV to be
 booted from ROOT-DEVICE"
   (cons* (string-append "--root="
-                        (if (uuid? root-device)
+                        (cond ((uuid? root-device)
 
-                            ;; Note: Always use the DCE format because that's
-                            ;; what (gnu build linux-boot) expects for the
-                            ;; '--root' kernel command-line option.
-                            (uuid->string (uuid-bytevector root-device) 'dce)
-                            root-device))
+                               ;; Note: Always use the DCE format because that's
+                               ;; what (gnu build linux-boot) expects for the
+                               ;; '--root' kernel command-line option.
+                               (uuid->string (uuid-bytevector root-device)
+                                             'dce))
+                              ((file-system-label? root-device)
+                               (file-system-label->string root-device))
+                              (else root-device)))
          #~(string-append "--system=" #$system.drv)
          #~(string-append "--load=" #$system.drv "/boot")
          kernel-arguments))
@@ -251,10 +254,16 @@ file system labels."
     (match-lambda
       (('uuid (? symbol? type) (? bytevector? bv))
        (bytevector->uuid bv type))
+      (('file-system-label (? string? label))
+       (file-system-label label))
       ((? bytevector? bv)                         ;old format
        (bytevector->uuid bv 'dce))
       ((? string? device)
-       device)))
+       ;; It used to be that we would not distinguish between labels and
+       ;; device names.  Try to infer the right thing here.
+       (if (string-prefix? "/dev/" device)
+           device
+           (file-system-label device)))))
 
   (match (read port)
     (('boot-parameters ('version 0)
@@ -308,8 +317,8 @@ file system labels."
          (_                                       ;the old format
           "/")))))
     (x                                            ;unsupported format
-     (warning (G_ "unrecognized boot parameters for '~a'~%")
-              system)
+     (warning (G_ "unrecognized boot parameters at '~a'~%")
+              (port-filename port))
      #f)))
 
 (define (read-boot-parameters-file system)
@@ -377,7 +386,7 @@ marked as 'needed-for-boot'."
   (let ((target (string-append "/dev/mapper/" (mapped-device-target device))))
     (find (lambda (fs)
             (or (member device (file-system-dependencies fs))
-                (and (eq? 'device (file-system-title fs))
+                (and (string? (file-system-device fs))
                      (string=? (file-system-device fs) target))))
           file-systems)))
 
@@ -515,8 +524,7 @@ explicitly appear in OS."
   ;; required for basic administrator tasks.
   (cons* procps psmisc which less zile nano
          pciutils usbutils
-         ;; temporary package to fix CVE-2018-7738 without a graft
-         util-linux-2.31.1
+         util-linux
          inetutils isc-dhcp
          (@ (gnu packages admin) shadow)          ;for 'passwd'
 
@@ -594,7 +602,7 @@ directory."
 # because they would require combining both profiles.
 # FIXME: See <http://bugs.gnu.org/20255>.
 export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
-export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
+export INFOPATH=$HOME/.config/guix/current/share/info:$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
 export XDG_DATA_DIRS=$HOME/.guix-profile/share:/run/current-system/profile/share
 export XDG_CONFIG_DIRS=$HOME/.guix-profile/etc/xdg:/run/current-system/profile/etc/xdg
 
@@ -622,16 +630,19 @@ then
   export `cat /etc/environment | cut -d= -f1`
 fi
 
-if [ -f \"$HOME/.guix-profile/etc/profile\" ]
-then
-  # Load the user profile's settings.
-  GUIX_PROFILE=\"$HOME/.guix-profile\" ; \\
-  . \"$HOME/.guix-profile/etc/profile\"
-else
-  # At least define this one so that basic things just work
-  # when the user installs their first package.
-  export PATH=\"$HOME/.guix-profile/bin:$PATH\"
-fi
+for profile in \"$HOME/.config/guix/current\" \"$HOME/.guix-profile\"
+do
+  if [ -f \"$profile/etc/profile\" ]
+  then
+    # Load the user profile's settings.
+    GUIX_PROFILE=\"$profile\" ; \\
+    . \"$profile/etc/profile\"
+  else
+    # At least define this one so that basic things just work
+    # when the user installs their first package.
+    export PATH=\"$profile/bin:$PATH\"
+  fi
+done
 
 # Set the umask, notably for users logging in via 'lsh'.
 # See <http://bugs.gnu.org/22650>.
@@ -842,9 +853,8 @@ hardware-related operations as necessary when booting a Linux container."
 
 (define (operating-system-root-file-system os)
   "Return the root file system of OS."
-  (find (match-lambda
-         (($ <file-system> device title "/") #t)
-         (x #f))
+  (find (lambda (fs)
+          (string=? "/" (file-system-mount-point fs)))
         (operating-system-file-systems os)))
 
 (define (operating-system-initrd-file os)
@@ -935,13 +945,6 @@ listed in OS.  The C library expects to find it under
       (bootloader-configuration-bootloader bootloader-conf))
      bootloader-conf (list entry) #:old-entries old-entries)))
 
-(define (fs->boot-device fs)
-  "Given FS, a <file-system> object, return a value suitable for use as the
-device in a <menu-entry>."
-  (case (file-system-title fs)
-    ((uuid label device) (file-system-device fs))
-    (else #f)))
-
 (define (operating-system-boot-parameters os system.drv root-device)
   "Return a monadic <boot-parameters> record that describes the boot parameters
 of OS.  SYSTEM.DRV is either a derivation or #f.  If it's a derivation, adds
@@ -963,7 +966,7 @@ kernel arguments for that derivation to <boot-parameters>."
                 (operating-system-user-kernel-arguments os)))
              (initrd initrd)
              (bootloader-name bootloader-name)
-             (store-device (ensure-not-/dev (fs->boot-device store)))
+             (store-device (ensure-not-/dev (file-system-device store)))
              (store-mount-point (file-system-mount-point store))))))
 
 (define (device->sexp device)
@@ -971,6 +974,8 @@ kernel arguments for that derivation to <boot-parameters>."
   (match device
     ((? uuid? uuid)
      `(uuid ,(uuid-type uuid) ,(uuid-bytevector uuid)))
+    ((? file-system-label? label)
+     `(file-system-label ,(file-system-label->string label)))
     (_
      device)))
 

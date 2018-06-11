@@ -184,7 +184,8 @@ person's version identifier."
   (date->string (current-date 0) "~Y~m~d.~H"))
 
 (define* (build-program source version
-                        #:optional (guile-version (effective-version)))
+                        #:optional (guile-version (effective-version))
+                        #:key (pull-version 0))
   "Return a program that computes the derivation to build Guix from SOURCE."
   (define select?
     ;; Select every module but (guix config) and non-Guix modules.
@@ -253,11 +254,14 @@ person's version identifier."
                               (spin system)))
 
                            (display
-                            (derivation-file-name
+                            (and=>
                              (run-with-store store
                                (guix-derivation #$source #$version
-                                                #$guile-version)
-                               #:system system)))))))
+                                                #$guile-version
+                                                #:pull-version
+                                                #$pull-version)
+                               #:system system)
+                             derivation-file-name))))))
                   #:module-path (list source))))
 
 ;; The procedure below is our return value.
@@ -266,13 +270,15 @@ person's version identifier."
                 (guile-version (match ((@ (guile) version))
                                  ("2.2.2" "2.2.2")
                                  (_       (effective-version))))
+                (pull-version 0)
                 #:allow-other-keys
                 #:rest rest)
   "Return a derivation that unpacks SOURCE into STORE and compiles Scheme
 files."
   ;; Build the build program and then use it as a trampoline to build from
   ;; SOURCE.
-  (mlet %store-monad ((build  (build-program source version guile-version))
+  (mlet %store-monad ((build  (build-program source version guile-version
+                                             #:pull-version pull-version))
                       (system (if system (return system) (current-system))))
     (mbegin %store-monad
       (show-what-to-build* (list build))
@@ -292,6 +298,9 @@ files."
              (return (newline (current-output-port)))
              ((store-lift add-temp-root) drv)
              (return (read-derivation-from-file drv))))
+          ("#f"
+           ;; Unsupported PULL-VERSION.
+           (return #f))
           ((? string? str)
            (error "invalid build result" (list build str))))))))
 

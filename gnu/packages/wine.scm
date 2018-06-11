@@ -69,7 +69,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "3.0")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.winehq.org/wine/source/"
@@ -77,7 +77,7 @@
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
-                "1v7vq9iinkscbq6wg85fb0d2137660fg2nk5iabxkl2wr850asil"))))
+                "1wr63n70pli83p3rmclr2j4lxzs4ll1cwlpdlaajfrf6v9yhvl5s"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -223,7 +223,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
    (name "wine-staging-patchset-data")
-   (version "3.7")
+   (version "3.9")
    (source
     (origin
      (method url-fetch)
@@ -232,7 +232,7 @@ integrate Windows applications into your desktop.")
      (file-name (string-append name "-" version ".zip"))
      (sha256
       (base32
-       "112sy32sja4cc3rv8x6v4cdi3jfxdgzwfra8f78hzdf8a2wrjqz6"))))
+       "0akccqrp1ymjrra2c99f6hxlaa77jyihfs3q8x93vkgb9c0lq5xx"))))
    (build-system trivial-build-system)
    (native-inputs
     `(("bash" ,bash)
@@ -257,7 +257,8 @@ integrate Windows applications into your desktop.")
                                       "/patches/gitapply.sh") (("/usr/bin/env") env))
           (mkdir-p wine-staging)
           (copy-recursively (string-append "wine-staging-" ,version)
-                            wine-staging)))))
+                            wine-staging)
+          #t))))
    (home-page "https://github.com/wine-staging")
    (synopsis "Patchset for Wine")
    (description
@@ -278,14 +279,15 @@ integrate Windows applications into your desktop.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1drbzk3y0m14lkq3vzwwkvain5shykgcbmyzh6gcb5r4sxh3givn"))))
+                "0ddphvlp9lsjyqc6zckinc36bggpkg925v0x2vqr8nkdjs0w5bfc"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
               ("gtk+" ,gtk+)
               ("libva" ,libva)
               ("python" ,python)
               ("sdl2" ,sdl2)
               ("util-linux" ,util-linux) ; for hexdump
-              ("vulkan-icd-loader" ,vulkan-icd-loader)
+              ("vkd3d" ,vkd3d)
+              ("vulkan-loader" ,vulkan-loader)
               ("wine-staging-patchset-data" ,wine-staging-patchset-data)
               ,@(package-inputs wine)))
     (arguments

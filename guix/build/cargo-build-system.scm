@@ -172,6 +172,7 @@ SRC-NAME as if it was part of the directory DIR-NAME with name
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)

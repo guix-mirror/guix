@@ -5,14 +5,14 @@ using 'getpwnam' in libmount.  This doesn't work in the chroot because
 
 --- util-linux-2.25.2/tests/ts/libmount/optstr	2015-01-23 13:58:41.181151194 +0100
 +++ util-linux-2.25.2/tests/ts/libmount/optstr	2015-01-23 13:58:42.829161716 +0100
-@@ -84,10 +84,6 @@ ts_init_subtest "apply-user"	# add user,
- ts_valgrind $TESTPROG --apply --user "noexec,nosuid,loop=/dev/looop0" 0x408 &> $TS_OUTPUT
+@@ -108,10 +108,6 @@
+ ts_run $TESTPROG --apply --user "noexec,nosuid,loop=/dev/looop0" 0x408 &> $TS_OUTPUT
  ts_finalize_subtest
  
 -ts_init_subtest "fix"
--ts_valgrind $TESTPROG --fix "uid=root,gid=root" &> $TS_OUTPUT
+-ts_run $TESTPROG --fix "uid=root,gid=root" &> $TS_OUTPUT
 -ts_finalize_subtest
 -
  ts_init_subtest "deduplicate"
- ts_valgrind $TESTPROG --dedup bbb,ccc,AAA,xxx,AAA=a,AAA=bbb,ddd,AAA=ccc,fff=eee AAA &> $TS_OUTPUT
+ ts_run $TESTPROG --dedup bbb,ccc,AAA,xxx,AAA=a,AAA=bbb,ddd,AAA=ccc,fff=eee AAA &> $TS_OUTPUT
  ts_finalize_subtest

@@ -25,6 +25,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix profiles)
+  #:use-module ((guix config) #:select (%state-directory))
   #:use-module ((guix utils) #:hide (package-name->name+version))
   #:use-module ((guix build utils)
                 #:select (package-name->name+version))
@@ -77,6 +78,7 @@
             manifest-entry-dependencies
             manifest-entry-search-paths
             manifest-entry-parent
+            manifest-entry-properties
 
             manifest-pattern
             manifest-pattern?
@@ -118,7 +120,13 @@
             generation-file-name
             switch-to-generation
             roll-back
-            delete-generation))
+            delete-generation
+
+            %user-profile-directory
+            %profile-directory
+            %current-profile
+            canonicalize-profile
+            user-friendly-profile))
 
 ;;; Commentary:
 ;;;
@@ -168,13 +176,15 @@
   (version      manifest-entry-version)           ; string
   (output       manifest-entry-output             ; string
                 (default "out"))
-  (item         manifest-entry-item)              ; package | store path
+  (item         manifest-entry-item)              ; package | file-like | store path
   (dependencies manifest-entry-dependencies       ; <manifest-entry>*
                 (default '()))
   (search-paths manifest-entry-search-paths       ; search-path-specification*
                 (default '()))
   (parent       manifest-entry-parent        ; promise (#f | <manifest-entry>)
-                (default (delay #f))))
+                (default (delay #f)))
+  (properties   manifest-entry-properties         ; list of symbol/value pairs
+                (default '())))
 
 (define-record-type* <manifest-pattern> manifest-pattern
   make-manifest-pattern
@@ -313,18 +323,20 @@ denoting a specific output of a package."
   (define (entry->gexp entry)
     (match entry
       (($ <manifest-entry> name version output (? string? path)
-                           (deps ...) (search-paths ...))
+                           (deps ...) (search-paths ...) _ (properties ...))
        #~(#$name #$version #$output #$path
                  (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
-                                      search-paths))))
-      (($ <manifest-entry> name version output (? package? package)
-                           (deps ...) (search-paths ...))
+                                      search-paths))
+                 (properties . #$properties)))
+      (($ <manifest-entry> name version output package
+                           (deps ...) (search-paths ...) _ (properties ...))
        #~(#$name #$version #$output
                  (ungexp package (or output "out"))
                  (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
-                                      search-paths))))))
+                                      search-paths))
+                 (properties . #$properties)))))
 
   (match manifest
     (($ <manifest> (entries ...))
@@ -387,7 +399,9 @@ procedure is here for backward-compatibility and will eventually vanish."
                           (dependencies deps*)
                           (search-paths (map sexp->search-path-specification
                                              search-paths))
-                          (parent parent))))
+                          (parent parent)
+                          (properties (or (assoc-ref extra-stuff 'properties)
+                                          '())))))
          entry))))
 
   (match sexp
@@ -671,7 +685,13 @@ if not found."
             (return (find-among-inputs inputs)))))
         ((? string? item)
          (mlet %store-monad ((refs (references* item)))
-           (return (find-among-store-items refs)))))))
+           (return (find-among-store-items refs))))
+        (item
+         ;; XXX: ITEM might be a 'computed-file' or anything like that, in
+         ;; which case we don't know what to do.  The fix may be to check
+         ;; references once ITEM is compiled, as proposed at
+         ;; <https://bugs.gnu.org/29927>.
+         (return #f)))))
 
   (anym %store-monad
         entry-lookup-package (manifest-entries manifest)))
@@ -836,6 +856,57 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
   (gexp->derivation "ca-certificate-bundle" build
                     #:local-build? #t
                     #:substitutable? #f))
+
+(define (glib-schemas manifest)
+  "Return a derivation that unions all schemas from manifest entries and
+creates the Glib 'gschemas.compiled' file."
+  (define glib  ; lazy reference
+    (module-ref (resolve-interface '(gnu packages glib)) 'glib))
+
+  (mlet %store-monad ((%glib (manifest-lookup-package manifest "glib"))
+                      ;; XXX: Can't use glib-compile-schemas corresponding
+                      ;; to the glib referenced by 'manifest'.  Because
+                      ;; '%glib' can be either a package or store path, and
+                      ;; there's no way to get the "bin" output for the later.
+                      (glib-compile-schemas
+                       -> #~(string-append #+glib:bin
+                                           "/bin/glib-compile-schemas")))
+
+    (define build
+      (with-imported-modules '((guix build utils)
+                               (guix build union)
+                               (guix build profiles)
+                               (guix search-paths)
+                               (guix records))
+        #~(begin
+            (use-modules (guix build utils)
+                         (guix build union)
+                         (guix build profiles)
+                         (srfi srfi-26))
+
+            (let* ((destdir  (string-append #$output "/share/glib-2.0/schemas"))
+                   (schemadirs (filter file-exists?
+                                     (map (cut string-append <> "/share/glib-2.0/schemas")
+                                          '#$(manifest-inputs manifest)))))
+
+              ;; Union all the schemas.
+              (mkdir-p (string-append #$output "/share/glib-2.0"))
+              (union-build destdir schemadirs
+                           #:log-port (%make-void-port "w"))
+
+              (let ((dir destdir))
+                 (when (file-is-directory? dir)
+                   (ensure-writable-directory dir)
+                   (invoke #+glib-compile-schemas
+                           (string-append "--targetdir=" dir)
+                           dir)))))))
+
+    ;; Don't run the hook when there's nothing to do.
+    (if %glib
+        (gexp->derivation "glib-schemas" build
+                          #:local-build? #t
+                          #:substitutable? #f)
+        (return #f))))
 
 (define (gtk-icon-themes manifest)
   "Return a derivation that unions all icon themes from manifest entries and
@@ -1139,41 +1210,39 @@ the entries in MANIFEST."
 
   (define build
     (with-imported-modules modules
-      #~(begin
-          (add-to-load-path (string-append #$gdbm-ffi "/share/guile/site/"
-                                           (effective-version)))
+      (with-extensions (list gdbm-ffi)            ;for (guix man-db)
+        #~(begin
+            (use-modules (guix man-db)
+                         (guix build utils)
+                         (srfi srfi-1)
+                         (srfi srfi-19))
 
-          (use-modules (guix man-db)
-                       (guix build utils)
-                       (srfi srfi-1)
-                       (srfi srfi-19))
+            (define (compute-entries)
+              (append-map (lambda (directory)
+                            (let ((man (string-append directory "/share/man")))
+                              (if (directory-exists? man)
+                                  (mandb-entries man)
+                                  '())))
+                          '#$(manifest-inputs manifest)))
 
-          (define (compute-entries)
-            (append-map (lambda (directory)
-                          (let ((man (string-append directory "/share/man")))
-                            (if (directory-exists? man)
-                                (mandb-entries man)
-                                '())))
-                        '#$(manifest-inputs manifest)))
+            (define man-directory
+              (string-append #$output "/share/man"))
 
-          (define man-directory
-            (string-append #$output "/share/man"))
+            (mkdir-p man-directory)
 
-          (mkdir-p man-directory)
-
-          (format #t "Creating manual page database...~%")
-          (force-output)
-          (let* ((start    (current-time))
-                 (entries  (compute-entries))
-                 (_        (write-mandb-database (string-append man-directory
-                                                                "/index.db")
-                                                 entries))
-                 (duration (time-difference (current-time) start)))
-            (format #t "~a entries processed in ~,1f s~%"
-                    (length entries)
-                    (+ (time-second duration)
-                       (* (time-nanosecond duration) (expt 10 -9))))
-            (force-output)))))
+            (format #t "Creating manual page database...~%")
+            (force-output)
+            (let* ((start    (current-time))
+                   (entries  (compute-entries))
+                   (_        (write-mandb-database (string-append man-directory
+                                                                  "/index.db")
+                                                   entries))
+                   (duration (time-difference (current-time) start)))
+              (format #t "~a entries processed in ~,1f s~%"
+                      (length entries)
+                      (+ (time-second duration)
+                         (* (time-nanosecond duration) (expt 10 -9))))
+              (force-output))))))
 
   (gexp->derivation "manual-database" build
 
@@ -1192,6 +1261,7 @@ the entries in MANIFEST."
         fonts-dir-file
         ghc-package-cache-file
         ca-certificate-bundle
+        glib-schemas
         gtk-icon-themes
         gtk-im-modules
         xdg-desktop-database
@@ -1202,6 +1272,7 @@ the entries in MANIFEST."
                              (hooks %default-profile-hooks)
                              (locales? #t)
                              (allow-collisions? #f)
+                             (relative-symlinks? #f)
                              system target)
   "Return a derivation that builds a profile (aka. 'user environment') with
 the given MANIFEST.  The profile includes additional derivations returned by
@@ -1212,6 +1283,9 @@ with a different version number.)
 
 When LOCALES? is true, the build is performed under a UTF-8 locale; this adds
 a dependency on the 'glibc-utf8-locales' package.
+
+When RELATIVE-SYMLINKS? is true, use relative file names for symlink targets.
+This is one of the things to do for the result to be relocatable.
 
 When TARGET is true, it must be a GNU triplet, and the packages in MANIFEST
 are cross-built for TARGET."
@@ -1275,6 +1349,9 @@ are cross-built for TARGET."
                                         (manifest-entries manifest))))))
 
             (build-profile #$output '#$inputs
+                           #:symlink #$(if relative-symlinks?
+                                           #~symlink-relative
+                                           #~symlink)
                            #:manifest '#$(manifest->gexp manifest)
                            #:search-paths search-paths))))
 
@@ -1451,5 +1528,45 @@ because the NUMBER is zero.)"
            (delete-and-return))
           (else
            (delete-and-return)))))
+
+(define %user-profile-directory
+  (and=> (getenv "HOME")
+         (cut string-append <> "/.guix-profile")))
+
+(define %profile-directory
+  (string-append %state-directory "/profiles/"
+                 (or (and=> (or (getenv "USER")
+                                (getenv "LOGNAME"))
+                            (cut string-append "per-user/" <>))
+                     "default")))
+
+(define %current-profile
+  ;; Call it `guix-profile', not `profile', to allow Guix profiles to
+  ;; coexist with Nix profiles.
+  (string-append %profile-directory "/guix-profile"))
+
+(define (canonicalize-profile profile)
+  "If PROFILE is %USER-PROFILE-DIRECTORY, return %CURRENT-PROFILE.  Otherwise
+return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
+'-p' was omitted."                           ; see <http://bugs.gnu.org/17939>
+
+  ;; Trim trailing slashes so that the basename comparison below works as
+  ;; intended.
+  (let ((profile (string-trim-right profile #\/)))
+    (if (and %user-profile-directory
+             (string=? (canonicalize-path (dirname profile))
+                       (dirname %user-profile-directory))
+             (string=? (basename profile) (basename %user-profile-directory)))
+        %current-profile
+        profile)))
+
+(define (user-friendly-profile profile)
+  "Return either ~/.guix-profile if that's what PROFILE refers to, directly or
+indirectly, or PROFILE."
+  (if (and %user-profile-directory
+           (false-if-exception
+            (string=? (readlink %user-profile-directory) profile)))
+      %user-profile-directory
+      profile))
 
 ;;; profiles.scm ends here

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,10 +25,15 @@
   #:use-module (guix config)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (guix profiles)
   #:use-module (guix gexp)
   #:use-module (guix grafts)
   #:use-module (guix monads)
   #:use-module (guix scripts build)
+  #:autoload   (guix self) (whole-package)
+  #:autoload   (gnu packages ssh) (guile-ssh)
+  #:autoload   (gnu packages tls) (gnutls)
+  #:use-module ((guix scripts package) #:select (build-and-use-profile))
   #:use-module ((guix build utils)
                 #:select (with-directory-excursion delete-file-recursively))
   #:use-module ((guix build download)
@@ -158,6 +163,12 @@ Download and deploy the latest version of Guix.\n"))
   ;; a makefile, and, similarly, is intended to always keep this name.
   "build-aux/build-self.scm")
 
+(define %pull-version
+  ;; This is the version of the 'guix pull' protocol.  It specifies what's
+  ;; expected from %SELF-BUILD-FILE.  The initial version ("0") was when we'd
+  ;; place a set of compiled Guile modules in ~/.config/guix/latest.
+  1)
+
 (define* (build-from-source source
                             #:key verbose? commit)
   "Return a derivation to build Guix from SOURCE, using the self-build script
@@ -170,35 +181,62 @@ contained therein.  Use COMMIT as the version string."
          (build  (primitive-load script)))
     ;; BUILD must be a monadic procedure of at least one argument: the source
     ;; tree.
-    (build source #:verbose? verbose? #:version commit)))
+    ;;
+    ;; Note: BUILD can return #f if it does not support %PULL-VERSION.  In the
+    ;; future we'll fall back to a previous version of the protocol when that
+    ;; happens.
+    (build source #:verbose? verbose? #:version commit
+           #:pull-version %pull-version)))
+
+(define (whole-package-for-legacy name modules)
+  "Return a full-blown Guix package for MODULES, a derivation that builds Guix
+modules in the old ~/.config/guix/latest style."
+  (whole-package name modules
+
+                 ;; In the "old style", %SELF-BUILD-FILE would simply return a
+                 ;; derivation that builds modules.  We have to infer what the
+                 ;; dependencies of these modules were.
+                 (list guile-json guile-git guile-bytestructures
+                       guile-ssh gnutls)))
+
+(define* (derivation->manifest-entry drv
+                                     #:key url branch commit)
+  "Return a manifest entry for DRV, which represents Guix at COMMIT.  Record
+URL, BRANCH, and COMMIT as a property in the manifest entry."
+  (mbegin %store-monad
+    (what-to-build (list drv))
+    (built-derivations (list drv))
+    (let ((out (derivation->output-path drv)))
+      (return (manifest-entry
+                (name "guix")
+                (version (string-take commit 7))
+                (item (if (file-exists? (string-append out "/bin/guix"))
+                          drv
+                          (whole-package-for-legacy (string-append name "-"
+                                                                   version)
+                                                    drv)))
+                (properties
+                 `((source (repository
+                            (version 0)
+                            (url ,url)
+                            (branch ,branch)
+                            (commit ,commit))))))))))
 
 (define* (build-and-install source config-dir
-                            #:key verbose? commit)
+                            #:key verbose? url branch commit)
   "Build the tool from SOURCE, and install it in CONFIG-DIR."
-  (mlet* %store-monad ((source        (build-from-source source
-                                                         #:commit commit
-                                                         #:verbose? verbose?))
-                       (source-dir -> (derivation->output-path source))
-                       (to-do?        (what-to-build (list source)))
-                       (built?        (built-derivations (list source))))
-    ;; Always update the 'latest' symlink, regardless of whether SOURCE was
-    ;; already built or not.
-    (if built?
-        (mlet* %store-monad
-            ((latest -> (string-append config-dir "/latest"))
-             (done      (indirect-root-added latest)))
-          (if (and (file-exists? latest)
-                   (string=? (readlink latest) source-dir))
-              (begin
-                (display (G_ "Guix already up to date\n"))
-                (return #t))
-              (begin
-                (switch-symlinks latest source-dir)
-                (format #t
-                        (G_ "updated ~a successfully deployed under `~a'~%")
-                        %guix-package-name latest)
-                (return #t))))
-        (leave (G_ "failed to update Guix, check the build log~%")))))
+  (define update-profile
+    (store-lift build-and-use-profile))
+
+  (mlet* %store-monad ((drv   (build-from-source source
+                                                 #:commit commit
+                                                 #:verbose? verbose?))
+                       (entry (derivation->manifest-entry drv
+                                                          #:url url
+                                                          #:branch branch
+                                                          #:commit commit)))
+    (update-profile (string-append config-dir "/current")
+                    (manifest (list entry)))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."
@@ -279,6 +317,11 @@ certificates~%"))
                                     (canonical-package guile-2.2)))))
                  (run-with-store store
                    (build-and-install checkout (config-directory)
+                                      #:url url
+                                      #:branch (match ref
+                                                 (('branch . branch)
+                                                  branch)
+                                                 (_ #f))
                                       #:commit commit
                                       #:verbose?
                                       (assoc-ref opts 'verbose?))))))))))))

@@ -47,7 +47,7 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20180422")
+    (version "20180522")
     (source
      (origin
       (method url-fetch)
@@ -55,7 +55,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0xsfpbxwgd4197gra981iv0nmjfk58c0d88dxx6dh6yrqz523klx"))))
+        "1khcz9pm7rjnq4gw8pn30k1d40x337a204dxj4y4qijpx8m7w0gb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

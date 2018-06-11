@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -27,7 +27,9 @@
 (define-module (gnu packages algebra)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages flex)
@@ -60,15 +62,15 @@
 (define-public mpfrcx
   (package
    (name "mpfrcx")
-   (version "0.4.2")
+   (version "0.5")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://www.multiprecision.org/mpfrcx/download/mpfrcx-"
+                  "http://www.multiprecision.org/downloads/mpfrcx-"
                   version ".tar.gz"))
             (sha256
              (base32
-              "0grw66b255r574lvll1bqccm5myj2m8ajzsjaygcyq9zjnnbnhhy"))))
+              "1s968480ymv6w0rnvfp9mxvx98hvi29fkvw8nk4ggzc6azxgwybs"))))
    (build-system gnu-build-system)
    (propagated-inputs
      `(("gmp" ,gmp)
@@ -82,7 +84,7 @@ on the rounding.  For the time being, only the few functions needed to
 implement the floating point approach to complex multiplication are
 implemented.  On the other hand, these comprise asymptotically fast
 multiplication routines such as Toom–Cook and the FFT.")
-   (license license:lgpl2.1+)
+   (license license:lgpl3+)
    (home-page "http://mpfrcx.multiprecision.org/")))
 
 (define-public cm
@@ -211,7 +213,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
 (define-public giac-xcas
   (package
     (name "giac-xcas")
-    (version "1.4.9-45")
+    (version "1.4.9-59")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -223,7 +225,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "11za5rznr2dgy6598y4iwrcyi86w7f601ci9i794kl8k22pqhcd8"))))
+                "0dv5p5y6gkrsmz3xa7fw87rjyabwdwk09mqb09kb7gai9n9dgayk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -519,31 +521,40 @@ a C program.")
     (license license:bsd-3)))
 
 (define-public fftw
-  ;; TODO: Make this 3.3.7 (see below) on the next upgrade cycle.
   (package
     (name "fftw")
-    (version "3.3.5")
+    (version "3.3.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.fftw.org/pub/fftw/fftw-"
                                  version".tar.gz"))
              (sha256
               (base32
-               "1kwbx92ps0r7s2mqy7lxbxanslxdzj7dp7r7gmdkzv1j8yqf3kwf"))))
+               "0wsms8narnbhfsa8chdflv2j9hzspvflblnqdn7hw8x5xdzrnq1v"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
-       '("--enable-shared" "--enable-openmp" "--enable-threads")
-       #:phases (alist-cons-before
-                 'build 'no-native
-                 (lambda _
-                   ;; By default '-mtune=native' is used.  However, that may
-                   ;; cause the use of ISA extensions (SSE2, etc.) that are
-                   ;; not necessarily available on the user's machine when
-                   ;; that package is built on a different machine.
-                   (substitute* (find-files "." "Makefile$")
-                     (("-mtune=native") "")))
-                 %standard-phases)))
+     `(#:configure-flags
+       '("--enable-shared" "--enable-openmp" "--enable-threads"
+         ,@(let ((system (or (%current-target-system) (%current-system))))
+             ;; Enable SIMD extensions for codelets.  See details at:
+             ;; <http://fftw.org/fftw3_doc/Installation-on-Unix.html>.
+             (cond
+              ((string-prefix? "x86_64" system)
+               '("--enable-sse2" "--enable-avx" "--enable-avx2"
+                 "--enable-avx512" "--enable-avx-128-fma"))
+              ((string-prefix? "i686" system)
+               '("--enable-sse2"))
+              ((string-prefix? "aarch64" system)
+               ;; Note that fftw supports NEON on 32-bit ARM only when
+               ;; compiled for single-precision.
+               '("--enable-neon"))
+              (else
+               '())))
+         ;; By default '-mtune=native' is used.  However, that may cause the
+         ;; use of ISA extensions (e.g. AVX) that are not necessarily
+         ;; available on the user's machine when that package is built on a
+         ;; different machine.
+         "ax_cv_c_flags__mtune_native=no")))
     (native-inputs `(("perl" ,perl)))
     (home-page "http://fftw.org")
     (synopsis "Computing the discrete Fourier transform")
@@ -559,8 +570,15 @@ cosine/ sine transforms or DCT/DST).")
     (name "fftwf")
     (arguments
      (substitute-keyword-arguments (package-arguments fftw)
-       ((#:configure-flags cf)
-        `(cons "--enable-float" ,cf))))
+       ((#:configure-flags fftw-configure-flags)
+        `(cons* "--enable-single"
+                ,@(if (string-prefix? "arm" (or (%current-target-system)
+                                                (%current-system)))
+                      ;; fftw supports NEON on 32-bit ARM only when compiled
+                      ;; for single-precision, so add it here.
+                      '("--enable-neon")
+                      '())
+                ,fftw-configure-flags))))
     (description
      (string-append (package-description fftw)
                     "  Single-precision version."))))
@@ -578,42 +596,6 @@ cosine/ sine transforms or DCT/DST).")
     (description
      (string-append (package-description fftw)
                     "  With OpenMPI parallelism support."))))
-
-(define-public fftw-3.3.7
-  ;; TODO: Make this the default 'fftw' on the next upgrade cycle.
-  (package
-    (inherit fftw)
-    (version "3.3.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "ftp://ftp.fftw.org/pub/fftw/fftw-"
-                                  version".tar.gz"))
-              (sha256
-               (base32
-                "0wsms8narnbhfsa8chdflv2j9hzspvflblnqdn7hw8x5xdzrnq1v"))))))
-
-(define-public fftw-avx
-  (package
-    (inherit fftw-3.3.7)
-    (name "fftw-avx")
-    (arguments
-     (substitute-keyword-arguments (package-arguments fftw-3.3.7)
-       ((#:configure-flags flags ''())
-        ;; Enable AVX & co.  See details at:
-        ;; <http://fftw.org/fftw3_doc/Installation-on-Unix.html>.
-        `(append '("--enable-avx" "--enable-avx2" "--enable-avx512"
-                   "--enable-avx-128-fma")
-                 ,flags))
-       ((#:substitutable? _ #f)
-        ;; To run the tests, we must have a CPU that supports all these
-        ;; extensions.  Since we cannot be sure that machines in the build
-        ;; farm support them, disable substitutes altogether.
-        #f)
-       ((#:phases _)
-        ;; Since we're not providing binaries, let '-mtune=native' through.
-        '%standard-phases)))
-    (synopsis "Computing the discrete Fourier transform (AVX2-optimized)")
-    (supported-systems '("x86_64-linux"))))
 
 (define-public java-la4j
   (package
@@ -732,9 +714,10 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
                ;; but maintainers say it's a known issue and it's unsupported
                ;; anyway, so just skip them.
                '(begin
+                  (substitute* "unsupported/CMakeLists.txt"
+                    (("add_subdirectory\\(test.*")
+                     "# Do not build the tests for unsupported features.\n"))
 		  (substitute* "CMakeLists.txt"
-                    (("add_subdirectory\\(unsupported\\)")
-                     "# Do not build the tests for unsupported features.\n")
                     ;; Work around
                     ;; <http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1114>.
                     (("\"include/eigen3\"")
@@ -743,7 +726,8 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
                     ;; See
                     ;; https://bitbucket.org/eigen/eigen/commits/ea8c22ce6920e982d15245ee41d0531a46a28e5d
                     ((".*svd_preallocate[^\n]*" &)
-                     (string-append "//" & " // Not supported by BDCSVD")))))))
+                     (string-append "//" & " // Not supported by BDCSVD")))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(;; Turn off debugging symbols to save space.
@@ -774,3 +758,37 @@ features, and more.")
     ;; Most of the code is MPLv2, with a few files under LGPLv2.1+ or BSD-3.
     ;; See 'COPYING.README' for details.
     (license license:mpl2.0)))
+
+(define-public xtensor
+  (package
+    (name "xtensor")
+    (version "0.15.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/QuantStack/xtensor/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0mlsw4p1w5mh7pscddfdamz27zq3wml5qla3vbzgvif34vsqc8ra"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("xtl" ,xtl)))
+    (arguments
+     `(#:configure-flags
+       '("-DBUILD_TESTS=ON")
+       #:test-target "xtest"))
+    (home-page "http://quantstack.net/xtensor")
+    (synopsis "C++ tensors with broadcasting and lazy computing")
+    (description "xtensor is a C++ library meant for numerical analysis with
+multi-dimensional array expressions.
+
+xtensor provides:
+@itemize
+@item an extensible expression system enabling lazy broadcasting.
+@item an API following the idioms of the C++ standard library.
+@item tools to manipulate array expressions and build upon xtensor.
+@end itemize")
+    (license license:bsd-3)))

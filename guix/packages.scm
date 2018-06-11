@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -35,6 +35,7 @@
   #:use-module (guix sets)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
+  #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-11)
@@ -106,6 +107,7 @@
             package-cross-derivation
             package-output
             package-grafts
+            package-patched-vulnerabilities
             package/inherit
 
             transitive-input-references
@@ -388,10 +390,37 @@ object."
 (define-condition-type &package-cross-build-system-error &package-error
   package-cross-build-system-error?)
 
+(define* (package-full-name package #:optional (delimiter "@"))
+  "Return the full name of PACKAGE--i.e., `NAME@VERSION'.  By specifying
+DELIMITER (a string), you can customize what will appear between the name and
+the version.  By default, DELIMITER is \"@\"."
+  (string-append (package-name package) delimiter (package-version package)))
 
-(define (package-full-name package)
-  "Return the full name of PACKAGE--i.e., `NAME-VERSION'."
-  (string-append (package-name package) "-" (package-version package)))
+(define (patch-file-name patch)
+  "Return the basename of PATCH's file name, or #f if the file name could not
+be determined."
+  (match patch
+    ((? string?)
+     (basename patch))
+    ((? origin?)
+     (and=> (origin-actual-file-name patch) basename))))
+
+(define %vulnerability-regexp
+  ;; Regexp matching a CVE identifier in patch file names.
+  (make-regexp "CVE-[0-9]{4}-[0-9]+"))
+
+(define (package-patched-vulnerabilities package)
+  "Return the list of patched vulnerabilities of PACKAGE as a list of CVE
+identifiers.  The result is inferred from the file names of patches."
+  (define (patch-vulnerabilities patch)
+    (map (cut match:substring <> 0)
+         (list-matches %vulnerability-regexp patch)))
+
+  (let ((patches (filter-map patch-file-name
+                             (or (and=> (package-source package)
+                                        origin-patches)
+                                 '()))))
+    (append-map patch-vulnerabilities patches)))
 
 (define (%standard-patch-inputs)
   (let* ((canonical (module-ref (resolve-interface '(gnu packages base))
@@ -519,9 +548,9 @@ specifies modules in scope when evaluating SNIPPET."
               ;; Use '--force' so that patches that do not apply perfectly are
               ;; rejected.  Use '--no-backup-if-mismatch' to prevent making
               ;; "*.orig" file if a patch is applied with offset.
-              (zero? (system* (string-append #+patch "/bin/patch")
-                              "--force" "--no-backup-if-mismatch"
-                              #+@flags "--input" patch)))
+              (invoke (string-append #+patch "/bin/patch")
+                      "--force" "--no-backup-if-mismatch"
+                      #+@flags "--input" patch))
 
             (define (first-file directory)
               ;; Return the name of the first file in DIRECTORY.
@@ -546,64 +575,74 @@ specifies modules in scope when evaluating SNIPPET."
                                           #+decomp "/bin"))
 
             ;; SOURCE may be either a directory or a tarball.
-            (and (if (file-is-directory? #+source)
-                     (let* ((store     (%store-directory))
-                            (len       (+ 1 (string-length store)))
-                            (base      (string-drop #+source len))
-                            (dash      (string-index base #\-))
-                            (directory (string-drop base (+ 1 dash))))
-                       (mkdir directory)
-                       (copy-recursively #+source directory)
-                       #t)
-                     #+(if (string=? decompression-type "unzip")
-                           #~(zero? (system* "unzip" #+source))
-                           #~(zero? (system* (string-append #+tar "/bin/tar")
-                                             "xvf" #+source))))
-                 (let ((directory (first-file ".")))
-                   (format (current-error-port)
-                           "source is under '~a'~%" directory)
-                   (chdir directory)
+            (if (file-is-directory? #+source)
+                (let* ((store     (%store-directory))
+                       (len       (+ 1 (string-length store)))
+                       (base      (string-drop #+source len))
+                       (dash      (string-index base #\-))
+                       (directory (string-drop base (+ 1 dash))))
+                  (mkdir directory)
+                  (copy-recursively #+source directory))
+                #+(if (string=? decompression-type "unzip")
+                      #~(invoke "unzip" #+source)
+                      #~(invoke (string-append #+tar "/bin/tar")
+                                "xvf" #+source)))
 
-                   (and (every apply-patch '#+patches)
-                        #+@(if snippet
-                               #~((let ((module (make-fresh-user-module)))
-                                    (module-use-interfaces!
-                                     module
-                                     (map resolve-interface '#+modules))
-                                    ((@ (system base compile) compile)
-                                     '#+snippet
-                                     #:to 'value
-                                     #:opts %auto-compilation-options
-                                     #:env module)))
-                               #~())
+            (let ((directory (first-file ".")))
+              (format (current-error-port)
+                      "source is under '~a'~%" directory)
+              (chdir directory)
 
-                        (begin (chdir "..") #t)
+              (for-each apply-patch '#+patches)
 
-                        (unless tar-supports-sort?
-                          (call-with-output-file ".file_list"
-                            (lambda (port)
-                              (for-each (lambda (name)
-                                          (format port "~a~%" name))
-                                        (find-files directory
-                                                    #:directories? #t
-                                                    #:fail-on-error? #t)))))
-                        (zero? (apply system*
-                                      (string-append #+tar "/bin/tar")
-                                      "cvf" #$output
-                                      ;; The bootstrap xz does not support
-                                      ;; threaded compression (introduced in
-                                      ;; 5.2.0), but it ignores the extra flag.
-                                      (string-append "--use-compress-program="
-                                                     #+xz "/bin/xz --threads=0")
-                                      ;; avoid non-determinism in the archive
-                                      "--mtime=@0"
-                                      "--owner=root:0"
-                                      "--group=root:0"
-                                      (if tar-supports-sort?
-                                          `("--sort=name"
-                                            ,directory)
-                                          '("--no-recursion"
-                                            "--files-from=.file_list"))))))))))
+              (let ((result #+(if snippet
+                                  #~(let ((module (make-fresh-user-module)))
+                                      (module-use-interfaces!
+                                       module
+                                       (map resolve-interface '#+modules))
+                                      ((@ (system base compile) compile)
+                                       '#+snippet
+                                       #:to 'value
+                                       #:opts %auto-compilation-options
+                                       #:env module))
+                                  #~#t)))
+                ;; Issue a warning unless the result is #t.
+                (unless (eqv? result #t)
+                  (format (current-error-port) "\
+## WARNING: the snippet returned `~s'.  Return values other than #t
+## are deprecated.  Please migrate this package so that its snippet
+## reports errors by raising an exception, and otherwise returns #t.~%"
+                          result))
+                (unless result
+                  (error "snippet returned false")))
+
+              (chdir "..")
+
+              (unless tar-supports-sort?
+                (call-with-output-file ".file_list"
+                  (lambda (port)
+                    (for-each (lambda (name)
+                                (format port "~a~%" name))
+                              (find-files directory
+                                          #:directories? #t
+                                          #:fail-on-error? #t)))))
+              (apply invoke
+                     (string-append #+tar "/bin/tar")
+                     "cvf" #$output
+                     ;; The bootstrap xz does not support
+                     ;; threaded compression (introduced in
+                     ;; 5.2.0), but it ignores the extra flag.
+                     (string-append "--use-compress-program="
+                                    #+xz "/bin/xz --threads=0")
+                     ;; avoid non-determinism in the archive
+                     "--mtime=@0"
+                     "--owner=root:0"
+                     "--group=root:0"
+                     (if tar-supports-sort?
+                         `("--sort=name"
+                           ,directory)
+                         '("--no-recursion"
+                           "--files-from=.file_list")))))))
 
     (let ((name (tarxz-name original-file-name)))
       (gexp->derivation name build
@@ -935,6 +974,10 @@ and return it."
               (($ <package> name version source build-system
                             args inputs propagated-inputs native-inputs
                             self-native-input? outputs)
+               ;; Even though we prefer to use "@" to separate the package
+               ;; name from the package version in various user-facing parts
+               ;; of Guix, checkStoreName (in nix/libstore/store-api.cc)
+               ;; prohibits the use of "@", so use "-" instead.
                (or (make-bag build-system (string-append name "-" version)
                              #:system system
                              #:target target

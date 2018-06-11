@@ -23,25 +23,13 @@
 ;; IMPORTANT: We must avoid loading any modules from Guix here,
 ;; because we need to adjust the guile load paths first.
 ;; It's okay to import modules from core Guile though.
-(use-modules (srfi srfi-26))
 
 (define-syntax-rule (push! elt v) (set! v (cons elt v)))
 
 (define (augment-load-paths!)
   ;; Add installed modules to load-path.
   (push! "@guilemoduledir@" %load-path)
-  (push! "@guileobjectdir@" %load-compiled-path)
-
-  ;; Add modules fetched by 'guix pull' to load-path.
-  (let ((updates-dir (and=> (or (getenv "XDG_CONFIG_HOME")
-                                (and=> (getenv "HOME")
-                                       (cut string-append <> "/.config")))
-                            (cut string-append <> "/guix/latest"))))
-    (when (and=> updates-dir file-exists?)
-      ;; XXX: Currently 'guix pull' puts both .scm and .go files in
-      ;; UPDATES-DIR.
-      (push! updates-dir %load-path)
-      (push! updates-dir %load-compiled-path))))
+  (push! "@guileobjectdir@" %load-compiled-path))
 
 (define* (main #:optional (args (command-line)))
   (unless (getenv "GUIX_UNINSTALLED")

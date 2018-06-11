@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016, 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
@@ -264,16 +264,16 @@ ISO 8601 dates, time and duration.")
 (define-public python-monotonic
   (package
     (name "python-monotonic")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "monotonic" version))
        (sha256
         (base32
-         "110zd5ld3nchdjds34r95lzs1csmmv81pli2px8l1k8qnpai29m0"))))
+         "1c6z46yb600klbfhqadyl7vq0jdjdxkm72k43ra3iw3d0xakv593"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f))          ;no tests
+    (arguments '(#:tests? #f))          ; no tests
     (home-page "https://github.com/atdt/monotonic")
     (synopsis "Implementation of time.monotonic() for Python 2 & < 3.3")
     (description

@@ -661,43 +661,47 @@ build."
   (define system (assoc-ref opts 'system))
   (define graft? (assoc-ref opts 'graft?))
 
-  (parameterize ((%graft? graft?))
-    (append-map (match-lambda
-                  ((? package? p)
-                   (let ((p (or (and graft? (package-replacement p)) p)))
-                     (match src
-                       (#f
-                        (list (package->derivation store p system)))
-                       (#t
-                        (match (package-source p)
-                          (#f
-                           (format (current-error-port)
-                                   (G_ "~a: warning: \
+  ;; We may get 'unbound-variable' errors while evaluating the 'inputs' fields
+  ;; of user packages.  Since 'guix build' is the primary tool for people
+  ;; testing new packages, report such errors gracefully.
+  (with-unbound-variable-handling
+   (parameterize ((%graft? graft?))
+     (append-map (match-lambda
+                   ((? package? p)
+                    (let ((p (or (and graft? (package-replacement p)) p)))
+                      (match src
+                        (#f
+                         (list (package->derivation store p system)))
+                        (#t
+                         (match (package-source p)
+                           (#f
+                            (format (current-error-port)
+                                    (G_ "~a: warning: \
 package '~a' has no source~%")
-                                   (location->string (package-location p))
-                                   (package-name p))
-                           '())
-                          (s
-                           (list (package-source-derivation store s)))))
-                       (proc
-                        (map (cut package-source-derivation store <>)
-                             (proc p))))))
-                  ((? derivation? drv)
-                   (list drv))
-                  ((? procedure? proc)
-                   (list (run-with-store store
-                           (mbegin %store-monad
-                             (set-guile-for-build (default-guile))
-                             (proc))
-                           #:system system)))
-                  ((? gexp? gexp)
-                   (list (run-with-store store
-                           (mbegin %store-monad
-                             (set-guile-for-build (default-guile))
-                             (gexp->derivation "gexp" gexp
-                                               #:system system))))))
-                (map (cut transform store <>)
-                     (options->things-to-build opts)))))
+                                    (location->string (package-location p))
+                                    (package-name p))
+                            '())
+                           (s
+                            (list (package-source-derivation store s)))))
+                        (proc
+                         (map (cut package-source-derivation store <>)
+                              (proc p))))))
+                   ((? derivation? drv)
+                    (list drv))
+                   ((? procedure? proc)
+                    (list (run-with-store store
+                            (mbegin %store-monad
+                              (set-guile-for-build (default-guile))
+                              (proc))
+                            #:system system)))
+                   ((? gexp? gexp)
+                    (list (run-with-store store
+                            (mbegin %store-monad
+                              (set-guile-for-build (default-guile))
+                              (gexp->derivation "gexp" gexp
+                                                #:system system))))))
+                 (map (cut transform store <>)
+                      (options->things-to-build opts))))))
 
 (define (show-build-log store file urls)
   "Show the build log for FILE, falling back to remote logs from URLS if

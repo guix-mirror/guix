@@ -39,12 +39,6 @@
                (base32
                 "080ci5589bpyy5kcl51csmvpw9zysify189hw6awx69pi3cjnxly"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-i")))))))
     (inputs `(("readline" ,readline)))
     (native-inputs `(("automake" ,automake)
                      ("autoconf" ,autoconf)))

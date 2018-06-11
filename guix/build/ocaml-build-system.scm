@@ -103,6 +103,7 @@
   ;; Everything is as with the GNU Build System except for the `configure'
   ;; , `build', `check' and `install' phases.
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (add-before 'configure 'ocaml-findlib-environment
                 ocaml-findlib-environment)
     (add-before 'install 'prepare-install prepare-install)

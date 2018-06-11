@@ -303,15 +303,14 @@ seconds after @code{SIGTERM} has been sent are terminated with
 
 (define (file-system->fstab-entry file-system)
   "Return a @file{/etc/fstab} entry for @var{file-system}."
-  (string-append (case (file-system-title file-system)
-                   ((label)
-                    (string-append "LABEL=" (file-system-device file-system)))
-                   ((uuid)
-                    (string-append
-                     "UUID="
-                     (uuid->string (file-system-device file-system))))
-                   (else
-                    (file-system-device file-system)))
+  (string-append (match (file-system-device file-system)
+                   ((? file-system-label? label)
+                    (string-append "LABEL="
+                                   (file-system-label->string label)))
+                   ((? uuid? uuid)
+                    (string-append "UUID=" (uuid->string uuid)))
+                   ((? string? device)
+                    device))
                  "\t"
                  (file-system-mount-point file-system) "\t"
                  (file-system-type file-system) "\t"

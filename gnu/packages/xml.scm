@@ -84,7 +84,7 @@ things the parser might find in the XML document (like start tags).")
 (define-public libebml
   (package
     (name "libebml")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
@@ -92,8 +92,23 @@ things the parser might find in the XML document (like start tags).")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "005a0ipqnfbsq47zrc61zszi439jw32q5xd6dc1jyb3lc0zl266q"))))
-    (build-system gnu-build-system)
+         "17iynkj22rbszaymxiaq6k02qy9w4fs1appkn1iam4y441w7lnhy"))
+       (patches
+        (list
+         (origin
+           (method url-fetch)
+           (uri
+            (string-append "https://github.com/Matroska-Org/libebml/commit/"
+                           "e46906b80e7662fb78d305f576412f9fa4a22218.patch"))
+           (file-name "libebml-use-limits-not-climits.patch")
+           (sha256
+            (base32
+             "1803rcj4kzg385xij8j3fcz8h86z43ivciv512zr7jp9jwrafs58")))))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DBUILD_SHARED_LIBS=YES")
+       #:tests? #f))                    ; no test suite
     (home-page "https://matroska-org.github.io/libebml/")
     (synopsis "C++ library to parse EBML files")
     (description "libebml is a C++ library to read and write @dfn{EBML}
@@ -105,14 +120,14 @@ hierarchical form with variable field lengths.")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.7")
+    (version "2.9.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "034hylzspvkm0p4bczqbf8q05a7r2disr8dz725x4bin61ymwg7n"))))
+               "0ci7is75bwqqw2p32vxvrk6ds51ik7qgx73m920rakv5jlayax0b"))))
     (build-system gnu-build-system)
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
@@ -636,14 +651,14 @@ that conforms to the API of the Document Object Model.")
 (define-public perl-xml-compile-tester
   (package
     (name "perl-xml-compile-tester")
-    (version "0.90")
+    (version "0.91")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-Tester-" version ".tar.gz"))
               (sha256
                (base32
-                "1bcl8x8cyacqv9yjp97aq9qq85sy8wv78kd8c16yd9yw3by4cpp1"))))
+                "1drzwziwi96rfkh48qpw4l225mcbk8ppl2157nj92cslcpwwdk75"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
@@ -735,14 +750,14 @@ used.")
 (define-public perl-xml-compile-wsdl11
   (package
     (name "perl-xml-compile-wsdl11")
-    (version "3.06")
+    (version "3.07")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-WSDL11-" version ".tar.gz"))
               (sha256
                (base32
-                "0vbq05cpynm3jj81fw1k4nsb3wv4zngi6blvi1jhdarmh2rfg1x2"))))
+                "09ayl442hzvn97q4ghn5rz4r82dm9w3l69hixhb29h9xq9ysi7ba"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
@@ -911,14 +926,14 @@ XSL-T processor.  It also performs any necessary post-processing.")
 (define-public xmlsec
   (package
     (name "xmlsec")
-    (version "1.2.25")
+    (version "1.2.26")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.aleksey.com/xmlsec/download/"
                                  name "1-" version ".tar.gz"))
              (sha256
               (base32
-               "1lpwj8dxwhha54sby0v5axjk79h56jnhjjiwiasbbk15vwzahz4n"))))
+               "0l1dk344rn3j2vnj13daz72xd8j1msvzhg82n2il5ji0qz4pd0ld"))))
     (build-system gnu-build-system)
     (propagated-inputs ; according to xmlsec1.pc
      `(("libxml2" ,libxml2)
@@ -1233,7 +1248,7 @@ files.  It is designed to be fast and to handle large input files.")
      `(#:phases
        (modify-phases %standard-phases
          ;; Bootstrapping is required in order to fix the test driver script.
-         (add-after 'unpack 'bootstrap
+         (replace 'bootstrap
            (lambda _
              (zero? (system* "bash" "bootstrap")))))))
     (native-inputs

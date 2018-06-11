@@ -184,4 +184,22 @@
                 (file-is-directory? "bin")
                 (eq? 'symlink (stat:type (lstat "bin/guile"))))))))
 
+(letrec-syntax ((test-relative-file-name
+                 (syntax-rules (=>)
+                   ((_ (reference file => expected) rest ...)
+                    (begin
+                      (test-equal (string-append "relative-file-name "
+                                                 reference " " file)
+                        expected
+                        (relative-file-name reference file))
+                      (test-relative-file-name rest ...)))
+                   ((_)
+                    #t))))
+  (test-relative-file-name
+   ("/a/b" "/a/c/d"     => "../c/d")
+   ("/a/b" "/a/b"       => "")
+   ("/a/b" "/a"         => "..")
+   ("/a/b" "/a/b/c/d"   => "c/d")
+   ("/a/b/c" "/a/d/e/f" => "../../d/e/f")))
+
 (test-end)

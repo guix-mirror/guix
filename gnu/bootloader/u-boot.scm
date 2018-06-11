@@ -33,7 +33,12 @@
             u-boot-a20-olinuxino-micro-bootloader
             u-boot-banana-pi-m2-ultra-bootloader
             u-boot-beaglebone-black-bootloader
-            u-boot-nintendo-nes-classic-edition-bootloader))
+            u-boot-mx6cuboxi-bootloader
+            u-boot-nintendo-nes-classic-edition-bootloader
+            u-boot-novena-bootloader
+            u-boot-pine64-plus-bootloader
+            u-boot-puma-rk3399-bootloader
+            u-boot-wandboard-bootloader))
 
 (define install-u-boot
   #~(lambda (bootloader device mount-point)
@@ -62,6 +67,33 @@
         (write-file-on-device u-boot (stat:size (stat u-boot))
                               device (* 8 1024)))))
 
+(define install-allwinner64-u-boot
+  #~(lambda (bootloader device mount-point)
+      (let ((spl (string-append bootloader "/libexec/spl/sunxi-spl.bin"))
+            (u-boot (string-append bootloader "/libexec/u-boot.itb")))
+        (write-file-on-device spl (stat:size (stat spl))
+                              device (* 8 1024))
+        (write-file-on-device u-boot (stat:size (stat u-boot))
+                              device (* 40 1024)))))
+
+(define install-imx-u-boot
+  #~(lambda (bootloader device mount-point)
+      (let ((spl (string-append bootloader "/libexec/SPL"))
+            (u-boot (string-append bootloader "/libexec/u-boot.img")))
+        (write-file-on-device spl (stat:size (stat spl))
+                              device (* 1 1024))
+        (write-file-on-device u-boot (stat:size (stat u-boot))
+                              device (* 69 1024)))))
+
+(define install-puma-rk3399-u-boot
+  #~(lambda (bootloader device mount-point)
+      (let ((spl (string-append bootloader "/libexec/u-boot-spl.rksd"))
+            (u-boot (string-append bootloader "/libexec/u-boot.itb")))
+        (write-file-on-device spl (stat:size (stat spl))
+                              device (* 64 512))
+        (write-file-on-device u-boot (stat:size (stat u-boot))
+                              device (* 512 512)))))
+
 
 
 ;;;
@@ -85,6 +117,16 @@
   (bootloader
    (inherit u-boot-bootloader)
    (installer install-allwinner-u-boot)))
+
+(define u-boot-allwinner64-bootloader
+  (bootloader
+   (inherit u-boot-bootloader)
+   (installer install-allwinner64-u-boot)))
+
+(define u-boot-imx-bootloader
+  (bootloader
+   (inherit u-boot-bootloader)
+   (installer install-imx-u-boot)))
 
 (define u-boot-nintendo-nes-classic-edition-bootloader
   (bootloader
@@ -110,3 +152,29 @@
   (bootloader
    (inherit u-boot-allwinner-bootloader)
    (package u-boot-banana-pi-m2-ultra)))
+
+(define u-boot-mx6cuboxi-bootloader
+  (bootloader
+   (inherit u-boot-imx-bootloader)
+   (package u-boot-mx6cuboxi)))
+
+(define u-boot-wandboard-bootloader
+  (bootloader
+   (inherit u-boot-imx-bootloader)
+   (package u-boot-wandboard)))
+
+(define u-boot-novena-bootloader
+  (bootloader
+   (inherit u-boot-imx-bootloader)
+   (package u-boot-novena)))
+
+(define u-boot-pine64-plus-bootloader
+  (bootloader
+   (inherit u-boot-allwinner64-bootloader)
+   (package u-boot-pine64-plus)))
+
+(define u-boot-puma-rk3399-bootloader
+  (bootloader
+   (inherit u-boot-bootloader)
+   (package u-boot-puma-rk3399)
+   (installer install-puma-rk3399-u-boot)))

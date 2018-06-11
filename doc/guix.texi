@@ -47,7 +47,8 @@ Copyright @copyright{} 2017, 2018 Arun Isaac@*
 Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018 Oleg Pykhalov@*
-Copyright @copyright{} 2018 Mike Gerwitz
+Copyright @copyright{} 2018 Mike Gerwitz@*
+Copyright @copyright{} 2018 Pierre-Antoine Rouby
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -235,6 +236,7 @@ Services
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
+* Sound Services::              ALSA and Pulseaudio services.
 * Database Services::           SQL databases, key-value stores, etc.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
@@ -2741,11 +2743,39 @@ Any user can update their Guix copy using @command{guix pull}, and the
 effect is limited to the user who run @command{guix pull}.  For
 instance, when user @code{root} runs @command{guix pull}, this has no
 effect on the version of Guix that user @code{alice} sees, and vice
-versa@footnote{Under the hood, @command{guix pull} updates the
-@file{~/.config/guix/latest} symbolic link to point to the latest Guix,
-and the @command{guix} command loads code from there.  Currently, the
-only way to roll back an invocation of @command{guix pull} is to
-manually update this symlink to point to the previous Guix.}.
+versa.
+
+The result of running @command{guix pull} is a @dfn{profile} available
+under @file{~/.config/guix/current} containing the latest Guix.  Thus,
+make sure to add it to the beginning of your search path so that you use
+the latest version, and similarly for the Info manual
+(@pxref{Documentation}):
+
+@example
+export PATH="$HOME/.config/guix/current/bin:$PATH"
+export INFOPATH="$HOME/.config/guix/current/share/info:$INFOPATH"
+@end example
+
+This @code{~/.config/guix/current} profile works like any other profile
+created by @command{guix package} (@pxref{Invoking guix package}).  That
+is, you can list generations, roll back to the previous
+generation---i.e., the previous Guix---and so on:
+
+@example
+$ guix package -p ~/.config/guix/current -l
+Generation 1	May 25 2018 10:06:41
+  guix	221951a	out	/gnu/store/i4dfk7vw5k112s49jrhl6hwsfnh6wr7l-guix-221951af4
+
+Generation 2	May 27 2018 19:07:47
+ + guix	2fbae00	out	/gnu/store/44cv9hyvxg34xf5kblf5dz57hc52y4bm-guix-2fbae006f
+ - guix	221951a	out	/gnu/store/i4dfk7vw5k112s49jrhl6hwsfnh6wr7l-guix-221951af4
+
+Generation 3	May 30 2018 16:11:39	(current)
+ + guix	a076f19	out	/gnu/store/332czkicwwg6lc3x4aqbw5q2mq12s7fj-guix-a076f1990
+ - guix	2fbae00	out	/gnu/store/44cv9hyvxg34xf5kblf5dz57hc52y4bm-guix-2fbae006f
+$ guix package -p ~/.config/guix/current --roll-back
+switched from generation 3 to 2
+@end example
 
 The @command{guix pull} command is usually invoked with no arguments,
 but it supports the following options:
@@ -2833,6 +2863,16 @@ guix pack -S /opt/gnu/bin=bin guile emacs geiser
 @noindent
 That way, users can happily type @file{/opt/gnu/bin/guile} and enjoy.
 
+@cindex relocatable binaries, with @command{guix pack}
+What if the recipient of your pack does not have root privileges on
+their machine, and thus cannot unpack it in the root file system?  In
+that case, you will want to use the @code{--relocatable} option (see
+below).  This option produces @dfn{relocatable binaries}, meaning they
+they can be placed anywhere in the file system hierarchy: in the example
+above, users can unpack your tarball in their home directory and
+directly run @file{./opt/gnu/bin/guile}.
+
+@cindex Docker, build an image with guix pack
 Alternatively, you can produce a pack in the Docker image format using
 the following command:
 
@@ -2845,6 +2885,22 @@ The result is a tarball that can be passed to the @command{docker load}
 command.  See the
 @uref{https://docs.docker.com/engine/reference/commandline/load/, Docker
 documentation} for more information.
+
+@cindex Singularity, build an image with guix pack
+@cindex SquashFS, build an image with guix pack
+Yet another option is to produce a SquashFS image with the following
+command:
+
+@example
+guix pack -f squashfs guile emacs geiser
+@end example
+
+@noindent
+The result is a SquashFS file system image that can either be mounted or
+directly be used as a file system container image with the
+@uref{http://singularity.lbl.gov, Singularity container execution
+environment}, using commands like @command{singularity shell} or
+@command{singularity exec}.
 
 Several command-line options allow you to customize your pack:
 
@@ -2864,7 +2920,45 @@ specified binaries and symlinks.
 This produces a tarball that follows the
 @uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
 Docker Image Specification}.
+
+@item squashfs
+This produces a SquashFS image containing all the specified binaries and
+symlinks, as well as empty mount points for virtual file systems like
+procfs.
 @end table
+
+@item --relocatable
+@itemx -R
+Produce @dfn{relocatable binaries}---i.e., binaries that can be placed
+anywhere in the file system hierarchy and run from there.  For example,
+if you create a pack containing Bash with:
+
+@example
+guix pack -R -S /mybin=bin bash
+@end example
+
+@noindent
+... you can copy that pack to a machine that lacks Guix, and from your
+home directory as a normal user, run:
+
+@example
+tar xf pack.tar.gz
+./mybin/sh
+@end example
+
+@noindent
+In that shell, if you type @code{ls /gnu/store}, you'll notice that
+@file{/gnu/store} shows up and contains all the dependencies of
+@code{bash}, even though the machine actually lacks @file{/gnu/store}
+altogether!  That is probably the simplest way to deploy Guix-built
+software on a non-Guix machine.
+
+There's a gotcha though: this technique relies on the @dfn{user
+namespace} feature of the kernel Linux, which allows unprivileged users
+to mount or change root.  Old versions of Linux did not support it, and
+some GNU/Linux distributions turn it off; on these systems, programs
+from the pack @emph{will fail to run}, unless they are unpacked in the
+root file system.
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}
@@ -3746,6 +3840,25 @@ because abstract classes cannot be run as tests.
 The parameter @code{#:build-target} can be used to specify the Ant task
 that should be run during the @code{build} phase.  By default the
 ``jar'' task will be run.
+
+@end defvr
+
+@defvr {Scheme Variable} android-ndk-build-system
+@cindex Android distribution
+@cindex Android NDK build system
+This variable is exported by @code{(guix build-system android-ndk)}.  It
+implements a build procedure for Android NDK (native development kit)
+packages using a Guix-specific build process.
+
+The build system assumes that packages install their public interface
+(header) files to the subdirectory "include" of the "out" output and
+their libraries to the subdirectory "lib" of the "out" output.
+
+It's also assumed that the union of all the dependencies of a package
+has no conflicting files.
+
+For the time being, cross-compilation is not supported - so right now
+the libraries and header files are assumed to be host tools.
 
 @end defvr
 
@@ -4979,6 +5092,23 @@ headers, which comes in handy in this case:
                         @dots{})))
 @end example
 
+@cindex extensions, for gexps
+@findex with-extensions
+In the same vein, sometimes you want to import not just pure-Scheme
+modules, but also ``extensions'' such as Guile bindings to C libraries
+or other ``full-blown'' packages.  Say you need the @code{guile-json}
+package available on the build side, here's how you would do it:
+
+@example
+(use-modules (gnu packages guile))  ;for 'guile-json'
+
+(with-extensions (list guile-json)
+  (gexp->derivation "something-with-json"
+                    #~(begin
+                        (use-modules (json))
+                        @dots{})))
+@end example
+
 The syntactic form to construct gexps is summarized below.
 
 @deffn {Scheme Syntax} #~@var{exp}
@@ -5062,6 +5192,18 @@ directly defined in @var{body}@dots{}, but not on those defined, say, in
 procedures called from @var{body}@dots{}.
 @end deffn
 
+@deffn {Scheme Syntax} with-extensions @var{extensions} @var{body}@dots{}
+Mark the gexps defined in @var{body}@dots{} as requiring
+@var{extensions} in their build and execution environment.
+@var{extensions} is typically a list of package objects such as those
+defined in the @code{(gnu packages guile)} module.
+
+Concretely, the packages listed in @var{extensions} are added to the
+load path while compiling imported modules in @var{body}@dots{}; they
+are also added to the load path of the gexp returned by
+@var{body}@dots{}.
+@end deffn
+
 @deffn {Scheme Procedure} gexp? @var{obj}
 Return @code{#t} if @var{obj} is a G-expression.
 @end deffn
@@ -5076,6 +5218,7 @@ information about monads.)
        [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:module-path @var{%load-path}] @
+       [#:effective-version "2.2"] @
        [#:references-graphs #f] [#:allowed-references #f] @
        [#:disallowed-references #f] @
        [#:leaked-env-vars #f] @
@@ -5095,6 +5238,9 @@ make @var{modules} available in the evaluation context of @var{exp};
 @var{module-path} to be copied in the store, compiled, and made available in
 the load path during the execution of @var{exp}---e.g., @code{((guix
 build utils) (guix build gnu-build-system))}.
+
+@var{effective-version} determines the string to use when adding extensions of
+@var{exp} (see @code{with-extensions}) to the search path---e.g., @code{"2.2"}.
 
 @var{graft?} determines whether packages referred to by @var{exp} should be grafted when
 applicable.
@@ -5793,8 +5939,15 @@ information on cross-compilation.
 
 An example use of this is on Linux-based systems, which can emulate
 different personalities.  For instance, passing
-@code{--system=i686-linux} on an @code{x86_64-linux} system allows you
+@code{--system=i686-linux} on an @code{x86_64-linux} system or
+@code{--system=armhf-linux} on an @code{aarch64-linux} system allows you
 to build packages in a complete 32-bit environment.
+
+@quotation Note
+Building for an @code{armhf-linux} system is unconditionally enabled on
+@code{aarch64-linux} machines, although certain aarch64 chipsets do not
+allow for this functionality, notably the ThunderX.
+@end quotation
 
 Similarly, when transparent emulation with QEMU and @code{binfmt_misc}
 is enabled (@pxref{Virtualization Services,
@@ -6461,6 +6614,12 @@ signatures,, emacs, The GNU Emacs Manual}).
 @uref{http://melpa.org/packages, MELPA}, selected by the @code{melpa}
 identifier.
 @end itemize
+
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
 @end table
 
 @item crate
@@ -6773,15 +6932,33 @@ where @code{CVE-YYYY-ABCD} is the CVE identifier---e.g.,
 
 Package developers can specify in package recipes the
 @uref{https://nvd.nist.gov/cpe.cfm,Common Platform Enumeration (CPE)}
-name and version of the package when they differ from the name that Guix
-uses, as in this example:
+name and version of the package when they differ from the name or version
+that Guix uses, as in this example:
 
 @example
 (package
   (name "grub")
   ;; @dots{}
   ;; CPE calls this package "grub2".
-  (properties '((cpe-name . "grub2"))))
+  (properties '((cpe-name . "grub2")
+                (cpe-version . "2.3")))
+@end example
+
+@c See <http://www.openwall.com/lists/oss-security/2017/03/15/3>.
+Some entries in the CVE database do not specify which version of a
+package they apply to, and would thus ``stick around'' forever.  Package
+developers who found CVE alerts and verified they can be ignored can
+declare them as in this example:
+
+@example
+(package
+  (name "t1lib")
+  ;; @dots{}
+  ;; These CVEs no longer apply and can be safely ignored.
+  (properties `((lint-hidden-cve . ("CVE-2011-0433"
+                                    "CVE-2011-1553"
+                                    "CVE-2011-1554"
+                                    "CVE-2011-5244")))))
 @end example
 
 @item formatting
@@ -6825,19 +7002,23 @@ single output for a package that could easily be split (@pxref{Packages
 with Multiple Outputs}).  Such are the typical issues that
 @command{guix size} can highlight.
 
-The command can be passed a package specification such as @code{gcc@@4.8}
+The command can be passed one or more package specifications
+such as @code{gcc@@4.8}
 or @code{guile:debug}, or a file name in the store.  Consider this
 example:
 
 @example
 $ guix size coreutils
 store item                               total    self
-/gnu/store/@dots{}-coreutils-8.23          70.0    13.9  19.8%
-/gnu/store/@dots{}-gmp-6.0.0a              55.3     2.5   3.6%
-/gnu/store/@dots{}-acl-2.2.52              53.7     0.5   0.7%
-/gnu/store/@dots{}-attr-2.4.46             53.2     0.3   0.5%
-/gnu/store/@dots{}-gcc-4.8.4-lib           52.9    15.7  22.4%
-/gnu/store/@dots{}-glibc-2.21              37.2    37.2  53.1%
+/gnu/store/@dots{}-gcc-5.5.0-lib           60.4    30.1  38.1%
+/gnu/store/@dots{}-glibc-2.27              30.3    28.8  36.6%
+/gnu/store/@dots{}-coreutils-8.28          78.9    15.0  19.0%
+/gnu/store/@dots{}-gmp-6.1.2               63.1     2.7   3.4%
+/gnu/store/@dots{}-bash-static-4.4.12       1.5     1.5   1.9%
+/gnu/store/@dots{}-acl-2.2.52              61.1     0.4   0.5%
+/gnu/store/@dots{}-attr-2.4.47             60.6     0.2   0.3%
+/gnu/store/@dots{}-libcap-2.25             60.5     0.2   0.2%
+total: 78.9 MiB
 @end example
 
 @cindex closure
@@ -6857,17 +7038,21 @@ item itself.  The last column shows the ratio of the size of the item
 itself to the space occupied by all the items listed here.
 
 In this example, we see that the closure of Coreutils weighs in at
-70@tie{}MiB, half of which is taken by libc.  (That libc represents a
-large fraction of the closure is not a problem @i{per se} because it is
-always available on the system anyway.)
+79@tie{}MiB, most of which is taken by libc and GCC's run-time support
+libraries.  (That libc and GCC's libraries represent a large fraction of
+the closure is not a problem @i{per se} because they are always available
+on the system anyway.)
 
-When the package passed to @command{guix size} is available in the
-store, @command{guix size} queries the daemon to determine its
+When the package(s) passed to @command{guix size} are available in the
+store@footnote{More precisely, @command{guix size} looks for the
+@emph{ungrafted} variant of the given package(s), as returned by
+@code{guix build @var{package} --no-grafts}.  @xref{Security Updates},
+for information on grafts.}, @command{guix size} queries the daemon to determine its
 dependencies, and measures its size in the store, similar to @command{du
 -ms --apparent-size} (@pxref{du invocation,,, coreutils, GNU
 Coreutils}).
 
-When the given package is @emph{not} in the store, @command{guix size}
+When the given packages are @emph{not} in the store, @command{guix size}
 reports information based on the available substitutes
 (@pxref{Substitutes}).  This makes it possible it to profile disk usage of
 store items that are not even on disk, only available remotely.
@@ -9115,20 +9300,31 @@ This is a string specifying the type of the file system---e.g.,
 This designates the place where the file system is to be mounted.
 
 @item @code{device}
-This names the ``source'' of the file system.  By default it is the name
-of a node under @file{/dev}, but its meaning depends on the @code{title}
-field described below.
+This names the ``source'' of the file system.  It can be one of three
+things: a file system label, a file system UUID, or the name of a
+@file{/dev} node.  Labels and UUIDs offer a way to refer to file
+systems without having to hard-code their actual device
+name@footnote{Note that, while it is tempting to use
+@file{/dev/disk/by-uuid} and similar device names to achieve the same
+result, this is not recommended: These special device nodes are created
+by the udev daemon and may be unavailable at the time the device is
+mounted.}.
 
-@item @code{title} (default: @code{'device})
-This is a symbol that specifies how the @code{device} field is to be
-interpreted.
+@findex file-system-label
+File system labels are created using the @code{file-system-label}
+procedure, UUIDs are created using @code{uuid}, and @file{/dev} node are
+plain strings.  Here's an example of a file system referred to by its
+label, as shown by the @command{e2label} command:
 
-When it is the symbol @code{device}, then the @code{device} field is
-interpreted as a file name; when it is @code{label}, then @code{device}
-is interpreted as a file system label name; when it is @code{uuid},
-@code{device} is interpreted as a file system unique identifier (UUID).
+@example
+(file-system
+  (mount-point "/home")
+  (type "ext4")
+  (device (file-system-label "my-home")))
+@end example
 
-UUIDs may be converted from their string representation (as shown by the
+@findex uuid
+UUIDs are converted from their string representation (as shown by the
 @command{tune2fs -l} command) using the @code{uuid} form@footnote{The
 @code{uuid} form expects 16-byte UUIDs as defined in
 @uref{https://tools.ietf.org/html/rfc4122, RFC@tie{}4122}.  This is the
@@ -9140,22 +9336,13 @@ like this:
 (file-system
   (mount-point "/home")
   (type "ext4")
-  (title 'uuid)
   (device (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")))
 @end example
 
-The @code{label} and @code{uuid} options offer a way to refer to file
-systems without having to hard-code their actual device
-name@footnote{Note that, while it is tempting to use
-@file{/dev/disk/by-uuid} and similar device names to achieve the same
-result, this is not recommended: These special device nodes are created
-by the udev daemon and may be unavailable at the time the device is
-mounted.}.
-
-However, when the source of a file system is a mapped device (@pxref{Mapped
+When the source of a file system is a mapped device (@pxref{Mapped
 Devices}), its @code{device} field @emph{must} refer to the mapped
-device name---e.g., @file{/dev/mapper/root-partition}---and consequently
-@code{title} must be set to @code{'device}.  This is required so that
+device name---e.g., @file{"/dev/mapper/root-partition"}.
+This is required so that
 the system knows that mounting the file system depends on having the
 corresponding device mapping established.
 
@@ -9697,6 +9884,7 @@ declaration.
 * X Window::                    Graphical display.
 * Printing Services::           Local and remote printer support.
 * Desktop Services::            D-Bus and desktop services.
+* Sound Services::              ALSA and Pulseaudio services.
 * Database Services::           SQL databases, key-value stores, etc.
 * Mail Services::               IMAP, POP3, SMTP, and all that.
 * Messaging Services::          Messaging services.
@@ -11624,7 +11812,7 @@ Script to run after starting xorg-server.
 @item @code{xdisplay-stop} (default @code{#~(string-append #$sddm "/share/sddm/scripts/Xstop")})
 Script to run before stopping xorg-server.
 
-@item @code{xsession-command} (default: @code{xinitr })
+@item @code{xsession-command} (default: @code{xinitrc})
 Script to run before starting a X session.
 
 @item @code{xsessions-directory} (default: "/run/current-system/profile/share/xsessions")
@@ -11697,6 +11885,44 @@ resolutions---e.g., @code{((1024 768) (640 480))}.
 Last, @var{extra-config} is a list of strings or objects appended to the
 configuration file.  It is used to pass extra text to be
 added verbatim to the configuration file.
+
+@cindex keymap
+@cindex keyboard layout
+This procedure is especially useful to configure a different keyboard layout
+than the default US keymap.  For instance, to use the ``bépo'' keymap by
+default on the display manager:
+
+@example
+(define bepo-evdev
+  "Section \"InputClass\"
+        Identifier \"evdev keyboard catchall\"
+        Driver \"evdev\"
+        MatchIsKeyboard \"on\"
+        Option \"xkb_layout\" \"fr\"
+        Option \"xkb_variant\" \"bepo\"
+EndSection")
+
+(operating-system
+  ...
+  (services
+    (modify-services %desktop-services
+      (slim-service-type config =>
+        (slim-configuration
+          (inherit config)
+          (startx (xorg-start-command
+                   #:configuration-file
+                   (xorg-configuration-file
+                     #:extra-config
+                     (list bepo-evdev)))))))))
+@end example
+
+The @code{MatchIsKeyboard} line specifies that we only apply the configuration
+to keyboards.  Without this line, other devices such as touchpad may not work
+correctly because they will be attached to the wrong driver.  In this example,
+the user typically used @code{setxkbmap fr bepo} to set their favorite keymap
+once logged in.  The first argument corresponds to the layout, while the second
+argument corresponds to the variant.  The @code{xkb_variant} line can be omitted
+to select the default variant.
 @end deffn
 
 @deffn {Scheme Procedure} screen-locker-service @var{package} [@var{program}]
@@ -12582,11 +12808,11 @@ field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
 Additionally, the @code{gnome-desktop-service},
-@code{xfce-desktop-service} and @code{mate-desktop-service}
-procedures can add GNOME, XFCE and/or MATE to a system.
-To ``add GNOME'' means that system-level services like the
-backlight adjustment helpers and the power management utilities are
-added to the system, extending @code{polkit} and @code{dbus}
+@code{xfce-desktop-service}, @code{mate-desktop-service} and
+@code{enlightenment-desktop-service-type} procedures can add GNOME, XFCE, MATE
+and/or Enlightenment to a system.  To ``add GNOME'' means that system-level
+services like the backlight adjustment helpers and the power management
+utilities are added to the system, extending @code{polkit} and @code{dbus}
 appropriately, allowing GNOME to operate with elevated privileges on a
 limited number of special-purpose system interfaces.  Additionally,
 adding a service made by @code{gnome-desktop-service} adds the GNOME
@@ -12599,7 +12825,10 @@ To ``add MATE'' means that @code{polkit} and @code{dbus} are extended
 appropriately, allowing MATE to operate with elevated privileges on a
 limited number of special-purpose system interfaces.  Additionally,
 adding a service made by @code{mate-desktop-service} adds the MATE
-metapackage to the system profile.
+metapackage to the system profile.  ``Adding ENLIGHTENMENT'' means that
+@code{dbus} is extended appropriately, and several of Enlightenment's binaries
+are set as setuid, allowing Enlightenment's screen locker and other
+functionality to work as expetected.
 
 The desktop environments in Guix use the Xorg display server by
 default.  If you'd like to use the newer display server protocol
@@ -12629,8 +12858,20 @@ profile, and extends polkit with the actions from
 @code{mate-settings-daemon}.
 @end deffn
 
+@deffn {Scheme Procedure} enlightenment-desktop-service-type
+Return a service that adds the @code{enlightenment} package to the system
+profile, and extends dbus with actions from @code{efl}.
+@end deffn
+
+@deftp {Data Type} enlightenment-desktop-service-configuration
+@table @asis
+@item @code{enlightenment} (default @code{enlightenment})
+The enlightenment package to use.
+@end table
+@end deftp
+
 Because the GNOME, XFCE and MATE desktop services pull in so many packages,
-the default @code{%desktop-services} variable doesn't include either of
+the default @code{%desktop-services} variable doesn't include any of
 them by default.  To add GNOME, XFCE or MATE, just @code{cons} them onto
 @code{%desktop-services} in the @code{services} field of your
 @code{operating-system}:
@@ -12841,6 +13082,48 @@ bluetooth keyboard or mouse.
 
 Users need to be in the @code{lp} group to access the D-Bus service.
 @end deffn
+
+@node Sound Services
+@subsubsection Sound Services
+
+@cindex sound support
+@cindex ALSA
+@cindex PulseAudio, sound support
+
+The @code{(gnu services sound)} module provides an
+@code{alsa-service-type} service to generate an ALSA
+@file{/etc/asound.conf} configuration file.  This configuration file is
+what allows applications that produce sound using ALSA to be correctly
+handled.
+
+@deffn {Scheme Variable} alsa-service-type
+This is the type for the @uref{https://alsa-project.org/, ALSA},
+@command{alsa-configuration} record as in this example:
+
+@example
+(service alsa-service-type)
+@end example
+
+See below for details about @code{alsa-configuration}.
+@end deffn
+
+@deftp {Data Type} alsa-configuration
+Data type representing the configuration for @code{alsa-service}.
+
+@table @asis
+@item @code{pulseaudio?} (default: @var{#t})
+Whether ALSA applications should transparently be made to use the
+@uref{http://www.pulseaudio.org/, PulseAudio} sound server.
+
+Using PulseAudio allows you to run several sound-producing applications
+at the same time and to individual control them @i{via}
+@command{pavucontrol}, among other things.
+
+@item @code{extra-options} (default: @var{""})
+String to append to the @file{asound.conf} file.
+
+@end table
+@end deftp
 
 @node Database Services
 @subsubsection Database Services
@@ -14880,6 +15163,9 @@ networking interface.
 @item @code{package} (default: @code{bitlbee})
 The BitlBee package to use.
 
+@item @code{plugins} (default: @code{'()})
+List of plugin packages to use---e.g., @code{bitlbee-discord}.
+
 @item @code{extra-settings} (default: @code{""})
 Configuration snippet added as-is to the BitlBee configuration file.
 @end table
@@ -15979,6 +16265,64 @@ A simple setup for cat-avatar-generator can look like this:
                  %base-services))
 @end example
 
+@subsubheading Hpcguix-web
+
+@cindex hpcguix-web
+The @uref{hpcguix-web, https://github.com/UMCUGenetics/hpcguix-web/}
+program is a customizable web interface to browse Guix packages,
+initially designed for users of high-performance computing (HPC)
+clusters.
+
+@defvr {Scheme Variable} hpcguix-web-service-type
+The service type for @code{hpcguix-web}.
+@end defvr
+
+@deftp {Data Type} hpcguix-web-configuration
+Data type for the hpcguix-web service configuration.
+
+@table @asis
+@item @code{specs}
+A gexp (@pxref{G-Expressions}) specifying the hpcguix-web service
+configuration.  The main items available in this spec are:
+
+@table @asis
+@item @code{title-prefix} (default: @code{"hpcguix | "})
+The page title prefix.
+
+@item @code{guix-command} (default: @code{"guix"})
+The @command{guix} command.
+
+@item @code{package-filter-proc} (default: @code{(const #t)})
+A procedure specifying how to filter packages that are displayed.
+
+@item @code{package-page-extension-proc} (default: @code{(const '())})
+Extension package for @code{hpcguix-web}.
+
+@item @code{menu} (default: @code{'()})
+Additional entry in page @code{menu}.
+@end table
+
+See the hpcguix-web repository for a
+@uref{https://github.com/UMCUGenetics/hpcguix-web/blob/master/hpcweb-configuration.scm,
+complete example}.
+
+@item @code{package} (default: @code{hpcguix-web})
+The hpcguix-web package to use.
+@end table
+@end deftp
+
+A typical hpcguix-web service declaration looks like this:
+
+@example
+(service hpcguix-web-service-type
+         (hpcguix-web-configuration
+          (specs
+           #~(define site-config
+               (hpcweb-configuration
+                (title-prefix "Guix-HPC - ")
+                (menu '(("/about" "ABOUT"))))))))
+@end example
+
 @node Certificate Services
 @subsubsection Certificate Services
 
@@ -16133,7 +16477,11 @@ saved to @code{/etc/letsencrypt/live/@var{name}/privkey.pem}.
 The @code{(gnu services dns)} module provides services related to the
 @dfn{domain name system} (DNS).  It provides a server service for hosting
 an @emph{authoritative} DNS server for multiple zones, slave or master.
-This service uses @uref{https://www.knot-dns.cz/, Knot DNS}.
+This service uses @uref{https://www.knot-dns.cz/, Knot DNS}.  And also a
+caching and forwarding DNS server for the LAN, which uses
+@uref{http://www.thekelleys.org.uk/dnsmasq/doc.html, dnsmasq}.
+
+@subsubheading Knot Service
 
 An example configuration of an authoritative server for two zones, one master
 and one slave, is:
@@ -16528,6 +16876,59 @@ The list of knot-zone-configuration used by this configuration.
 @end table
 @end deftp
 
+@subsubheading Dnsmasq Service
+
+@deffn {Scheme Variable} dnsmasq-service-type
+This is the type of the dnsmasq service, whose value should be an
+@code{dnsmasq-configuration} object as in this example:
+
+@example
+(service dnsmasq-service-type
+         (dnsmasq-configuration
+           (no-resolv? #t)
+           (servers '("192.168.1.1"))))
+@end example
+@end deffn
+
+@deftp {Data Type} dnsmasq-configuration
+Data type representing the configuration of dnsmasq.
+
+@table @asis
+@item @code{package} (default: @var{dnsmasq})
+Package object of the dnsmasq server.
+
+@item @code{no-hosts?} (default: @code{#f})
+When true, don't read the hostnames in /etc/hosts.
+
+@item @code{port} (default: @code{53})
+The port to listen on.  Setting this to zero completely disables DNS
+funtion, leaving only DHCP and/or TFTP.
+
+@item @code{local-service?} (default: @code{#t})
+Accept DNS queries only from hosts whose address is on a local subnet,
+ie a subnet for which an interface exists on the server.
+
+@item @code{listen-addresses} (default: @code{'()})
+Listen on the given IP addresses.
+
+@item @code{resolv-file} (default: @code{"/etc/resolv.conf"})
+The file to read the IP address of the upstream nameservers from.
+
+@item @code{no-resolv?} (default: @code{#f})
+When true, don't read @var{resolv-file}.
+
+@item @code{servers} (default: @code{'()})
+Specify IP address of upstream servers directly.
+
+@item @code{cache-size} (default: @code{150})
+Set the size of dnsmasq's cache.  Setting the cache size to zero
+disables caching.
+
+@item @code{negative-cache?} (default: @code{#t})
+When false, disable negative caching.
+
+@end table
+@end deftp
 
 @node VPN Services
 @subsubsection VPN Services
@@ -19100,7 +19501,7 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
-@deftypevr {@code{cgit-configuration} parameter} list project-list
+@deftypevr {@code{cgit-configuration} parameter} project-list project-list
 A list of subdirectories inside of @code{repository-directory}, relative
 to it, that should loaded as Git repositories.  An empty list means that
 all subdirectories will be loaded.

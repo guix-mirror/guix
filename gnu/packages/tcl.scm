@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -39,14 +39,14 @@
 (define-public tcl
   (package
     (name "tcl")
-    (version "8.6.7")
+    (version "8.6.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/tcl/Tcl/"
                                   version "/tcl" version "-src.tar.gz"))
               (sha256
                (base32
-                "19bb09l55alz4jb38961ikd5116q80s51bjvzqy44ckkwf28ysvw"))))
+                "0sprsg7wnraa4cbwgbcliylm6p0rspfymxn8ww02pr4ca70v0g64"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -55,16 +55,15 @@
                  (add-after 'install 'install-private-headers
                    (lambda* (#:key outputs #:allow-other-keys)
                      ;; Private headers are needed by Expect.
-                     (and (zero? (system* "make"
-                                          "install-private-headers"))
-                          (let ((bin (string-append (assoc-ref outputs "out")
-                                                    "/bin")))
-                            ;; Create a tclsh -> tclsh8.6 symlink.
-                            ;; Programs such as Ghostscript rely on it.
-                            (with-directory-excursion bin
-                              (symlink (car (find-files "." "tclsh"))
-                                       "tclsh"))
-                            #t)))))
+                     (invoke "make" "install-private-headers")
+                     (let ((bin (string-append (assoc-ref outputs "out")
+                                               "/bin")))
+                       ;; Create a tclsh -> tclsh8.6 symlink.
+                       ;; Programs such as Ghostscript rely on it.
+                       (with-directory-excursion bin
+                         (symlink (car (find-files "." "tclsh"))
+                                  "tclsh"))
+                       #t))))
 
        ;; By default, man pages are put in PREFIX/man, but we want them in
        ;; PREFIX/share/man.  The 'validate-documentation-location' phase is
@@ -100,7 +99,7 @@
     (inputs
      `(;; TODO: Add these optional dependencies.
        ;; ("libX11" ,libX11)
-       ;; ("xproto" ,xproto)
+       ;; ("xorgproto" ,xorgproto)
        ;; ("tk" ,tk)
        ("tcl" ,tcl)))
     (arguments
@@ -135,14 +134,14 @@ X11 GUIs.")
 (define-public tk
   (package
     (name "tk")
-    (version "8.6.7")
+    (version "8.6.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/tcl/Tcl/"
                                  version "/tk" version "-src.tar.gz"))
              (sha256
               (base32
-               "1aipcf6qmbgi15av8yrpp2hx6vdwr684r6739p8cgdzrajiy4786"))
+               "0cvvznjwfn0i9vj9cw3wg8svx25ha34gg57m4xd1k5fyinhbrrs9"))
              (patches (search-patches "tk-find-library.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -150,7 +149,8 @@ X11 GUIs.")
                   (add-before
                    'configure 'pre-configure
                    (lambda _
-                     (chdir "unix")))
+                     (chdir "unix")
+                     #t))
                   (add-after
                    'install 'add-fontconfig-flag
                    (lambda* (#:key inputs outputs #:allow-other-keys)

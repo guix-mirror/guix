@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -139,22 +139,19 @@ may also simplify input method development.")
 (define-public ibus-libpinyin
   (package
    (name "ibus-libpinyin")
-   (version "1.9.2")
+   (version "1.10.0")
    (source (origin
              (method url-fetch)
-             (uri (string-append "https://github.com/libpinyin/"
-                                 "ibus-libpinyin/archive/" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (uri (string-append "https://github.com/libpinyin/ibus-libpinyin/"
+                                 "releases/download/" version
+                                 "/ibus-libpinyin-" version ".tar.gz"))
              (sha256
               (base32
-               "0wpgs0m62l4zlis9f11b7xknhgnw2xw485nc2xrzk880s17pp1mr"))))
+               "0yq8aw4lddiviag8cnik6fp52vvk8lxv6bym13a3xya84c6zii3c"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'autogen
-          (lambda _ (and (zero? (system* "intltoolize"))
-                         (zero? (system* "autoreconf" "-vif")))))
         (add-after 'wrap-program 'wrap-with-additional-paths
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Make sure 'ibus-setup-libpinyin' runs with the correct
@@ -180,10 +177,7 @@ may also simplify input method development.")
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("intltool" ,intltool)
-      ("autoconf" ,autoconf)
-      ("automake" ,automake)
-      ("glib" ,glib "bin")
-      ("libtool" ,libtool)))
+      ("glib" ,glib "bin")))
    (synopsis "Chinese pinyin and ZhuYin input methods for IBus")
    (description
     "This package includes a Chinese pinyin input method and a Chinese
@@ -194,43 +188,21 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
 (define-public libpinyin
   (package
     (name "libpinyin")
-    (version "2.1.91")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/libpinyin/libpinyin/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/libpinyin/libpinyin/"
+                                  "releases/download/" version
+                                  "/libpinyin-2.2.0.tar.gz"))
               (sha256
                (base32
-                "1yr4zyz3rwvmvj6bh8pc54hbp4rd2xk3g06y38z220fshx2l8pwf"))))
+                "1c4wxvcvjxvk23mcwqvsfsv4nhimx4kpjhabxa28gx1ih10l88gj"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'autogen
-           (lambda _ (zero? (system* "autoreconf" "-vif"))))
-         (add-after 'unpack 'unpack-model
-           (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "tar" "-xvf"
-                             (assoc-ref inputs "model")
-                             "-C" "data")))))))
     (inputs
      `(("glib" ,glib)
-       ("bdb" ,bdb)
-       ("model"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append "mirror://sourceforge/libpinyin/"
-                               "models/model14.text.tar.gz"))
-           (sha256
-            (base32
-             "0qqk30nflj07zjhs231c95ln4yj4ipzwxxiwrxazrg4hb8bhypqq"))))))
+       ("bdb" ,bdb)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     `(("pkg-config" ,pkg-config)))
     (synopsis "Library to handle Chinese pinyin")
     (description
      "The libpinyin C++ library provides algorithms needed for sentence-based

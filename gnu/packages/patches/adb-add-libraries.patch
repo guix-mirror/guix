@@ -1,0 +1,30 @@
+--- a/adb/Android.mk	2018-04-25 23:23:29.527198350 +0200
++++ b/adb/Android.mk	2018-04-25 23:24:25.558632573 +0200
+@@ -226,7 +226,7 @@
+ LOCAL_SRC_FILES := test_track_devices.cpp
+ LOCAL_SANITIZE := $(adb_host_sanitize)
+ LOCAL_SHARED_LIBRARIES := libbase
+-LOCAL_STATIC_LIBRARIES := libadb libcrypto_static libcutils
++LOCAL_STATIC_LIBRARIES := libadb libbase libcrypto_static libcutils
+ LOCAL_LDLIBS += -lrt -ldl -lpthread
+ include $(BUILD_HOST_EXECUTABLE)
+ endif
+@@ -278,6 +278,7 @@
+ LOCAL_SANITIZE := $(adb_host_sanitize)
+ LOCAL_STATIC_LIBRARIES := \
+     libadb \
++    libcutils \
+     libbase \
+     libcrypto_static \
+     libdiagnose_usb \
+--- a/adb/sysdeps_test.cpp	2018-05-09 23:58:46.583163684 +0200
++++ b/adb/sysdeps_test.cpp	2018-05-09 23:56:41.356544648 +0200
+@@ -17,6 +17,8 @@
+ #include <gtest/gtest.h>
+ #include <unistd.h>
+ #include <atomic>
++#include <climits>
++#include <mutex>
+ 
+ #include "adb_io.h"
+ #include "sysdeps.h"

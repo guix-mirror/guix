@@ -58,7 +58,8 @@
            ;; qtsingleapplication have not yet been packaged, but all are
            ;; explicitly used from the 3rdparty folder during build.
            ;; We can also remove the macgoodies folder
-           (delete-file-recursively "src/3rdparty/qtmacgoodies")))))
+           (delete-file-recursively "src/3rdparty/qtmacgoodies")
+           #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases

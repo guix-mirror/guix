@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -15,8 +15,10 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +61,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages maths)
@@ -66,6 +69,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages networking)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -182,23 +186,24 @@ without requiring the source code to be rewritten.")
    (outputs '("out" "debug"))
 
    (arguments
-    `(#:configure-flags '("--disable-static")     ;saves 3MiB
-      #:phases (alist-cons-before
-                'configure 'pre-configure
-                (lambda* (#:key inputs #:allow-other-keys)
-                  ;; Tell (ice-9 popen) the file name of Bash.
-                  (let ((bash (assoc-ref inputs "bash")))
-                    (substitute* "module/ice-9/popen.scm"
-                      ;; If bash is #f allow fallback for user to provide
-                      ;; "bash" in PATH.  This happens when cross-building to
-                      ;; MinGW for which we do not have Bash yet.
-                      (("/bin/sh")
-                       ,@(if (target-mingw?)
-                             '((if bash
-                                   (string-append bash "/bin/bash")
-                                   "bash"))
-                             '((string-append bash "/bin/bash")))))))
-                %standard-phases)))
+    `(#:configure-flags '("--disable-static") ; saves 3 MiB
+      #:phases
+      (modify-phases %standard-phases
+        (add-before 'configure 'pre-configure
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; Tell (ice-9 popen) the file name of Bash.
+            (let ((bash (assoc-ref inputs "bash")))
+              (substitute* "module/ice-9/popen.scm"
+                ;; If bash is #f allow fallback for user to provide
+                ;; "bash" in PATH.  This happens when cross-building to
+                ;; MinGW for which we do not have Bash yet.
+                (("/bin/sh")
+                 ,@(if (target-mingw?)
+                       '((if bash
+                             (string-append bash "/bin/bash")
+                             "bash"))
+                       '((string-append bash "/bin/bash")))))
+              #t))))))
 
    (native-search-paths
     (list (search-path-specification
@@ -238,8 +243,10 @@ without requiring the source code to be rewritten.")
               ;; Remove the pre-built object files.  Instead, build everything
               ;; from source, at the expense of significantly longer build
               ;; times (almost 3 hours on a 4-core Intel i5).
-              (snippet '(for-each delete-file
-                                  (find-files "prebuilt" "\\.go$")))))
+              (snippet '(begin
+                          (for-each delete-file
+                                    (find-files "prebuilt" "\\.go$"))
+                          #t))))
     (properties '((timeout . 72000)               ;20 hours
                   (max-silent-time . 36000)))     ;10 hours (needed on ARM
                                                   ;  when heavily loaded)
@@ -275,10 +282,9 @@ without requiring the source code to be rewritten.")
   (package
     (inherit guile-2.2)
     (properties '((hidden? . #t)            ;people should install 'guile-2.2'
-                  (timeout . 72000)            ;20 hours
-                  (max-silent-time . 36000)))  ;10 hours (needed on ARM
-                                               ;  when heavily loaded)
-    (replacement #f)))
+                  (timeout . 72000)             ;20 hours
+                  (max-silent-time . 36000))))) ;10 hours (needed on ARM
+                                                ;  when heavily loaded)
 
 (define-public guile-2.2.2
   ;; Keep it so that, when 'guix' runs on 2.2.2, 'guix pull' compiles objects
@@ -523,7 +529,8 @@ program can be installed in one go.")
                                       post)))
                     (substitute* "artanis/artanis.scm"
                       (("[[:punct:][:space:]]+->json-string[[:punct:][:space:]]+")
-                       ""))))))
+                       ""))
+                    #t))))
       (build-system gnu-build-system)
       ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
       (inputs `(("guile" ,guile-2.2)
@@ -720,16 +727,16 @@ format is also supported.")
 (define-public guile-ics
   (package
     (name "guile-ics")
-    (version "0.1.1")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/guile-ics")
-                    (commit "v0.1.1")))
+                    (commit (string-append "v" version))))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1pvg6j48inpbq47hq00yh5hhl2qd2srvrx5yjl7w7ky1jsjadp86"))))
+                "0qjjvadr7gibdq9jvwkmlkb4afsw9n2shfj9phpiadinxk3p4m2g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -746,8 +753,8 @@ format is also supported.")
        ;; Gettext brings 'AC_LIB_LINKFLAGS_FROM_LIBS'.
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.0) ("which" ,which)))
-    (propagated-inputs `(("guile-lib" ,guile2.0-lib)))
+    (inputs `(("guile" ,guile-2.2) ("which" ,which)))
+    (propagated-inputs `(("guile-lib" ,guile-lib)))
     (home-page "https://github.com/artyom-poptsov/guile-ics")
     (synopsis "Guile parser library for the iCalendar format")
     (description
@@ -807,28 +814,33 @@ for Guile\".")
 (define-public guile-json
   (package
     (name "guile-json")
-    (version "0.6.0")
+    (version "1.0.1")
+    (home-page "https://github.com/aconchillo/guile-json")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/guile-json/guile-json-"
+              (uri (string-append home-page "/archive/"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1qmjg7lbgciw95fkdzvlp9f68vv17kdjky42ywfzd4ffzwww0lgc"))
+                "16155dv30rhagz6dwv7xc87l386i8v0f1kgydqa2ajr166fi9qhr"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure everything goes under .../site/X.Y, like Guile's
                ;; search paths expects.
                '(begin
-                  (substitute* "configure"
-                    (("ac_subst_vars='")
-                     "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
-                  (substitute* '("Makefile.in" "json/Makefile.in")
-                    (("moddir =.*/share/guile/site" all)
+                  (substitute* "configure.ac"
+                    (("GUILE_PROGS")
+                     (string-append "GUILE_PROGS\n"
+                                    "AC_SUBST([GUILE_EFFECTIVE_VERSION])\n")))
+                  (substitute* '("Makefile.am" "json/Makefile.am")
+                    (("moddir[[:blank:]]*=.*/share/guile/site" all)
                      (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
     (build-system gnu-build-system)
-    (native-inputs `(("guile" ,guile-2.2)))
-    (home-page "https://savannah.nongnu.org/projects/guile-json/")
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("guile" ,guile-2.2)))
+    (inputs `(("guile" ,guile-2.2)))
     (synopsis "JSON module for Guile")
     (description
      "Guile-JSON supports parsing and building JSON documents according to the
@@ -904,19 +916,18 @@ specification.  These are the main features:
                          ;; Install source module.
                          (copy-file file dest-file)
                          ;; Install compiled module.
-                         (unless (zero? (system* guild "compile"
-                                                 "-L" source
-                                                 "-o" go-file
-                                                 file))
-                           (error (format #f "Failed to compile ~s to ~s!"
-                                          file go-file)))))
+                         (invoke guild "compile"
+                                 "-L" source
+                                 "-o" go-file
+                                 file)))
                      scm-files)
 
            ;; Also copy over the README.
            (install-file "README.org" doc)
+
            #t))))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "https://github.com/ijp/minikanren")
     (synopsis "MiniKanren declarative logic system, packaged for Guile")
     (description
@@ -931,8 +942,11 @@ slightly from miniKanren mainline.
 See http://minikanren.org/ for more on miniKanren generally.")
     (license license:expat)))
 
+(define-public guile2.0-minikanren
+  (package-for-guile-2.0 guile-minikanren))
+
 (define-public guile2.2-minikanren
-  (package-for-guile-2.2 guile-minikanren))
+  (deprecated-package "guile2.2-minikanren" guile-minikanren))
 
 (define-public guile-miniadapton
   (let ((commit "1b5749422304567c96ac5367f2221dda9eff5880")
@@ -1059,12 +1073,10 @@ understand, extend, and port to host languages other than Scheme.")
                                 (copy-file src-file
                                            dest-file)
                                 ;; Install compiled module.
-                                (unless (zero? (system* guild "compile"
-                                                        "-L" (getcwd)
-                                                        "-o" go-file
-                                                        src-file))
-                                  (error (format #f "Failed to compile ~s to ~s!"
-                                                 src-file dest-file)))))))
+                                (invoke guild "compile"
+                                        "-L" (getcwd)
+                                        "-o" go-file
+                                        src-file)))))
                          '(("irregex-guile.scm" "/rx/irregex")
                            ("irregex.scm" "/rx/source/irregex")
                            ;; Not really reachable via guile's packaging system,
@@ -1075,7 +1087,7 @@ understand, extend, and port to host languages other than Scheme.")
                (install-file "irregex.html" doc)
                #t))))))
     (inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "http://synthcode.com/scheme/irregex")
     (synopsis "S-expression based regular expressions")
     (description
@@ -1084,8 +1096,11 @@ string-based regular expressions.  It implements SRFI 115 and is deeply
 inspired by the SCSH regular expression system.")
     (license license:bsd-3)))
 
+(define-public guile2.0-irregex
+  (package-for-guile-2.0 guile-irregex))
+
 (define-public guile2.2-irregex
-  (package-for-guile-2.2 guile-irregex))
+  (deprecated-package "guile2.2-irregex" guile-irregex))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.
@@ -1104,6 +1119,15 @@ inspired by the SCSH regular expression system.")
                (base32
                 "1j8wrsw7v9w6qkl47xz0rdikg50v16nn6kbs3lgzcymjzpa7babj"))))
     (build-system trivial-build-system)
+    (inputs
+     `(("guile" ,guile-2.2)
+       ;; patch-and-repack doesn't work for git checkouts,
+       ;; so we must apply the patch manually.
+       ("patch" ,patch)
+       ("patch-file" ,(search-patch
+                       "guile-gdbm-ffi-support-gdbm-1.14.patch"))))
+    (propagated-inputs
+     `(("gdbm" ,gdbm)))
     (arguments
      `(#:modules
        ((guix build utils))
@@ -1136,7 +1160,7 @@ inspired by the SCSH regular expression system.")
                  (string-append module-dir "/gdbm.go"))
                 (compile-file
                  (lambda (in-file out-file)
-                   (system* guild "compile" "-o" out-file in-file))))
+                   (invoke guild "compile" "-o" out-file in-file))))
            ;; Switch directory for compiling and installing
            (chdir source)
 
@@ -1156,12 +1180,18 @@ inspired by the SCSH regular expression system.")
               (format #f "(dynamic-link \"~a/lib/libgdbm.so\")"
                       (assoc-ref %build-inputs "gdbm"))))
 
+           ;; Apply the patch to add support for gdbm-1.14.
+           (let ((patch-command (string-append (assoc-ref %build-inputs "patch")
+                                               "/bin/patch"))
+                 (patch-file (assoc-ref %build-inputs "patch-file")))
+             (with-directory-excursion (dirname gdbm.scm-dest)
+               (format #t "applying '~a'...~%" patch-file)
+               (invoke patch-command "--force" "--input" patch-file)))
+
            ;; compile to the destination
-           (compile-file gdbm.scm-dest gdbm.go-dest)))))
-    (inputs
-     `(("guile" ,guile-2.2)))
-    (propagated-inputs
-     `(("gdbm" ,gdbm)))
+           (compile-file gdbm.scm-dest gdbm.go-dest)
+
+           #t))))
     (home-page "https://github.com/ijp/guile-gdbm")
     (synopsis "Guile bindings to the GDBM library via Guile's FFI")
     (description
@@ -1198,9 +1228,11 @@ Guile's foreign function interface.")
                 (modules '((guix build utils)))
                 (snippet
                  ;; Upgrade 'Makefile.am' to the current way of doing things.
-                 '(substitute* "Makefile.am"
-                    (("TESTS_ENVIRONMENT")
-                     "TEST_LOG_COMPILER")))))
+                 '(begin
+                    (substitute* "Makefile.am"
+                      (("TESTS_ENVIRONMENT")
+                       "TEST_LOG_COMPILER"))
+                    #t))))
 
       (build-system gnu-build-system)
       (native-inputs
@@ -1346,18 +1378,22 @@ above command-line parameters.")
                                  "redis/Makefile.in"
                                  "redis/commands/Makefile.in")
                     (("moddir =.*/share/guile/site" all)
-                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
+                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (home-page "https://savannah.nongnu.org/projects/guile-redis/")
     (synopsis "Redis client library for Guile")
     (description "Guile-redis provides a Scheme interface to the Redis
 key-value cache and store.")
     (license license:lgpl3+)))
 
+(define-public guile2.0-redis
+  (package-for-guile-2.0 guile-redis))
+
 (define-public guile2.2-redis
-  (package-for-guile-2.2 guile-redis))
+  (deprecated-package "guile2.2-redis" guile-redis))
 
 (define-public guile-wisp
   (package
@@ -1459,7 +1495,8 @@ users and in some situations.")
                     (("godir = .*$")
                      (string-append
                       "godir = "
-                      "$(prefix)/lib/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")))))))
+                      "$(prefix)/lib/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1539,19 +1576,24 @@ provides access to that interface and its types from the Scheme level.")
     (arguments
      '(#:configure-flags
        (list (string-append
-              "--with-guile-site-dir=" %output "/share/guile/site/2.0"))
+              "--with-guile-site-dir=" %output "/share/guile/site/2.2"))
+       #:make-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib:"
+                            (assoc-ref %build-inputs "guile-dbd-sqlite3") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'patch-extension-path
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
                     (dbi.scm (string-append
-                              out "/share/guile/site/2.0/dbi/dbi.scm"))
+                              out "/share/guile/site/2.2/dbi/dbi.scm"))
                     (ext     (string-append out "/lib/libguile-dbi")))
                (substitute* dbi.scm (("libguile-dbi") ext))
                #t))))))
+    (inputs
+     `(("guile-dbd-sqlite3" ,guile-dbd-sqlite3))) ; only shared library, no scheme files
     (propagated-inputs
-     `(("guile" ,guile-2.0)))
+     `(("guile" ,guile-2.2)))
     (synopsis "Guile database abstraction layer")
     (home-page "http://home.gna.org/guile-dbi/guile-dbi.html")
     (description
@@ -1560,6 +1602,15 @@ SQL databases.  Database programming with guile-dbi is generic in that the same
 programming interface is presented regardless of which database system is used.
 It currently supports MySQL, Postgres and SQLite3.")
     (license license:gpl2+)))
+
+(define guile-dbi-bootstrap
+  (package
+    (inherit guile-dbi)
+    (name "guile-dbi-bootstrap")
+    (inputs '())
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-dbi)
+       ((#:make-flags _) '(list))))))
 
 (define-public guile-dbd-sqlite3
   (package
@@ -1575,12 +1626,11 @@ It currently supports MySQL, Postgres and SQLite3.")
                 "0rg71jchxd2y8x496s8zmfmikr5g8zxi8zv2ar3f7a23pph92iw2"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("guile-dbi-bootstrap" ,guile-dbi-bootstrap))) ; only required for headers
     (inputs
      `(("sqlite" ,sqlite)
        ("zlib" ,(@ (gnu packages compression) zlib))))
-    (propagated-inputs
-     `(("guile-dbi" ,guile-dbi)))
     (synopsis "Guile DBI driver for SQLite")
     (home-page "https://github.com/jkalbhenn/guile-dbd-sqlite3")
     (description
@@ -1713,7 +1763,8 @@ you send to a FIFO file.")
                      "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
                   (substitute* "Makefile.in"
                     (("/site/2.0")
-                     "/site/@GUILE_EFFECTIVE_VERSION@"))))))
+                     "/site/@GUILE_EFFECTIVE_VERSION@"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.2)))
@@ -1823,12 +1874,7 @@ dictionary and suggesting spelling corrections.")
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "sh" "bootstrap")))))
-
-         #:configure-flags
+       '(#:configure-flags
          ;; Add -I to match 'bash.pc' of Bash 4.4.
          (list (string-append "CPPFLAGS=-I"
                               (assoc-ref %build-inputs "bash:include")
@@ -1958,10 +2004,6 @@ is not available for Guile 2.0.")
       (build-system gnu-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi"))))
-
                     ;; FIXME: On i686, bytestructures miscalculates the offset
                     ;; of the 'old-file' and 'new-file' fields within the
                     ;; '%diff-delta' structure.  See
@@ -2011,8 +2053,8 @@ manipulate repositories of the Git version control system.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)))
-      (synopsis "General-purpose syntax highlighter for GNU Guile")
-      (description "Guile-syntax-highlight is a general-purpose syntax
+    (synopsis "General-purpose syntax highlighter for GNU Guile")
+    (description "Guile-syntax-highlight is a general-purpose syntax
 highlighting library for GNU Guile.  It can parse code written in various
 programming languages into a simple s-expression that can be converted to
 HTML (via SXML) or any other format for rendering.")
@@ -2031,11 +2073,6 @@ HTML (via SXML) or any other format for rendering.")
                (base32
                 "1mzmapln79vv10qxaggz9qwcdbag3jnrj19xx8bgkmxss8h03sv3"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _ (zero? (system* "sh" "bootstrap.sh")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2092,5 +2129,246 @@ It has a nice, simple s-expression based syntax.")
     (description
      "Guile-colorized provides you with a colorized REPL for GNU Guile.")
     (license license:gpl3+)))
+
+(define-public guile-simple-zmq
+  (let ((commit "d76657aeb1cd10ef8136edc06bb90999914c7c3c")
+        (revision "0"))
+    (package
+      (name "guile-simple-zmq")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jerry40/guile-simple-zmq")
+               (commit commit)))
+         (sha256
+          (base32
+           "1w73dy5gpyv33jn34dqlkqpwh9w4y8wm6hgvbpb3wbp6xsa2mk4z"))
+         (file-name (git-file-name name version))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils)
+                        (srfi srfi-26)
+                        (ice-9 match)
+                        (ice-9 popen)
+                        (ice-9 rdelim))
+
+           (let* ((out (assoc-ref %outputs "out"))
+                  (guile (assoc-ref %build-inputs "guile"))
+                  (effective (read-line
+                              (open-pipe* OPEN_READ
+                                          (string-append guile "/bin/guile")
+                                          "-c" "(display (effective-version))")))
+                  (module-dir (string-append out "/share/guile/site/"
+                                             effective))
+                  (go-dir     (string-append out "/lib/guile/"
+                                             effective "/site-ccache/"))
+                  (source     (string-append (assoc-ref %build-inputs "source")
+                                             "/src"))
+                  (scm-file "simple-zmq.scm")
+                  (guild (string-append (assoc-ref %build-inputs "guile")
+                                        "/bin/guild"))
+                  (zmq  (assoc-ref %build-inputs "zeromq"))
+                  (deps (list zmq))
+                  (path (string-join
+                         (map (cut string-append <>
+                                   "/lib/")
+                              deps)
+                         ":")))
+             ;; Make installation directories.
+             (mkdir-p module-dir)
+             (mkdir-p go-dir)
+
+             ;; Compile .scm files and install.
+             (chdir source)
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             (for-each (lambda (file)
+                         (let* ((dest-file (string-append module-dir "/"
+                                                          file))
+                                (go-file (match (string-split file #\.)
+                                           ((base _)
+                                            (string-append go-dir "/"
+                                                           base ".go")))))
+                           ;; Install source module.
+                           (copy-file file dest-file)
+                           (substitute* dest-file
+                             (("\\(dynamic-link \"libzmq\"\\)")
+                              (format #f "(dynamic-link \"~a/lib/libzmq.so\")"
+                                      (assoc-ref %build-inputs "zeromq"))))
+
+                           ;; Install and compile module.
+                           (unless (zero? (system* guild "compile"
+                                                   "-L" source
+                                                   "-o" go-file
+                                                   dest-file))
+                             (error (format #f "Failed to compile ~s to ~s!"
+                                            file go-file)))))
+                       (list scm-file))
+             #t))))
+      (propagated-inputs
+       `(("guile" ,guile-2.2)
+         ("zeromq" ,zeromq)))
+      (home-page "https://github.com/jerry40/guile-simple-zmq")
+      (synopsis "Guile wrapper over ZeroMQ library")
+      (description
+       "This package provides a Guile programming interface to the ZeroMQ
+messaging library.")
+      (license license:gpl3+))))
+
+(define-public jupyter-guile-kernel
+  (let ((commit "a5c5f3ea3215b65e770bcb62f71117b0ec4575ed")
+        (revision "0"))
+    (package
+      (name "jupyter-guile-kernel")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jerry40/guile-kernel")
+               (commit commit)))
+         (sha256
+          (base32
+           "0y5jr0f0dyskvsawqbf6n0bpg8jirw4mhqbarf2a6p9lxhqha9s9"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils)
+                        (srfi srfi-26)
+                        (ice-9 match)
+                        (ice-9 popen)
+                        (ice-9 rdelim))
+
+           (let* ((out (assoc-ref %outputs "out"))
+                  (guile (assoc-ref %build-inputs "guile"))
+                  (effective (read-line
+                              (open-pipe* OPEN_READ
+                                          (string-append guile "/bin/guile")
+                                          "-c" "(display (effective-version))")))
+                  (module-dir (string-append out "/share/guile/site/"
+                                             effective))
+                  (kernel-dir (string-append out "/share/jupyter/kernels/guile"))
+                  (go-dir     (string-append out "/lib/guile/"
+                                             effective
+                                             "/site-ccache"))
+                  (source     (string-append (assoc-ref %build-inputs "source")
+                                             "/src"))
+                  (scm-files '("hmac.scm"
+                               "tools.scm"
+                               "guile-jupyter-kernel.scm"))
+                  (kernel-file "kernel.json")
+                  (guild  (string-append (assoc-ref %build-inputs "guile")
+                                         "/bin/guild"))
+                  (g-szmq (assoc-ref %build-inputs "guile-simple-zmq"))
+                  (json   (assoc-ref %build-inputs "guile-json"))
+                  (deps   (list g-szmq json))
+                  (path   (string-join
+                           (map (cut string-append <>
+                                     "/share/guile/site/"
+                                     effective)
+                                deps)
+                           ":"))
+                  (gopath (string-join
+                           (map (cut string-append <>
+                                     "/lib/guile/" effective
+                                     "/site-ccache/")
+                                deps)
+                           ":")))
+
+             ;; Make installation directories.
+             (mkdir-p module-dir)
+             (mkdir-p kernel-dir)
+             (mkdir-p go-dir)
+
+             ;; Make a writable copy of SOURCE.
+             (copy-recursively source ".")
+
+             ;; Record the absolute file name of the 'openssl' command.
+             (substitute* "hmac.scm"
+               (("openssl")
+                (string-append (assoc-ref %build-inputs "openssl")
+                               "/bin/openssl")))
+
+             ;; Compile .scm files and install.
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             (setenv "GUILE_LOAD_PATH" path)
+             (setenv "GUILE_LOAD_COMPILED_PATH" gopath)
+
+             (for-each (lambda (file)
+                         (let* ((dest-file (string-append module-dir "/"
+                                                          file))
+                                (go-file (match (string-split file #\.)
+                                           ((base _)
+                                            (string-append go-dir "/"
+                                                           base ".go")))))
+                           ;; Install source module.
+                           (copy-file file dest-file)
+
+                           ;; Install compiled module.
+                           (unless (zero? (system* guild "compile"
+                                                   "-L" source
+                                                   "-o" go-file
+                                                   file))
+                             (error (format #f "Failed to compile ~s to ~s!"
+                                            file go-file)))))
+                       scm-files)
+
+             ;; Install kernel
+             (copy-file kernel-file (string-append kernel-dir "/"
+                                                   kernel-file))
+             ;; Fix hard-coded file name in the kernel
+             (substitute* (string-append kernel-dir "/"
+                                         kernel-file)
+               (("/home/jerry/.local/share/jupyter/kernels/guile/guile-jupyter-kernel.scm")
+                (string-append module-dir "/guile-jupyter-kernel.scm"))
+               (("\"guile\"")
+                (string-append "\"" (assoc-ref %build-inputs "guile")
+                               "/bin/guile\""))
+               (("-s")
+                (string-append "--no-auto-compile\", \"-s")))
+
+             #t))))
+      (inputs
+       `(("openssl" ,openssl)
+         ("guile" ,guile-2.2)))
+      (propagated-inputs
+       `(("guile-json" ,guile-json)
+         ("guile-simple-zmq" ,guile-simple-zmq)))
+      (synopsis "Guile kernel for the Jupyter Notebook")
+      (description
+       "This package provides a Guile 2.x kernel for the Jupyter Notebook.  It
+allows users to interact with the Guile REPL through Jupyter.")
+      (home-page "https://github.com/jerry40/guile-kernel")
+      (license license:gpl3+))))
+
+(define-public guile-sparql
+  (package
+   (name "guile-sparql")
+   (version "0.0.7")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/roelj/guile-sparql/releases/download/"
+                  version "/guile-sparql-" version ".tar.gz"))
+            (sha256
+             (base32 "1drnvhsgl0gc5crmb16yyw1j98nkhwwcgssv9vgm36ng43nnzffd"))))
+   (build-system gnu-build-system)
+   (arguments `(#:tests? #f)) ; There are no tests.
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (inputs
+    `(("guile" ,guile-2.2)))
+   (home-page "https://github.com/roelj/guile-sparql")
+   (synopsis "SPARQL module for Guile")
+   (description "This package provides the functionality to query a SPARQL
+endpoint.  Additionally, it provides an interface to write SPARQL queries
+using S-expressions.")
+   (license license:gpl3+)))
 
 ;;; guile.scm ends here

@@ -212,7 +212,9 @@ compiled, requires few libraries, and starts up quickly. ")
               (modules '((guix build utils)))
 
               ;; Remove pre-built binaries.
-              (snippet '(delete-file-recursively "bin"))))
+              (snippet '(begin
+                          (delete-file-recursively "bin")
+                          #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -248,10 +250,10 @@ Wordstar-, EMACS-, Pico, Nedit or vi-like key bindings.  e3 can be used on
                (base32
                 "06w86xk7sjl2x2h3z6msn8kpmwj05qdimcym77wzhz5s94dzh1bl"))
               (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "GNUmakefile"
-                    (("/usr/bin/") ""))))))
+              (snippet '(begin
+                          (substitute* "GNUmakefile"
+                            (("/usr/bin/") ""))
+                          #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

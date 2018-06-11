@@ -2,10 +2,10 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -31,10 +31,12 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
@@ -78,7 +80,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.12.2")
+    (version "1.12.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -86,7 +88,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "121xm3cy48vbv6nv522lfkk4zyiqc1g6v4lb3344gc3h2w4vaar7"))
+                "05picaq8j60wlwyi84qvw5liw3nd0cws9va3krnc3pms0wm906v2"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -112,10 +114,10 @@
          (replace 'install
                   (lambda _
                     ;; Don't try to create /var and /etc.
-                    (system* "make"
-                             "localstatedir=/tmp/dummy"
-                             "sysconfdir=/tmp/dummy"
-                             "install"))))))
+                    (invoke "make"
+                            "localstatedir=/tmp/dummy"
+                            "sysconfdir=/tmp/dummy"
+                            "install"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -148,7 +150,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.54.2")
+   (version "2.56.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -156,9 +158,8 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0v4ffl172kbqgxrhgxyafhpw36bq3iklb2zjqyl6jcfkmb2yb2dv"))
-            (patches (search-patches "glib-respect-datadir.patch"
-                                     "glib-tests-timer.patch"))))
+              "1iqgi90fmpl3l23jm2iv44qp7hqsxvnv7978s18933bvx4bnxvzc"))
+            (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
               "bin"           ; glib-mkenums, gtester, etc.; depends on Python
@@ -184,6 +185,9 @@ shared NFS home directories.")
       (modify-phases %standard-phases
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; For building deterministic pyc files
+            (setenv "DETERMINISTIC_BUILD" "1")
+
             ;; For tests/gdatetime.c.
             (setenv "TZDIR"
                     (string-append (assoc-ref inputs "tzdata")
@@ -197,7 +201,8 @@ shared NFS home directories.")
                            "glib/tests/utils.c"
                            "tests/spawn-test.c")
               (("/bin/sh")
-               (string-append (assoc-ref inputs "bash") "/bin/sh")))))
+               (string-append (assoc-ref inputs "bash") "/bin/sh")))
+            #t))
         (add-before 'check 'disable-failing-tests
           (lambda _
             (let ((disable
@@ -235,6 +240,7 @@ shared NFS home directories.")
                      ("gio/tests/contenttype.c"
                       (;; XXX: requires shared-mime-info.
                        "/contenttype/guess"
+                       "/contenttype/guess_svg_from_data"
                        "/contenttype/subtype"
                        "/contenttype/list"
                        "/contenttype/icon"
@@ -260,7 +266,8 @@ shared NFS home directories.")
                      ("gio/tests/gdbus-unix-addresses.c"
                       (;; Requires /etc/machine-id.
                        "/gdbus/x11-autolaunch")))))
-              (and-map (lambda (x) (apply disable x)) failing-tests)))))
+              (for-each (lambda (x) (apply disable x)) failing-tests)
+              #t))))
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
       #:configure-flags (list (string-append "--with-html-dir="
@@ -296,18 +303,20 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.54.1")
+    (version "1.56.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "0zl7pfkzkm07733391b4f3cwjbnvb1nwvpmajf5bajh6bxgfv3dq"))
+              (base32 "1y50pbn5qqbcv2h9rkz96wvv5jls2gma9bkqjq6wapmaszx5jw0d"))
              (modules '((guix build utils)))
              (snippet
-              '(substitute* "tools/g-ir-tool-template.in"
-                 (("#!/usr/bin/env @PYTHON@") "#!@PYTHON@")))
+              '(begin
+                 (substitute* "tools/g-ir-tool-template.in"
+                   (("#!/usr/bin/env @PYTHON@") "#!@PYTHON@"))
+                 #t))
              (patches (search-patches
                        "gobject-introspection-cc.patch"
                        "gobject-introspection-girepository.patch"
@@ -331,7 +340,10 @@ dynamic loading, and an object system.")
             (files '("lib/girepository-1.0")))))
     (search-paths native-search-paths)
     (arguments
-     `(;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
+     `(;; The build system has at least one race condition involving Gio-2.0.gir
+       ;; which causes intermittent failures, as of 1.56.0.
+       #:parallel-build? #f
+       ;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
        ;; some tests to fail.
        #:tests? #f))
     (home-page "https://wiki.gnome.org/GObjectIntrospection")
@@ -369,13 +381,14 @@ bindings to call into the C library.")
        ("perl-xml-parser" ,perl-xml-parser)
        ("perl" ,perl)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'patch-file-references
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((file (assoc-ref inputs "file")))
-                     (substitute* "intltool-update.in"
-                       (("`file") (string-append "`" file "/bin/file")))))
-                 %standard-phases)))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-file-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((file (assoc-ref inputs "file")))
+               (substitute* "intltool-update.in"
+                 (("`file") (string-append "`" file "/bin/file")))
+               #t))))))
     (home-page "https://launchpad.net/intltool/+download")
     (synopsis "Tools to centralise translations of different file formats")
     (description
@@ -418,7 +431,8 @@ The intltool collection can be used to do these things:
              (let ((prog (string-append (assoc-ref outputs "out")
                                         "/bin/itstool")))
                (wrap-program prog
-                 `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))))))))
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))
+               #t))))))
     (home-page "http://www.itstool.org")
     (synopsis "Tool to translate XML documents with PO files")
     (description
@@ -584,7 +598,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.24.1")
+    (version "3.28.2")
     (source
      (origin
        (method url-fetch)
@@ -593,14 +607,30 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "1zdzznrj2s1gsrv2z4r0n88fzba8zjc1n2r313xi77lhl1daja56"))))
+         "1jpjws4v17wv99lbhks0g0152w0f70mnwpdn8ibzzfgw2kykli5c"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-broken-tests
+           (lambda _
+             ;; FIXME: this test freezes and times out.
+             (delete-file "tests/test_mainloop.py")
+             ;; FIXME: this test fails with this kind of error:
+             ;; AssertionError: <Handlers.SIG_IGN: 1> != <built-in function default_int_handler
+             (delete-file "tests/test_ossig.py")
+             #t)))))
     (native-inputs
-     `(("which" ,which)
+     `(;; Use gcc-7 to work around an internal compiler error that happens
+       ;; when using gcc-5.5.0.  FIXME: Try removing this when the default
+       ;; compiler is no longer gcc-5.5.0.
+       ("gcc" ,gcc-7)
+       ("which" ,which)
        ;for tests: dbus-run-session and glib-compile-schemas
        ("dbus" ,dbus)
        ("glib-bin" ,glib "bin")
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python-pytest" ,python-pytest)))
     (inputs
      `(("python" ,python)
        ("python-pycairo" ,python-pycairo)
@@ -624,7 +654,18 @@ useful for C++.")
     (inputs
      `(("python" ,python-2)
        ("python-pycairo" ,python2-pycairo)
-       ("gobject-introspection" ,gobject-introspection)))))
+       ("gobject-introspection" ,gobject-introspection)))
+    (native-inputs
+     `(;; Use gcc-7 to work around an internal compiler error that happens
+       ;; when using gcc-5.5.0.  FIXME: Try removing this when the default
+       ;; compiler is no longer gcc-5.5.0.
+       ("gcc" ,gcc-7)
+       ("which" ,which)
+       ;for tests: dbus-run-session and glib-compile-schemas
+       ("dbus" ,dbus)
+       ("glib-bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("python-pytest" ,python2-pytest)))))
 
 (define-public perl-glib
   (package

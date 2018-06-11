@@ -114,7 +114,7 @@ default Emacs configuration, but it carries a much lighter feature set.")
        (substitute-keyword-arguments (package-arguments zile)
          ((#:phases phases)
           `(modify-phases ,phases
-             (add-after 'unpack 'bootstrap
+             (replace 'bootstrap
                (lambda _
                  ;; Make sure all the files are writable so that ./bootstrap
                  ;; can proceed.

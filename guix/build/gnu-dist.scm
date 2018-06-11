@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,24 +42,22 @@
                                     (begin
                                       (format #t "bootstrapping with `~a'...~%"
                                               file)
-                                      (zero?
-                                       (system* (string-append "./" file))))
+                                      (invoke (string-append "./" file)))
                                     (try-files files ...
                                                (else fallback ...)))))))
     (try-files "bootstrap" "bootstrap.sh" "autogen" "autogen.sh"
                (else
                 (format #t "bootstrapping with `autoreconf'...~%")
-                (zero? (system* "autoreconf" "-vfi"))))))
+                (invoke "autoreconf" "-vfi")))))
 
 (define* (build #:key build-before-dist? make-flags (dist-target "distcheck")
                 #:allow-other-keys
                 #:rest args)
-  (and (or (not build-before-dist?)
-           (let ((build (assq-ref %standard-phases 'build)))
-             (apply build args)))
-       (begin
-         (format #t "building target `~a'~%" dist-target)
-         (zero? (apply system* "make" dist-target make-flags)))))
+  (when build-before-dist?
+    (let ((build (assq-ref %standard-phases 'build)))
+      (apply build args)))
+  (format #t "building target `~a'~%" dist-target)
+  (apply invoke "make" dist-target make-flags))
 
 (define* (install-dist #:key outputs #:allow-other-keys)
   (let* ((out      (assoc-ref outputs "out"))

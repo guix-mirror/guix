@@ -50,8 +50,11 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages dns)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages linux)
@@ -70,6 +73,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages mcrypt)
@@ -97,7 +101,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages elf)
-  #:use-module (gnu packages mpi))
+  #:use-module (gnu packages mpi)
+  #:use-module (gnu packages web))
 
 (define-public aide
   (package
@@ -358,16 +363,15 @@ hostname.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.5")
+    (version "4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
                     "download/" version "/shadow-" version ".tar.xz"))
-              (patches (search-patches "shadow-CVE-2018-7169.patch"))
               (sha256
                (base32
-                "0hdpai78n63l3v3fgr3kkiqzhd0awrpfnnzz4mf7lmxdh61qb37w"))))
+                "10smy01km2bqjjvsd2jz17zvrxbzj89qczyb1amk38j28bcci609"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -386,7 +390,8 @@ hostname.")
                                          "libc"))))
                (substitute* "lib/nscd.c"
                  (("/usr/sbin/nscd")
-                  (string-append libc "/sbin/nscd"))))))
+                  (string-append libc "/sbin/nscd")))
+               #t)))
          (add-after 'install 'remove-groups
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Remove `groups', which is already provided by Coreutils.
@@ -486,8 +491,8 @@ allow automatic login and starting any app.")
                           (output (assoc-ref %outputs "out"))
                           (etc    (string-append output "/etc")))
                      (setenv "PATH" (string-append xz "/bin"))
-                     (system* (string-append tar "/bin/tar") "xvf"
-                              source)
+                     (invoke (string-append tar "/bin/tar") "xvf"
+                             source)
                      (chdir ,(string-append "netbase-" version))
                      (mkdir-p etc)
                      (for-each copy-file
@@ -603,10 +608,10 @@ connection alive.")
 
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
-         (bind-minor-version "9")
-         (bind-patch-version "11")
-         (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "1")      ; for patch release, e.g. "6"
+         (bind-minor-version "11")
+         (bind-patch-version "3")
+         (bind-release-type "")         ; for patch release, use "-P"
+         (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -616,14 +621,14 @@ connection alive.")
                                       bind-release-version)))
     (package
       (name "isc-dhcp")
-      (version "4.3.6-P1")
+      (version "4.4.1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "http://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1hx3az6ckvgvybr1ag4k9kqr8zfcpzcww4vpw5gz0mi8y2z7gl9g"))))
+                  "025nfqx4zwdgv4b3rkw26ihcj312vir08jk6yi57ndmb4a4m08ia"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
@@ -669,16 +674,16 @@ connection alive.")
                                      sh " SHELL=" sh))))
 
                  (let ((bind-directory (string-append "bind-" ,bind-version)))
-                   (system* "tar" "xf" "bind.tar.gz")
+                   (invoke "tar" "xf" "bind.tar.gz")
                    (for-each patch-shebang
                              (find-files bind-directory ".*"))
-                   (zero? (system* "tar" "cf" "bind.tar.gz"
-                                   bind-directory
-                                   ;; avoid non-determinism in the archive
-                                   "--sort=name"
-                                   "--mtime=@0"
-                                   "--owner=root:0"
-                                   "--group=root:0"))))))
+                   (invoke "tar" "cf" "bind.tar.gz"
+                           bind-directory
+                           ;; avoid non-determinism in the archive
+                           "--sort=name"
+                           "--mtime=@0"
+                           "--owner=root:0"
+                           "--group=root:0")))))
            (add-after 'install 'post-install
              (lambda* (#:key inputs outputs #:allow-other-keys)
                ;; Install the dhclient script for GNU/Linux and make sure
@@ -704,7 +709,8 @@ connection alive.")
                      ,(map (lambda (dir)
                              (string-append dir "/bin:"
                                             dir "/sbin"))
-                           (list inetutils net-tools coreutils sed))))))))))
+                           (list inetutils net-tools coreutils sed))))
+                 #t))))))
 
       (native-inputs `(("perl" ,perl)))
 
@@ -722,7 +728,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1a4g6nzzrbmhngdgvgv1jjq4fm06m8fwc2a0gskkchplxl7dva20"))))
+                      "1xbnb2b11274z9frc9y7nvkyxr52qx09bwb97gf9qzzcn8adx78d"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -737,7 +743,7 @@ connection alive.")
        "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
 reference implementation of all aspects of DHCP, through a suite of DHCP
 tools: server, client, and relay agent.")
-      (license license:isc)
+      (license license:mpl2.0)
       (properties '((cpe-name . "dhcp"))))))
 
 (define-public libpcap
@@ -898,13 +904,15 @@ at once based on a Perl regular expression.")
                 "0751mb9l2f0jrk3vj6q8ilanifd121dliwk0c34g8k0dlzsv3kd7"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile.in"
-                  (("-o \\$\\{LOG_OWN\\} -g \\$\\{LOG_GROUP\\}")
-                   ;; Don't try to chown root.
-                   "")
-                  (("mkdir -p \\$\\(ROTT_STATDIR\\)")
-                   ;; Don't attempt to create /var/lib/rottlog.
-                   "true")))))
+               '(begin
+                  (substitute* "Makefile.in"
+                    (("-o \\$\\{LOG_OWN\\} -g \\$\\{LOG_GROUP\\}")
+                     ;; Don't try to chown root.
+                     "")
+                    (("mkdir -p \\$\\(ROTT_STATDIR\\)")
+                     ;; Don't attempt to create /var/lib/rottlog.
+                     "true"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list "ROTT_ETCDIR=/etc/rottlog" ;rc file location
@@ -955,7 +963,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.22")
+    (version "1.8.23")
     (source (origin
               (method url-fetch)
               (uri
@@ -965,10 +973,12 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "00pxp74xkwdcmrjwy55j0k8p684jk1zx3nzdc11v30q8q8kwnmkj"))
+                "0yg62wq8rcrbr7qvh3wgfg2g4bwanbi50cr2lf2cfyy8dydx4qyq"))
               (modules '((guix build utils)))
               (snippet
-               '(delete-file-recursively "lib/zlib"))))
+               '(begin
+                  (delete-file-recursively "lib/zlib")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1255,7 +1265,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20180313")
+    (version "20180531")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1263,7 +1273,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "16galaadmr37q2pvk2gyxrm8d1xldzk31djfxfq9v1c9yq4i425h"))))
+                "0q7vg1nr51f3rg16vjh4glz361a64r6gpm46fqkl2jf4fq7g43g5"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1272,7 +1282,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                           "CC=gcc"
                           "HOST=_LINUX"
                           "OPT_CFLAGS=-Wall -fno-strict-aliasing")
-       #:tests? #f  ; no 'check' target.
+       #:tests? #f                      ; no 'check' target
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://acpica.org/")
     (synopsis "Tools for the development and debug of ACPI tables")
@@ -1284,7 +1294,7 @@ of ACPI meant to be directly integrated into the host OS as a kernel-resident
 subsystem, and a small set of tools to assist in developing and debugging ACPI
 tables.  This package contains only the user-space tools needed for ACPI table
 development, not the kernel implementation of ACPI.")
-    (license license:gpl2)))  ; Dual GPLv2/ACPICA Licence
+    (license license:gpl2)))            ; dual GPLv2/ACPICA Licence
 
 (define-public stress
   (package
@@ -1407,9 +1417,11 @@ environment variable is set and output is to tty.")
                (base32
                 "1nwvjmx7kb14ni34c0b8x9a3791pc20gvhj7xaj66d8q4h6n0qf4"))
               (modules '((guix build utils)))
-              (snippet '(substitute* "tests/testsuite"
-                          (("#![[:blank:]]?/bin/sh")
-                           "#!$SHELL")))))
+              (snippet '(begin
+                          (substitute* "tests/testsuite"
+                            (("#![[:blank:]]?/bin/sh")
+                             "#!$SHELL"))
+                          #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1829,14 +1841,14 @@ done with the @code{auditctl} utility.")
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (map delete-file-recursively
-                       ;; Remove bundled lua, pcap, and pcre libraries.
-                       ;; FIXME: Remove bundled liblinear once packaged.
-                       '("liblua"
-                         "libpcap"
-                         "libpcre"
-                         ;; Remove pre-compiled binares.
-                         "mswin32"))
+                  (for-each delete-file-recursively
+                            ;; Remove bundled lua, pcap, and pcre libraries.
+                            ;; FIXME: Remove bundled liblinear once packaged.
+                            '("liblua"
+                              "libpcap"
+                              "libpcre"
+                              ;; Remove pre-compiled binares.
+                              "mswin32"))
                   #t))))
     (build-system gnu-build-system)
     (inputs
@@ -1941,7 +1953,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.26")
+    (version "3.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nvbn/thefuck/archive/"
@@ -1949,7 +1961,7 @@ throughput (in the same interval).")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ddlf25ik97z34bcpc52xyfhlfm6a3hdi43l6cz4ggwcawdwvn1p"))
+                "0my32n2x8x0f0wr8ql7qgk9qhb6ibv5b1rqs5b2r4nadv0gpiv96"))
               (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -2141,7 +2153,9 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
        (snippet
         ;; Remove binaries contained in the tarball which are only for the
         ;; target and can be regenerated anyway.
-        '(delete-file-recursively "bin"))
+        '(begin
+           (delete-file-recursively "bin")
+           #t))
        (file-name (string-append name "-" version ".tar.gz"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2468,7 +2482,7 @@ make it a perfect utility on modern distros.")
 (define-public thermald
   (package
     (name "thermald")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
       (method url-fetch)
@@ -2476,25 +2490,15 @@ make it a perfect utility on modern distros.")
                           version ".tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256 (base32
-               "0isgmav3z3nb5bsdya8m3haqhzj1lyfjx7i812cqfjrh2a9msin4"))))
+               "15a6vb67y5wsmf0irrq7sxam18yqpz64130k83ryf24mp40h661b"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after
-                   'unpack 'autogen.sh-and-fix-paths
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let ((out (assoc-ref outputs "out")))
-                       ;; XXX this can probably be removed after version 1.7.1.
-                       ;; upstartconfir is hardcoded to /etc/init and the build
-                       ;; system tries to mkdir that.  We don't even need upstart
-                       ;; files at all; this is a fast and kludgy workaround
-                       (substitute* "data/Makefile.am"
-                         (("upstartconfdir = /etc/init")
-                          (string-append "upstartconfdir = "
-                                         out "/etc/init")))
-                       ;; Now run autogen
-                       (invoke "sh" "autogen.sh")
-                       #t))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (invoke "sh" "autogen.sh")
+             #t)))
        #:configure-flags
        (let ((out      (assoc-ref %outputs "out")))
          (list (string-append "--sysconfdir="
@@ -2516,7 +2520,7 @@ make it a perfect utility on modern distros.")
     (synopsis "CPU scaling for thermal management")
     (description "The Linux Thermal Daemon helps monitor and control temperature
 on systems running the Linux kernel.")
-    ;; arm and aarch64 don't have cpuid.h
+    ;; arm and aarch64 don't have cpuid.h.
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:gpl2+)))
 
@@ -2652,3 +2656,116 @@ Python loading in HPC environments.")
     ;; This package supports x86_64 and PowerPC64
     (supported-systems '("x86_64-linux"))
     (license license:lgpl2.1)))
+
+(define-public inxi-minimal
+  (let ((real-name "inxi"))
+    (package
+      (name "inxi-minimal")
+      (version "3.0.11-1")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/smxi/inxi")
+               (commit version)))
+         (sha256
+          (base32
+           "07wihl4gsamq98mhxvm6k4vpphym75467cxfa19b3g5ggpyq894g"))))
+      (build-system trivial-build-system)
+      (inputs
+       `(("bash" ,bash)
+         ("perl" ,perl)))
+      (native-inputs
+       `(("gzip" ,gzip)))
+      (arguments
+       `(#:modules
+         ((guix build utils)
+          (ice-9 match)
+          (srfi srfi-26))
+         #:builder
+         (begin
+           (use-modules (guix build utils)
+                        (ice-9 match)
+                        (srfi srfi-26))
+           (setenv "PATH" (string-append
+                           (assoc-ref %build-inputs "bash") "/bin" ":"
+                           (assoc-ref %build-inputs "gzip") "/bin" ":"
+                           (assoc-ref %build-inputs "perl") "/bin" ":"))
+           (copy-recursively (assoc-ref %build-inputs "source")
+                             ,(string-append real-name "-" version))
+           (with-directory-excursion ,(string-append real-name "-" version)
+             (with-fluids ((%default-port-encoding #f))
+               (substitute* "inxi" (("/usr/bin/env perl") (which "perl"))))
+             (let ((bin (string-append %output "/bin")))
+               (install-file "inxi" bin)
+               (wrap-program (string-append bin "/inxi")
+                 `("PATH" ":" =
+                   ("$PATH"
+                    ,@(map (lambda (input)
+                             (match input
+                               ((name . store)
+                                (let ((store-append
+                                       (cut string-append store <>)))
+                                  (cond
+                                   ((member name '("util-linux"))
+                                    (string-append (store-append "/bin") ":"
+                                                   (store-append "/sbin")))
+                                   ((member name '("dmidecode" "iproute2"))
+                                    (store-append "/sbin"))
+                                   (else (store-append "/bin")))))))
+                           %build-inputs)))
+                 `("PERL5LIB" ":" =
+                   ,(delete
+                     ""
+                     (map (match-lambda
+                            (((? (cut string-prefix? "perl-" <>) name) . dir)
+                             (string-append dir "/lib/perl5/site_perl"))
+                            (_ ""))
+                          %build-inputs)))))
+             (invoke "gzip" "inxi.1")
+             (install-file "inxi.1.gz"
+                           (string-append %output "/share/man/man1")))
+           #t)))
+      (home-page "https://smxi.org/docs/inxi.htm")
+      (synopsis "Full-featured system information script")
+      (description "Inxi is a system information script that can display
+various things about your hardware and software to users in an IRC chatroom or
+support forum.  It runs with the @code{/exec} command in most IRC clients.")
+      (license license:gpl3+))))
+
+(define-public inxi
+  (package
+    (inherit inxi-minimal)
+    (name "inxi")
+    (inputs
+     `(("dmidecode" ,dmidecode)
+       ("file" ,file)
+       ("bind:utils" ,isc-bind "utils") ; dig
+       ("gzip" ,gzip)
+       ("iproute2" ,iproute)            ; ip
+       ("kmod" ,kmod)                   ; modinfo
+       ("lm-sensors" ,lm-sensors)
+       ("mesa-utils" ,mesa-utils)
+       ("pciutils" ,pciutils)
+       ("procps" ,procps)
+       ("tar" ,tar)
+       ("tree" ,tree)
+       ("util-linux" ,util-linux)       ; lsblk
+       ("usbutils" ,usbutils)           ; lsusb
+       ("wmctrl" ,wmctrl)
+       ("xdpyinfo" ,xdpyinfo)
+       ("xprop" ,xprop)
+       ("xrandr" ,xrandr)
+       ("coreutils" ,coreutils)         ; uptime
+       ("inetutils" ,inetutils)         ; ifconfig
+       ("perl-cpanel-json-xs" ,perl-cpanel-json-xs)
+       ("perl-http-tiny" ,perl-http-tiny)
+       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-json-xs" ,perl-json-xs)
+       ("perl-time-hires" ,perl-time-hires)
+       ;; TODO: Add more inputs:
+       ;; ipmi-sensors
+       ;; hddtemp
+       ;; perl-xml-dumper
+       ;; ipmitool
+       ,@(package-inputs inxi-minimal)))))

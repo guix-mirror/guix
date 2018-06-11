@@ -98,7 +98,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.12.1")
+    (version "9.12.1-P2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -106,7 +106,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "043mjcw405qa0ghm5dkhfsq35gsy279724fz3mjqpr1mbi14dr0n"))))
+                "0a9dvyg1dk7vpqn9gz7p5jas3bz7z22bjd66b98g1qk16i2w7rqd"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -176,7 +176,9 @@ high-volume and high-reliability applications. The name BIND stands for
               (snippet
                ;; Delete bundled libltdl. XXX: This package also bundles
                ;; a modified libevent that cannot currently be removed.
-               '(delete-file-recursively "libltdl"))))
+               '(begin
+                  (delete-file-recursively "libltdl")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -490,14 +492,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.6.6")
+    (version "2.6.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02h8qdkja4kic3br79svws6r2pq1ijz945238v99d998d2jxh6ci"))
+                "0hr2m664ckjicv3pq2lk16m61pscknywxv2ydnrzfqf10m5h0ahw"))
               (modules '((guix build utils)))
               (snippet
                '(begin

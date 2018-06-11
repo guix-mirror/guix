@@ -89,14 +89,17 @@
 
                (substitute* "gettext-tools/src/project-id"
                  (("/bin/pwd")
-                  "pwd"))))))
+                  "pwd"))
+
+               #t))))
         (add-before 'configure 'link-expat
          (lambda _
            ;; Gettext defaults to opening expat via dlopen on
            ;; "Linux".  Change to link directly.
            (substitute* "gettext-tools/configure"
              (("LIBEXPAT=\"-ldl\"") "LIBEXPAT=\"-ldl -lexpat\"")
-             (("LTLIBEXPAT=\"-ldl\"") "LTLIBEXPAT=\"-ldl -lexpat\"")))))
+             (("LTLIBEXPAT=\"-ldl\"") "LTLIBEXPAT=\"-ldl -lexpat\""))
+           #t)))
 
        ;; When tests fail, we want to know the details.
        #:make-flags '("VERBOSE=yes")))
@@ -139,14 +142,14 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
 (define-public po4a
   (package
     (name "po4a")
-    (version "0.47")
+    (version "0.53")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://alioth.debian.org/frs/download.php"
-                                  "/file/4142/po4a-" version ".tar.gz"))
+              (uri (string-append "https://github.com/mquinson/po4a/releases/download/v"
+                                  version "/po4a-" version ".tar.gz"))
               (sha256
                (base32
-                "01vm0750aq0h2lphrflv3wq9gz7y0py8frglfpacn58ivyvy242h"))))
+                "033qrd37zjjzvjl6g55fvhlcrm7gynfx6rj76qpr2852dn0mw069"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -163,6 +166,14 @@ translated messages from the catalogs.  Nearly all GNU packages use Gettext.")
           (lambda _
             (delete-file "t/20-sgml.t")
             #t))
+         (add-before 'check 'disable-asciidoc-test
+           (lambda _
+             (delete-file "t/30-asciidoc.t")
+             #t))
+         (add-before 'check 'disable-yaml-test
+           (lambda _
+             (delete-file "t/32-yaml.t")
+             #t))
          (add-after 'unpack 'fix-builder
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (substitute* "Po4aBuilder.pm"

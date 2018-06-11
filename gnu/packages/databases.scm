@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
@@ -28,7 +28,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -163,14 +163,14 @@ either single machines or networked clusters.")
 (define-public gdbm
   (package
     (name "gdbm")
-    (version "1.13")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdbm/gdbm-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0lx201q20dvc70f8a3c9s7s18z15inlxvbffph97ngvrgnyjq9cx"))))
+                "0pxwz3jlwvglq2mrbxvrjgr8pa0aj73p3v9sxmdlj570zw0gzknd"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org.ua/software/gdbm")
@@ -254,23 +254,22 @@ standard Go idioms.")
                  (("docdir[[:blank:]]*=.*")
                   (string-append "docdir = " doc "/share/doc/bdb")))
 
-               (zero?
-                (system* "./dist/configure"
-                         (string-append "--prefix=" out)
-                         (string-append "CONFIG_SHELL=" (which "bash"))
-                         (string-append "SHELL=" (which "bash"))
+               (invoke "./dist/configure"
+                       (string-append "--prefix=" out)
+                       (string-append "CONFIG_SHELL=" (which "bash"))
+                       (string-append "SHELL=" (which "bash"))
 
-                         ;; Remove 7 MiB of .a files.
-                         "--disable-static"
+                       ;; Remove 7 MiB of .a files.
+                       "--disable-static"
 
-                         ;; The compatibility mode is needed by some packages,
-                         ;; notably iproute2.
-                         "--enable-compat185"
+                       ;; The compatibility mode is needed by some packages,
+                       ;; notably iproute2.
+                       "--enable-compat185"
 
-                         ;; The following flag is needed so that the inclusion
-                         ;; of db_cxx.h into C++ files works; it leads to
-                         ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-                         "--enable-cxx"))))))))
+                       ;; The following flag is needed so that the inclusion
+                       ;; of db_cxx.h into C++ files works; it leads to
+                       ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+                       "--enable-cxx")))))))
     (synopsis "Berkeley database")
     (description
      "Berkeley DB is an embeddable database allowing developers the choice of
@@ -308,28 +307,27 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                  (("docdir[[:blank:]]*=.*")
                   (string-append "docdir = " doc "/share/doc/bdb")))
 
-               (zero?
-                (system* "./dist/configure"
-                         (string-append "--prefix=" out)
-                         (string-append "CONFIG_SHELL=" (which "bash"))
-                         (string-append "SHELL=" (which "bash"))
+               (invoke "./dist/configure"
+                       (string-append "--prefix=" out)
+                       (string-append "CONFIG_SHELL=" (which "bash"))
+                       (string-append "SHELL=" (which "bash"))
 
-                         ;; Bdb doesn't recognize aarch64 as an architecture.
-                         ,@(if (string=? "aarch64-linux" (%current-system))
-                               '("--build=aarch64-unknown-linux-gnu")
-                               '())
+                       ;; Bdb doesn't recognize aarch64 as an architecture.
+                       ,@(if (string=? "aarch64-linux" (%current-system))
+                             '("--build=aarch64-unknown-linux-gnu")
+                             '())
 
-                         ;; Remove 7 MiB of .a files.
-                         "--disable-static"
+                       ;; Remove 7 MiB of .a files.
+                       "--disable-static"
 
-                         ;; The compatibility mode is needed by some packages,
-                         ;; notably iproute2.
-                         "--enable-compat185"
+                       ;; The compatibility mode is needed by some packages,
+                       ;; notably iproute2.
+                       "--enable-compat185"
 
-                         ;; The following flag is needed so that the inclusion
-                         ;; of db_cxx.h into C++ files works; it leads to
-                         ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-                         "--enable-cxx"))))))))))
+                       ;; The following flag is needed so that the inclusion
+                       ;; of db_cxx.h into C++ files works; it leads to
+                       ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
+                       "--enable-cxx")))))))))
 
 (define-public es-dump-restore
   (package
@@ -439,7 +437,8 @@ applications.")
                                 (string-append "src/third_party/" dir)))
                             '("pcre-8.41" "scons-2.5.0" "snappy-1.1.3"
                               "valgrind-3.11.0" "wiredtiger"
-                              "yaml-cpp-0.5.3" "zlib-1.2.8"))))
+                              "yaml-cpp-0.5.3" "zlib-1.2.8"))
+                  #t))
               (patches
                (list
                 (search-patch "mongodb-support-unknown-linux-distributions.patch")))))
@@ -596,7 +595,8 @@ RDBMS systems (which are deep in functionality).")
                      (substitute* "cmake/boost.cmake"
                        (("59")
                         ,(match (string-split (package-version boost) #\.)
-                           ((_ minor . _) minor))))))
+                           ((_ minor . _) minor))))
+                     #t))
                   (add-after
                    'install 'remove-extra-binaries
                    (lambda* (#:key outputs #:allow-other-keys)
@@ -627,7 +627,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.29")
+    (version "10.1.33")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -635,7 +635,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1m3ya6c3snnsyscd0waklayqfv0vhws52iizv2j5masj5xhdbfvk"))))
+                "0bax748j4srsyhw5cs5jvwigndh0zwmf4r2cjvhja31ckx8jqccl"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -682,7 +682,8 @@ Language.")
               (with-directory-excursion out
                 (for-each delete-file-recursively
                           '("data" "mysql-test" "sql-bench"
-                            "share/man/man1/mysql-test-run.pl.1")))))))))
+                            "share/man/man1/mysql-test-run.pl.1")))
+              #t))))))
     (native-inputs
      `(("bison" ,bison)
        ("perl" ,perl)))
@@ -1007,7 +1008,7 @@ for example from a shell script.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.21.0")
+   (version "3.23.0")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -1019,11 +1020,11 @@ for example from a shell script.")
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (string-append "https://sqlite.org/2017/sqlite-autoconf-"
+                   (string-append "https://sqlite.org/2018/sqlite-autoconf-"
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
-              "1qxvzdjwzw6k0kqjfabj86rnq87xdbwbca7laxxdhnh0fmkm3pfp"))))
+              "0jbf78g3cm5wq77k7sfg8fb6rz44hnp9hs7p5d66fwd000c1lwdp"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
@@ -1124,7 +1125,7 @@ extremely small.")
 (define-public perl-dbix-class
   (package
     (name "perl-dbix-class")
-    (version "0.082840")
+    (version "0.082841")
     (source
      (origin
        (method url-fetch)
@@ -1132,7 +1133,7 @@ extremely small.")
                            "DBIx-Class-" version ".tar.gz"))
        (sha256
         (base32
-         "1vw1f756g8m5hq11nqf5dk2cw2y4mqq91ca5p75fn5g3fp8syja0"))))
+         "1gf3hgv8f9rnr8bl4ljgsqk4aliphmvljhsk4282kvdc4mcgh1fp"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-dbd-sqlite" ,perl-dbd-sqlite)
@@ -1232,7 +1233,7 @@ introspected and examined.")
 (define-public perl-dbix-class-schema-loader
   (package
     (name "perl-dbix-class-schema-loader")
-    (version "0.07047")
+    (version "0.07049")
     (source
      (origin
        (method url-fetch)
@@ -1240,7 +1241,7 @@ introspected and examined.")
                            "DBIx-Class-Schema-Loader-" version ".tar.gz"))
        (sha256
         (base32
-         "06s2q6xj95600sdlfph57spjk2z1gjs4zwq5b7mz7d5izcxgnwb6"))))
+         "0r57fv71ypxafb85cpxph1hdqii7ipjwvc19yb6fpkvq2ggcssg8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-config-any" ,perl-config-any)
@@ -1486,14 +1487,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "4.0.2")
+    (version "4.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "04s8cgvwjj1979s3hg8zkwc9pyn3jkjpz5zidp87kfcipifr385i"))))
+                "0465bv6yxnwmas3wzg07vmrprv2pxhnr56hn5pxrybwf66y76kyz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail
@@ -1628,12 +1629,7 @@ trees (LSM), for sustained throughput under random insert workloads.")
        #:configure-flags
        (list (string-append "--with-libwiredtiger-prefix="
                             (assoc-ref %build-inputs "wiredtiger")))
-       #:make-flags '("GUILE_AUTO_COMPILE=0")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (invoke "sh" "bootstrap"))))))
+       #:make-flags '("GUILE_AUTO_COMPILE=0")))
     ;; TODO: Remove microkanren.scm when we have a separate package
     ;; for it.
     (native-inputs
@@ -1931,20 +1927,22 @@ etc., and an SQL engine for performing simple SQL queries.")
 (define-public python-lmdb
   (package
     (name "python-lmdb")
-    (version "0.93")
+    (version "0.94")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lmdb" version))
               (sha256
                (base32
-                "0xdpb298fyl68acadbwv5801wcwfpnhc7sm4bnrq1x4bd5dhhsql"))
+                "1zh38gvkqw1jm5105if6rr7ccbgyxr7k2rm5ygb9ab3bq82pyaww"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled lmdb source files.
-               '(for-each delete-file (list "lib/lmdb.h"
-                                            "lib/mdb.c"
-                                            "lib/midl.c"
-                                            "lib/midl.h")))))
+               '(begin
+                  (for-each delete-file (list "lib/lmdb.h"
+                                              "lib/mdb.c"
+                                              "lib/midl.c"
+                                              "lib/midl.h"))
+                  #t))))
     (build-system python-build-system)
     (inputs
      `(("lmdb" ,lmdb)))
@@ -2063,14 +2061,14 @@ and web services platform functionality.")
 (define-public r-rmysql
   (package
     (name "r-rmysql")
-    (version "0.10.14")
+    (version "0.10.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RMySQL" version))
        (sha256
         (base32
-         "01891kn263b02y6addgpy3gn5axg7m10bqbqv7dg9yx9k85am590"))))
+         "0bmc7w5fnkjaf333sgc0hskiy332m9gmfaxg0yzkjxscpizdw43n"))))
     (properties `((upstream-name . "RMySQL")))
     (build-system r-build-system)
     (native-inputs

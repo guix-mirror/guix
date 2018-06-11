@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
@@ -119,7 +119,7 @@ C_*INCLUDE_PATH."
         ;; libc is false, so we are building xgcc-sans-libc.
         ;; Add essential headers from mingw-w64.
         (let ((mingw-source (assoc-ref inputs "mingw-source")))
-          (system* "tar" "xvf" mingw-source)
+          (invoke "tar" "xvf" mingw-source)
           (let ((mingw-headers (unpacked-mingw-dir)))
             ;; We need _mingw.h which will gets built from _mingw.h.in by
             ;; mingw-w64's configure.  We cannot configure mingw-w64 until we
@@ -160,7 +160,7 @@ C_*INCLUDE_PATH."
   "Install a stripped GCC."
   ;; Unlike our 'strip' phase, this will do the right thing for
   ;; cross-compilers.
-  (zero? (system* "make" "install-strip")))
+  (invoke "make" "install-strip"))
 
 (define* (cross-gcc-build-phases target
                                  #:optional (phases %standard-phases))

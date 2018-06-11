@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -72,7 +72,14 @@
    (9 "0g1l56kvw61rpw7dqa9fcl9llkl693h73g631hrhxlm030ddssqb")
    (10 "01lfhrkdsdkdz8ypzapr614ras23x7ckjnr60aa5bzkaqprccrc4")
    (11 "038p7mhnq9m65g505hi3827jkf9f35nd1cy00w8mwafpyxp44mnx")
-   (12 "0gh6lbb1rwpk44pvbamm6vzdfi50xnwkqd9v7s8cjwk3pz973hps")))
+   (12 "0gh6lbb1rwpk44pvbamm6vzdfi50xnwkqd9v7s8cjwk3pz973hps")
+   (13 "1djkx0w9v62q78gz3jsvamj1jq53i6hbfrfhhsw86ihwpjnfy98v")
+   (14 "0z5ikcq9zyxw79d0z36r5p0mspnb5piavbv03jmlan1wnknmrxx7")
+   (15 "09n307fi1j257abhm295k6ksmnzw47ka2zhnr0i5lbdnpvn04xnk")
+   (16 "1cgi1y6mifm8hsgv4avj5ih76535js3qba1sqwbfvp7si76927sh")
+   (17 "0w6jpj2giakji1ir83rpkx1y7n7xqppah3j748m6dm38hywr0gvp")
+   (18 "1k58h4wxbsg7r4rwhrvzx5hfbapba2nxjysbhh6qp6ki5ys99i2v")
+   (19 "07n1i5610lbs672x1s8g82qn3qfj06s0ip3z80sri0g8vxp0s5r7")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
@@ -93,9 +100,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
           1))
 
 (define-public bash
-  (let* ((cppflags (string-join '("-DSYS_BASHRC='\"/etc/bashrc\"'"
-                                  "-DSYS_BASH_LOGOUT='\"/etc/bash_logout\"'"
-                                  "-DDEFAULT_PATH_VALUE='\"/no-such-path\"'"
+  (let* ((cppflags (string-join '("-DDEFAULT_PATH_VALUE='\"/no-such-path\"'"
                                   "-DSTANDARD_UTILS_PATH='\"/no-such-path\"'"
                                   "-DNON_INTERACTIVE_LOGIN_SHELLS"
                                   "-DSSH_SOURCE_BASHRC")
@@ -160,7 +165,8 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
               ;; Add a `sh' -> `bash' link.
               (let ((out (assoc-ref outputs "out")))
                 (with-directory-excursion (string-append out "/bin")
-                  (symlink "bash" "sh")))))
+                  (symlink "bash" "sh")
+                  #t))))
 
           (add-after 'install 'move-development-files
             (lambda* (#:key outputs #:allow-other-keys)

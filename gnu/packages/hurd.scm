@@ -60,8 +60,7 @@
        (modify-phases %standard-phases
          (replace 'install
            (lambda _
-             (zero?
-              (system* "make" "install-data"))))
+             (invoke "make" "install-data")))
          (delete 'build))
 
       ;; GNU Mach supports only IA32 currently, so cheat so that we can at
@@ -128,7 +127,7 @@ communication.")
        (modify-phases %standard-phases
          (replace 'install
            (lambda _
-             (zero? (system* "make" "install-headers" "no_deps=t"))))
+             (invoke "make" "install-headers" "no_deps=t")))
          (delete 'build))
 
        #:configure-flags '(;; Pretend we're on GNU/Hurd; 'configure' wants
@@ -179,7 +178,7 @@ Library and other user programs.")
                  #t)))
            (replace 'build
              (lambda _
-               (zero? (system* "make" "-Clibihash" "libihash.a"))))))))
+               (invoke "make" "-Clibihash" "libihash.a")))))))
     (home-page "https://www.gnu.org/software/hurd/hurd.html")
     (synopsis "GNU Hurd libraries")
     (description
@@ -201,7 +200,8 @@ Library for GNU/Hurd.")
                    (match %build-inputs
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
-                                   directories))))))
+                                   directories)
+                      #t)))))
     (inputs `(("gnumach-headers" ,gnumach-headers)
               ("hurd-headers" ,hurd-headers)
               ("hurd-minimal" ,hurd-minimal)))
@@ -229,10 +229,9 @@ Hurd-minimal package which are needed for both glibc and GCC.")
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out  (assoc-ref outputs "out"))
                              (boot (string-append out "/boot")))
-                        (and (zero? (system* "make" "gnumach.gz"))
-                             (begin
-                               (install-file "gnumach.gz" boot)
-                               #t))))))))
+                        (invoke "make" "gnumach.gz")
+                        (install-file "gnumach.gz" boot)
+                        #t))))))
     (native-inputs
      `(("mig" ,mig)
        ("perl" ,perl)))

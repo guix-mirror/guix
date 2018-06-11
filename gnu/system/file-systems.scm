@@ -20,16 +20,17 @@
   #:use-module (ice-9 match)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (guix records)
   #:use-module (gnu system uuid)
   #:re-export (uuid                               ;backward compatibility
                string->uuid
                uuid->string)
-  #:export (<file-system>
-            file-system
+  #:export (file-system
             file-system?
             file-system-device
-            file-system-title
+            file-system-title                     ;deprecated
             file-system-mount-point
             file-system-type
             file-system-needed-for-boot?
@@ -42,6 +43,10 @@
             file-system-location
 
             file-system-type-predicate
+
+            file-system-label
+            file-system-label?
+            file-system-label->string
 
             file-system->spec
             spec->file-system
@@ -83,12 +88,10 @@
 ;;; Code:
 
 ;; File system declaration.
-(define-record-type* <file-system> file-system
+(define-record-type* <file-system> %file-system
   make-file-system
   file-system?
-  (device           file-system-device)           ; string
-  (title            file-system-title             ; 'device | 'label | 'uuid
-                    (default 'device))
+  (device           file-system-device) ; string | <uuid> | <file-system-label>
   (mount-point      file-system-mount-point)      ; string
   (type             file-system-type)             ; string
   (flags            file-system-flags             ; list of symbols
@@ -108,6 +111,83 @@
   (location         file-system-location
                     (default (current-source-location))
                     (innate)))
+
+;; A file system label for use in the 'device' field.
+(define-record-type <file-system-label>
+  (file-system-label label)
+  file-system-label?
+  (label file-system-label->string))
+
+(set-record-type-printer! <file-system-label>
+                          (lambda (obj port)
+                            (format port "#<file-system-label ~s>"
+                                    (file-system-label->string obj))))
+
+(define-syntax report-deprecation
+  (lambda (s)
+    "Report the use of the now-deprecated 'title' field."
+    (syntax-case s ()
+      ((_ field)
+       (let* ((source (syntax-source #'field))
+              (file   (and source (assq-ref source 'filename)))
+              (line   (and source
+                           (and=> (assq-ref source 'line) 1+)))
+              (column (and source (assq-ref source 'column))))
+         (format (current-error-port)
+                 "~a:~a:~a: warning: 'title' field is deprecated~%"
+                 file line column)
+         #t)))))
+
+;; Helper for 'process-file-system-declaration'.
+(define-syntax device-expression
+  (syntax-rules (quote label uuid device)
+    ((_ (quote label) dev)
+     (file-system-label dev))
+    ((_ (quote uuid) dev)
+     (if (uuid? dev) dev (uuid dev)))
+    ((_ (quote device) dev)
+     dev)
+    ((_ title dev)
+     (case title
+       ((label) (file-system-label dev))
+       ((uuid)  (uuid dev))
+       (else    dev)))))
+
+;; Helper to interpret the now-deprecated 'title' field.  Detect forms like
+;; (title 'label), remove them, and adjust the 'device' field accordingly.
+;; TODO: Remove this once 'title' has been deprecated long enough.
+(define-syntax process-file-system-declaration
+  (syntax-rules (device title)
+    ((_ () (rest ...) #f #f)                 ;no 'title' and no 'device' field
+     (%file-system rest ...))
+    ((_ () (rest ...) dev #f)                     ;no 'title' field
+     (%file-system rest ... (device dev)))
+    ((_ () (rest ...) dev titl)                   ;got a 'title' field
+     (%file-system rest ...
+                   (device (device-expression titl dev))))
+    ((_ ((title titl) rest ...) (previous ...) dev _)
+     (begin
+       (report-deprecation (title titl))
+       (process-file-system-declaration (rest ...)
+                                        (previous ...)
+                                        dev titl)))
+    ((_ ((device dev) rest ...) (previous ...) _ titl)
+     (process-file-system-declaration (rest ...)
+                                      (previous ...)
+                                      dev titl))
+    ((_ (field rest ...) (previous ...) dev titl)
+     (process-file-system-declaration (rest ...)
+                                      (previous ... field)
+                                      dev titl))))
+
+(define-syntax-rule (file-system fields ...)
+  (process-file-system-declaration (fields ...) () #f #f))
+
+(define (file-system-title fs)                    ;deprecated
+  (match (file-system-device fs)
+    ((? file-system-label?) 'label)
+    ((? uuid?)              'uuid)
+    ((? string?)            'device)))
 
 ;; Note: This module is used both on the build side and on the host side.
 ;; Arrange not to pull (guix store) and (guix config) because the latter
@@ -161,23 +241,26 @@ store--e.g., if FS is the root file system."
   "Return a list corresponding to file-system FS that can be passed to the
 initrd code."
   (match fs
-    (($ <file-system> device title mount-point type flags options _ _ check?)
-     (list (if (uuid? device)
-               `(uuid ,(uuid-type device) ,(uuid-bytevector device))
-               device)
-           title mount-point type flags options check?))))
+    (($ <file-system> device mount-point type flags options _ _ check?)
+     (list (cond ((uuid? device)
+                  `(uuid ,(uuid-type device) ,(uuid-bytevector device)))
+                 ((file-system-label? device)
+                  `(file-system-label ,(file-system-label->string device)))
+                 (else device))
+           mount-point type flags options check?))))
 
 (define (spec->file-system sexp)
   "Deserialize SEXP, a list, to the corresponding <file-system> object."
   (match sexp
-    ((device title mount-point type flags options check?)
+    ((device mount-point type flags options check?)
      (file-system
        (device (match device
                  (('uuid (? symbol? type) (? bytevector? bv))
                   (bytevector->uuid bv type))
+                 (('file-system-label (? string? label))
+                  (file-system-label label))
                  (_
                   device)))
-       (title title)
        (mount-point mount-point) (type type)
        (flags flags) (options options)
        (check? check?)))))

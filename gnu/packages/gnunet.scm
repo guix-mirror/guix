@@ -186,16 +186,13 @@ authentication and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.59.0")
+   (version "7.60.0")
    (source (origin
             (method url-fetch)
-            (uri (list (string-append "mirror://gnu/gnunet/" name "-" version ".tar.xz")
-                       ;; TODO: Remove once gnurl-7.59.0 release has synced to ftp.gnu.org
-                       (string-append "https://ftp.n0.is/pub/releases/gnurl/"
-                                       name "-" version ".tar.xz")))
+            (uri (string-append "mirror://gnu/gnunet/" name "-" version ".tar.Z"))
             (sha256
              (base32
-              "0fdwqxs4crzj1nbq3lz0xbqjiiqpq16vpll09gryyq4c1y6lbyib"))))
+              "0klf3h339dznbm903474mjjysrarz09s1wiypnbai3xnfjamha99"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ; 1.5 MiB of man3 pages
@@ -324,11 +321,6 @@ kinds of basic applications for the foundation of a GNU internet.")
                  (base32
                   "0k6mn28isjlxrnvbnblab3nh2xqx1b7san8k98kc35ap9lq0iz8w"))))
       (build-system gnu-build-system)
-      (arguments
-       '(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
-                      (lambda _
-                        (invoke "autoreconf" "-vfi"))))))
       (native-inputs `(("pkg-config" ,pkg-config)
                        ("autoconf" ,autoconf-wrapper)
                        ("automake" ,automake)))

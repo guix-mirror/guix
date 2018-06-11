@@ -4,6 +4,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages m4)
-  #:use-module (gnu packages indent)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bison)
@@ -90,12 +91,14 @@
              `(modify-phases ,phases
                 (replace 'build
                   (lambda _
-                    (zero? (system* "./build.sh"))))
+                    (invoke "./build.sh")
+                    #t))
                 (replace 'install
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let* ((out (assoc-ref outputs "out"))
                            (bin (string-append out "/bin")))
-                      (install-file "make" bin)))))))))
+                      (install-file "make" bin)
+                      #t))))))))
      (native-inputs '())                          ; no need for 'pkg-config'
      (inputs %bootstrap-inputs))))
 
@@ -183,28 +186,12 @@
                     ,cf)))))
      (inputs %boot0-inputs))))
 
-;; gcc-4.9 was fixed late in the core-update cycle and so this GCC is only
-;; needed to prevent a full world rebuild, and can be replaced with gcc-4.9.
-(define gcc-for-libstdc++
-  (package (inherit gcc-4.9)
-    (version "4.9.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gcc/gcc-"
-                                  version "/gcc-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
-              (patches (search-patches "gcc-arm-bug-71399.patch"
-                                       "gcc-libvtv-runpath.patch"
-                                       "gcc-fix-texi2pod.patch"))))))
-
 (define libstdc++-boot0
   ;; GCC's libcc1 is always built as a shared library (the top-level
   ;; 'Makefile.def' forcefully adds --enable-shared) and thus needs to refer
   ;; to libstdc++.so.  We cannot build libstdc++-5.3 because it relies on
   ;; C++14 features missing in some of our bootstrap compilers.
-  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-for-libstdc++))))
+  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-4.9))))
     (package
       (inherit lib)
       (name "libstdc++-boot0")
@@ -262,42 +249,40 @@
                                 "--(with-system-zlib|enable-languages.*)" <>)
                               ,flags)))
             ((#:phases phases)
-             `(alist-cons-after
-               'unpack 'unpack-gmp&co
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
-                       (mpfr (assoc-ref %build-inputs "mpfr-source"))
-                       (mpc  (assoc-ref %build-inputs "mpc-source")))
+             `(modify-phases ,phases
+                (add-after 'unpack 'unpack-gmp&co
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
+                          (mpfr (assoc-ref %build-inputs "mpfr-source"))
+                          (mpc  (assoc-ref %build-inputs "mpc-source")))
 
-                   ;; To reduce the set of pre-built bootstrap inputs, build
-                   ;; GMP & co. from GCC.
-                   (for-each (lambda (source)
-                               (or (zero? (system* "tar" "xvf" source))
-                                   (error "failed to unpack tarball"
-                                          source)))
-                             (list gmp mpfr mpc))
+                      ;; To reduce the set of pre-built bootstrap inputs, build
+                      ;; GMP & co. from GCC.
+                      (for-each (lambda (source)
+                                  (invoke "tar" "xvf" source))
+                                (list gmp mpfr mpc))
 
-                   ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
-                   ,@(map (lambda (lib)
-                            ;; Drop trailing letters, as gmp-6.0.0a unpacks
-                            ;; into gmp-6.0.0.
-                            `(symlink ,(string-trim-right
-                                        (package-full-name lib)
-                                        char-set:letter)
-                                      ,(package-name lib)))
-                          (list gmp-6.0 mpfr mpc))))
-               (alist-cons-after
-                'install 'symlink-libgcc_eh
-                (lambda* (#:key outputs #:allow-other-keys)
-                  (let ((out (assoc-ref outputs "lib")))
-                    ;; Glibc wants to link against libgcc_eh, so provide
-                    ;; it.
-                    (with-directory-excursion
-                        (string-append out "/lib/gcc/"
-                                       ,(boot-triplet)
-                                       "/" ,(package-version gcc))
-                      (symlink "libgcc.a" "libgcc_eh.a"))))
-                ,phases))))))
+                      ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
+                      ,@(map (lambda (lib)
+                               ;; Drop trailing letters, as gmp-6.0.0a unpacks
+                               ;; into gmp-6.0.0.
+                               `(symlink ,(string-trim-right
+                                           (package-full-name lib "-")
+                                           char-set:letter)
+                                         ,(package-name lib)))
+                             (list gmp-6.0 mpfr mpc))
+                      #t)))
+                (add-after 'install 'symlink-libgcc_eh
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "lib")))
+                      ;; Glibc wants to link against libgcc_eh, so provide
+                      ;; it.
+                      (with-directory-excursion
+                          (string-append out "/lib/gcc/"
+                                         ,(boot-triplet)
+                                         "/" ,(package-version gcc))
+                        (symlink "libgcc.a" "libgcc_eh.a"))
+                      #t))))))))
 
      (inputs `(("gmp-source" ,(package-source gmp-6.0))
                ("mpfr-source" ,(package-source mpfr))
@@ -332,7 +317,8 @@
                            (lambda _
                              (substitute* "Configure"
                                (("^libswanted=(.*)pthread" _ before)
-                                (string-append "libswanted=" before)))))))
+                                (string-append "libswanted=" before)))
+                             #t))))
                      ;; Do not configure with '-Dusethreads' since pthread
                      ;; support is missing.
                      ((#:configure-flags configure-flags)
@@ -512,32 +498,33 @@ the bootstrap environment."
                             "--enable-obsolete-rpc")
                       ,flags))
             ((#:phases phases)
-             `(alist-cons-before
-               'configure 'pre-configure
-               (lambda* (#:key inputs #:allow-other-keys)
-                 ;; Don't clobber CPATH with the bootstrap libc.
-                 (setenv "NATIVE_CPATH" (getenv "CPATH"))
-                 (unsetenv "CPATH")
+             `(modify-phases ,phases
+                (add-before 'configure 'pre-configure
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    ;; Don't clobber CPATH with the bootstrap libc.
+                    (setenv "NATIVE_CPATH" (getenv "CPATH"))
+                    (unsetenv "CPATH")
 
-                 ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
-                 ,@(if (hurd-triplet? (%current-system))
-                       `((substitute* "libpthread/Makefile"
-                           (("LDLIBS-pthread.so =.*")
-                            (string-append "LDLIBS-pthread.so = "
-                                           (assoc-ref %build-inputs "kernel-headers")
-                                           "/lib/libihash.a\n"))))
-                       '())
+                    ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
+                    ,@(if (hurd-triplet? (%current-system))
+                          `((substitute* "libpthread/Makefile"
+                              (("LDLIBS-pthread.so =.*")
+                               (string-append "LDLIBS-pthread.so = "
+                                              (assoc-ref %build-inputs "kernel-headers")
+                                              "/lib/libihash.a\n"))))
+                          '())
 
-                 ;; 'rpcgen' needs native libc headers to be built.
-                 (substitute* "sunrpc/Makefile"
-                   (("sunrpc-CPPFLAGS =.*" all)
-                    (string-append "CPATH = $(NATIVE_CPATH)\n"
-                                   "export CPATH\n"
-                                   all "\n"))))
-               ,phases)))))
+                    ;; 'rpcgen' needs native libc headers to be built.
+                    (substitute* "sunrpc/Makefile"
+                      (("sunrpc-CPPFLAGS =.*" all)
+                       (string-append "CPATH = $(NATIVE_CPATH)\n"
+                                      "export CPATH\n"
+                                      all "\n")))
+                    #t)))))))
      (propagated-inputs `(("kernel-headers" ,(kernel-headers-boot0))))
      (native-inputs
-      `(("texinfo" ,texinfo-boot0)
+      `(("bison" ,bison-boot0)
+        ("texinfo" ,texinfo-boot0)
         ("perl" ,perl-boot0)))
      (inputs
       `(;; The boot inputs.  That includes the bootstrap libc.  We don't want
@@ -599,7 +586,9 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                                            triplet "-" tool)
                                             tool))
                                  '("ar" "ranlib"))
-                       (for-each wrap-program '("gcc" "g++")))))))
+                       (for-each wrap-program '("gcc" "g++")))
+
+                     #t))))
     (native-inputs
      `(("binutils" ,binutils)
        ("gcc" ,gcc)
@@ -652,7 +641,8 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                   ;; Build only the tools.
                   (add-after 'unpack 'chdir
                              (lambda _
-                               (chdir "gettext-tools")))
+                               (chdir "gettext-tools")
+                               #t))
 
                   ;; Some test programs require pthreads, which we don't have.
                   (add-before 'configure 'no-test-programs
@@ -923,20 +913,27 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define grep-final
   ;; The final grep.  Gzip holds a reference to it (via zgrep), so it must be
   ;; built before gzip.
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs (package
-                                   (inherit grep)
-                                   (inputs '())   ;no PCRE support
-                                   (native-inputs `(("perl" ,perl-boot0))))
-                                 %boot5-inputs
-                                 (current-source-location)
-                                 #:guile guile-final)))
+  (let ((grep (package-with-bootstrap-guile
+               (package-with-explicit-inputs grep %boot5-inputs
+                                             (current-source-location)
+                                             #:guile guile-final))))
+    (package/inherit grep
+                     (inputs (alist-delete "pcre" (package-inputs grep)))
+                     (native-inputs `(("perl" ,perl-boot0))))))
 
 (define %boot6-inputs
   ;; Now use the final Coreutils.
   `(("coreutils" ,coreutils-final)
     ("grep" ,grep-final)
     ,@%boot5-inputs))
+
+(define sed-final
+  ;; The final sed.
+  (let ((sed (package-with-bootstrap-guile
+              (package-with-explicit-inputs sed %boot6-inputs
+                                            (current-source-location)
+                                            #:guile guile-final))))
+    (package/inherit sed (native-inputs `(("perl" ,perl-boot0))))))
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by 'gnu-build-system'.  We
@@ -956,9 +953,9 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                ("file" ,file)
                ("diffutils" ,diffutils)
                ("patch" ,patch)
-               ("sed" ,sed)
                ("findutils" ,findutils)
                ("gawk" ,gawk)))
+      ("sed" ,sed-final)
       ("grep" ,grep-final)
       ("coreutils" ,coreutils-final)
       ("make" ,gnu-make-final)
@@ -1029,7 +1026,8 @@ COREUTILS-FINAL vs. COREUTILS, etc."
                                                    "libc-debug")))
                      (union-build (assoc-ref %outputs "static")
                                   (list (assoc-ref %build-inputs
-                                                   "libc-static")))))))
+                                                   "libc-static")))
+                     #t))))
 
     (native-search-paths (package-native-search-paths gcc))
     (search-paths (package-search-paths gcc))

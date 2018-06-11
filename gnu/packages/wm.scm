@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -135,14 +136,14 @@ the leaves of a full binary tree.")
 (define-public i3status
   (package
     (name "i3status")
-    (version "2.11")
+    (version "2.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/i3status/i3status-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0pwcy599fw8by1a1sf91crkqba7679qhvhbacpmhis8c1xrpxnwq"))))
+                "06krpbijv4yi33nypg6qcn4hilcrdyarsdpd9fmr2cq46qaqiikg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
@@ -355,13 +356,7 @@ prompt.")
          "0zh7il2y6dmzym3w6r9xii5dma8pjjjlq4dm5iby7m3gvplj4q9p"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests included
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (invoke "autoreconf" "-vfi")
-             #t)))))
+     `(#:tests? #f))                              ;no tests included
     (inputs
      `(("cairo" ,cairo)
        ("libev" ,libev)
@@ -680,6 +675,19 @@ experience.")
              (sha256
               (base32
                "0kwpbls9h1alxcmvxh5g9qb995fds5b2ngcr44w0ibazkyls2pdc"))
+             (modules '((guix build utils)
+                        (srfi srfi-19)))
+             (snippet '(begin
+                         ;; Remove non-reproducible timestamp and use the date
+                         ;; of the source file instead.
+                         (substitute* "common/version.c"
+                           (("__DATE__ \" \" __TIME__")
+                            (date->string
+                             (time-utc->date
+                              (make-time time-utc 0
+                                         (stat:mtime (stat "awesome.c"))))
+                             "\"~c\"")))
+                         #t))
              (patches (search-patches "awesome-reproducible-png.patch"))))
     (build-system cmake-build-system)
     (native-inputs `(("asciidoc" ,asciidoc)
@@ -912,7 +920,7 @@ It is inspired by Xmonad and dwm.  Its major features include:
 (define-public cwm
   (package
     (name "cwm")
-    (version "6.2")
+    (version "6.3")
     (source
      (origin
        (method url-fetch)
@@ -920,7 +928,7 @@ It is inspired by Xmonad and dwm.  Its major features include:
                            version ".tar.gz"))
        (sha256
         (base32
-         "1b8k2hjxpb0bzqjh2wj6mn2nf2360zacf8z19sw2rw5lxvmfy89x"))))
+         "17pdp9cfgh2n3n3905l4rl9qk7b722i8psnarhlc2h98qzx7zmac"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
@@ -960,3 +968,47 @@ It is inspired by Xmonad and dwm.  Its major features include:
     (description "Cwm is a stacking window manager for X11.  It is an OpenBSD
 project derived from the original Calm Window Manager.")
     (license license:isc)))
+
+(define-public nitrogen
+  (package
+    (name "nitrogen")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://github.com/l3ib/nitrogen/"
+                                  "releases/download/" version "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0zc3fl1mbhq0iyndy4ysmy8vv5c7xwf54rbgamzfhfvsgdq160pl"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("gtkmm" ,gtkmm-2)
+       ("glib" ,glib)
+       ("glibmm" ,glibmm)))
+    (native-inputs
+     `(("pkg-config", pkg-config)))
+    (arguments
+     `(#:configure-flags (list
+                          (string-append "--prefix=" %output)
+                          "CXXFLAGS=-std=c++11")))
+    (home-page "http://projects.l3ib.org/nitrogen/")
+    (synopsis "Background browser and setter for X windows")
+    (description
+     "This package is a background browser and setter for X windows.  It's
+features are:
+
+@itemize
+@item Multihead and Xinerama aware
+@item Recall mode to used via startup script
+@item Uses freedesktop.org standard for thumbnails
+@item Can set GNOME background
+@item Command lie set modes for script use
+@item Inotify monitoring of browse directory
+@item Lazy loading of thumbnails - conserves memory
+@item \"Automatic\" set mode - determines best mode to set an image based on
+its size
+@item Display preview images in a tiled icon layout
+@end itemize")
+    (license license:gpl2+)))

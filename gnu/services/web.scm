@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,11 +26,14 @@
 (define-module (gnu services web)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu system pam)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages web)
   #:use-module (gnu packages php)
+  #:use-module (gnu packages guile)
   #:use-module (guix records)
+  #:use-module (guix modules)
   #:use-module (guix gexp)
   #:use-module ((guix utils) #:select (version-major))
   #:use-module ((guix packages) #:select (package-version))
@@ -155,7 +159,11 @@
             php-fpm-service-type
             nginx-php-location
 
-            cat-avatar-generator-service))
+            cat-avatar-generator-service
+
+            hpcguix-web-configuration
+            hpcguix-web-configuration?
+            hpcguix-web-service-type))
 
 ;;; Commentary:
 ;;;
@@ -893,3 +901,65 @@ a webserver.")
                 (nginx-server-configuration-locations configuration)))
             (root #~(string-append #$package
                                    "/share/web/cat-avatar-generator"))))))
+
+
+(define-record-type* <hpcguix-web-configuration>
+  hpcguix-web-configuration make-hpcguix-web-configuration
+  hpcguix-web-configuration?
+
+  (package  hpcguix-web-package (default hpcguix-web)) ;<package>
+
+  ;; Specs is gexp of hpcguix-web configuration file
+  (specs    hpcguix-web-configuration-specs))
+
+(define %hpcguix-web-accounts
+  (list (user-group
+         (name "hpcguix-web")
+         (system? #t))
+        (user-account
+         (name "hpcguix-web")
+         (group "hpcguix-web")
+         (system? #t)
+         (comment "hpcguix-web")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define %hpcguix-web-activation
+  #~(begin
+      (use-modules (guix build utils))
+      (let ((home-dir "/var/cache/guix/web")
+            (user (getpwnam "hpcguix-web")))
+        (mkdir-p home-dir)
+        (chown home-dir (passwd:uid user) (passwd:gid user))
+        (chmod home-dir #o755))))
+
+(define (hpcguix-web-shepherd-service config)
+  (let ((specs       (hpcguix-web-configuration-specs config))
+        (hpcguix-web (hpcguix-web-package config)))
+    (with-imported-modules (source-module-closure
+                            '((gnu build shepherd)))
+      (shepherd-service
+       (documentation "hpcguix-web daemon")
+       (provision     '(hpcguix-web))
+       (requirement   '(networking))
+       (start #~(make-forkexec-constructor
+                 (list #$(file-append hpcguix-web "/bin/run")
+                       (string-append "--config="
+                                      #$(scheme-file "hpcguix-web.scm" specs)))
+                 #:user "hpcguix-web"
+                 #:group "hpcguix-web"
+                 #:environment-variables
+                 (list "XDG_CACHE_HOME=/var/cache")))
+       (stop #~(make-kill-destructor))))))
+
+(define hpcguix-web-service-type
+  (service-type
+   (name 'hpcguix-web)
+   (description "Run the hpcguix-web server.")
+   (extensions
+    (list (service-extension account-service-type
+                             (const %hpcguix-web-accounts))
+          (service-extension activation-service-type
+                             (const %hpcguix-web-activation))
+          (service-extension shepherd-root-service-type
+                             (compose list hpcguix-web-shepherd-service))))))

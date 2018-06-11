@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,14 +44,13 @@
 (define-public lcms
   (package
    (name "lcms")
-   (version "2.8")
+   (version "2.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/lcms/lcms/" version
                                 "/lcms2-" version ".tar.gz"))
-            (patches (search-patches "lcms-CVE-2016-10165.patch"))
             (sha256 (base32
-                     "08pvl289g0mbznzx5l6ibhaldsgx41kwvdn2c974ga9fkli2pl36"))))
+                     "083xisy6z01zhm7p7rgk4bx9d6zlr8l20qkfv1g29ylnhgwzvij8"))))
    (build-system gnu-build-system)
    (inputs `(("libjpeg-8" ,libjpeg-8)
              ("libtiff" ,libtiff)
@@ -132,7 +132,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.22")
+    (version "9.23")
     (source
       (origin
         (method url-fetch)
@@ -142,7 +142,7 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "1fyi4yvdj39bjgs10klr31cda1fbx1ar7a7b7yz7v68gykk65y61"))
+          "1ng8d9fm5lza7k1f7ybc791275c07z5hcmpkrl2i226nshkxrkhz"))
         (patches (search-patches "ghostscript-runpath.patch"
                                  "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
@@ -152,10 +152,11 @@ printing, and psresize, for adjusting page sizes.")
           ;; Remove bundled libraries. The bundled OpenJPEG is a patched fork so
           ;; we leave it, at least for now.
           ;; TODO Try unbundling ijs, which is developed alongside Ghostscript.
+          ;; Likewise for the thread-safe lcms2 fork called "lcms2art".
          '(begin
             (for-each delete-file-recursively '("freetype" "jbig2dec" "jpeg"
-                                                "lcms2" "libpng"
-                                                "tiff" "zlib"))))))
+                                                "libpng" "tiff" "zlib"))
+            #t))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))                  ;19 MiB of HTML/PS doc + examples
     (arguments
@@ -179,13 +180,6 @@ printing, and psresize, for adjusting page sizes.")
                    '()))
        #:phases
        (modify-phases %standard-phases
-        (add-after 'unpack 'fix-doc-dir
-          (lambda _
-            ;; Honor --docdir.
-            (substitute* "Makefile.in"
-              (("^docdir=.*$") "docdir = @docdir@\n")
-              (("^exdir=.*$") "exdir = $(docdir)/examples\n"))
-            #t))
         (add-after 'configure 'remove-doc-reference
           (lambda _
             ;; Don't retain a reference to the 'doc' output in 'gs'.
@@ -194,6 +188,10 @@ printing, and psresize, for adjusting page sizes.")
             (substitute* "base/gscdef.c"
               (("GS_DOCDIR")
                "\"~/.guix-profile/share/doc/ghostscript\""))
+            ;; The docdir default changed in 9.23 and a compatibility
+            ;; symlink was added from datadir->docdir.  Remove it.
+            (substitute* "base/unixinst.mak"
+              (("ln -s \\$\\(DESTDIR\\)\\$\\(docdir\\).*") ""))
             #t))
          (add-after 'configure 'patch-config-files
            (lambda _
@@ -213,11 +211,11 @@ printing, and psresize, for adjusting page sizes.")
            (lambda _
              ;; Build 'libgs.so', but don't build the statically-linked 'gs'
              ;; binary (saves 22 MiB).
-             (zero? (system* "make" "so" "-j"
-                             (number->string (parallel-job-count))))))
+             (invoke "make" "so" "-j"
+                     (number->string (parallel-job-count)))))
          (replace 'install
            (lambda _
-             (zero? (system* "make" "soinstall"))))
+             (invoke "make" "soinstall")))
          (add-after 'install 'create-gs-symlink
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -233,13 +231,11 @@ printing, and psresize, for adjusting page sizes.")
        ;; these libraries.
        ,@(if (%current-target-system)
              `(("zlib/native" ,zlib)
-               ("libjpeg/native" ,libjpeg)
-               ("lcms2/native" ,lcms))
+               ("libjpeg/native" ,libjpeg))
              '())))
     (inputs
      `(("freetype" ,freetype)
        ("jbig2dec" ,jbig2dec)
-       ("lcms2" ,lcms)
        ("libjpeg" ,libjpeg)
        ("libpaper" ,libpaper)
        ("libpng" ,libpng)
@@ -294,7 +290,7 @@ output file formats and printers.")
             (substitute* "autogen.sh"
               (("^.*\\$srcdir/configure.*") "")
               (("^ + && echo Now type.*$")  ""))
-            (zero? (system* "bash" "autogen.sh")))))))
+            (invoke "bash" "autogen.sh"))))))
    (synopsis "IJS driver framework for inkjet and other raster devices")
    (description
     "IJS is a protocol for transmission of raster page images.  This package
@@ -335,7 +331,8 @@ architecture.")
               (for-each
                 (lambda (file)
                   (copy-file file (string-append dir "/" file)))
-                (find-files "." "pfb|afm"))))))))
+                (find-files "." "pfb|afm"))
+              #t))))))
    (synopsis "Free replacements for the PostScript fonts")
    (description
     "Ghostscript fonts provides fonts and font metrics customarily distributed with

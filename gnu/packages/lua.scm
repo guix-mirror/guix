@@ -73,10 +73,10 @@
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "make" "install"
-                               (string-append "INSTALL_TOP=" out)
-                               (string-append "INSTALL_MAN=" out
-                                              "/share/man/man1")))))))))
+               (invoke "make" "install"
+                       (string-append "INSTALL_TOP=" out)
+                       (string-append "INSTALL_MAN=" out
+                                      "/share/man/man1"))))))))
     (home-page "https://www.lua.org/")
     (synopsis "Embeddable scripting language")
     (description
@@ -174,8 +174,8 @@ language.")
            (lambda _
              (setenv "LUA_CPATH" "src/?.so;;")
              (setenv "LUA_PATH"  "src/?.lua;;")
-             (and (zero? (system* "lua" "tests/test.lua"))
-                  (zero? (system* "lua" "tests/test-lom.lua"))))))))
+             (invoke "lua" "tests/test.lua")
+             (invoke "lua" "tests/test-lom.lua"))))))
     (inputs
      `(("lua" ,lua-5.1)
        ("expat" ,expat)))
@@ -210,8 +210,8 @@ language.")
              (setenv "LUA_CPATH" (string-append "src/?.so." ,version ";;"))
              (setenv "LUA_PATH"  "src/?.lua;;")
              (when (zero? (primitive-fork))
-               (system* "lua" "test/testsrvr.lua"))
-             (zero? (system* "lua" "test/testclnt.lua")))))))
+               (invoke "lua" "test/testsrvr.lua"))
+             (invoke "lua" "test/testclnt.lua"))))))
     (inputs
      `(("lua" ,lua-5.1)))
     (home-page "http://www.tecgraf.puc-rio.br/~diego/professional/luasocket/")

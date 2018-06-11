@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,11 +87,10 @@ around or take advantage of platform-specific deficiencies or features.")
                    (apr   (assoc-ref inputs  "apr"))
                    (expat (assoc-ref inputs  "expat")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         (string-append "--with-apr=" apr)
-                         (string-append "--with-expat=" expat)))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--with-apr=" apr)
+                       (string-append "--with-expat=" expat))))))
 
        ;; There are race conditions during 'make check'.  Typically, the
        ;; 'testall' executable is not built yet by the time 'make check' tries

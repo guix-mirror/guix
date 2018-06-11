@@ -35,18 +35,23 @@ export GUIX_BUILD_OPTIONS
 # Build a tarball with no compression.
 guix pack --compression=none --bootstrap guile-bootstrap
 
-# Build a tarball (with compression).
-guix pack --bootstrap guile-bootstrap
+# Build a tarball (with compression).  Check that '-e' works as well.
+out1="`guix pack --bootstrap guile-bootstrap`"
+out2="`guix pack --bootstrap -e '(@ (gnu packages bootstrap) %bootstrap-guile)'`"
+test -n "$out1"
+test "$out1" = "$out2"
 
 # Build a tarball with a symlink.
 the_pack="`guix pack --bootstrap -S /opt/gnu/bin=bin guile-bootstrap`"
 
-# Try to extract it.
+# Try to extract it.  Note: we cannot test whether /opt/gnu/bin/guile itself
+# exists because /opt/gnu/bin may be an absolute symlink to a store item that
+# has been GC'd.
 test_directory="`mktemp -d`"
 trap 'rm -rf "$test_directory"' EXIT
 cd "$test_directory"
 tar -xf "$the_pack"
-test -x opt/gnu/bin/guile
+test -L opt/gnu/bin
 
 is_available () {
     # Use the "type" shell builtin to see if the program is on PATH.
@@ -81,3 +86,14 @@ guix pack --dry-run --bootstrap -f docker -S /opt/gnu=/ guile-bootstrap
 # Build a tarball pack of cross-compiled software.  Use coreutils because
 # guile-bootstrap is not intended to be cross-compiled.
 guix pack --dry-run --bootstrap --target=arm-unknown-linux-gnueabihf coreutils
+
+# Likewise, 'guix pack -R' requires a full-blown toolchain (because
+# 'glibc-bootstrap' lacks 'libc.a'), hence '--dry-run'.
+guix pack -R --dry-run --bootstrap -S /mybin=bin guile-bootstrap
+
+# Make sure package transformation options are honored.
+mkdir -p "$test_directory"
+drv1="`guix pack -n guile 2>&1 | grep pack.*\.drv`"
+drv2="`guix pack -n --with-source=guile=$test_directory guile 2>&1 | grep pack.*\.drv`"
+test -n "$drv1"
+test "$drv1" != "$drv2"

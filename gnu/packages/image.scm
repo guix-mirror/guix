@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2014, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
@@ -17,6 +17,8 @@
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -393,7 +395,6 @@ extracting icontainer icon files.")
   (package
    (name "libtiff")
    (version "4.0.9")
-   (replacement libtiff/fixed)
    (source
      (origin
        (method url-fetch)
@@ -401,7 +402,9 @@ extracting icontainer icon files.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1kfg4q01r4mqn7dj63ifhi6pmqzbf4xax6ni6kkk81ri5kndwyvf"))))
+         "1kfg4q01r4mqn7dj63ifhi6pmqzbf4xax6ni6kkk81ri5kndwyvf"))
+       (patches (search-patches "libtiff-CVE-2017-9935.patch"
+                                "libtiff-CVE-2017-18013.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -422,17 +425,6 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
-
-(define libtiff/fixed
-  (package
-    (inherit libtiff)
-    (source
-      (origin
-        (inherit (package-source libtiff))
-        (patches
-          (append (origin-patches (package-source libtiff))
-                  (search-patches "libtiff-CVE-2017-9935.patch"
-                                  "libtiff-CVE-2017-18013.patch")))))))
 
 (define-public leptonica
   (package
@@ -495,8 +487,9 @@ arithmetic ops.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://downloads.ghostscript.com/public/" name "/"
-                            name "-" version ".tar.gz"))
+        (uri
+         (string-append "https://github.com/ArtifexSoftware/ghostpdl-downloads/"
+                        "releases/download/gs922/" name "-" version ".tar.gz"))
         (sha256
           (base32 "0k01hp0q4275fj4rbr1gy64svfraw5w7wvwl08yjhvsnpb1rid11"))
         (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
@@ -512,7 +505,7 @@ This is a decoder only implementation, and currently is in the alpha
 stage, meaning it doesn't completely work yet.  However, it is
 maintaining parity with available encoders, so it is useful for real
 work.")
-    (home-page "http://www.ghostscript.com/jbig2dec.html")
+    (home-page "https://jbig2dec.com")
     (license license:gpl2+)))
 
 (define-public openjpeg
@@ -591,7 +584,8 @@ error-resilience, a Java-viewer for j2k-images, ...")
          (add-after 'unpack 'disable-html-doc-gen
            (lambda _
              (substitute* "doc/Makefile.in"
-               (("^all: allhtml manpages") ""))))
+               (("^all: allhtml manpages") ""))
+             #t))
          (add-after 'install 'install-manpages
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((bin (assoc-ref outputs "bin"))
@@ -604,7 +598,8 @@ error-resilience, a Java-viewer for j2k-images, ...")
                              (copy-file file
                                         (string-append
                                          man1dir "/" base))))
-                         (find-files "doc" "\\.1"))))))))
+                         (find-files "doc" "\\.1"))
+               #t))))))
     (synopsis "Tools and library for working with GIF images")
     (description
      "GIFLIB is a library for reading and writing GIF images.  It is API and
@@ -817,7 +812,14 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       ("python2-sphinx" ,python2-sphinx)))
    (arguments
     `(#:test-target "check"
-      #:parallel-build? #f ; parallel builds trigger an ICE
+      #:phases
+      (modify-phases %standard-phases
+        ;; See https://github.com/ukoethe/vigra/issues/432
+        (add-after 'unpack 'disable-broken-test
+          (lambda _
+            (substitute* "test/fourier/CMakeLists.txt"
+              (("VIGRA_ADD_TEST.*") ""))
+            #t)))
       #:configure-flags
         (list "-Wno-dev" ; suppress developer mode with lots of warnings
               (string-append "-DVIGRANUMPY_INSTALL_DIR="
@@ -842,6 +844,39 @@ algorithms and data structures.  It is particularly strong for
 multi-dimensional image processing.")
    (license license:expat)
    (home-page "https://ukoethe.github.io/vigra/")))
+
+(define-public vigra-c
+  (let* ((commit "a2ff675f42079e2623318d8ff8b4288dbe7a7f06")
+         (revision "0")
+         (version (git-version "0.0.0" revision commit)))
+    (package
+      (name "vigra-c")
+      (version version)
+      (home-page "https://github.com/BSeppke/vigra_c")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1f1phmfbbz3dsq9330rd6bjmdg29hxskxi9l17cyx1f4mdqpgdgl"))
+                (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f))                  ; No test target.
+      (native-inputs
+       `(("doxygen" ,doxygen)))
+      (inputs
+       `(("fftw" ,fftw)
+         ("fftwf" ,fftwf)
+         ("vigra" ,vigra)))
+      (synopsis "C interface to the VIGRA computer vision library")
+      (description
+       "This package provides a C interface to the VIGRA C++ computer vision
+library.  It is designed primarily to ease the implementation of higher-level
+language bindings to VIGRA.")
+      (license license:expat))))
 
 (define-public libwebp
   (package
@@ -1365,4 +1400,51 @@ Features:
    (description "This package provides a way to read, write and display bitmap
 images stored in the JPEG format with R.  It can read and write both files and
 in-memory raw vectors.")
+   (license license:gpl2+)))
+
+(define-public gifsicle
+  (package
+   (name "gifsicle")
+   (version "1.91")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.lcdf.org/gifsicle/gifsicle-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "00586z1yz86qcblgmf16yly39n4lkjrscl52hvfxqk14m81fckha"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        (add-before 'check 'patch-tests
+          (lambda _
+            (substitute* "test/testie"
+              (("/usr/bin/perl")
+               (which "perl"))
+              (("/bin/sh")
+               (which "sh"))
+              (("/bin/rm")
+               (which "rm")))
+            #t)))))
+   (native-inputs `(("perl" ,perl))) ; Only for tests.
+   (inputs `(("libx11" ,libx11)))
+   (home-page "http://www.lcdf.org/gifsicle/")
+   (synopsis "Edit GIF images and animations")
+   (description "Gifsicle is a command-line GIF image manipulation tool that:
+
+@itemize
+@item Provides a batch mode for changing GIFs in place.
+@item Prints detailed information about GIFs, including comments.
+@item Control over interlacing, comments, looping, transparency, etc.
+@item Creates well-behaved GIFs: removes redundant colors, only uses local color
+tables, etc.
+@item Shrinks colormaps and change images to use the Web-safe palette.
+@item Optimizes GIF animations, or unoptimizes them for easier editing.
+@end itemize
+
+Two other programs are included with Gifsicle: @command{gifview} is a
+lightweight animated-GIF viewer, and @command{gifdiff} compares two GIFs for
+identical visual appearance.")
    (license license:gpl2+)))

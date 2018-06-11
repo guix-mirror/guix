@@ -29,7 +29,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.46")
+    (version "0.14.48")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -37,11 +37,12 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0h5b2mp0li0qzrz3wggzavdfqfaz9b79hx6wds84ya2i9maw80cl"))
+                "0bxkm5jlj6l4gai23bg0y31brr80r9qllh1rdg29pahjn0c2b4ml"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
-              (snippet
-                '(delete-file-recursively "vendor"))))
+              (snippet '(begin
+                          (delete-file-recursively "vendor")
+                          #t))))
     (build-system go-build-system)
     ;; The primary Syncthing executable goes to "out", while the auxiliary
     ;; server programs and utility tools go to "utils".  This reduces the size
@@ -144,7 +145,7 @@
        ("go-golang-org-x-net-union" ,(go-golang-org-x-net-union))
        ("go-golang-org-x-text" ,(go-golang-org-x-text-union))
        ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
-       ("go-github-com-zillode-notify" ,go-github-com-zillode-notify)
+       ("go-github-com-syncthing-notify" ,go-github-com-syncthing-notify)
        ;; For tests
        ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
     (synopsis "Decentralized continuous file system synchronization")
@@ -335,7 +336,8 @@ structs in the Go programming language.")
                    (match %build-inputs
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
-                                   directories))))))
+                                   directories)
+                      #t)))))
     (inputs (map (lambda (package)
                    (list (package-name package) package))
                  packages))
@@ -505,7 +507,10 @@ address of the default LAN gateway.")
                   "056dkgxrqjj5r18bnc3knlpgdz5p3yvp12y4y978hnsfhwaqvbjz"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "github.com/kardianos/osext"))
+       `(#:import-path "github.com/kardianos/osext"
+         ;; The tests are flaky:
+         ;; <https://github.com/kardianos/osext/issues/21>
+         #:tests? #f))
       (synopsis "Find the running executable")
       (description "Osext provides a method for finding the current executable
 file that is running.  This can be used for upgrading the current executable or
@@ -771,7 +776,8 @@ environment")
                    (match %build-inputs
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
-                                   directories))))))
+                                   directories)
+                      #t)))))
     (inputs (map (lambda (package)
                    (list (package-name package) package))
                  packages))
@@ -892,7 +898,8 @@ generation.")
                    (match %build-inputs
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
-                                   directories))))))
+                                   directories)
+                      #t)))))
     (inputs (map (lambda (package)
                    (list (package-name package) package))
                  packages))
@@ -906,7 +913,6 @@ libraries are in the same directory.")
 (define* (go-golang-org-x-net-union #:optional
                                  (packages (list go-golang-org-x-net-ipv4
                                                  go-golang-org-x-net-bpf
-                                                 go-golang-org-x-net-context
                                                  go-golang-org-x-net-ipv6
                                                  go-golang-org-x-net-proxy
                                                  go-golang-org-x-net-internal-iana)))
@@ -923,7 +929,8 @@ libraries are in the same directory.")
                    (match %build-inputs
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
-                                   directories))))))
+                                   directories)
+                      #t)))))
     (inputs (map (lambda (package)
                    (list (package-name package) package))
                  packages))
@@ -948,7 +955,8 @@ libraries are in the same directory.")
                    (match %build-inputs
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
-                                   directories))))))
+                                   directories)
+                      #t)))))
     (inputs (map (lambda (package)
                    (list (package-name package) package))
                  packages))
@@ -983,8 +991,8 @@ virtual connections from a single physical connection.")
       (license expat))))
 
 (define-public go-github-com-chmduquesne-rollinghash-adler32
-  (let ((commit "3dc7875a1f890f9bcf0619adb5571fc6f7d516bb")
-        (revision "1"))
+  (let ((commit "abb8cbaf9915e48ee20cae94bcd94221b61707a2")
+        (revision "2"))
     (package
       (name "go-github-com-chmduquesne-rollinghash-adler32")
       (version (git-version "0.0.0" revision commit))
@@ -997,7 +1005,7 @@ virtual connections from a single physical connection.")
           (file-name (git-file-name name version))
           (sha256
            (base32
-            "0frl021qdqcdyk9fccw6x1v2byvh0hls4rsrdjih5jgqpc18kx6y"))))
+            "0ylqb9r60q77qw0d6g9cg4yzadxzwcw74lfd25cw9yglyq0wgd3l"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/chmduquesne/rollinghash/adler32"
@@ -1105,30 +1113,30 @@ using sh's word-splitting rules.")
       (home-page "https://github.com/kballard/go-shellquote")
       (license expat))))
 
-(define-public go-github-com-zillode-notify
-  (let ((commit "53dd6873a851fc377c87d82f994b1fecdf25aadb")
-        (revision "3"))
+(define-public go-github-com-syncthing-notify
+  (let ((commit "b9ceffc925039c77cd9e0d38f248279ccc4399e2")
+        (revision "0"))
     (package
-      (name "go-github-com-zillode-notify")
+      (name "go-github-com-syncthing-notify")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                       (url "https://github.com/calmh/notify")
+                       (url "https://github.com/syncthing/notify")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ar6mj6s91y7hc5gdp88lz3i7xi29cqkx9f090xj899ir21a8djn"))))
+                  "1scha9b2r35bvqzqx86sarzjxf72ywvj3g6n9pm3xq4i4xzpylxf"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/Zillode/notify"))
+       '(#:import-path "github.com/syncthing/notify"))
       (propagated-inputs
        `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (synopsis "File system event notification library")
       (description "This package provides @code{notify}, a file system event
 notification library in Go.")
-      (home-page "https://github.com/zillode/notify")
+      (home-page "https://github.com/syncthing/notify")
       (license expat))))
 
 (define-public go-github-com-beorn7-perks-quantile
@@ -1400,7 +1408,8 @@ Prometheus HTTP API.")
                    (match %build-inputs
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
-                                   directories))))))
+                                   directories)
+                      #t)))))
     (inputs (map (lambda (package)
                    (list (package-name package) package))
                  packages))

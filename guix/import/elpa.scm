@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,8 @@
   #:use-module (guix packages)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:export (elpa->guix-package
-            %elpa-updater))
+            %elpa-updater
+            elpa-recursive-import))
 
 (define (elpa-dependencies->names deps)
   "Convert DEPS, a list of symbol/version pairs à la ELPA, to a list of
@@ -200,13 +202,15 @@ type '<elpa-package>'."
 
   (define source-url (elpa-package-source-url pkg))
 
+  (define dependencies-names
+    (filter-dependencies (elpa-dependencies->names
+                          (elpa-package-inputs pkg))))
+
   (define dependencies
-    (let* ((deps (elpa-package-inputs pkg))
-           (names (filter-dependencies (elpa-dependencies->names deps))))
-      (map (lambda (n)
-             (let ((new-n (elpa-name->package-name n)))
-               (list new-n (list 'unquote (string->symbol new-n)))))
-           names)))
+    (map (lambda (n)
+           (let ((new-n (elpa-name->package-name n)))
+             (list new-n (list 'unquote (string->symbol new-n)))))
+         dependencies-names))
 
   (define (maybe-inputs input-type inputs)
     (match inputs
@@ -218,23 +222,25 @@ type '<elpa-package>'."
 
   (let ((tarball (with-store store
                    (download-to-store store source-url))))
-    `(package
-       (name ,(elpa-name->package-name name))
-       (version ,version)
-       (source (origin
-                 (method url-fetch)
-                 (uri (string-append ,@(factorize-uri source-url version)))
-                 (sha256
-                  (base32
-                   ,(if tarball
-                        (bytevector->nix-base32-string (file-sha256 tarball))
-                        "failed to download package")))))
-       (build-system emacs-build-system)
-       ,@(maybe-inputs 'propagated-inputs dependencies)
-       (home-page ,(elpa-package-home-page pkg))
-       (synopsis ,(elpa-package-synopsis pkg))
-       (description ,(elpa-package-description pkg))
-       (license ,license))))
+    (values
+     `(package
+        (name ,(elpa-name->package-name name))
+        (version ,version)
+        (source (origin
+                  (method url-fetch)
+                  (uri (string-append ,@(factorize-uri source-url version)))
+                  (sha256
+                   (base32
+                    ,(if tarball
+                         (bytevector->nix-base32-string (file-sha256 tarball))
+                         "failed to download package")))))
+        (build-system emacs-build-system)
+        ,@(maybe-inputs 'propagated-inputs dependencies)
+        (home-page ,(elpa-package-home-page pkg))
+        (synopsis ,(elpa-package-synopsis pkg))
+        (description ,(elpa-package-description pkg))
+        (license ,license))
+     dependencies-names)))
 
 (define* (elpa->guix-package name #:optional (repo 'gnu))
   "Fetch the package NAME from REPO and produce a Guix package S-expression."
@@ -288,5 +294,12 @@ type '<elpa-package>'."
    (description "Updater for ELPA packages")
    (pred package-from-gnu.org?)
    (latest latest-release)))
+
+(define elpa-guix-name (cut guix-name "emacs-" <>))
+
+(define* (elpa-recursive-import package-name #:optional (repo 'gnu))
+  (recursive-import package-name repo
+                    #:repo->guix-package elpa->guix-package
+                    #:guix-name elpa-guix-name))
 
 ;;; elpa.scm ends here

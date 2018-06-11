@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
@@ -30,6 +30,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -38,6 +39,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
@@ -199,6 +201,8 @@ exec smbd $@")))
     (native-inputs `(("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin") ; gtester, etc.
                      ("perl" ,perl)
+                     ("flex" ,flex)
+                     ("bison" ,bison)
                      ("pkg-config" ,pkg-config)
                      ("python-wrapper" ,python-wrapper)
                      ("texinfo" ,texinfo)))
@@ -256,7 +260,9 @@ server and embedded PowerPC, and S390 guests.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))))
+               "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))
+             (patches
+              (search-patches "qemu-glibc-2.27.patch"))))
     ;; qemu-minimal-2.10 needs Python 2. Remove below once no longer necessary.
     (native-inputs `(("python-2" ,python-2)
                      ,@(fold alist-delete (package-native-inputs qemu)
@@ -331,7 +337,7 @@ all common programming languages.  Vala bindings are also provided.")
 (define-public lxc
   (package
     (name "lxc")
-    (version "2.1.1")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -339,7 +345,7 @@ all common programming languages.  Vala bindings are also provided.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1xpghrinxhm2072fwmn42pxhjwh7qx6cbsipw4s6g38a8mkklrk8"))))
+                "1nyml98k28sc5sda0260cmby4irkpnhpwgmx4yhqy10wpr4nr625"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -377,14 +383,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "4.2.0")
+    (version "4.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0nq1iz5iic466qahp0i8dlvyd6li0b0pdrvvrz9286l12x2fm61s"))))
+                "1dy243dqaj174hcka0my7q781wf0dvyi7f9328nwnplqicnf4cd5"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest

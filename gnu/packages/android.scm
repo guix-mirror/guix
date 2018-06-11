@@ -27,17 +27,72 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system android-ndk)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages selinux)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages linux))
+
+(define-public android-make-stub
+  (package
+    (name "android-make-stub")
+    (version "0.6.0")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/daym/android-make-stub.git")
+            (commit (string-append "v" version))))
+      (file-name (string-append "android-make-stub-"
+                                version "-checkout"))
+      (sha256
+       (base32
+        "0y1b2x96d37n6f1bp6dcx08bn08zac0cylmbfsx6mf2nahc02fhc"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; None exist.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (invoke "make" (string-append "prefix=" out) "install")
+                 #t))))))
+    (home-page "https://github.com/daym/android-make-stub")
+    (synopsis "Stubs for the @command{make} system of the Android platform")
+    (description "@code{android-make-stub} provides stubs for the
+@command{make} system of the Android platform.  This allows us to
+use their packages mostly unmodified in our Android NDK build system.")
+    (license license:asl2.0)))
+
+(define-public android-googletest
+  (package (inherit googletest)
+    (name "android-googletest")
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-host-libraries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib")))
+               (symlink "libgtest.so"
+                        (string-append lib "/libgtest_host.so"))
+               (symlink "libgmock.so"
+                        (string-append lib "/libgmock_host.so"))
+               #t))))))))
 
 ;; The Makefiles that we add are largely based on the Debian
 ;; packages.  They are licensed under GPL-2 and have copyright:
@@ -58,52 +113,69 @@
                               version "-checkout"))
     (sha256
      (base32
-      "0xc2n7jxrf1iw9cc278pijdfjix2fkiig5ws27f6rwp40zg5mrgg"))))
+      "0xc2n7jxrf1iw9cc278pijdfjix2fkiig5ws27f6rwp40zg5mrgg"))
+    (patches
+     (search-patches "libbase-use-own-logging.patch"
+                     "libbase-fix-includes.patch"
+                     "libutils-remove-damaging-includes.patch"
+                     "libutils-add-includes.patch"
+                     "adb-add-libraries.patch"
+                     "libziparchive-add-includes.patch"))))
 
-(define liblog
+(define (android-platform-system-extras version)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://android.googlesource.com/platform/system/extras")
+          (commit (string-append "android-" version))))
+    (file-name (string-append "android-platform-system-extras-"
+                              version "-checkout"))
+    (sha256
+     (base32
+      "18130c23ybqcpgjc5v6f8kdbv2xn39hyiaj17dzldjb9rlwzcyy9"))))
+
+(define (android-platform-bionic version)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url "https://android.googlesource.com/platform/bionic")
+          (commit (string-append "android-" version))))
+    (file-name (string-append "android-platform-bionic-"
+                              version "-checkout"))
+    (sha256
+     (base32
+      "0n9wkz3ynqw39if1ss9n32m66iga14nndf29hpm7g1aqn4wvvgzk"))))
+
+(define (android-platform-external version subdirectory checksum)
+  (origin
+    (method git-fetch)
+    (uri (git-reference
+          (url
+           (string-append "https://android.googlesource.com/platform/external/"
+                          subdirectory))
+          (commit (string-append "android-" version))))
+    (file-name (string-append "android-platform-system-external-" subdirectory "-"
+                              version "-checkout"))
+    (sha256
+     (base32
+      checksum))))
+
+(define android-liblog
   (package
-    (name "liblog")
+    (name "android-liblog")
     (version (android-platform-version))
     (source (android-platform-system-core version))
-    (build-system gnu-build-system)
+    (build-system android-ndk-build-system)
     (arguments
-     `(#:tests? #f ; TODO.
-       #:make-flags '("CC=gcc")
+     `(#:make-flags '("LDLIBS=-lpthread")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "liblog") #t))
-         (add-after 'enter-source 'create-Makefile
-           (lambda _
-             ;; No useful makefile is shipped, so we create one.
-             (with-output-to-file "Makefile"
-               (lambda _
-                 (display
-                  (string-append
-                   "NAME = liblog\n"
-                   "SOURCES = log_event_list.c log_event_write.c"
-                   " logger_write.c config_write.c logger_name.c"
-                   " logger_lock.c fake_log_device.c fake_writer.c"
-                   " event_tag_map.c\n"
-
-                   "CFLAGS += -fvisibility=hidden -fPIC\n"
-                   "CPPFLAGS += -I../include -DFAKE_LOG_DEVICE=1"
-                   ;; Keep these two in sync with "liblog/Android.bp".
-                   " -DLIBLOG_LOG_TAG=1005"
-                   " -DSNET_EVENT_LOG_TAG=1397638484\n"
-                   "LDFLAGS += -shared -Wl,-soname,$(NAME).so.0 -lpthread\n"
-
-                   "build: $(SOURCES)\n"
-                   "	$(CC) $^ -o $(NAME).so.0 $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)\n"))
-                 #t))))
-         (delete 'configure)
-         (replace 'install
+         (add-after 'install 'ldconfig
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib")))
-               (install-file "liblog.so.0" lib)
-               (with-directory-excursion lib
-                 (symlink "liblog.so.0" "liblog.so"))
+             (let ((out (assoc-ref outputs "out")))
+               (symlink "liblog.so.0" (string-append out "/lib/liblog.so"))
                #t))))))
     (home-page "https://developer.android.com/")
     (synopsis "Logging library from the Android platform.")
@@ -113,62 +185,29 @@ interfaces for either writing or reading logs.  The log buffers are divided up
 in Main, System, Radio and Events sub-logs.")
     (license license:asl2.0)))
 
-(define libbase
+(define android-libbase
   (package
-    (name "libbase")
+    (name "android-libbase")
     (version (android-platform-version))
-    (source (origin
-              (inherit (android-platform-system-core version))
-              (patches
-               (search-patches "libbase-use-own-logging.patch"
-                               "libbase-fix-includes.patch"))))
-    (build-system gnu-build-system)
+    (source (android-platform-system-core version))
+    (build-system android-ndk-build-system)
     (arguments
-     `(#:tests? #f ; TODO.
+     `(#:tests? #f ; Test failure: logging.UNIMPLEMENTED
+       #:make-flags '("CXXFLAGS=-std=gnu++11")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
-           (lambda _ (chdir "base") #t))
-         (add-after 'enter-source 'create-Makefile
-           (lambda _
-             ;; No useful makefile is shipped, so we create one.
-             (with-output-to-file "Makefile"
-               (lambda _
-                 (display
-                  (string-append
-                   "NAME = libbase\n"
-                   "SOURCES = file.cpp logging.cpp parsenetaddress.cpp"
-                   " stringprintf.cpp strings.cpp errors_unix.cpp\n"
-
-                   "CXXFLAGS += -std=gnu++11 -fPIC\n"
-                   "CPPFLAGS += -Iinclude -I../include\n"
-                   "LDFLAGS += -shared -Wl,-soname,$(NAME).so.0"
-                   " -L.. -llog\n"
-
-                   "build: $(SOURCES)\n"
-                   "	$(CXX) $^ -o $(NAME).so.0 $(CXXFLAGS) $(CPPFLAGS)"
-                   " $(LDFLAGS)\n"))
-                 #t))))
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib")))
-               (install-file "libbase.so.0" lib)
-               (with-directory-excursion lib
-                 (symlink "libbase.so.0" "libbase.so"))
-               (copy-recursively "include" out)
-               #t))))))
-    (inputs `(("liblog" ,liblog)))
+           (lambda _ (chdir "base") #t)))))
+    (inputs `(("android-liblog" ,android-liblog)))
     (home-page "https://developer.android.com/")
     (synopsis "Android platform base library")
     (description "@code{libbase} is a library in common use by the
 various Android core host applications.")
     (license license:asl2.0)))
 
-(define libcutils
+(define android-libcutils
   (package
-    (name "libcutils")
+    (name "android-libcutils")
     (version (android-platform-version))
     (source (android-platform-system-core version))
     (build-system gnu-build-system)
@@ -206,10 +245,13 @@ various Android core host applications.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib")))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
                (install-file "libcutils.so.0" lib)
                (with-directory-excursion lib
                  (symlink "libcutils.so.0" "libcutils.so"))
+               (copy-recursively "../include/cutils"
+                                 (string-append include "/cutils"))
                #t))))))
     (home-page "https://developer.android.com/")
     (synopsis "Android platform c utils library")
@@ -217,90 +259,92 @@ various Android core host applications.")
 various Android core host applications.")
     (license license:asl2.0)))
 
+(define-public android-libsparse
+  (package
+    (name "android-libsparse")
+    (version (android-platform-version))
+    (source (android-platform-system-core version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:make-flags '("CFLAGS=-Wno-error"
+                      "CXXFLAGS=-fpermissive -Wno-error")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source
+           (lambda _ (chdir "libsparse") #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android platform sparse library")
+    (description "@code{android-libsparse} is a library in common use by the
+various Android core host applications.")
+    (license license:asl2.0)))
+
+(define-public android-libziparchive
+  (package
+    (name "android-libziparchive")
+    (version (android-platform-version))
+    (source (android-platform-system-core version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:make-flags '("CFLAGS=-Wno-error"
+                      "CXXFLAGS=-fpermissive -Wno-error -std=gnu++11")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source
+           (lambda _ (chdir "libziparchive") #t))
+         (add-before 'check 'setenv
+           (lambda _
+             (setenv "ziparchive_tests_host_PARAMS" "--test_data_dir=testdata")
+             #t))
+         (add-after 'install 'install-headers
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "../include/ziparchive"
+                                 (string-append out "/include/ziparchive"))
+               #t))))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("android-libbase" ,android-libbase)
+       ("android-libutils" ,android-libutils)
+       ("android-liblog" ,android-liblog)))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android platform ZIP library")
+    (description "@code{android-libziparchive} is a library in common use by the
+various Android core host applications.")
+    (license license:asl2.0)))
+
 (define-public adb
   (package
     (name "adb")
     (version (android-platform-version))
-    (source (origin
-              (inherit (android-platform-system-core version))
-              (patches
-               (search-patches "libbase-use-own-logging.patch"
-                               "libbase-fix-includes.patch"))))
-    (build-system gnu-build-system)
+    (source (android-platform-system-core version))
+    (build-system android-ndk-build-system)
     (arguments
-     `(#:phases
+     `(#:tests? #f ; Test failure: sysdeps_poll.fd_count
+       #:make-flags
+       (list "CFLAGS=-Wno-error"
+             "CXXFLAGS=-fpermissive -Wno-error -std=gnu++14 -D_Nonnull= -D_Nullable= -I ."
+             (string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out") "/lib "
+                            "-Wl,-rpath=" (assoc-ref %build-inputs "openssl") "/lib -L ."))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "adb") #t))
-         (add-before 'build 'fix-clang
-           (lambda _
-             ;; adb_client.h contains _Nonnull and _Nullable attributes, that
-             ;; are not understood by gcc.
-             (substitute* "adb_client.h"
-                   (("_Nonnull") "")
-                   (("_Nullable") ""))
+         (add-after 'enter-source 'make-libs-available
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "Android.mk"
+              (("libcrypto_static") "libcrypto"))
              #t))
-         (add-before 'build 'fix-main
-           (lambda _
-             ;; main.cpp used to be adb_main.cpp in the current directory
-             ;; rather than in its own subdirectory, but it was not fixed.
-             ;; This leads to some header files not being found anymore.
-             (copy-file "client/main.cpp" "adb_main.cpp")
-             #t))
-         (add-after 'enter-source 'create-Makefile
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; No useful makefile is shipped, so we create one.
-             (with-output-to-file "Makefile"
-               (lambda _
-                 (display
-                  (string-append
-                   ;; Common for all components.
-                   "CXXFLAGS += -std=gnu++14 -fpermissive\n"
-                   "CPPFLAGS += -I../include -I../base/include -I. -DADB_HOST=1 "
-                   "-DADB_REVISION='\"" ,version "\"' -fPIC\n"
-                   "LDFLAGS += -lcrypto -lpthread -lbase -lcutils -L. -ladb\n"
-
-                   ;; Libadb specifics.
-                   "LIBADB_SOURCES = adb.cpp adb_auth.cpp adb_io.cpp "
-                   "adb_listeners.cpp adb_trace.cpp adb_utils.cpp fdevent.cpp "
-                   "sockets.cpp transport.cpp transport_local.cpp transport_usb.cpp "
-                   "get_my_path_linux.cpp sysdeps_unix.cpp usb_linux.cpp "
-                   "adb_auth_host.cpp diagnose_usb.cpp services.cpp "
-                   "shell_service_protocol.cpp bugreport.cpp line_printer.cpp\n"
-
-                   "LIBADB_LDFLAGS += -shared -Wl,-soname,libadb.so.0 "
-                   "-lcrypto -lpthread -lbase\n"
-
-                   ;; Adb specifics.
-                   "ADB_SOURCES = adb_main.cpp console.cpp commandline.cpp "
-                   "adb_client.cpp file_sync_client.cpp\n"
-                   "ADB_LDFLAGS += -Wl,-rpath=" (assoc-ref outputs "out") "/lib\n"
-
-                   "build: libadb $(ADB_SOURCES)\n"
-                   "	$(CXX) $(ADB_SOURCES) -o adb $(CXXFLAGS) $(CPPFLAGS) "
-                   "$(ADB_LDFLAGS) $(LDFLAGS)\n"
-
-                   "libadb: $(LIBADB_SOURCES)\n"
-                   "	$(CXX) $^ -o libadb.so.0 $(CXXFLAGS) $(CPPFLAGS) "
-                   "$(LIBADB_LDFLAGS)\n"
-                   "	ln -sv libadb.so.0 libadb.so\n"))
-                 #t))))
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib"))
-                    (bin (string-append out "/bin")))
-               (install-file "libadb.so.0" lib)
-               (install-file "adb" bin)
-               (with-directory-excursion lib
-                 (symlink "libadb.so.0" "libadb.so"))
-               #t))))
-       ;; Test suite must be run with attached devices
-       #:tests? #f))
+         (add-after 'install 'install-headers
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (install-file "diagnose_usb.h" (string-append (assoc-ref outputs "out") "/include"))
+             #t)))))
     (inputs
-     `(("libbase" ,libbase)
-       ("libcutils" ,libcutils)
+     `(("android-libbase" ,android-libbase)
+       ("android-libcutils" ,android-libcutils)
+       ("android-liblog" ,android-liblog)
        ("openssl" ,openssl)))
     (home-page "https://developer.android.com/studio/command-line/adb.html")
     (synopsis "Android Debug Bridge")
@@ -329,13 +373,272 @@ to a Unix shell that can run commands on the connected device or emulator.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
+                    (bin (string-append out "/bin"))
+                    (include (string-append out "/include")))
                (install-file "mkbootimg" bin)
+               (install-file "bootimg.h" include)
                #t))))))
     (home-page "https://developer.android.com/studio/command-line/adb.html")
     (synopsis "Tool to create Android boot images")
     (description "This package provides a tool to create Android Boot
 Images.")
+    (license license:asl2.0)))
+
+(define-public android-safe-iop
+  (package
+    (name "android-safe-iop")
+    (version (android-platform-version))
+    (source (android-platform-external version "safe-iop"
+                                       "1nyyrs463advjhlq8xx1lm37m4g5afv7gy0csxrj7biwwl0v13qw"))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:make-flags '("CXXFLAGS=-fpermissive -Wno-error")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-host
+           (lambda _
+             ;; TODO: Cross-compile.
+             (substitute* "Android.mk"
+              (("BUILD_STATIC_LIBRARY") "BUILD_HOST_STATIC_LIBRARY"))
+             #t)))))
+    (home-page "https://developer.android.com/")
+    (synopsis "Safe integers in C")
+    (description "@code{android-safe-iop} provides a set of functions for
+performing and checking safe integer operations.  Ensure that integer
+operations do not result in silent overflow.")
+    (license license:bsd-2)))
+
+(define-public android-bionic-uapi
+  (package
+    (name "android-bionic-uapi")
+    (version (android-platform-version))
+    (source (android-platform-bionic version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+        (add-after 'unpack 'enter-source
+           (lambda _ (chdir "libc") #t))
+        (replace 'check
+          (const #t))
+        (replace 'build
+          (const #t))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (out-sys (string-append out "/include/sys")))
+              (mkdir-p out-sys)
+              (install-file "include/sys/system_properties.h" out-sys)
+              (install-file "include/sys/_system_properties.h" out-sys)
+              (copy-recursively "kernel/uapi" (string-append out "/include"))
+              #t))))))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android Linux API that is safe for user space")
+    (description "@code{android-bionic-uapi} provides the part of the Linux API
+that is safe to use for user space.  It also includes
+@code{system_properties.h} and @code{_system_properties.h}.")
+    (license license:asl2.0)))
+
+(define-public android-libselinux
+  (package
+    (name "android-libselinux")
+    (version (android-platform-version))
+    (source
+     (android-platform-external version "libselinux"
+                                "13m2q32gzdcs5d0zj1nwasjy1j8vsxsgbjg7m5sa9lfcjaj7nkm7"))
+    (build-system android-ndk-build-system)
+    (arguments
+     ;; See logd/Android.mk for the *_LOG_TAG values.
+     `(#:make-flags (list (string-append "CFLAGS=-Wno-error "
+                                         "-I core/include "
+                                         "-I core/libpackagelistparser/include "
+                                         "-DAUDITD_LOG_TAG=1003 "
+                                         "-DLOGD_LOG_TAG=1004 -D_GNU_SOURCE")
+                          "LDFLAGS=-L . -lpcre")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack-core 'patch-HOST
+           (lambda _
+             ;; gettid duplicates otherwise.
+             (substitute* "src/procattr.c"
+              (("#ifdef HOST") "#ifdef XXX"))
+             #t)))))
+    (inputs
+     `(("openssl" ,openssl)))
+    (native-inputs
+     `(("android-bionic-uapi" ,android-bionic-uapi)
+       ;; pcre is inlined by our package.
+       ("pcre" ,pcre)))
+    (home-page "https://developer.android.com/")
+    (synopsis (package-synopsis libselinux))
+    (description (package-description libselinux))
+    (license (package-license libselinux))))
+
+(define-public android-ext4-utils
+  (package
+    (name "android-ext4-utils")
+    (version (android-platform-version))
+    (source (android-platform-system-extras version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "CPPFLAGS="
+                            ;"-Wno-error "
+                            "-I "
+                            (assoc-ref %build-inputs "android-libselinux")
+                            "/include "
+                            "-I " (assoc-ref %build-inputs "android-libsparse")
+                            "/include "
+                            "-I " (assoc-ref %build-inputs "android-libcutils")
+                            "/include "
+                            "-I " (assoc-ref %build-inputs "android-liblog") "/include "
+                            "-I ../core/include")
+             "CFLAGS=-Wno-error"
+             "install-libext4_utils_host.a"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-core
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "core")
+             (with-directory-excursion "core"
+               (invoke "tar" "axf" (assoc-ref inputs "android-core")
+                             "--strip-components=1"))
+             #t))
+         (add-after 'unpack-core 'enter-source
+           (lambda _ (chdir "ext4_utils") #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "." (string-append out "/include")))
+             #t)))))
+    (inputs
+     `(("android-libcutils" ,android-libcutils)
+       ("android-liblog" ,android-liblog)
+       ("android-libselinux" ,android-libselinux)
+       ("android-libsparse" ,android-libsparse)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("android-core" ,(android-platform-system-core version))))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android ext4 filesystem utils")
+    (description "@code{android-ext4-utils} is a library in common use by the
+Android core.")
+    (license license:asl2.0)))
+
+(define-public android-f2fs-utils
+  (package
+    (name "android-f2fs-utils")
+    (version (android-platform-version))
+    (source (android-platform-system-extras version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source
+           (lambda _ (chdir "f2fs_utils") #t))
+         (add-after 'install 'install-headers
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (copy-recursively "." (string-append (assoc-ref outputs "out")
+                                                  "/include"))
+             #t))
+         (add-after 'install 'install-shell-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (patch-shebang "mkf2fsuserimg.sh")
+               (substitute* "mkf2fsuserimg.sh"
+                (("make_f2fs") (string-append bin "/make_f2fs")))
+               (install-file "mkf2fsuserimg.sh" bin)
+               #t))))))
+    (inputs
+     `(("f2fs-tools" ,f2fs-tools-1.7)
+       ("android-libselinux" ,android-libselinux)
+       ("android-libsparse" ,android-libsparse)
+       ("android-libcutils" ,android-libcutils)
+       ("zlib" ,zlib)))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android f2fs utils")
+    (description "@code{android-f2fs-utils} is a library in common use by the
+Android core.  It allows the user to create images for the @code{f2fs} Flash
+file system.")
+    (license license:asl2.0)))
+
+(define-public android-libutils
+  (package
+    (name "android-libutils")
+    (version (android-platform-version))
+    (source (android-platform-system-core version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:tests? #f ; TODO
+       #:make-flags '("CXXFLAGS=-std=gnu++11 -Wno-error")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source
+           (lambda _ (chdir "libutils") #t))
+
+         (add-after 'install 'install-headers
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (copy-recursively "../include/utils" (string-append (assoc-ref outputs "out") "/include/utils")))))))
+    (inputs
+     `(("android-safe-iop" ,android-safe-iop)
+       ("android-libcutils" ,android-libcutils)))
+    (native-inputs
+     `(("android-bionic-uapi" ,android-bionic-uapi)
+       ("android-liblog" ,android-liblog)))
+    (home-page "https://developer.android.com/")
+    (synopsis "Android utility library")
+    (description "@code{android-libutils} provides utilities for Android NDK developers.")
+    (license license:asl2.0)))
+
+(define-public fastboot
+  (package
+    (name "fastboot")
+    (version (android-platform-version))
+    (source (android-platform-system-core version))
+    (build-system android-ndk-build-system)
+    (arguments
+     `(#:make-flags (list "CXXFLAGS=-std=gnu++11")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source
+           (lambda _
+             (chdir "fastboot")
+             #t))
+         (add-after 'enter-source 'patch-source
+           (lambda _
+             (substitute* "Android.mk"
+              (("libext4_utils_host") "libext4_utils_host libselinux libpcre"))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (bin (string-append out "/bin")))
+               (install-file "fastboot" bin)
+               #t))))))
+    (inputs
+     `(("adb" ,adb)
+       ("android-safe-iop" ,android-safe-iop)
+       ("android-ext4-utils" ,android-ext4-utils)
+       ("android-f2fs-utils" ,android-f2fs-utils)
+       ("android-libbase" ,android-libbase)
+       ("android-libcutils" ,android-libcutils)
+       ("android-liblog" ,android-liblog)
+       ("android-libutils" ,android-libutils)
+       ("android-libsparse" ,android-libsparse)
+       ("android-libziparchive" ,android-libziparchive)
+       ("android-libselinux" ,android-libselinux)
+       ("pcre" ,pcre)
+       ("mkbootimg" ,mkbootimg)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("xz" ,xz)))
+    (home-page "https://developer.android.com/studio/command-line/")
+    (synopsis "Android image flasher")
+    (description
+     "This package provides @command{fastboot}, a tool to upload file system images to Android devices.")
     (license license:asl2.0)))
 
 (define-public android-udev-rules
@@ -360,7 +663,8 @@ Images.")
          (use-modules (guix build utils))
          (let ((source (assoc-ref %build-inputs "source")))
            (install-file (string-append source "/51-android.rules")
-                         (string-append %output "/lib/udev/rules.d"))))))
+                         (string-append %output "/lib/udev/rules.d"))
+           #t))))
     (home-page "https://github.com/M0Rf30/android-udev-rules")
     (synopsis "udev rules for Android devices")
     (description "Provides a set of udev rules to allow using Android devices

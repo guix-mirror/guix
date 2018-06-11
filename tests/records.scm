@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -287,6 +287,34 @@
     (lambda (key proc message location form . args)
       (and (string-match "extra.*initializer.*baz" message)
            (eq? proc 'foo)))))
+
+(test-assert "ABI checks"
+  (let ((module (test-module)))
+    (eval '(begin
+             (define-record-type* <foo> foo make-foo
+               foo?
+               (bar foo-bar (default 42)))
+
+             (define (make-me-a-record) (foo)))
+          module)
+    (unless (eval '(foo? (make-me-a-record)) module)
+      (error "what?" (eval '(make-me-a-record) module)))
+
+    ;; Redefine <foo> with an additional field.
+    (eval '(define-record-type* <foo> foo make-foo
+             foo?
+             (baz foo-baz)
+             (bar foo-bar (default 42)))
+          module)
+
+    ;; Now 'make-me-a-record' is out of sync because it does an
+    ;; 'allocate-struct' that corresponds to the previous definition of <foo>.
+    (catch 'record-abi-mismatch-error
+      (lambda ()
+        (eval '(foo? (make-me-a-record)) module)
+        #f)
+      (lambda (key rtd . _)
+        (eq? rtd (eval '<foo> module))))))
 
 (test-equal "recutils->alist"
   '((("Name" . "foo")

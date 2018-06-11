@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,7 +139,7 @@ for the LXQt desktop environment.")
 (define-public lxqt-build-tools
   (package
     (name "lxqt-build-tools")
-    (version "0.4.0")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
@@ -147,10 +148,10 @@ for the LXQt desktop environment.")
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1llbrjbgabxlq933a8cpg03b3mdmvd8983csnd4f7vrcj51nv0xh"))))
+         "13b5x26p6ycnwzlgg1cgvlc88wjrjmlb3snrrmzh0xgh9h6hhvd6"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f)) ;No tests
+     `(#:tests? #f))                    ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib)))

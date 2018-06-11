@@ -131,8 +131,10 @@ For synthesis, the compiler generates netlists in the desired format.")
               (file-name (string-append name "-" version "-checkout.tar.gz"))
               (modules '((guix build utils)))
               (snippet
-                '(substitute* "Makefile"
-                   (("ABCREV = .*") "ABCREV = default\n")))))
+               '(begin
+                  (substitute* "Makefile"
+                    (("ABCREV = .*") "ABCREV = default\n"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

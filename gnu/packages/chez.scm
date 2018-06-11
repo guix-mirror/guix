@@ -74,8 +74,10 @@
        (modules '((guix build utils)))
        (snippet
         ;; Fix compilation with glibc >= 2.26, which removed xlocale.h.
-        '(substitute* "c/expeditor.c"
-           (("xlocale\\.h") "locale.h")))))
+        '(begin
+           (substitute* "c/expeditor.c"
+             (("xlocale\\.h") "locale.h"))
+           #t))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)

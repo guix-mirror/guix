@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -115,6 +116,10 @@
 (define (serialize-file-object field-name val)
   (serialize-string field-name val))
 
+(define (project-list? val)
+  (or (list? val)
+      (file-object? val)))
+
 
 ;;;
 ;;; Serialize <nginx-server-configuration>
@@ -167,7 +172,12 @@
   (if (null? val) ""
       (serialize-field
        'project-list
-       (plain-file "project-list" (string-join val "\n")))))
+       (if (file-object? val)
+           val
+           (plain-file "project-list" (string-join val "\n"))))))
+
+(define (serialize-extra-options extra-options)
+  (string-join extra-options "\n" 'suffix))
 
 (define repository-directory? string?)
 
@@ -543,7 +553,7 @@ disabled.")
    "Flag which, when set to @samp{#t}, will make cgit omit the standard
 header on all pages.")
   (project-list
-   (list '())
+   (project-list '())
    "A list of subdirectories inside of @code{repository-directory}, relative
 to it, that should loaded as Git repositories.  An empty list means that all
 subdirectories will be loaded.")
@@ -641,6 +651,7 @@ for cgit to allow access to that repository.")
   (define (rest? field)
     (not (memq (configuration-field-name field)
                '(project-list
+                 extra-options
                  repository-directory
                  repositories))))
   #~(string-append
@@ -649,6 +660,8 @@ for cgit to allow access to that repository.")
      #$(serialize-project-list
         'project-list
         (cgit-configuration-project-list config))
+     #$(serialize-extra-options
+        (cgit-configuration-extra-options config))
      #$(serialize-repository-directory
         'repository-directory
         (cgit-configuration-repository-directory config))

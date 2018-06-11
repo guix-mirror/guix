@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
@@ -18,11 +18,12 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,11 +93,13 @@
                 "1i3f1agixxbfy4kxikb2b241p7c2lg73cl9wqfvlwz3q6zf5faxv"))
               (modules '((guix build utils)))
               (snippet
-               ;; Do not record a timestamp and file name in gzipped man
-               ;; pages (this is equivalent to 'gzip --no-name'.)
-               '(substitute* "setup.py"
-                  (("gzip\\.open\\(gzfile, 'w', 9\\)")
-                   "gzip.GzipFile('', 'wb', 9, open(gzfile, 'wb'), 0.)")))))
+               '(begin
+                  ;; Do not record a timestamp and file name in gzipped man
+                  ;; pages (this is equivalent to 'gzip --no-name'.)
+                  (substitute* "setup.py"
+                    (("gzip\\.open\\(gzfile, 'w', 9\\)")
+                     "gzip.GzipFile('', 'wb', 9, open(gzfile, 'wb'), 0.)"))
+                  #t))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2     ;incompatible with python 3
@@ -138,12 +141,7 @@ program.")
            "0n7pczk9vv30zf8qfln8ba3hnif9yfdxg0m84djac469wc28hnya"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f     ; There is no test suite
-       #:phases
-       (modify-phases %standard-phases
-         ;; Since version 0.13, bootstrapped releases are no longer available.
-         (add-after 'unpack 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-v")))))))
+     '(#:tests? #f))                              ;there is no test suite
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -533,7 +531,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.5")
+    (version "5.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -542,7 +540,7 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02blbimjdckbcb04crhv0k2vxnp3rcgskyq66sk0v13l2h52849v"))))
+                "1dvw0axnr9hhjg6zdcq9lwvaq0x7vrzlz00p8n3hj25qzsi4z5as"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
@@ -629,9 +627,7 @@ things less distracting.")
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)))
     (native-inputs
-     `(("inputproto" ,inputproto)
-       ("xextproto" ,xextproto)
-       ("xproto" ,xproto)))
+     `(("xorgproto" ,xorgproto)))
     (synopsis "Tools to automate tasks in X such as detecting on screen images")
     (description
      "Xautomation can control X from the command line for scripts, and
@@ -887,14 +883,15 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "0.29")
+    (version "0.30")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/linuxwacom/libwacom/"
-                                  name "-" version ".tar.bz2"))
+              (uri (string-append
+                    "https://github.com/linuxwacom/libwacom/releases/download/"
+                    name "-" version "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1diklgcjhmvcxi9p1ifp6wcnyr6k7z9jhrlzfhzjqd6zipk01slw"))))
+                "0n9294f2534qcgfry4n7vmr6vy49iqym0y74a88g1h0l0ml0hd2j"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -907,7 +904,7 @@ Escape key when Left Control is pressed and released on its own.")
      ;; libwacom includes header files that include GLib, and libinput uses
      ;; those header files.
      `(("glib" ,glib)))
-    (home-page "http://linuxwacom.sourceforge.net/")
+    (home-page "https://linuxwacom.github.io/")
     (synopsis "Helper library for Wacom tablet settings")
     (description
      "Libwacom is a library to help implement Wacom tablet settings.  It is
@@ -919,15 +916,16 @@ Wacom tablet applet.")
 (define-public xf86-input-wacom
   (package
     (name "xf86-input-wacom")
-    (version "0.36.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/linuxwacom/xf86-input-wacom/"
-                    name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1xi39hl8ddgj9m7m2k2ll2r3wh0k0aq45fvrsv43651bhz9cbrza"))))
+    (version "0.36.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/linuxwacom/xf86-input-wacom/releases/download/"
+             name "-" version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "029y8varbricba2dzhzhy0ndd7lbfif411ca8c3wxzni9qmbj1ij"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="
@@ -945,7 +943,7 @@ Wacom tablet applet.")
        ("libxinerama" ,libxinerama)
        ("libxi" ,libxi)
        ("eudev" ,eudev)))
-    (home-page "http://linuxwacom.sourceforge.net/")
+    (home-page "https://linuxwacom.github.io/")
     (synopsis "Wacom input driver for X")
     (description
      "The xf86-input-wacom driver is the wacom-specific X11 input driver for
@@ -955,7 +953,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
 (define-public redshift
   (package
     (name "redshift")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -965,7 +963,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
                        "/redshift-" version ".tar.xz"))
        (sha256
         (base32
-         "0ngkwj7rg8nfk806w0sg443w6wjr91xdc0zisqfm5h2i77wm1qqh"))))
+         "1fi27b73x85qqar526dbd33av7mahca2ykaqwr7siqiw1qqcby6j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -975,7 +973,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
        ("libxxf86vm" ,libxxf86vm)
-       ("glib" ,glib)))                           ;for Geoclue2 support
+       ("glib" ,glib)))                 ; for Geoclue2 support
     (home-page "https://github.com/jonls/redshift")
     (synopsis "Adjust the color temperature of your screen")
     (description
@@ -1260,7 +1258,9 @@ program for X11.  It was designed to be fast, tiny and scriptable in any languag
               (modules '((guix build utils)))
               (snippet
                ;; Drop bundled m4.
-               '(delete-file-recursively "m4"))))
+               '(begin
+                  (delete-file-recursively "m4")
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1287,41 +1287,41 @@ XCB util-xrm module provides the following libraries:
 (define-public xcalib
   (package
     (name "xcalib")
-    (version "0.8")
+    (version "0.10")
+    (home-page "https://github.com/OpenICC/xcalib")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/xcalib/xcalib/" version
-                                  "/xcalib-source-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
               (sha256
                (base32
-                "1rh6xb51c5xz926dnn82a2fn643g0sr4a8z66rn6yi7523kjw4ca"))))
-    (build-system gnu-build-system)
+                "05fzdjmhiafgi2jf0k41i3nm0837a78sb6yv59cwc23nla8g0bhr"))
+              (patches
+               (list
+                ;; Add missing documentation for the new --output option.
+                ;; This upstream patch can be removed on the next update.
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        home-page "/commit/"
+                        "ae03889b91fe984b18e925ad2b5e6f2f7354e058.patch"))
+                  (file-name "xcalib-update-man-page.patch")
+                  (sha256
+                   (base32
+                    "0f7b4d5484x4b9n1bwhqmar0kcaa029ffff7bp3xpr734n1qgqb6")))))))
+    (build-system cmake-build-system)
     (arguments
-     '(#:make-flags '("CC=gcc")
-       #:tests? #f   ; No test suite
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin")))
-                        (install-file "xcalib" bin))))
-                  (add-after 'install 'install-doc
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((doc (string-append(assoc-ref outputs "out")
-                                               "/share/doc/xcalib")))
-                        (install-file "README" doc)
-                        ;; Avoid unspecified return value.
-                        #t))))))
+     '(#:tests? #f))                    ; no test suite
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
+              ("libxrandr" ,libxrandr)
               ("libxxf86vm" ,libxxf86vm)))
     (synopsis "Tiny monitor calibration loader for XFree86 (or X.org)")
     (description "xcalib is a tiny tool to load the content of vcgt-Tags in ICC
 profiles to the video card's gamma ramp.  It does work with most video card
 drivers except the generic VESA driver.  Alter brightness, contrast, RGB, and
 invert colors on a specific display/screen.")
-    (home-page "http://xcalib.sourceforge.net/")
     (license license:gpl2)))
 
 (define-public nxbelld
@@ -1439,3 +1439,39 @@ with black color on a white background (colors are configurable on the
 commandline).")
     (home-page "https://www.joachim-breitner.de/projects#screen-message")
     (license license:gpl2+)))
+
+(define-public xss-lock
+  ;; xss-lock does not seem to be maintained any longer, but the last commits
+  ;; fix important issues so we package them.
+  (let ((version "0.3.0")
+        (revision "1")
+        (commit "1e158fb20108058dbd62bd51d8e8c003c0a48717"))
+    (package
+      (name "xss-lock")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://bitbucket.org/raymonad/xss-lock.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "10hx7k7ga8g08akwz8qrsvj8iqr5nd4siiva6sjx789jvf0sak7r"))))
+      (build-system cmake-build-system)
+      (inputs `(("glib" ,glib)
+                ("xcb-util" ,xcb-util)))
+      (native-inputs
+       `(("python-docutils" ,python-docutils)
+         ("pkg-config" ,pkg-config)))
+      (arguments
+       `(#:tests? #f))
+      (synopsis "Use external screen locker on events")
+      (description "@code{xss-lock} listens to X signals to fire up a
+user-defined screensaver.  In effect this allows to automatically lock the
+screen when closing a laptop lid or after a period of user inactivity (as set
+with @code{xset s TIMEOUT}).  The notifier command, if specified, is executed
+first.  Additionally, xss-lock uses the inhibition logic to lock the screen
+before the system goes to sleep.")
+      (home-page "https://bitbucket.org/raymonad/xss-lock")
+      (license license:expat))))

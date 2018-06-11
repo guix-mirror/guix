@@ -4,9 +4,10 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,6 +110,13 @@
                (("#include <boost/numeric/ublas/matrix.hpp>" line)
                 (string-append "#include <boost/serialization/array_wrapper.hpp>\n"
                                line)))
+             #t))
+         ;; Fix build against Qt 5.11.
+         (add-after 'unpack 'add-missing-headers
+           (lambda _
+             (substitute* "librecad/src/ui/generic/widgetcreator.cpp"
+               (("#include <QPushButton>") "#include <QPushButton>
+#include <QActionGroup>"))
              #t))
          (add-after 'unpack 'patch-paths
            (lambda* (#:key outputs #:allow-other-keys)
@@ -329,7 +337,9 @@ featuring various improvements and bug fixes.")))
                 "0x37vfp6k0d2z3gnig0hbicvi0jp8v267xjnn3z8jdllpiaa6p3k"))
               (snippet
                ;; Remove a non-free file.
-               '(delete-file "doc/psfig.sty"))
+               '(begin
+                  (delete-file "doc/psfig.sty")
+                  #t))
               (patches (search-patches "fastcap-mulSetup.patch"
                                        "fastcap-mulGlobal.patch"))))
     (build-system gnu-build-system)
@@ -523,35 +533,17 @@ ready for production.")
 (define-public gerbv
   (package
     (name "gerbv")
-    (version "2.6.1")
+    (version "2.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gerbv/gerbv/gerbv-"
                                   version "/gerbv-" version ".tar.gz"))
               (sha256
                (base32
-                "0v6ry0mxi5qym4z0y0lpblxsw9dfjpgxs4c4v2ngg7yw4b3a59ks"))))
+                "1cw8k6ni0q8kswad03kha86fk7n06vq8p0wzsfhcnalsdshrn17i"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autoconf
-           (lambda _
-             ;; Build rules contain references to Russian translation, but the
-             ;; needed files are missing; see
-             ;; http://sourceforge.net/p/gerbv/bugs/174/
-             (delete-file "po/LINGUAS")
-             (substitute* "man/Makefile.am"
-               (("PO_FILES= gerbv.ru.1.in.po") "")
-               (("man_MANS = gerbv.1 gerbv.ru.1") "man_MANS = gerbv.1"))
-             (zero? (system* "autoreconf" "-vfi")))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("gettext" ,gettext-minimal)
-       ("po4a" ,po4a)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
        ("gtk" ,gtk+-2)
@@ -769,7 +761,7 @@ render model libraries.")
 (define-public linsmith
   (package
     (name "linsmith")
-    (version "0.99.30")
+    (version "0.99.31")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -777,13 +769,13 @@ render model libraries.")
                     version "/linsmith-" version ".tar.gz"))
               (sha256
                (base32
-                "18qslhr2r45rhpj4v6bjcqx189vs0bflvsj271wr7w8kvh69qwvn"))))
+                "13qj7n9826qc9shkkgd1p6vcpj78v4h9d67wbg45prg7rbnzkzds"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gtk" ,gtk+-2)
        ("libgnome" ,libgnomeui)))
-    (home-page "http://jcoppens.com/soft/linsmith/index.en.php")
+    (home-page "https://jcoppens.com/soft/linsmith/index.en.php")
     (synopsis "Smith Charting program")
     (description "LinSmith is a Smith Charting program, mainly designed for
 educational use.  As such, there is an emphasis on capabilities that improve
@@ -1080,14 +1072,14 @@ bindings for Python, Java, OCaml and more.")
 (define-public radare2
   (package
     (name "radare2")
-    (version "1.6.0")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://radare.mikelloc.com/get/" version "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "16ggsk40zz6hyvclvqj1r4bh4hb78jf0d6ppry1jk4r0j30wm7cm"))
+                "17h4ba5qqahfi8mi4x2dcvq87cqpir5v2dlaqbvmay6vby4zh4v7"))
               (modules '((guix build utils)))
               (snippet
                 '(begin
@@ -1096,7 +1088,8 @@ bindings for Python, Java, OCaml and more.")
                   (substitute* "libr/parse/p/Makefile"
                     (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
                   (substitute* "libr/bin/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))))))
+                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f; tests require git and network access
@@ -1182,14 +1175,14 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
   ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=27344#236>.
   (package
     (name "libngspice")
-    (version "26")
+    (version "28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/ngspice/ng-spice-rework/"
                                   version "/ngspice-" version ".tar.gz"))
               (sha256
                (base32
-                "02019ndcl057nq9z41nxycqba7wxlb081ibvfj9jv010nz431qji"))
+                "0rnz2rdgyav16w7wfn3sfrk2lwvvgz1fh0l9107zkcldijklz04l"))
               (modules '((guix build utils)))
               ;; We remove the non-free cider and build without it.
               (snippet
@@ -1201,7 +1194,8 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
                     (("src/ciderlib/input/Makefile") "")
                     (("src/ciderlib/support/Makefile") "")
                     (("src/ciderlib/oned/Makefile") "")
-                    (("src/ciderlib/twod/Makefile") ""))))))
+                    (("src/ciderlib/twod/Makefile") ""))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(;; No tests for libngspice exist.
@@ -1212,7 +1206,7 @@ high-performance parallel differential evolution (DE) optimization algorithm.")
          (add-after 'unpack 'patch-timestamps
            (lambda _
              (substitute* "configure"
-               (("`date`") "Do 1. Jan 00:00:00 UTC 1970"))
+               (("`date`") "Thu Jan  1 00:00:01 UTC 1970"))
              #t))
          (add-after 'unpack 'delete-program-manuals
            (lambda _
@@ -1285,17 +1279,27 @@ an embedded event driven algorithm.")
   ;; TODO: Remove when we have modular Trilinos packages?
   (package
     (name "trilinos-serial-xyce")
-    (version "12.6.3")
+    (version "12.12.1")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://trilinos.org/oldsite/download/files/trilinos-"
                                  version "-Source.tar.gz"))
              (sha256
               (base32
-               "07jd1qpsbf31cmbyyngr4l67xzwyan24dyx5wlcahgbw7x6my3wn"))))
+               "1zgrcksrcbmyy79mbdv0j4j4sh0chpigxk8vcrrwgaxyxwxxhrvw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:out-of-source? #t
+       #:phases
+       (modify-phases %standard-phases
+         ;; Delete unneeded tribits(build system) directory which makes validate-runpath
+         ;; phase to fail.
+         (add-before 'validate-runpath 'delete-tribits
+           (lambda* (#:key outputs #:allow-other-keys)
+             (delete-file-recursively
+              (string-append (assoc-ref outputs "out")
+                             "/lib/cmake/tribits"))
+             #t)))
        #:configure-flags
        (list "-DCMAKE_CXX_FLAGS=-O3 -fPIC"
              "-DCMAKE_C_FLAGS=-O3 -fPIC"
@@ -1328,7 +1332,7 @@ an embedded event driven algorithm.")
        ("swig" ,swig)))
     (inputs
      `(("boost" ,boost)
-       ("lapack" ,lapack-3.5)
+       ("lapack" ,lapack)
        ("suitesparse" ,suitesparse)))
     (home-page "https://trilinos.org")
     (synopsis "Engineering and scientific problems algorithms")
@@ -1343,14 +1347,14 @@ unique design feature of Trilinos is its focus on packages.")
 (define-public xyce-serial
   (package
     (name "xyce-serial")
-    (version "6.7")
+    (version "6.8")
     (source
      (origin (method url-fetch)
              (uri (string-append "https://archive.org/download/Xyce-"
                                  version "/Xyce-" version ".tar.gz"))
              (sha256
               (base32
-               "02k952mnvrnc5kv7r65fdrn7khwq1lbyhwyvd7jznafzdpsvgm4x"))))
+               "09flp1xywbb2laayd9rg8vd0fjsh115y6k1p71jacy0nrbdvvlcg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -1366,7 +1370,7 @@ unique design feature of Trilinos is its focus on packages.")
     (inputs
      `(("fftw" ,fftw)
        ("suitesparse" ,suitesparse)
-       ("lapack" ,lapack-3.5)
+       ("lapack" ,lapack)
        ("trilinos" ,trilinos-serial-xyce)))
     (home-page "https://xyce.sandia.gov/")
     (synopsis "High-performance analog circuit simulator")
@@ -1401,8 +1405,6 @@ parallel computing platforms.  It also supports serial execution.")
                    "CC=mpicc"
                    "F77=mpif77"
                    "--enable-mpi"
-                   "--enable-isorropia=no"
-                   "--enable-zoltan=no"
                    (string-append
                     "ARCHDIR="
                     (assoc-ref %build-inputs "trilinos")))))))
@@ -1509,116 +1511,134 @@ parallel computing platforms.  It also supports serial execution.")
                    license:lgpl2.0+)))) ; freehdl's libraries
 
 (define-public qucs
-  (package
-    (name "qucs")
-    (version "0.0.19")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "https://sourceforge.net/projects/qucs/files/qucs/" version
-                "/qucs-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0giv9gfyfdizvjhq56x2pdncrlyv3k15lrsh6pk37i94vr7l7ij5"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "qucs/configure"
-               (("\\$QTDIR") (assoc-ref inputs "qt4")))
-             #t))
-         (add-after 'patch-configure 'patch-scripts
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (substitute* '("qucs/qucs/qucsdigi"
-                            "qucs/qucs/qucsdigilib"
-                            "qucs/qucs/qucsveri")
-               (("\\$BINDIR")
-                (string-append (assoc-ref outputs "out") "/bin"))
-               (("freehdl-config")
-                (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-config"))
-               (("freehdl-v2cc")
-                (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-v2cc"))
-               (("cp ")
-                (string-append (assoc-ref inputs "coreutils") "/bin/cp "))
-               (("glibtool")
-                (string-append (assoc-ref inputs "libtool") "/bin/libtool"))
-               (("sed")
-                (string-append (assoc-ref inputs "sed") "/bin/sed"))
-               (("iverilog")
-                (string-append (assoc-ref inputs "iverilog") "/bin/iverilog"))
-               (("vvp")
-                (string-append (assoc-ref inputs "iverilog") "/bin/vvp")))
-             #t))
-         (add-before 'check 'pre-check
-           (lambda _
-             ;; The test suite requires a running X server.
-             (system "Xvfb :1 &")
-             (setenv "DISPLAY" ":1")
-             #t))
-         (add-after 'install 'make-wrapper
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; 'qucs' directly invokes gcc, hence this wrapping.
-               (wrap-program (string-append out "/bin/qucs")
-                 `("CPLUS_INCLUDE_PATH" ":" prefix
-                   (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                    "/include")))
-                 `("PATH" ":" prefix
-                   (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                    "/bin")))
-                 `("LIBRARY_PATH" ":" prefix
-                   (,(string-append (assoc-ref inputs "gcc-toolchain")
-                                    "/lib")))
-                 `("ADMSXMLBINDIR" ":" prefix
-                   (,(string-append (assoc-ref inputs "adms") "/bin")))
-                 `("ASCOBINDIR" ":" prefix
-                   (,(string-append (assoc-ref inputs "asco") "/bin")))
-                 `("QUCS_OCTAVE" ":" prefix
-                   (,(string-append (assoc-ref inputs "octave") "/bin/octave")))))
-             #t)))
-       #:parallel-build? #f ; race condition
-       #:configure-flags '("--disable-doc"))) ; we need octave-epstk
-    (native-inputs
-     `(("gperf" ,gperf)
-       ("libtool-native" ,libtool)
-       ("python" ,python-2) ; for tests
-       ("matplotlib" ,python2-matplotlib) ; for tests
-       ("numpy" ,python2-numpy) ; for tests
-       ("xorg-server" ,xorg-server))) ; for tests
-    (inputs
-     `(("adms" ,adms)
-       ("asco" ,asco)
-       ("coreutils" ,coreutils)
-       ("freehdl" ,freehdl)
-       ("gcc-toolchain" ,gcc-toolchain)
-       ("iverilog" ,iverilog)
-       ("libtool" ,libtool)
-       ("octave" ,octave)
-       ("qt4" ,qt-4)
-       ("sed" ,sed)))
-    (home-page "http://qucs.sourceforge.net/")
-    (synopsis "Circuit simulator with graphical user interface")
-    (description
-     "Qucs is a circuit simulator with graphical user interface.  The software
+  ;; Qucs 0.0.19 segfaults when using glibc-2.26. Temporarily build from git.
+  ;; TODO: When qucs-0.0.20 is released, revert the commit that introduced this
+  ;; comment and update the package.
+  (let ((commit "b4f27d9222568066cd59e4c387c51a35056c99d8")
+        (revision "0"))
+    (package
+      (name "qucs")
+      (version (git-version "0.0.19" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Qucs/qucs")
+                      (commit commit)))
+                (sha256
+                 (base32 "10bclay9xhkffmsh4j4l28kj1qpxx0pnxja5vx6305cllnq4r3gb"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'bootstrap 'patch-bootstrap
+             (lambda _
+               (for-each patch-shebang
+                         '("bootstrap"
+                           "qucs/bootstrap"
+                           "qucs-doc/bootstrap"
+                           "qucs-core/bootstrap"))
+               #t))
+           (add-before 'configure 'patch-configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "qucs/configure"
+                 (("\\$QTDIR") (assoc-ref inputs "qt4")))
+               #t))
+           (add-after 'patch-configure 'patch-scripts
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (substitute* '("qucs/qucs/qucsdigi"
+                              "qucs/qucs/qucsdigilib"
+                              "qucs/qucs/qucsveri")
+                 (("\\$BINDIR")
+                  (string-append (assoc-ref outputs "out") "/bin"))
+                 (("freehdl-config")
+                  (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-config"))
+                 (("freehdl-v2cc")
+                  (string-append (assoc-ref inputs "freehdl") "/bin/freehdl-v2cc"))
+                 (("cp ")
+                  (string-append (assoc-ref inputs "coreutils") "/bin/cp "))
+                 (("glibtool")
+                  (string-append (assoc-ref inputs "libtool") "/bin/libtool"))
+                 (("sed")
+                  (string-append (assoc-ref inputs "sed") "/bin/sed"))
+                 (("iverilog")
+                  (string-append (assoc-ref inputs "iverilog") "/bin/iverilog"))
+                 (("vvp")
+                  (string-append (assoc-ref inputs "iverilog") "/bin/vvp")))
+               #t))
+           (add-before 'check 'pre-check
+             (lambda _
+               ;; The test suite requires a running X server.
+               (system "Xvfb :1 &")
+               (setenv "DISPLAY" ":1")
+               #t))
+           (add-after 'install 'make-wrapper
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; 'qucs' directly invokes gcc, hence this wrapping.
+                 (wrap-program (string-append out "/bin/qucs")
+                   `("CPLUS_INCLUDE_PATH" ":" prefix
+                     (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                      "/include")))
+                   `("PATH" ":" prefix
+                     (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                      "/bin")))
+                   `("LIBRARY_PATH" ":" prefix
+                     (,(string-append (assoc-ref inputs "gcc-toolchain")
+                                      "/lib")))
+                   `("ADMSXMLBINDIR" ":" prefix
+                     (,(string-append (assoc-ref inputs "adms") "/bin")))
+                   `("ASCOBINDIR" ":" prefix
+                     (,(string-append (assoc-ref inputs "asco") "/bin")))
+                   `("QUCS_OCTAVE" ":" prefix
+                     (,(string-append (assoc-ref inputs "octave") "/bin/octave")))))
+               #t)))
+         #:parallel-build? #f ; race condition
+         #:configure-flags '("--disable-doc"))) ; we need octave-epstk
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("bison" ,bison)
+         ("flex" ,flex)
+         ("gperf" ,gperf)
+         ("libtool-native" ,libtool)
+         ("pkg-config" ,pkg-config)
+         ("python" ,python-2) ; for tests
+         ("matplotlib" ,python2-matplotlib) ; for tests
+         ("numpy" ,python2-numpy) ; for tests
+         ("xorg-server" ,xorg-server))) ; for tests
+      (inputs
+       `(("adms" ,adms)
+         ("asco" ,asco)
+         ("coreutils" ,coreutils)
+         ("freehdl" ,freehdl)
+         ("gcc-toolchain" ,gcc-toolchain)
+         ("iverilog" ,iverilog)
+         ("libtool" ,libtool)
+         ("octave" ,octave)
+         ("qt4" ,qt-4)
+         ("sed" ,sed)))
+      (home-page "http://qucs.sourceforge.net/")
+      (synopsis "Circuit simulator with graphical user interface")
+      (description
+       "Qucs is a circuit simulator with graphical user interface.  The software
 aims to support all kinds of circuit simulation types---e.g. DC, AC,
 S-parameter, transient, noise and harmonic balance analysis.  Pure digital
 simulations are also supported.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public qucs-s
   (package
     (name "qucs-s")
-    (version "0.0.19S")
+    (version "0.0.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/ra3xdh/qucs/releases/download/"
-                                  version "/qucs-" version ".tar.gz"))
+              (uri (string-append "https://github.com/ra3xdh/qucs_s/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1bhahvdqmayaw0306fxz1ghmjhd4fq05yk3rk7zi0z703w5imgjv"))))
+                "01dizf4rjciqc8x7bmv3kbhdlz90bm6n9m9fz7dbzqcwvszcs1hx"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1653,19 +1673,21 @@ simulations are also supported.")
                                 "\\+ \"qucsator\" \\+ executableSuffix"))
                 (string-append "}{ QucsSettings.Qucsator = \""
                                (assoc-ref inputs "qucs") "/bin/qucsator\""))
-               (((string-append "else QucsSettings\\.XyceExecutable = "
-                                "\"/usr/local/Xyce-Release-6.2.0-OPENSOURCE/bin/runxyce"))
-                (string-append "QucsSettings.XyceExecutable = \""
+               (((string-append "QucsSettings\\.XyceExecutable = "
+                                "\"/usr/local/Xyce-Release-6.8.0-OPENSOURCE/bin/Xyce"))
+                (string-append "}{ QucsSettings.XyceExecutable = \""
                                (assoc-ref inputs "xyce-serial") "/bin/Xyce"))
-               (((string-append "else QucsSettings\\.XyceParExecutable = \"/usr/local"
-                                "/Xyce-Release-6.2.0-OPENMPI-OPENSOURCE/bin/xmpirun"))
+               (((string-append "else QucsSettings\\.XyceParExecutable = "
+                                "\"mpirun -np %p /usr/local"
+                                "/Xyce-Release-6.8.0-OPENMPI-OPENSOURCE/bin/Xyce"))
                 (string-append "QucsSettings.XyceParExecutable = \""
-                               (assoc-ref inputs "mpi") "/bin/mpirun"))
-               (("%p")
-                (string-append "%p "(assoc-ref inputs "xyce-parallel") "/bin/Xyce"))
+                               (assoc-ref inputs "mpi") "/bin/mpirun -np %p "
+                               (assoc-ref inputs "xyce-parallel") "/bin/Xyce"))
                (("else QucsSettings\\.NgspiceExecutable = \"ngspice\"")
                 (string-append "QucsSettings.NgspiceExecutable = " "\""
                                (assoc-ref inputs "ngspice") "/bin/ngspice\"")))
+             (substitute* "qucs/extsimkernels/ngspice.cpp"
+               (("share/qucs/xspice_cmlib") "share/qucs-s/xspice_cmlib"))
              (substitute* "qucs/qucs_actions.cpp"
                (("qucstrans")
                 (string-append (assoc-ref inputs "qucs") "/bin/qucstrans"))
@@ -1678,7 +1700,7 @@ simulations are also supported.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (for-each
               (lambda (script)
-                (let ((file (string-append "../qucs-" ,version
+                (let ((file (string-append "../qucs_s-" ,version
                                            "/qucs/" script))
                       (out (assoc-ref outputs "out")))
                   (install-file file (string-append out "/bin"))

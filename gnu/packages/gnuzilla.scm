@@ -77,8 +77,10 @@
              (modules '((guix build utils)))
              (snippet
               ;; Fix incompatibility with Perl 5.22+.
-              '(substitute* '("js/src/config/milestone.pl")
-                 (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
+              '(begin
+                 (substitute* '("js/src/config/milestone.pl")
+                   (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE"))
+                 #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -96,7 +98,9 @@
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-timedout-test
            ;; This test times out on slower hardware.
-           (lambda _ (delete-file "js/src/jit-test/tests/basic/bug698584.js")))
+           (lambda _
+             (delete-file "js/src/jit-test/tests/basic/bug698584.js")
+             #t))
          (add-before 'configure 'chdir
            (lambda _
              (chdir "js/src")
@@ -107,12 +111,11 @@
              (let ((out (assoc-ref outputs "out")))
                (setenv "SHELL" (which "sh"))
                (setenv "CONFIG_SHELL" (which "sh"))
-               (zero? (system*
-                       "./configure" (string-append "--prefix=" out)
-                                     ,@(if (string=? "aarch64-linux"
-                                                     (%current-system))
-                                         '("--host=aarch64-unknown-linux-gnu")
-                                         '())))))))))
+               (invoke "./configure" (string-append "--prefix=" out)
+                       ,@(if (string=? "aarch64-linux"
+                                       (%current-system))
+                             '("--host=aarch64-unknown-linux-gnu")
+                             '()))))))))
     (home-page
      "https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey")
     (synopsis "Mozilla javascript engine")
@@ -136,8 +139,10 @@ in C/C++.")
               (patches (search-patches "mozjs24-aarch64-support.patch"))
               (snippet
                ;; Fix incompatibility with Perl 5.22+.
-               '(substitute* '("js/src/config/milestone.pl")
-                  (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
+               '(begin
+                  (substitute* '("js/src/config/milestone.pl")
+                    (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE"))
+                  #t))))
     (arguments
       (substitute-keyword-arguments (package-arguments mozjs)
         ((#:phases phases)
@@ -148,15 +153,15 @@ in C/C++.")
                   ;; configure fails if it is followed by SHELL and CONFIG_SHELL
                   (setenv "SHELL" (which "sh"))
                   (setenv "CONFIG_SHELL" (which "sh"))
-                  (zero? (system* "./configure"
-                                  (string-append "--prefix=" out)
-                                  "--with-system-nspr"
-                                  "--enable-system-ffi"
-                                  "--enable-threadsafe"
-                                  ,@(if (string=? "aarch64-linux"
-                                                  (%current-system))
-                                      '("--host=aarch64-unknown-linux-gnu")
-                                      '()))))))))))
+                  (invoke "./configure"
+                          (string-append "--prefix=" out)
+                          "--with-system-nspr"
+                          "--enable-system-ffi"
+                          "--enable-threadsafe"
+                          ,@(if (string=? "aarch64-linux"
+                                          (%current-system))
+                                '("--host=aarch64-unknown-linux-gnu")
+                                '())))))))))
     (inputs
      `(("libffi" ,libffi)
        ("zlib" ,zlib)))))
@@ -220,23 +225,23 @@ in C/C++.")
                (chdir "js/src")
                (setenv "SHELL" (which "sh"))
                (setenv "CONFIG_SHELL" (which "sh"))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)
-                               "--enable-ctypes"
-                               "--enable-gcgenerational"
-                               "--enable-optimize"
-                               "--enable-pie"
-                               "--enable-readline"
-                               "--enable-shared-js"
-                               "--enable-system-ffi"
-                               "--enable-threadsafe"
-                               "--enable-xterm-updates"
-                               "--with-system-icu"
-                               "--with-system-nspr"
-                               "--with-system-zlib"
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       "--enable-ctypes"
+                       "--enable-gcgenerational"
+                       "--enable-optimize"
+                       "--enable-pie"
+                       "--enable-readline"
+                       "--enable-shared-js"
+                       "--enable-system-ffi"
+                       "--enable-threadsafe"
+                       "--enable-xterm-updates"
+                       "--with-system-icu"
+                       "--with-system-nspr"
+                       "--with-system-zlib"
 
-                               ;; Intl API requires bundled ICU.
-                               "--without-intl-api"))))))))
+                       ;; Intl API requires bundled ICU.
+                       "--without-intl-api")))))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -340,7 +345,7 @@ in the Mozilla clients.")
              (setenv "DOMSUF" "(none)")
              (setenv "USE_IP" "TRUE")
              (setenv "IP_ADDRESS" "127.0.0.1")
-             (zero? (system* "./nss/tests/all.sh"))))
+             (invoke "./nss/tests/all.sh")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
@@ -454,20 +459,47 @@ security standards.")
         (mozilla-patch "icecat-CVE-2018-5146.patch"      "494e5d5278ba" "1yb4lxjw499ppwhk31vz0vzl0cfqvj9d4jwqag7ayj53ybwsqgjr")
         (mozilla-patch "icecat-CVE-2018-5147.patch"      "5cd5586a2f48" "10s774pwvj6xfk3kk6ivnhp2acc8x9sqq6na8z47nkhgwl2712i5")
         (mozilla-patch "icecat-CVE-2018-5148.patch"      "c3e447e07077" "0gmwy631f8ip4gr1mpbjk8bx1n1748wdls5zq4y8hpmpnq5g1wyx")
-        (mozilla-patch "icecat-bug-1443891.patch"        "17201199b18d" "1d0hcim1fwh0bklwpmnal1mv9d9kmyif1m15aj1nqkf1n3x4xc37")
+        (mozilla-patch "icecat-CVE-2018-5178.patch"      "17201199b18d" "1d0hcim1fwh0bklwpmnal1mv9d9kmyif1m15aj1nqkf1n3x4xc37")
         (mozilla-patch "icecat-bug-1361699.patch"        "a07d6c3ff262" "1z8mjg2487r8pxi0x951v6fwwr696q84f6hlzimc3r7bn5ds9r83")
-        (mozilla-patch "icecat-bug-1433609.patch"        "7127ccf8f88c" "0m4my7aflpp0wlqilr2m4axd7k2fyrs7jqdcz2rrz5pwivz1anvd")
+        (mozilla-patch "icecat-CVE-2018-5150-pt01.patch" "7127ccf8f88c" "0m4my7aflpp0wlqilr2m4axd7k2fyrs7jqdcz2rrz5pwivz1anvd")
         (mozilla-patch "icecat-bug-1444231.patch"        "57bd35fa8618" "0pl6x5amc5x6nhwl7qnmnff3jjjxmbs8r365bfzj58g7q5ihqwvf")
-        (mozilla-patch "icecat-bug-1409440.patch"        "2f3e1ccf1661" "0azl8g81kpc0w2xpjpgm1154ll12g0a8n6i7bl3s9nnrk2i26n74")
-        (mozilla-patch "icecat-bug-1441941.patch"        "8ff2c4d68e36" "0kz1rqhnz8ca4z20hnpcafidhsrwhnm0h2gmlgchni33h8pisr1f")
-        (mozilla-patch "icecat-bug-1443092.patch"        "b8c430253efd" "1arjcaps9axhxh5ff84n9bydhhzrihn7hbq7v69nvqwqrjp3lgg9")
-        (mozilla-patch "icecat-bug-1448774.patch"        "05cadfa3ac39" "0q0vh7vy7x0l8jp6376fn10qljfp4mnp4m9zfn90j4m19pfl86a0")
-        (mozilla-patch "icecat-bug-1449548.patch"        "48a678d7cb81" "1yfh7kxxxvqck2hpn98pwag4splyc6c9brc5haq28fp8x9r9qvlk")
-        (mozilla-patch "icecat-bug-1448705.patch"        "112032576872" "1x1hxyggbxlnlj0n9cbp03hjnfvm6cq8nqj0jizrd8cfyd5aig8p")
-        (mozilla-patch "icecat-bug-1388020.patch"        "ad9a885b0df4" "1hrk1q9mk59jww55g4lqmaflznk87x3vvjn2mxfgfbbjs8l1cyz4")
+        (mozilla-patch "icecat-CVE-2018-5150-pt02.patch" "2f3e1ccf1661" "0azl8g81kpc0w2xpjpgm1154ll12g0a8n6i7bl3s9nnrk2i26n74")
+        (mozilla-patch "icecat-CVE-2018-5159.patch"      "8ff2c4d68e36" "0kz1rqhnz8ca4z20hnpcafidhsrwhnm0h2gmlgchni33h8pisr1f")
+        (mozilla-patch "icecat-CVE-2018-5154.patch"      "b8c430253efd" "1arjcaps9axhxh5ff84n9bydhhzrihn7hbq7v69nvqwqrjp3lgg9")
+        (mozilla-patch "icecat-CVE-2018-5155.patch"      "05cadfa3ac39" "0q0vh7vy7x0l8jp6376fn10qljfp4mnp4m9zfn90j4m19pfl86a0")
+        (mozilla-patch "icecat-CVE-2018-5168.patch"      "48a678d7cb81" "1yfh7kxxxvqck2hpn98pwag4splyc6c9brc5haq28fp8x9r9qvlk")
+        (mozilla-patch "icecat-CVE-2018-5150-pt03.patch" "112032576872" "1x1hxyggbxlnlj0n9cbp03hjnfvm6cq8nqj0jizrd8cfyd5aig8p")
+        (mozilla-patch "icecat-CVE-2018-5150-pt04.patch" "ad9a885b0df4" "1hrk1q9mk59jww55g4lqmaflznk87x3vvjn2mxfgfbbjs8l1cyz4")
         (mozilla-patch "icecat-bug-1452416.patch"        "f89ab96a2532" "1dqchxdyznhgyxhfq0hm0vg1p597hjqflfzigc7j3s5vxf9rg2nv")
-        (mozilla-patch "icecat-bug-1451376.patch"        "af885a1bd293" "1wfpqhm2dp4fsx6zbrncngsqz7g2x09b625zcighixrbpvybyww3")
-        (mozilla-patch "icecat-bug-1444668.patch"        "666fc84ec72d" "0lml2wqd4yqidhi364x8r90f78397k2y0kq5z5bv8l8j4bhcnb9v")))
+        (mozilla-patch "icecat-CVE-2018-5150-pt05.patch" "af885a1bd293" "1wfpqhm2dp4fsx6zbrncngsqz7g2x09b625zcighixrbpvybyww3")
+        (mozilla-patch "icecat-CVE-2018-5150-pt06.patch" "666fc84ec72d" "0lml2wqd4yqidhi364x8r90f78397k2y0kq5z5bv8l8j4bhcnb9v")
+        (search-patch  "icecat-CVE-2018-5157-and-CVE-2018-5158.patch")
+        (mozilla-patch "icecat-CVE-2018-5150-pt07.patch" "1ab40761a856" "1kgwypy7k5b33jwkni4025za4kcnv5m6klsx4wsswlixmljmkbc7")
+        (mozilla-patch "icecat-bug-1453339.patch"        "0edb8dca7087" "0b30pipqryh311sc97rcmwnx9n8qdlbbz90b2hkybjnprmbhfxrm")
+        (mozilla-patch "icecat-CVE-2018-5150-pt08.patch" "134c728799c1" "16hbwx6fx1hrddsyjjbd3z954ql3pg348xs13h9riyblq8crzmam")
+        (mozilla-patch "icecat-CVE-2018-5150-pt09.patch" "14eab155eaa8" "0wr4xgblxzk4c2gvlnpl7ic1196mrhry1hgwdl1jivq0ji5cbvbd")
+        (mozilla-patch "icecat-bug-1452619.patch"        "2b75d55ccf0e" "1g87aybw6ggv6hyk385bplv0lx63n020gwyq0d6d4pqld48hsm1i")
+        (mozilla-patch "icecat-bug-1453127.patch"        "89857f35df29" "0gzi47svrw5ajdlm3i12193psm702zx70x5h1rwp4gb7gxh4m4d9")
+        (mozilla-patch "icecat-CVE-2018-5150-pt10.patch" "3f2ec03c0405" "0w02952dlxd2gmwghck2nm4rjjmc5ylg62bw6m1rvi35kcr134lr")
+        (mozilla-patch "icecat-CVE-2018-5183.patch"      "f729bf78fb3a" "0xkj6jwxwdqkvb5c7wi16b8cm8qrnlrd3s9jnd46jg03iykrx56f")
+        (mozilla-patch "icecat-bug-1437842.patch"        "eb896089db47" "10lppk4x2d3pim71a36ky1dmg08rs5ckfiljwvfnr1cw6934qxl4")
+        (mozilla-patch "icecat-bug-1458270.patch"        "2374dca97bde" "0y1g55wvj44nzb1qfkl271jcf8s1ik8lcl1785z0zim4qzn7qkpa")
+        (mozilla-patch "icecat-bug-1452576.patch"        "70b6298e0c9e" "0n5jfy6c421dkybk8m18vd61y95zz0r64g1p1zlya3fps5knfaqi")
+        (mozilla-patch "icecat-bug-1459206-pt1.patch"    "4ef79fe9b3b7" "1c32z1ki1i6xj1nbb0xlxwqnmz48ikmy8dmp37rkjz8ssn04wgfg")
+        (mozilla-patch "icecat-bug-1459206-pt2.patch"    "9ad16112044a" "0ayya67sx7avcb8bplfdxb92l9g4mjrb1s3hby283llhqv0ikg9b")
+        (mozilla-patch "icecat-bug-1459162.patch"        "11d8a87fb6d6" "1rkmdk18llw0x1jakix75hlhy0hpsmlminnflagbzrzjli81gwm1")
+        (mozilla-patch "icecat-bug-1451297.patch"        "407b10ad1273" "16qzsfirw045xag96f1qvpdlibm8lwdj9l1mlli4n1vz0db91v9q")
+        (mozilla-patch "icecat-bug-1462682.patch"        "e76e2e481b17" "0hnx13msjy28n3bpa2c24kpzalam4bdk5gnp0f9k671l48rs9yb3")
+        (mozilla-patch "icecat-bug-1450688.patch"        "2c75bfcd465c" "1pjinj8qypafqm2fk68s3hzcbzcijn09qzrpcxvzq6bl1yfc1xfd")
+        (mozilla-patch "icecat-bug-1456975.patch"        "042f80f3befd" "0av918kin4bkrq7gnjz0h9w8kkq8rk9l93250lfl5kqrinza1gsk")
+        (mozilla-patch "icecat-bugs-1442722+1455071+1433642+1456604+1458320.patch"
+                                                         "bb0451c9c4a0" "1lhm1b2a7c6jwhzsg3c830hfhp17p8j9zbcmgchpb8c5jkc3vw0x")
+        (mozilla-patch "icecat-bug-1465108-pt1.patch"    "8189b262e3b9" "13rh86ddwmj1bhv3ibbil3sv5xbqq1c9v1czgbsna5hxxkzc1y3b")
+        (mozilla-patch "icecat-bug-1465108-pt2.patch"    "9f81ae3f6e1d" "05vfg8a8jrzd93n1wvncmvdmqgf9cgsl8ryxgjs3032gbbjkga7q")
+        (mozilla-patch "icecat-bug-1459693.patch"        "face7a3dd5d7" "0jclw30mf693w8lrmvn0iankggj21nh4j3zh51q5363rj5xncdzx")
+        (mozilla-patch "icecat-bug-1464829.patch"        "7afb58c046c8" "1r0569r76712x7x1sw6xr0x06ilv6iw3fncb0f8r8b9mp6wrpx34")
+        (mozilla-patch "icecat-bug-1452375-pt1.patch"    "f1a745f8c42d" "11q73pb7a8f09xjzil4rhg5nr49zrnz1vb0prni0kqvrnppf5s40")
+        (mozilla-patch "icecat-bug-1452375-pt2.patch"    "1f9a430881cc" "0f79rv7njliqxx33z07n60b50jg0a596d1km7ayz2hivbl2d0168")))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -539,7 +571,7 @@ security standards.")
        ("libxcomposite" ,libxcomposite)
        ("libxt" ,libxt)
        ("libffi" ,libffi)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("libvpx" ,libvpx)
        ("icu4c" ,icu4c)
        ("pixman" ,pixman)
@@ -643,19 +675,6 @@ security standards.")
                          #t))
               #t)))
          (add-after
-          'unpack 'use-skia-by-default
-          (lambda _
-            ;; Use the bundled Skia library by default, since IceCat appears
-            ;; to be far more stable when using it than when using our system
-            ;; Cairo.
-            (let ((out (open "browser/app/profile/icecat.js"
-                              (logior O_WRONLY O_APPEND))))
-              (format out "~%// Use Skia by default~%")
-              (format out "pref(~s, ~s);~%" "gfx.canvas.azure.backends" "skia")
-              (format out "pref(~s, ~s);~%" "gfx.content.azure.backends" "skia")
-              (close-port out))
-            #t))
-         (add-after
           'unpack 'link-libxul-with-libraries
           (lambda _
             ;; libxul.so dynamically opens libraries, so here we explicitly
@@ -691,9 +710,9 @@ security standards.")
               (chdir "../build")
               (format #t "build directory: ~s~%" (getcwd))
               (format #t "configure flags: ~s~%" flags)
-              (zero? (apply system* bash
-                            (string-append srcdir "/configure")
-                            flags)))))
+              (apply invoke bash
+                     (string-append srcdir "/configure")
+                     flags))))
          (add-before 'configure 'install-desktop-entry
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install the '.desktop' file.
@@ -748,7 +767,8 @@ security standards.")
                       (copy-file file (string-append icons "/icecat.png"))))
                   '("default16.png" "default22.png" "default24.png"
                     "default32.png" "default48.png" "content/icon64.png"
-                    "mozicon128.png" "default256.png"))))))
+                    "mozicon128.png" "default256.png"))
+                 #t))))
          ;; This fixes the file chooser crash that happens with GTK 3.
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -757,7 +777,8 @@ security standards.")
                     (gtk (assoc-ref inputs "gtk+"))
                     (gtk-share (string-append gtk "/share")))
                (wrap-program (car (find-files lib "^icecat$"))
-                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))))))))
+                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))
+               #t))))))
     (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description

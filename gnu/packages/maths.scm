@@ -25,6 +25,8 @@
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
+;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +55,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system r)
   #:use-module (guix build-system ruby)
   #:use-module (gnu packages algebra)
@@ -176,9 +179,11 @@ interactive dialogs to guide them.")
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
-        '(for-each (lambda (d)
-                     (delete-file-recursively (string-append "libcoda/" d)))
-                   '("zlib" "pcre" "expat")))))
+        '(begin
+           (for-each (lambda (d)
+                       (delete-file-recursively (string-append "libcoda/" d)))
+                     '("zlib" "pcre" "expat"))
+           #t))))
     (native-inputs
      `(("fortran" ,gfortran)
        ("python" ,python)
@@ -476,7 +481,10 @@ large scale eigenvalue problems.")
     (inputs
      `(("mpi" ,openmpi)
        ,@(package-inputs arpack-ng)))
-    (arguments `(#:configure-flags '("--enable-mpi")))
+    (arguments
+     (substitute-keyword-arguments (package-arguments arpack-ng)
+       ((#:configure-flags _ '())
+        ''("--enable-mpi"))))
     (synopsis "Fortran subroutines for solving eigenvalue problems with MPI")))
 
 (define-public lapack
@@ -517,19 +525,6 @@ problems in numerical linear algebra.")
     (license (license:non-copyleft "file://LICENSE"
                                 "See LICENSE in the distribution."))))
 
-(define-public lapack-3.5
-  (package
-    (inherit lapack)
-    (version "3.5.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://www.netlib.org/lapack/lapack-"
-                           version ".tgz"))
-       (sha256
-        (base32
-         "0lk3f97i9imqascnlf6wr5mjpyxqcdj73pgj97dj2mgvyg9z1n4s"))))))
-
 (define-public scalapack
   (package
     (name "scalapack")
@@ -548,7 +543,16 @@ problems in numerical linear algebra.")
        ("fortran" ,gfortran)
        ("lapack" ,lapack)))             ;for testing only
     (arguments
-     `(#:configure-flags `("-DBUILD_SHARED_LIBS:BOOL=YES")))
+     `(#:configure-flags `("-DBUILD_SHARED_LIBS:BOOL=YES")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-test-environment
+                    (lambda _
+                      ;; By default, running the test suite would fail because
+                      ;; 'ssh' could not be found in $PATH.  Define this
+                      ;; variable to placate Open MPI without adding a
+                      ;; dependency on OpenSSH (the agent isn't used anyway.)
+                      (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+                      #t)))))
     (home-page "http://www.netlib.org/scalapack/")
     (synopsis "Library for scalable numerical linear algebra")
     (description
@@ -562,7 +566,7 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "5.0.6")
+    (version "5.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
@@ -570,7 +574,7 @@ singular value problems.")
                                   version ".tar.gz"))
        (sha256
         (base32
-         "0q5lr6nala3ln6f3yp6g17ziymb9r9gx9zylnw1y3hjmwl9lggjv"))))
+         "18diyy7aib9mn098x07g25c7jij1x7wbfpicz0z8gwxx08px45m4"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)
@@ -580,6 +584,9 @@ singular value problems.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texlive" ,texlive-tiny)))
+    (arguments `(#:configure-flags (list (string-append
+                                          "--with-texdir=" %output
+                                          "/texmf-local/tex/latex/gnuplot"))))
     (home-page "http://www.gnuplot.info")
     (synopsis "Command-line driven graphing utility")
     (description "Gnuplot is a portable command-line driven graphing
@@ -826,7 +833,8 @@ extremely large and complex data collections.")
           (for-each delete-file
                     (list "SZip.tar.gz" "ZLib.tar.gz" "JPEG8d.tar.gz"
                           "HDF4.tar.gz" "HDF5.tar.gz"))
-          (delete-file-recursively ,(string-append "hdfjava-" version "/lib"))))))
+          (delete-file-recursively ,(string-append "hdfjava-" version "/lib"))
+          #t))))
    (build-system gnu-build-system)
    (native-inputs
     `(("jdk" ,icedtea "jdk")
@@ -1229,7 +1237,9 @@ online as well as original implementations of various other algorithms.")
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
-               '(delete-file-recursively "ThirdParty"))))
+               '(begin
+                  (delete-file-recursively "ThirdParty")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1314,7 +1324,7 @@ can solve two kinds of problems:
 (define-public octave
   (package
     (name "octave")
-    (version "4.2.2")
+    (version "4.4.0")
     (source
      (origin
       (method url-fetch)
@@ -1322,7 +1332,7 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "0pkkz1vazsh7ipffb09q0nc2jgx6q27pkkngygjij6jrpcly5zsp"))))
+        "0nm766737gbkq9wqry54a026k3dg7rb1065kngfpwgjz8b544xbp"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
@@ -1482,7 +1492,9 @@ Open CASCADE library.")
       (modules '((guix build utils)))
       (snippet
        ;; Remove non-free METIS code
-       '(delete-file-recursively "contrib/Metis"))))
+       '(begin
+          (delete-file-recursively "contrib/Metis")
+          #t))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("fltk" ,fltk)
@@ -1670,6 +1682,31 @@ scientific applications modeled by partial differential equations.")
            ,@(delete "--with-mpi=0" ,cf)))))
     (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
 
+
+(define-public python-kiwisolver
+  (package
+    (name "python-kiwisolver")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "kiwisolver" version))
+              (sha256
+               (base32
+                "0y22ci86znwwwfhbmvbgdfnbi6lv5gv2xkdlxvjw7lml43ayafyf"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/nucleic/kiwi")
+    (synopsis "Fast implementation of the Cassowary constraint solver")
+    (description
+     "Kiwi is an efficient C++ implementation of the Cassowary constraint
+solving algorithm.  Kiwi has been designed from the ground up to be
+lightweight and fast.  Kiwi ranges from 10x to 500x faster than the original
+Cassowary solver with typical use cases gaining a 40x improvement.  Memory
+savings are consistently > 5x.")
+    (license license:bsd-3)))
+
+(define-public python2-kiwisolver
+  (package-with-python2 python-kiwisolver))
+
 (define-public slepc
   (package
     (name "slepc")
@@ -1752,6 +1789,18 @@ arising after the discretization of partial differential equations.")
 (define-public slepc-openmpi
   (package (inherit slepc)
     (name "slepc-openmpi")
+    (arguments
+     (substitute-keyword-arguments (package-arguments slepc)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               #t))))))
     (inputs
      `(("mpi" ,openmpi)
        ("arpack" ,arpack-ng-openmpi)
@@ -1921,11 +1970,18 @@ sparse system of linear equations A x = b using Guassian elimination.")
      (substitute-keyword-arguments (package-arguments mumps)
        ((#:phases phases)
         `(modify-phases ,phases
-           (replace
-            'check
-            (lambda _
-              ((assoc-ref ,phases 'check)
-               #:exec-prefix '("mpirun" "-n" "2"))))))))
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               #t))
+           (replace 'check
+             (lambda _
+               ((assoc-ref ,phases 'check)
+                #:exec-prefix '("mpirun" "-n" "2"))))))))
     (synopsis "Multifrontal sparse direct solver (with MPI)")))
 
 (define-public mumps-metis-openmpi
@@ -2048,7 +2104,8 @@ void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
                    (let ((line (read-line in 'concat)))
                     (unless (regexp-exec rx line)
                       (display line out)
-                      (loop)))))))))))
+                      (loop))))
+                 #t)))))))
     (build-system cmake-build-system)
     (native-inputs
      `(("tcsh" ,tcsh)))
@@ -2075,38 +2132,38 @@ also provides threshold-based ILU factorization preconditioners.")
 (define-public superlu-dist
   (package
     (name "superlu-dist")
-    (version "3.3")
+    (version "5.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
                            "superlu_dist_" version ".tar.gz"))
        (sha256
-        (base32 "1hnak09yxxp026blq8zhrl7685yip16svwngh1wysqxf8z48vzfj"))
-              (modules '((guix build utils)))
+        (base32 "0ja5ihqivkda1wd58y4lmzvmwssm9g91f70c5q0fzwhng6580h6y"))
+       (modules '((guix build utils)))
        (snippet
         ;; Replace the non-free implementation of MC64 with a stub
         '(begin
            (use-modules (ice-9 regex)
                         (ice-9 rdelim))
-           (call-with-output-file "SRC/mc64ad.c"
+           (call-with-output-file "SRC/mc64ad_dist.c"
              (lambda (port)
                (display "
 #include <stdio.h>
 #include <stdlib.h>
-void mc64id_(int *a) {
+void mc64id_dist(int *a) {
   fprintf (stderr, \"SuperLU_DIST: non-free MC64 not available.  Aborting.\\n\");
   abort ();
 }
-void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
+void mc64ad_dist (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
               int *h, int *i, int *j, int *k, double *l, int *m, int *n) {
   fprintf (stderr, \"SuperLU_DIST: non-free MC64 not available.  Aborting.\\n\");
   abort ();
 }\n" port)))
-           (delete-file "SRC/mc64ad.f.bak")
            (substitute* "SRC/util.c"    ;adjust default algorithm
              (("RowPerm[[:blank:]]*=[[:blank:]]*LargeDiag")
-              "RowPerm = NOROWPERM"))))
+              "RowPerm = NOROWPERM"))
+           #t))
        (patches (search-patches "superlu-dist-scotchmetis.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2168,6 +2225,11 @@ CDEFS       = -DAdd_"
              #t))
          (replace 'check
            (lambda _
+             ;; By default, running the test suite would fail because 'ssh'
+             ;; could not be found in $PATH.  Define this variable to placate
+             ;; Open MPI without adding a dependency on OpenSSH (the agent
+             ;; isn't used anyway.)
+             (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
              (with-directory-excursion "EXAMPLE"
                (and
                 (zero? (system* "mpirun" "-n" "2"
@@ -2262,6 +2324,12 @@ YACC = bison -pscotchyy -y -b y
          (add-after
           'build 'build-esmumps
           (lambda _
+            ;; By default, running the test suite would fail because 'ssh'
+            ;; could not be found in $PATH.  Define this variable to placate
+            ;; Open MPI without adding a dependency on OpenSSH (the agent
+            ;; isn't used anyway.)
+            (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+
             (zero? (system* "make"
                             (format #f "-j~a" (parallel-job-count))
                             "esmumps"))))
@@ -2441,7 +2509,16 @@ schemes.")
                                            " -lopenblas")
                            ,(string-append "LAPACK_LIBS=-L"
                                            (assoc-ref %build-inputs "lapack")
-                                           " -llapack"))))
+                                           " -llapack"))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-test-environment
+                    (lambda _
+                      ;; By default, running the test suite would fail because
+                      ;; 'ssh' could not be found in $PATH.  Define this
+                      ;; variable to placate Open MPI without adding a
+                      ;; dependency on OpenSSH (the agent isn't used anyway.)
+                      (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+                      #t)))))
     (home-page "http://www.p4est.org")
     (synopsis "Adaptive mesh refinement on forests of octrees")
     (description
@@ -2957,7 +3034,9 @@ Fresnel integrals, and similar related functions as well.")
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled metis source
-        '(delete-file-recursively "metis-5.1.0"))))
+        '(begin
+           (delete-file-recursively "metis-5.1.0")
+           #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f  ;no "check" target
@@ -3153,19 +3232,21 @@ specifications.")
         "12pj1idjz31r7c2mb5w03vy1cmvycvbkx9z29s40qdmkp1i7q6i0"))
       (modules '((guix build utils)))
       (snippet
-       '(substitute* (list "lp_solve/ccc" "lpsolve55/ccc")
-          (("^c=cc") "c=gcc")
-          ;; Pretend to be on a 64 bit platform to obtain a common directory
-          ;; name for the build results on all architectures; nothing else
-          ;; seems to depend on it.
-          (("^PLATFORM=.*$") "PLATFORM=ux64\n")
+       '(begin
+          (substitute* (list "lp_solve/ccc" "lpsolve55/ccc")
+            (("^c=cc") "c=gcc")
+            ;; Pretend to be on a 64 bit platform to obtain a common directory
+            ;; name for the build results on all architectures; nothing else
+            ;; seems to depend on it.
+            (("^PLATFORM=.*$") "PLATFORM=ux64\n")
 
-          ;; The check for 'isnan' as it is written fails with
-          ;; "non-floating-point argument in call to function
-          ;; ‘__builtin_isnan’", which leads to the 'NOISNAN' cpp macro
-          ;; definition, which in turn leads to bad things.  Fix the feature
-          ;; test.
-          (("isnan\\(0\\)") "isnan(0.)")))))
+            ;; The check for 'isnan' as it is written fails with
+            ;; "non-floating-point argument in call to function
+            ;; ‘__builtin_isnan’", which leads to the 'NOISNAN' cpp macro
+            ;; definition, which in turn leads to bad things.  Fix the feature
+            ;; test.
+            (("isnan\\(0\\)") "isnan(0.)"))
+          #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -3223,7 +3304,9 @@ revised simplex and the branch-and-bound methods.")
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
-        '(delete-file-recursively "bundled"))))
+        '(begin
+           (delete-file-recursively "bundled")
+           #t))))
     (build-system cmake-build-system)
     (inputs
      `(("tbb" ,tbb)
@@ -3420,6 +3503,7 @@ set.")
     (native-inputs
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
+       ("perl" ,perl)                   ;needed to run 'ppmquant' during tests
        ("texlive" ,texlive)             ;full package required for fonts
        ("ghostscript" ,ghostscript)))
     (inputs
@@ -3497,7 +3581,17 @@ problems.")
      (substitute-keyword-arguments (package-arguments hypre)
        ((#:configure-flags flags)
         ``("--with-MPI"
-           ,@(delete "--without-MPI" ,flags)))))
+           ,@(delete "--without-MPI" ,flags)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               #t))))))
     (synopsis "Parallel solvers and preconditioners for linear equations")
     (description
      "HYPRE is a software library of high performance preconditioners and
@@ -3854,14 +3948,14 @@ are noisy or are discontinuous at the solution.")
 (define-public r-desolve
   (package
     (name "r-desolve")
-    (version "1.20")
+    (version "1.21")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "deSolve" version))
         (sha256
          (base32
-          "18nx3maww979a8p8ly4hv63y65mnjx8vbj2fpipd6rhcbf1lbsan"))))
+          "0qqc4mknw1jblzcmph1dg3k1p6w42yal0k1xjh8pqk7yb3a75hs5"))))
     (properties `((upstream-name . "deSolve")))
     (build-system r-build-system)
     (native-inputs

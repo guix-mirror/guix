@@ -78,7 +78,6 @@
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("compositeproto" ,compositeproto)
        ("curl" ,curl)
        ("ghostscript" ,ghostscript)
        ("giflib" ,giflib)
@@ -110,12 +109,10 @@
        ("openjpeg" ,openjpeg-1)
        ("poppler" ,poppler)
        ("printproto" ,printproto)
-       ("scrnsaverproto" ,scrnsaverproto)
        ("wayland-protocols" ,wayland-protocols)
-       ("xextproto" ,xextproto)
        ("xinput" ,xinput)
        ("xpr" ,xpr)
-       ("xproto" ,xproto)))
+       ("xorgproto" ,xorgproto)))
     (propagated-inputs
      ;; All these inputs are in package config files in section
      ;; Requires.private.
@@ -180,7 +177,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.2.0")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -188,7 +185,7 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "0kw34l5lahn1qaks3ah6x8k41d6hfywpqfak2p7qq1z87zj506mx"))
+                "1ii8332bl88l8md3gvz5dhi9bjpm6shyf14ck9kfyy7d56hp71mc"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
               ;; TODO: Remove bundled lz4.
@@ -262,11 +259,11 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "16zydv7z94aw3rywmb9gr8ya85k7b75h22wng95lfx1x0y1yb0ad"))))
+                "16zydv7z94aw3rywmb9gr8ya85k7b75h22wng95lfx1x0y1yb0ad"))
+              (patches (search-patches "enlightenment-fix-setuid-path.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-mount-eeze")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
@@ -278,6 +275,8 @@ Libraries with some extra bells and whistles.")
                  (("/usr/share/X11/xkb/rules/xorg.lst")
                   (string-append xkeyboard
                                  "/share/X11/xkb/rules/base.lst")))
+               (substitute* "src/modules/everything/evry_plug_apps.c"
+                 (("/usr/bin/") ""))
                (substitute* "configure"
                  (("/bin/mount") (string-append utils "/bin/mount"))
                  (("/bin/umount") (string-append utils "/bin/umount"))

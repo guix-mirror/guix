@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017,2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -56,11 +56,24 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (home-page "https://savannah.nongnu.org/projects/nyacc")
     (license (list gpl3+ lgpl3+))))
 
+(define-public nyacc-for-mes
+  (package
+    (inherit nyacc)
+    (version "0.80.42")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://gitlab.com/janneke/nyacc"
+                                    "/-/archive/v" version
+                                    "/nyacc-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0c8c8kxir0h2d4nxr131xbkfs7c80haipmkp2g6677sh14wn0b3y"))))))
+
 (define-public mes
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.13")
+      (version "0.14")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://gitlab.com/janneke/mes"
@@ -68,12 +81,12 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                                     "/mes-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0db4f32rak839ff3n7ywkkng9672457pd2pvvgvcsyndqmmdsqw0"))))
+                  "1i23jk61iibjza2s3lka56ry4ma424g2fyk8pjd5bd1dyjd0yrzf"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
        `(("mescc-tools" ,mescc-tools)
-         ("nyacc" ,nyacc)))
+         ("nyacc" ,nyacc-for-mes)))
       (native-inputs
        `(("guile" ,guile-2.2)
          ,@(if (not (string-prefix? "i686-linux" (or (%current-target-system)
@@ -85,7 +98,9 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                '())
          ("perl" ,perl)))               ;build-aux/gitlog-to-changelog
       (arguments
-       `(#:phases
+       `(#:make-flags (list
+                       (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
          (modify-phases %standard-phases
            (add-before 'install 'generate-changelog
              (lambda _
@@ -107,7 +122,7 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
 (define-public mescc-tools
   (package
     (name "mescc-tools")
-    (version "0.3")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -117,13 +132,18 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04lvyyp7isamgddrnfpi92lgqdflzdzx5kc2x8fxmgsjisy0dgr4"))))
+                "1iwc8xqwzdaqckb4jkkisljrgn8ii4bl7dzk1l2kpv98hsyq9vi1"))))
     (build-system gnu-build-system)
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:test-target "test"
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure)
+                  (add-after 'install 'install-2
+                    (lambda _
+                      (let ((out (assoc-ref %outputs "out")))
+                       (copy-file "bin/blood-elf" (string-append out "/bin/blood-elf"))))))))
     (synopsis "Tools for the full source bootstrapping process")
     (description
      "Mescc-tools is a collection of tools for use in a full source

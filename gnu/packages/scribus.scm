@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,7 +47,7 @@
 (define-public scribus
   (package
     (name "scribus")
-    (version "1.5.3")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
@@ -54,29 +55,8 @@
                            version "/scribus-" version ".tar.xz"))
        (sha256
         (base32
-         "0kyp45vidxa3v35ic9592db4zk3m8al26vck38q5v7z14x3hp8vk"))
-       (patches
-        (list
-         (origin
-           (method url-fetch)
-           (uri (string-append "https://github.com/scribusproject/scribus/commit/"
-                               "61186c7ef083046b7e0c908952e8a773e2787d82.patch"))
-           (file-name "scribus-fix-poppler-0.58-breakage.patch")
-           (sha256
-            (base32 "189qw9xmgz01xz1w1bi9lzrp399zk1j1iz5qdhchdrhgnd69b7ly")))
-         (origin
-           (method url-fetch)
-           (uri (string-append "https://github.com/scribusproject/scribus/commit/"
-                               "d82b1c989bd0e79b5611521f671adbfb94996e5e.patch"))
-           (file-name "scribus-fix-poppler-packaging.patch")
-           (sha256
-            (base32 "1p9s18jjvj2h0ba1xvk1zhmnn4f4n3ykrgb56mjd6in30h0vrykx")))))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Fix typo.  Equivalent to patch at
-        ;; https://bugs.scribus.net/view.php?id=14850
-        '(substitute* "cmake/modules/FindLIBPODOFO.cmake"
-           (("find_package\\(OPENSSL\\)") "find_package(OpenSSL)")))))
+         "00ys0p6h3iq77kh72dkl0qrf7qvznq18qdrgiq10gfxja1995034"))
+       (modules '((guix build utils)))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test target
@@ -114,6 +94,7 @@
        ("libtiff" ,libtiff)
        ("libvisio" ,libvisio)
        ("libxml2" ,libxml2)
+       ("libzmf" ,libzmf)
        ("openssl" ,openssl)
        ("podofo" ,podofo)
        ("poppler" ,poppler)

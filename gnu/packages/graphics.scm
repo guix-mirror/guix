@@ -339,7 +339,8 @@ graphics.")
                   ;; and <https://github.com/openexr/openexr/pull/184>.
                   (substitute* "IlmImf/Makefile.in"
                     (("ImfIO\\.h")
-                     "ImfIO.h ImfStdIO.h"))))
+                     "ImfIO.h ImfStdIO.h"))
+                  #t))
               (patches (search-patches "openexr-missing-samples.patch"))))
     (build-system gnu-build-system)
     (arguments

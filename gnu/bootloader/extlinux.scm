@@ -64,6 +64,7 @@ corresponding to old generations of the system."
             (format port "# This file was generated from your GuixSD configuration.  Any changes
 # will be lost upon reconfiguration.
 UI menu.c32
+MENU TITLE GuixSD Boot Options
 PROMPT ~a
 TIMEOUT ~a~%"
                     (if (> timeout 0) 1 0)

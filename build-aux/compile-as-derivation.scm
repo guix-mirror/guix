@@ -25,7 +25,8 @@
  (and=> (or (getenv "XDG_CONFIG_HOME")
             (and=> (getenv "HOME")
                    (cut string-append <> "/.config")))
-        (cut string-append <> "/guix/latest")))
+        (cute string-append <> "/guix/current/share/guile/site/"
+              (effective-version))))
 
 (use-modules (guix) (guix ui)
              (guix git-download)
@@ -43,7 +44,7 @@
            (mlet* %store-monad ((source (interned-file source "guix-source"
                                                        #:select? git?
                                                        #:recursive? #t))
-                                (drv    (build source)))
+                                (drv    (build source #:pull-version 1)))
              (mbegin %store-monad
                (show-what-to-build* (list drv))
                (built-derivations (list drv))

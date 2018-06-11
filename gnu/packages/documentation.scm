@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
@@ -59,7 +59,7 @@
      `(#:tests? #f                     ; no 'check' target
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
+         (replace 'bootstrap
            (lambda _
              (invoke "autoconf")))
          ;; Some XML-related binaries are required for asciidoc's proper usage.
@@ -139,10 +139,23 @@ markup) can be customized and extended by the user.")
        ("libxml2" ,libxml2) ; provides xmllint for the tests
        ("python" ,python-2))) ; for creating the documentation
     (inputs
-     `(("bash" ,bash-minimal)))
+     `(("bash" ,bash-minimal)
+       ,@(if (string-prefix? "armhf-" (%current-system))
+             `(("gcc-ice-patch" ,@(search-patches "doxygen-gcc-ice.patch")))
+             '())))
     (arguments
      `(#:test-target "tests"
        #:phases (modify-phases %standard-phases
+                  ;; Work around an ICE that shows up on native compiles for
+                  ;; armhf-linux.
+                  ,@(if (string-prefix? "armhf-" (%current-system))
+                        `((add-after 'unpack 'apply-gcc-patch
+                            (lambda* (#:key inputs #:allow-other-keys)
+                              (let ((patch (assoc-ref inputs "gcc-ice-patch")))
+                                (invoke "patch" "-p1" "--force"
+                                        "--input" patch)))))
+                        '())
+
                   (add-before 'configure 'patch-sh
                               (lambda* (#:key inputs #:allow-other-keys)
                                 (substitute* "src/portable.cpp"

@@ -212,8 +212,10 @@ features an integrated Emacs-like editor and a large runtime library.")
              ;; Remove bundled libraries.
              (modules '((guix build utils)))
              (snippet
-              '(for-each delete-file-recursively
-                         '("gc" "gmp" "libuv")))))
+              '(begin
+                 (for-each delete-file-recursively
+                           '("gc" "gmp" "libuv"))
+                 #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -613,9 +615,10 @@ threads.")
        (origin
          (method url-fetch/tarbomb)
          (modules '((guix build utils)))
-         (snippet
-          ;; Remove binary code
-          '(delete-file-recursively "scmutils/mit-scheme"))
+         (snippet '(begin
+                     ;; Remove binary code
+                     (delete-file-recursively "scmutils/mit-scheme")
+                     #t))
          (uri (string-append "http://groups.csail.mit.edu/mac/users/gjs/6946"
                              "/scmutils-tarballs/" name "-" version
                              "-x86-64-gnu-linux.tar.gz"))
@@ -803,13 +806,12 @@ engineering.")
              (setenv "PATH" (string-append gzip "/bin"
                                            ":" texinfo "/bin"))
              (mkdir-p info-dir)
-             (and (zero?
-                   (system* "makeinfo" "--output"
-                            (string-append info-dir "/sicp.info")
-                            (string-append source "/sicp-pocket.texi")))
-                  (every zero?
-                         (map (cut system* "gzip" "-9n" <>)
-                              (find-files info-dir))))))))
+             (invoke "makeinfo" "--output"
+                     (string-append info-dir "/sicp.info")
+                     (string-append source "/sicp-pocket.texi"))
+             (for-each (cut invoke "gzip" "-9n" <>)
+                       (find-files info-dir))
+             #t))))
       (home-page "https://sarabander.github.io/sicp")
       (synopsis "Structure and Interpretation of Computer Programs")
       (description "Structure and Interpretation of Computer Programs (SICP) is
@@ -848,7 +850,8 @@ metalinguistic abstraction, recursion, interpreters, and modular programming.")
                                        "/rx")))
              (chdir (assoc-ref %build-inputs "source"))
              (mkdir-p share)
-             (copy-recursively "." share)))))
+             (copy-recursively "." share)
+             #t))))
       (native-inputs
        `(("source" ,source)
          ("scheme48" ,scheme48)))

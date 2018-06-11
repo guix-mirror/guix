@@ -15,10 +15,13 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
+;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Tonton <tonton@riseup.net>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,9 +56,11 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
@@ -66,6 +71,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
@@ -84,6 +90,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages wm)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
 
@@ -348,14 +355,14 @@ containing both Producer and Consumer support.")
 (define-public libndp
   (package
     (name "libndp")
-    (version "1.6")
+    (version "1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://libndp.org/files/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03mczwrxqbp54msafxzzyhaazkvjdwm2kipjkrb5xg8kw22glz8c"))))
+                "1dlinhl39va00v55qygjc9ap77yqf7xvn4rwmvdr49xhzzxhlj1c"))))
     (build-system gnu-build-system)
     (home-page "http://libndp.org/")
     (synopsis "Library for Neighbor Discovery Protocol")
@@ -399,9 +406,11 @@ Ethernet devices.")
                 "045cbsq9ps32j24v8y5hpyqxnqn9mpaf3mgvirlhgpqyb9jsia0c"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Main.h"
-                  (("#include <stdio.h>")
-                   "#include <stdio.h>\n#include <stdlib.h>")))))
+               '(begin
+                  (substitute* "Main.h"
+                    (("#include <stdio.h>")
+                     "#include <stdio.h>\n#include <stdlib.h>"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                                ; no "check" target
@@ -495,7 +504,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.3.0")
+    (version "5.3.1")
     (source
      (origin
        (method url-fetch)
@@ -503,7 +512,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "08sp2gzv09rar1a5mnfmbc24pqvhpqqmz2hnmv436n7v7d09qy2d"))))
+         "0gl98l26dcgmlap0pxllbv4b9n2fr5b7zml3ijf8sf3a60qsskpg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -517,8 +526,7 @@ and up to 1 Mbit/s downstream.")
              (setenv "HAVE_ICONV" "1")
              #t)))))
     (inputs
-     ;; TODO: Switch to libidn2 when >= 2.0.3 is ungrafted in master.
-     `(("libidn" ,libidn)))
+     `(("libidn2" ,libidn2)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
@@ -539,7 +547,7 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.4.5")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
@@ -547,7 +555,7 @@ of the same name.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1mvgy67rvnwj2kbc43s4il81jvz5ai0bx2j3j2js7x50zclyrcmk"))))
+         "126dvd6myjbxjr69dy9vzzdda2lmjy1wwwc6gcs5djb46jy5nvmb"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
@@ -558,12 +566,14 @@ of the same name.")
               ("libpcap" ,libpcap)
               ("libssh" ,libssh)
               ("libxml2" ,libxml2)
+              ("lz4" ,lz4)
               ("lua" ,lua-5.2)          ;Lua 5.3 unsupported
               ("krb5" ,mit-krb5)
-              ("openssl" ,openssl)
               ("portaudio" ,portaudio)
               ("qtbase" ,qtbase)
+              ("qtmultimedia" ,qtmultimedia)
               ("sbc" ,sbc)
+              ("snappy" ,snappy)
               ("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)
                      ("pkg-config" ,pkg-config)
@@ -576,12 +586,28 @@ of the same name.")
              (string-append "--with-libcap=" (assoc-ref %build-inputs "libcap"))
              (string-append "--with-libssh=" (assoc-ref %build-inputs "libssh"))
              (string-append "--with-lua=" (assoc-ref %build-inputs "lua"))
+             (string-append "--with-lz4=" (assoc-ref %build-inputs "lz4"))
              (string-append "--with-pcap=" (assoc-ref %build-inputs "libpcap"))
              (string-append "--with-portaudio="
                             (assoc-ref %build-inputs "portaudio"))
              (string-append "--with-sbc=" (assoc-ref %build-inputs "sbc"))
-             (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl"))
-             (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib")))))
+             (string-append "--with-snappy=" (assoc-ref %build-inputs "snappy"))
+             (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda _
+             ;; Fix build against Qt 5.11.
+             (substitute* "ui/qt/packet_format_group_box.cpp"
+               (("#include <QStyle>") "#include <QStyle>
+#include <QStyleOption>"))
+             (substitute* "ui/qt/time_shift_dialog.cpp"
+               (("#include <ui/time_shift.h>") "#include <ui/time_shift.h>
+#include <QStyleOption>"))
+             (substitute* "ui/qt/wireless_frame.cpp"
+               (("#include <QProcess>") "#include <QProcess>
+#include <QAbstractItemView>"))
+             #t)))))
     (synopsis "Network traffic analyzer")
     (description "Wireshark is a network protocol analyzer, or @dfn{packet
 sniffer}, that lets you capture and interactively browse the contents of
@@ -1198,7 +1224,7 @@ gone wild and are suddenly taking up your bandwidth.")
 (define-public nzbget
   (package
     (name "nzbget")
-    (version "19.1")
+    (version "20.0")
     (source
      (origin
        (method url-fetch)
@@ -1207,7 +1233,7 @@ gone wild and are suddenly taking up your bandwidth.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0y713g7gd4n5chbhr8lv7k50rxkmzysrg13sscxam3s386mmlb1r"))
+         "0q93aqqyzccn5r9sny38499rmg846qdh9pi2v5kvf9m23v54yk60"))
        (modules '((guix build utils)))
        (snippet
         ;; Reported upstream as <https://github.com/nzbget/nzbget/pull/414>.
@@ -1324,7 +1350,7 @@ networks.")
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "1.0.7")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
@@ -1333,7 +1359,7 @@ networks.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fbq4kpx8sj50g74hwpixisfjjgxq6zyn40d3m28dxhn7mxbnlrq"))))
+         "16kcpba7nmszz2h0fq7qvv6src20syck2wlknaacg69kk88aybbk"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")
@@ -1573,8 +1599,6 @@ interface and a programmable text output for scripting.")
        (modify-phases %standard-phases
          (add-after 'unpack 'chdir
            (lambda _ (chdir "libnet") #t))
-         (add-after 'chdir 'bootstrap
-           (lambda _ (zero? (system* "autoreconf" "-vif"))))
          (add-before 'build 'build-doc
            (lambda* (#:key make-flags #:allow-other-keys)
              (zero? (apply system* "make" "-C" "doc" "doc"
@@ -1702,3 +1726,178 @@ file for more details.")
            ;; src/libstrongswan/plugins/blowfish/blowfish_crypter.c
            ;; src/libstrongswan/plugins/des/des_crypter.c
            license:bsd-4))))
+
+(define-public amule
+  (package
+    (name "amule")
+    (version "2.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/amule-project/amule/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wvcj0n9xz03xz5c2xwp6dwfp7sqjhhwbki3m0lwikskpn9lkzk2"))
+              ;; Patch for adopting crypto++ >= 6.0.
+              (patches (search-patches "amule-crypto-6.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'autogen
+           (lambda _
+             (invoke "sh" "autogen.sh")
+             #t)))
+       #:configure-flags
+       '("--disable-rpath"
+         "--enable-wxcas"
+         "--enable-cas"
+         "--enable-alc"
+         "--enable-alcc"
+         "--enable-xas"
+         "--enable-amulecmd"
+         "--enable-geoip"
+         "--enable-ccache"
+         "--enable-nls"
+         "--enable-optimize"
+         "--enable-amule-gui"
+         "--enable-amule-daemon"
+         "--enable-webserver"
+         "--with-denoise-level=0")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext-minimal" ,gettext-minimal)
+       ("perl" ,perl)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("crypto++" ,crypto++)
+       ("libpng" ,libpng)
+       ("wxwidgets-gtk2", wxwidgets-gtk2)))
+    (home-page "http://amule.org/")
+    (synopsis "Peer-to-peer client for the eD2K and Kademlia networks")
+    (description
+     "aMule is an eMule-like client for the eD2k and Kademlia peer-to-peer
+file sharing networks.  It includes a graphical user interface (GUI), a daemon
+allowing you to run a client with no graphical interface, and a Web GUI for
+remote access.  The @command{amulecmd} command allows you to control aMule
+remotely.")
+    (license license:gpl2+)))
+
+(define-public zyre
+  (package
+    (name "zyre")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/zeromq/zyre/releases/download/v"
+                              version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qz2730bng1gs9xbqxhkw88qbsmszgmmrl2g9k6xrg6r3bqvsdc7"))))
+    (build-system gnu-build-system)
+    (inputs `(("zeromq" ,zeromq)
+              ("czmq" ,czmq)
+              ("libsodium" ,libsodium)))
+    (synopsis "Framework for proximity-based peer-to-peer applications")
+    (description "Zyre provides reliable group messaging over local area
+networks using zeromq.  It has these key characteristics:
+
+@itemize
+@item Zyre needs no administration or configuration.
+@item Peers may join and leave the network at any time.
+@item Peers talk to each other without any central brokers or servers.
+@item Peers can talk directly to each other.
+@item Peers can join groups, and then talk to groups.
+@item Zyre is reliable, and loses no messages even when the network is heavily loaded.
+@item Zyre is fast and has low latency, requiring no consensus protocols.
+@item Zyre is designed for WiFi networks, yet also works well on Ethernet networks.
+@end itemize")
+    (home-page "https://github.com/zeromq/zyre")
+    (license license:mpl2.0)))
+
+(define-public can-utils
+  (package
+    (name "can-utils")
+    (version "2018.02.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linux-can/can-utils.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0r0zkm67bdcmbfypjr7z041d4zp0xzb379dyl8cvhmflh12fd2jb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests exist.
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure))))
+    (home-page "https://github.com/linux-can/can-utils")
+    (synopsis "CAN utilities")
+    (description "This package provides CAN utilities in the following areas:
+
+@itemize
+@item Basic tools to display, record, generate and replay CAN traffic
+@item CAN access via IP sockets
+@item CAN in-kernel gateway configuration
+@item CAN bus measurement and testing
+@item ISO-TP (ISO15765-2:2016 - this means messages with a body larger than
+eight bytes) tools
+@item Log file converters
+@item Serial Line Discipline configuration for slcan driver
+@end itemize")
+    ;; Either BSD-3 or GPL-2 can be used.
+    (license (list license:bsd-3 license:gpl2))))
+
+(define-public asio
+  (package
+    (name "asio")
+    (version "1.12.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chriskohlhoff/asio.git")
+             (commit (string-join (cons name (string-split version #\.))
+                                  "-"))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "04dg8kpgriay7q62mqcq2gl439k5y4mf761zghsd6wfl0farh3mx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("boost" ,boost)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "--with-boost=" (assoc-ref %build-inputs "boost"))
+        (string-append "--with-openssl=" (assoc-ref %build-inputs "openssl")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-to-asio
+           (lambda _
+             (chdir "asio")))
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
+    (home-page "https://think-async.com/Asio")
+    (synopsis "C++ library for ASynchronous network I/O")
+    (description "Asio is a cross-platform C++ library for network and
+low-level I/O programming that provides developers with a consistent
+asynchronous model using a modern C++ approach.")
+    (license license:boost1.0)))

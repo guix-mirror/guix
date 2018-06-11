@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -63,6 +63,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -94,6 +95,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages iso-codes)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
@@ -110,7 +112,9 @@
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
@@ -118,6 +122,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages upnp)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
@@ -155,22 +160,22 @@
                     (let ((out     (assoc-ref outputs "out"))
                           (ncurses (assoc-ref inputs "ncurses")))
                       (setenv "CONFIG_SHELL" (which "bash"))
-                      (zero? (system* "./configure"
-                                      (string-append "--prefix=" out)
-                                      (string-append "--build=" build)
-                                      ;; The ancient config.guess is unable to
-                                      ;; guess the host triplet on mips64el.
-                                      ,@(if (string=? "mips64el-linux"
-                                                      (%current-system))
-                                            '("--host=mips64el-unknown-linux-gnu")
-                                            '())
-                                      ;; The same is also true with aarch64.
-                                      ,@(if (string=? "aarch64-linux"
-                                                      (%current-system))
-                                            '("--host=aarch64-unknown-linux-gnu")
-                                            '())
-                                      (string-append "--with-ncurses="
-                                                     ncurses)))))))))
+                      (invoke "./configure"
+                              (string-append "--prefix=" out)
+                              (string-append "--build=" build)
+                              ;; The ancient config.guess is unable to
+                              ;; guess the host triplet on mips64el.
+                              ,@(if (string=? "mips64el-linux"
+                                              (%current-system))
+                                    '("--host=mips64el-unknown-linux-gnu")
+                                    '())
+                              ;; The same is also true with aarch64.
+                              ,@(if (string=? "aarch64-linux"
+                                              (%current-system))
+                                    '("--host=aarch64-unknown-linux-gnu")
+                                    '())
+                              (string-append "--with-ncurses="
+                                             ncurses))))))))
     (home-page "http://aa-project.sourceforge.net/aalib/")
     (synopsis "ASCII-art library")
     (description
@@ -208,9 +213,8 @@ old-fashioned output methods with powerful ascii-art renderer.")
                  (modify-phases %standard-phases
                    ;; XXX We need to run ./bootstrap because of the build
                    ;; system fixes above.
-                   (add-after
-                    'unpack 'bootstrap
-                    (lambda _ (zero? (system* "sh" "bootstrap")))))))
+                   (replace 'bootstrap
+                     (lambda _ (invoke "sh" "bootstrap"))))))
     (home-page "http://liba52.sourceforge.net/")
     (synopsis "ATSC A/52 stream decoder")
     (description "liba52 is a library for decoding ATSC A/52 streams.  The
@@ -306,15 +310,15 @@ H.264 (MPEG-4 AVC) video streams.")
         (base32
          "0hknnnnx9661igm1r73dc7aqxnnrl5a8yvyvr1nhd9ymn2klwpl5"))
        (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Delete bundled libraries.
-           (for-each delete-file-recursively
-                     '("lib/libebml"
-                       "lib/libmatroska"
-                       "lib/nlohmann-json"
-                       "lib/pugixml"
-                       "lib/utf8-cpp"))))))
+       (snippet '(begin
+                   ;; Delete bundled libraries.
+                   (for-each delete-file-recursively
+                             '("lib/libebml"
+                               "lib/libmatroska"
+                               "lib/nlohmann-json"
+                               "lib/pugixml"
+                               "lib/utf8-cpp"))
+                   #t))))
     (build-system gnu-build-system)
     (inputs
      `(("boost" ,boost)
@@ -362,13 +366,13 @@ H.264 (MPEG-4 AVC) video streams.")
          (replace 'build
            (lambda _
              (let ((-j (list "-j" (number->string (parallel-job-count)))))
-               (zero? (apply system* "rake" -j)))))
+               (apply invoke "rake" -j))))
          (replace 'check
            (lambda _
-             (zero? (system* "rake" "tests/unit"))))
+             (invoke "rake" "tests/unit")))
          (replace 'install
            (lambda _
-             (zero? (system* "rake" "install")))))))
+             (invoke "rake" "install"))))))
     (home-page "https://mkvtoolnix.download")
     (synopsis "Tools to create, alter and inspect Matroska files")
     (description
@@ -380,7 +384,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "2.6")
+    (version "2.8")
     (source
       (origin
         (method url-fetch)
@@ -388,14 +392,15 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "1gyd94jkwdii9308m07nymsbxrmrcl81c0j8i10zhslr2mj07w0v"))
+          "0qx8mavwdzdpkkby7n29i9av7zsnklavacwfz537mf62q2pzjnbf"))
         (modules '((guix build utils)))
-        (snippet
-         '(delete-file-recursively "source/compat/getopt"))))
+        (snippet '(begin
+                    (delete-file-recursively "source/compat/getopt")
+                    #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
-       ;; Currently the source code doesn't check for aarch64
+       ;; Currently the source code doesn't check for aarch64.
        ,@(if (string-prefix? "aarch64" (or (%current-target-system) (%current-system)))
            '(#:configure-flags '("-DENABLE_PIC=TRUE"))
            '())
@@ -472,7 +477,7 @@ canvas operations.")
 (define-public libdca
   (package
     (name "libdca")
-    (version "0.0.5")
+    (version "0.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -480,7 +485,7 @@ canvas operations.")
                     version "/libdca-" version ".tar.bz2"))
               (sha256
                (base32
-                "0hh6a7l8vvccsd5i1fkv9av2gzv9fy8m0b8jpsn5p6hh4bh2586v"))))
+                "0h0zvcn97i9kyljdpifzi8in9xnw31fx3b3ggj96p8h0l2d8mycq"))))
     (build-system gnu-build-system)
     (home-page "https://www.videolan.org/developers/libdca.html")
     (synopsis "DTS Coherent Acoustics decoder")
@@ -515,7 +520,7 @@ SMPTE 314M.")
 (define-public libmatroska
   (package
     (name "libmatroska")
-    (version "1.4.8")
+    (version "1.4.9")
     (source
      (origin
        (method url-fetch)
@@ -523,12 +528,14 @@ SMPTE 314M.")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "14n9sw974prr3yp4yjb7aadi6x2yz5a0hjw8fs3qigy5shh2piyq"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
+         "1j4mjzx6mjzfjf9hz8g4w84krf5jccmr5cyynll0j1vwv3aiv9iq"))))
+    (build-system cmake-build-system)
     (inputs
      `(("libebml" ,libebml)))
+    (arguments
+     `(#:configure-flags
+       (list "-DBUILD_SHARED_LIBS=YES")
+       #:tests? #f))                    ; no test suite
     (home-page "https://www.matroska.org")
     (synopsis "C++ library to parse Matroska files (.mkv and .mka)")
     (description
@@ -564,7 +571,8 @@ libebml is a C++ library to read and write EBML files.")
        ("libx11" ,libx11)
        ("libxext" ,libxext)
        ("libxfixes" ,libxfixes)
-       ("mesa" ,mesa)))
+       ("mesa" ,mesa)
+       ("wayland" ,wayland)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -574,7 +582,8 @@ libebml is a C++ library to read and write EBML files.")
             (let ((out (assoc-ref outputs "out")))
               (substitute* "va/drm/va_drm_auth_x11.c"
                 (("\"libva-x11\\.so\\.%d\"")
-                 (string-append "\"" out "/lib/libva-x11.so.%d\"")))))))
+                 (string-append "\"" out "/lib/libva-x11.so.%d\"")))
+              #t))))
        ;; Most drivers are in mesa's $prefix/lib/dri, so use that.  (Can be
        ;; overridden at run-time via LIBVA_DRIVERS_PATH.)
        #:configure-flags
@@ -746,13 +755,13 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
                 (("#! /bin/sh") (string-append "#!" (which "sh"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
-              (zero? (apply system*
-                            "./configure"
-                            (string-append "--prefix=" out)
-                            ;; Add $libdir to the RUNPATH of all the binaries.
-                            (string-append "--extra-ldflags=-Wl,-rpath="
-                                           out "/lib")
-                            configure-flags)))))
+              (apply invoke
+                     "./configure"
+                     (string-append "--prefix=" out)
+                     ;; Add $libdir to the RUNPATH of all the binaries.
+                     (string-append "--extra-ldflags=-Wl,-rpath="
+                                    out "/lib")
+                     configure-flags))))
          (add-before
           'check 'set-ld-library-path
           (lambda _
@@ -805,7 +814,7 @@ audio/video codec library.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "2.2.8")
+    (version "3.0.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -813,55 +822,90 @@ audio/video codec library.")
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "1v32snw46rkgbdqdy3dssl2y13i8p2cr1cw1i18r6vdmiy24dw4v"))))
+               "0lavzly8l0ll1d9iris9cnirgcs77g48lxj14058dxqkvd5v1a4v"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("git" ,git) ; needed for a test
+     `(("flex" ,flex)
+       ("bison" ,bison)
+       ("gettext" ,gettext-minimal)
+       ("git" ,git) ; needed for a test
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add optional inputs once available.
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("avahi" ,avahi)
        ("dbus" ,dbus)
+       ("eudev" ,eudev)
        ("flac" ,flac)
-       ("ffmpeg" ,ffmpeg-2.8)               ;fails to build against ffmpeg 3.0
+       ("ffmpeg" ,ffmpeg)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
        ("gnutls" ,gnutls)
        ("liba52" ,liba52)
+       ("libarchive" ,libarchive)
+       ("libass" ,libass)
+       ("libavc1394" ,libavc1394)
+       ("libbluray" ,libbluray)
+       ("libcaca" ,libcaca)
        ("libcddb" ,libcddb)
+       ("libdca" ,libdca)
        ("libdvbpsi" ,libdvbpsi)
+       ("libdvdnav" ,libdvdnav)
+       ("libdvdread" ,libdvdread)
+       ("libebml" ,libebml)
        ("libgcrypt" ,libgcrypt)
+       ("libidn" ,libidn)
        ("libkate" ,libkate)
        ("libmad" ,libmad)
+       ("libmatroska" ,libmatroska)
+       ("libmodplug" ,libmodplug)
+       ("libmpeg2" ,libmpeg2)
        ("libogg" ,libogg)
        ("libpng" ,libpng)
+       ("libraw1394" ,libraw1394)
+       ("librsvg" ,librsvg)
        ("libsamplerate" ,libsamplerate)
+       ("libsecret" ,libsecret)
        ("libssh2" ,libssh2)
+       ("libupnp" ,libupnp)
+       ("libva" ,libva)
+       ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
+       ("libvpx" ,libvpx)
        ("libtheora" ,libtheora)
+       ("libx264" ,libx264)
        ("libxext" ,libxext)
        ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
        ("libxml2" ,libxml2)
        ("libxpm" ,libxpm)
        ("livemedia-utils" ,livemedia-utils)
-       ("lua" ,lua-5.1)
+       ("lua" ,lua-5.2)
        ("mesa" ,mesa)
        ("opus" ,opus)
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-wrapper)
        ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
+       ("samba" ,samba)
        ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
+       ("taglib" ,taglib)
+       ("twolame" ,twolame)
+       ("unzip" ,unzip)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
        ("x265" ,x265)
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (arguments
      `(#:configure-flags
        `("CXXFLAGS=-std=gnu++11"
+         "BUILDCC=gcc"
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
                          "/lib"))                 ;needed for the tests
@@ -878,11 +922,24 @@ audio/video codec library.")
                ;; which fails in our sandboxed build system
                (substitute* "test/run_vlc.sh"
                  (("./vlc --ignore-config") "echo"))
-               ;; XXX Likely not needed for >2.2.6.
-               (substitute* "modules/gui/qt4/components/interface_widgets.cpp"
-                 (("<qx11info_x11.h>") "<QtX11Extras/qx11info_x11.h>"))
+
+               ;; modules/text_renderer/freetype/text_layout.c uses a
+               ;; now-deprecated interface 'fribidi_get_par_embedding_levels'
+               ;; from fribidi.h, so for now we enable the use of deprecated
+               ;; fribidi interfaces from this file.
+               ;; FIXME: Try removing this for vlc >= 3.0.3.
+               (substitute* "modules/text_renderer/freetype/text_layout.c"
+                 (("# define FRIBIDI_NO_DEPRECATED 1") ""))
+
+               ;; Fix build against Qt 5.11.
+               (substitute* "modules/gui/qt/actions_manager.cpp"
+                 (("#include <vlc_keys.h>") "#include <vlc_keys.h>
+#include <QAction>"))
+               (substitute* "modules/gui/qt/components/simple_preferences.cpp"
+                 (("#include <QFont>") "#include <QFont>
+#include <QButtonGroup>"))
                #t)))
-         (add-after 'install 'regenerate-plugin-cache
+         (add-after 'strip 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)
              ;; The 'install-exec-hook' rule in the top-level Makefile.am
              ;; generates 'lib/vlc/plugins/plugins.dat', a plugin cache, using
@@ -899,9 +956,16 @@ audio/video codec library.")
                (for-each (lambda (file)
                            (let ((s (lstat file)))
                              (unless (eq? (stat:type s) 'symlink)
-                               (utime file 0 0 0 0))))
+                               (utime file 1 1))))
                          (find-files plugindir))
-               (zero? (system* cachegen plugindir))))))))
+               (invoke cachegen plugindir))))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (plugin-path (getenv "QT_PLUGIN_PATH")))
+              (wrap-program (string-append out "/bin/vlc")
+                `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
+            #t)))))
     (home-page "https://www.videolan.org/")
     (synopsis "Audio and video framework")
     (description "VLC is a cross-platform multimedia player and framework
@@ -1053,7 +1117,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("pulseaudio" ,pulseaudio)
        ("rsound" ,rsound)
        ("shaderc" ,shaderc)
-       ("vulkan-icd-loader" ,vulkan-icd-loader)
+       ("vulkan-loader" ,vulkan-loader)
        ("waf" ,python-waf)
        ("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
@@ -1067,7 +1131,8 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
           'configure 'setup-waf
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-file (assoc-ref inputs "waf") "waf")
-            (setenv "CC" "gcc"))))
+            (setenv "CC" "gcc")
+            #t)))
        #:configure-flags (list "--enable-libmpv-shared"
                                "--enable-cdda"
                                "--enable-dvdread"
@@ -1153,7 +1218,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.04.25")
+    (version "2018.05.09")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1161,7 +1226,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "17zxgwfcy7c6gdyxdgh02f5zi52gvmy0zpccfj6zjkhw5iqj1vbw"))))
+                "0sl4bi2jls3417rd62awbqdq1b6wskkjbfwpnyw4a61qarfxid1d"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1271,7 +1336,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1060")
+    (version "0.4.1077")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1280,7 +1345,7 @@ other site that youtube-dl supports.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1pq7c2ay42aan7ykpmddzh6ylq0qsq8a27pk68m5imaxi6abbwsz"))))
+                "04vxc91k627qgsqs8dhqajrb6vpj4pw21jlwbha28qakfiz2x11k"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -1800,7 +1865,12 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
            (add-before 'check 'check-setup
              (lambda _
                (setenv "HOME" (getcwd)) ;Needs to write to ‘$HOME’.
-               #t)))))
+               #t))
+           (add-after 'install 'install-rofi-plugin
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "plugins/rofi-twitchy"
+                             (string-append (assoc-ref outputs "out")
+                                            "/bin")))))))
       (inputs
        `(("python-requests" ,python-requests)
          ("streamlink" ,streamlink)))
@@ -1823,10 +1893,11 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
                (base32
                 "10m3ry0b2pvqx3bk34qh5dq337nn8pkc2gzfyhsj4nv9abskln47"))
               (modules '((guix build utils)))
-              (snippet
-               ;; As of glibc 2.26, <xlocale.h> no longer is.
-               '(substitute* "src/framework/mlt_property.h"
-                  (("xlocale\\.h") "locale.h")))))
+              (snippet '(begin
+                          ;; As of glibc 2.26, <xlocale.h> no longer is.
+                          (substitute* "src/framework/mlt_property.h"
+                            (("xlocale\\.h") "locale.h"))
+                          #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1963,9 +2034,9 @@ and JACK.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("dri2proto" ,dri2proto)
-       ("libx11" ,libx11 "out")
-       ("libxext" ,libxext)))
+     `(("libx11" ,libx11 "out")
+       ("libxext" ,libxext)
+       ("xorgproto" ,xorgproto)))
     (home-page "https://wiki.freedesktop.org/www/Software/VDPAU/")
     (synopsis "Video Decode and Presentation API")
     (description "VDPAU is the Video Decode and Presentation API for UNIX.  It
@@ -2012,7 +2083,8 @@ implementation.")
           "1x2ag1f2fwa4yh1g5spv99w9x1m33hbxlqwyhm205ssq0ra234bx"))
         (patches (search-patches "libvdpau-va-gl-unbundle.patch"))
         (modules '((guix build utils)))
-        (snippet '(delete-file-recursively "3rdparty"))))
+        (snippet '(begin (delete-file-recursively "3rdparty")
+                         #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; Tests require a running X11 server, with VA-API support.
@@ -2066,7 +2138,7 @@ making @dfn{screencasts}.")
 (define-public simplescreenrecorder
   (package
     (name "simplescreenrecorder")
-    (version "0.3.10")
+    (version "0.3.11")
     (source
      (origin
        (method url-fetch)
@@ -2075,14 +2147,14 @@ making @dfn{screencasts}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "02rl9yyx3hlz9fqvgzv7ipmvx2qahj7ws5wx2m7zs3lssq3qag3g"))))
+         "0l6irdadqpajvv0dj3ngs1231n559l0y1pykhs2h7526qm4w7xal"))))
     (build-system cmake-build-system)
     ;; Although libx11, libxfixes, libxext are listed as build dependencies in
     ;; README.md, the program builds and functions properly without them.
     ;; As a result, they are omitted. Please add them back if problems appear.
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("ffmpeg" ,ffmpeg-3.4)
+       ("ffmpeg" ,ffmpeg)
        ("glu" ,glu)
        ("jack" ,jack-1)
        ("libxi" ,libxi)
@@ -2188,7 +2260,7 @@ Content System specification.")
 (define-public mps-youtube
   (package
     (name "mps-youtube")
-    (version "0.2.7.1")
+    (version "0.2.8")
     (source
      (origin
        (method url-fetch)
@@ -2197,7 +2269,7 @@ Content System specification.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1s7h35yx6f0szf8mm8612ic913w3v05m2kwphjfcxnpq0ammhyci"))))
+         "0x7cmfh199q9j396v7bz81nnvanfllhsg86489i5dw2p3yyc9wnm"))))
     (build-system python-build-system)
     (arguments
      ;; Tests need to be disabled until #556 upstream is fixed. It reads as if the
@@ -2279,7 +2351,7 @@ supported players in addition to this package.")
      `(#:tests? #f             ;tests require Ruby and claim to be unsupported
        #:phases
        (modify-phases %standard-phases
-         (add-before 'patch-source-shebangs 'bootstrap-gtk
+         (replace 'bootstrap
            ;; Run bootstrap ahead of time so that shebangs get patched.
            (lambda _
              (setenv "CONFIG_SHELL" (which "sh"))
@@ -2524,10 +2596,11 @@ many codecs and formats supported by libmediainfo.")
                (base32
                 "0f5kxpayqn3yhabqrd2cqlc74i6x2xr01jfkank1lcilxnfyrsnq"))
               (modules '((guix build utils)))
-              (snippet
-               ;; As of glibc 2.26, <xlocale.h> no longer is.
-               '(substitute* "liveMedia/include/Locale.hh"
-                  (("xlocale\\.h") "locale.h")))))
+              (snippet '(begin
+                          ;; As of glibc 2.26, <xlocale.h> no longer is.
+                          (substitute* "liveMedia/include/Locale.hh"
+                            (("xlocale\\.h") "locale.h"))
+                          #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -2798,7 +2871,7 @@ It counts more than 100 plugins.")
        ("sqlite" ,sqlite)))
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
+                  (replace 'bootstrap
                     (lambda _
                       (patch-shebang "version.sh")
                       (invoke "autoreconf" "-vfi"))))

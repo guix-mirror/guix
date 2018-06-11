@@ -23,6 +23,7 @@
   #:use-module (guix grafts)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix build-system trivial)
   #:use-module (guix tests)
   #:use-module ((guix build utils) #:select (with-directory-excursion))
   #:use-module ((guix utils) #:select (call-with-temporary-directory))
@@ -65,6 +66,27 @@
   (test-assert name
     (run-with-store %store exp
                     #:guile-for-build (%guile-for-build))))
+
+(define %extension-package
+  ;; Example of a package to use when testing 'with-extensions'.
+  (dummy-package "extension"
+                 (build-system trivial-build-system)
+                 (arguments
+                  `(#:guile ,%bootstrap-guile
+                    #:modules ((guix build utils))
+                    #:builder
+                    (begin
+                      (use-modules (guix build utils))
+                      (let* ((out (string-append (assoc-ref %outputs "out")
+                                                 "/share/guile/site/"
+                                                 (effective-version))))
+                        (mkdir-p out)
+                        (call-with-output-file (string-append out "/hg2g.scm")
+                          (lambda (port)
+                            (write '(define-module (hg2g)
+                                      #:export (the-answer))
+                                   port)
+                            (write '(define the-answer 42) port)))))))))
 
 
 (test-begin "gexp")
@@ -739,6 +761,54 @@
       (built-derivations (list drv))
       (return (= 42 (call-with-input-file out read))))))
 
+(test-equal "gexp-extensions & ungexp"
+  (list sed grep)
+  ((@@ (guix gexp) gexp-extensions)
+   #~(foo #$(with-extensions (list grep) #~+)
+          #+(with-extensions (list sed)  #~-))))
+
+(test-equal "gexp-extensions & ungexp-splicing"
+  (list grep sed)
+  ((@@ (guix gexp) gexp-extensions)
+   #~(foo #$@(list (with-extensions (list grep) #~+)
+                   (with-imported-modules '((foo))
+                     (with-extensions (list sed) #~-))))))
+
+(test-equal "gexp-extensions and literal Scheme object"
+  '()
+  ((@@ (guix gexp) gexp-extensions) #t))
+
+(test-assertm "gexp->derivation & with-extensions"
+  ;; Create a fake Guile extension and make sure it is accessible both to the
+  ;; imported modules and to the derivation build script.
+  (mlet* %store-monad
+      ((extension -> %extension-package)
+       (module -> (scheme-file "x" #~( ;; splice!
+                                      (define-module (foo)
+                                        #:use-module (hg2g)
+                                        #:export (multiply))
+
+                                      (define (multiply x)
+                                        (* the-answer x)))
+                               #:splice? #t))
+       (build -> (with-extensions (list extension)
+                   (with-imported-modules `((guix build utils)
+                                            ((foo) => ,module))
+                     #~(begin
+                         (use-modules (guix build utils)
+                                      (hg2g) (foo))
+                         (call-with-output-file #$output
+                           (lambda (port)
+                             (write (list the-answer (multiply 2))
+                                    port)))))))
+       (drv      (gexp->derivation "thingie" build
+                                   ;; %BOOTSTRAP-GUILE is 2.0.
+                                   #:effective-version "2.0"))
+       (out ->   (derivation->output-path drv)))
+    (mbegin %store-monad
+      (built-derivations (list drv))
+      (return (equal? '(42 84) (call-with-input-file out read))))))
+
 (test-assertm "gexp->derivation #:references-graphs"
   (mlet* %store-monad
       ((one (text-file "one" (random-text)))
@@ -947,6 +1017,22 @@
                   (str   (get-string-all pipe)))
              (return (and (zero? (close-pipe pipe))
                           (string=? text str))))))))))
+
+(test-assertm "program-file & with-extensions"
+  (let* ((exp    (with-extensions (list %extension-package)
+                   (gexp (begin
+                           (use-modules (hg2g))
+                           (display the-answer)))))
+         (file   (program-file "program" exp
+                               #:guile %bootstrap-guile)))
+    (mlet* %store-monad ((drv (lower-object file))
+                         (out -> (derivation->output-path drv)))
+      (mbegin %store-monad
+        (built-derivations (list drv))
+        (let* ((pipe  (open-input-pipe out))
+               (str   (get-string-all pipe)))
+          (return (and (zero? (close-pipe pipe))
+                       (= 42 (string->number str)))))))))
 
 (test-assertm "scheme-file"
   (let* ((text   (plain-file "foo" "Hello, world!"))

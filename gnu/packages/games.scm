@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
@@ -67,6 +67,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages fltk)
@@ -90,6 +91,7 @@
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages music)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
@@ -189,11 +191,13 @@ settings to tweak as well.")
               (modules '((guix build utils)))
               (snippet
                ;; Import cmath header for the std::pow function.
-               '(for-each (lambda (file)
-                            (substitute* file
-                              (("#include <math.h>")
-                               "#include <cmath>")))
-                          (find-files "src")))))
+               '(begin
+                  (for-each (lambda (file)
+                              (substitute* file
+                                (("#include <math.h>")
+                                 "#include <cmath>")))
+                            (find-files "src"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
@@ -308,6 +312,7 @@ tired of cows, a variety of other ASCII-art messengers are available.")
       #:tests? #f ; no check target
       #:phases
       (modify-phases %standard-phases
+        (delete 'bootstrap)
         (replace 'configure
                  (lambda* (#:key inputs outputs #:allow-other-keys)
                    (let* ((dejavu (assoc-ref inputs "font-dejavu"))
@@ -683,9 +688,11 @@ watch your CPU playing while enjoying a cup of tea!")
               "151v6nign86m1a2vqz27krsccpc9m4d1jax4y43v2fa82wfj9qp0"))
             (modules '((guix build utils)))
             (snippet
-             '(substitute* "src/version.c"
-                           (("__DATE__") "")
-                           (("__TIME__") "")))))
+             '(begin
+                (substitute* "src/version.c"
+                  (("__DATE__") "")
+                  (("__TIME__") ""))
+                #t))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--disable-cpu-opt")
@@ -773,90 +780,110 @@ utilizing the art assets from the @code{SuperTux} project.")
                    license:gpl3+))))
 
 (define-public roguebox-adventures
-  (let ((commit "19a2c340b34d5b4e7cc89118c7aedc058babbd93")
-        (revision "1"))
-      (package
-        (name "roguebox-adventures")
-        (version (git-version "2.1.2" revision commit))
-        (source
-         (origin
-           (method git-fetch)
-           (uri
-            (git-reference
-             (url "https://git.postactiv.com/themightyglider/RogueBoxAdventures.git")
-                 (commit commit)))
-           (file-name (git-file-name name version))
-           (sha256
-            (base32
-             "0afmg8fjdcs3sqdp5rc7irgr7riil8jwysfjn1imfxslf1wcx5ah"))))
-        (build-system python-build-system)
-        (arguments
-         '(#:tests? #f ; no check target
-           #:phases
-           (modify-phases %standard-phases
-             ;; no setup.py script
-             (replace 'build
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (let* ((out (assoc-ref outputs "out"))
-                        (data (string-append
-                               out "/share/games/roguebox-adventures")))
-                   ;; Use the correct data directory.
-                   (substitute* '("main.py" "LIB/getch.py" "LIB/getch_gcwz.py")
-                     (("basic_path + os\\.sep + 'DATA'")
-                      (string-append "'" data "'"))
-                     (("^basic_path.*$")
-                      (string-append "basic_path ='" data "'\n")))
-                   (substitute* "LIB/gra_files.py"
-                     (("basic_path = b_path\\.replace\\('/LIB',''\\)")
-                      (string-append "basic_path ='" data "'\n")))
+  (package
+    (name "roguebox-adventures")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://download.tuxfamily.org/rba/RogueBoxAdventures_v"
+             (string-join (string-split version #\.) "_") "_Source.zip"))
+       (file-name (string-append name "-" version ".zip"))
+       (sha256
+        (base32
+         "0kmzdgnik8fsf3bg55546l77p3mfxn2awkzfzzdn20n82rd2babw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (and (invoke "unzip" source)
+                  ;; The actual source is buried a few directories deep.
+                  (chdir (string-append "RogueBoxAdventures_v"
+                                        (string-join
+                                         (string-split ,version #\.) "_")
+                                        "_Source")))))
+         ;; no setup.py script
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (data (string-append
+                           out "/share/games/roguebox-adventures")))
+               ;; Use the correct data directory.
+               (substitute* '("main.py" "LIB/getch.py" "LIB/getch_gcwz.py")
+                 (("basic_path + os\\.sep + 'DATA'")
+                  (string-append "'" data "'"))
+                 (("^basic_path.*$")
+                  (string-append "basic_path ='" data "'\n")))
+               (substitute* "LIB/gra_files.py"
+                 (("basic_path = b_path\\.replace\\('/LIB',''\\)")
+                  (string-append "basic_path ='" data "'\n")))
 
-                   ;; The game must save in the user's home directory because
-                   ;; the store is read-only.
-                   (substitute* "main.py"
-                     (("home_save = False") "home_save = True")
-                     (("'icon_small.png'")
-                      (string-append "'" data "/icon_small.png'"))))
-                 #t))
-             (replace 'install
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (let* ((out (assoc-ref outputs "out"))
-                        (bin (string-append out "/bin"))
-                        (data (string-append
-                               out "/share/games/roguebox-adventures"))
-                        (doc (string-append
-                              out "/share/doc/roguebox-adventures")))
-                   (mkdir-p bin)
-                   (mkdir-p doc)
-                   (copy-file "main.py"
-                              (string-append bin "/roguebox-adventures"))
-                   (chmod (string-append bin "/roguebox-adventures") #o555)
+               ;; The game must save in the user's home directory because
+               ;; the store is read-only.
+               (substitute* "main.py"
+                 (("home_save = False") "home_save = True")
+                 (("'icon_small.png'")
+                  (string-append "'" data "/icon_small.png'"))))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (roguebox-adventures
+                     (string-append bin "/roguebox-adventures"))
+                    (data (string-append
+                           out "/share/games/roguebox-adventures"))
+                    (lib (string-append data "/LIB"))
+                    (doc (string-append
+                          out "/share/doc/roguebox-adventures")))
+               (mkdir-p bin)
+               (mkdir-p doc)
 
-                   (for-each (lambda (file)
-                               (copy-recursively file
-                                                 (string-append data "/" file)))
-                             '("AUDIO" "FONT" "GRAPHIC" "LIB" "LICENSE"
-                               "icon_big.png" "icon_small.png"))
+               (for-each (lambda (file)
+                           (copy-recursively file
+                                             (string-append data "/" file)))
+                         '("AUDIO" "FONT" "GRAPHIC" "LIB" "LICENSE"
+                           "icon_big.png" "icon_small.png"))
+               (for-each (lambda (file)
+                           (chmod file #o555)
+                           (install-file file lib))
+                         '("main.py" "run.py"))
 
-                   (copy-recursively "DOC" doc)
+               (copy-recursively "DOC" doc)
 
-                   (wrap-program (string-append bin "/roguebox-adventures")
-                     `("PYTHONPATH" ":" prefix (,(string-append data "/LIB")))))
-                 #t)))))
-        (inputs
-         `(("python-pygame" ,python-pygame)
-           ("python-tmx" ,python-tmx)))
-        (home-page "https://rogueboxadventures.tuxfamily.org")
-        (synopsis "A classical roguelike/sandbox game")
-        (description
-         "RogueBox Adventures is a graphical roguelike with strong influences
+               (call-with-output-file
+                   roguebox-adventures
+                 (lambda (p)
+                   (format p "\
+#!~a
+export PYTHONPATH=~a/LIB:~a
+exec -a \"~a\" ~a \"$@\"\n"
+                           (which "bash") data (getenv "PYTHONPATH")
+                           (which "python3")
+                           (string-append lib "/main.py"))))
+               (chmod roguebox-adventures #o555))
+             #t)))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("python-pygame" ,python-pygame)
+       ("python-tmx" ,python-tmx)))
+    (home-page "https://rogueboxadventures.tuxfamily.org")
+    (synopsis "A classical roguelike/sandbox game")
+    (description
+     "RogueBox Adventures is a graphical roguelike with strong influences
 from sandbox games like Minecraft or Terraria.  The main idea of RogueBox
 Adventures is to offer the player a kind of roguelike toy-world.  This world
 can be explored and changed freely.")
-        ;; The GPL3+ is for code, the rest are for art.
-        (license (list license:cc0
-                       license:cc-by3.0
-                       license:gpl3+
-                       license:silofl1.1)))))
+    ;; The GPL3+ is for code, the rest are for art.
+    (license (list license:cc0
+                   license:cc-by3.0
+                   license:gpl3+
+                   license:silofl1.1))))
 
 (define-public xshogi
   (package
@@ -897,7 +924,9 @@ can be explored and changed freely.")
        (modules '((guix build utils)))
        (snippet
         ;; Unbundle fonts.
-        '(delete-file-recursively "fonts"))))
+        '(begin
+           (delete-file-recursively "fonts")
+           #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("CC=gcc")
@@ -953,15 +982,15 @@ that beneath its ruins lay buried an ancient evil.")
         ;; In the future, if someone tries to make a graphical variant of
         ;; this package, they can deal with that mess themselves. :)
         '(begin
-           (for-each
-            (lambda (subdir)
-              (let ((lib-subdir (string-append "lib/" subdir)))
-                (delete-file-recursively lib-subdir)))
-            '("fonts" "icons" "sounds" "tiles"))
+           (for-each (lambda (subdir)
+                       (let ((lib-subdir (string-append "lib/" subdir)))
+                         (delete-file-recursively lib-subdir)))
+                     '("fonts" "icons" "sounds" "tiles"))
            (substitute* "lib/Makefile"
              ;; And don't try to invoke makefiles in the directories we removed
              (("gamedata customize help screens fonts tiles sounds icons user")
-              "gamedata customize help screens user"))))))
+              "gamedata customize help screens user"))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                 ;no check target
@@ -1176,7 +1205,8 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
                                  (assoc-ref %build-inputs "bash")
                                  (assoc-ref %build-inputs "engine")
                                  (assoc-ref %build-inputs "data"))
-                         (chmod port #o777)))))
+                         (chmod port #o777)))
+                     #t))
        #:modules ((guix build utils))))
     (inputs `(("engine" ,freedink-engine)
               ("data" ,freedink-data)
@@ -1282,11 +1312,13 @@ destroy, the better your score.  The person with the highest score wins.")
                ;; We do not provide `ncurses.h' within an `ncursesw'
                ;; sub-directory, so patch the source accordingly.  See
                ;; <http://bugs.gnu.org/19018>.
-               '(for-each (lambda (file)
-                            (substitute* file
-                              (("ncursesw/ncurses.h")
-                               "ncurses.h")))
-                          (find-files "." "configure$|\\.c$")))))
+               '(begin
+                  (for-each (lambda (file)
+                              (substitute* file
+                                (("ncursesw/ncurses.h")
+                                 "ncurses.h")))
+                            (find-files "." "configure$|\\.c$"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)))
@@ -1433,10 +1465,11 @@ match, cannon keep, and grave-itation pit.")
                                                          "gzip")
                                               "/bin")))
                      (setenv "PATH" path)
-                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
+                     (invoke tar "xvf" (assoc-ref %build-inputs "source"))
                      (chdir (string-append "minetest_game-" ,version))
                      (mkdir-p install-dir)
-                     (copy-recursively "." install-dir)))))
+                     (copy-recursively "." install-dir)
+                     #t))))
     (synopsis "Main game data for the Minetest game engine")
     (description
      "Game data for the Minetest infinite-world block sandox game.")
@@ -1789,7 +1822,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.12.6")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -1798,17 +1831,10 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0kifp6g1dsr16m6ngjq2hx19h851fqg326ps3krnhpyix963h3x5"))))
+                "1mzrnbv71b4s41c5x8clhb53l8lidiwzny1hl828228pvys5bxkb"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; no check target
-       #:configure-flags
-       ;; XXX: Failed to compile with '-Werror=old-style-cast'.
-       ;;   boost/mpl/assert.hpp:313:58: error:
-       ;;     use of old-style cast [-Werror=old-style-cast]
-       ;;   [...]
-       ;;   cc1plus: all warnings being treated as errors
-       '("-DENABLE_STRICT_COMPILATION=OFF")))
+     `(#:tests? #f)) ; no check target
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -1817,12 +1843,10 @@ falling, themeable graphics and sounds, and replays.")
        ("dbus" ,dbus)
        ("fribidi" ,fribidi)
        ("libvorbis" ,libvorbis)
+       ("openssl" ,openssl)
        ("pango" ,pango)
-       ("sdl-image" ,sdl-image)
-       ("sdl-mixer" ,sdl-mixer)
-       ("sdl-net" ,sdl-net)
-       ("sdl-ttf" ,sdl-ttf)))
-    (home-page "http://www.wesnoth.org/")
+       ("sdl-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+    (home-page "https://www.wesnoth.org/")
     (synopsis "Turn-based strategy game")
     (description
      "The Battle for Wesnoth is a fantasy, turn based tactical strategy game,
@@ -1841,19 +1865,12 @@ next campaign.")
     (name "wesnoth-server")
     (inputs
      `(("boost" ,boost)
-       ("sdl-net" ,sdl-net)))
+       ("icu4c" ,icu4c)
+       ("openssl" ,openssl)
+       ("sdl2" ,sdl2)))
     (arguments
-     (append
-      (substitute-keyword-arguments (package-arguments wesnoth)
-        ((#:configure-flags configure-flags)
-         `(append ,configure-flags (list "-DENABLE_GAME=OFF"))))
-      `(#:phases
-        (modify-phases %standard-phases
-          ;; Delete game assets not required by the server.
-          (add-after 'install 'delete-data
-            (lambda* (#:key outputs #:allow-other-keys)
-              (delete-file-recursively (string-append (assoc-ref outputs "out")
-                                                      "/share/wesnoth"))))))))
+     `(#:configure-flags '("-DENABLE_GAME=OFF")
+       ,@(package-arguments wesnoth)))
     (synopsis "Dedicated @emph{Battle for Wesnoth} server")
     (description "This package contains a dedicated server for @emph{The
 Battle for Wesnoth}.")))
@@ -1984,13 +2001,25 @@ world}, @uref{http://evolonline.org, Evol Online} and
      (origin (method url-fetch)
              (uri (string-append "http://binaries.openttd.org/releases/"
                                  version "/openttd-" version "-source.tar.xz"))
+             (patches
+              (list
+               (origin (method url-fetch)
+                       (uri (string-append
+                             "https://github.com/OpenTTD/OpenTTD/commit/"
+                             "19076c24c1f3baf2a22d1fa832d5688216cf54a3.patch"))
+                       (file-name "openttd-fix-compilation-with-ICU-61.patch")
+                       (sha256
+                        (base32
+                         "02d1xmb75yv4x6rfnvxk3vvq4l3lvvwr2pfsdzn7lzalic51ziqh")))))
              (sha256
               (base32
                "0dhv5bbbg1dmmq7fi3xss0a9jq2rqgb5sf9fsqzlsjcdm590j6b1"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
-              '(delete-file-recursively "os/dos"))))
+              '(begin
+                 (delete-file-recursively "os/dos")
+                 #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f              ; no "check" target
@@ -2603,18 +2632,19 @@ Red Eclipse provides fast paced and accessible gameplay.")
                           (bin     (string-append out "/bin"))
                           (doc     (string-append out
                                                   "/share/doc/grue-hunter")))
-                     (begin
-                       (copy-file tarball "grue-hunter.tar.gz")
-                       (zero? (system* gzip "-d" "grue-hunter.tar.gz"))
-                       (zero? (system* tar "xvf"  "grue-hunter.tar"))
+                     (copy-file tarball "grue-hunter.tar.gz")
+                     (invoke gzip "-d" "grue-hunter.tar.gz")
+                     (invoke tar "xvf" "grue-hunter.tar")
 
-                       (mkdir-p bin)
-                       (copy-file "grue-hunter/gh.pl"
-                                  (string-append bin "/grue-hunter"))
-                       (patch-shebang (string-append bin "/grue-hunter")
-                                      (list perl))
+                     (mkdir-p bin)
+                     (copy-file "grue-hunter/gh.pl"
+                                (string-append bin "/grue-hunter"))
+                     (patch-shebang (string-append bin "/grue-hunter")
+                                    (list perl))
 
-                       (install-file "grue-hunter/AGPLv3.txt" doc))))))
+                     (install-file "grue-hunter/AGPLv3.txt" doc)
+
+                     #t))))
     (inputs `(("perl" ,perl)
               ("tar" ,tar)
               ("gzip" ,gzip)
@@ -2840,7 +2870,8 @@ safety of the Chromium vessel.")
            (substitute* "Makefile"
              ;; Do not rely on $(GPERF) being an absolute file name
              (("\\[ -x \\$\\(GPERF\\) \\]")
-              "$(GPERF) --version >/dev/null 2>&1"))))
+              "$(GPERF) --version >/dev/null 2>&1"))
+           #t))
        (patches (search-patches "tuxpaint-stamps-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2920,11 +2951,12 @@ your child be creative.")
                            (string-append
                             (assoc-ref %build-inputs "tar") "/bin" ":"
                             (assoc-ref %build-inputs "gzip") "/bin"))
-                   (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+                   (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
                    (chdir (string-append ,name "-" ,version))
                    (let ((dir (string-append %output "/share/tuxpaint/stamps")))
                      (mkdir-p dir)
-                     (copy-recursively "stamps" dir)))))
+                     (copy-recursively "stamps" dir))
+                   #t)))
     (home-page (package-home-page tuxpaint))
     (synopsis "Stamp images for Tux Paint")
     (description
@@ -4042,27 +4074,26 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad-data
   (package
     (name "0ad-data")
-    (version "0.0.22-alpha")
+    (version "0.0.23-alpha")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://releases.wildfiregames.com/0ad-"
+       (uri (string-append "https://releases.wildfiregames.com/0ad-"
                            version "-unix-data.tar.xz"))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0vknk9ay9h2p34r7mym2g066f3s3c5d5vmap0ckcs5b86h5cscjc"))
+         "1b6qcvd8yyyxavgdwpcs7asmln3xgnvjkglz6ggvwb956x37ggzx"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
-            (for-each
-             (lambda (name)
-               (let* ((dir (string-append "binaries/data/mods/" name))
-                      (file (string-append dir "/" name ".zip"))
-                      (unzip #$(file-append unzip "/bin/unzip")))
-                 (system* unzip "-d" dir file)
-                 (delete-file file)))
-             '("mod" "public"))
+            (for-each (lambda (name)
+                        (let* ((dir (string-append "binaries/data/mods/" name))
+                               (file (string-append dir "/" name ".zip"))
+                               (unzip #$(file-append unzip "/bin/unzip")))
+                          (invoke unzip "-d" dir file)
+                          (delete-file file)))
+                      '("mod" "public"))
             #t))))
     (build-system trivial-build-system)
     (native-inputs `(("tar" ,tar)
@@ -4078,7 +4109,7 @@ fight against their plot and save his fellow rabbits from slavery.")
                (xz-path (string-append (assoc-ref %build-inputs "xz") "/bin")))
            (setenv "PATH" xz-path)
            (mkdir out)
-           (zero? (system* tar "xvf" source "-C" out "--strip=3"))))))
+           (invoke tar "xvf" source "-C" out "--strip=3")))))
     (synopsis "Data files for 0ad")
     (description "0ad-data provides the data files required by the game 0ad.")
     (home-page "https://play0ad.com")
@@ -4096,19 +4127,18 @@ fight against their plot and save his fellow rabbits from slavery.")
 (define-public 0ad
   (package
     (name "0ad")
-    (version "0.0.22-alpha")
+    (version "0.0.23-alpha")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://releases.wildfiregames.com/0ad-"
+       (uri (string-append "https://releases.wildfiregames.com/0ad-"
                            version "-unix-build.tar.xz"))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1cgmr4g5g9wv36v7ylbrvqhsjwgcsdgbqwc8zlqmnayk9zgkdpgx"))
+         "0qz1sg4n5y766qwgi63drrrx6k17kk0rcnn9a4a9crllk2vf78fg"))))
        ;; A snippet here would cause a build failure because of timestamps
        ;; reset.  See https://bugs.gnu.org/26734.
-       ))
     (inputs
      `(("0ad-data" ,0ad-data)
        ("curl" ,curl)
@@ -4116,6 +4146,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        ("gloox" ,gloox)
        ("icu4c" ,icu4c)
        ("libpng" ,libpng)
+       ("libsodium" ,libsodium)
        ("libvorbis" ,libvorbis)
        ("libxcursor" ,libxcursor)
        ("libxml2" ,libxml2)
@@ -4297,10 +4328,12 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
          "0v2qgdfpvdzd1bcbp9v8pfahj1bgczsq2d4xfhh5wg11jgjcwz03"))
        (modules '((guix build utils)))
        (snippet
-        '(substitute* '("src/music.h" "src/tSDL.h")
-           (("#elif defined(__FreeBSD__)" line)
-            (string-append
-             line " || defined(__GNUC__)"))))))
+        '(begin
+           (substitute* '("src/music.h" "src/tSDL.h")
+             (("#elif defined(__FreeBSD__)" line)
+              (string-append
+               line " || defined(__GNUC__)")))
+           #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -4461,7 +4494,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
     (arguments
      `(#:make-flags
        (let ((vulkanlib (string-append (assoc-ref %build-inputs
-                                                  "vulkan-icd-loader") "/lib")))
+                                                  "vulkan-loader") "/lib")))
          (list "CC=gcc"
                "MP3LIB=mpg123"
                "USE_CODEC_FLAC=1"
@@ -4474,7 +4507,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                   (add-after 'unpack 'fix-makefile-paths
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((vulkan (assoc-ref %build-inputs
-                                               "vulkan-icd-loader"))
+                                               "vulkan-loader"))
                             (out (assoc-ref outputs "out")))
                         (mkdir-p (string-append out "/bin"))
                         (substitute* "Quake/Makefile" ((" /usr")
@@ -4485,7 +4518,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                         #t))))
        ,@(strip-keyword-arguments '(#:make-flags #:phases)
                                   (package-arguments quakespasm))))
-    (inputs `(("vulkan-icd-loader" ,vulkan-icd-loader)
+    (inputs `(("vulkan-loader" ,vulkan-loader)
               ,@(package-inputs quakespasm)))
     (description "vkquake is a modern engine for id software's Quake 1.
 It includes support for 64 bit CPUs, custom music playback, a new sound driver,
@@ -4640,8 +4673,6 @@ elements to achieve a simple goal in the most complex way possible.")
                                (string-append "PIONEER_DATA_DIR="
                                               %output "/share/games/pioneer"))
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
-                    (lambda _ (zero? (system* "sh" "bootstrap"))))
                   (add-before 'bootstrap 'fix-lua-check
                     (lambda _
                       (substitute* "configure.ac"
@@ -4689,7 +4720,7 @@ Github or Gitlab.")
 (define-public colobot
   (package
     (name "colobot")
-    (version "0.1.11-alpha")
+    (version "0.1.11.1-alpha")
     (source
      (origin
        (method url-fetch)
@@ -4697,7 +4728,7 @@ Github or Gitlab.")
                            "colobot-gold-" version ".tar.gz"))
        (sha256
         (base32
-         "160rq9fp5vd0qaqr3jvzvzrcxk9cac532y8vx4cvq0a8hgylrbad"))))
+         "0h6f4icarramhjkxxbzz6siv3v11z5r8ghqisgr1rscw217vhmwf"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -4735,7 +4766,7 @@ Github or Gitlab.")
                  "colobot-gold-" version ".tar.gz"))
            (sha256
             (base32
-             "1pdpsyr41g7xmk03k2g76l214f53ahk04qnkzmsv1fdbbaq7p109"))))
+             "0riznycx2jbxmg4m9nn3mcpqws2c0s7cn2m9skz9zj1w39r5qpjy"))))
        ("colobot-music"
         ,(origin
            (method url-fetch)
@@ -4785,7 +4816,8 @@ You can save humanity and get programming skills!")
                   (delete-file-recursively "bzip2")
                   (delete-file-recursively "game-music-emu")
                   (delete-file-recursively "jpeg-6b")
-                  (delete-file-recursively "zlib")))))
+                  (delete-file-recursively "zlib")
+                  #t))))
     (arguments
      '(#:tests? #f
        #:configure-flags
@@ -4907,3 +4939,244 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
     (description "Fortune is a command-line utility which displays a random
 quotation from a collection of quotes.")
     (license license:bsd-4)))
+
+(define xonotic-data
+  (package
+    (name "xonotic-data")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.xonotic.org/xonotic-"
+                           version ".zip"))
+       (file-name (string-append name "-" version ".zip"))
+       (sha256
+        (base32
+         "1mcs6l4clvn7ibfq3q69k2p0z6ww75rxvnngamdq5ic6yhq74bx2"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (xonotic (string-append out "/share/xonotic"))
+                (source (assoc-ref %build-inputs "source"))
+                (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+           (copy-file source (string-append ,name "-" ,version ".zip"))
+           (invoke unzip (string-append ,name "-" ,version ".zip"))
+           (mkdir-p out)
+           (mkdir-p xonotic)
+           (chdir "Xonotic")
+           (copy-recursively "data"
+                             (string-append xonotic "/data"))
+           (copy-recursively "server"
+                             (string-append xonotic "/server"))
+           (install-file "key_0.d0pk" xonotic)))))
+    (home-page "http://xonotic.org")
+    (synopsis "Data files for Xonotic")
+    (description
+     "Xonotic-data provides the data files required by the game Xonotic.")
+    (license (list license:gpl2+
+                   (license:x11-style "file://server/rcon.pl")))))
+
+(define-public xonotic
+  (package
+    (name "xonotic")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.xonotic.org/xonotic-"
+                           version "-source.zip"))
+       (file-name (string-append name "-" version ".zip"))
+       (sha256
+        (base32
+         "0axxw04fyz6jlfqd0kp7hdrqa0li31sx1pbipf2j5qp9wvqicsay"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "--prefix="
+                                              (assoc-ref %outputs "out"))
+                               "--disable-rijndael")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'make-darkplaces
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sharedir (string-append out "/share/xonotic/")))
+               (invoke "make" "-C" "source/darkplaces"
+                       (string-append "DP_FS_BASEDIR="
+                                      sharedir)
+                       "DP_LINK_TO_LIBJPEG=1"
+                       "DP_SOUND_API=ALSA"
+                       "CC=gcc"
+                       "-f" "makefile"
+                       "cl-release")
+               (invoke "make" "-C" "source/darkplaces"
+                       (string-append "DP_FS_BASEDIR="
+                                      sharedir)
+                       "DP_LINK_TO_LIBJPEG=1"
+                       "DP_SOUND_API=ALSA"
+                       "CC=gcc"
+                       "-f" "makefile"
+                       "sdl-release")
+               (invoke "make" "-C" "source/darkplaces"
+                       (string-append "DP_FS_BASEDIR="
+                                      sharedir)
+                       "DP_LINK_TO_LIBJPEG=1"
+                       "DP_SOUND_API=ALSA"
+                       "CC=gcc"
+                       "-f" "makefile"
+                       "sv-release"))))
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (chdir "source/d0_blind_id")
+             (invoke "sh" "autogen.sh")))
+         (add-after 'build 'install-desktop-entry
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Add .desktop files for the 2 variants and the symlink
+             (let* ((output (assoc-ref outputs "out"))
+                    (apps (string-append output "/share/applications")))
+               (mkdir-p apps)
+               (with-output-to-file
+                   (string-append apps "/xonotic-glx.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                     Name=xonotic-glx~@
+                     Comment=Xonotic glx~@
+                     Exec=~a/bin/xonotic-glx~@
+                     TryExec=~@*~a/bin/xonotic-glx~@
+                     Icon=~@
+                     Type=Application~%"
+                           output)))
+               (with-output-to-file
+                   (string-append apps "/xonotic-sdl.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                     Name=xonotic-sdl~@
+                     Comment=Xonotic sdl~@
+                     Exec=~a/bin/xonotic-sdl~@
+                     TryExec=~@*~a/bin/xonotic-sdl~@
+                     Icon=~@
+                     Type=Application~%"
+                           output)))
+               (with-output-to-file
+                   (string-append apps "/xonotic.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                     Name=xonotic~@
+                     Comment=Xonotic~@
+                     Exec=~a/bin/xonotic-glx~@
+                     TryExec=~@*~a/bin/xonotic~@
+                     Icon=~@
+                     Type=Application~%"
+                           output)))
+               #t)))
+         (add-after 'install-desktop-entry 'install-icons
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion "../../misc/logos/icons_png/"
+                 (for-each
+                  (lambda (file)
+                    (let* ((size (string-filter char-numeric? file))
+                           (icons (string-append out "/share/icons/hicolor/"
+                                                 size "x" size "/apps")))
+                      (mkdir-p icons)
+                      (copy-file file (string-append icons "/xonotic.png"))))
+                  '("xonotic_16.png" "xonotic_22.png" "xonotic_24.png"
+                    "xonotic_32.png" "xonotic_48.png" "xonotic_64.png"
+                    "xonotic_128.png" "xonotic_256.png" "xonotic_512.png"))))))
+         (add-after 'install-icons 'install-binaries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (define (install src dst)
+                 (let ((dst (string-append out dst)))
+                   (mkdir-p (dirname dst))
+                   (copy-file src dst)))
+               (mkdir-p (string-append out "/bin"))
+               (install "../darkplaces/darkplaces-dedicated"
+                        "/bin/xonotic-dedicated")
+               (install "../darkplaces/darkplaces-glx"
+                        "/bin/xonotic-glx")
+               (install "../darkplaces/darkplaces-sdl"
+                        "/bin/xonotic-sdl")
+               ;; Provide a default xonotic executable, defaulting to SDL.
+               (symlink (string-append out "/bin/xonotic-sdl")
+                        (string-append out "/bin/xonotic"))
+               #t)))
+         (add-after 'install-binaries 'install-data
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (data (assoc-ref inputs "xonotic-data")))
+               (copy-recursively (string-append data "/share/xonotic")
+                                 (string-append out "/share/xonotic"))
+               #t)))
+         (add-after 'install-binaries 'wrap-binaries
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; Curl and libvorbis need to be wrapped so that we get
+             ;; sound and networking.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/xonotic"))
+                    (bin-sdl (string-append out "/bin/xonotic-sdl"))
+                    (bin-glx (string-append out "/bin/xonotic-glx"))
+                    (bin-dedicated (string-append out "/bin/xonotic-dedicated"))
+                    (curl (assoc-ref inputs "curl"))
+                    (vorbis (assoc-ref inputs "libvorbis")))
+               (wrap-program bin
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,(string-append curl "/lib:" vorbis "/lib"))))
+               (wrap-program bin-sdl
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,(string-append curl "/lib:" vorbis "/lib"))))
+               (wrap-program bin-glx
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,(string-append curl "/lib:" vorbis "/lib"))))
+               (wrap-program bin-dedicated
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,(string-append curl "/lib:" vorbis "/lib"))))
+               #t))))))
+    (inputs
+     `(("xonotic-data" ,xonotic-data)
+       ("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
+       ("libjpeg" ,libjpeg)
+       ("libmodplug" ,libmodplug)
+       ("libvorbis" ,libvorbis)
+       ("libogg" ,libogg)
+       ("libxpm" ,libxpm)
+       ("libxxf86dga" ,libxxf86dga)
+       ("libxxf86vm" ,libxxf86vm)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxau" ,libxau)
+       ("libxdmcp" ,libxdmcp)
+       ("mesa" ,mesa)
+       ("glu" ,glu)
+       ("freetype" ,freetype)
+       ("sdl2" ,sdl2)
+       ("libpng" ,libpng)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ("gmp" ,gmp)))
+    (home-page "http://xonotic.org")
+    (synopsis "Fast-paced first-person shooter game")
+    (description
+     "Xonotic is a free, fast-paced first-person shooter.
+The project is geared towards providing addictive arena shooter
+gameplay which is all spawned and driven by the community itself.
+Xonotic is a direct successor of the Nexuiz project with years of
+development between them, and it aims to become the best possible
+open-source FPS of its kind.")
+    (license (list license:gpl2+
+                   license:bsd-3 ; /source/d0_blind_id folder and others
+                   (license:x11-style "" "See file rcon.pl.")))))

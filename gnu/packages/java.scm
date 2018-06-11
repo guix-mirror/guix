@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -53,6 +53,7 @@
   #:use-module (gnu packages gnuzilla) ;nss
   #:use-module (gnu packages ghostscript) ;lcms
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages groovy)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
@@ -60,6 +61,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux) ;alsa
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wget)
   #:use-module (gnu packages pkg-config)
@@ -550,9 +552,10 @@ machine.")))
                "--disable-gjdoc")
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'bootstrap
-             (lambda _
-               (zero? (system* "autoreconf" "-vif"))))
+           ;; XXX The bootstrap phase executes autogen.sh, which fails after
+           ;; complaining about the lack of gettext.
+           (replace 'bootstrap
+             (lambda _ (invoke "autoreconf" "-vif")))
            (add-after 'unpack 'remove-unsupported-annotations
              (lambda _
                (substitute* (find-files "java" "\\.java$")
@@ -621,10 +624,12 @@ machine.")))
                 "0bg9sb4f7qbq77c0zf9m17p47ga0kf0r9622g9p12ysg26jd1ksg"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile.in"
-                  ;; do not leak information about the build host
-                  (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
-                   "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
+               '(begin
+                  (substitute* "Makefile.in"
+                    ;; do not leak information about the build host
+                    (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
+                     "DISTRIBUTION_ID=\"\\\"guix\\\"\""))
+                  #t))))
     (build-system gnu-build-system)
     (outputs '("out"   ; Java Runtime Environment
                "jdk"   ; Java Development Kit
@@ -844,6 +849,7 @@ machine.")))
        ("fastjar" ,fastjar)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("gcc" ,gcc-4.9) ; there's a segmentation fault when compiling with gcc-5 or gcc-7
        ("gtk" ,gtk+-2)
        ("gawk" ,gawk)
        ("giflib" ,giflib)
@@ -851,6 +857,7 @@ machine.")))
        ("jamvm" ,jamvm)
        ("lcms" ,lcms)
        ("libjpeg" ,libjpeg)
+       ("libnsl" ,libnsl)
        ("libpng" ,libpng)
        ("libtool" ,libtool)
        ("libx11" ,libx11)
@@ -967,10 +974,12 @@ bootstrapping purposes.")
                   "1w331rdqx1dcx2xb0fmjmrkdc71xqn20fxsgw8by4xhiblh88khh"))
                 (modules '((guix build utils)))
                 (snippet
-                 '(substitute* "Makefile.in"
-                    ;; do not leak information about the build host
-                    (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
-                     "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
+                 '(begin
+                    (substitute* "Makefile.in"
+                      ;; do not leak information about the build host
+                      (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
+                       "DISTRIBUTION_ID=\"\\\"guix\\\"\""))
+                    #t))))
       (build-system gnu-build-system)
       (outputs '("out"   ; Java Runtime Environment
                  "jdk"   ; Java Development Kit
@@ -1398,6 +1407,7 @@ bootstrapping purposes.")
          ("coreutils" ,coreutils)
          ("diffutils" ,diffutils)       ;for tests
          ("gawk" ,gawk)
+         ("gcc" ,gcc-4.9) ; there's a segmentation fault when compiling with gcc-5
          ("grep" ,grep)
          ("libtool" ,libtool)
          ("pkg-config" ,pkg-config)
@@ -2280,6 +2290,8 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
          #:jdk ,icedtea-8
          #:phases
          (modify-phases %standard-phases
+           ;; FIXME: this build phase fails.
+           (delete 'generate-jar-indices)
            ;; Don't erase results from the build phase when building tests.
            (add-after 'unpack 'separate-test-target-from-clean
              (lambda _
@@ -4262,6 +4274,64 @@ is achieved by providing an API that permits calling scripting language engines
 from within Java, as well as an object registry that exposes Java objects to
 these scripting language engines.")
     (license license:asl2.0)))
+
+(define-public java-commons-jxpath
+  (package
+    (name "java-commons-jxpath")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/commons/jxpath/source/"
+                                  "commons-jxpath-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1rpgg31ayn9fwr4bfi2i1ij0npcg79ad2fv0w9hacvawsyc42cfs"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "commons-jxpath.jar"
+       ;; tests require more dependencies, including mockrunner which depends on old software
+       #:tests? #f
+       #:source-dir "src/java"))
+    (inputs
+     `(("java-tomcat" ,java-tomcat)
+       ("java-jdom" ,java-jdom)
+       ("java-commons-beanutils" ,java-commons-beanutils)))
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (home-page "http://commons.apache.org/jxpath/")
+    (synopsis "Simple interpreter of an expression language called XPath.")
+    (description "The org.apache.commons.jxpath package defines a simple
+interpreter of an expression language called XPath.  JXPath applies XPath
+expressions to graphs of objects of all kinds: JavaBeans, Maps, Servlet
+contexts, DOM etc, including mixtures thereof.")
+    (license license:asl2.0)))
+
+(define-public java-jsr250
+  (package
+    (name "java-jsr250")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "javax/annotation/javax.annotation-api/"
+                                  version "/javax.annotation-api-"
+                                  version "-sources.jar"))
+              (sha256
+               (base32
+                "08clh8n4n9wfglf75qsqfjs6yf79f7x6hqx38cn856pksszv50kz"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:jdk ,icedtea-8
+       #:jar-name "jsr250.jar"))
+    (home-page "https://jcp.org/en/jsr/detail?id=250")
+    (synopsis "Security-related annotations")
+    (description "This package provides annotations for security.  It provides
+packages in the @code{javax.annotation} and @code{javax.annotation.security}
+namespaces.")
+    ;; either cddl or gpl2 only, with classpath exception
+    (license (list license:cddl1.0
+                   license:gpl2))))
 
 (define-public java-jsr305
   (package
@@ -8166,6 +8236,7 @@ algorithms and xxHash hashing algorithm.")
     (build-system ant-build-system)
     (arguments
      `(#:jdk ,icedtea-8
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (replace 'build
@@ -8173,9 +8244,10 @@ algorithms and xxHash hashing algorithm.")
              (invoke "ant" "-f" "ant/jdk15+.xml" "build-provider")
              (invoke "ant" "-f" "ant/jdk15+.xml" "build")
              #t))
-         (replace 'check
-           (lambda _
-             (invoke "ant" "-f" "ant/jdk15+.xml" "test")))
+         ;; FIXME: the tests freeze.
+         ;; (replace 'check
+         ;;   (lambda _
+         ;;     (invoke "ant" "-f" "ant/jdk15+.xml" "test")))
          (replace 'install
            (install-jars "build/artifacts/jdk1.5/jars")))))
     (inputs
@@ -9806,3 +9878,278 @@ and reporting) project dependencies.  It is characterized by the following:
       reporting and publication.
 @end itemize")
     (license license:asl2.0)))
+
+(define-public java-eclipse-sisu-inject
+  (package
+    (name "java-eclipse-sisu-inject")
+    (version "0.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eclipse/sisu.inject/"
+                                  "archive/releases/" version ".tar.gz"))
+              (sha256
+               (base32
+                "11rg6yw5nl13i65xsp4jxxgr341qcnnaan48p767h28kb07s0ajn"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "eclipse-sisu-inject.jar"
+       #:source-dir "org.eclipse.sisu.inject/src"
+       #:jdk ,icedtea-8
+       #:tests? #f)); no tests
+    (inputs
+     `(("java-guice" ,java-guice)
+       ("java-guice-servlet" ,java-guice-servlet)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-tomcat" ,java-tomcat)
+       ("java-junit" ,java-junit)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-jsr305" ,java-jsr305)
+       ("java-jsr250" ,java-jsr250)
+       ("java-cdi-api" ,java-cdi-api)
+       ("java-osgi-framework" ,java-osgi-framework)
+       ("java-osgi-util-tracker" ,java-osgi-util-tracker)
+       ("java-testng" ,java-testng)))
+    (home-page "https://www.eclipse.org/sisu/")
+    (synopsis "Classpath scanning, auto-binding, and dynamic auto-wiring")
+    (description "Sisu is a modular JSR330-based container that supports
+classpath scanning, auto-binding, and dynamic auto-wiring.  Sisu uses
+Google-Guice to perform dependency injection and provide the core JSR330
+support, but removes the need to write explicit bindings in Guice modules.
+Integration with other containers via the Eclipse Extension Registry and the
+OSGi Service Registry is a goal of this project.")
+    (license license:epl1.0)))
+
+(define-public java-eclipse-sisu-plexus
+  (package
+    (name "java-eclipse-sisu-plexus")
+    (version "0.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/eclipse/sisu.plexus/"
+                                  "archive/releases/" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lbj7nxy5j0z71k407zbb82icfqh7midrfk0fb3fa3jzdjz0d9d9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." ".*.jar"))
+                  (rename-file "org.eclipse.sisu.plexus.tests/src"
+                               "org.eclipse.sisu.plexus.tests/java")
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "eclipse-sisu-plexus.jar"
+       #:source-dir "org.eclipse.sisu.plexus/src"
+       #:test-dir "org.eclipse.sisu.plexus.tests"
+       #:test-exclude
+       (list
+         ;; This test fails probably because we can't generate the necessary
+         ;; meta-inf files.
+         "**/PlexusLoggingTest.*"
+         ;; FIXME: This test fails because of some injection error
+         "**/PlexusRequirementTest.*")
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'copy-resources
+           (lambda _
+             (install-file "org.eclipse.sisu.plexus/META-INF/plexus/components.xml"
+                           "build/classes/META-INF/plexus")
+             #t))
+         (add-before 'check 'build-test-jar
+           (lambda _
+             (with-directory-excursion "org.eclipse.sisu.plexus.tests/resources/component-jar/src/main/"
+               (mkdir "build")
+               (with-directory-excursion "java"
+                 (apply invoke "javac" "-cp"
+                        (string-append (getenv "CLASSPATH")
+                                       ":../../../../../build/classes")
+                        (find-files "." ".*.java"))
+                 (for-each (lambda (file) (install-file file (string-append "../build/" file)))
+                           (find-files "." ".*.jar")))
+               (mkdir-p "build/META-INF/plexus")
+               (copy-file "resources/META-INF/plexus/components.xml"
+                          "build/META-INF/plexus/components.xml")
+               (with-directory-excursion "build"
+                 (invoke "jar" "cf" "../../../component-jar-0.1.jar" ".")))
+             (with-directory-excursion "org.eclipse.sisu.plexus.tests/"
+               (copy-recursively "META-INF" "../build/test-classes/META-INF")
+               (substitute* "java/org/eclipse/sisu/plexus/DefaultPlexusContainerTest.java"
+                 (("resources/component-jar")
+                  "org.eclipse.sisu.plexus.tests/resources/component-jar")))
+             #t)))))
+    (inputs
+     `(("java-plexus-classworlds" ,java-plexus-classworlds)
+       ("java-plexus-util" ,java-plexus-utils)
+       ("java-plexus-component-annotations" ,java-plexus-component-annotations)
+       ("java-osgi-framework" ,java-osgi-framework)
+       ("java-eclipse-sisu-inject" ,java-eclipse-sisu-inject)
+       ("java-guice" ,java-guice)
+       ("java-javax-inject" ,java-javax-inject)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ("java-junit" ,java-junit)))
+    (native-inputs
+     `(("java-guava" ,java-guava)
+       ("java-aopalliance" ,java-aopalliance)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)))
+    (home-page "https://www.eclipse.org/sisu/")
+    (synopsis "Plexus support for the sisu container")
+    (description "Sisu is a modular JSR330-based container that supports
+classpath scanning, auto-binding, and dynamic auto-wiring.  This package
+adds Plexus support to the Sisu-Inject container.")
+    (license license:epl1.0)))
+
+(define-public java-commons-compiler
+  (package
+    (name "java-commons-compiler")
+    (version "3.0.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/janino-compiler/janino")
+                     (commit "91aa95686d1e4ca3b16a984a03a38686572331b2")))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "04hfdl59sgh20qkxzgnibvs8f9hy6n7znxwpk611y5d89977y62r"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file
+                            (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "commons-compiler.jar"
+       #:source-dir "commons-compiler/src/main"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/janino-compiler/janino")
+    (synopsis "Java compiler")
+    (description "Commons-compiler contains an API for janino, including the
+@code{IExpressionEvaluator}, @code{IScriptEvaluator}, @code{IClassBodyEvaluator}
+and @code{ISimpleCompiler} interfaces.")
+    (license license:bsd-3)))
+
+(define-public java-janino
+  (package
+    (inherit java-commons-compiler)
+    (name "java-janino")
+    (arguments
+     `(#:jar-name "janino.jar"
+       #:source-dir "src/main/java"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "janino"))))))
+    (inputs
+     `(("java-commons-compiler" ,java-commons-compiler)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
+    (description "Janino is a Java compiler.  Janino can compile a set of
+source files to a set of class files like @code{javac}, but also compile a
+Java expression, block, class body or source file in memory, load the bytecode
+and execute it directly in the same JVM.  @code{janino} can also be used for
+static code analysis or code manipulation.")))
+
+(define-public java-logback-core
+  (package
+    (name "java-logback-core")
+    (version "1.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/qos-ch/logback/archive/v_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1x6ga74yfgm94cfx98gybakbrlilx8i2gn6dx13l40kasmys06mi"))
+              (modules '((guix build utils)))
+              (snippet
+               '(delete-file-recursively "logback-access/lib"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "logback.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:test-exclude
+       ;; These tests fail with Unable to set MockitoNamingPolicy on cglib generator
+       ;; which creates FastClasses
+       (list "**/AllCoreTest.*"
+             "**/AutoFlushingObjectWriterTest.*"
+             "**/PackageTest.*"
+             "**/ResilientOutputStreamTest.*"
+             ;; And we still don't want to run abstract classes
+             "**/Abstract*.*")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "logback-core")
+             #t)))))
+    (inputs
+     `(("java-javax-mail" ,java-javax-mail)
+       ("java-tomcat" ,java-tomcat)
+       ("java-commons-compiler" ,java-commons-compiler)
+       ("java-janino" ,java-janino)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-mockito-1" ,java-mockito-1)
+       ("java-cglib" ,java-cglib)
+       ("java-asm" ,java-asm)
+       ("java-objenesis" ,java-objenesis)
+       ("java-joda-time" ,java-joda-time)))
+    (home-page "https://logback.qos.ch")
+    (synopsis "Logging for java")
+    (description "Logback is intended as a successor to the popular log4j project.
+This module lays the groundwork for the other two modules.")
+    ;; Either epl1.0 or lgpl2.1
+    (license (list license:epl1.0
+                   license:lgpl2.1))))
+
+(define-public java-logback-classic
+  (package
+    (inherit java-logback-core)
+    (name "java-logback-classic")
+    (arguments
+     `(#:jar-name "logback-classic.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:tests? #f; tests require more packages: h2, greenmail, hsql, subethamail, slf4j, log4j, felix
+       #:jdk ,icedtea-8
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "logback-classic")
+             #t))
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir-p "build/classes")
+             (setenv "CLASSPATH"
+                     (string-join
+                       (apply append (map (lambda (input)
+                                            (find-files (assoc-ref inputs input)
+                                                        ".*.jar"))
+                                          '("java-logback-core" "java-slf4j-api"
+                                            "java-commons-compiler" "java-tomcat"
+                                            "groovy")))
+                       ":"))
+             (apply invoke "groovyc" "-d" "build/classes" "-j"
+                    (find-files "src/main/" ".*\\.(groovy|java)$"))
+             (invoke "ant" "jar")
+             #t)))))
+    (inputs
+     `(("java-logback-core" ,java-logback-core)
+       ("java-slf4j-api" ,java-slf4j-api)
+       ,@(package-inputs java-logback-core)))
+    (native-inputs
+     `(("groovy" ,groovy)))
+    (description "Logback is intended as a successor to the popular log4j project.
+This module can be assimilated to a significantly improved version of log4j.
+Moreover, @code{logback-classic} natively implements the slf4j API so that you
+can readily switch back and forth between logback and other logging frameworks
+such as log4j or @code{java.util.logging} (JUL).")))

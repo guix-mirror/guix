@@ -187,45 +187,47 @@ score, keyboard, guitar, drum and controller views.")
 ;; We don't use the latest release because it depends on Qt4.  Instead we
 ;; download the sources from the tip of the "qt5" branch.
 (define-public clementine
-  (let ((commit "0a59257dc334b8df60a4d7d90b04f1766747efcf")
-        (revision "1"))
+  (let ((commit "4619a4c1ab3b17b13d4b2327ad477912917eaf36")
+        (revision "2"))
     (package
       (name "clementine")
-      (version (string-append "1.3.1-" revision "." (string-take commit 7)))
+      (version (git-version "1.3.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/clementine-player/Clementine.git")
                       (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                   "0cdcj7di7j9jgzc1ihjna1a5df64f9hnmx7b9kh8rlg76hc0l0hi"))
+                  "1hximk3q0p8nw8is5w7215xgkb7k4flnfyr0pdz9svfwvcm05w1i"))
                 (modules '((guix build utils)))
                 (snippet
-                  '(for-each
+                 '(begin
+                    (for-each
                      (lambda (dir)
                        (delete-file-recursively
-                         (string-append "3rdparty/" dir)))
+                        (string-append "3rdparty/" dir)))
                      (list
-                       ;; TODO: The following dependencies are still bundled:
-                       ;; - "qxt": Appears to be unmaintained upstream.
-                       ;; - "qsqlite"
-                       ;; - "qtsingleapplication"
-                       ;; - "qocoa"
-                       ;; - "qtiocompressor"
-                       ;; - "gmock": The tests crash when using our googletest
-                       ;;   package instead of the bundled gmock.
-                       "SPMediaKeyTap"
-                       "fancytabwidget"
-                       "google-breakpad"
-                       "libmygpo-qt"
-                       "libmygpo-qt5"
-                       "libprojectm"
-                       "qtwin"
-                       "sha2" ;; Replaced by openssl.
-                       "taglib"
-                       "tinysvcmdns")))
+                      ;; TODO: The following dependencies are still bundled:
+                      ;; - "qxt": Appears to be unmaintained upstream.
+                      ;; - "qsqlite"
+                      ;; - "qtsingleapplication"
+                      ;; - "qocoa"
+                      ;; - "qtiocompressor"
+                      ;; - "gmock": The tests crash when using our googletest
+                      ;;   package instead of the bundled gmock.
+                      "SPMediaKeyTap"
+                      "fancytabwidget"
+                      "google-breakpad"
+                      "libmygpo-qt"
+                      "libmygpo-qt5"
+                      "libprojectm"
+                      "qtwin"
+                      "sha2" ;; Replaced by openssl.
+                      "taglib"
+                      "tinysvcmdns"))
+                    #t))
                 (patches (search-patches "clementine-use-openssl.patch"
                                          "clementine-remove-crypto++-dependency.patch"))))
       (build-system cmake-build-system)
@@ -262,7 +264,6 @@ score, keyboard, guitar, drum and controller views.")
          ("gst-plugins-base" ,gst-plugins-base)
          ("libcdio" ,libcdio)
          ("libmygpo-qt" ,libmygpo-qt)
-         ("libechonest" ,libechonest)
          ;; TODO: Package libgpod.
          ("libmtp" ,libmtp)
          ("libxml2" ,libxml2)
@@ -1183,6 +1184,19 @@ add_library( rapidjson INTERFACE IMPORTED )"))
                (("boost::rational<int> duration\\(4, pos.getDurationType\\(\\)\\);")
                 "boost::rational<int> duration(4, static_cast<int>(pos.getDurationType()));"))
              #t))
+         ;; Fix build with Qt 5.11.
+         (add-after 'unpack 'add-missing-headers
+           (lambda _
+             (substitute* (find-files "source/dialogs/" "\\.h$")
+               (("#include <QDialog>" m)
+                (string-append m "\n#include <QButtonGroup>")))
+             (substitute* "source/widgets/mixer/mixeritem.h"
+               (("#include <QWidget>" m)
+                (string-append m "\n#include <QStyle>")))
+             (substitute* "source/widgets/playback/playbackwidget.h"
+               (("#include <QWidget>" m)
+                (string-append m "\n#include <QButtonGroup>\n#include <QAction>")))
+             #t))
          (add-before 'configure 'remove-third-party-libs
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Link with required static libraries, because we're not
@@ -1973,7 +1987,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.7")
+    (version "1.5.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -1981,7 +1995,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "1w916mmi6hh547a7icrgx6qr2kwxlxwlm6ampql427rshcz9r61k"))))
+                "0gwsr5srzy28hwqhfzrc8pswysmyra8kbww3bxfx8bq4mdjifdj6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -2175,16 +2189,28 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.0")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "03892177k3jn2bsi366dhq28rcdsc1p9v5qqc0k6hg3cnrkh23na"))))
+                "07csbqr7q4m1j0pqg89kn7jdw0snd5lwna5rha0986s4plq4z1qb"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f)) ; no "check" target
+    (arguments
+     `(#:tests? #f  ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-qt-5.11
+           (lambda _
+             (substitute* "src/qtractorMeter.h"
+               (("#include <QFrame>" m)
+                (string-append "#include <QAction>\n" m)))
+             (substitute* "src/qtractorTrackButton.h"
+               (("#include <QPushButton>" m)
+                (string-append "#include <QAction>\n" m)))
+             #t)))))
     (inputs
      `(("qt" ,qtbase)
        ("qtx11extras" ,qtx11extras)
@@ -2578,9 +2604,12 @@ Songs can be searched by artist, name or even by a part of the song text.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-HOME
-           (lambda _ (setenv "HOME" (string-append (getcwd) "/tmp"))))
+           (lambda _
+             (setenv "HOME" (string-append (getcwd) "/tmp"))
+             #t))
          (replace 'check
-           (lambda _ (zero? (system* "nosetests" "-v")))))))
+           (lambda _
+             (invoke "nosetests" "-v"))))))
     (native-inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-flask" ,python-flask)
@@ -2612,7 +2641,7 @@ of tools for manipulating and accessing your music.")
 (define-public milkytracker
   (package
     (name "milkytracker")
-    (version "1.01.00")
+    (version "1.02.00")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/milkytracker/"
@@ -2621,14 +2650,15 @@ of tools for manipulating and accessing your music.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1dvnddsnn9c83lz4dlm0cfjpc0m524amfkbalxbswdy0qc8cj1wv"))
+                "08v0l4ipvvwkwv4ywkc6c8a6xnpkyb02anj36w8q6gikxrs6xjvb"))
               (modules '((guix build utils)))
               ;; Remove non-FSDG compliant sample songs.
               (snippet
                '(begin
                   (delete-file-recursively "resources/music")
                   (substitute* "CMakeLists.txt"
-                    (("add_subdirectory\\(resources/music\\)") ""))))))
+                    (("add_subdirectory\\(resources/music\\)") ""))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no check target
@@ -2666,9 +2696,11 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
-               `(substitute* "schism/version.c"
-                  (("Schism Tracker built %s %s.*$")
-                   (string-append "Schism Tracker version " ,version "\");"))))))
+               `(begin
+                  (substitute* "schism/version.c"
+                    (("Schism Tracker built %s %s.*$")
+                     (string-append "Schism Tracker version " ,version "\");")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -3504,7 +3536,10 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
      `(#:make-flags
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "USE_SYSTEM_FREETYPE=ON"
-         "DOWNLOAD_SOUNDFONT=OFF")
+         "DOWNLOAD_SOUNDFONT=OFF"
+         ;; The following is not supported since Qt 5.11.  Can be
+         ;; removed in Musescore 2.2.2+.
+         "BUILD_WEBKIT=OFF")
        ;; There are tests, but no simple target to run.  The command
        ;; used to run them is:
        ;;
@@ -3516,6 +3551,14 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         ;; Fix Qt 5.11 upgrade.  Should be fixed in 2.2.2+, see:
+         ;; <https://github.com/musescore/MuseScore/commit/d10e70415c8e52e2ba9d45de564467e42f66c102>
+         (add-after 'unpack 'patch-sources
+           (lambda _
+             (substitute* "all.h"
+               (("#include <QRadioButton>") "#include <QRadioButton>
+#include <QButtonGroup>"))
+             #t))
          (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -3533,7 +3576,6 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        ("qtdeclarative" ,qtdeclarative)
        ("qtscript" ,qtscript)
        ("qtsvg" ,qtsvg)
-       ("qtwebkit" ,qtwebkit)
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (native-inputs
      `(("cmake" ,cmake)
@@ -3809,33 +3851,6 @@ OSC connections.")
 the electronic or dubstep genre.")
     (license license:gpl3+)))
 
-(define-public libechonest
-  (package
-    (name "libechonest")
-    (version "2.3.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://anongit.kde.org/libechonest.git")
-                    (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0xbavf9f355dl1d3qv59x4ryypqrdanh9xdvw2d0q66l008crdkq"))))
-    (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f                      ; Tests require Internet access
-       #:configure-flags '("-DBUILD_WITH_QT4=OFF")))
-    (inputs
-     `(("qtbase" ,qtbase)
-       ("qjson" ,qjson)))
-    (home-page "https://projects.kde.org/projects/playground/libs/libechonest")
-    (synopsis "C++/Qt classes to interface with The Echo Nest API")
-    (description "@code{libechonest} is a collection of C++/Qt classes
-designed to make a developer's life easy when trying to use the APIs provided
-by The Echo Nest.")
-    (license license:gpl2+)))
-
 (define-public libmygpo-qt
   (package
     (name "libmygpo-qt")
@@ -3846,12 +3861,19 @@ by The Echo Nest.")
                                   "libmygpo-qt/libmygpo-qt." version ".tar.gz"))
               (sha256
                (base32
-                "1kg18qrq2rsswgzhl65r3mlyx7kpqg4wwnbp4yiv6svvmadmlxl2"))))
+                "1kg18qrq2rsswgzhl65r3mlyx7kpqg4wwnbp4yiv6svvmadmlxl2"))
+              (patches (search-patches "libmygpo-qt-fix-qt-5.11.patch"
+                                       "libmygpo-qt-missing-qt5-modules.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("qt" ,qtbase)))
+    (arguments
+     `(#:configure-flags '("-DMYGPO_BUILD_TESTS=ON")
+       ;; TODO: Enable tests when https://github.com/gpodder/gpodder/issues/446
+       ;; is fixed.
+       #:tests? #f))
     (home-page "http://wiki.gpodder.org/wiki/Libmygpo-qt")
     (synopsis "Qt/C++ library wrapping the gpodder web service")
     (description "@code{libmygpo-qt} is a Qt/C++ library wrapping the

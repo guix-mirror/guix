@@ -33,6 +33,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
@@ -94,8 +95,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.14.0")
-        (commit "ab85cf7185da366da56314c53d8e43276e1cccc4")
-        (revision 11))
+        (commit "77a1aac6cccc79d7c8085762f610e22e6ebfb43b")
+        (revision 12))
     (package
       (name "guix")
 
@@ -111,7 +112,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1c00yr2vgsdl3kmlbjppyws47ssahamdx88y0wg26x73px71rd19"))
+                  "0f0agvw3fizy0aaf51vc2d1rbsvxhg6vnzgjb1n1hbyym79f17j6"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -144,7 +145,7 @@
                     (ice-9 rdelim))
 
          #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'bootstrap
+                    (replace 'bootstrap
                       (lambda _
                         ;; Make sure 'msgmerge' can modify the PO files.
                         (for-each (lambda (po)
@@ -157,7 +158,7 @@
                           (lambda (port)
                             (display ,version port)))
 
-                        (zero? (system* "sh" "bootstrap"))))
+                        (invoke "sh" "bootstrap")))
                     (add-before 'check 'copy-bootstrap-guile
                       (lambda* (#:key system inputs #:allow-other-keys)
                         ;; Copy the bootstrap guile tarball in the store used
@@ -295,6 +296,15 @@ the Nix package manager.")
     (inherit guix)
     (properties `((hidden? . #t)))
     (name "guix-register")
+
+    ;; Use a minimum set of dependencies.
+    (native-inputs
+     (fold alist-delete (package-native-inputs guix)
+           '("po4a" "graphviz" "help2man")))
+    (propagated-inputs
+     `(("gnutls" ,gnutls)
+       ("guile-git" ,guile-git)))
+
     (arguments
      (substitute-keyword-arguments (package-arguments guix)
        ((#:tests? #f #f)
@@ -367,41 +377,24 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "1.11.9")
+    (version "2.0.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "1qg7qrfr60dysmyfg3ijgani71l23p1kqadhjs8kz11pgwkkx50f"))))
+               "0ss9svxlh1pvrdmnqjvjyqjmbqmrdbyfarvbb14i9d4bggzl0r8n"))))
     (build-system gnu-build-system)
-    ;; XXX: Should we pass '--with-store-dir=/gnu/store'?  But then we'd also
-    ;; need '--localstatedir=/var'.  But then!  The thing would use /var/nix
-    ;; instead of /var/guix.  So in the end, we do nothing special.
-    (arguments
-     '(#:configure-flags
-       ;; Set the prefixes of Perl libraries to avoid propagation.
-       (let ((perl-libdir (lambda (p)
-                            (string-append
-                             (assoc-ref %build-inputs p)
-                             "/lib/perl5/site_perl"))))
-         (list (string-append "--with-dbi="
-                              (perl-libdir "perl-dbi"))
-               (string-append "--with-dbd-sqlite="
-                              (perl-libdir "perl-dbd-sqlite"))
-               (string-append "--with-www-curl="
-                              (perl-libdir "perl-www-curl"))))))
-    (native-inputs `(("perl" ,perl)
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("curl" ,curl)
-              ("openssl" ,openssl)
-              ("libgc" ,libgc)
-              ("sqlite" ,sqlite)
               ("bzip2" ,bzip2)
-              ("perl-www-curl" ,perl-www-curl)
-              ("perl-dbi" ,perl-dbi)
-              ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
+              ("libgc" ,libgc)
+              ("libseccomp" ,libseccomp)
+              ("libsodium" ,libsodium)
+              ("openssl" ,openssl)
+              ("sqlite" ,sqlite)
+              ("xz" ,xz)))
     (home-page "https://nixos.org/nix/")
     (synopsis "The Nix package manager")
     (description
@@ -535,13 +528,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "93")
+    (version "95")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0g90nf7817jk03hzk36l3hymky4xqs50iynfld3r0in7hffly5nj"))))
+                "0aksxxivxli6l3fylxgl771hw0h7l8x35l76cmj0d12zgx54w0a1"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

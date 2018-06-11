@@ -51,7 +51,8 @@
                   (substitute* "src/Makefile.in"
                     (("/bin/ln") "ln"))
                   (substitute* "configure"
-                    (("-ltermcap") ""))))))
+                    (("-ltermcap") ""))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f

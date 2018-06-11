@@ -9,9 +9,9 @@ in a package separate from glibc.
      place, and because otherwise, 'localedef' fails with:
      "cannot write output files to `(null)'".
 
---- glibc-2.22/localedata/Makefile	1970-01-01 01:00:00.000000000 +0100
-+++ glibc-2.22/localedata/Makefile	2015-09-25 14:18:34.698941752 +0200
-@@ -195,7 +195,7 @@ INSTALL-SUPPORTED-LOCALES=$(addprefix in
+--- glibc-2.27/localedata/Makefile
++++ glibc-2.27/localedata/Makefile
+@@ -199,7 +199,7 @@ INSTALL-SUPPORTED-LOCALES=$(addprefix install-, $(SUPPORTED-LOCALES))
  
  # Sometimes the whole collection of locale files should be installed.
  LOCALEDEF=I18NPATH=. GCONV_PATH=$(common-objpfx)iconvdata LC_ALL=C \
@@ -20,10 +20,10 @@ in a package separate from glibc.
  install-locales: $(INSTALL-SUPPORTED-LOCALES)
  
  install-locales-dir:
-@@ -212,7 +212,7 @@ $(INSTALL-SUPPORTED-LOCALES): install-lo
+@@ -224,7 +224,7 @@ $(INSTALL-SUPPORTED-LOCALES): install-locales-dir
  	input=`echo $$locale | sed 's/\([^.]*\)[^@]*\(.*\)/\1\2/'`; \
- 	$(LOCALEDEF) --alias-file=../intl/locale.alias \
- 		     -i locales/$$input -c -f charmaps/$$charset \
+ 	$(LOCALEDEF) $$flags --alias-file=../intl/locale.alias \
+ 		     -i locales/$$input -f charmaps/$$charset \
 -		     $(addprefix --prefix=,$(install_root)) $$locale \
 +		     $(addprefix --prefix=,$(install_root)) $(inst_complocaledir)/$$locale \
  	&& echo ' done'; \

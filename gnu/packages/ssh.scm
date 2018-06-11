@@ -116,11 +116,24 @@ remote applications.")
    ;; zlib libraries, so we need to propagate the inputs.
    (propagated-inputs `(("libgcrypt" ,libgcrypt)
                         ("zlib" ,zlib)))
-   (arguments '(#:configure-flags `("--with-libgcrypt")
-                #:phases (modify-phases %standard-phases
-                           (add-before 'configure 'autoreconf
-                             (lambda _
-                               (zero? (system* "autoreconf" "-v")))))))
+   (arguments `(#:configure-flags `("--with-libgcrypt")
+                #:phases
+                ;; FIXME: In the next core-updates cycle, replace the entire
+                ;; following ,(...) form with its first 'modify-phases'
+                ;; subform.  The change made here is only strictly needed on
+                ;; MIPS, but should work on any system.  For now, we apply it
+                ;; only to MIPS to avoid forcing thousands of rebuilds on
+                ;; other systems.
+                ,(if (string-prefix? "mips" (or (%current-target-system)
+                                                (%current-system)))
+                     '(modify-phases %standard-phases
+                        (replace 'bootstrap
+                          (lambda _
+                            (invoke "autoreconf" "-v"))))
+                     '(modify-phases %standard-phases
+                        (add-before 'configure 'autoreconf
+                          (lambda _
+                            (invoke "autoreconf" "-v")))))))
    (native-inputs `(("autoconf" ,autoconf)
                     ("automake" ,automake)))
    (synopsis "Client-side C library implementing the SSH2 protocol")
@@ -187,17 +200,16 @@ a server that supports the SSH-2 protocol.")
         (replace 'install
          (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
            ;; install without host keys and system configuration files
-           (and (zero? (apply system* "make" "install-nosysconf" make-flags))
-                (begin
-                  (install-file "contrib/ssh-copy-id"
-                                (string-append (assoc-ref outputs "out")
-                                               "/bin/"))
-                  (chmod (string-append (assoc-ref outputs "out")
-                                        "/bin/ssh-copy-id") #o555)
-                  (install-file "contrib/ssh-copy-id.1"
-                                (string-append (assoc-ref outputs "out")
-                                               "/share/man/man1/"))
-                  #t)))))))
+           (apply invoke "make" "install-nosysconf" make-flags)
+           (install-file "contrib/ssh-copy-id"
+                         (string-append (assoc-ref outputs "out")
+                                        "/bin/"))
+           (chmod (string-append (assoc-ref outputs "out")
+                                 "/bin/ssh-copy-id") #o555)
+           (install-file "contrib/ssh-copy-id.1"
+                         (string-append (assoc-ref outputs "out")
+                                        "/share/man/man1/"))
+           #t)))))
    (synopsis "Client and server for the secure shell (ssh) protocol")
    (description
     "The SSH2 protocol implemented in OpenSSH is standardised by the
@@ -445,16 +457,15 @@ particularly useful for embedded systems, such as wireless routers.")
 (define-public liboop
   (package
     (name "liboop")
-    (version "1.0")
+    (version "1.0.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://download.ofb.net/liboop/liboop-"
-                          version ".tar.gz"))
+      (uri (string-append "http://ftp.lysator.liu.se/pub/liboop/"
+                          name "-" version ".tar.gz"))
       (sha256
        (base32
-        "0z6rlalhvfca64jpvksppc9bdhs7jwhiw4y35g5ibvh91xp3rn1l"))
-      (patches (search-patches "liboop-mips64-deplibs-fix.patch"))))
+        "1q0p1l72pq9k3bi7a366j2rishv7dzzkg3i6r2npsfg7cnnidbsn"))))
     (build-system gnu-build-system)
     (home-page "http://www.lysator.liu.se/liboop/")
     (synopsis "Event loop library")
@@ -494,7 +505,8 @@ basis for almost any application.")
                     (("localhost") "127.0.0.1"))
 
                   (substitute* "src/testsuite/login-auth-test"
-                    (("/bin/cat") "cat"))))))
+                    (("/bin/cat") "cat"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("m4" ,m4)

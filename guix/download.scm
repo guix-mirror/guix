@@ -391,11 +391,6 @@
   (plain-file "content-addressed-mirrors"
               (object->string %content-addressed-mirrors)))
 
-(define (gnutls-package)
-  "Return the default GnuTLS package."
-  (let ((module (resolve-interface '(gnu packages tls))))
-    (module-ref module 'gnutls)))
-
 (define built-in-builders*
   (let ((cache (make-weak-key-hash-table)))
     (lambda ()
@@ -512,12 +507,14 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
     ;; Use ungrafted tar/gzip so that the resulting tarball doesn't depend on
     ;; whether grafts are enabled.
     (gexp->derivation (or name file-name)
-                      #~(begin
-                          (mkdir #$output)
-                          (setenv "PATH" (string-append #$gzip "/bin"))
-                          (chdir #$output)
-                          (zero? (system* (string-append #$tar "/bin/tar")
-                                          "xf" #$drv)))
+                      (with-imported-modules '((guix build utils))
+                        #~(begin
+                            (use-modules (guix build utils))
+                            (mkdir #$output)
+                            (setenv "PATH" (string-append #$gzip "/bin"))
+                            (chdir #$output)
+                            (invoke (string-append #$tar "/bin/tar")
+                                    "xf" #$drv)))
                       #:graft? #f
                       #:local-build? #t)))
 
@@ -545,11 +542,13 @@ own.  This helper makes it easier to deal with \"zip bombs\"."
     ;; Use ungrafted unzip so that the resulting tarball doesn't depend on
     ;; whether grafts are enabled.
     (gexp->derivation (or name file-name)
-                      #~(begin
-                          (mkdir #$output)
-                          (chdir #$output)
-                          (zero? (system* (string-append #$unzip "/bin/unzip")
-                                          #$drv)))
+                      (with-imported-modules '((guix build utils))
+                        #~(begin
+                            (use-modules (guix build utils))
+                            (mkdir #$output)
+                            (chdir #$output)
+                            (invoke (string-append #$unzip "/bin/unzip")
+                                    #$drv)))
                       #:graft? #f
                       #:local-build? #t)))
 

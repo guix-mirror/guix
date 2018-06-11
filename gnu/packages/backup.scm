@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +64,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.7.12")
+    (version "0.7.17")
     (source
      (origin
       (method url-fetch)
@@ -73,12 +74,13 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1rhgrz2lm9vbfdp2raykrih1c6n2lw5jd572z4dsz488m52avjqi"))))
+        "0jmh3h09680xyf33hzxxxl74bwz66zqhzvjlj7j89r9rz3qwa91p"))))
     (build-system python-build-system)
     (native-inputs
      `(("util-linux" ,util-linux)     ;setsid command, for the tests
        ("par2cmdline" ,par2cmdline)
        ("python-pexpect" ,python2-pexpect)
+       ("python-fasteners" ,python2-fasteners)
        ("mock" ,python2-mock)))
     (propagated-inputs
      `(("lockfile" ,python2-lockfile)
@@ -203,7 +205,6 @@ backups (called chunks) to allow easy burning to CD/DVD.")
         (base32
          "1km0mzfl6in7l5vz9kl09a88ajx562rw93ng9h2jqavrailvsbgd"))))
     (build-system gnu-build-system)
-    ;; TODO: Add -L/path/to/nettle in libarchive.pc.
     (inputs
      `(("zlib" ,zlib)
        ("nettle" ,nettle)
@@ -226,12 +227,33 @@ backups (called chunks) to allow easy burning to CD/DVD.")
              ;; the chroot's /etc/passwd doesn't have it.  Turn off those tests.
              ;;
              ;; The tests allow one to disable tests matching a globbing pattern.
-             (and (zero? (system* "make"
-                                  "libarchive_test" "bsdcpio_test" "bsdtar_test"))
-                  ;; XXX: This glob disables too much.
-                  (zero? (system* "./libarchive_test" "^test_*_disk*"))
-                  (zero? (system* "./bsdcpio_test" "^test_owner_parse"))
-                  (zero? (system* "./bsdtar_test"))))))
+             (invoke "make" "libarchive_test" "bsdcpio_test" "bsdtar_test")
+             ;; XXX: This glob disables too much.
+             (invoke "./libarchive_test" "^test_*_disk*")
+             (invoke "./bsdcpio_test" "^test_owner_parse")
+             (invoke "./bsdtar_test")))
+         (add-after 'install 'add--L-in-libarchive-pc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (lib     (string-append out "/lib"))
+                    (nettle  (assoc-ref inputs "nettle"))
+                    (libxml2 (assoc-ref inputs "libxml2"))
+                    (xz      (assoc-ref inputs "xz"))
+                    (zlib    (assoc-ref inputs "zlib"))
+                    (bzip2   (assoc-ref inputs "bzip2")))
+               (substitute* (string-append lib "/pkgconfig/libarchive.pc")
+                 (("-lnettle")
+                  (string-append "-L" nettle "/lib -lnettle"))
+                 (("-lxml2")
+                  (string-append "-L" libxml2 "/lib -lxml2"))
+                 (("-llzma")
+                  (string-append "-L" xz "/lib -llzma"))
+                 (("-lz")
+                  (string-append "-L" zlib "/lib -lz"))
+                 (("-lbz2")
+                  (string-append "-L" bzip2 "/lib -lbz2")))
+               #t))))
+
        ;; libarchive/test/test_write_format_gnutar_filenames.c needs to be
        ;; compiled with C99 or C11 or a gnu variant.
        #:configure-flags '("CFLAGS=-O2 -g -std=c99")))
@@ -278,9 +300,6 @@ random access nor for in-place modification.")
      `(#:parallel-build? #f             ;race conditions
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (invoke "autoreconf")))
          (add-before 'build 'qualify-inputs
            (lambda* (#:key inputs #:allow-other-keys)
              ;; This script is full of pitfalls.  Fix some that particularly
@@ -468,7 +487,8 @@ detection, and lossless compression.")
            ;; Remove bundled shared libraries.
            (with-directory-excursion "src/borg/algorithms"
              (for-each delete-file-recursively
-                       (list "blake2" "lz4" "zstd")))))))
+                       (list "blake2" "lz4" "zstd")))
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((srfi srfi-26) ; for cut

@@ -63,7 +63,7 @@ all the services that may be activated by the daemon."
                                        (find-files
                                         (string-append
                                          service
-                                         "/share/dbus-1/system-services")
+                                         "/share/dbus-1/")
                                         "\\.service$"))
                                      (list #$@services)))
 

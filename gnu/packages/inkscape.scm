@@ -80,8 +80,13 @@
     ;; FIXME: tests require gmock
     (arguments
      `(#:tests? #f
-       #:make-flags
-       '("gtk_update_icon_cache=true")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-icon-cache-generator
+           (lambda _
+             (substitute* "share/icons/application/CMakeLists.txt"
+              (("gtk-update-icon-cache") "true"))
+             #t)))))
     (home-page "https://inkscape.org/")
     (synopsis "Vector graphics editor")
     (description "Inkscape is a vector graphics editor.  What sets Inkscape

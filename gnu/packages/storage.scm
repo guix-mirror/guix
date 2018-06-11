@@ -29,7 +29,6 @@
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
@@ -116,7 +115,6 @@
        ;; <https://bugs.gnu.org/29674> for details. Disable tests until
        ;; resolved.
        #:tests? #f
-       #:cmake ,cmake-3.11
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
@@ -317,7 +315,7 @@
        ("python2-testtools" ,python2-testtools)
        ("python2-tox" ,python2-tox)))
     (inputs
-     `(("boost" ,boost-1.66)
+     `(("boost" ,boost)
        ("curl" ,curl)
        ("cryptsetup" ,cryptsetup)
        ("expat" ,expat)

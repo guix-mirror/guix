@@ -146,8 +146,6 @@ generator library for C++.")
        '(#:tests? #f
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'bootstrap
-             (lambda _ (zero? (system* "autoreconf" "-vif"))))
            (delete 'configure)
            (delete 'build)
            (replace 'install
@@ -183,8 +181,6 @@ generator library for C++.")
        '(#:tests? #f
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'bootstrap
-             (lambda _ (zero? (system* "autoreconf" "-vif"))))
            (delete 'configure)
            (delete 'build)
            (replace 'install
@@ -220,8 +216,6 @@ generator library for C++.")
        '(#:tests? #f
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'bootstrap
-             (lambda _ (zero? (system* "autoreconf" "-vif"))))
            (delete 'configure)
            (delete 'build)
            (replace 'install

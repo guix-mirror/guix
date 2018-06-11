@@ -64,46 +64,6 @@
 ;;; Profiles.
 ;;;
 
-(define %user-profile-directory
-  (and=> (getenv "HOME")
-         (cut string-append <> "/.guix-profile")))
-
-(define %profile-directory
-  (string-append %state-directory "/profiles/"
-                 (or (and=> (or (getenv "USER")
-                                (getenv "LOGNAME"))
-                            (cut string-append "per-user/" <>))
-                     "default")))
-
-(define %current-profile
-  ;; Call it `guix-profile', not `profile', to allow Guix profiles to
-  ;; coexist with Nix profiles.
-  (string-append %profile-directory "/guix-profile"))
-
-(define (canonicalize-profile profile)
-  "If PROFILE is %USER-PROFILE-DIRECTORY, return %CURRENT-PROFILE.  Otherwise
-return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
-'-p' was omitted."                           ; see <http://bugs.gnu.org/17939>
-
-  ;; Trim trailing slashes so that the basename comparison below works as
-  ;; intended.
-  (let ((profile (string-trim-right profile #\/)))
-    (if (and %user-profile-directory
-             (string=? (canonicalize-path (dirname profile))
-                       (dirname %user-profile-directory))
-             (string=? (basename profile) (basename %user-profile-directory)))
-        %current-profile
-        profile)))
-
-(define (user-friendly-profile profile)
-  "Return either ~/.guix-profile if that's what PROFILE refers to, directly or
-indirectly, or PROFILE."
-  (if (and %user-profile-directory
-           (false-if-exception
-            (string=? (readlink %user-profile-directory) profile)))
-      %user-profile-directory
-      profile))
-
 (define (ensure-default-profile)
   "Ensure the default profile symlink and directory exist and are writable."
 

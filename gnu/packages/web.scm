@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
@@ -25,6 +25,7 @@
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,6 +73,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
@@ -82,6 +84,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages java)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages jemalloc)
@@ -96,6 +99,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openstack)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages python)
@@ -414,12 +418,7 @@ APIs.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests included
-       #:make-flags (list "CC=gcc")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
+       #:make-flags (list "CC=gcc")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -524,7 +523,7 @@ data.")
 (define-public json-c
   (package
     (name "json-c")
-    (version "0.13")
+    (version "0.13.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -532,7 +531,7 @@ data.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0kf2594kxcfga6x0mvwzj2qg8pgxhjkibc16ghnw85mdx45ph5h3"))
+               "0ws8dz9nk8q2c0gbf66kg2r6mrkl7kamd3gpdv9zsyrz9n6n0zmq"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -541,13 +540,8 @@ data.")
                  ;; run 'autoheader'.
                  (set-file-time "config.h.in"
                                 (stat "aclocal.m4"))
-
-                 ;; Don't try to build with -Werror.
-                 (substitute* (find-files "." "Makefile\\.in")
-                   (("-Werror") ""))))))
+                 #t))))
     (build-system gnu-build-system)
-    (arguments '(#:parallel-build? #f
-                 #:parallel-tests? #f))
     (home-page "https://github.com/json-c/json-c/wiki")
     (synopsis "JSON implementation in C")
     (description
@@ -580,7 +574,8 @@ It aims to conform to RFC 7159.")
 
                  ;; Don't try to build with -Werror.
                  (substitute* (find-files "." "Makefile\\.in")
-                   (("-Werror") ""))))))))
+                   (("-Werror") ""))
+                 #t))))))
 
 (define-public qjson
   (package
@@ -695,8 +690,8 @@ instances, while JSON's objects will be mapped to @code{QVariantMap}.")
          (add-after 'wrap-program 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (with-directory-excursion "data"
-               (zero? (system* (string-append (assoc-ref outputs "out") "/bin/ktImportText")
-                               "ec.tsv"))))))))
+               (invoke (string-append (assoc-ref outputs "out") "/bin/ktImportText")
+                       "ec.tsv")))))))
    (inputs
     `(("perl" ,perl)))
    (home-page "https://github.com/marbl/Krona/wiki")
@@ -854,13 +849,13 @@ UTS#46.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'bootstrap
+                  (replace 'bootstrap
                     (lambda* (#:key inputs #:allow-other-keys)
                       ;; configure.in and Makefile.am aren't in the root of the
                       ;; source tree.
                       (copy-recursively "build/gnuauto" ".")
                       (setenv "AUTOMAKE" "automake --foreign")
-                      (zero? (system* "autoreconf" "-vfi")))))))
+                      (invoke "autoreconf" "-vfi"))))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
@@ -1241,11 +1236,9 @@ minimum to provide high performance operation.")
            (delete 'configure)
            (add-after 'unpack 'unpack-libsass-and-set-path
              (lambda* (#:key inputs #:allow-other-keys)
-               (and (zero? (system* "tar" "xvf" (assoc-ref inputs "libsass")))
-                    (begin
-                      (setenv "SASS_LIBSASS_PATH"
-                              (string-append (getcwd) "/libsass-" ,version))
-                      #t)))))))
+               (invoke "tar" "xvf" (assoc-ref inputs "libsass"))
+               (setenv "SASS_LIBSASS_PATH"
+                       (string-append (getcwd) "/libsass-" ,version)))))))
       (inputs
        `(("libsass" ,libsass)))
       (synopsis "CSS pre-processor")
@@ -1821,15 +1814,15 @@ number, file name, and code context surrounding the line number.")
 (define-public perl-catalyst-plugin-static-simple
   (package
     (name "perl-catalyst-plugin-static-simple")
-    (version "0.33")
+    (version "0.36")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
                            "Catalyst-Plugin-Static-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "1h8f12bhzh0ssq9gs8r9g3hqn8zn2k0q944vc1vm8j81bns16msy"))))
+         "0m4l627p2fvzr4i6sgdxhdvsx4wpa6qmaibsbxlg5x5yjs7k7drn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
@@ -2115,7 +2108,7 @@ development server with Starman.")
 (define-public perl-cgi
   (package
     (name "perl-cgi")
-    (version "4.35")
+    (version "4.38")
     (source
      (origin
        (method url-fetch)
@@ -2123,7 +2116,7 @@ development server with Starman.")
                            "CGI-" version ".tar.gz"))
        (sha256
         (base32
-         "07gwnlc7vq58fjwmfsrv0hfyirqqdrpjhf89caq34rjrkz2wsd0b"))))
+         "1m779315rzj4mpgscw209a2wk18iwg2n8zibn8aak4mv56jz8n4c"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -2138,6 +2131,30 @@ processing and preparing HTTP requests and responses.  Major features include
 processing form submissions, file uploads, reading and writing cookies, query
 string generation and manipulation, and processing and preparing HTTP
 headers.")
+    (license l:perl-license)))
+
+(define-public perl-cgi-formbuilder
+  (package
+    (name "perl-cgi-formbuilder")
+    (version "3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://cpan.metacpan.org/authors/id/B/BI/BIGPRESH/"
+             "CGI-FormBuilder-" version ".tar.gz"))
+       (sha256
+        (base32
+         "163ixq9kninqq094z2rnkg9pv3bcmvjphlww4vksfrzhq3h9pjdf"))))
+    (build-system perl-build-system)
+    (inputs `(("perl-cgi" ,perl-cgi)))
+    (home-page
+     "https://metacpan.org/release/CGI-FormBuilder")
+    (synopsis
+     "Generate and process stateful forms")
+    (description
+     "@code{CGI::FormBuilder} provides an easy way to generate and process CGI
+form-based applications.")
     (license l:perl-license)))
 
 (define-public perl-cgi-session
@@ -2442,7 +2459,7 @@ composed of HTML::Element style components.")
 (define-public perl-html-scrubber
   (package
     (name "perl-html-scrubber")
-    (version "0.15")
+    (version "0.17")
     (source
      (origin
        (method url-fetch)
@@ -2452,11 +2469,12 @@ composed of HTML::Element style components.")
              ".tar.gz"))
        (sha256
         (base32
-         "1m1f8gm2jry42zxja05dxp2ck7y66m7i8vc38nj6hccnwlby6cvi"))))
+         "06p7w4zd42b2yh541mlzyqj40lwmvvn3fyqi8big4mf34la7m2jm"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-cpan-meta" ,perl-test-cpan-meta)
+       ("perl-test-differences" ,perl-test-differences)
        ("perl-test-eol" ,perl-test-eol)
        ("perl-test-memory-cycle" ,perl-test-memory-cycle)
        ("perl-test-notabs" ,perl-test-notabs)))
@@ -2735,16 +2753,18 @@ used by the HTTP protocol (and then some more).")
 (define-public perl-http-message
   (package
     (name "perl-http-message")
-    (version "6.11")
+    (version "6.15")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/E/ET/ETHER/HTTP-Message-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/HTTP-Message-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "06yq6cjx4vzl4if4ykap77xsrrd8aa7ish90k7cqi8g6g83nicz7"))))
+               "11fbvisyvi6bw8z9iq9fm9mraf69qyds09fblhl9gyvg7ccll93v"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-try-tiny" ,perl-try-tiny)))
     (propagated-inputs
      `(("perl-encode-locale" ,perl-encode-locale)
        ("perl-http-date" ,perl-http-date)
@@ -3161,15 +3181,15 @@ and retry a few times.")
 (define-public perl-net-http
   (package
     (name "perl-net-http")
-    (version "6.07")
+    (version "6.18")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/M/MS/MSCHILLI/Net-HTTP-"
-                   version ".tar.gz"))
+                   "mirror://cpan/authors/id/O/OA/OALDERS/"
+                   "Net-HTTP-" version ".tar.gz"))
              (sha256
               (base32
-               "0r034hhci0yqbrkrh1gv6vi5g3i0kpd1k84z62nk02asb8rf0ccz"))))
+               "074mp9s37q1j290xa3qj1wwgalzla328i2zpnh73xkmdnwnxyhky"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
@@ -3413,7 +3433,7 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-www-mechanize
   (package
     (name "perl-test-www-mechanize")
-    (version "1.48")
+    (version "1.50")
     (source
      (origin
        (method url-fetch)
@@ -3421,17 +3441,12 @@ either mocked HTTP or a locally spawned server.")
                            "Test-WWW-Mechanize-" version ".tar.gz"))
        (sha256
         (base32
-         "1d11fx9155d5v17d5w7q3kj37b01l8yj2yb0g6b0z1vh938rrlcr"))))
+         "097pl87vdbxbb56vawzvs6ikrlb8nz3dx223kjjbdn3jlli3jjhg"))))
     (build-system perl-build-system)
-    (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
-    (native-inputs
-     `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-carp-assert-more" ,perl-carp-assert-more)
        ("perl-html-form" ,perl-html-form)
        ("perl-html-lint" ,perl-html-lint)
-       ("perl-html-tree" ,perl-html-tree)
        ("perl-http-server-simple" ,perl-http-server-simple)
        ("perl-libwww" ,perl-libwww)
        ("perl-test-longstring" ,perl-test-longstring)
@@ -3481,7 +3496,7 @@ testing of Catalyst applications without needing to start up a web server.")
 (define-public perl-test-www-mechanize-psgi
   (package
     (name "perl-test-www-mechanize-psgi")
-    (version "0.37")
+    (version "0.38")
     (source
      (origin
        (method url-fetch)
@@ -3489,7 +3504,7 @@ testing of Catalyst applications without needing to start up a web server.")
                            "Test-WWW-Mechanize-PSGI-" version ".tar.gz"))
        (sha256
         (base32
-         "0c9a9w0d2whadnrich7f09w37fgq5hws4gq04zgz4jsdjcvr3qv2"))))
+         "0fsh2i05kf1kfavv2r9kmnjl7qlyqrd11ikc0qcqzzxsqzzjkg9r"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-pod" ,perl-test-pod)))
@@ -3785,13 +3800,13 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.4.1")
+    (version "1.4.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "1pndv0h870ygibk0bmg9ayzkls60jqscrsyk39k29gy2pvm9ha5y"))))
+                "15ghxcyg9h0za3qy077fnn3izbpihskvaqwsppm2s43a771imsf6"))))
     (build-system r-build-system)
     (native-inputs `(("r-rcpp" ,r-rcpp)))
     (propagated-inputs
@@ -3837,21 +3852,19 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.9")
+    (version "0.10")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0bs0i5mjfzxfshqz8i30nhn7kvgwly4fqn5bfq6dqfdrn7biai2x"))))
+                "0yz3igqsiyqnjj1ngh199zicg3spx4kbmvl0wc8i8xahk6l9g06v"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
        ("r-jsonlite" ,r-jsonlite)
        ("r-mime" ,r-mime)
        ("r-xfun" ,r-xfun)))
-    (native-inputs
-     `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/yihui/servr")
     (synopsis "Simple HTTP server to serve static files or dynamic documents")
     (description
@@ -3920,14 +3933,14 @@ applications.")
 (define-public r-htmltable
   (package
     (name "r-htmltable")
-    (version "1.11.2")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "htmlTable" version))
        (sha256
         (base32
-         "1lbpi0kkk8b41w10scmlf27dg5azcv51a4q3p5bpqyphrnqp78k4"))))
+         "1n5136vb7mi4rxl5jgwdmdhn4mwv2pcqyw2mrj406ih4hy6hpxa2"))))
     (properties `((upstream-name . "htmlTable")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4011,14 +4024,14 @@ objects in HTML format.")
 (define-public r-rjson
   (package
     (name "r-rjson")
-    (version "0.2.15")
+    (version "0.2.19")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rjson" version))
        (sha256
         (base32
-         "1vzjyvf57k1fjizlk28rby65y5lsww5qnfvgnhln74qwda7hvl3p"))))
+         "1g29vp3gfbh73a5br68jydsrigia4vnr5avc84avgwl6353749jw"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/rjson")
     (synopsis "JSON library for R")
@@ -4041,11 +4054,7 @@ and vice-versa.")
                 "1bgg2kbj311pqdzw2v33za7k66g1rv44kkvvnz2gnpaasi9k0ii8"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; tests require bundling googletest sources
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-          (lambda _ (zero? (system* "sh" "autogen.sh")))))))
+     `(#:tests? #f))         ;tests require bundling googletest sources
     ;; The release tarball lacks the generated files.
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -4393,16 +4402,17 @@ NetSurf project.")
        ("mercurial" ,mercurial)))
     (inputs
      `(("python" ,python-wrapper)
+       ("perl-cgi-formbuilder" ,perl-cgi-formbuilder)
        ("perl-cgi-session" ,perl-cgi-session)
        ("perl-cgi-simple" ,perl-cgi-simple)
-       ("perl-json" ,perl-json)
-       ("perl-image-magick" ,perl-image-magick)
-       ("perl-uri" ,perl-uri)
+       ("perl-db-file" ,perl-db-file)
        ("perl-html-parser" ,perl-html-parser)
-       ("perl-uri" ,perl-uri)
-       ("perl-text-markdown-discount" ,perl-text-markdown-discount)
        ("perl-html-scrubber" ,perl-html-scrubber)
        ("perl-html-template" ,perl-html-template)
+       ("perl-image-magick" ,perl-image-magick)
+       ("perl-json" ,perl-json)
+       ("perl-text-markdown-discount" ,perl-text-markdown-discount)
+       ("perl-uri" ,perl-uri)
        ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
     (home-page "https://ikiwiki.info/")
     (synopsis "Wiki compiler, capable of generating HTML")
@@ -4796,7 +4806,7 @@ handling many of the web standards in use today.")
              (let* ((out (assoc-ref %outputs "out"))
                     (man (string-append out "/share/man/man1")))
                (with-directory-excursion man
-                 (zero? (system* "gzip" "elvi.1sr")))))))))
+                 (invoke "gzip" "elvi.1sr"))))))))
     (inputs
      `(("perl" ,perl)
        ("perl-www-opensearch" ,perl-www-opensearch)
@@ -4853,10 +4863,11 @@ config files---you only have to specify the www root.")
                (base32
                 "1w84y61f3ldg2f28q6qlyr1scn3mcx0bsbq3i5xi5w193wh3xa2q"))
               (modules '((guix build utils)))
-              (snippet
-               '(substitute* "src/error.h"
-                  (("__DATE__") "\"1970-01-01\"")
-                  (("__TIME__") "\"00:00:00\"")))))
+              (snippet '(begin
+                          (substitute* "src/error.h"
+                            (("__DATE__") "\"1970-01-01\"")
+                            (("__TIME__") "\"00:00:00\""))
+                          #t))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add dependency on geoip-tools.
@@ -4886,9 +4897,10 @@ on the fly.")
         (base32
          "0mn5s6p68n32xzadz6ds5i6bp44dyxzkq68r1yljlv470jr84bql"))
        (modules '((guix build utils)))
-       (snippet
-        ;; Remove non-free IETF RFC documentation.
-        '(delete-file-recursively "doc"))))
+       (snippet '(begin
+                   ;; Remove non-free IETF RFC documentation.
+                   (delete-file-recursively "doc")
+                   #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4899,8 +4911,8 @@ on the fly.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero? (system* "./configure"
-                               (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (home-page "http://www.nocrew.org/software/httptunnel.html")
     (synopsis "Tunnel data connections through HTTP requests")
     (description "httptunnel creates a bidirectional virtual data connection
@@ -4913,7 +4925,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.44")
+  (version "5.46")
   (source
     (origin
       (method url-fetch)
@@ -4921,7 +4933,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1692y69wl7j6yjgnrrzclgzb34bxsaxjzl1dfy47vms7pdfk42lr"))))
+        "1iw4gap9ysag8iww2ik029scmdllk7jdzcpnnbj7hgbl526b9akn"))))
   (build-system gnu-build-system)
   (inputs `(("openssl" ,openssl)))
   (arguments
@@ -5022,9 +5034,10 @@ functions of Tidy.")
        (uri (string-append "https://www.hiawatha-webserver.org/files/"
                            "hiawatha-" version ".tar.gz"))
        (modules '((guix build utils)))
-       (snippet
-        ;; We use our packaged mbedtls, so delete the included copy.
-        '(delete-file-recursively "mbedtls"))
+       (snippet '(begin
+                   ;; We use our packaged mbedtls, so delete the included copy.
+                   (delete-file-recursively "mbedtls")
+                   #t))
        (sha256
         (base32
          "0x2zfc8kc6c7rl4gwymwmg13w1c60biv6c6c9fvzpnl59bc9jgin"))))
@@ -5249,12 +5262,12 @@ command-line arguments or read from stdin.")
              (add-installed-pythonpath inputs outputs)
              (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
                                            ":" (getenv "PATH")))
-             (zero? (system* "py.test" "-v" "-k"
-                             (string-append
-                              ;; These tests attempt to make a connection to
-                              ;; an external web service.
-                              "not test_get_item_with_kwargs"
-                              " and not test_ia"))))))))
+             (invoke "py.test" "-v" "-k"
+                     (string-append
+                      ;; These tests attempt to make a connection to
+                      ;; an external web service.
+                      "not test_get_item_with_kwargs"
+                      " and not test_ia")))))))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-jsonpatch" ,python-jsonpatch-0.4)
@@ -5315,14 +5328,15 @@ internetarchive python module for programatic access to archive.org.")
          (modify-phases %standard-phases
            (add-after 'unpack 'get-tests
              (lambda _
-               (copy-file (assoc-ref %build-inputs "test-clf") "test_clf.py")))
+               (copy-file (assoc-ref %build-inputs "test-clf") "test_clf.py")
+               #t))
            (replace 'check
              (lambda _
-               (zero? (system* "nosetests"
-                               ;; These tests require internet connection
-                               "--exclude=test_browse"
-                               "--exclude=test_command"
-                               "--exclude=test_search")))))))
+               (invoke "nosetests"
+                       ;; These tests require an Internet connection.
+                       "--exclude=test_browse"
+                       "--exclude=test_command"
+                       "--exclude=test_search"))))))
       (home-page "https://github.com/ncrocfer/clf")
       (synopsis "Search code snippets on @url{https://commandlinefu.com}")
       (description "@code{clf} is a command line tool for searching code
@@ -5335,16 +5349,17 @@ snippets on @url{https://commandlinefu.com}.")
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.0.3")
+    (version "1.1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/rstudio/shiny/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rstudio/shiny.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0z2v2s4hd44mvzjn7r70549kdzkrrch9nxhp27r6x2cy6micizm3"))))
+         "041q2gzvzs13syfhbirmkik96asdji8dxnnbs63j7v1ks97hrvvz"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build r-build-system)
@@ -5409,7 +5424,8 @@ snippets on @url{https://commandlinefu.com}.")
                               "jquery.min.js")))))
              #t)))))
     (propagated-inputs
-     `(("r-httpuv" ,r-httpuv)
+     `(("r-crayon" ,r-crayon)
+       ("r-httpuv" ,r-httpuv)
        ("r-mime" ,r-mime)
        ("r-jsonlite" ,r-jsonlite)
        ("r-xtable" ,r-xtable)
@@ -5556,9 +5572,8 @@ named elements: the @code{status}, the @code{headers}, and the @code{body}.")
             "PATH" '("bin") (map (match-lambda ((_ . input) input))
                                  %build-inputs))
            (mkdir-p share-rss-bridge)
-           (system* "tar" "xvf" (assoc-ref %build-inputs "source")
-                    "--strip-components" "1" "-C" share-rss-bridge)
-           #t))))
+           (invoke "tar" "xvf" (assoc-ref %build-inputs "source")
+                   "--strip-components" "1" "-C" share-rss-bridge)))))
     (home-page "https://github.com/RSS-Bridge/rss-bridge")
     (synopsis "Generate Atom feeds for social networking websites")
     (description "rss-bridge generates Atom feeds for social networking
@@ -5570,28 +5585,23 @@ Instagram and YouTube.")
 (define-public linkchecker
   (package
     (name "linkchecker")
-    (version "9.3")
+    (version "9.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "LinkChecker" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linkchecker/linkchecker")
+             (commit (string-append "v" version))))
        (sha256
         (base32
-         "0v8pavf0bx33xnz1kwflv0r7lxxwj7vg3syxhy2wzza0wh6sc2pf"))))
+         "03ihjmc4bqxxqv71bb43r2f23sx0xnbq1k2fsg9fw05qa5s9x187"))))
     (build-system python-build-system)
     (inputs
-     `(("python2-requests" ,python2-requests)))
+     `(("python2-dnspython" ,python2-dnspython)
+       ("python2-pyxdg" ,python2-pyxdg)
+       ("python2-requests" ,python2-requests)))
     (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         ;; Remove faulty python-requests version check. This has been fixed
-         ;; upstream, and can be removed in version 9.4.
-         (add-after 'unpack 'remove-python-requests-version
-           (lambda _
-             (substitute* "linkcheck/__init__.py"
-               (("requests.__version__ <= '2.2.0'") "False"))
-             #t)))))
+     `(#:python ,python-2))
     (home-page "https://linkcheck.github.io/linkchecker")
     (synopsis "Check websites for broken links")
     (description "LinkChecker is a website validator.  It checks for broken
@@ -5600,15 +5610,10 @@ colored or normal text, HTML, SQL, CSV, XML or as a sitemap graph.  It
 supports checking HTTP/1.1, HTTPS, FTP, mailto, news, nntp, telnet and local
 file links.")
     (license (list l:gpl2+
-                   l:bsd-2 ; linkcheck/better_exchook2.py
-                   l:bsd-3 ; linkcheck/colorama.py
-                   l:psfl  ; linkcheck/gzip2.py
-                   l:expat ; linkcheck/mem.py
-                   ;; FIXME: Unbundle dnspython and miniboa
-                   ;; This issue has been raised upstream
-                   ;; https://github.com/wummel/linkchecker/issues/729
-                   l:isc   ; third_party/dnspython
-                   l:asl2.0)))) ; third_party/miniboa
+                   l:bsd-2              ; linkcheck/better_exchook2.py
+                   l:bsd-3              ; linkcheck/colorama.py
+                   l:psfl               ; linkcheck/gzip2.py
+                   l:expat))))          ; linkcheck/mem.py
 
 (define-public cadaver
   (package
@@ -6347,7 +6352,8 @@ features include:
               "if(isset($_SERVER['CACHE_DIR']))
 $cachepath = $_SERVER['CACHE_DIR'];
 else
-die('You need to set the CACHE_DIR variable first.');"))))))
+die('You need to set the CACHE_DIR variable first.');"))
+           #t))))
     (home-page "https://framagit.org/Deevad/cat-avatar-generator")
     (synopsis "Random avatar generator")
     (description "Cat avatar generator is a generator of cat pictures optimised
@@ -6437,3 +6443,81 @@ compressed JSON header blocks.
 @item @command{inflatehd} converts such compressed headers back to JSON pairs.
 @end itemize\n")
     (license l:expat)))
+
+(define-public hpcguix-web
+  (let ((commit "87cb51611c0f1fd3863b830614ab1364599cf1ca"))
+    (package
+      (name "hpcguix-web")
+      (version (git-version "0.0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/UMCUGenetics/hpcguix-web.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0p66fl8r3v73v13fqg9rbqbzbdzvyznchxbq2s1jwq6qfsn2w3gr"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (srfi srfi-26)
+                    (ice-9 popen)
+                    (ice-9 rdelim))
+
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'autoconf
+             (lambda _
+               (setenv "GUILE_AUTO_COMPILE" "0")
+               (setenv "XDG_CACHE_HOME" (getcwd))
+               (invoke "autoreconf" "-vif")))
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out      (assoc-ref outputs "out"))
+                      (guix     (assoc-ref inputs "guix"))
+                      (guile    (assoc-ref inputs "guile"))
+                      (json     (assoc-ref inputs "guile-json"))
+                      (guile-cm (assoc-ref inputs
+                                           "guile-commonmark"))
+                      (deps (list guile guile-cm guix json))
+                      (effective
+                       (read-line
+                        (open-pipe* OPEN_READ
+                                    (string-append guile "/bin/guile")
+                                    "-c" "(display (effective-version))")))
+                      (path   (string-join
+                               (map (cut string-append <>
+                                         "/share/guile/site/"
+                                         effective)
+                                    deps)
+                               ":"))
+                      (gopath (string-join
+                               (map (cut string-append <>
+                                         "/lib/guile/" effective
+                                         "/site-ccache")
+                                    deps)
+                               ":")))
+                 (wrap-program (string-append out "/bin/run")
+                   `("GUILE_LOAD_PATH" ":" prefix (,path))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath)))
+
+                 #t))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("uglify-js" ,uglify-js)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("guix" ,guix)))
+      (propagated-inputs
+       `(("guile" ,guile-2.2)
+         ("guile-commonmark" ,guile-commonmark)
+         ("guile-json" ,guile-json)))
+    (home-page "https://github.com/UMCUGenetics/hpcguix-web")
+      (synopsis "Web interface for cluster deployments of Guix")
+      (description "Hpcguix-web provides a web interface to the list of packages
+provided by Guix.  The list of packages is searchable and provides
+instructions on how to use Guix in a shared HPC environment.")
+    (license l:agpl3+))))

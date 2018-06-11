@@ -47,14 +47,14 @@
     ;; The 7 release series has an incompatible API, while the 6 series is still
     ;; maintained. Don't update to 7 until we've made sure that the ImageMagick
     ;; users are ready for the 7-series API.
-    (version "6.9.9-39")
+    (version "6.9.9-43")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0cgrvfg8722cdv2y0hw2f7xhzdfmfiqc1348l71ki38dg4b0q4sn"))))
+               "09vfxb1ljfma7mvkcqp17bs7adlrfh6kc6k9hifkhgxf51vr7hk6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")
@@ -77,7 +77,8 @@
                         (let ((doc (assoc-ref outputs "doc")))
                           (string-append "DOCUMENTATION_PATH = "
                                          doc "/share/doc/"
-                                         ,name "-" ,version "\n"))))))
+                                         ,name "-" ,version "\n"))))
+                     #t))
                   (add-before
                    'configure 'strip-configure-xml
                    (lambda _
@@ -87,7 +88,8 @@
                        ;; include --docdir, and thus retain a reference to the
                        ;; 'doc' output.
                        (("@CONFIGURE_ARGS@")
-                        "not recorded")))))))
+                        "not recorded"))
+                     #t)))))
     ;; TODO: Add Jasper etc.
     (inputs `(("fftw" ,fftw)
               ("graphviz" ,graphviz)
@@ -144,7 +146,8 @@ text, lines, polygons, ellipses and Bézier curves.")
                 (("my \\$INC_magick = .*")
                  "my $INC_magick = `pkg-config --cflags ImageMagick`;\n")
                 (("my \\$LIBS_magick = .*")
-                 "my $LIBS_magick = `pkg-config --libs ImageMagick`;\n")))))
+                 "my $LIBS_magick = `pkg-config --libs ImageMagick`;\n"))
+              #t)))
          (add-before
           'check 'skip-mpeg-tests
           (lambda _
@@ -152,7 +155,8 @@ text, lines, polygons, ellipses and Bézier curves.")
             ;; MPEG.  Has been reported elsewhere,
             ;; http://www.imagemagick.org/discourse-server/viewtopic.php?f=7&t=25036,
             ;; so skip for now.
-            (delete-file "t/mpeg/read.t"))))))
+            (delete-file "t/mpeg/read.t")
+            #t)))))
     (home-page "http://search.cpan.org/dist/PerlMagick")
     (synopsis "Perl interface to ImageMagick")
     (description "This Perl extension allows the reading, manipulation and
@@ -165,7 +169,7 @@ script.")
 (define-public graphicsmagick
   (package
     (name "graphicsmagick")
-    (version "1.3.28")
+    (version "1.3.29")
     (source (origin
               (method url-fetch)
               (uri
@@ -177,7 +181,7 @@ script.")
                                  "/GraphicsMagick-" version ".tar.xz")))
               (sha256
                (base32
-                "0jlrrimrajcmwp7llivyj14qnzb1mpqd8vw95dl6zbx5m2lnhall"))))
+                "1m0cc6kpky06lpcipj7rfwc2jbw2igr0jk97zqmw3j1ld5mg93g1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

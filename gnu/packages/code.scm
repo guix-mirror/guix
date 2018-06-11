@@ -7,6 +7,10 @@
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,12 +30,16 @@
 (define-module (gnu packages code)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autogen)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages databases)
@@ -39,15 +47,13 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pcre)
-  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages autogen)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages autotools)
   #:use-module (gnu packages llvm)
-  #:use-module (gnu packages lua)
-  #:use-module (gnu packages bash))
+  #:use-module (gnu packages lua))
 
 ;;; Tools to deal with source code: metrics, cross-references, etc.
 
@@ -414,7 +420,8 @@ functionality such as HTML output.")
            (let ((files (find-files "." ".*\\.cpp|.*\\.h")))
              (substitute* files
                (("#include ?\"rct/(.*.h)\"" all header)
-                (string-append "#include <rct/" header ">"))))))
+                (string-append "#include <rct/" header ">")))
+             #t)))
        (sha256
         (base32
          "0scjbp1z201q8njvrxqz7lk2m9b6k2rxd5q1shrng6532r7ndif2"))))
@@ -492,7 +499,8 @@ importantly we give you proper follow-symbol and find-references support.")
            (install-files '("AUTHORS" "BUGS" "ChangeLog" "README") doc)
            (install-files '("colormake" "colormake-short" "clmake"
                             "clmake-short" "colormake.pl")
-                          bin)))))
+                          bin)
+           #t))))
     (home-page "http://bre.klaki.net/programs/colormake/")
     (synopsis "Wrapper around @command{make} to produce colored output")
     (description "This package provides a wrapper around @command{make} to
@@ -527,3 +535,164 @@ produce colored output.")
 output is a graphviz-dot file, a Gexf-XML file or a list of the deepest
 independent targets.")
     (license license:expat)))
+
+(define-public uncrustify
+  (package
+    (name "uncrustify")
+    (version "0.67")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/uncrustify/uncrustify/archive/"
+                    "uncrustify-" version ".zip"))
+              (sha256
+               (base32
+                "0n13kq0nsm35fxhdp0f275n4x0w88hdv3bdjy0hgvv42x0dx5zyp"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-etc
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Configuration samples are not installed by default.
+             (let* ((output (assoc-ref outputs "out"))
+                    (etcdir (string-append output "/etc")))
+               (for-each (lambda (l)
+                           (install-file l etcdir))
+                         (find-files "etc" "\\.cfg$")))
+             #t)))))
+    (home-page "http://uncrustify.sourceforge.net/")
+    (synopsis "Code formatter for C and other related languages")
+    (description
+     "Beautify source code in many languages of the C family (C, C++, C#,
+Objective@tie{}C, D, Java, Pawn, and Vala).  Features:
+@itemize
+@item Indent and align code.
+@item Reformat comments (a little bit).
+@item Fix inter-character spacing.
+@item Add or remove parens / braces.
+@item Supports embedded SQL @code{EXEC SQL} stuff.
+@item Highly configurable - More than 600 configurable options.
+@end itemize\n")
+    (license license:gpl2+)))
+
+(define-public astyle
+  (package
+    (name "astyle")
+    (version "2.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/astyle/astyle/astyle%20"
+                           version "/astyle_"  version "_linux.tar.gz"))
+       (sha256
+        (base32
+         "0f9sh9kq5ajp1yz133h00fr9235p1m698x7n3h7zbrhjiwgynd6s"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags (list (string-append "prefix=" %output)
+                          "INSTALL=install"
+                          "all")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _ (chdir "build/gcc") #t))
+         (add-after 'install 'install-libs
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Libraries are not installed by default
+             (let* ((output (assoc-ref outputs "out"))
+                    (libdir (string-append output "/lib")))
+               (begin
+                 (mkdir-p libdir)
+                 (for-each (lambda (l)
+                             (copy-file
+                              l (string-append libdir "/" (basename l))))
+                           (find-files "bin" "lib*"))))
+             #t)))))
+    (home-page "http://astyle.sourceforge.net/")
+    (synopsis "Source code indenter, formatter, and beautifier")
+    (description
+     "Artistic Style is a source code indenter, formatter, and beautifier for
+the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
+    (license license:lgpl3+)))
+
+(define-public indent
+  (package
+   (name "indent")
+   (version "2.2.10")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/indent/indent-" version
+                                ".tar.gz"))
+            (sha256 (base32
+                     "0f9655vqdvfwbxvs1gpa7py8k1z71aqh8hp73f65vazwbfz436wa"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'fix-docdir
+          (lambda _
+            ;; Although indent uses a modern autoconf in which docdir
+            ;; defaults to PREFIX/share/doc, the doc/Makefile.am
+            ;; overrides this to be in PREFIX/doc.  Fix this.
+            (substitute* "doc/Makefile.in"
+              (("^docdir = .*$") "docdir = @docdir@\n"))
+            #t)))))
+   (synopsis "Code reformatter")
+   (description
+    "Indent is a program that makes source code easier to read by
+reformatting it in a consistent style.  It can change the style to one of
+several different styles such as GNU, BSD or K&R.  It has some flexibility to
+deal with incomplete or malformed syntax.  GNU indent offers several
+extensions over the standard utility.")
+   (license license:gpl3+)
+   (home-page "https://www.gnu.org/software/indent/")))
+
+(define-public amalgamate
+  (let* ((commit "c91f07eea1133aa184f652b8f1398eaf03586208")
+         (revision "0")
+         (version (git-version "1.1.1" revision commit)))
+    (package
+      (name "amalgamate")
+      (version version)
+      (home-page "https://github.com/edlund/amalgamate")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (sha256
+          (base32
+           "0cllaraw8mxs8q2nr28nhgzkb417gj2wcklqg59w84f4lc78k3yb"))
+         (file-name (git-file-name name version))
+         (modules '((guix build utils)))
+         (snippet
+          '(substitute* "test.sh"
+             (("test_command \"cc -Wall -Wextra -o source.out source.c\"" all)
+              "test_command \"gcc -Wall -Wextra -o source.out source.c\"")))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("python" ,python-wrapper)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "amalgamate.py" bin))))
+           (replace 'check
+             (lambda _
+               (invoke "./test.sh"))))))
+      (synopsis "Tool for amalgamating C source and header files")
+      ;; The package is indeed a script file, and the term "amalgamate.py" is
+      ;; used by upstream.
+      (description "amalgamate.py aims to make it easy to use SQLite-style C
+source and header amalgamation in projects.")
+      (license license:bsd-3))))

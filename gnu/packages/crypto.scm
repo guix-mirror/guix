@@ -183,7 +183,8 @@ OpenBSD tool of the same name.")
            (substitute* "src/crypto.cpp"
              (("argon2/argon2.h") "argon2.h"))
            (substitute* "configure.ac"
-             (("src/argon2/Makefile") ""))))
+             (("src/argon2/Makefile") ""))
+           #t))
        (sha256
         (base32
          "09yvkmbqbym3b5md4n96qc1s9sf2n8ji404hagih45rmsj49599x"))))
@@ -228,9 +229,11 @@ communication.")
          "1906254dg5hwljh0h4gyrw09ms3b57dlhjfzhfzffv50yzpkl837"))
        (modules '((guix build utils)))
        ;; Remove bundled dependencies in favour of proper inputs.
-       (snippet '(for-each delete-file-recursively
-                           (find-files "internal" "^tinyxml2-[0-9]"
-                                       #:directories? #t)))))
+       (snippet '(begin
+                   (for-each delete-file-recursively
+                             (find-files "internal" "^tinyxml2-[0-9]"
+                                         #:directories? #t))
+                   #t))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -272,8 +275,10 @@ the wrong hands.")
          "1dmgjcf7mnwc6h72xkvpaqpzxw8vmlnsmzz0s27pg0giwzm3sp0i"))
        (modules '((guix build utils)))
        ;; Create relative symbolic links instead of absolute ones to /lib/*
-       (snippet '(substitute* "Makefile" (("\\$\\(LNS\\) \\$\\(LIBDIR\\)/")
-                                          "$(LNS) ")))))
+       (snippet '(begin
+                   (substitute* "Makefile" (("\\$\\(LNS\\) \\$\\(LIBDIR\\)/")
+                                            "$(LNS) "))
+                   #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -358,14 +363,14 @@ no man page, refer to the home page for usage details.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dyne.org/tomb/"
                                   "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "1hv1w79as7swqj0n137vz8n8mwvcgwlvd91sdyssz41jarg7f1vr"))))
+                "12c6qldngaw520gvb02inzkhnxbl4k0dwmddrgnaf7xashy6j0wc"))))
     (build-system gnu-build-system)
     (native-inputs `(("sudo" ,sudo)))   ;presence needed for 'check' phase
     (inputs
@@ -377,7 +382,8 @@ no man page, refer to the home page for usage details.")
        ("mlocate" ,mlocate)
        ("pinentry" ,pinentry)
        ("qrencode" ,qrencode)
-       ("steghide" ,steghide)))
+       ("steghide" ,steghide)
+       ("util-linux" ,util-linux)))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        ;; TODO: Build and install gtk and qt trays
@@ -400,7 +406,7 @@ no man page, refer to the home page for usage details.")
                                  (error "program not found:" program)))
                            '("seq" "mkfs.ext4" "pinentry" "sudo"
                              "gpg" "cryptsetup" "gettext"
-                             "qrencode" "steghide")))))
+                             "qrencode" "steghide" "findmnt")))))
                #t)))
          (delete 'check)
          (add-after 'wrap 'check
@@ -648,12 +654,7 @@ data on your platform, so the seed itself will be as random as possible.
                ;; fat only checks for Intel optimisations
                '("--enable-fat")
                '())
-           "--disable-native") ; don't optimise at build time.
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'bootstrap
-             (lambda _
-               (invoke "sh" "autogen.sh"))))))
+           "--disable-native")))                 ;don't optimise at build time
       (home-page "https://blake2.net/")
       (synopsis "Library implementing the BLAKE2 family of hash functions")
       (description
@@ -671,7 +672,7 @@ BLAKE.")
 (define-public rhash
   (package
     (name "rhash")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
@@ -680,32 +681,27 @@ BLAKE.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0bhz3xdl6r06k1bqigdjz42l31iqz2qdpg7zk316i7p2ra56iq4q"))))
+         "14ngzfgmd1lfp7m78sn49x8ymf2s37nrr67c6p5vas85nrrgjkcn"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
-       #:test-target "test"
+     `(#:make-flags
+       ;; The binaries in /bin need some help finding librhash.so.0.
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:test-target "test"             ; ‘make check’ just checks the sources
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
+           ;; ./configure is not GNU autotools' and doesn't gracefully handle
+           ;; unrecognized options, so we must call it manually.
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "Makefile"
-               (("\\$\\(DESTDIR\\)/etc")
-                (string-append (assoc-ref outputs "out") "/etc")))
-             #t))
-         (add-after 'build 'build-library
+             (invoke "./configure"
+                     (string-append "--prefix=" (assoc-ref outputs "out")))))
+         (add-after 'install 'install-library-extras
            (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "lib-shared" make-flags)))
-         (add-after 'install 'install-library
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "install-lib-shared" make-flags)
              (apply invoke
-                    "make" "-C" "librhash" "install-headers"
-                    "install-so-link" make-flags)))
-         (add-after 'check 'check-library
-           (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "test-shared-lib" make-flags))))))
+                    "make" "-C" "librhash"
+                    "install-headers" "install-so-link"
+                    make-flags))))))
     (home-page "https://sourceforge.net/projects/rhash/")
     (synopsis "Utility for computing hash sums")
     (description "RHash is a console utility for calculation and verification

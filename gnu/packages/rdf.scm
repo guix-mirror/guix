@@ -248,7 +248,8 @@ and triple stores.")
           (lambda* (#:key outputs #:allow-other-keys)
             (setenv "LDFLAGS"
                     (string-append "-Wl,-rpath="
-                                   (assoc-ref outputs "out") "/lib")))))))
+                                   (assoc-ref outputs "out") "/lib"))
+            #t)))))
     (home-page "http://drobilla.net/software/serd/")
     (synopsis "Library for RDF syntax supporting Turtle and NTriples")
     (description
@@ -281,7 +282,8 @@ ideal (e.g. in LV2 implementations or embedded applications).")
           (lambda* (#:key outputs #:allow-other-keys)
             (setenv "LDFLAGS"
                     (string-append "-Wl,-rpath="
-                                   (assoc-ref outputs "out") "/lib")))))))
+                                   (assoc-ref outputs "out") "/lib"))
+            #t)))))
     (inputs
      `(("serd" ,serd)))
     (native-inputs

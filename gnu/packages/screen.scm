@@ -87,7 +87,8 @@ view to show two terminals at once.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (install-file "dtach" (string-append out "/bin"))
-               (install-file "dtach.1" (string-append out "/share/man/man1"))))))
+               (install-file "dtach.1" (string-append out "/share/man/man1"))
+               #t))))
        ;; No check target.
        #:tests? #f))
     (home-page "http://dtach.sourceforge.net/")
@@ -124,7 +125,8 @@ controlling terminal and attach to it later.")
           (lambda* (#:key inputs #:allow-other-keys)
             (let ((libc   (assoc-ref inputs "libc"))) ;implicit input
               (substitute* "usr/bin/byobu.in"
-                (("locale") (string-append libc "/bin/locale"))))))
+                (("locale") (string-append libc "/bin/locale")))
+              #t)))
          (add-after
           'install 'wrap-python-scripts
           (lambda* (#:key inputs outputs #:allow-other-keys)

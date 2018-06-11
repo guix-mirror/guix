@@ -15,7 +15,7 @@ main="(@ (gnu build-support ld-wrapper) ld-wrapper)"
 exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line)))" "$@"
 !#
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,7 +81,19 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
 
 (define %allow-impurities?
   ;; Whether to allow references to libraries outside the store.
-  (getenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES"))
+  ;; Allow them by default for convenience.
+  (let ((value (getenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES")))
+    (or (not value)
+        (let ((value (string-downcase value)))
+          (cond ((member value '("yes" "y" "t" "true" "1"))
+                 #t)
+                ((member value '("no" "n" "f" "false" "0"))
+                 #f)
+                (else
+                 (format (current-error-port)
+                         "ld-wrapper: ~s: invalid value for \
+'GUIX_LD_WRAPPER_ALLOW_IMPURITIES'~%"
+                         value)))))))
 
 (define %debug?
   ;; Whether to emit debugging output.
@@ -217,8 +229,8 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
                        (begin
                          (format (current-error-port)
                                  "ld-wrapper: error: attempt to use \
-impure library ~s~%"
-                                 file)
+library outside of ~a: ~s~%"
+                                 %store-directory file)
                          (exit 1)))))
               '()
               library-files))
@@ -270,7 +282,8 @@ impure library ~s~%"
               "ld-wrapper: libraries linked: ~s~%" libs)
       (format (current-error-port)
               "ld-wrapper: invoking `~a' with ~s~%"
-              %real-ld args))
+              %real-ld args)
+      (force-output (current-error-port)))
     (apply execl %real-ld (basename %real-ld) args)))
 
 ;;; ld-wrapper.scm ends here

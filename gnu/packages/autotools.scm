@@ -3,11 +3,12 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,9 +121,9 @@ know anything about Autoconf or M4.")
                    (out  (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" bash)
                (setenv "SHELL" bash)
-               (zero? (system* bash "./configure"
-                               (string-append "--prefix=" out)
-                               (string-append "--build=" build)))))))))))
+               (invoke bash "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--build=" build))))))))))
 
 
 (define (make-autoconf-wrapper autoconf)
@@ -192,7 +193,8 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                        (patch-shebang "configure"))
                      (exit (status:exit-val result))))
                 port)))
-           (chmod (string-append bin "/autoconf") #o555)))))
+           (chmod (string-append bin "/autoconf") #o555)
+           #t))))
 
     ;; Do not show it in the UI since it's meant for internal use.
     (properties '((hidden? . #t)))))
@@ -248,14 +250,14 @@ output is indexed in many ways to simplify browsing.")
 (define-public automake
   (package
     (name "automake")
-    (version "1.15.1")
+    (version "1.16.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/automake/automake-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1bzd9g32dfm4rsbw93ld9x7b5nc1y6i4m6zp032qf1i28a8s6sxg"))
+                "08g979ficj18i1w6w5219bgmns7czr03iadf20mk3lrzl8wbn1ax"))
              (patches
               (search-patches "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
@@ -287,32 +289,33 @@ output is indexed in many ways to simplify browsing.")
                (setenv "CONFIG_SHELL" sh)
                #t)))
 
-           ;; Files like `install-sh', `mdate.sh', etc. must use
-           ;; #!/bin/sh, otherwise users could leak erroneous shebangs
-           ;; in the wild.  See <http://bugs.gnu.org/14201> for an
-           ;; example.
-           (add-after 'install 'unpatch-shebangs
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (dir (string-append out "/share")))
-                 (define (starts-with-shebang? file)
-                   (equal? (call-with-input-file file
-                             (lambda (p)
-                               (list (get-u8 p) (get-u8 p))))
-                           (map char->integer '(#\# #\!))))
+         ;; Files like `install-sh', `mdate.sh', etc. must use
+         ;; #!/bin/sh, otherwise users could leak erroneous shebangs
+         ;; in the wild.  See <http://bugs.gnu.org/14201> for an
+         ;; example.
+         (add-after 'install 'unpatch-shebangs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dir (string-append out "/share")))
+               (define (starts-with-shebang? file)
+                 (equal? (call-with-input-file file
+                           (lambda (p)
+                             (list (get-u8 p) (get-u8 p))))
+                         (map char->integer '(#\# #\!))))
 
-                 (for-each (lambda (file)
-                             (when (and (starts-with-shebang? file)
-                                        (executable-file? file))
-                               (format #t "restoring shebang on `~a'~%"
-                                       file)
-                               (substitute* file
-                                 (("^#!.*/bin/sh")
-                                  "#!/bin/sh")
-                                 (("^#!.*/bin/env(.*)$" _ args)
-                                  (string-append "#!/usr/bin/env"
-                                                 args)))))
-                           (find-files dir ".*"))))))))
+               (for-each (lambda (file)
+                           (when (and (starts-with-shebang? file)
+                                      (executable-file? file))
+                             (format #t "restoring shebang on `~a'~%"
+                                     file)
+                             (substitute* file
+                               (("^#!.*/bin/sh")
+                                "#!/bin/sh")
+                               (("^#!.*/bin/env(.*)$" _ args)
+                                (string-append "#!/usr/bin/env"
+                                               args)))))
+                         (find-files dir ".*"))
+               #t))))))
     (home-page "https://www.gnu.org/software/automake/")
     (synopsis "Making GNU standards-compliant Makefiles")
     (description
@@ -321,21 +324,6 @@ standards-compliant Makefiles.  Build requirements are entered in an
 intuitive format and then Automake works with Autoconf to produce a robust
 Makefile, simplifying the entire process for the developer.")
     (license gpl2+)))                      ; some files are under GPLv3+
-
-(define-public automake-1.16
-  ;; Make this the default on the next rebuild cycle.
-  (package
-    (inherit automake)
-    (version "1.16.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/automake/automake-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "08g979ficj18i1w6w5219bgmns7czr03iadf20mk3lrzl8wbn1ax"))
-              (patches
-               (search-patches "automake-skip-amhello-tests.patch"))))))
 
 (define-public libtool
   (package
@@ -353,6 +341,9 @@ Makefile, simplifying the entire process for the developer.")
     (propagated-inputs `(("m4" ,m4)))
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)
+                     ;; XXX: this shouldn't be necessary, but without it test
+                     ;; 102 fails because it cannot find ltdl/libltdl.la.
+                     ("libltdl" ,libltdl)
                      ("help2man" ,help2man) ;because we modify ltmain.sh
                      ("automake" ,automake)      ;some tests rely on 'aclocal'
                      ("autoconf" ,autoconf-wrapper))) ;others on 'autom4te'

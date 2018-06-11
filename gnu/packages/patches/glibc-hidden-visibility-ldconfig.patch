@@ -1,0 +1,16 @@
+Fix a regression in glibc 2.27 when built without ldconfig.  See
+<https://sourceware.org/bugzilla/show_bug.cgi?id=22977> for details.
+
+diff --git a/include/libc-symbols.h b/include/libc-symbols.h
+index 6137304b0b..7d630f36d8 100644
+--- a/include/libc-symbols.h
++++ b/include/libc-symbols.h
+@@ -508,7 +508,7 @@ for linking")
+ # ifndef __ASSEMBLER__
+ #  if !defined SHARED && IS_IN (libc) && !defined LIBC_NONSHARED \
+       && (!defined PIC || !defined NO_HIDDEN_EXTERN_FUNC_IN_PIE) \
+-      && !defined NO_HIDDEN
++      && !defined NO_HIDDEN && defined USE_LDCONFIG
+ #   define __hidden_proto_hiddenattr(attrs...) \
+   __attribute__ ((visibility ("hidden"), ##attrs))
+ #   define hidden_proto(name, attrs...) \

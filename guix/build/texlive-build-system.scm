@@ -34,11 +34,11 @@
 ;; Code:
 
 (define (compile-with-latex format file)
-  (zero? (system* format
-                  "-interaction=batchmode"
-                  "-output-directory=build"
-                  (string-append "&" format)
-                  file)))
+  (invoke format
+          "-interaction=batchmode"
+          "-output-directory=build"
+          (string-append "&" format)
+          file))
 
 (define* (configure #:key inputs #:allow-other-keys)
   (let* ((out       (string-append (getcwd) "/.texlive-union"))
@@ -81,6 +81,7 @@
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (replace 'configure configure)
     (replace 'build build)
     (delete 'check)

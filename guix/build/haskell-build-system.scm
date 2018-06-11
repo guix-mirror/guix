@@ -266,6 +266,7 @@ given Haskell package."
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (add-before 'configure 'setup-compiler setup-compiler)
     (add-before 'install 'haddock haddock)
     (add-after 'install 'register register)

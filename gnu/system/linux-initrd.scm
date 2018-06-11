@@ -283,7 +283,7 @@ FILE-SYSTEMS."
   (define virtio-modules
     ;; Modules for Linux para-virtualized devices, for use in QEMU guests.
     '("virtio_pci" "virtio_balloon" "virtio_blk" "virtio_net"
-      "virtio_console"))
+      "virtio_console" "virtio-rng"))
 
   `("ahci"                                  ;for SATA controllers
     "usb-storage" "uas"                     ;for the installation image etc.

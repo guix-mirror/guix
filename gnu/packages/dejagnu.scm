@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flasher.co.il>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,11 +58,10 @@
 
                   ;; The test-suite needs to have a non-empty stdin:
                   ;; <http://lists.gnu.org/archive/html/bug-dejagnu/2003-06/msg00002.html>.
-                  (zero?
-                   (system "make check < /dev/zero")))
-                 (begin
-                   (display "test suite cannot be run, skipping\n")
-                   #t))))
+                  (unless (zero? (system "make check < /dev/zero"))
+                    (error "make check failed")))
+                 (display "test suite cannot be run, skipping\n"))
+             #t))
          (add-after 'install 'post-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Use the right `expect' binary.
@@ -71,7 +71,8 @@
                  (("^mypath.*$" all)
                   (string-append all
                                  "export PATH="
-                                 expect "/bin:$PATH\n")))))))))
+                                 expect "/bin:$PATH\n")))
+               #t))))))
     (home-page
      "https://www.gnu.org/software/dejagnu/")
     (synopsis "GNU software testing framework")

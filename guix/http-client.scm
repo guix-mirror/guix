@@ -114,7 +114,7 @@ Raise an '&http-get-error' condition if downloading fails."
             308)                                  ; permanent redirection
            (let ((uri (resolve-uri-reference (response-location resp) uri)))
              (close-port port)
-             (format #t (G_ "following redirection to `~a'...~%")
+             (format (current-error-port) (G_ "following redirection to `~a'...~%")
                      (uri->string uri))
              (loop uri)))
           (else

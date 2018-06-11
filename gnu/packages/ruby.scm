@@ -669,14 +669,14 @@ line of code.")
 (define-public ruby-asciidoctor
   (package
   (name "ruby-asciidoctor")
-  (version "1.5.6.2")
+  (version "1.5.7.1")
   (source
     (origin
       (method url-fetch)
       (uri (rubygems-uri "asciidoctor" version))
       (sha256
         (base32
-          "0zq3az4836nxkc8g5wnnbzmarw7663s1ky6gf8pc04sfpa8n2l3f"))))
+          "0v52bzc72cvg7zfgq27pa4mgyf29dx9m20fghrw1xmvwgd519n1w"))))
   (build-system ruby-build-system)
   (arguments
    `(#:test-target "test:all"
@@ -697,8 +697,8 @@ line of code.")
   (synopsis "Converter from AsciiDoc content to other formats")
   (description
     "Asciidoctor is a text processor and publishing toolchain for converting
-AsciiDoc content to HTML5, DocBook 5 (or 4.5) and other formats.")
-  (home-page "http://asciidoctor.org")
+AsciiDoc content to HTML5, DocBook 5 (or 4.5), PDF, and other formats.")
+  (home-page "https://asciidoctor.org")
   (license license:expat)))
 
 (define-public ruby-sporkmonger-rack-mount
@@ -1005,13 +1005,13 @@ interfaces.")
 (define-public ruby-lumberjack
   (package
     (name "ruby-lumberjack")
-    (version "1.0.12")
+    (version "1.0.13")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "lumberjack" version))
               (sha256
                (base32
-                "0yz26k9mi0djx1qvlmvdw1xw2yf7a2rkfmnb2j0d28kms33xpibp"))))
+                "06im7gcg42x77yhz2w5da2ly9xz0n0c36y5ks7xs53v0l9g0vf5n"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
@@ -1346,13 +1346,13 @@ disable tests, have before and after blocks that run once and more.")
 (define-public ruby-connection-pool
   (package
     (name "ruby-connection-pool")
-    (version "2.2.1")
+    (version "2.2.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "connection_pool" version))
               (sha256
                (base32
-                "17vpaj6kyf2i8bimaxz7rg1kyadf4d10642ja67qiqlhwgczl2w7"))))
+                "0lflx29mlznf1hn0nihkgllzbj8xp5qasn8j7h838465pi399k68"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
@@ -2068,14 +2068,14 @@ instance, it provides @code{assert_true}, @code{assert_false} and
 (define-public ruby-minitest-hooks
   (package
     (name "ruby-minitest-hooks")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "minitest-hooks" version))
        (sha256
         (base32
-         "05bngfyxwq1cflk568nhddgfrmws5ff6kiqax4skklsjnh71ykbi"))))
+         "0lnpvzijbjrvxjc43d155jnbk2mkfshrz22an711wh004scavlzc"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
@@ -2924,13 +2924,13 @@ a native C extension.")
 (define-public ruby-rb-fsevent
   (package
     (name "ruby-rb-fsevent")
-    (version "0.10.2")
+    (version "0.10.3")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rb-fsevent" version))
               (sha256
                (base32
-                "1fbpmjypwxkb8r7y1kmhmyp6gawa4byw0yb3jc3dn9ly4ld9lizf"))))
+                "1lm1k7wpz69jx7jrc92w3ggczkjyjbfziq5mg62vjnxmzs383xx8"))))
     (build-system ruby-build-system)
     ;; Tests need "guard-rspec", which needs "guard".  However, "guard" needs
     ;; "listen", which needs "rb-fsevent" at runtime.
@@ -3417,17 +3417,17 @@ testing libraries to build on.")
 (define-public ruby-rack-protection
   (package
     (name "ruby-rack-protection")
-    (version "2.0.1")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rack-protection" version))
        (sha256
         (base32
-         "0ywmgh7x8ljf7jfnq5hmfzki3f803waji3fcvi107w7mlyflbng7"))))
+         "0fik7c77rhzs55ip3s8fwa6b0yvmy6313720cqkjx38w34yn2889"))))
     (build-system ruby-build-system)
     (arguments
-     '(;; Tests missing from the gem
+     '(;; Tests missing from the gem.
        #:tests? #f))
     (propagated-inputs
      `(("ruby-rack" ,ruby-rack)))
@@ -3694,17 +3694,17 @@ application.")
 (define-public ruby-eventmachine
   (package
     (name "ruby-eventmachine")
-    (version "1.2.5")
+    (version "1.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "eventmachine" version))
        (sha256
         (base32
-         "075hdw0fgzldgss3xaqm2dk545736khcvv1fmzbf1sgdlkyh1v8z"))))
+         "0wh9aqb0skz80fhfn66lbpr4f86ya2z5rx6gm5xlfhd05bj1ch4r"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ; test suite tries to connect to google.com
+     '(#:tests? #f))               ; test suite tries to connect to google.com
     (native-inputs
      `(("ruby-rake-compiler" ,ruby-rake-compiler)))
     (synopsis "Single-threaded network event framework for Ruby")
@@ -3713,7 +3713,8 @@ application.")
 communications.  EventMachine wraps all interactions with sockets, allowing
 programs to concentrate on the implementation of network protocols.  It can be
 used to create both network servers and clients.")
-    (home-page "http://rubyeventmachine.com")
+    ;; The ‘official’ rubyeventmachine.com domain is now registrar-squatted.
+    (home-page "https://github.com/eventmachine/eventmachine")
     (license (list license:ruby license:gpl3)))) ; GPLv3 only AFAICT
 
 (define-public ruby-ruby-engine
@@ -3882,14 +3883,14 @@ definitions.")
 (define-public ruby-fivemat
   (package
     (name "ruby-fivemat")
-    (version "1.3.5")
+    (version "1.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "fivemat" version))
        (sha256
         (base32
-         "0ij7n250gk5c1g34rsbwjnpcv64gk4vsas8lkz8fac4wbygvk6z1"))))
+         "006n7b09vviv5bs5hv2ccmjxw9iw3brcsm3xh3dhzfncsknz4jp7"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f)) ; no tests

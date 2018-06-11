@@ -68,7 +68,8 @@
                     (("deps/http_parser/http_parser.gyp") "")
                     (("deps/uv/include/\\*.h") "")
                     (("deps/uv/uv.gyp") "")
-                    (("deps/zlib/zlib.gyp") ""))))))
+                    (("deps/zlib/zlib.gyp") ""))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO: Purge the bundled copies from the source.

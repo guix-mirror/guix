@@ -76,7 +76,7 @@
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                 (add-before 'patch-source-shebangs 'bootstrap
+                 (replace 'bootstrap
                   (lambda _
                     (setenv "NOCONFIGURE" "true")
                     (invoke "sh" "autogen.sh"))))))
@@ -238,7 +238,8 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
                      "")
                     ;; Replace the call to 'sd_booted' by the truth value.
                     (("sd_booted\\(\\)")
-                     "1"))))))
+                     "1"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -557,7 +558,8 @@ embedded kernel situations.")
                        "app/qml/ApplicationSettings.qml"))
                     ;; Final substitution for default scanline and pixel fonts
                     (substitute* "app/qml/ApplicationSettings.qml"
-                      (("COMMODORE_PET") "PROGGY_TINY"))))))
+                      (("COMMODORE_PET") "PROGGY_TINY"))
+                    #t))))
       (build-system gnu-build-system)
       (inputs
        `(("qtbase" ,qtbase)
@@ -617,7 +619,7 @@ eye-candy, customizable, and reasonably lightweight.")
 (define-public sakura
   (package
     (name "sakura")
-    (version "3.5.0")
+    (version "3.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/" name "/trunk/"
@@ -625,14 +627,13 @@ eye-candy, customizable, and reasonably lightweight.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0fhcn3540iw22l5zg3njh5z8cj0g2n9p6fvagjqa5zc323jfsc7b"))))
+                "1q463qm41ym7jb3kbzjz7b6x549vmgkb70arpkhsf86yxly1y5m1"))))
     (build-system cmake-build-system)
     (arguments
-     ;; no check phase
-     '(#:tests? #f))
+     '(#:tests? #f))                    ; no check phase
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("perl" ,perl)               ; for pod2man
+       ("perl" ,perl)                   ; for pod2man
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("libxft" ,libxft)

@@ -101,7 +101,7 @@ is usually the formatter of \"man\" documentation pages.")
                    ;; Keep only the programs that man-db needs at run time,
                    ;; and make sure we don't pull in Perl.
                    (let ((out  (assoc-ref outputs "out"))
-                         (kept '("eqn" "neqn" "pic" "tbl" "refer"
+                         (kept '("eqn" "neqn" "pic" "tbl" "refer" "preconv"
                                  "nroff" "groff" "troff" "grotty")))
                      (for-each (lambda (file)
                                  (unless (member (basename file) kept)

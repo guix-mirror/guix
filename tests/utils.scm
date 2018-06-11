@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
@@ -71,6 +71,12 @@
 
 (test-assert "guile-version>? 10.5"
   (not (guile-version>? "10.5")))
+
+(test-assert "version-prefix?"
+  (and (version-prefix? "4.1" "4.1.2")
+       (version-prefix? "4.1" "4.1")
+       (not (version-prefix? "4.1" "4.16.2"))
+       (not (version-prefix? "4.1" "4"))))
 
 (test-equal "string-tokenize*"
   '(("foo")

@@ -60,7 +60,7 @@
      (let* ((url (if (string=? "" version)
                      (string-append %stackage-url "/lts")
                      (string-append %stackage-url "/lts-" version)))
-            (lts-info (json-fetch url)))
+            (lts-info (json-fetch-alist url)))
        (if lts-info
            (reverse lts-info)
            (leave-with-message "LTS release version not found: ~a" version))))))

@@ -1,5 +1,4 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
@@ -56,9 +55,11 @@
               (modules '((guix build utils)))
               (snippet
                ;; Remove timestamp from the installed 'README' file.
-               '(substitute* "etc/README.in"
-                  (("@date@")
-                   "1st of some month, sometime after 1970")))
+               '(begin
+                  (substitute* "etc/README.in"
+                    (("@date@")
+                     "1st of some month, sometime after 1970"))
+                  #t))
               (patches (search-patches
                         "a2ps-CVE-2001-1593.patch"
                         "a2ps-CVE-2014-0466.patch"))))
@@ -281,44 +282,3 @@ seen in a terminal.")
 TeX, SVG, BBCode and terminal escape sequences with colored syntax
 highlighting.  Language definitions and color themes are customizable.")
     (license gpl3+)))
-
-(define-public astyle
-  (package
-    (name "astyle")
-    (version "2.05")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/astyle/astyle/astyle%20"
-                           version "/astyle_"  version "_linux.tar.gz"))
-       (sha256
-        (base32
-         "0f9sh9kq5ajp1yz133h00fr9235p1m698x7n3h7zbrhjiwgynd6s"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f                      ;no tests
-       #:make-flags (list (string-append "prefix=" %output)
-                          "INSTALL=install"
-                          "all")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _ (chdir "build/gcc") #t))
-         (add-after 'install 'install-libs
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Libraries are not installed by default
-             (let* ((output (assoc-ref outputs "out"))
-                    (libdir (string-append output "/lib")))
-               (begin
-                 (mkdir-p libdir)
-                 (for-each (lambda (l)
-                             (copy-file
-                              l (string-append libdir "/" (basename l))))
-                           (find-files "bin" "lib*"))))
-             #t)))))
-    (home-page "http://astyle.sourceforge.net/")
-    (synopsis "Source code indenter, formatter, and beautifier")
-    (description
-     "Artistic Style is a source code indenter, formatter, and beautifier for
-the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
-    (license lgpl3+)))

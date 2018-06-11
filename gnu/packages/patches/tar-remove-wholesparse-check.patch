@@ -1,0 +1,68 @@
+This patch is needed in order to build Guix on a Btrfs file system.
+
+
+From da922703282b0d3b8837a99a9c7fdd32f1d20d49 Mon Sep 17 00:00:00 2001
+From: Mark H Weaver <mhw@netris.org>
+Date: Tue, 9 Jan 2018 20:16:14 -0500
+Subject: [PATCH] Remove nonportable check for files containing only zeroes.
+
+This check benefitted only one unlikely case (large files containing
+only zeroes, on systems that do not support SEEK_HOLE) and was based
+on an assumption about file system behavior that is not mandated by
+POSIX and no longer holds in practice, namely that for sufficiently
+large files, (st_blocks == 0) implies that the file contains only
+zeroes.  Examples of file systems that violate this assumption include
+Linux's /proc file system and Btrfs.
+
+* src/sparse.c (sparse_scan_file_wholesparse): Remove this function.
+(sparse_scan_file_seek): Remove the initial check for files containing
+only zeroes.
+---
+ src/sparse.c | 24 ------------------------
+ 1 file changed, 24 deletions(-)
+
+diff --git a/src/sparse.c b/src/sparse.c
+index d41c0ea..3de6560 100644
+--- a/src/sparse.c
++++ b/src/sparse.c
+@@ -261,26 +261,6 @@ sparse_scan_file_raw (struct tar_sparse_file *file)
+   return tar_sparse_scan (file, scan_end, NULL);
+ }
+ 
+-static bool
+-sparse_scan_file_wholesparse (struct tar_sparse_file *file)
+-{
+-  struct tar_stat_info *st = file->stat_info;
+-  struct sp_array sp = {0, 0};
+-
+-  /* Note that this function is called only for truly sparse files of size >= 1
+-     block size (checked via ST_IS_SPARSE before).  See the thread
+-     http://www.mail-archive.com/bug-tar@gnu.org/msg04209.html for more info */
+-  if (ST_NBLOCKS (st->stat) == 0)
+-    {
+-      st->archive_file_size = 0;
+-      sp.offset = st->stat.st_size;
+-      sparse_add_map (st, &sp);
+-      return true;
+-    }
+-
+-  return false;
+-}
+-
+ #ifdef SEEK_HOLE
+ /* Try to engage SEEK_HOLE/SEEK_DATA feature. */
+ static bool
+@@ -343,10 +323,6 @@ sparse_scan_file_seek (struct tar_sparse_file *file)
+ static bool
+ sparse_scan_file (struct tar_sparse_file *file)
+ {
+-  /* always check for completely sparse files */
+-  if (sparse_scan_file_wholesparse (file))
+-    return true;
+-
+   switch (hole_detection)
+     {
+     case HOLE_DETECTION_DEFAULT:
+-- 
+2.15.1
+

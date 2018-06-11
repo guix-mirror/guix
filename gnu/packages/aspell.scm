@@ -55,7 +55,8 @@
                                               "/bin/aspell")))
                (wrap-program bin/aspell
                  '("ASPELL_CONF" "" =
-                   ("${ASPELL_CONF:-\"dict-dir ${GUIX_PROFILE:-$HOME/.guix-profile}/lib/aspell\"}")))))))))
+                   ("${ASPELL_CONF:-\"dict-dir ${GUIX_PROFILE:-$HOME/.guix-profile}/lib/aspell\"}")))
+               #t))))))
     (inputs `(("perl" ,perl)))
 
     (native-search-paths
@@ -101,7 +102,7 @@ dictionaries, including personal ones.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "./configure"))))))
+               (invoke "./configure")))))
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append "dictdir=" out "/lib/aspell")

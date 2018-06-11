@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -233,10 +233,19 @@ PCM data.")
                (base32
                 "13j1m92zhxwkaaja3lg5x0h0b28mrrawdzk9d3hd19031akfxwb3"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'no-Werror
+                    (lambda _
+                      ;; Don't abort builds due to things like GLib
+                      ;; deprecation warnings.
+                      (substitute* (find-files "." "^Makefile\\.in$")
+                        (("-Werror") ""))
+                      #t)))))
     (native-inputs `(("pkgconfig" ,pkg-config)))
     (inputs `(("bdb" ,bdb)
               ("glib" ,glib)
-              ("guile" ,guile-2.0)
+              ("guile" ,guile-2.2)
               ("libmicrohttpd" ,libmicrohttpd)
               ("ncurses" ,ncurses)
               ("sdl" ,sdl)
@@ -387,7 +396,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.1.4")
+    (version "1.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -395,7 +404,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xb3zwcdk7khdrza6spl02g5n2xbij6nbszv8vi27vagjnmz1wxh"))))
+                "1zrq1nhb50mwqzw3fln6vj49ljddil1v7yby3ahjbcm94s25ll1y"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -541,22 +550,14 @@ archive on a per-file basis.")
 (define-public love
   (package
     (name "love")
-    (version "0.10.2")
+    (version "11.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/rude/love/downloads/"
                                  "love-" version "-linux-src.tar.gz"))
              (sha256
               (base32
-               "11x346pw0gqad8nmkmywzx4xpcbfc3dslbrdw5x94n1i25mk0sxj"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Build with luajit 2.1.0-beta3.  Fixed in love 0.11.
-                 ;; See <https://bitbucket.org/rude/love/issues/1277>.
-                 (substitute* "src/libraries/luasocket/libluasocket/lua.h"
-                   (("> 501") ">= 501"))
-                 #t))))
+               "1pkwiszmjs0xrwk0wqbc5cp9108b1y8gwsid0gqk1s0x09q9lpmw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -959,11 +960,6 @@ painted with a mouse.")
         (base32
          "0w0pamjc3vj0jr718hysrw8x076fq6n9rd6wcb36sn2jd0lqvi98"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _ (zero? (system* "sh" "bootstrap")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

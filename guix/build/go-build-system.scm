@@ -261,6 +261,7 @@ files in OUTPUTS."
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (delete 'bootstrap)
     (delete 'configure)
     (delete 'patch-generated-file-shebangs)
     (replace 'unpack unpack)

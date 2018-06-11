@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,14 +30,14 @@
 (define-public libgc
   (package
    (name "libgc")
-   (version "7.6.0")
+   (version "7.6.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.hboehm.info/gc/gc_source/gc-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "143x7g0d0k6250ai6m2x3l4y352mzizi4wbgrmahxscv2aqjhjm1"))))
+              "076dzsqqyxd3nlzs0z277vvhqjp8nv5dqi763s0m90zr6ljiyk5r"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
@@ -91,7 +91,7 @@ C or C++ programs, though that is not its primary goal.")
 (define-public libatomic-ops
   (package
     (name "libatomic-ops")
-    (version "7.4.8")
+    (version "7.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -99,13 +99,13 @@ C or C++ programs, though that is not its primary goal.")
                     version "/libatomic_ops-" version ".tar.gz"))
               (sha256
                (base32
-                "0sj3plzpbqgxrqpjq3w2zi3zxxqqps71ncdwk5s1k30i9d9da1f4"))))
+                "0knxncsjhbknlyy6lx7ycxhpzfk3sykhvicgxyp0rmsxd1d3v0jv"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (synopsis "Accessing hardware atomic memory update operations")
     (description
      "This C library provides semi-portable access to hardware-provided atomic
-memory update operations on a number architectures.  These might allow you to
+memory update operations on a number of architectures.  These might allow you to
 write code that does more interesting things in signal handlers, write
 lock-free code, experiment with thread programming paradigms, etc.")
     (home-page "https://github.com/ivmai/libatomic_ops/")

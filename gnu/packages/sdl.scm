@@ -324,7 +324,8 @@ If PACKAGES are not specified, all SDL packages are used."
                    (match %build-inputs
                      (((names . directories) ...)
                       (union-build (assoc-ref %outputs "out")
-                                   directories))))))
+                                   directories)
+                      #t)))))
     (inputs (map (lambda (package)
                    (list (package-name package) package))
                  packages))
@@ -369,9 +370,10 @@ directory.")
                (string-append "http://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-"
                               version ".tar.gz"))
               (modules '((guix build utils)))
-              (snippet
-               ;; Remove bundled libraries.
-               '(delete-file-recursively "external"))
+              (snippet '(begin
+                          ;; Remove bundled libraries.
+                          (delete-file-recursively "external")
+                          #t))
               (sha256
                (base32
                 "1fw3kkqi5346ai5if4pxrcbhs5c4vv3a4smgz6fl6kyaxwkmwqaf"))))
@@ -388,9 +390,10 @@ directory.")
               (string-append "https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-"
                              version ".tar.gz"))
              (modules '((guix build utils)))
-             (snippet
-              ;; Remove bundled libraries.
-              '(delete-file-recursively "external"))
+             (snippet (begin
+                        ;; Remove bundled libraries.
+                        '(delete-file-recursively "external")
+                        #t))
              (sha256
               (base32
                "0xljwcpvd2knrjdfag5b257xqayplz55mqlszrqp0kpnphh5xnrl"))))

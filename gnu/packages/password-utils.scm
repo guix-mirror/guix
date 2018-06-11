@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
@@ -18,6 +18,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
@@ -94,7 +96,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.3.1")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
@@ -103,12 +105,22 @@ human.")
                            version "-src.tar.xz"))
        (sha256
         (base32
-         "1gdrbpzwbs56anc3k5vklvcackcn214pc8gm5xh5zcymsi8q4zff"))))
+         "1m8alsp39vk21zgcvy5zswk0dc1xmajbwnccg7n0lndsi7pqbzyg"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_NETWORKING=YES"
                            "-DWITH_XC_BROWSER=YES"
-                           "-DWITH_XC_SSHAGENT=YES")))
+                           "-DWITH_XC_SSHAGENT=YES")
+       #:phases
+       (modify-phases %standard-phases
+         ;; should be fixed in 2.3.3+, see:
+         ;; https://github.com/keepassxreboot/keepassxc/pull/1964
+         (add-after 'unpack 'patch-sources
+           (lambda _
+             (substitute* "src/gui/entry/EditEntryWidget.cpp"
+               (("#include <QColorDialog>") "#include <QColorDialog>
+#include <QButtonGroup>"))
+             #t)))))
     (inputs
      `(("argon2" ,argon2)
        ("curl" ,curl) ; XC_NETWORKING
@@ -659,3 +671,30 @@ Upstream development seems to have stopped.  It is therefore recommended
 to use a different password manager.")
     (home-page "https://als.regnet.cz/fpm2/")
     (license license:gpl2+)))
+
+(define-public pass-rotate
+  (package
+    (name "pass-rotate")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/SirCmpwn/pass-rotate/archive/"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1svm5nj8bczv2dg8lh2zqqhbsrljqsw9680r03qwgl9vlci90210"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-docopt" ,python-docopt)
+       ("python-html5lib" ,python-html5lib)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/SirCmpwn/pass-rotate")
+    (synopsis "Rotate password on online services")
+    (description "pass-rotate is a command line utility and python library for
+rotating passwords on various web services.  It makes it easier to rotate your
+passwords, one at a time or in bulk, when security events or routine upkeep of
+your online accounts makes it necessary.")
+    (license license:expat)))

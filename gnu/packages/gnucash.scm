@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
@@ -25,9 +25,12 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gnome)
@@ -47,7 +50,7 @@
 (define-public gnucash
   (package
     (name "gnucash")
-    (version "2.6.19")
+    (version "3.0")
     (source
      (origin
       (method url-fetch)
@@ -55,34 +58,47 @@
                           version "/gnucash-" version ".tar.bz2"))
       (sha256
        (base32
-        "1lbz7ygqlxbndxir5ay59bmmrqv9qvc6pgb5jwgdbhkf4ikr7f2h"))
-      (patches (search-patches "gnucash-price-quotes-perl.patch"))))
-    (build-system glib-or-gtk-build-system)
+        "1ffvf1rryg5yin86fnf1zvy6hnpwzrjarbdfmjmrf2mqlmv48xac"))
+
+      ;; TODO: rebase this patch
+;      (patches (search-patches "gnucash-price-quotes-perl.patch"))
+      ))
+    (build-system cmake-build-system)
     (inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
+       ("boost" ,boost)
        ("icu4c" ,icu4c)
        ("glib" ,glib)
-       ("gtk" ,gtk+-2)
-       ("goffice" ,goffice-0.8)
+       ("gtk" ,gtk+)
        ("libgnomecanvas" ,libgnomecanvas)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("webkitgtk" ,webkitgtk/gtk+-2)
+       ("webkitgtk" ,webkitgtk)
        ("aqbanking" ,aqbanking)
        ("perl-date-manip" ,perl-date-manip)
        ("perl-finance-quote" ,perl-finance-quote)))
     (native-inputs
      `(("glib" ,glib "bin") ; glib-compile-schemas, etc.
        ("intltool" ,intltool)
+       ("googlemock" ,(package-source googletest))
+       ("googletest" ,googletest)
        ("gnucash-docs" ,gnucash-docs)
        ("pkg-config" ,pkg-config)))
     (outputs '("out" "doc"))
     (arguments
-     `(#:tests? #f ;FIXME: failing at /qof/gnc-date/qof print date dmy buff
-       #:configure-flags '("--disable-dbi"
-                           "--enable-aqbanking")
+     `(#:test-target "check"
+       #:configure-flags
+       (list "-DWITH_OFX=OFF"  ; libofx is not available yet
+             "-DWITH_SQL=OFF") ; without dbi.h
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-gmock
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir "gmock")
+             (invoke "tar" "xf" (assoc-ref inputs "googlemock")
+                     "-C" "gmock" "--strip-components=1")
+             (setenv "GMOCK_ROOT" (string-append (getcwd) "/gmock/googlemock"))
+             #t))
          ;; There are about 100 megabytes of documentation.
          (add-after
           'install 'install-docs
@@ -142,7 +158,7 @@ financial calculations or scheduled transactions.")
                            version "/gnucash-docs-" version ".tar.gz"))
        (sha256
         (base32
-         "1ix99d5c1ppamn5ajamjfxpx6l25bv81nkg777rp1sl0glaib116"))))
+         "0yq65s3z3dwdwdf2nq1d1w9ckdjdyjwkfpmvhzyib54b66q65xh5"))))
     (build-system gnu-build-system)
     ;; These are native-inputs because they are only required for building the
     ;; documentation.
@@ -168,22 +184,23 @@ to be read using the GNOME Yelp program.")
 (define-public gwenhywfar
   (package
     (name "gwenhywfar")
-    (version "4.15.3")
+    (version "4.20.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.aquamaniac.de/sites/download/download.php?"
-                           "package=01&release=201&file=01"))
+       (uri (string-append "https://www.aquamaniac.de/sites/download/"
+                           "download.php?package=01&release=208&file=02&"
+                           "dummy=gwenhywfar-" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0fp67s932x66xfljb26zbrn8ambbc5y5c3hllr6l284nr63qf3ka"))))
+         "1c0g3f8jk6j693774ifslx2ds4ksabgbbalhhm9gk20kpamxm22s"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--disable-network-checks"
-             ;; Both GTK+2 and QT4 are supported.
-             "--with-guis=gtk2"
+             ;; GTK+3, GTK+2 and QT4 are supported.
+             "--with-guis=gtk3"
              (string-append "--with-openssl-includes="
                             (assoc-ref %build-inputs "openssl") "/include")
              (string-append "--with-openssl-libs="
@@ -192,7 +209,7 @@ to be read using the GNOME Yelp program.")
      `(("libgcrypt" ,libgcrypt)
        ("gnutls" ,gnutls)
        ("openssl" ,openssl)
-       ("gtk+" ,gtk+-2)))
+       ("gtk+" ,gtk+)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.aquamaniac.de/sites/aqbanking/index.php")
@@ -207,16 +224,17 @@ applications and libraries.  It is used by AqBanking.")
 (define-public aqbanking
   (package
     (name "aqbanking")
-    (version "5.6.12")
+    (version "5.7.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.aquamaniac.de/sites/download/download.php?"
-                           "package=03&release=208&file=01"))
+       (uri (string-append "https://www.aquamaniac.de/sites/download/"
+                           "download.php?package=03&release=217&file=02&"
+                           "dummy=aqbanking-" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "08jbwmiv6f3v8iqdr44x4szna496fqcjfi6mlx04cnbx91m70lh6"))))
+         "0s67mysskbiw1h1p0np4ph4351r7wq3nc873vylam7lsqi66xy0n"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Parallel building fails because aqhbci is required before it's

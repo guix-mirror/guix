@@ -188,9 +188,11 @@ files.")
              (patches (search-patches "cdparanoia-fpic.patch"))
              (modules '((guix build utils)))
              (snippet
-              ;; Make libraries respect LDFLAGS.
-              '(substitute* '("paranoia/Makefile.in" "interface/Makefile.in")
-                 (("-Wl,-soname") "$(LDFLAGS) -Wl,-soname")))))
+              '(begin
+                 ;; Make libraries respect LDFLAGS.
+                 (substitute* '("paranoia/Makefile.in" "interface/Makefile.in")
+                   (("-Wl,-soname") "$(LDFLAGS) -Wl,-soname"))
+                 #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there is no check target
@@ -449,9 +451,11 @@ the data.")
                 "0qrcvn7227qaayjcd5rm7z0k5q89qfy5qkdgwr5pd7ih0va8rmpz"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile"
-                  (("/usr/bin/install")
-                   "install")))))
+               '(begin
+                  (substitute* "Makefile"
+                    (("/usr/bin/install")
+                     "install"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -479,11 +483,13 @@ from an audio CD.")
                 "1msm5snyckynbspz54p9krarn7v9izsi7qyyi2z5y4cinw36xv3h"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "Makefile"
-                  (("/usr/bin/install")
-                   "install")
-                  (("^etcdir = .*$")
-                   (string-append "etcdir = $(prefix)/etc\n"))))))
+               '(begin
+                  (substitute* "Makefile"
+                    (("/usr/bin/install")
+                     "install")
+                    (("^etcdir = .*$")
+                     (string-append "etcdir = $(prefix)/etc\n")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

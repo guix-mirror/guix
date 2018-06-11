@@ -5,12 +5,12 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -80,14 +80,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.62.0")
+   (version "0.63.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1ii9ly1pngyvs0aiq2wxpya08hidpl54y7nsb8b1vxnnskgp76jv"))))
+              "04d1z1ygyb3llzc6s6c99wxafvljj2sc5b76djif34f7mzfqmk17"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -124,6 +124,36 @@
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
    (license license:gpl2+)
    (home-page "https://poppler.freedesktop.org/")))
+
+(define-public poppler-data
+  (package
+    (name "poppler-data")
+    (version "0.4.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://poppler.freedesktop.org/poppler-data"
+                                  "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "04i0wgdkn5lhda8cyxd1ll4a2p41pwqrwd47n9mdpl7cx5ypx70z"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no test suite
+       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The package only provides some data files, so there is nothing to
+         ;; build.
+         (delete 'configure)
+         (delete 'build))))
+    (synopsis "Poppler encoding files for rendering of CJK and Cyrillic text")
+    (description "This package provides optional encoding files for Poppler.
+When present, Poppler is able to correctly render CJK and Cyrillic text.")
+    (home-page (package-home-page poppler))
+    ;; See COPYING in the source distribution for more information about
+    ;; the licensing.
+    (license (list license:bsd-3
+                   license:gpl2))))
 
 (define-public poppler-qt4
   (package (inherit poppler)
@@ -596,21 +626,17 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.12.0")
+    (version "1.13.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://mupdf.com/downloads/archive/"
                             name "-" version "-source.tar.xz"))
-        (patches (search-patches "mupdf-build-with-latest-openjpeg.patch"
-                                 "mupdf-CVE-2017-17858.patch"
-                                 "mupdf-CVE-2018-6544.patch"
-                                 "mupdf-CVE-2018-1000051.patch"))
         (sha256
          (base32
-          "0b9j0gqbc3jhmx87r6idcsh8lnb30840c3hyx6dk2gdjqqh3hysp"))
+          "0129k92bav692l6lyw10ryldx7h2f9khjpgnp3f3n4fdsph9hrkl"))
         (modules '((guix build utils)))
-        (snippet '(delete-file-recursively "thirdparty"))))
+        (snippet '(begin (delete-file-recursively "thirdparty") #t))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
@@ -662,12 +688,14 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
             (snippet
              ;; Replace shebang with the bi-lingual shell/Perl trick to remove
              ;; dependency on Perl.
-             '(substitute* "qpdf/fix-qdf"
-                (("#!/usr/bin/env perl")
-                 "\
+             '(begin
+                (substitute* "qpdf/fix-qdf"
+                  (("#!/usr/bin/env perl")
+                   "\
 eval '(exit $?0)' && eval 'exec perl -wS \"$0\" ${1+\"$@\"}'
   & eval 'exec perl -wS \"$0\" $argv:q'
-    if 0;\n")))))
+    if 0;\n"))
+                #t))))
    (build-system gnu-build-system)
    (arguments
     `(#:disallowed-references (,perl)
@@ -681,7 +709,8 @@ eval '(exit $?0)' && eval 'exec perl -wS \"$0\" ${1+\"$@\"}'
             (substitute* (append
                           '("qtest/bin/qtest-driver")
                           (find-files "." "\\.test"))
-              (("/usr/bin/env") (which "env"))))))))
+              (("/usr/bin/env") (which "env")))
+            #t)))))
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("perl" ,perl)))
@@ -702,7 +731,7 @@ program capable of converting PDF into other formats.")
 (define-public xournal
   (package
     (name "xournal")
-    (version "0.4.8")
+    (version "0.4.8.2016")
     (source
      (origin
        (method url-fetch)
@@ -710,7 +739,7 @@ program capable of converting PDF into other formats.")
                            "/xournal-" version ".tar.gz"))
        (sha256
         (base32
-         "0c7gjcqhygiyp0ypaipdaxgkbivg6q45vhsj8v5jsi9nh6iqff13"))))
+         "09i88v3wacmx7f96dmq0l3afpyv95lh6jrx16xzm0jd1szdrhn5j"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk" ,gtk+-2)
@@ -985,7 +1014,7 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
 (define-public pdfgrep
   (package
     (name "pdfgrep")
-    (version "2.0.1")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
@@ -993,7 +1022,7 @@ PDF.  Indeed @command{pdfposter} was inspired by @command{poster}.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "07llkrkcfjwd3ybai9ad10ybhr0biffcplmy7lw4fb87nd2dfw03"))))
+         "02qcl5kmr5qzjfc99qpbpfb1890bxlrq3r208gnding51zrmb09c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

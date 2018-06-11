@@ -1,10 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -13,7 +13,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -22,6 +22,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,9 +98,8 @@
                ,@(if (%current-target-system)
                      `((setenv "CHOST" ,(%current-target-system)))
                      '())
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out))))))))
     (home-page "https://zlib.net/")
     (synopsis "Compression library")
     (description
@@ -127,7 +127,7 @@ in compression.")
            (lambda _ (chdir "contrib/minizip") #t))
          (add-after 'enter-source 'autoreconf
            (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
+             (invoke "autoreconf" "-vif"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -184,7 +184,7 @@ utility.  Instead of being written in Java, FastJar is written in C.")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'autoconf
-          (lambda _ (zero? (system* "sh" "autoreconf" "-vfi")))))))
+          (lambda _ (invoke "sh" "autoreconf" "-vfi"))))))
    (native-inputs
     `(("autoconf" ,autoconf)
       ("automake" ,automake)
@@ -201,14 +201,14 @@ adding and extracting files to/from a tar archive.")
 (define-public gzip
   (package
    (name "gzip")
-   (version "1.8")
+   (version "1.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gzip/gzip-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1lxv3p4iyx7833mlihkn5wfwmz4cys5nybwpz3dfawag8kn6f5zz"))))
+              "16h8g4acy7fgfxcjacr3wijjsnixwsfd2jhz3zwdi2qrzi262l5f"))))
    (build-system gnu-build-system)
    (synopsis "General file (de)compression (using lzw)")
    (arguments
@@ -251,35 +251,48 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key target #:allow-other-keys)
-             (if ,(%current-target-system)
-                 ;; Cross-compilation: use the cross tools.
-                 (substitute* (find-files "." "Makefile")
-                   (("CC=.*$")
-                    (string-append "CC = " target "-gcc\n"))
-                   (("AR=.*$")
-                    (string-append "AR = " target "-ar\n"))
-                   (("RANLIB=.*$")
-                    (string-append "RANLIB = " target "-ranlib\n"))
-                   (("^all:(.*)test" _ prerequisites)
-                    ;; Remove 'all' -> 'test' dependency.
-                    (string-append "all:" prerequisites "\n")))
-                 #t)))
+             (when ,(%current-target-system)
+               ;; Cross-compilation: use the cross tools.
+               (substitute* (find-files "." "Makefile")
+                 (("CC=.*$")
+                  (string-append "CC = " target "-gcc\n"))
+                 (("AR=.*$")
+                  (string-append "AR = " target "-ar\n"))
+                 (("RANLIB=.*$")
+                  (string-append "RANLIB = " target "-ranlib\n"))
+                 (("^all:(.*)test" _ prerequisites)
+                  ;; Remove 'all' -> 'test' dependency.
+                  (string-append "all:" prerequisites "\n"))))
+             #t))
          (add-before 'build 'build-shared-lib
            (lambda* (#:key inputs #:allow-other-keys)
              (patch-makefile-SHELL "Makefile-libbz2_so")
-             (zero? (system* "make" "-f" "Makefile-libbz2_so"))))
+             (invoke "make" "-f" "Makefile-libbz2_so")))
          (add-after 'install 'install-shared-lib
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; The Makefile above does not have an 'install' target, nor does
+             ;; it create all the (un)versioned symlinks, so we handle it here.
              (let* ((out    (assoc-ref outputs "out"))
-                    (libdir (string-append out "/lib")))
-               (for-each (lambda (file)
-                           (let ((base (basename file)))
-                             (format #t "installing `~a' to `~a'~%"
-                                     base libdir)
-                             (copy-file file
-                                        (string-append libdir "/" base))))
-                         (find-files "." "^libbz2\\.so")))
-             #t))
+                    (libdir (string-append out "/lib"))
+                    ;; Find the actual library (e.g. "libbz2.so.1.0.6").
+                    (lib (string-drop
+                          (car (find-files
+                                "."
+                                (lambda (file stat)
+                                  (and (string-prefix? "./libbz2.so" file)
+                                       (eq? 'regular (stat:type stat))))))
+                          2))
+                    (soversion (string-drop lib (string-length "libbz2.so."))))
+               (install-file lib libdir)
+               (with-directory-excursion libdir
+                 ;; Create symlinks libbz2.so.1 -> libbz2.so.1.0, etc.
+                 (let loop ((base "libbz2.so")
+                            (numbers (string-split soversion #\.)))
+                   (unless (null? numbers)
+                     (let ((so-file (string-append base "." (car numbers))))
+                       (symlink so-file base)
+                       (loop so-file (cdr numbers))))))
+               #t)))
          (add-after 'install-shared-lib 'patch-scripts
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
@@ -476,14 +489,14 @@ some compression ratio).")
 (define-public lzip
   (package
     (name "lzip")
-    (version "1.19")
+    (version "1.20")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/lzip/lzip-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1abbch762gv8rjr579q3qyyk6c80plklbv2mw4x0vg71dgsw9bgz"))))
+               "0319q59kb8g324wnj7xzbr7vvlx5bcs13lr34j0zb3kqlyjq2fy9"))))
     (build-system gnu-build-system)
     (home-page "https://www.nongnu.org/lzip/lzip.html")
     (synopsis "Lossless data compressor based on the LZMA algorithm")
@@ -647,7 +660,7 @@ decompression of some loosely related file formats used by Microsoft.")
 (define-public perl-compress-raw-bzip2
   (package
     (name "perl-compress-raw-bzip2")
-    (version "2.074")
+    (version "2.081")
     (source
      (origin
        (method url-fetch)
@@ -655,7 +668,7 @@ decompression of some loosely related file formats used by Microsoft.")
                            "Compress-Raw-Bzip2-" version ".tar.gz"))
        (sha256
         (base32
-         "0b5jwqf15zr787acnx8sfyy2zavdd7gfkd98n1dgy8fs6r8yb8a4"))))
+         "081mpkjy688lg48997fqh3d7ja12vazmz02fw84495civg4vb4l6"))))
     (build-system perl-build-system)
     ;; TODO: Use our bzip2 package.
     (home-page "http://search.cpan.org/dist/Compress-Raw-Bzip2")
@@ -667,7 +680,7 @@ compression library.")
 (define-public perl-compress-raw-zlib
   (package
     (name "perl-compress-raw-zlib")
-    (version "2.076")
+    (version "2.081")
     (source
      (origin
        (method url-fetch)
@@ -675,7 +688,7 @@ compression library.")
                            "Compress-Raw-Zlib-" version ".tar.gz"))
        (sha256
         (base32
-         "1al2h0i6mspldmlf5c09fy5a4j8swsxd31v6zi8zx9iyqk1lw7in"))))
+         "06rsm9ahp20xfyvd3jc69sd0k8vqysryxc6apzdbn96jbcsdwmp1"))))
     (build-system perl-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -702,7 +715,7 @@ compression library.")
 (define-public perl-io-compress
   (package
     (name "perl-io-compress")
-    (version "2.074")
+    (version "2.081")
     (source
      (origin
        (method url-fetch)
@@ -710,11 +723,11 @@ compression library.")
                            "IO-Compress-" version ".tar.gz"))
        (sha256
         (base32
-         "1wlpy2026djfmq0bjync531yq6s695jf7bcnpvjphrasi776igdl"))))
+         "1na66ns1g3nni0m9q5494ym4swr21hfgpv88mw8wbj2daiswf4aj"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.074
-       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.074
+     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.081
+       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.081
     (home-page "http://search.cpan.org/dist/IO-Compress")
     (synopsis "IO Interface to compressed files/buffers")
     (description "IO-Compress provides a Perl interface to allow reading and
@@ -742,7 +755,7 @@ writing of compressed data created with the zlib and bzip2 libraries.")
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))        ; no configure script
-    (home-page "http://www.lz4.org")
+    (home-page "https://www.lz4.org")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
 compression speed at 400 MB/s per core (0.16 Bytes/cycle).  It also features an
@@ -843,6 +856,23 @@ systems where low overhead is needed.  This package allows you to create and
 extract such file systems.")
     (license license:gpl2+)))
 
+;; We need this for building squashfs images with symlinks.
+(define-public squashfs-tools-next
+  (let ((commit "fb33dfc32b131a1162dcf0e35bd88254ae10e265")
+        (revision "1"))
+    (package (inherit squashfs-tools)
+      (name "squashfs-tools-next")
+      (version (string-append "4.3-" revision (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/plougher/squashfs-tools.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1x2skf8hxzfch978nzx5mh46d4hhi6gl22270hiarjszsjk3bnsx")))))))
+
 (define-public pigz
   (package
     (name "pigz")
@@ -925,10 +955,11 @@ tarballs.")
                  (base32
                   "1qxxsasvwbbbh6dl3138y9h3fg0q2v7xdk5jjc690bdg7g1wrj6n"))
                 (modules '((guix build utils)))
-                (snippet
-                 ;; This is a recursive submodule that is unnecessary for this
-                 ;; package, so delete it.
-                 '(delete-file-recursively "brotli/terryfy"))))
+                (snippet '(begin
+                            ;; This is a recursive submodule that is
+                            ;; unnecessary for this package, so delete it.
+                            (delete-file-recursively "brotli/terryfy")
+                            #t))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -939,7 +970,7 @@ tarballs.")
                     (add-after 'unpack 'autogen
                       (lambda _
                         (mkdir "m4")
-                        (zero? (system* "autoreconf" "-vfi")))))))
+                        (invoke "autoreconf" "-vfi"))))))
       (home-page "https://github.com/bagder/libbrotli/")
       (synopsis "Implementation of the Brotli compression algorithm")
       (description
@@ -987,7 +1018,9 @@ respectively, based on the reference implementation from Google.")
        (file-name (string-append name "-" version ".tar.gz"))
        (snippet
         ;; This file isn't freely distributable and has no effect on building.
-        '(delete-file "xdelta3/draft-korn-vcdiff.txt"))))
+        '(begin
+           (delete-file "xdelta3/draft-korn-vcdiff.txt")
+           #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -996,9 +1029,9 @@ respectively, based on the reference implementation from Google.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-build-directory
-           (lambda _ (chdir "xdelta3")))
+           (lambda _ (chdir "xdelta3") #t))
          (add-after 'enter-build-directory 'autoconf
-           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+           (lambda _ (invoke "autoreconf" "-vfi"))))))
     (home-page "http://xdelta.org")
     (synopsis "Delta encoder for binary files")
     (description "xdelta encodes only the differences between two binary files
@@ -1159,7 +1192,7 @@ install: libbitshuffle.so
          (add-before 'build 'build-jni
            (lambda _
              ;; Rebuild one of the binaries we removed earlier
-             (system* "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
+             (invoke "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
                       "-d" "lib")
              ;; Link to the dynamic bitshuffle and snappy, not the static ones
              (substitute* "Makefile.common"
@@ -1246,7 +1279,7 @@ compresser/decompresser.")
          (add-before 'build 'build-jni
            (lambda _
              ;; Rebuild one of the binaries we removed earlier
-             (system* "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
+             (invoke "javac" "src/main/java/org/xerial/snappy/OSInfo.java"
                       "-d" "lib")
              ;; Link to the dynamic snappy, not the static ones
              (substitute* "Makefile.common"
@@ -1263,7 +1296,7 @@ compresser/decompresser.")
                (("NAME\\): \\$\\(SNAPPY_OBJ\\)")
                 "NAME): $(SNAPPY_OBJ)\n\t@mkdir -p $(@D)"))
              ;; Finally we can run the Makefile to build the dynamic library.
-             (zero? (system* "make" "native"))))
+             (invoke "make" "native")))
          ;; Once we have built the shared library, we need to place it in the
          ;; "build" directory so it can be added to the jar file.
          (add-after 'build-jni 'copy-jni
@@ -1302,16 +1335,15 @@ compresser/decompresser.")
          (replace 'check
            (lambda _
              (define (test class)
-               (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
-                                                           ":build/classes"
-                                                           ":build/test-classes")
-                               "-Dtest.resources.dir=src/test/resources"
-                               "org.testng.TestNG" "-testclass"
-                               class)))
-             (system* "ant" "compile-tests")
-             (and
-               (test "org.iq80.snappy.SnappyFramedStreamTest")
-               (test "org.iq80.snappy.SnappyStreamTest"))))
+               (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                   ":build/classes"
+                                                   ":build/test-classes")
+                       "-Dtest.resources.dir=src/test/resources"
+                       "org.testng.TestNG" "-testclass"
+                       class))
+             (invoke "ant" "compile-tests")
+             (test "org.iq80.snappy.SnappyFramedStreamTest")
+             (test "org.iq80.snappy.SnappyStreamTest")))
          (add-before 'build 'remove-hadoop-dependency
            (lambda _
              ;; We don't have hadoop
@@ -1407,22 +1439,22 @@ It can be used as a replacement for the Apache @code{CBZip2InputStream} /
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key system outputs #:allow-other-keys)
-             (zero? (system* "cp"
-                             (let ((system ,(or (%current-target-system)
-                                                (%current-system))))
-                               (cond
-                                ((string-prefix? "x86_64" system)
-                                 "makefile.linux_amd64_asm")
-                                ((string-prefix? "i686" system)
-                                 "makefile.linux_x86_asm_gcc_4.X")
-                                (else
-                                 "makefile.linux_any_cpu_gcc_4.X")))
-                             "makefile.machine"))))
+             (invoke "cp"
+                     (let ((system ,(or (%current-target-system)
+                                        (%current-system))))
+                       (cond
+                        ((string-prefix? "x86_64" system)
+                         "makefile.linux_amd64_asm")
+                        ((string-prefix? "i686" system)
+                         "makefile.linux_x86_asm_gcc_4.X")
+                        (else
+                         "makefile.linux_any_cpu_gcc_4.X")))
+                     "makefile.machine")))
          (replace 'check
            (lambda _
-             (and (zero? (system* "make" "test"))
-                  (zero? (system* "make" "test_7z"))
-                  (zero? (system* "make" "test_7zr"))))))))
+             (invoke "make" "test")
+             (invoke "make" "test_7z")
+             (invoke "make" "test_7zr"))))))
     (inputs
      (let ((system (or (%current-target-system)
                        (%current-system))))
@@ -1455,7 +1487,9 @@ handles the 7z format which features very high compression ratios.")
                 (modules '((guix build utils)))
                 (snippet
                  ;; Remove pre-compiled object.
-                 '(delete-file "gzstream.o"))))
+                 '(begin
+                    (delete-file "gzstream.o")
+                    #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -1492,7 +1526,9 @@ functionality in a C++ iostream.")
        (modules '((guix build utils)))
        (snippet
         ;; Delete irrelevant pre-compiled binaries.
-        '(for-each delete-file (find-files "." "\\.exe$")))))
+        '(begin
+           (for-each delete-file (find-files "." "\\.exe$"))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1601,7 +1637,7 @@ or junctions, and always follows hard links.")
              #t))
          (replace 'check
            (lambda _
-            (zero? (system* "./run-tests.sh")))))))
+             (invoke "./run-tests.sh"))))))
     (home-page "https://github.com/twogood/unshield")
     (synopsis "Extract CAB files from InstallShield installers")
     (description
@@ -1667,7 +1703,7 @@ speed.")
          (delete 'configure)            ; no configure script
          (add-before 'check 'compile-tests
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* "make" "tests" make-flags))))
+             (apply invoke "make" "tests" make-flags)))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -1711,14 +1747,11 @@ the actual decompression, the other input and output.")
                       (list "-f" "unix/Makefile"
                             (string-append "prefix=" out)
                             (string-append "MANDIR=" out "/share/man/man1")))
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (replace 'build
            (lambda* (#:key (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "generic_gcc" make-flags))))
+             (apply invoke "make" "generic_gcc" make-flags)))
          (delete 'configure))))
     (home-page "http://www.info-zip.org/Zip.html")
     (synopsis "Compression and file packing utility")
@@ -1740,7 +1773,6 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
 (define-public unzip
   (package (inherit zip)
     (name "unzip")
-    (replacement unzip/fixed)
     (version "6.0")
     (source
      (origin
@@ -1768,13 +1800,20 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure)
+                  (add-after 'unpack 'fortify
+                    (lambda _
+                      ;; Mitigate CVE-2018-1000035, an exploitable buffer overflow.
+                      ;; This environment variable is recommended in 'unix/Makefile'
+                      ;; for passing flags to the C compiler.
+                      (setenv "LOCAL_UNZIP" "-D_FORTIFY_SOURCE=1")
+                      #t))
                   (replace 'build
                     (lambda* (#:key make-flags #:allow-other-keys)
-                      (zero? (apply system* "make"
-                                    `("-j" ,(number->string
-                                             (parallel-job-count))
-                                      ,@make-flags
-                                      "generic_gcc"))))))
+                      (apply invoke "make"
+                             `("-j" ,(number->string
+                                      (parallel-job-count))
+                               ,@make-flags
+                               "generic_gcc")))))
        #:make-flags (list "-f" "unix/Makefile"
                           (string-append "prefix=" %output)
                           (string-append "MANDIR=" %output "/share/man/man1"))))
@@ -1790,20 +1829,6 @@ subdirectories below it, all files from the specified zipfile.  UnZip
 recreates the stored directory structure by default.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))))
-
-(define unzip/fixed
-  (package/inherit unzip
-    (arguments
-      (substitute-keyword-arguments (package-arguments unzip)
-        ((#:phases phases)
-          `(modify-phases ,phases
-             (add-after 'unpack 'fortify
-               (lambda _
-                 ;; Mitigate CVE-2018-1000035, an exploitable buffer overflow.
-                 ;; This environment variable is recommended in 'unix/Makefile'
-                 ;; for passing flags to the C compiler.
-                 (setenv "LOCAL_UNZIP" "-D_FORTIFY_SOURCE=1")
-                 #t))))))))
 
 (define-public zziplib
   (package
@@ -2151,3 +2176,75 @@ with @code{deflate} but offers more dense compression.
 
 The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
     (license license:expat)))
+
+(define-public ucl
+  (package
+    (name "ucl")
+    (version "1.03")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.oberhumer.com/opensource/"
+                                 name "/download/" name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0j036lkwsxvm15gr29n8wn07cqq79dswjs9k54939ms5zngjjrdq"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.oberhumer.com/opensource/ucl/")
+    (synopsis "Portable lossless data compression library")
+    (description "UCL implements a number of compression algorithms that
+achieve an excellent compression ratio while allowing fast decompression.
+Decompression requires no additional memory.
+
+Compared to LZO, the UCL algorithms achieve a better compression ratio but
+decompression is a little bit slower.")
+    (license license:gpl2+)))
+
+(define-public upx
+  (package
+    (name "upx")
+    (version "3.94")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/upx/upx/releases/download/v"
+                                 version "/" name "-" version "-src.tar.xz"))
+             (sha256
+              (base32
+               "08anybdliqsbsl6x835iwzljahnm9i7v26icdjkcv33xmk6p5vw1"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("perl" ,perl)
+                     ("ucl" ,ucl)))
+    (inputs `(("zlib" ,zlib)))
+    (arguments
+     `(#:make-flags
+       (list "all"
+             ;; CHECK_WHITESPACE does not seem to work.
+             ;; See https://git.archlinux.org/svntogit/community.git/tree/trunk/PKGBUILD?h=packages/upx.
+             "CHECK_WHITESPACE=true")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (delete 'install)
+         (add-before 'build 'patch-exec-bin-sh
+           (lambda _
+             (substitute* (find-files "Makefile")
+               (("/bin/sh") (which "sh")))
+             (substitute* "src/Makefile"
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'build 'install-upx
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (copy-file "src/upx.out" (string-append bin "/upx")))
+             #t))
+         )))
+    (home-page "https://upx.github.io/")
+    (synopsis "Compression tool for executables")
+    (description
+     "The Ultimate Packer for eXecutables (UPX) is an executable file
+compressor.  UPX typically reduces the file size of programs and shared
+libraries by around 50%--70%, thus reducing disk space, network load times,
+download times, and other distribution and storage costs.")
+    (license license:gpl2+)))

@@ -19,12 +19,12 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -104,9 +104,11 @@ source code editors and IDEs.")
     (build-system gnu-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases
-                   (add-before 'configure 'autoconf
-                     (lambda _
-                       (zero? (system* "autoreconf" "-vfi")))))))
+                   ;; XXX: The "bootstrap" phase detects the "bootstrap"
+                   ;; script, but fails to execute it, so we bootstrap
+                   ;; manually.
+                   (replace 'bootstrap
+                     (lambda _ (invoke "autoreconf" "-vfi"))))))
     (native-inputs
      `(("automake" ,automake)
        ("autoconf" ,autoconf)
@@ -161,6 +163,8 @@ supervised tests.")
                (base32
                 "1027cyfx5gsjkdkaf6c2wnjh68882grw8n672018cj3vs9lrhmix"))))))
 
+;; When dependent packages upgraded to use newer version of catch, this one should
+;; be removed.
 (define-public catch-framework
   (package
     (name "catch")
@@ -185,18 +189,36 @@ supervised tests.")
                           (incdir (string-append output "/include"))
                           (docdir (string-append output "/share/doc/catch-"
                                                  ,version)))
-                     (begin
-                       (for-each mkdir-p (list incdir docdir))
-                       (install-file (string-append source
-                                                 "/single_include/catch.hpp")
-                                     incdir)
-                       (copy-recursively (string-append source "/docs")
-                                         docdir))))))
+                     (for-each mkdir-p (list incdir docdir))
+                     (install-file (string-append source
+                                                  "/single_include/catch.hpp")
+                                   incdir)
+                     (copy-recursively (string-append source "/docs")
+                                       docdir)
+                     #t))))
     (home-page "http://catch-lib.net/")
     (synopsis "Automated test framework for C++ and Objective-C")
     (description
      "Catch stands for C++ Automated Test Cases in Headers and is a
 multi-paradigm automated test framework for C++ and Objective-C.")
+    (license license:boost1.0)))
+
+(define-public catch-framework2
+  (package
+    (name "catch2")
+    (version "1.12.2")
+    (home-page "https://github.com/catchorg/Catch2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "0g2ysxc6adqca5wh7nsicnxb9wkxg75cd5izjsl39rcj0v903gr7"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (synopsis "Automated test framework for C++ and Objective-C")
+    (description "Catch2 stands for C++ Automated Test Cases in Headers and is
+a multi-paradigm automated test framework for C++ and Objective-C.")
     (license license:boost1.0)))
 
 (define-public cmdtest
@@ -394,6 +416,8 @@ test coverage and has a web user interface that will refresh automatically.")
     (home-page "https://github.com/smartystreets/goconvey")
     (license license:expat)))
 
+;; XXX When updating, check whether ZNC's GOOGLETEST-SOURCES can be
+;; switched back to simply using (PACKAGE-SOURCE ...).
 (define-public googletest
   (package
     (name "googletest")
@@ -595,14 +619,14 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "3.2.3")
+    (version "3.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "0g6w86ks73fnrnsyib9ii2rbyx830vn7aglsjqz9v1n2xwbndyi7"))))
+         "1q832zd07zak2lyxbycxjydh0jp7y3hvawjqzlvra6aghz8r3r7s"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -620,7 +644,11 @@ standard library.")
                                line)))
              #t)))))
     (propagated-inputs
-     `(("python-py" ,python-py)))
+     `(("python-attrs" ,python-attrs-bootstrap)
+       ("python-more-itertools" ,python-more-itertools)
+       ("python-pluggy" ,python-pluggy)
+       ("python-py" ,python-py)
+       ("python-six" ,python-six-bootstrap)))
     (native-inputs
      `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
        ("bash" ,bash)
@@ -634,20 +662,33 @@ standard library.")
      "Pytest is a testing tool that provides auto-discovery of test modules
 and functions, detailed info on failing assert statements, modular fixtures,
 and many external plugins.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest))))))
 
 (define-public python2-pytest
-  (package-with-python2 python-pytest))
+  (let ((pytest (package-with-python2
+                 (strip-python2-variant python-pytest))))
+    (package
+      (inherit pytest)
+      (propagated-inputs
+       `(("python2-funcsigs" ,python2-funcsigs)
+         ,@(package-propagated-inputs pytest))))))
 
 (define-public python-pytest-bootstrap
   (package
-    (inherit python-pytest)
+    (inherit (strip-python2-variant python-pytest))
     (name "python-pytest-bootstrap")
     (native-inputs `(("python-setuptools-scm" ,python-setuptools-scm)))
-    (arguments `(#:tests? #f))))
+    (arguments `(#:tests? #f))
+    (properties `((python2-variant . ,(delay python2-pytest-bootstrap))))))
 
 (define-public python2-pytest-bootstrap
-  (package-with-python2 python-pytest-bootstrap))
+  (let ((pytest (package-with-python2
+                 (strip-python2-variant python-pytest-bootstrap))))
+    (package (inherit pytest)
+             (propagated-inputs
+              `(("python2-funcsigs" ,python2-funcsigs-bootstrap)
+                ,@(package-propagated-inputs pytest))))))
 
 (define-public python-pytest-cov
   (package
@@ -1356,23 +1397,26 @@ normally the case.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "3.1.0")
+    (version "3.52.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "0qyqq9akm4vshhn8cngjc1qykcvsn7cz6dlm6njfsgpbraqrmbbw"))))
+                "0g54cypfi5qj6cgxfr7l1nb41r1cqhhngx4qxn4ga9h720rcsbr8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
        ("python-pytest" ,python-pytest-bootstrap)))
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs-bootstrap)
+       ("python-coverage" ,python-coverage)))
     (synopsis "Library for property based testing")
     (description "Hypothesis is a library for testing your Python code against a
 much larger range of examples than you would ever want to write by hand.  It’s
 based on the Haskell library, Quickcheck, and is designed to integrate
 seamlessly into your existing Python unit testing work flow.")
-    (home-page "https://github.com/DRMacIver/hypothesis")
+    (home-page "https://github.com/HypothesisWorks/hypothesis-python")
     (license license:mpl2.0)
     (properties `((python2-variant . ,(delay python2-hypothesis))))))
 

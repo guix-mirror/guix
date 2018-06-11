@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,10 +27,13 @@
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-26)
   #:use-module (rnrs io ports)
   #:export (%standard-phases
             %license-file-regexp
+            dump-file-contents
             gnu-build))
 
 ;; Commentary:
@@ -82,6 +86,9 @@ See https://reproducible-builds.org/specs/source-date-epoch/."
        dir)
       (#f                                         ; not cross compiling
        '())))
+
+  ;; Tell 'ld-wrapper' to disallow non-store libraries.
+  (setenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES" "no")
 
   ;; When cross building, $PATH must refer only to native (host) inputs since
   ;; target inputs are not executable.
@@ -152,12 +159,50 @@ working directory."
         ;; Preserve timestamps (set to the Epoch) on the copied tree so that
         ;; things work deterministically.
         (copy-recursively source "."
-                          #:keep-mtime? #t)
-        #t)
-      (and (if (string-suffix? ".zip" source)
-               (zero? (system* "unzip" source))
-               (zero? (system* "tar" "xvf" source)))
-           (chdir (first-subdirectory ".")))))
+                          #:keep-mtime? #t))
+      (begin
+        (if (string-suffix? ".zip" source)
+            (invoke "unzip" source)
+            (invoke "tar" "xvf" source))
+        (chdir (first-subdirectory "."))))
+  #t)
+
+(define %bootstrap-scripts
+  ;; Typical names of Autotools "bootstrap" scripts.
+  '("bootstrap" "bootstrap.sh" "autogen.sh"))
+
+(define* (bootstrap #:key (bootstrap-scripts %bootstrap-scripts)
+                    #:allow-other-keys)
+  "If the code uses Autotools and \"configure\" is missing, run
+\"autoreconf\".  Otherwise do nothing."
+  ;; Note: Run that right after 'unpack' so that the generated files are
+  ;; visible when the 'patch-source-shebangs' phase runs.
+  (if (not (file-exists? "configure"))
+
+      ;; First try one of the BOOTSTRAP-SCRIPTS.  If none exists, and it's
+      ;; clearly an Autoconf-based project, run 'autoreconf'.  Otherwise, do
+      ;; nothing (perhaps the user removed or overrode the 'configure' phase.)
+      (let ((script (find file-exists? bootstrap-scripts)))
+        ;; GNU packages often invoke the 'git-version-gen' script from
+        ;; 'configure.ac' so make sure it has a valid shebang.
+        (false-if-file-not-found
+         (patch-shebang "build-aux/git-version-gen"))
+
+        (if script
+            (let ((script (string-append "./" script)))
+              (format #t "running '~a'~%" script)
+              (if (executable-file? script)
+                  (begin
+                    (patch-shebang script)
+                    (invoke script))
+                  (invoke "sh" script)))
+            (if (or (file-exists? "configure.ac")
+                    (file-exists? "configure.in"))
+                (invoke "autoreconf" "-vif")
+                (format #t "no 'configure.ac' or anything like that, \
+doing nothing~%"))))
+      (format #t "GNU build system bootstrapping not needed~%"))
+  #t)
 
 ;; See <http://bugs.gnu.org/17840>.
 (define* (patch-usr-bin-file #:key native-inputs inputs
@@ -184,7 +229,8 @@ $CONFIG_SHELL, but some don't, such as `mkinstalldirs' or Automake's
                         (lambda (file stat)
                           ;; Filter out symlinks.
                           (eq? 'regular (stat:type stat)))
-                        #:stat lstat)))
+                        #:stat lstat))
+  #t)
 
 (define (patch-generated-file-shebangs . rest)
   "Patch shebangs in generated files, including `SHELL' variables in
@@ -199,7 +245,9 @@ makefiles."
                         #:stat lstat))
 
   ;; Patch `SHELL' in generated makefiles.
-  (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$")))
+  (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$"))
+
+  #t)
 
 (define* (configure #:key build target native-inputs inputs outputs
                     (configure-flags '()) out-of-source?
@@ -279,33 +327,61 @@ makefiles."
     ;; Call `configure' with a relative path.  Otherwise, GCC's build system
     ;; (for instance) records absolute source file names, which typically
     ;; contain the hash part of the `.drv' file, leading to a reference leak.
-    (zero? (apply system* bash
-                  (string-append srcdir "/configure")
-                  flags))))
+    (apply invoke bash
+           (string-append srcdir "/configure")
+           flags)))
 
 (define* (build #:key (make-flags '()) (parallel-build? #t)
                 #:allow-other-keys)
-  (zero? (apply system* "make"
-                `(,@(if parallel-build?
-                        `("-j" ,(number->string (parallel-job-count)))
-                        '())
-                  ,@make-flags))))
+  (apply invoke "make"
+         `(,@(if parallel-build?
+                 `("-j" ,(number->string (parallel-job-count)))
+                 '())
+           ,@make-flags)))
+
+(define* (dump-file-contents directory file-regexp
+                             #:optional (port (current-error-port)))
+  "Dump to PORT the contents of files in DIRECTORY that match FILE-REGEXP."
+  (define (dump file)
+    (let ((prefix (string-append "\n--- " file " ")))
+      (display (if (< (string-length prefix) 78)
+                   (string-pad-right prefix 78 #\-)
+                   prefix)
+               port)
+      (display "\n\n" port)
+      (call-with-input-file file
+        (lambda (log)
+          (dump-port log port)))
+      (display "\n" port)))
+
+  (for-each dump (find-files directory file-regexp)))
+
+(define %test-suite-log-regexp
+  ;; Name of test suite log files as commonly found in GNU-based build systems
+  ;; and CMake.
+  "^(test-?suite\\.log|LastTestFailed\\.log)$")
 
 (define* (check #:key target (make-flags '()) (tests? (not target))
                 (test-target "check") (parallel-tests? #t)
+                (test-suite-log-regexp %test-suite-log-regexp)
                 #:allow-other-keys)
   (if tests?
-      (zero? (apply system* "make" test-target
-                    `(,@(if parallel-tests?
-                            `("-j" ,(number->string (parallel-job-count)))
-                            '())
-                      ,@make-flags)))
-      (begin
-        (format #t "test suite not run~%")
-        #t)))
+      (guard (c ((invoke-error? c)
+                 ;; Dump the test suite log to facilitate debugging.
+                 (display "\nTest suite failed, dumping logs.\n"
+                          (current-error-port))
+                 (dump-file-contents "." test-suite-log-regexp)
+                 (raise c)))
+        (apply invoke "make" test-target
+               `(,@(if parallel-tests?
+                       `("-j" ,(number->string (parallel-job-count)))
+                       '())
+                 ,@make-flags)))
+      (format #t "test suite not run~%"))
+  #t)
 
 (define* (install #:key (make-flags '()) #:allow-other-keys)
-  (zero? (apply system* "make" "install" make-flags)))
+  (apply invoke "make" "install" make-flags))
 
 (define* (patch-shebangs #:key inputs outputs (patch-shebangs? #t)
                          #:allow-other-keys)
@@ -371,10 +447,8 @@ makefiles."
     (let ((debug (debug-file file)))
       (mkdir-p (dirname debug))
       (copy-file file debug)
-      (and (zero? (system* strip-command "--only-keep-debug" debug))
-           (begin
-             (chmod debug #o400)
-             #t))))
+      (invoke strip-command "--only-keep-debug" debug)
+      (chmod debug #o400)))
 
   (define (add-debug-link file)
     ;; Add a debug link in FILE (info "(binutils) strip").
@@ -384,10 +458,10 @@ makefiles."
     ;; `bfd_fill_in_gnu_debuglink_section' function.)  No reference to
     ;; DEBUG-OUTPUT is kept because bfd keeps only the basename of the debug
     ;; file.
-    (zero? (system* objcopy-command "--enable-deterministic-archives"
-                    (string-append "--add-gnu-debuglink="
-                                   (debug-file file))
-                    file)))
+    (invoke objcopy-command "--enable-deterministic-archives"
+            (string-append "--add-gnu-debuglink="
+                           (debug-file file))
+            file))
 
   (define (strip-dir dir)
     (format #t "stripping binaries in ~s with ~s and flags ~s~%"
@@ -397,17 +471,29 @@ makefiles."
               debug-output objcopy-command))
 
     (for-each (lambda (file)
-                (and (or (elf-file? file) (ar-file? file))
-                     (or (not debug-output)
-                         (make-debug-file file))
+                (when (or (elf-file? file) (ar-file? file))
+                  ;; If an error occurs while processing a file, issue a
+                  ;; warning and continue to the next file.
+                  (guard (c ((invoke-error? c)
+                             (format (current-error-port)
+                                     "warning: ~a: program ~s exited\
+~@[ with non-zero exit status ~a~]\
+~@[ terminated by signal ~a~]~%"
+                                     file
+                                     (invoke-error-program c)
+                                     (invoke-error-exit-status c)
+                                     (invoke-error-term-signal c))))
+                    (when debug-output
+                      (make-debug-file file))
 
-                     ;; Ensure the file is writable.
-                     (begin (make-file-writable file) #t)
+                    ;; Ensure the file is writable.
+                    (make-file-writable file)
 
-                     (zero? (apply system* strip-command
-                                   (append strip-flags (list file))))
-                     (or (not debug-output)
-                         (add-debug-link file))))
+                    (apply invoke strip-command
+                           (append strip-flags (list file)))
+
+                    (when debug-output
+                      (add-debug-link file)))))
               (find-files dir
                           (lambda (file stat)
                             ;; Ignore symlinks such as:
@@ -415,15 +501,17 @@ makefiles."
                             (eq? 'regular (stat:type stat)))
                           #:stat lstat)))
 
-  (or (not strip-binaries?)
-      (every strip-dir
-             (append-map (match-lambda
-                          ((_ . dir)
-                           (filter-map (lambda (d)
-                                         (let ((sub (string-append dir "/" d)))
-                                           (and (directory-exists? sub) sub)))
-                                       strip-directories)))
-                         outputs))))
+  (when strip-binaries?
+    (for-each
+     strip-dir
+     (append-map (match-lambda
+                   ((_ . dir)
+                    (filter-map (lambda (d)
+                                  (let ((sub (string-append dir "/" d)))
+                                    (and (directory-exists? sub) sub)))
+                                strip-directories)))
+                 outputs)))
+  #t)
 
 (define* (validate-runpath #:key
                            (validate-runpath? #t)
@@ -466,10 +554,11 @@ phase after stripping."
                                  (filter-map (sub-directory output)
                                              elf-directories)))
                               outputs)))
-        (every* validate dirs))
-      (begin
-        (format (current-error-port) "skipping RUNPATH validation~%")
-        #t)))
+        (unless (every* validate dirs)
+          (error "RUNPATH validation failed")))
+      (format (current-error-port) "skipping RUNPATH validation~%"))
+
+  #t)
 
 (define* (validate-documentation-location #:key outputs
                                           #:allow-other-keys)
@@ -549,47 +638,45 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
               (apply throw args))))))
 
   (define (maybe-compress-directory directory regexp)
-    (or (not (directory-exists? directory))
-        (match (find-files directory regexp)
-          (()                                     ;nothing to compress
-           #t)
-          ((files ...)                            ;one or more files
-           (format #t
-                   "compressing documentation in '~a' with ~s and flags ~s~%"
-                   directory documentation-compressor
-                   documentation-compressor-flags)
-           (call-with-values
-               (lambda ()
-                 (partition symbolic-link? files))
-             (lambda (symlinks regular-files)
-               ;; Compress the non-symlink files, and adjust symlinks to refer
-               ;; to the compressed files.  Leave files that have hard links
-               ;; unchanged ('gzip' would refuse to compress them anyway.)
-               ;; Also, do not retarget symbolic links pointing to other
-               ;; symbolic links, since these are not compressed.
-               (and (every retarget-symlink
-                           (filter (lambda (symlink)
-                                     (and (not (points-to-symlink? symlink))
-                                          (string-match regexp symlink)))
-                                   symlinks))
-                    (zero?
-                     (apply system* documentation-compressor
-                            (append documentation-compressor-flags
-                                    (remove has-links? regular-files)))))))))))
+    (when (directory-exists? directory)
+      (match (find-files directory regexp)
+        (()                                     ;nothing to compress
+         #t)
+        ((files ...)                            ;one or more files
+         (format #t
+                 "compressing documentation in '~a' with ~s and flags ~s~%"
+                 directory documentation-compressor
+                 documentation-compressor-flags)
+         (call-with-values
+             (lambda ()
+               (partition symbolic-link? files))
+           (lambda (symlinks regular-files)
+             ;; Compress the non-symlink files, and adjust symlinks to refer
+             ;; to the compressed files.  Leave files that have hard links
+             ;; unchanged ('gzip' would refuse to compress them anyway.)
+             ;; Also, do not retarget symbolic links pointing to other
+             ;; symbolic links, since these are not compressed.
+             (for-each retarget-symlink
+                       (filter (lambda (symlink)
+                                 (and (not (points-to-symlink? symlink))
+                                      (string-match regexp symlink)))
+                               symlinks))
+             (apply invoke documentation-compressor
+                    (append documentation-compressor-flags
+                            (remove has-links? regular-files)))))))))
 
   (define (maybe-compress output)
-    (and (maybe-compress-directory (string-append output "/share/man")
-                                   "\\.[0-9]+$")
-         (maybe-compress-directory (string-append output "/share/info")
-                                   "\\.info(-[0-9]+)?$")))
+    (maybe-compress-directory (string-append output "/share/man")
+                              "\\.[0-9]+$")
+    (maybe-compress-directory (string-append output "/share/info")
+                              "\\.info(-[0-9]+)?$"))
 
   (if compress-documentation?
       (match outputs
         (((names . directories) ...)
-         (every maybe-compress directories)))
-      (begin
-        (format #t "not compressing documentation~%")
-        #t)))
+         (for-each maybe-compress directories)))
+      (format #t "not compressing documentation~%"))
+  #t)
 
 (define* (delete-info-dir-file #:key outputs #:allow-other-keys)
   "Delete any 'share/info/dir' file from OUTPUTS."
@@ -672,6 +759,7 @@ which cannot be found~%"
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
     (phases set-SOURCE-DATE-EPOCH set-paths install-locale unpack
+            bootstrap
             patch-usr-bin-file
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install
@@ -704,17 +792,26 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
 
   ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
   ;; PHASES can pick the keyword arguments it's interested in.
-  (every (match-lambda
-          ((name . proc)
-           (let ((start (current-time time-monotonic)))
-             (format #t "starting phase `~a'~%" name)
-             (let ((result (apply proc args))
-                   (end    (current-time time-monotonic)))
-               (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
-                       name result
-                       (elapsed-time end start))
+  (for-each (match-lambda
+              ((name . proc)
+               (let ((start (current-time time-monotonic)))
+                 (format #t "starting phase `~a'~%" name)
+                 (let ((result (apply proc args))
+                       (end    (current-time time-monotonic)))
+                   (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
+                           name result
+                           (elapsed-time end start))
 
-               ;; Dump the environment variables as a shell script, for handy debugging.
-               (system "export > $NIX_BUILD_TOP/environment-variables")
-               result))))
-         phases))
+                   ;; Issue a warning unless the result is #t.
+                   (unless (eqv? result #t)
+                     (format (current-error-port) "\
+## WARNING: phase `~a' returned `~s'.  Return values other than #t
+## are deprecated.  Please migrate this package so that its phase
+## procedures report errors by raising an exception, and otherwise
+## always return #t.~%"
+                             name result))
+
+                   ;; Dump the environment variables as a shell script, for handy debugging.
+                   (system "export > $NIX_BUILD_TOP/environment-variables")
+                   result))))
+            phases))

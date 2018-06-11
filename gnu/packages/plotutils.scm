@@ -61,9 +61,11 @@
               ;; that, libplot.la ends up containing just "-lXaw" (without
               ;; "-L/path/to/Xaw"), due to the fact that there is no
               ;; libXaw.la, which forces us to propagate libXaw.
-              '(substitute* "configure"
-                 (("-lXaw")
-                  "-lXaw7")))))
+              '(begin
+                 (substitute* "configure"
+                   (("-lXaw")
+                    "-lXaw7"))
+                 #t))))
     (build-system gnu-build-system)
     (inputs `(("libpng" ,libpng)
               ("libx11" ,libx11)
@@ -98,7 +100,8 @@ scientific data.")
                   ;; Use the standard location for modules.
                   (substitute* "Makefile.in"
                     (("godir = .*$")
-                     "godir = $(moddir)\n"))))))
+                     "godir = $(moddir)\n"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.2)))
@@ -124,9 +127,11 @@ using the Cairo drawing library.")
               (modules '((guix build utils)))
               (snippet
                ;; Install binaries in the right place.
-               '(substitute* "src/Makefile"
-                  (("INSTALLBIN =.*$")
-                   (string-append "INSTALLBIN = $(out)/bin"))))))
+               '(begin
+                  (substitute* "src/Makefile"
+                    (("INSTALLBIN =.*$")
+                     (string-append "INSTALLBIN = $(out)/bin")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -174,14 +179,14 @@ colors, styles, options and details.")
 (define-public asymptote
   (package
     (name "asymptote")
-    (version "2.42")
+    (version "2.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/asymptote/"
                                   version "/asymptote-" version ".src.tgz"))
               (sha256
                (base32
-                "0dprc4shzdpvp87kc97ggh5ay2zmskjjaciay7mnblx63rhk1d95"))))
+                "1rs9v95g19ri6ra2m921jf2yr9avqnzfybrqxilsld98xpqx56vg"))))
     (build-system gnu-build-system)
     ;; Note: The 'asy' binary retains a reference to docdir for use with its
     ;; "help" command in interactive mode, so adding a "doc" output is not

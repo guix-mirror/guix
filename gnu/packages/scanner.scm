@@ -45,9 +45,11 @@
              (snippet
               ;; Generated HTML files and udev rules normally embed a
               ;; timestamp.  Work around that to build things reproducibly.
-              '(substitute* "tools/sane-desc.c"
-                 (("asctime \\(localtime \\(&current_time\\)\\)")
-                  "\"1970-01-01\"")))))
+              '(begin
+                 (substitute* "tools/sane-desc.c"
+                   (("asctime \\(localtime \\(&current_time\\)\\)")
+                    "\"1970-01-01\""))
+                 #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -81,7 +83,8 @@
                (copy-file "tools/udev/libsane.rules"
                           (string-append out
                                          "/lib/udev/rules.d/"
-                                         "60-libsane.rules"))))))))
+                                         "60-libsane.rules"))
+               #t))))))
     (home-page "http://www.sane-project.org")
     (synopsis
      "Raster image scanner library and drivers, without scanner support")

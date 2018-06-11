@@ -2,6 +2,7 @@
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -691,7 +692,14 @@ See also @url{https://prosody.im/doc/modules/mod_muc}."
                        (service-extension account-service-type
                                           (const %prosody-accounts))
                        (service-extension activation-service-type
-                                          prosody-activation)))))
+                                          prosody-activation)))
+                (default-value (prosody-configuration
+                                (virtualhosts
+                                 (list
+                                  (virtualhost-configuration
+                                   (domain "localhost"))))))
+                (description
+                 "Run Prosody, a modern XMPP communication server.")))
 
 ;; A little helper to make it easier to document all those fields.
 (define (generate-documentation)
@@ -783,20 +791,24 @@ string, you could instantiate a prosody service like this:
              (default "127.0.0.1"))
   (port bitlbee-configuration-port
         (default 6667))
+  (plugins bitlbee-plugins
+           (default '()))
   (extra-settings bitlbee-configuration-extra-settings
                   (default "")))
 
 (define bitlbee-shepherd-service
   (match-lambda
-    (($ <bitlbee-configuration> bitlbee interface port extra-settings)
-     (let ((conf (plain-file "bitlbee.conf"
-                             (string-append "
+    (($ <bitlbee-configuration> bitlbee interface port
+                                plugins extra-settings)
+     (let ((conf (mixed-text-file "bitlbee.conf"
+                                  "
   [settings]
   User = bitlbee
   ConfigDir = /var/lib/bitlbee
   DaemonInterface = " interface "
   DaemonPort = " (number->string port) "
-" extra-settings))))
+  PluginDir = " (directory-union "bitlbee-plugins" plugins) "/lib/bitlbee
+" extra-settings)))
 
        (with-imported-modules (source-module-closure
                                '((gnu build shepherd)

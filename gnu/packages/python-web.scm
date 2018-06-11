@@ -24,6 +24,8 @@
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +61,70 @@
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-1))
+
+(define-public python-aiohttp
+  (package
+    (name "python-aiohttp")
+    (version "3.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiohttp" version))
+       (sha256
+        (base32
+         "1b888lggmyf2d08rfayq9khszzc0pav1z70ssc0b4d9kkr4g1klz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;FIXME: 2 errors, 2084 passed
+    (native-inputs
+     `(("python-async-generator" ,python-async-generator)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-capturelog" ,python-pytest-capturelog)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (propagated-inputs
+     `(("python-aiodns" ,python-aiodns)
+       ("python-async-timeout" ,python-async-timeout)
+       ("python-attrs" ,python-attrs)
+       ("python-chardet" ,python-chardet)
+       ("python-idna-ssl" ,python-idna-ssl)
+       ("python-multidict" ,python-multidict)
+       ("python-yarl" ,python-yarl)))
+    (home-page "https://github.com/aio-libs/aiohttp/")
+    (synopsis "Async HTTP client/server framework (asyncio)")
+    (description "@code{aiohttp} is an asynchronous HTTP client/server
+framework.
+
+Its main features are:
+@itemize
+@item Supports both client and server side of HTTP protocol.
+@item Supports both client and server Web-Sockets out-of-the-box without the
+Callback Hell.
+@item Web-server has middlewares and pluggable routing.
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public python-aiodns
+  (package
+    (name "python-aiodns")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiodns" version))
+       (sha256
+        (base32
+         "1snr5paql8dgvc676n8xq460wypjsb1xj53cf3px1s4wczf7lryq"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-pycares" ,python-pycares)))
+    (arguments
+     `(#:tests? #f))                    ;tests require internet access
+    (home-page "http://github.com/saghul/aiodns")
+    (synopsis "Simple DNS resolver for asyncio")
+    (description "@code{aiodns} provides a simple way for doing
+asynchronous DNS resolutions with a synchronous looking interface by
+using @url{https://github.com/saghul/pycares,pycares}.")
+    (license license:expat)))
 
 (define-public python-furl
   (package
@@ -246,14 +312,14 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
 (define-public python-pycurl
   (package
     (name "python-pycurl")
-    (version "7.43.0.1")
+    (version "7.43.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.bintray.com/pycurl/pycurl/pycurl-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1ali1gjs9iliwjra7w0y5hwg79a2fd0f4ydvv6k27sgxpbr1n8s3"))))
+        (base32 "1915kb04k1j4y6k1dx1sgnbddxrl9r1n4q928if2lkrdm73xy30g"))))
     (build-system python-build-system)
     (arguments
      ;; The tests attempt to access external web servers, so we cannot run
@@ -2025,6 +2091,9 @@ users' sessions over extended periods of time.")
 library for Python")
     (license license:asl2.0)))
 
+(define-public python2-oauth2client
+  (package-with-python2 python-oauth2client))
+
 (define-public python-flask-oidc
   (package
     (name "python-flask-oidc")
@@ -2511,3 +2580,74 @@ protocols, it supports features like HTTP keep-alive, reget, throttling and
 more.")
     (license license:lgpl2.1+)))
 
+(define-public python-pycares
+  (package
+    (name "python-pycares")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pycares" version))
+       (sha256
+        (base32
+         "0h4fxw5drrhfyslzmfpljk0qnnpbhhb20hnnndzahhbwylyw1x1n"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;tests require internet access
+    (home-page "http://github.com/saghul/pycares")
+    (synopsis "Python interface for @code{c-ares}")
+    (description "@code{pycares} is a Python module which provides an
+interface to @code{c-ares}, a C library that performs DNS requests and
+name resolutions asynchronously.")
+    (license license:expat)))
+
+(define-public python-yarl
+  (package
+    (name "python-yarl")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "yarl" version))
+       (sha256
+        (base32
+         "1s6z13g8vgxfkkqwhn6imnm7pl7ky9arv4jygnn6bcndcbidg7d6"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-idna" ,python-idna)
+       ("python-multidict" ,python-multidict)))
+    (home-page "https://github.com/aio-libs/yarl/")
+    (synopsis "Yet another URL library")
+    (description "@code{yarl} module provides handy @code{URL} class
+for URL parsing and changing.")
+    (license license:asl2.0)))
+
+(define-public python-google-api-client
+  (package
+    (name "python-google-api-client")
+    (version "1.6.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "google-api-python-client" version))
+       (sha256
+        (base32
+         "1wpbbbxfpy9mwxdy3kn352cb590ladv574j1aa2l4grjdqw3ln05"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests require internet access
+    (native-inputs
+     `(("python-httplib2" ,python-httplib2)
+       ("python-six" ,python-six)
+       ("python-oauth2client" ,python-oauth2client)
+       ("python-uritemplate" ,python-uritemplate)))
+    (home-page "https://github.com/google/google-api-python-client")
+    (synopsis "Core Python library for accessing Google APIs")
+    (description "Python client library for Google's discovery based APIs")
+    (license license:asl2.0)))
+
+(define-public python2-google-api-client
+  (package-with-python2 python-google-api-client))

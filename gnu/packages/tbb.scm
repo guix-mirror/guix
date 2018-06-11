@@ -40,9 +40,11 @@
                 "1i3zy87gyzw22fvajm039w6g822qzqn7jbmznc8y8c57qpqnf330"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "build/common.inc"
-                  (("export tbb_build_prefix.+$")
-                   "export tbb_build_prefix?=guix\n")))))
+               '(begin
+                  (substitute* "build/common.inc"
+                    (("export tbb_build_prefix.+$")
+                     "export tbb_build_prefix?=guix\n"))
+                  #t))))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments

@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2018 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
@@ -33,6 +33,7 @@
   #:use-module (guix svn-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -54,12 +56,19 @@
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages mp3)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
@@ -69,6 +78,7 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages web)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
@@ -107,8 +117,8 @@
 
 ;; Building from recent Git because the official 5.0 release no longer builds.
 (define-public dolphin-emu
-  (let ((commit "d04b179111f8d863f360839474cb82c766f762b8")
-        (revision "0"))
+  (let ((commit "47fd8c6eff4cdea7660d0fa78040f98d1d4fa136")
+        (revision "1"))
     (package
       (name "dolphin-emu")
       (version (git-version "5.0" revision commit))
@@ -134,7 +144,7 @@
              #t))
          (sha256
           (base32
-           "0g725wmhlim73zrhi47wmr1bmplpy4b7sbimd5pm8xpfhj5nm10l"))))
+           "1gp2sshnr0dswdawxd5ix96nksp435b52bqvpjx8pmn523k29zsw"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f
@@ -143,13 +153,17 @@
 
          #:phases
          (modify-phases %standard-phases
+           (add-before 'configure 'fixgcc7
+             (lambda _
+               (unsetenv "C_INCLUDE_PATH")
+               (unsetenv "CPLUS_INCLUDE_PATH")))
            (add-before 'configure 'generate-fonts&hardcore-libvulkan-path
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((fontfile
                       (string-append (assoc-ref inputs "font-wqy-microhei")
                                      "/share/fonts/truetype/wqy-microhei.ttc"))
                      (libvulkan
-                      (string-append (assoc-ref inputs "vulkan-icd-loader")
+                      (string-append (assoc-ref inputs "vulkan-loader")
                                      "/lib/libvulkan.so")))
                  (chdir "docs")
                  (invoke "bash" "-c" "g++ -O2 -std=c++11 $(freetype-config \
@@ -179,6 +193,7 @@
                "-DX11_FOUND=1")))
       (native-inputs
        `(("pkg-config" ,pkg-config)
+         ("gcc" ,gcc-7) ; Building with gcc@5 doesn't work anymore.
          ("gettext" ,gnu-gettext)))
       (inputs
        `(("alsa-lib" ,alsa-lib)
@@ -211,7 +226,7 @@
          ("sfml" ,sfml)
          ("soil" ,soil)
          ("soundtouch" ,soundtouch)
-         ("vulkan-icd-loader" ,vulkan-icd-loader)
+         ("vulkan-loader" ,vulkan-loader)
          ("wxwidgets" ,wxwidgets-gtk2-3.1)
          ("zlib" ,zlib)))
       (home-page "https://dolphin-emu.org/")
@@ -410,11 +425,13 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
-               '(for-each
-                 (lambda (subdir)
-                   (let ((lib-subdir (string-append "src/third-party/" subdir)))
-                     (delete-file-recursively lib-subdir)))
-                 '("libpng" "lzma" "sqlite3" "zlib")))))
+               '(begin
+                  (for-each
+                   (lambda (subdir)
+                     (let ((lib-subdir (string-append "src/third-party/" subdir)))
+                       (delete-file-recursively lib-subdir)))
+                   '("libpng" "lzma" "sqlite3" "zlib"))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no "test" target
@@ -1007,7 +1024,8 @@ towards a working Mupen64Plus for casual users.")
               (snippet
                '(begin
                   ;; We don't need libretro for the GNU/Linux build.
-                  (delete-file-recursively "libretro")))))
+                  (delete-file-recursively "libretro")
+                  #t))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1043,7 +1061,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.2")
+    (version "1.7.3")
     (source
      (origin
        (method url-fetch)
@@ -1051,7 +1069,7 @@ emulation community.  It provides highly accurate emulation.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1y9fakr41h6xpddpkj12mcw1kgldvy76nzvxm5jk5v7iyiks4c6k"))))
+        (base32 "1si78dbwbsq4i0r42q94nmlpaxdyqch113nxavdprf4vc1224356"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
@@ -1061,7 +1079,7 @@ emulation community.  It provides highly accurate emulation.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (etc (string-append out "/etc"))
-                    (vulkan (assoc-ref inputs "vulkan-icd-loader")))
+                    (vulkan (assoc-ref inputs "vulkan-loader")))
                ;; Hard-code the path to libvulkan.so.
                (substitute* "gfx/common/vulkan_common.c"
                  (("libvulkan.so") (string-append vulkan "/lib/libvulkan.so")))
@@ -1085,9 +1103,10 @@ emulation community.  It provides highly accurate emulation.")
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python)
+       ("qtbase" ,qtbase)
        ("sdl" ,sdl2)
        ("udev" ,eudev)
-       ("vulkan-icd-loader" ,vulkan-icd-loader)
+       ("vulkan-loader" ,vulkan-loader)
        ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (native-inputs
@@ -1102,3 +1121,243 @@ straight into any libretro-compatible frontend.  RetroArch is the official
 reference frontend for the libretro API, currently used by most as a modular
 multi-system game/emulator system.")
     (license license:gpl3+)))
+
+(define-public scummvm
+  (package
+    (name "scummvm")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.scummvm.org/frs/scummvm/" version
+                           "/scummvm-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0q6aiw97wsrf8cjw9vjilzhqqsr2rw2lll99s8i5i9svan6l314p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;require "git"
+       #:configure-flags (list "--enable-release") ;for optimizations
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; configure does not work followed by both "SHELL=..." and
+           ;; "CONFIG_SHELL=..."; set environment variables instead
+           (lambda* (#:key outputs configure-flags #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash (which "bash"))
+                    (flags `(,(string-append "--prefix=" out)
+                             ,@configure-flags)))
+               (setenv "SHELL" bash)
+               (setenv "CONFIG_SHELL" bash)
+               (apply invoke "./configure" flags)))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("faad2" ,faad2)
+       ("fluidsynth" ,fluidsynth)
+       ("freetype" ,freetype)
+       ("libflac" ,flac)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libmad" ,libmad)
+       ("libmpeg2" ,libmpeg2)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("nasm" ,nasm)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (home-page "https://www.scummvm.org/")
+    (synopsis "Engine for several graphical adventure games")
+    (description "ScummVM is a program which allows you to run certain
+classic graphical point-and-click adventure games, provided you
+already have their data files.  The clever part about this: ScummVM
+just replaces the executables shipped with the games, allowing you to
+play them on systems for which they were never designed!")
+    (license license:gpl2+)))
+
+(define-public mame
+  (package
+    (name "mame")
+    (version "0.198")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mamedev/mame.git")
+             (commit (apply string-append "mame" (string-split version #\.)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0kl7qll8d6xlx7bj5920ljs888a6nc1fj2kfw1fz0r8za3m7wiq9"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Remove bundled libraries.
+        '(begin
+           (with-directory-excursion "3rdparty"
+             (for-each delete-file-recursively
+                       '("asio" "expat" "glm" "libflac" "libjpeg" "lua"
+                         "portaudio" "portmidi" "pugixml" "rapidjson" "SDL2"
+                         "SDL2-override" "sqlite3" "utf8proc" "zlib")))
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (cons*
+        (string-append "QT_HOME=" (assoc-ref %build-inputs "qtbase"))
+        (string-append "SDL_INI_PATH="
+                       (assoc-ref %outputs "out")
+                       "/share/mame/ini")
+        (map (lambda (lib)
+               (string-append "USE_SYSTEM_LIB_" (string-upcase lib) "=1"))
+             '("asio" "expat" "flac" "glm" "jpeg" "lua" "portaudio" "portmidi"
+               "pugixml" "rapidjson" "sqlite3" "utf8proc" "zlib")))
+       #:tests? #f                      ;no test in regular release
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'build 'build-documentation
+           (lambda _ (invoke "make" "-C" "docs" "man" "info")))
+         (replace 'install
+           ;; Upstream does not provide an installation phase.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/mame")))
+               ;; Install data.
+               (for-each (lambda (dir)
+                           (copy-recursively dir (string-append share "/" dir)))
+                         '("artwork" "bgfx" "ctrlr" "hash" "ini" "language"
+                           "plugins" "samples"))
+               (let ((keymaps (string-append share "/keymaps")))
+                 (for-each (lambda (file) (install-file file keymaps))
+                           (find-files "keymaps" ".*LINUX\\.map")))
+               (let ((fonts (string-append share "/fonts")))
+                 (install-file "uismall.bdf" fonts))
+               (rename-file "mame64" "mame")
+               (install-file "mame" (string-append out "/bin")))
+             #t))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man/man1"))
+                    (info (string-append out "/share/info")))
+               (install-file "docs/build/man/MAME.1" man)
+               (install-file "docs/build/texinfo/MAME.info" info))
+             #t))
+         (add-after 'install 'install-ini-file
+           ;; Generate an ini file so as to set some directories (e.g., roms)
+           ;; to a writable location, i.e., "$HOME/.mame/" and "$HOME/mame/".
+           ;;
+           ;; XXX: We need to insert absolute references to the store.  It can
+           ;; be an issue if they leak into user's home directory, e.g., with
+           ;; "mame -createconfig" and the package is later GC'ed.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/mame"))
+                    (ini (string-append share "/ini")))
+               (with-output-to-file (string-append ini "/mame.ini")
+                 (lambda _
+                   (format #t
+                           "inipath              $HOME/.mame;~a/ini~@
+                            homepath             $HOME/mame~@
+                            rompath              $HOME/mame/roms~@
+                            samplepath           $HOME/mame/samples;~a/samples~@
+                            cheatpath            $HOME/mame/cheat~@
+                            artpath              $HOME/mame/artwork;~a/artwork~@
+                            crosshairpath        $HOME/mame/crosshair~@
+                            snapshot_directory   $HOME/mame/snapshots~@
+                            hashpath             ~a/hash~@
+                            fontpath             $HOME/mame/fonts;~a/fonts~@
+                            ctrlrpath            $HOME/mame/ctrlr;~a/ctrlr~@
+                            bgfx_path            ~a/bgfx~@
+                            pluginspath          $HOME/mame/plugins;~a/plugins~@
+                            languagepath         ~a/language~@
+                            cfg_directory        $HOME/.mame/cfg~@
+                            nvram_directory      $HOME/.mame/nvram~@
+                            input_directory      $HOME/.mame/inp~@
+                            state_directory      $HOME/.mame/sta~@
+                            diff_directory       $HOME/.mame/diff~@
+                            comment_directory    $HOME/.mame/comments~%"
+                           share share share share share share share share
+                           share)))
+               (with-output-to-file (string-append ini "/ui.ini")
+                 (lambda _
+                   (format #t
+                           "historypath          $HOME/mame/history~@
+                            categorypath         $HOME/mame/folders~@
+                            cabinets_directory   $HOME/mame/cabinets~@
+                            cpanels_directory    $HOME/mame/cpanel~@
+                            pcbs_directory       $HOME/mame/pcb~@
+                            flyers_directory     $HOME/mame/flyers~@
+                            titles_directory     $HOME/mame/titles~@
+                            ends_directory       $HOME/mame/ends~@
+                            marquees_directory   $HOME/mame/marquees~@
+                            artwork_preview_directory $HOME/mame/artpreview~@
+                            bosses_directory     $HOME/mame/bosses~@
+                            logos_directory      $HOME/mame/logo~@
+                            scores_directory     $HOME/mame/scores~@
+                            versus_directory     $HOME/mame/versus~@
+                            gameover_directory   $HOME/mame/gameover~@
+                            howto_directory      $HOME/mame/howto~@
+                            select_directory     $HOME/mame/select~@
+                            icons_directory      $HOME/mame/icons~@
+                            covers_directory     $HOME/mame/covers~@
+                            ui_path              $HOME/.mame/ui~%")))
+               #t)))
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (desktop (string-append out "/share/applications"))
+                    (executable (string-append out "/bin/mame")))
+               (mkdir-p desktop)
+               (with-output-to-file (string-append desktop "/mame.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                           Name=mame~@
+                           Comment=Multi-purpose emulation framework~@
+                           Exec=~a~@
+                           TryExec=~@*~a~@
+                           Terminal=false~@
+                           Type=Application~@
+                           Categories=Game;Emulator;~@
+                           Keywords=Game;Emulator;Arcade;~%"
+                           executable)))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("pugixml" ,pugixml)
+       ("python-sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("asio" ,asio)
+       ("expat" ,expat)
+       ("flac" ,flac)
+       ("fontconfig" ,fontconfig)
+       ("glm" ,glm)
+       ("libjpeg" ,libjpeg-8)    ;jpeg_read_header argument error in libjpeg-9
+       ("libxinerama" ,libxinerama)
+       ("lua" ,lua)
+       ("portaudio" ,portaudio)
+       ("portmidi" ,portmidi)
+       ("python-wrapper" ,python-wrapper)
+       ("qtbase" ,qtbase)
+       ("rapidjson" ,rapidjson)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-ttf)))
+       ("sqlite" ,sqlite)
+       ("utf8proc" ,utf8proc)
+       ("zlib" ,zlib)))
+    (home-page "http://mamedev.org/")
+    (synopsis "Multi-purpose emulation framework")
+    (description "MAME's purpose is to preserve decades of software
+history.  As electronic technology continues to rush forward, MAME
+prevents this important @emph{vintage} software from being lost and
+forgotten.  This is achieved by documenting the hardware and how it
+functions.  The source code to MAME serves as this documentation.")
+    ;; The MAME project as a whole is distributed under the terms of GPL2+.
+    ;; However, over 90% of the files are under Expat license.  Also, artwork,
+    ;; keymaps, languages and samples are under CC0.
+    (license (list license:gpl2+ license:expat license:cc0))))

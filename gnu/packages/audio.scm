@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -212,7 +213,8 @@ streams from live audio.")
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port ,(string-append "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"" version "\" ; }")))))
+namespace ARDOUR { const char* revision = \"" version "\" ; }"))
+                    #t)))
               (sha256
                (base32
                 "0mla5lm51ryikc2rrk53max2m7a5ds6i1ai921l2h95wrha45nkr"))
@@ -514,7 +516,9 @@ tools (analyzer, mono/stereo tools, crossovers).")
               (modules '((guix build utils)))
               (snippet
                ;; remove prebuilt binaries
-               '(delete-file-recursively "linux_32bit"))))
+               '(begin
+                  (delete-file-recursively "linux_32bit")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
@@ -569,16 +573,7 @@ based on human speech recordings.")
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-compiler-flags
            (lambda _
-             (substitute* '("src/casynth/CMakeLists.txt"
-                            "src/cheapdist/CMakeLists.txt"
-                            "src/duffer/CMakeLists.txt"
-                            "src/envfollower/CMakeLists.txt"
-                            "src/ewham/CMakeLists.txt"
-                            "src/hip2b/CMakeLists.txt"
-                            "src/lushlife/CMakeLists.txt"
-                            "src/powercut/CMakeLists.txt"
-                            "src/powerup/CMakeLists.txt"
-                            "src/stuck/CMakeLists.txt")
+             (substitute* (find-files "." "CMakeLists.txt")
                (("-msse2 -mfpmath=sse") ""))
              #t)))))
     (inputs
@@ -1034,7 +1029,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "1.1.10")
+    (version "1.1.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1043,7 +1038,7 @@ follower.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "04jlgq1d1hd8r9cnmkl3lgf1fgm7kgy4hh9nfddap41fm1wp121p"))))
+                "0n75jq3xgq46hfmjkaaxz3gic77shs4fzajq40c8gk043i84xbdh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1095,10 +1090,10 @@ also play midifiles using a Soundfont.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
+         (replace 'bootstrap
            (lambda _
              (substitute* "bootstrap" (("\r\n") "\n"))
-             (zero? (system* "sh" "bootstrap")))))))
+             (invoke "sh" "bootstrap"))))))
     (home-page "http://www.audiocoding.com/faad2.html")
     (synopsis "MPEG-4 and MPEG-2 AAC decoder")
     (description
@@ -1202,14 +1197,15 @@ PS, and DAB+.")
                      (setenv "PATH" (string-append
                                      (assoc-ref %build-inputs "bzip2") "/bin:"
                                      (assoc-ref %build-inputs "tar") "/bin"))
-                     (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+                     (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
                      (chdir "freepats")
                      ;; Use absolute pattern references
                      (substitute* "freepats.cfg"
                        (("Tone_000") (string-append out "/Tone_000"))
                        (("Drum_000") (string-append out "/Drum_000")))
                      (mkdir-p out)
-                     (copy-recursively "." out)))))
+                     (copy-recursively "." out)
+                     #t))))
     (native-inputs
      `(("tar" ,tar)
        ("bzip2" ,bzip2)))
@@ -1730,7 +1726,8 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
           (lambda* (#:key outputs #:allow-other-keys)
             (setenv "LDFLAGS"
                     (string-append "-Wl,-rpath="
-                                   (assoc-ref outputs "out") "/lib")))))))
+                                   (assoc-ref outputs "out") "/lib"))
+            #t)))))
     ;; required by lilv-0.pc
     (propagated-inputs
      `(("serd" ,serd)
@@ -1997,14 +1994,14 @@ and ALSA.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.0")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "0lx81dfwanc10vrny1vzi0wx73ph82dlz99ffjzsigj3cqzz6x4s"))))
+                "0jw1s4qh4qjxnysddjv3j2lchwlslj9p4iisv9i89d3m7pf1svs4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; no check target
@@ -2041,9 +2038,9 @@ into various outputs and to start, stop and configure jackd")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "qmake"
-                             (string-append "PREFIX="
-                                            (assoc-ref outputs "out")))))))))
+             (invoke "qmake"
+                     (string-append "PREFIX="
+                                    (assoc-ref outputs "out"))))))))
     (native-inputs
      `(("qtbase" ,qtbase))) ; for qmake
     (inputs
@@ -2073,6 +2070,7 @@ background file post-processing.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
+                           "-DSC_QT=off"
                            "-DSC_EL=off") ;scel is packaged individually as
                                           ;emacs-scel.
        #:modules ((guix build utils)
@@ -2133,8 +2131,7 @@ set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/\
 external_libraries/yaml-cpp/include)"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
@@ -2147,12 +2144,7 @@ external_libraries/yaml-cpp/include)"))
        ("icu4c" ,icu4c)
        ("boost" ,boost)
        ("boost-sync" ,boost-sync)
-       ("yaml-cpp" ,yaml-cpp)
-       ("qtbase" ,qtbase)               ;IDE support
-       ("qtwebkit" ,qtwebkit)
-       ("qtsensors" ,qtsensors)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtlocation" ,qtlocation)))
+       ("yaml-cpp" ,yaml-cpp)))
     (home-page "https://github.com/supercollider/supercollider")
     (synopsis "Synthesis engine and programming language")
     (description "SuperCollider is a synthesis engine (@code{scsynth} or
@@ -2595,12 +2587,6 @@ Tracker 3 S3M and Impulse Tracker IT files.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("file" ,file)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "sh" "bootstrap")))))))
     (home-page "http://www.surina.net/soundtouch/")
     (synopsis
      "Audio processing library for changing tempo, pitch and playback rate")
@@ -2750,7 +2736,7 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -2758,7 +2744,7 @@ interface.")
                            "/qsynth-" version ".tar.gz"))
        (sha256
         (base32
-         "1sr6vrz8z9r99j9xcix86lgcqldragb2ajmq1bnhr58d99sda584"))))
+         "0kpk1rnhbifbvm4xvw8i0d4ksk78pf505qvg08k89kqkg32494ap"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" phase
@@ -2863,8 +2849,10 @@ result.")
                     version ".tar.bz2"))
               (snippet
                ;; Don't optimize for a specific processor architecture.
-               '(substitute* "libs/Makefile"
-                  (("^CXXFLAGS \\+= -march=native") "")))
+               '(begin
+                  (substitute* "libs/Makefile"
+                    (("^CXXFLAGS \\+= -march=native") ""))
+                  #t))
               (modules '((guix build utils)))
               (sha256
                (base32
@@ -2908,8 +2896,10 @@ engine.")
                     version ".tar.bz2"))
               (snippet
                ;; Don't optimize for a specific processor architecture.
-               '(substitute* '("apps/Makefile" "libs/Makefile")
-                  (("^CXXFLAGS \\+= -march=native") "")))
+               '(begin
+                  (substitute* '("apps/Makefile" "libs/Makefile")
+                    (("^CXXFLAGS \\+= -march=native") ""))
+                  #t))
               (modules '((guix build utils)))
               (sha256
                (base32
@@ -3003,12 +2993,6 @@ point audio data.")
                "01xi3rvdmil9nawsha04iagjylqr1l9v9vlzk99scs8c207l58i4"))))
     (build-system gnu-build-system)
     ;; The source tarball is not bootstrapped.
-    (arguments
-     `(#:phases
-        (modify-phases %standard-phases
-          (add-after 'unpack 'bootstrap
-            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
-    ;; Bootstrapping tools
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3137,7 +3121,7 @@ code, used in @code{libtoxcore}.")
 (define-public gsm
   (package
     (name "gsm")
-    (version "1.0.17")
+    (version "1.0.18")
     (source
      (origin
        (method url-fetch)
@@ -3146,7 +3130,7 @@ code, used in @code{libtoxcore}.")
                        "-" version ".tar.gz"))
        (sha256
         (base32
-         "00bns0d4wwrvc60lj2w7wz4yk49q1f6rpdrwqzrxsha9d78mfnl5"))))
+         "041amvpz8cvxykl3pwqldrzxligmmzcg8ncdnxbg32rlqf3q1xh4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tst"
@@ -3172,7 +3156,7 @@ code, used in @code{libtoxcore}.")
                (mkdir-p (string-append out "/include/gsm"))
                (copy-recursively "inc"
                                  (string-append out "/include/gsm")))))
-         (delete 'configure))))
+         (delete 'configure))))         ; no configure script
     (synopsis "GSM 06.10 lossy speech compression library")
     (description "This C library provides an encoder and a decoder for the GSM
 06.10 RPE-LTP lossy speech compression algorithm.")
@@ -3221,12 +3205,6 @@ mixers.")
                (base32
                 "1qinf41wl2ihx54zmmhanycihwjkn7dn1cicq6pp4rqbiv79b95x"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
-           (lambda _
-             (zero? (system* "autoreconf" "-vif")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3266,7 +3244,7 @@ on the ALSA software PCM plugin.")
                 "1vm0dy5qlycqkima7y5ajzvazyjybifa803fabjcpncjz08c26vp"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
+     `(#:tests? #f                      ; no tests
        #:out-of-source? #f              ; for the 'install-doc' phase
        #:configure-flags
        (let* ((out (assoc-ref %outputs "out"))
@@ -3278,13 +3256,13 @@ on the ALSA software PCM plugin.")
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (docdir (string-append out "/share/doc/snd")))
-               (mkdir-p docdir)
+                    (doc (string-append out "/share/doc/"
+                                        ,name "-" ,version)))
                (for-each
                 (lambda (f)
-                  (install-file f docdir))
+                  (install-file f doc))
                 (find-files "." "\\.html$|COPYING"))
-               (copy-recursively "pix" (string-append docdir "/pix"))
+               (copy-recursively "pix" (string-append doc "/pix"))
                #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -3418,7 +3396,7 @@ representations.")
 (define-public cava
   (package
     (name "cava")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3427,7 +3405,7 @@ representations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p24lz3h4d0h82ffylqr7mq8a8x1c66flm2r2bsv1liw51n1rma2"))))
+                "13d72swnjs894llf0paandmhf1lf90dz6ygkcdw4bv84wzkq1f4q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3446,7 +3424,7 @@ representations.")
          (list (string-append "cava_LDFLAGS = -L" lib " -Wl,-rpath " lib)))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'bootstrap
+         (replace 'bootstrap
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "HOME" (getcwd))
              (invoke "sh" "autogen.sh")))
@@ -3492,7 +3470,8 @@ using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
            (let ((file (assoc-ref %build-inputs "source"))
                  (out (string-append %output "/share/soundfonts")))
              (mkdir-p out)
-             (copy-file file (string-append out "/FluidR3Mono_GM.sf3"))))))
+             (copy-file file (string-append out "/FluidR3Mono_GM.sf3"))
+             #t))))
       (home-page  "https://github.com/musescore/MuseScore/tree/master/share/sound")
       (synopsis "Pro-quality GM soundfont")
       (description "Fluid-3 is Frank Wen's pro-quality GM soundfont.")

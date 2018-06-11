@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -214,7 +215,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.9.5")
+    (version "1.9.6")
     (source
      (origin
        (method url-fetch)
@@ -222,7 +223,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "1g4zqhbh1yw3gnb400szzwrdz0k5s3h0h5nc35xgmn5v69zvphpi"))))
+         "0a2qkvzr0g5cbd66wi7b6r40qyp9p55y0zz2j5qg1xsqwsdhbx1n"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -383,7 +384,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.9)
     (name "go")
-    (version "1.10.1")
+    (version "1.10.2")
     (source
      (origin
        (method url-fetch)
@@ -391,7 +392,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "1p1xyyxicp752n9wj10sljjl6mjxpfsplkhx74fzzjrwdkzlk52q"))))
+         "1gcqbac3wbhbcr0ri9zgfj6qkqbwf9fn116a0a7fvn4wdff60r32"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.9)
        ((#:phases phases)
@@ -1299,4 +1300,405 @@ limiting in Go.")
 support functions for dealing with terminals, as commonly found on UNIX
 systems.")
       (home-page "https://go.googlesource.com/crypto/")
+      (license license:bsd-3))))
+
+(define-public go-github-com-burntsushi-toml
+  (let ((commit
+         "a368813c5e648fee92e5f6c30e3944ff9d5e8895")
+        (revision "0"))
+    (package
+      (name "go-github-com-burntsushi-toml")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/BurntSushi/toml.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1sjxs2lwc8jpln80s4rlzp7nprbcljhy5mz4rf9995gq93wqnym5"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/BurntSushi/toml"))
+      (home-page "https://github.com/BurntSushi/toml")
+      (synopsis "Toml parser and encoder for Go")
+      (description "This package is toml parser and encoder for Go.  The
+interface is similar to Go's standard library @code{json} and @code{xml}
+package.")
+      (license license:expat))))
+
+(define-public go-github-com-getsentry-raven-go
+  (let ((commit
+         "dffeb57df75d6a911f00232155194e43d79d38d7")
+        (revision "0"))
+    (package
+      (name "go-github-com-getsentry-raven-go")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/getsentry/raven-go.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "13sb9rvl3369m7fah3ss9g0hwky259snqfn8gmbr0h5zvp651lja"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/getsentry/raven-go"))
+      (home-page
+       "https://github.com/getsentry/raven-go")
+      (synopsis "Sentry client in Go")
+      (description "This package is Go client API for the Sentry event/error
+logging system.")
+      (license license:bsd-3))))
+
+(define-public go-github-com-hashicorp-go-version
+  (let ((commit
+         "03c5bf6be031b6dd45afec16b1cf94fc8938bc77")
+        (revision "0"))
+    (package
+      (name "go-github-com-hashicorp-go-version")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/hashicorp/go-version.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0sjq57gpfznaqdrbyb2p0bn90g9h661cvr0jrk6ngags4pbw14ik"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/hashicorp/go-version"))
+      (home-page
+       "https://github.com/hashicorp/go-version")
+      (synopsis "Go library for parsing and verifying versions and version
+constraints")
+      (description "This package is a library for parsing versions and version
+constraints, and verifying versions against a set of constraints.  It can sort
+a collection of versions properly, handles prerelease/beta versions, can
+increment versions.")
+      (license license:mpl2.0))))
+
+(define-public go-github-com-jpillora-backoff
+  (let ((commit
+         "06c7a16c845dc8e0bf575fafeeca0f5462f5eb4d")
+        (revision "0"))
+    (package
+      (name "go-github-com-jpillora-backoff")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jpillora/backoff.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0xhvxr7bm47czdc5hy3kl508z3y4j91i2jm7vg774i52zych6k4l"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/jpillora/backoff"))
+      (home-page "https://github.com/jpillora/backoff")
+      (synopsis "Simple exponential backoff counter in Go")
+      (description "This package is a simple exponential backoff counter in
+Go.")
+      (license license:expat))))
+
+(define-public go-github-com-stretchr-testify
+  (let ((commit
+          "b1f989447a57594c728884458a39abf3a73447f7")
+        (revision "0"))
+    (package
+      (name "go-github-com-stretchr-testify")
+      (version (git-version "1.1.4" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/stretchr/testify.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "0p0gkqzh2p8r5g0rxm885ljl7ghih7h7hx9w562imx5ka0vdgixv"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/stretchr/testify"))
+      (home-page "https://github.com/stretchr/testify")
+      (synopsis "Go helper library for tests and invariant checking")
+      (description "This package provide many tools for testifying that your
+code will behave as you intend.
+
+Features include:
+@itemize
+@item Easy assertions
+@item Mocking
+@item HTTP response trapping
+@item Testing suite interfaces and functions.
+@end itemize")
+      (license license:expat))))
+
+(define-public go-github-com-tevino-abool
+  (let ((commit
+          "3c25f2fe7cd0ef3eabefce1d90efd69a65d35b12")
+        (revision "0"))
+    (package
+      (name "go-github-com-tevino-abool")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/tevino/abool.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "1wxqrclxk93q0aj15z596dx2y57x9nkhi64nbrr5cxnhxn8vwixm"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/tevino/abool"))
+      (home-page "https://github.com/tevino/abool")
+      (synopsis "Atomic boolean library for Go code")
+      (description "This package is atomic boolean library for Go code,
+optimized for performance yet simple to use.")
+      (license license:expat))))
+
+(define-public go-github-com-urfave-cli
+  (let ((commit "cfb38830724cc34fedffe9a2a29fb54fa9169cd1")
+        (revision "0"))
+    (package
+      (name "go-github-com-urfave-cli")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/urfave/cli.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0y6f4sbzkiiwrxbl15biivj8c7qwxnvm3zl2dd3mw4wzg4x10ygj"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/urfave/cli"))
+      (home-page "https://github.com/urfave/cli")
+      (synopsis "Library for building command-line interfaces in Go")
+      (description "This package provides a library for building command-line
+interfaces in Go.")
+      (license license:expat))))
+
+(define-public go-github-com-blang-semver
+  (let ((commit "60ec3488bfea7cca02b021d106d9911120d25fe9")
+        (revision "0"))
+    (package
+      (name "go-github-com-blang-semver")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/blang/semver.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "19pli07y5592g4dyjyj0jq5rn548vc3fz0qg3624vm1j5828p1c2"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/blang/semver"))
+      (home-page "https://github.com/blang/semver")
+      (synopsis "Semantic versioning library written in Go")
+      (description "Semver is a library for Semantic versioning written in Go.")
+      (license license:expat))))
+
+(define-public go-github-com-emicklei-go-restful
+  (let ((commit "89ef8af493ab468a45a42bb0d89a06fccdd2fb22")
+        (revision "0"))
+    (package
+      (name "go-github-com-emicklei-go-restful")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emicklei/go-restful.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0rrlfcfq80fkxifpih6bq31vavb5mf4530xz51pp9pq1mn2fzjfh"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/emicklei/go-restful"))
+      (home-page "https://github.com/emicklei/go-restful")
+      (synopsis "Build REST-style web services using Go")
+      (description "This package provides @code{go-restful}, which helps
+developers to use @code{http} methods explicitly and in a way that's consistent
+with the HTTP protocol definition.")
+      (license license:expat))))
+
+(define-public go-github-com-google-cadvisor
+  (let ((commit "2ed7198f77395ee9a172878a0a7ab92ab59a2cfd")
+        (revision "0"))
+    (package
+      (name "go-github-com-google-cadvisor")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/google/cadvisor.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1w8p345z5j0gk3yiq5ah0znd5lfh348p2s624k5r10drz04p3f55"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/google/cadvisor"))
+      (home-page "https://github.com/google/cadvisor")
+      (synopsis "Analyze resource usage of running containers")
+      (description "The package provides @code{cadvisor}, which provides
+information about the resource usage and preformance characteristics of running
+containers.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-google-gofuzz
+  (let ((commit "fd52762d25a41827db7ef64c43756fd4b9f7e382")
+        (revision "0"))
+    (package
+      (name "go-github-com-google-gofuzz")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/google/gofuzz.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1yxmmr73h0lq7ryf3q9a7pcm2x5xrg4d5bxkq8n5pxwxwyq26kw8"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/google/gofuzz"))
+      (home-page "https://github.com/google/gofuzz")
+      (synopsis "Fuzz testing library for Go")
+      (description "Gofuzz is a library for populationg Go objects with random
+values for the purpose of fuzz testing.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-gorilla-context
+  (let ((commit "08b5f424b9271eedf6f9f0ce86cb9396ed337a42")
+        (revision "0"))
+    (package
+      (name "go-github-com-gorilla-context")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gorilla/context.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "03p4hn87vcmfih0p9w663qbx9lpsf7i7j3lc7yl7n84la3yz63m4"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gorilla/context"))
+      (home-page "https://github.com/gorilla/context")
+      (synopsis "Go registry for request variables")
+      (description "This package provides @code{gorilla/context}, which is a general purpose registry for global request variables in the Go programming language.")
+      (license license:bsd-3))))
+
+(define-public go-github-com-gorilla-mux
+  (let ((commit "599cba5e7b6137d46ddf58fb1765f5d928e69604")
+        (revision "0"))
+    (package
+      (name "go-github-com-gorilla-mux")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gorilla/mux.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0wd6jjii1kg5s0nk3ri6gqriz6hbd6bbcn6x4jf8n7ncrb8qsxyz"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gorilla/mux"))
+      (home-page "https://github.com/gorilla/mux")
+      (synopsis "URL router and dispatcher for Go")
+      (description
+       "Gorilla/Mux implements a request router and dispatcher for matching
+incoming requests with their respective handler.")
+      (license license:bsd-3))))
+
+(define-public go-github-com-jonboulle-clockwork
+  (let ((commit "e3653ace2d63753697e0e5b07b9393971c0bba9d")
+        (revision "0"))
+    (package
+      (name "go-github-com-jonboulle-clockwork")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/jonboulle/clockwork.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "1avzqhks12a8x2yzpvjsf3k0gv9cy7zx2z88hn0scacnxkphisvc"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/jonboulle/clockwork"))
+      (home-page "https://github.com/jonboulle/clockwork")
+      (synopsis "Fake clock library for Go")
+      (description
+       "Replace uses of the @code{time} package with the
+@code{clockwork.Clock} interface instead.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-spf13-pflag
+  (let ((commit "4f9190456aed1c2113ca51ea9b89219747458dc1")
+        (revision "0"))
+    (package
+      (name "go-github-com-spf13-pflag")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/spf13/pflag.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "12vrlcsbwjqlfc49rwky45mbcj74c0kb6z54354pzas6fwzyi1kc"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/spf13/pflag"))
+      (home-page "https://github.com/spf13/pflag")
+      (synopsis "Replacement for Go's @code{flag} package")
+      (description
+       "Pflag is library to replace Go's @code{flag} package.  It implements
+POSIX/GNU-style command-line options with double hyphens.  It is is compatible
+with the
+@uref{https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html,
+GNU extensions} to the POSIX recommendations for command-line options.")
       (license license:bsd-3))))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -473,36 +473,15 @@ were found."
   (find-partition luks-partition-uuid-predicate))
 
 
-(define* (canonicalize-device-spec spec #:optional (title 'any))
-  "Return the device name corresponding to SPEC.  TITLE is a symbol, one of
-the following:
-
-  • 'device', in which case SPEC is known to designate a device node--e.g.,
-     \"/dev/sda1\";
-  • 'label', in which case SPEC is known to designate a partition label--e.g.,
-     \"my-root-part\";
-  • 'uuid', in which case SPEC must be a UUID designating a partition;
-  • 'any', in which case SPEC can be anything.
-"
+(define (canonicalize-device-spec spec)
+  "Return the device name corresponding to SPEC, which can be a <uuid>, a
+<file-system-label>, or a string (typically a /dev file name)."
   (define max-trials
     ;; Number of times we retry partition label resolution, 1 second per
     ;; trial.  Note: somebody reported a delay of 16 seconds (!) before their
     ;; USB key would be detected by the kernel, so we must wait for at least
     ;; this long.
     20)
-
-  (define canonical-title
-    ;; The realm of canonicalization.
-    (if (eq? title 'any)
-        (if (string? spec)
-            ;; The "--root=SPEC" kernel command-line option always provides a
-            ;; string, but the string can represent a device, a UUID, or a
-            ;; label.  So check for all three.
-            (cond ((string-prefix? "/" spec) 'device)
-                  ((string->uuid spec) 'uuid)
-                  (else 'label))
-            'uuid)
-        title))
 
   (define (resolve find-partition spec fmt)
     (let loop ((count 0))
@@ -518,23 +497,19 @@ the following:
                   (sleep 1)
                   (loop (+ 1 count))))))))
 
-  (case canonical-title
-    ((device)
-     ;; Nothing to do.
-     spec)
-    ((label)
+  (match spec
+    ((? string?)
+     ;; Nothing to do, but wait until SPEC shows up.
+     (resolve identity spec identity))
+    ((? file-system-label?)
      ;; Resolve the label.
-     (resolve find-partition-by-label spec identity))
-    ((uuid)
+     (resolve find-partition-by-label
+              (file-system-label->string spec)
+              identity))
+    ((? uuid?)
      (resolve find-partition-by-uuid
-              (cond ((string? spec)
-                     (string->uuid spec))
-                    ((uuid? spec)
-                     (uuid-bytevector spec))
-                    (else spec))
-              uuid->string))
-    (else
-     (error "unknown device title" title))))
+              (uuid-bytevector spec)
+              uuid->string))))
 
 (define (check-file-system device type)
   "Run a file system check of TYPE on DEVICE."
@@ -615,8 +590,7 @@ run a file system check."
                                 "")))))
   (let ((type        (file-system-type fs))
         (options     (file-system-options fs))
-        (source      (canonicalize-device-spec (file-system-device fs)
-                                               (file-system-title fs)))
+        (source      (canonicalize-device-spec (file-system-device fs)))
         (mount-point (string-append root "/"
                                     (file-system-mount-point fs)))
         (flags       (mount-flags->bit-mask (file-system-flags fs))))

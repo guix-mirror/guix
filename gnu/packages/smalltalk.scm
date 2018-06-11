@@ -100,7 +100,8 @@ such as ones for networking and GUI programming.")
               "ux_version = \"GNU\";\n"))
            (substitute* "unix/vm/config.cmake"
              (("\\(VM_BUILD_STRING.*")
-              "(VM_BUILD_STRING \\\"Built with GNU Guix\\\")"))))))
+              "(VM_BUILD_STRING \\\"Built with GNU Guix\\\")"))
+           #t))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)

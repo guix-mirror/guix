@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system emacs)
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
@@ -41,57 +43,66 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.7.2")
+    (version "3.11.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://www.cmake.org/files/v"
-                                 (version-major+minor version)
-                                 "/cmake-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1q6a60695prpzzsmczm2xrgxdb61fyjznb04dr6yls6iwv24c4nw"))
-             (patches (search-patches "cmake-fix-tests.patch"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Drop bundled software.
-                 (with-directory-excursion "Utilities"
-                   (for-each delete-file-recursively
-                             '("cmbzip2"
-                               ;"cmcompress"
-                               "cmcurl"
-                               "cmexpat"
-                               ;"cmjsoncpp"
-                               ;"cmlibarchive"
-                               "cmliblzma"
-                               "cmlibuv"
-                               "cmzlib"))
-                   #t)))))
+              (method url-fetch)
+              (uri (string-append "https://www.cmake.org/files/v"
+                                  (version-major+minor version)
+                                  "/cmake-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sv5k9q6braa8hhw0y3w19avqn0xn5czv5jf5fz5blnlf7ivw4y3"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Drop bundled software.
+                  (with-directory-excursion "Utilities"
+                    (for-each delete-file-recursively
+                              '("cmbzip2"
+                                ;; "cmcompress"
+                                "cmcurl"
+                                "cmexpat"
+                                ;; "cmjsoncpp"
+                                ;; "cmlibarchive"
+                                "cmliblzma"
+                                ;; "cmlibuv"
+                                "cmzlib"))
+                    #t)))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:make-flags
+       (let ((skipped-tests
+              (list "BundleUtilities" ; This test fails on Guix.
+                    "CTestTestSubdir" ; This test fails to build 2 of the 3 tests.
+                    ;; These tests requires network access.
+                    "CTestCoverageCollectGCOV"
+                    "CTestTestUpload")))
+         (list
+          (string-append
+           ;; These arguments apply for the tests only.
+           "ARGS=-j " (number->string (parallel-job-count))
+           " --output-on-failure"
+           " --exclude-regex ^\\(" (string-join skipped-tests "\\|") "\\)$")))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-bin-sh
            (lambda _
-           ;; Replace "/bin/sh" by the right path in... a lot of
-           ;; files.
-           (substitute*
-               '("Modules/CompilerId/Xcode-3.pbxproj.in"
-                 "Modules/CompilerId/Xcode-1.pbxproj.in"
-                 "Modules/CompilerId/Xcode-2.pbxproj.in"
-                 "Modules/CPack.RuntimeScript.in"
-                 "Source/cmakexbuild.cxx"
-                 "Source/cmGlobalXCodeGenerator.cxx"
-                 "Source/CTest/cmCTestBatchTestHandler.cxx"
-                 "Source/cmLocalUnixMakefileGenerator3.cxx"
-                 "Source/cmExecProgramCommand.cxx"
-                 "Utilities/Release/release_cmake.cmake"
-                 "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
-                 "Tests/CMakeLists.txt"
-                 "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
+             ;; Replace "/bin/sh" by the right path in... a lot of
+             ;; files.
+             (substitute*
+                 '("Modules/CompilerId/Xcode-3.pbxproj.in"
+                   "Modules/CPack.RuntimeScript.in"
+                   "Source/cmakexbuild.cxx"
+                   "Source/cmGlobalXCodeGenerator.cxx"
+                   "Source/cmLocalUnixMakefileGenerator3.cxx"
+                   "Source/cmExecProgramCommand.cxx"
+                   "Utilities/Release/release_cmake.cmake"
+                   "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
+                   "Tests/CMakeLists.txt"
+                   "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
                (("/bin/sh") (which "sh")))
-           #t))
+             #t))
          (add-before 'configure 'set-paths
            (lambda _
              ;; Help cmake's bootstrap process to find system libraries
@@ -102,43 +113,37 @@
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system*
-                       "./configure"
-                       (string-append "--prefix=" out)
-                       "--system-libs"
-                       "--no-system-jsoncpp" ; FIXME: Circular dependency.
-                       ;; By default, the man pages and other docs land
-                       ;; in PREFIX/man and PREFIX/doc, but we want them
-                       ;; in share/{man,doc}.  Note that unlike
-                       ;; autoconf-generated configure scripts, cmake's
-                       ;; configure prepends "PREFIX/" to what we pass
-                       ;; to --mandir and --docdir.
-                       "--mandir=share/man"
-                       ,(string-append
-                         "--docdir=share/doc/cmake-"
-                         (version-major+minor version)))))))
-         (add-before 'check 'set-test-environment
-           (lambda _
-             ;; Get verbose output from failed tests.
-             (setenv "CTEST_OUTPUT_ON_FAILURE" "TRUE")
-             ;; Run tests in parallel.
-             (setenv "CTEST_PARALLEL_LEVEL"
-                     (number->string (parallel-job-count)))
-             #t)))))
+               (invoke
+                "./configure" "--verbose"
+                (string-append "--parallel=" (number->string (parallel-job-count)))
+                (string-append "--prefix=" out)
+                "--system-libs"
+                "--no-system-jsoncpp" ; FIXME: Circular dependency.
+                ;; By default, the man pages and other docs land
+                ;; in PREFIX/man and PREFIX/doc, but we want them
+                ;; in share/{man,doc}.  Note that unlike
+                ;; autoconf-generated configure scripts, cmake's
+                ;; configure prepends "PREFIX/" to what we pass
+                ;; to --mandir and --docdir.
+                "--mandir=share/man"
+                ,(string-append
+                  "--docdir=share/doc/cmake-"
+                  (version-major+minor version)))))))))
     (inputs
-     `(("file"       ,file)
-       ("curl"       ,curl)
-       ("zlib"       ,zlib)
-       ("expat"      ,expat)
-       ("bzip2"      ,bzip2)
-       ("ncurses"    ,ncurses) ; required for ccmake
-       ("libuv"      ,libuv)
-       ("libarchive" ,libarchive)))
+     `(("bzip2" ,bzip2)
+       ("curl" ,curl)
+       ("expat" ,expat)
+       ("file" ,file)
+       ("libarchive" ,libarchive)
+       ("libuv" ,libuv)
+       ("ncurses" ,ncurses) ; required for ccmake
+       ("rhash" ,rhash)
+       ("zlib" ,zlib)))
     (native-search-paths
      (list (search-path-specification
-             (variable "CMAKE_PREFIX_PATH")
-             (files '("")))))
-    (home-page "https://www.cmake.org/")
+            (variable "CMAKE_PREFIX_PATH")
+            (files '("")))))
+    (home-page "https://cmake.org/")
     (synopsis "Cross-platform build system")
     (description
      "CMake is a family of tools designed to build, test and package software.
@@ -151,58 +156,19 @@ and workspaces that can be used in the compiler environment of your choice.")
                    license:expat             ; cmjsoncpp is dual MIT/public domain
                    license:public-domain)))) ; cmlibarchive/archive_getdate.c
 
-;; Recent Ceph requires Boost 1.66, which in turn requires CMake 3.11 for
-;; its updated "FindBoost.cmake" facility.
-(define-public cmake-3.11
+(define-public emacs-cmake-mode
   (package
     (inherit cmake)
-    (version "3.11.0-rc2")
-    (source (origin
-              (inherit (package-source cmake))
-              (uri (string-append "https://www.cmake.org/files/v"
-                                  (version-major+minor version)
-                                  "/cmake-" version ".tar.gz"))
-              (sha256
-               (base32
-                "14p6ais19nfcwl914n4n5rbzaqwafv3qkg6nd8jw54ykn6lz6mf3"))
-              (snippet
-               '(begin
-                  ;; Drop bundled software.
-                  (with-directory-excursion "Utilities"
-                    (for-each delete-file-recursively
-                              '("cmbzip2"
-                                "cmcurl"
-                                "cmexpat"
-                                "cmliblzma"
-                                "cmzlib"))
-                    #t)))))
-    (build-system gnu-build-system)
+    (name "emacs-cmake-mode")
+    (build-system emacs-build-system)
     (arguments
-     (substitute-keyword-arguments (package-arguments cmake)
-       ((#:make-flags flags ''()) `(cons (string-append
-                                          "ARGS=-j "
-                                          (number->string (parallel-job-count))
-                                          " --output-on-failure")
-                                         ,flags))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'patch-bin-sh
-             (lambda _
-               (substitute*
-                   '("Modules/CompilerId/Xcode-3.pbxproj.in"
-                     "Modules/CPack.RuntimeScript.in"
-                     "Source/cmakexbuild.cxx"
-                     "Source/cmGlobalXCodeGenerator.cxx"
-                     "Source/cmLocalUnixMakefileGenerator3.cxx"
-                     "Source/cmExecProgramCommand.cxx"
-                     "Utilities/Release/release_cmake.cmake"
-                     "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
-                     "Tests/CMakeLists.txt"
-                     "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
-                 (("/bin/sh") (which "sh")))
-               #t))
-           ;; This is now passed through #:make-flags.
-           (delete 'set-test-environment)))))
-    (inputs
-     `(("rhash" ,rhash)
-       ,@(package-inputs cmake)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-elisp
+           ;; Elisp directory is not in root of the source.
+           (lambda _
+             (chdir "Auxiliary"))))))
+    (synopsis "Emacs major mode for editing Cmake expressions")
+    (description "@code{cmakeos-mode} provides an Emacs major mode for editing
+Cmake files.  It supports syntax highlighting, indenting and refilling of
+comments.")))
