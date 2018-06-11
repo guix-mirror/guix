@@ -303,6 +303,41 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
     (license (list license:expat
                    license:bsd-2 license:bsd-3 license:bsd-4))))
 
+(define-public ovmf-aarch64
+  (package
+    (inherit ovmf)
+    (name "ovmf-aarch64")
+    (native-inputs
+     `(,@(package-native-inputs ovmf)
+       ,@(if (not (string-prefix? "aarch64" (%current-system)))
+           `(("cross-gcc" ,(cross-gcc "aarch64-linux-gnu"))
+             ("cross-binutils" ,(cross-binutils "aarch64-linux-gnu")))
+           '())))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ovmf)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'set-env
+             (lambda _
+               ,@(if (not (string-prefix? "aarch64" (%current-system)))
+                     `((setenv "GCC49_AARCH64_PREFIX" "aarch64-linux-gnu-"))
+                     '())
+               #t))
+           (replace 'build
+             (lambda _
+               (invoke "build" "-a" "AARCH64" "-t" "GCC49"
+                       "-p" "ArmVirtPkg/ArmVirtQemu.dsc")))
+           (delete 'build-x64)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (fmw (string-append out "/share/firmware")))
+                 (mkdir-p fmw)
+                 (copy-file "Build/ArmVirtQemu-AARCH64/RELEASE_GCC49/FV/QEMU_EFI.fd"
+                            (string-append fmw "/ovmf_aarch64.bin"))
+                 #t)))))))
+    (supported-systems %supported-systems)))
+
 (define* (make-arm-trusted-firmware platform #:optional (arch "aarch64"))
   (package
     (name (string-append "arm-trusted-firmware-" platform))
