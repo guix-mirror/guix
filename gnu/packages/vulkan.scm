@@ -115,8 +115,8 @@ disassembler, validator, and optimizer for SPIR-V.")
 (define-public glslang
   ;; Keep updated in accordance with
   ;; https://github.com/google/shaderc/blob/known-good/known_good.json
-  (let ((commit "b5b08462442239e6537315ea1405b6afcd53043e")
-        (revision "2"))
+  (let ((commit "32d3ec319909fcad0b2b308fe1635198773e8316")
+        (revision "3"))
     (package
       (name "glslang")
       (version (string-append "3.0-" revision "." (string-take commit 9)))
@@ -128,7 +128,7 @@ disassembler, validator, and optimizer for SPIR-V.")
                (commit commit)))
          (sha256
           (base32
-           "08imby3hciisshzacrkx8s56lx4fxm7dad06xxaxxcapinmqrvwk"))
+           "1kmgjv5kbrjy6azpgwnjcn3cj8vg5i8hnyk3m969sc0gq2j1rbjj"))
          (file-name (string-append name "-" version "-checkout"))))
       (build-system cmake-build-system)
       (arguments
