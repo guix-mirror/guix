@@ -69,14 +69,14 @@
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.18.11")
+    (version "0.18.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07a7k83hx7icahh6jaxfbd7pw5jjm5i11xcqjj31b28d1aj29xvw"))))
+                "1m2khr2cij8z6lawgbmdksjn14fpnjsy8ad4qahnpqapm1slsxap"))))
     (build-system gnu-build-system)
     (home-page "https://www.libraw.org")
     (synopsis "Raw image decoder")
