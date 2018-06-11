@@ -173,7 +173,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
-    (version "2.2.7")
+    (version "2.2.8")
     (source
      (origin
        (method url-fetch)
@@ -181,10 +181,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                            version "/cups-" version "-source.tar.gz"))
        (sha256
         (base32
-         "0spaqv943bzzq31gqdp73934jgyhhlbzdmgvrmf5cxvhfdxn6jrw"))
-       ;; “PAM will soon [in 2.3.x] be required for authentication, period.”
-       ;; <https://github.com/apple/cups/pull/5253#issuecomment-368066917>
-       (patches (search-patches "cups-fix-builds-without-PAM.patch"))))
+         "1r7r7b3nqpzc1a9dczqpj2mr8rkcwf01676v11sp4j7w4qfzqs1r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
