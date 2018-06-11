@@ -467,17 +467,17 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-pam
   (package
     (name "linux-pam")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append
-            "http://www.linux-pam.org/library/"
-            "Linux-PAM-" version ".tar.bz2"))
-      (sha256
-       (base32
-        "1fyi04d5nsh8ivd0rn2y0z83ylgc0licz7kifbb6xxi2ylgfs6i4"))
-      (patches (search-patches "linux-pam-no-setfsuid.patch"))))
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/linux-pam/linux-pam/releases/download/v"
+             version "/Linux-PAM-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1nyh9kdi3knhxcbv5v4snya0g3gff0m671lnvqcbygw3rm77mx7g"))
+       (patches (search-patches "linux-pam-no-setfsuid.patch"))))
 
     (build-system gnu-build-system)
     (native-inputs
