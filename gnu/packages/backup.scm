@@ -472,13 +472,13 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.5")
+    (version "1.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
        (sha256
-        (base32 "0gbdnq7ks46diz6y2pf6wpwkb9hy6hp3immi7jg3h7w72b3ycmj3"))
+        (base32 "0c09j46fi8i7klas0bh82a4whlwnajshk0izkgax6fjxr1sf9lm1"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -511,17 +511,6 @@ detection, and lossless compression.")
                ;; HOME=/homeless-shelter.
                (setenv "HOME" "/tmp")
                #t)))
-         ;; Later versions of msgpack were disallowed to some warnings and lack
-         ;; of support for Python versions that we don't support anyways. So,
-         ;; it's okay to to keep using more recents versions of msgpack for
-         ;; Borg. Also see the note about msgpack in the list of inputs.
-         ;; https://github.com/borgbackup/borg/issues/3517#issuecomment-357221978
-         (add-before 'build 'adjust-msgpack-dependency
-           (lambda _
-             (substitute* "setup.py"
-               (("msgpack-python>=0.4.6,<0.5.0")
-                 "msgpack-python>=0.4.6"))
-             #t))
          ;; The tests need to be run after Borg is installed.
          (delete 'check)
          (add-after 'install 'check
