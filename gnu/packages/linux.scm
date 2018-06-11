@@ -3026,7 +3026,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.49")
+    (version "5.50")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3034,7 +3034,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "15ffsaz7l3fgdg03l7g1xx9jw7xgs6pc548zxqsxawsca5x1sc1k"))))
+                "048r91vx9gs5nwwbah2s0xig04nwk14c5s0vb7qmaqdvighsmz2z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
