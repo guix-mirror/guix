@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +44,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.11.1")
+    (version "3.11.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cmake.org/files/v"
@@ -51,7 +52,7 @@
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "033x45q0lyaqr32pv92pv87pw20nja6i9794hmijrm6ilinbrgjp"))
+                "16n310smy3h4q3i7l1hcv0hlrwdvh082f1r7s36c3zxppsv3aw98"))
               (modules '((guix build utils)))
               (snippet
                '(begin
