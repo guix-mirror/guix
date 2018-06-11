@@ -37,8 +37,8 @@
 (define-public spirv-headers
   ;; Keep updated in accordance with
   ;; https://github.com/google/shaderc/blob/known-good/known_good.json
-  (let ((commit "061097878467b8e040fbf153a837d844ef9f9f96")
-        (revision "2"))
+  (let ((commit "3ce3e49d73b8abbf2ffe33f829f941fb2a40f552")
+        (revision "3"))
     (package
       (name "spirv-headers")
       (version (string-append "0.0-" revision "." (string-take commit 9)))
@@ -50,7 +50,7 @@
                (commit commit)))
          (sha256
           (base32
-           "0bf9h6xc5fkncxnadwmqvpsjh7sdgns6is8prv1gvlfzrkvpjj17"))
+           "0yk4bzqifdqpmdxkhvrxbdqhf5ngkga0ig1yyz7khr7rklqfz7wp"))
          (file-name (string-append name "-" version "-checkout"))))
       (build-system cmake-build-system)
       (arguments
@@ -58,10 +58,10 @@
          #:phases (modify-phases %standard-phases
                     (replace 'install
                       (lambda* (#:key outputs #:allow-other-keys)
-                        (zero? (system* "cmake" "-E" "copy_directory"
+                        (invoke "cmake" "-E" "copy_directory"
                                         "../source/include/spirv"
                                         (string-append (assoc-ref outputs "out")
-                                                       "/include/spirv"))))))))
+                                                       "/include/spirv")))))))
       (home-page "https://github.com/KhronosGroup/SPIRV-Headers")
       (synopsis "Machine-readable files from the SPIR-V Registry")
       (description
