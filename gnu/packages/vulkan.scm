@@ -24,15 +24,19 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages wine)
   #:use-module (gnu packages xorg))
 
 (define-public spirv-headers
@@ -280,3 +284,43 @@ and the ICD.")
       (description "Shaderc is a collection of tools, libraries, and tests for
 shader compilation.")
       (license license:asl2.0))))
+
+(define-public vkd3d
+  (let ((commit "020c119e2da0786d8be0615cff961c190b00d62d") ; Release 1.0.
+        (revision "0"))
+    (package
+     (name "vkd3d")
+     (version "1.0")
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://source.winehq.org/git/vkd3d.git")
+             (commit commit)))
+       (sha256
+        (base32
+         "084svxhigs8r0725jv6gs7wwrxb9x4igyg5bgvgpcfw4aq0k69gn"))
+       (file-name (string-append name "-" version "-checkout"))))
+     (build-system gnu-build-system)
+     (arguments
+      `(#:configure-flags '("--with-spirv-tools")))
+     (native-inputs
+      `(("autoconf" ,autoconf)
+        ("automake" ,automake)
+        ("gettext" ,gnu-gettext)
+        ("libtool" ,libtool)
+        ("pkg-config" ,pkg-config)))
+     (inputs
+      `(("libx11" ,libx11)
+        ("libxcb" ,libxcb)
+        ("spirv-headers" ,spirv-headers)
+        ("spirv-tools" ,spirv-tools)
+        ("vulkan-loader" ,vulkan-loader)
+        ("wine" ,wine) ; Needed for 'widl'.
+        ("xcb-util" ,xcb-util)
+        ("xcb-util-keysyms" ,xcb-util-keysyms)
+        ("xcb-util-wm" ,xcb-util-wm)))
+     (home-page "https://source.winehq.org/git/vkd3d.git/")
+     (synopsis "Direct3D 12 to Vulkan translation library")
+     (description "vkd3d is a library for translating Direct3D 12 to Vulkan.")
+     (license license:lgpl2.1))))
