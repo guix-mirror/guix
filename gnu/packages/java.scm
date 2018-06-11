@@ -212,7 +212,13 @@ JNI.")
                 "1cg0lga887qz5iizh6mlkxp01lciymrhmp7wzxpl6zpnldxmzrjx"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" target
+     `(#:imported-modules ((guix build syscalls)
+                           ,@%gnu-build-system-modules)
+       #:modules ((srfi srfi-1)
+                  (guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build syscalls))
+       #:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap)
@@ -254,10 +260,42 @@ JNI.")
              (zero? (system* "bash" "bootstrap.sh"
                              (string-append "-Ddist.dir="
                                             (assoc-ref %outputs "out"))))))
+         (add-after 'build 'strip-jar-timestamps ;based on ant-build-system
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define (repack-archive jar)
+               (let* ((dir (mkdtemp! "jar-contents.XXXXXX"))
+                      (manifest (string-append dir "/META-INF/MANIFESTS.MF")))
+                 (with-directory-excursion dir
+                   (invoke "unzip" jar))
+                 (delete-file jar)
+                 ;; XXX: copied from (gnu build install)
+                 (for-each (lambda (file)
+                             (let ((s (lstat file)))
+                               (unless (eq? (stat:type s) 'symlink)
+                                 (utime file  0 0 0 0))))
+                           (find-files dir #:directories? #t))
+                 ;; It is important that the manifest appears first.
+                 (with-directory-excursion dir
+                   (let* ((files (find-files "." ".*" #:directories? #t))
+                          ;; To ensure that the reference scanner can
+                          ;; detect all store references in the jars
+                          ;; we disable compression with the "-0" option.
+                          (command (if (file-exists? manifest)
+                                       `("zip" "-0" "-X" ,jar ,manifest
+                                         ,@files)
+                                       `("zip" "-0" "-X" ,jar ,@files))))
+                     (apply invoke command)))))
+             (for-each repack-archive
+                    (find-files
+                     (string-append (assoc-ref %outputs "out") "/lib")
+                     "\\.jar$"))
+             #t))
          (delete 'install))))
     (native-inputs
      `(("jikes" ,jikes)
-       ("jamvm" ,jamvm-1-bootstrap)))
+       ("jamvm" ,jamvm-1-bootstrap)
+       ("unzip" ,unzip)
+       ("zip", zip)))
     (home-page "http://ant.apache.org")
     (synopsis "Build tool for Java")
     (description
