@@ -2730,7 +2730,7 @@ X server.")
 (define-public xf86-video-fbdev
   (package
     (name "xf86-video-fbdev")
-    (version "0.4.4")
+    (version "0.5.0")
     (source
       (origin
         (method url-fetch)
@@ -2740,7 +2740,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "06ym7yy017lanj730hfkpfk4znx3dsj8jq3qvyzsn8w294kb7m4x"))))
+            "16a66zr0l1lmssa07i3rzy07djxnb45c17ks8c71h8l06xgxihyw"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
