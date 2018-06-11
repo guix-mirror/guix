@@ -44,7 +44,6 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module (guix utils) ;substitute-keyword-arguments for perl-5.26.2
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
@@ -61,15 +60,14 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.26.1")
-    (replacement perl/fixed)
+    (version "5.26.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1p81wwvr5jb81m41d07kfywk5gvbk0axdrnvhc2aghcdbr4alqz7"))
+               "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))
              (patches (search-patches
                        "perl-file-path-CVE-2017-6512.patch"
                        "perl-no-sys-dirs.patch"
@@ -159,39 +157,6 @@
 24 years of development.")
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
-
-;; Fixes CVE-2018-6797, CVE-2018-6798, and CVE-2018-6913.
-;; See <https://metacpan.org/changes/release/SHAY/perl-5.26.2>.
-(define perl-5.26.2
-  (package
-    (inherit perl)
-    (version "5.26.2")
-    (source (origin
-              (inherit (package-source perl))
-              (uri (string-append "mirror://cpan/src/5.0/perl-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))))
-
-;; When grafting perl, complications arise when the replacement perl has a
-;; different version number than the original.  So, here we create a version
-;; of perl-5.26.2 that thinks it is version 5.26.1.  See
-;; <https://bugs.gnu.org/31210> and <https://bugs.gnu.org/31216>.
-(define perl/fixed
-  (package
-    (inherit perl-5.26.2)
-    (version "5.26.1")
-    (arguments
-     (substitute-keyword-arguments (package-arguments perl-5.26.2)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'revert-perl-subversion
-             (lambda _
-               (substitute* "patchlevel.h"
-                 (("^#define PERL_SUBVERSION	2")
-                  "#define PERL_SUBVERSION	1"))
-               #t))))))))
 
 (define-public perl-algorithm-c3
   (package
