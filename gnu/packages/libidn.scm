@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,26 +33,16 @@
 (define-public libidn
   (package
    (name "libidn")
-   (version "1.34")
+   (version "1.35")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libidn/libidn-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "0g3fzypp0xjcgr90c5cyj57apx1cmy0c6y9lvw2qdcigbyby469p"))
-            (modules '((guix build utils)))
-            (snippet
-             '(begin
-                ;; The gnulib test-lock test is prone to writer starvation
-                ;; with our glibc@2.25, which prefers readers, so disable it.
-                ;; The gnulib commit b20e8afb0b2 should fix this once
-                ;; incorporated here.
-                (substitute* "lib/gltests/Makefile.in"
-                  (("test-lock\\$\\(EXEEXT\\) ") ""))
-                #t))))
+              "07pyy0afqikfq51z5kbzbj9ldbd12mri0zvx0mfv3ds6bc0g26pi"))))
    (build-system gnu-build-system)
-;; FIXME: No Java and C# libraries are currently built.
+   ;; FIXME: No Java and C# libraries are currently built.
    (synopsis "Internationalized string processing library")
    (description
      "libidn is a library implementing of the Stringprep, Punycode and IDNA
