@@ -10,7 +10,7 @@
 ;;; Copyright © 2016, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -1194,7 +1194,25 @@ and daylight-saving rules.")
 ;;; will typically be obsolete and should never be referred to by a built
 ;;; package.
 (define-public tzdata-for-tests
-  (hidden-package tzdata))
+  (hidden-package
+   (package
+     (inherit tzdata)
+     (version "2018d")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "https://www.iana.org/time-zones/repository"
+                                   "/releases/tzdata" version ".tar.gz"))
+               (sha256
+                (base32
+                 "0m6020dnk9r40z7k36jp13fa06xip3hn0fdx3nly66jzxgffs1ji"))))
+     (inputs `(("tzcode" ,(origin
+                            (method url-fetch)
+                            (uri (string-append
+                                  "http://www.iana.org/time-zones/repository/releases/tzcode"
+                                  version ".tar.gz"))
+                            (sha256
+                             (base32
+                              "1nd882yhsazmcfqmcqyfig3axycryl30gmizgqhqsx5dpa2lxr3x")))))))))
 
 (define-public libiconv
   (package
