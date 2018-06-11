@@ -3440,7 +3440,7 @@ X server.")
 (define-public xf86-video-vmware
   (package
     (name "xf86-video-vmware")
-    (version "13.2.1")
+    (version "13.3.0")
     (source
       (origin
         (method url-fetch)
@@ -3450,7 +3450,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0azn3g0vcki47n5jddagk2rmbwdvp845k8p7d2r56zxs3w8ggxz2"))))
+           "0v06qhm059klq40m2yx4wypzb7h53aaassbjfmm6clcyclj1k5s7"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
