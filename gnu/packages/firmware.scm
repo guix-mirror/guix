@@ -338,6 +338,41 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
                  #t)))))))
     (supported-systems %supported-systems)))
 
+(define-public ovmf-arm
+  (package
+    (inherit ovmf)
+    (name "ovmf-arm")
+    (native-inputs
+     `(,@(package-native-inputs ovmf)
+       ,@(if (not (string-prefix? "armhf" (%current-system)))
+           `(("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf"))
+             ("cross-binutils" ,(cross-binutils "arm-linux-gnueabihf")))
+           '())))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ovmf)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'set-env
+             (lambda _
+               ,@(if (not (string-prefix? "armhf" (%current-system)))
+                     `((setenv "GCC49_ARM_PREFIX" "arm-linux-gnueabihf-"))
+                     '())
+               #t))
+           (replace 'build
+             (lambda _
+               (invoke "build" "-a" "ARM" "-t" "GCC49"
+                       "-p" "ArmVirtPkg/ArmVirtQemu.dsc")))
+           (delete 'build-x64)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (fmw (string-append out "/share/firmware")))
+                 (mkdir-p fmw)
+                 (copy-file "Build/ArmVirtQemu-ARM/RELEASE_GCC49/FV/QEMU_EFI.fd"
+                            (string-append fmw "/ovmf_arm.bin"))
+                 #t)))))))
+    (supported-systems %supported-systems)))
+
 (define* (make-arm-trusted-firmware platform #:optional (arch "aarch64"))
   (package
     (name (string-append "arm-trusted-firmware-" platform))
