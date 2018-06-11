@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,8 +85,7 @@ accept from any for local deliver to mbox
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'smtpd)
-                #t)
+                (start-service 'smtpd))
              marionette))
 
           (test-assert "mbox is empty"
@@ -224,8 +224,7 @@ acl_check_data:
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'exim)
-                #t)
+                (start-service 'exim))
              marionette))
 
           (sleep 1) ;; give the service time to start talking
@@ -330,13 +329,11 @@ Subject: Hello Nice to meet you!")
           (test-begin "dovecot")
 
           ;; Wait for dovecot to be up and running.
-          (test-eq "dovecot running"
-            'running!
+          (test-assert "dovecot running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'dovecot)
-                'running!)
+                (start-service 'dovecot))
              marionette))
 
           ;; Check Dovecot service's PID.

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -245,13 +245,11 @@ HTTP-PORT, along with php-fpm."
                      ((pid) (number? pid))))))
              marionette))
 
-          (test-eq "nginx running"
-            'running!
+          (test-assert "nginx running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'nginx)
-                'running!)
+                (start-service 'nginx))
              marionette))
 
           (test-equal "http-get"

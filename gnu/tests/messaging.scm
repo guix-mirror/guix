@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -102,13 +102,11 @@
           (test-begin "xmpp")
 
           ;; Wait for XMPP service to be up and running.
-          (test-eq "service running"
-            'running!
+          (test-assert "service running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'xmpp-daemon)
-                'running!)
+                (start-service 'xmpp-daemon))
              marionette))
 
           ;; Check XMPP service's PID.
@@ -196,13 +194,11 @@
 
           (test-begin "bitlbee")
 
-          (test-eq "service started"
-            'running!
+          (test-assert "service started"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'bitlbee)
-                'running!)
+                (start-service 'bitlbee))
              marionette))
 
           (test-equal "valid PID"

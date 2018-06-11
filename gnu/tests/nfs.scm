@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,13 +95,11 @@
           (test-begin "rpc-daemon")
 
           ;; Wait for the rpcbind daemon to be up and running.
-          (test-eq "RPC service running"
-            'running!
+          (test-assert "RPC service running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'rpcbind-daemon)
-                'running!)
+                (start-service 'rpcbind-daemon))
              marionette))
 
           ;; Check the socket file and that the service is still running.

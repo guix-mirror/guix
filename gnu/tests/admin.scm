@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,13 +75,11 @@ HTTP-PORT."
 
           (test-begin "tailon")
 
-          (test-eq "service running"
-            'running!
+          (test-assert "service running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'tailon)
-                'running!)
+                (start-service 'tailon))
              marionette))
 
           (define* (retry-on-error f #:key times delay)

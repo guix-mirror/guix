@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,13 +85,11 @@
           (test-begin "dicod")
 
           ;; Wait for the service to be started.
-          (test-eq "service is running"
-            'running!
+          (test-assert "service is running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'dicod)
-                'running!)
+                (start-service 'dicod))
              marionette))
 
           ;; Wait until dicod is actually listening.
