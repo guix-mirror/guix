@@ -2411,7 +2411,7 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-evdev
   (package
     (name "xf86-input-evdev")
-    (version "2.10.5")
+    (version "2.10.6")
     (source
       (origin
         (method url-fetch)
@@ -2421,7 +2421,7 @@ devices, thus making direct access unnecessary.")
                ".tar.bz2"))
         (sha256
           (base32
-           "03dphgwjaxxyys8axc1kyysp6xvy9bjxicsdrhi2jvdgbchadnly"))))
+           "1h1y0fwnawlp4yc5llr1l7hwfcxxpln2fxhy6arcf6w6h4z0f9l7"))))
     (build-system gnu-build-system)
     (inputs
       `(("udev" ,eudev)
