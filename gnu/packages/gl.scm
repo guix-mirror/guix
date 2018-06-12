@@ -224,7 +224,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "18.0.5")
+    (version "18.1.1")
     (source
       (origin
         (method url-fetch)
@@ -236,7 +236,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "0szwqjr5x2q4r6gcwb862s18wl4s0z34w4rd0vr7isiasylbp1si"))
+          "10bp1m1avf4ab329f09k71w3c0d4wfw0icknfjj19b2svqp2lcfk"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
@@ -259,7 +259,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
-             `(("llvm" ,llvm-3.9.1))) ; exactly 3.9.0 or 3.9.1 for swrast
+             `(("llvm" ,llvm)))
             (_
              `()))
         ("makedepend" ,makedepend)
@@ -327,8 +327,6 @@ also known as DXTn or DXTC) for Mesa.")
          (add-after
            'unpack 'patch-create_test_cases
            (lambda _
-             (substitute* "src/compiler/glsl/tests/lower_jumps/create_test_cases.py"
-               (("/usr/bin/env bash") (which "bash")))
              (substitute* "src/intel/genxml/gen_pack_header.py"
                (("/usr/bin/env python2") (which "python")))
              #t))
