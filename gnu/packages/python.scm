@@ -6007,13 +6007,13 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.3.2")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "llfuse" version ".tar.bz2"))
               (sha256
                (base32
-                "0qxvnbz41bpvpc1vbi8qkhmpr9gj1qrrp5jdj085iqibd8l2l9cn"))))
+                "1rqww632y2zz71xmr6ch7yq80kvza9mhqr2z773k0d8l1lwzl575"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
