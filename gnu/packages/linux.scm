@@ -2995,7 +2995,10 @@ arrays when needed.")
              (let ((lvm2 (assoc-ref inputs "lvm2"))
                    (udev (assoc-ref inputs "udev")))
                (substitute* "Makefile.inc"
-                 (("\\$\\(prefix\\)/usr") "$(prefix)"))
+                 (("\\$\\(prefix\\)/usr") "$(prefix)")
+                 ;; Do not save timestamp to avoid gzip "timestamp
+                 ;; out-of-range" warnings.
+                 (("gzip -9") "gzip -9n"))
                (substitute* '("kpartx/Makefile" "libmultipath/Makefile")
                  (("/usr/include/libdevmapper.h")
                   (string-append lvm2 "/include/libdevmapper.h"))
