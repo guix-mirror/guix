@@ -833,3 +833,32 @@ the following advantages:
 @item Capable of handling large-scale data
 @end itemize\n")
     (license license:expat)))
+
+(define-public vowpal-wabbit
+  ;; Language bindings not included.
+  (package
+    (name "vowpal-wabbit")
+    (version "8.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/JohnLangford/vowpal_wabbit/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0clp2kb7rk5sckhllxjr5a651awf4s8dgzg4659yh4hf5cqnf0gr"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (inputs
+     `(("boost" ,boost)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-boost="
+                            (assoc-ref %build-inputs "boost")))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/JohnLangford/vowpal_wabbit")
+    (synopsis "Fast machine learning library for online learning")
+    (description "Vowpal Wabbit is a machine learning system with techniques
+such as online, hashing, allreduce, reductions, learning2search, active, and
+interactive learning.")
+    (license license:bsd-3)))
