@@ -25,14 +25,14 @@
 (define-public libbsd
   (package
     (name "libbsd")
-    (version "0.8.7")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libbsd.freedesktop.org/releases/"
                                   "libbsd-" version ".tar.xz"))
               (sha256
                (base32
-                "0c9bl49zs0xdddcwj5dh0lay9sxi2m1yi74848g8p87mb87g2j7m"))))
+                "1957w2wi7iqar978qlfsm220dwywnrh5m58nrnn9zmi74ds3bn2n"))))
     (build-system gnu-build-system)
     (synopsis "Utility functions from BSD systems")
     (description "This library provides useful functions commonly found on BSD
