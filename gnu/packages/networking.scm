@@ -1350,16 +1350,17 @@ networks.")
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "2.0.0")
+    (version "2.0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/sivel/speedtest-cli/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sivel/speedtest-cli")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "16kcpba7nmszz2h0fq7qvv6src20syck2wlknaacg69kk88aybbk"))))
+         "0vv2z37g2kgm2dzkfa4bhri92hs0d1acxi8z66gznsl5148q7sdi"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")
