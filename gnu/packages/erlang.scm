@@ -89,6 +89,7 @@
                   (guix build gnu-build-system))
        #:phases
        (modify-phases %standard-phases
+         (delete 'bootstrap)
          ;; The are several code fragments that embed timestamps into the
          ;; output. Here, we alter those fragments to use the value of
          ;; SOURCE_DATE_EPOCH instead.
