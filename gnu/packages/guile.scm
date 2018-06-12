@@ -1786,7 +1786,7 @@ is no support for parsing block and inline level HTML.")
 (define-public guile-bytestructures
   (package
     (name "guile-bytestructures")
-    (version "1.0.1")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/TaylanUB/scheme-bytestructures"
@@ -1794,7 +1794,7 @@ is no support for parsing block and inline level HTML.")
                                   "/bytestructures-" version ".tar.gz"))
               (sha256
                (base32
-                "1lnfcy65mqj823lamy2n2vaghdz0g7mj011bgnhmd6hwpnaidnh2"))))
+                "0xf6s8gd3656j8k2ar6y7i62r68azawyzxhsagsk8nvldnrs1r18"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2002,20 +2002,6 @@ is not available for Guile 2.0.")
                   "0z1dvn0scx59pbgjkpacam7p5n7630z4qm8fazim7ixq9xv3s8wx"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    ;; FIXME: On i686, bytestructures miscalculates the offset
-                    ;; of the 'old-file' and 'new-file' fields within the
-                    ;; '%diff-delta' structure.  See
-                    ;; <https://github.com/TaylanUB/scheme-bytestructures/issues/30>.
-                    ,@(if (string=? (%current-system) "x86_64-linux")
-                          '()
-                          '((add-before 'check 'skip-tests
-                              (lambda _
-                                (substitute* "Makefile"
-                                  (("tests/status\\.scm")
-                                   ""))
-                                #t)))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
