@@ -3372,7 +3372,8 @@ in finite element programs.")
             version "-src.zip"))
         (sha256
           (base32
-            "022w8hph7bli5zbpnk3z1qh1c2sl5hm8fw2ccim651ynn0hr7fyz"))))
+            "022w8hph7bli5zbpnk3z1qh1c2sl5hm8fw2ccim651ynn0hr7fyz"))
+        (patches (search-patches "flann-cmake-3.11.patch"))))
     (build-system cmake-build-system)
     (outputs '("out"
                "octave"))                  ;46 MiB .mex file that pulls Octave
