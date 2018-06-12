@@ -170,6 +170,8 @@
               (inherit (package-source perl))
               (uri (string-append "mirror://cpan/src/5.0/perl-"
                                   version ".tar.gz"))
+              (patches (append (origin-patches (package-source perl))
+                               (search-patches "perl-archive-tar-CVE-2018-12015.patch")))
               (sha256
                (base32
                 "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))))
