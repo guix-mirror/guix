@@ -365,7 +365,10 @@ many event types, including timers, signals, and the classic file descriptor eve
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(;; LMDB is only supported on 64-bit systems, yet the test suite
+       ;; requires it.
+       #:tests? (assoc-ref %build-inputs "lmdb")
+       #:phases
        (modify-phases %standard-phases
          (replace 'configure
            ;; ldb use a custom configuration script that runs waf.
@@ -385,7 +388,9 @@ many event types, including timers, signals, and the classic file descriptor eve
      `(("talloc" ,talloc)
        ("tdb" ,tdb)))
     (inputs
-     `(("lmdb" ,lmdb)
+     `(,@(if (target-64bit?)
+             `(("lmdb" ,lmdb))
+             '())
        ("popt" ,popt)
        ("tevent" ,tevent)))
     (synopsis "LDAP-like embedded database")
