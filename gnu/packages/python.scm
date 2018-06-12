@@ -2764,14 +2764,14 @@ and is very extensible.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.27")
+    (version "0.28.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "02y0pp1nx77b8s1mpxc6da2dccl6wd31pp4ksi9via479qcvacmr"))))
+         "0imw9s2rbrh32clbl10csnwmig9p3nzkrd2baxxxfmnrsc42pb3n"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -2784,7 +2784,7 @@ and is very extensible.")
            ;; some tests require access to "$HOME/.cython"
            (lambda _ (setenv "HOME" "/tmp") #t))
          (replace 'check
-           (lambda _ (zero? (system* "python" "runtests.py" "-vv")))))))
+           (lambda _ (invoke "python" "runtests.py" "-vv"))))))
     (home-page "http://cython.org/")
     (synopsis "C extensions for Python")
     (description "Cython is an optimising static compiler for both the Python
