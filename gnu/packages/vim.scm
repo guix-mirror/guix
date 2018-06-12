@@ -493,16 +493,17 @@ commit or run any Git arbitrary command.")
 (define-public vim-airline
   (package
     (name "vim-airline")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/vim-airline/vim-airline/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/vim-airline/vim-airline")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "053sfq3jmgdc5y7zbg6jrk7r2hp0raj3y3mxa2h1c1bnkb6wvcaz"))))
+         "0hq3304rhakx7x1v7wll7gxinmfz6561bq97qpj8jrk19rhcab75"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
