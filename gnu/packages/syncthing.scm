@@ -30,16 +30,15 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.48")
+    (version "0.14.49")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
                                   "/releases/download/v" version
                                   "/syncthing-source-v" version ".tar.gz"))
-              (patches (search-patches "syncthing-fix-crash.patch"))
               (sha256
                (base32
-                "0bxkm5jlj6l4gai23bg0y31brr80r9qllh1rdg29pahjn0c2b4ml"))
+                "06mzzj5iwgqw3yva7azrsqs9zpl84srbamza4gm03grp7v9gf3sj"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -130,7 +129,6 @@
        ("go-github-com-golang-groupcache-lru"
         ,go-github-com-golang-groupcache-lru)
        ("go-github-com-jackpal-gateway" ,go-github-com-jackpal-gateway)
-       ("go-github-com-kardianos-osext" ,go-github-com-kardianos-osext)
        ("go-github-com-kballard-go-shellquote"
         ,go-github-com-kballard-go-shellquote)
        ("go-github-com-lib-pq" ,go-github-com-lib-pq)
