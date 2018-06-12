@@ -4871,26 +4871,15 @@ computing.")
 (define-public python-urwid
   (package
     (name "python-urwid")
-    (version "1.3.1")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "urwid" version))
        (sha256
         (base32
-         "18cnd1wdjcas08x5qwa5ayw6jsfcn33w4d9f7q3s29fy6qzc1kng"))))
+         "1g6cpicybvbananpjikmjk8npmjk4xvak1wjzji62wc600wkwkb4"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Disable failing test. Bug filed upstream:
-         ;; https://github.com/wardi/urwid/issues/164
-         ;; TODO: check again for python-urwid > 1.3.1 or python > 3.4.3.
-         (add-after 'unpack 'disable-failing-test
-          (lambda _
-            (substitute* "urwid/tests/test_event_loops.py"
-              (("test_remove_watch_file")
-                "disable_remove_watch_file")))))))
     (home-page "http://urwid.org")
     (synopsis "Console user interface library for Python")
     (description
@@ -4899,22 +4888,7 @@ features useful for text console applications.")
     (license license:lgpl2.1+)))
 
 (define-public python2-urwid
-  (let ((python2-urwid (package-with-python2 python-urwid)))
-    (package
-      (inherit python2-urwid)
-      (arguments
-       (append
-        `(;; Explicitly using Python 2 is necessary due the argument list being
-          ;; built from only the 'delete-test_vterm.py' phase and python-urwid's
-          ;; package arguments, which by default assumes the use of Python 3.
-          #:python ,python-2
-          #:phases
-          (modify-phases %standard-phases
-            ;; Disable the vterm tests because of non-deterministic failures
-            ;; with Python 2. See https://github.com/urwid/urwid/issues/230.
-            (add-after 'unpack 'delete-test_vterm.py
-              (delete-file "urwid/tests/test_vterm.py"))))
-        (package-arguments python-urwid))))))
+  (package-with-python2 python-urwid))
 
 (define-public python-urwidtrees
   (package
