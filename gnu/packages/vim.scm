@@ -573,16 +573,17 @@ and powerline symbols, etc.")
 (define-public vim-syntastic
   (package
     (name "vim-syntastic")
-    (version "3.8.0")
+    (version "3.9.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/vim-syntastic/syntastic/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vim-syntastic/syntastic")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wsnd9bsp5x6yiw96h1bnd1vyxdkh130hb82kyyxydgsplx92ima"))))
+         "121a1mxgfng2y5zmivyyk02mca8pyw72crivf4f1q9nhn0barf57"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
