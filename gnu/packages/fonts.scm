@@ -617,7 +617,7 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "10.0.07")
+    (version "11.0.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -625,7 +625,7 @@ languages, plus Greek and Cyrillic.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1js8dn4v4pv8jqprsxa1fv4fs3hqhm9x4dj19fg9qgc8fx7k0v0k"))))
+                "1nkapra0ic4fp3lmnvfc6jly62yskhcdkwrnq29hvh3xs51ncc52"))))
     (build-system gnu-build-system)
     (outputs '("out" ; TrueType version
                "pcf" ; PCF (bitmap) version
@@ -650,12 +650,12 @@ languages, plus Greek and Cyrillic.")
                    (psf (string-append (assoc-ref outputs "psf")
                                        "/share/consolefonts"))
                    (bin (assoc-ref outputs "bin")))
-              (system* "make"
-                       (string-append "PREFIX=" bin)
-                       (string-append "TTFDEST=" ttf)
-                       (string-append "PCFDEST=" pcf)
-                       (string-append "CONSOLEDEST=" psf)
-                       "install")
+              (invoke "make"
+                      (string-append "PREFIX=" bin)
+                      (string-append "TTFDEST=" ttf)
+                      (string-append "PCFDEST=" pcf)
+                      (string-append "CONSOLEDEST=" psf)
+                      "install")
               ;; Move Texinfo file to the right place.
               (mkdir (string-append bin "/share/info"))
               (rename-file (string-append bin "/share/unifont/unifont.info.gz")
