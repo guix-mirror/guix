@@ -223,7 +223,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
    (name "wine-staging-patchset-data")
-   (version "3.9")
+   (version "3.10")
    (source
     (origin
      (method url-fetch)
@@ -232,7 +232,7 @@ integrate Windows applications into your desktop.")
      (file-name (string-append name "-" version ".zip"))
      (sha256
       (base32
-       "0akccqrp1ymjrra2c99f6hxlaa77jyihfs3q8x93vkgb9c0lq5xx"))))
+       "14rf3g9szxygbd6ypg6zbqw1h84rn8gqgrzwi607xwgh8wm59sli"))))
    (build-system trivial-build-system)
    (native-inputs
     `(("bash" ,bash)
