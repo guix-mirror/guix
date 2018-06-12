@@ -602,7 +602,7 @@ directory."
 # because they would require combining both profiles.
 # FIXME: See <http://bugs.gnu.org/20255>.
 export MANPATH=$HOME/.guix-profile/share/man:/run/current-system/profile/share/man
-export INFOPATH=$HOME/.config/guix/current/share/info:$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
+export INFOPATH=$HOME/.guix-profile/share/info:/run/current-system/profile/share/info
 export XDG_DATA_DIRS=$HOME/.guix-profile/share:/run/current-system/profile/share
 export XDG_CONFIG_DIRS=$HOME/.guix-profile/etc/xdg:/run/current-system/profile/etc/xdg
 
@@ -630,7 +630,8 @@ then
   export `cat /etc/environment | cut -d= -f1`
 fi
 
-for profile in \"$HOME/.config/guix/current\" \"$HOME/.guix-profile\"
+# Arrange so that ~/.config/guix/current comes first.
+for profile in \"$HOME/.guix-profile\" \"$HOME/.config/guix/current\"
 do
   if [ -f \"$profile/etc/profile\" ]
   then
@@ -643,6 +644,9 @@ do
     export PATH=\"$profile/bin:$PATH\"
   fi
 done
+
+# Arrange so that ~/.config/guix/current/share/info comes first.
+export INFOPATH=\"$HOME/.config/guix/current/share/info:$INFOPATH\"
 
 # Set the umask, notably for users logging in via 'lsh'.
 # See <http://bugs.gnu.org/22650>.
