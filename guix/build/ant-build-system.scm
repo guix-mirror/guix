@@ -68,14 +68,11 @@
 
                  (target (@ (name "manifest"))
                          (mkdir (@ (dir "${manifest.dir}")))
-                         (echo (@ (file "${manifest.file}")
-                                  (message ,(string-append
-                                              (if main-class
-                                                (string-append
-                                                  "Main-Class: " main-class
-                                                  "${line.separator}")
-                                                "")
-                                              "")))))
+                         (manifest (@ (file "${manifest.file}"))
+                                   ,(if main-class
+                                       `(attribute (@ (name "Main-Class")
+                                                      (value ,main-class)))
+                                       "")))
 
                  (target (@ (name "compile"))
                          (mkdir (@ (dir "${classes.dir}")))
