@@ -4213,3 +4213,28 @@ Sequence logos can easily be combined with other ggplot2 plots.")
 plots in scientific journals, data visualization libraries, science fiction
 movies, and TV shows.")
     (license license:gpl3)))
+
+(define-public r-ggsignif
+  (package
+    (name "r-ggsignif")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggsignif" version))
+       (sha256
+        (base32
+         "1rn58d7pb3axk6chiihryykrzw76adaa2yiafq4d0j6qbhax78f7"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://github.com/const-ae/ggsignif")
+    (synopsis "Significance brackets for ggplot2")
+    (description
+     "Enrich your ggplots with group-wise comparisons.  This package provides
+an easy way to indicate if two groups are significantly different.  Commonly
+this is shown by a bracket on top connecting the groups of interest which
+itself is annotated with the level of significance.  The package provides a
+single layer that takes the groups for comparison and the test as arguments
+and adds the annotation to the plot.")
+    (license license:gpl3)))
