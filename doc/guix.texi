@@ -2756,25 +2756,40 @@ export PATH="$HOME/.config/guix/current/bin:$PATH"
 export INFOPATH="$HOME/.config/guix/current/share/info:$INFOPATH"
 @end example
 
+The @code{--list-generations} or @code{-l} option lists past generations
+produced by @command{guix pull}, along with details about their provenance:
+
+@example
+$ guix pull -l
+Generation 1	Jun 10 2018 00:18:18
+  guix 65956ad
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: origin/master
+    commit: 65956ad3526ba09e1f7a40722c96c6ef7c0936fe
+
+Generation 2	Jun 11 2018 11:02:49
+  guix e0cc7f6
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: origin/master
+    commit: e0cc7f669bec22c37481dd03a7941c7d11a64f1d
+
+Generation 3	Jun 13 2018 23:31:07	(current)
+  guix 844cc1c
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: origin/master
+    commit: 844cc1c8f394f03b404c5bb3aee086922373490c
+@end example
+
 This @code{~/.config/guix/current} profile works like any other profile
 created by @command{guix package} (@pxref{Invoking guix package}).  That
 is, you can list generations, roll back to the previous
 generation---i.e., the previous Guix---and so on:
 
 @example
-$ guix package -p ~/.config/guix/current -l
-Generation 1	May 25 2018 10:06:41
-  guix	221951a	out	/gnu/store/i4dfk7vw5k112s49jrhl6hwsfnh6wr7l-guix-221951af4
-
-Generation 2	May 27 2018 19:07:47
- + guix	2fbae00	out	/gnu/store/44cv9hyvxg34xf5kblf5dz57hc52y4bm-guix-2fbae006f
- - guix	221951a	out	/gnu/store/i4dfk7vw5k112s49jrhl6hwsfnh6wr7l-guix-221951af4
-
-Generation 3	May 30 2018 16:11:39	(current)
- + guix	a076f19	out	/gnu/store/332czkicwwg6lc3x4aqbw5q2mq12s7fj-guix-a076f1990
- - guix	2fbae00	out	/gnu/store/44cv9hyvxg34xf5kblf5dz57hc52y4bm-guix-2fbae006f
 $ guix package -p ~/.config/guix/current --roll-back
 switched from generation 3 to 2
+$ guix package -p ~/.config/guix/current --delete-generations=1
+deleting /home/charlie/.config/guix/current-1-link
 @end example
 
 The @command{guix pull} command is usually invoked with no arguments,
@@ -2799,6 +2814,13 @@ string.
 @item --branch=@var{branch}
 Deploy the tip of @var{branch}, the name of a Git branch available on
 the repository at @var{url}.
+
+@item --list-generations[=@var{pattern}]
+@itemx -l [@var{pattern}]
+List all the generations of @file{~/.config/guix/current} or, if @var{pattern}
+is provided, the subset of generations that match @var{pattern}.
+The syntax of @var{pattern} is the same as with @code{guix package
+--list-generations} (@pxref{Invoking guix package}).
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
