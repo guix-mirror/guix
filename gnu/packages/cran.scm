@@ -2719,17 +2719,19 @@ supports arbitrary vertex/edge/graph attributes.")
 (define-public r-statnet-common
   (package
     (name "r-statnet-common")
-    (version "4.0.0")
+    (version "4.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "statnet.common" version))
         (sha256
           (base32
-            "0yw6l5b4qv0jqlg4zyczas7m12a5pyqghs6ydxy2f6v6vxkijvi0"))))
+            "0h3g687214rlycca0fjrpy1lqbqsrginxqhmhl2mb2jinqqxcfgd"))))
     (properties
       `((upstream-name . "statnet.common")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-coda" ,r-coda)))
     (home-page "https://statnet.org")
     (synopsis "R scripts and utilities used by the Statnet software")
     (description "This package provides non-statistical utilities used by the
