@@ -53,6 +53,7 @@
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13631,3 +13632,29 @@ introspection.")
 
 (define-public python2-fasteners
   (package-with-python2 python-fasteners))
+
+(define-public python-requests-file
+  (package
+    (name "python-requests-file")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "requests-file" version))
+       (sha256
+        (base32
+         "1yp2jaxg3v86pia0q512dg3hz6s9y5vzdivsgrba1kds05ial14g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page
+     "https://github.com/dashea/requests-file")
+    (synopsis "File transport adapter for Requests")
+    (description
+     "Requests-File is a transport adapter for use with the Requests Python
+library to allow local filesystem access via file:// URLs.")
+    (license license:asl2.0)))
+
+(define-public python2-requests-file
+  (package-with-python2 python-requests-file))
