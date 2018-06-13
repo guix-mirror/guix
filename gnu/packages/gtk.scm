@@ -1416,7 +1416,7 @@ information.")
 (define-public gtk-doc
   (package
     (name "gtk-doc")
-    (version "1.25")
+    (version "1.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1424,12 +1424,30 @@ information.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hpxcij9xx9ny3gs9p0iz4r8zslw8wqymbyababiyl7603a6x90y"))))
+                "0vwsdl61nvnmqswlz5j9m4hg7qirhazwcikcnqf9nx0c13vx6sz2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-gtk-doc-scan
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gtk-doc.xsl"
+              (("http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl")
+               (string-append (assoc-ref inputs "docbook-xsl")
+                              "/xml/xsl/docbook-xsl-"
+                              ,(package-version docbook-xsl)
+                              "/html/chunk.xsl")))
+             #t))
+         (add-after 'patch-gtk-doc-scan 'patch-test-out
+           (lambda _
+             ;; sanity.sh counts the number of status lines.  Since our
+             ;; texlive regenerates the fonts every time and the font
+             ;; generator metafont outputs a lot of extra lines, this
+             ;; test would always fail.  Disable it for now.
+             (substitute* "tests/Makefile.in"
+              (("empty.sh sanity.sh") "empty.sh"))
+             #t))
          (add-before 'build 'set-HOME
            (lambda _
              ;; FIXME: dblatex with texlive-union does not find the built
@@ -1470,6 +1488,8 @@ information.")
        ("docbook-xsl" ,docbook-xsl)
        ("source-highlight" ,source-highlight)
        ("glib" ,glib)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (home-page "http://www.gtk.org/gtk-doc/")
     (synopsis "Documentation generator from C source code")
     (description
