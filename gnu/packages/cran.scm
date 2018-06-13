@@ -4132,14 +4132,14 @@ obtain a better initial configuration in non-metric MDS.")
 (define-public r-reticulate
   (package
     (name "r-reticulate")
-    (version "1.7")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reticulate" version))
        (sha256
         (base32
-         "1ghhc4hbmwpp79ilbdbshynhs61i8sv8z6p1al04jy7ij0lcglxy"))))
+         "0zwb4ikf021nw7axdn7qlr6bq4xkph3anfy314idkspy1iil4nmr"))))
     (build-system r-build-system)
     (inputs `(("python" ,python)))
     (propagated-inputs
