@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +48,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -55,6 +57,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg)
@@ -845,3 +849,33 @@ per-line fullscreen terminal rendering, and keyboard input event reporting.")
 
 (define-public python2-curtsies
   (package-with-python2 python-curtsies))
+
+(define-public tmate
+  (package
+    (name "tmate")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/tmate-io/tmate/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01f3hhm3x0sd6apyb1ajkjfdfvq5m2759w00yp2slr9fyicsrhnr"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libevent" ,libevent)
+       ("libssh" ,libssh)
+       ("msgpack" ,msgpack)
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://tmate.io/")
+    (synopsis "Terminal sharing application")
+    (description "tmate is a terminal sharing application that allows you to
+share your terminal with other users over the Internet.  tmate is a fork of
+tmux.")
+    (license license:isc)))
