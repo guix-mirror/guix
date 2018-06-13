@@ -13716,3 +13716,36 @@ Public Suffix List's private domains as well.")
 
 (define-public python2-pynamecheap
   (package-with-python2 python-pynamecheap))
+
+(define-public python-dns-lexicon
+  (package
+    (name "python-dns-lexicon")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dns-lexicon" version))
+       (sha256
+        (base32
+         "0jdn3ns71bsybr7njgsqr9xlxsqh7zh6phn4ld0liazqdn2l5f6m"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;requires internet access
+    (propagated-inputs
+     `(("python-future" ,python-future)
+       ("python-pynamecheap" ,python-pynamecheap)
+       ("python-requests" ,python-requests)
+       ("python-tldextract" ,python-tldextract)
+       ("python-urllib3" ,python-urllib3)))
+    (home-page "https://github.com/AnalogJ/lexicon")
+    (synopsis
+     "Manipulate DNS records on various DNS providers")
+    (description
+     "Lexicon provides a way to manipulate DNS records on multiple DNS
+providers in a standardized way.  It has a CLI but it can also be used as a
+Python library.  It was designed to be used in automation, specifically with
+Let's Encrypt.")
+    (license license:expat)))
+
+(define-public python2-dns-lexicon
+  (package-with-python2 python-dns-lexicon))
