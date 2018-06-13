@@ -5636,7 +5636,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "47.0")
+    (version "48.0")
     (source
      (origin
        (method url-fetch)
@@ -5645,7 +5645,7 @@ highlights quasi-quoted expressions.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "0xbcc266x752y68s3g096m161irzvsqym3axzqn8rb276a8x55n7"))))
+         "07imi3hji06b3r7v7v59978q76s8a7ynmxwfc9j03pgnv965lpjy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -5653,30 +5653,35 @@ highlights quasi-quoted expressions.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _
-             ;; Configure Emacspeak according to etc/install.org.
-             (setenv "SHELL" (which "sh"))
-             (zero? (system* "make" "config"))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lisp (string-append out
+                                         "/share/emacs/site-lisp/emacspeak")))
+               (setenv "SHELL" (which "sh"))
+               ;; Configure Emacspeak according to etc/install.org.
+               (invoke "make" "config"))))
          (add-after 'build 'build-espeak
            (lambda _
-             (zero? (system* "make" "espeak"))))
+             (invoke "make" "espeak")))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (lisp (string-append out "/share/emacs/site-lisp/emacspeak"))
-                    (info (string-append out "/share/info")))
+                    (info (string-append out "/share/info"))
+                    (emacs (string-append (assoc-ref inputs "emacs")
+                                          "/bin/emacs")))
                ;; According to etc/install.org, the Emacspeak directory should
                ;; be copied to its installation destination.
                (for-each
                 (lambda (file)
                   (copy-recursively file (string-append lisp "/" file)))
-                '("etc" "info" "lisp" "media" "servers" "sounds" "stumpwm"
-                  "xsl"))
+                '("etc" "info" "js" "lisp" "media" "scapes" "servers" "sounds"
+                  "stumpwm" "xsl"))
                ;; Make sure emacspeak is loaded from the correct directory.
                (substitute* "etc/emacspeak.sh"
-                 (("exec emacs.*$")
-                  (string-append "exec emacs -l " lisp
+                 (("exec FLAVOR.*")
+                  (string-append "exec " emacs " -l " lisp
                                  "/lisp/emacspeak-setup.el $CL_ALL")))
                ;; Install the convenient startup script.
                (mkdir-p bin)
@@ -5695,10 +5700,11 @@ highlights quasi-quoted expressions.")
                #t))))
        #:tests? #f)) ; no check target
     (inputs
-     `(("espeak" ,espeak)
+     `(("emacs" ,emacs)
+       ("espeak" ,espeak)
+       ("perl" ,perl)
        ("tcl" ,tcl)
        ("tclx" ,tclx)))
-    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://emacspeak.sourceforge.net")
     (synopsis "Audio desktop interface for Emacs")
     (description
