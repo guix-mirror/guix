@@ -3327,14 +3327,14 @@ environment within Shiny.")
 (define-public r-radiant-data
   (package
     (name "r-radiant-data")
-    (version "0.8.1")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "radiant.data" version))
        (sha256
         (base32
-         "1ylina1jlrmvjkj8pwg0ip5jv1038vnzyckmf542xl7g11x8rvw1"))
+         "0mbxfqn79nphii4hb6kxl2wc0w0ra16y378rp2yw9a9926zdb7mb"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3350,6 +3350,7 @@ environment within Shiny.")
        ("r-curl" ,r-curl)
        ("r-dplyr" ,r-dplyr)
        ("r-dt" ,r-dt)
+       ("r-glue" ,r-glue)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
        ("r-import" ,r-import)
@@ -3358,16 +3359,19 @@ environment within Shiny.")
        ("r-lubridate" ,r-lubridate)
        ("r-magrittr" ,r-magrittr)
        ("r-markdown" ,r-markdown)
-       ("r-pryr" ,r-pryr)
+       ("r-plotly" ,r-plotly)
        ("r-psych" ,r-psych)
        ("r-readr" ,r-readr)
+       ("r-readxl" ,r-readxl)
+       ("r-rlang" ,r-rlang)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-scales" ,r-scales)
        ("r-shiny" ,r-shiny)
        ("r-shinyace" ,r-shinyace)
        ("r-tibble" ,r-tibble)
-       ("r-tidyr" ,r-tidyr)))
+       ("r-tidyr" ,r-tidyr)
+       ("r-writexl" ,r-writexl)))
     (home-page "https://github.com/radiant-rstats/radiant.data")
     (synopsis "Data menu for Radiant: business analytics using R and Shiny")
     (description
