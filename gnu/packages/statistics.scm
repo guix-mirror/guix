@@ -960,14 +960,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "1z8yqnh3alq0xriz77vifgl27msf3av6maz07fld78m90ajb6y8r"))))
+         "1sgg4krw03qkz1n4dwiya0djggk7giwd0w21qlp0pfjqi0rxq6qx"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
