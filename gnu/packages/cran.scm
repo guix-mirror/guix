@@ -4295,3 +4295,24 @@ American Statistician 50, 178-180.  There are also routines implementing the
 profile plots described in Bates and Watts (1988), Nonlinear Regression
 Analysis and its Applications.")
     (license license:gpl2+)))
+
+(define-public r-flashclust
+  (package
+    (name "r-flashclust")
+    (version "1.01-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flashClust" version))
+       (sha256
+        (base32
+         "0l4lpz451ll7f7lfxmb7ds24ppzhfg1c3ypvydglcc35p2dq99s8"))))
+    (properties `((upstream-name . "flashClust")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/flashClust/")
+    (synopsis "Implementation of optimal hierarchical clustering")
+    (description
+     "This package provides a fast implementation of hierarchical
+clustering.")
+    (license license:gpl2+)))
