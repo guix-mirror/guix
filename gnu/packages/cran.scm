@@ -4350,3 +4350,38 @@ correspondence analysis (CA) and multiple correspondence analysis (MCA) when
 variables are categorical, Multiple Factor Analysis when variables are
 structured in groups, etc. and hierarchical cluster analysis.")
     (license license:gpl2+)))
+
+(define-public r-factoextra
+  (package
+    (name "r-factoextra")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "factoextra" version))
+       (sha256
+        (base32
+         "1l6m8k7qhdw8ndar8nhmym0lfyd1i2iszl1cicjax0vq23ss6xw1"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-cluster" ,r-cluster)
+       ("r-dendextend" ,r-dendextend)
+       ("r-factominer" ,r-factominer)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggpubr" ,r-ggpubr)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-reshape2" ,r-reshape2)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "http://www.sthda.com/english/rpkgs/factoextra")
+    (synopsis "Extract and visualize the results of multivariate data analyses")
+    (description
+     "This package provides some easy-to-use functions to extract and
+visualize the output of multivariate data analyses, including
+@code{PCA} (Principal Component Analysis), @cod{CA} (Correspondence Analysis),
+@code{MCA} (Multiple Correspondence Analysis), @code{FAMD} (Factor Analysis of
+Mixed Data), @code{MFA} (Multiple Factor Analysis) and
+@code{HMFA} (Hierarchical Multiple Factor Analysis) functions from different R
+packages.  It contains also functions for simplifying some clustering analysis
+steps and provides ggplot2-based elegant data visualization.")
+    (license license:gpl2)))
