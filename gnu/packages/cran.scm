@@ -4238,3 +4238,37 @@ itself is annotated with the level of significance.  The package provides a
 single layer that takes the groups for comparison and the test as arguments
 and adds the annotation to the plot.")
     (license license:gpl3)))
+
+(define-public r-ggpubr
+  (package
+    (name "r-ggpubr")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggpubr" version))
+       (sha256
+        (base32
+         "0mvw215bj887958p34f0dzlrb8mgyfcz9b5zvsschvbhamqinqna"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cowplot" ,r-cowplot)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-ggsci" ,r-ggsci)
+       ("r-ggsignif" ,r-ggsignif)
+       ("r-gridextra" ,r-gridextra)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-scales" ,r-scales)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "http://www.sthda.com/english/rpkgs/ggpubr")
+    (synopsis "ggplot2-based publication-ready plots")
+    (description
+     "The ggplot2 package is an excellent and flexible package for elegant
+data visualization in R.  However the default generated plots require some
+formatting before we can send them for publication.  The ggpubr package
+provides some easy-to-use functions for creating and customizing ggplot2-based
+publication-ready plots.")
+    (license license:gpl2)))
