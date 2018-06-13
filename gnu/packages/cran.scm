@@ -4316,3 +4316,37 @@ Analysis and its Applications.")
      "This package provides a fast implementation of hierarchical
 clustering.")
     (license license:gpl2+)))
+
+(define-public r-factominer
+  (package
+    (name "r-factominer")
+    (version "1.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "FactoMineR" version))
+       (sha256
+        (base32
+         "1h20hydav6l2b7bngqw1av4l5rrh0wk58nhailga1f4qw9lrv259"))))
+    (properties `((upstream-name . "FactoMineR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-car" ,r-car)
+       ("r-cluster" ,r-cluster)
+       ("r-ellipse" ,r-ellipse)
+       ("r-flashclust" ,r-flashclust)
+       ("r-lattice" ,r-lattice)
+       ("r-leaps" ,r-leaps)
+       ("r-mass" ,r-mass)
+       ("r-scatterplot3d" ,r-scatterplot3d)))
+    (home-page "http://factominer.free.fr")
+    (synopsis "Multivariate exploratory data analysis and data mining")
+    (description
+     "This package provides exploratory data analysis methods to summarize,
+visualize and describe datasets.  The main principal component methods are
+available, those with the largest potential in terms of applications:
+principal component analysis (PCA) when variables are quantitative,
+correspondence analysis (CA) and multiple correspondence analysis (MCA) when
+variables are categorical, Multiple Factor Analysis when variables are
+structured in groups, etc. and hierarchical cluster analysis.")
+    (license license:gpl2+)))
