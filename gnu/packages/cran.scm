@@ -4385,9 +4385,9 @@ structured in groups, etc. and hierarchical cluster analysis.")
     (description
      "This package provides some easy-to-use functions to extract and
 visualize the output of multivariate data analyses, including
-@code{PCA} (Principal Component Analysis), @cod{CA} (Correspondence Analysis),
-@code{MCA} (Multiple Correspondence Analysis), @code{FAMD} (Factor Analysis of
-Mixed Data), @code{MFA} (Multiple Factor Analysis) and
+@code{PCA} (Principal Component Analysis), @code{CA} (Correspondence
+Analysis), @code{MCA} (Multiple Correspondence Analysis), @code{FAMD} (Factor
+Analysis of Mixed Data), @code{MFA} (Multiple Factor Analysis) and
 @code{HMFA} (Hierarchical Multiple Factor Analysis) functions from different R
 packages.  It contains also functions for simplifying some clustering analysis
 steps and provides ggplot2-based elegant data visualization.")
