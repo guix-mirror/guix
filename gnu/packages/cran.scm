@@ -4385,3 +4385,24 @@ Mixed Data), @code{MFA} (Multiple Factor Analysis) and
 packages.  It contains also functions for simplifying some clustering analysis
 steps and provides ggplot2-based elegant data visualization.")
     (license license:gpl2)))
+
+(define-public r-nbclust
+  (package
+    (name "r-nbclust")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NbClust" version))
+       (sha256
+        (base32
+         "1vwb48zy6ln1ddpqmfngii1i80n8qmqyxnzdp6gbaq96lakl3w3c"))))
+    (properties `((upstream-name . "NbClust")))
+    (build-system r-build-system)
+    (home-page "https://sites.google.com/site/malikacharrad/research/nbclust-package")
+    (synopsis "Determine the best number of clusters in a data set")
+    (description
+     "NbClust provides 30 indexes for determining the optimal number of
+clusters in a data set and offers the best clustering scheme from different
+results to the user.")
+    (license license:gpl2)))
