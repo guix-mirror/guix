@@ -13658,3 +13658,36 @@ library to allow local filesystem access via file:// URLs.")
 
 (define-public python2-requests-file
   (package-with-python2 python-requests-file))
+
+(define-public python-tldextract
+  (package
+    (name "python-tldextract")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tldextract" version))
+       (sha256
+        (base32
+         "1d5s8v6kpsgazyahflhji1cfdcf89rv7l7z55v774bhzvcjp2y99"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-responses" ,python-responses)))
+    (propagated-inputs
+     `(("python-idna" ,python-idna)
+       ("python-requests" ,python-requests)
+       ("python-requests-file" ,python-requests-file)))
+    (home-page
+     "https://github.com/john-kurkowski/tldextract")
+    (synopsis
+     "Separate the TLD from the registered domain and subdomains of a URL")
+    (description
+     "TLDExtract accurately separates the TLD from the registered domain and
+subdomains of a URL, using the Public Suffix List.  By default, this includes
+the public ICANN TLDs and their exceptions.  It can optionally support the
+Public Suffix List's private domains as well.")
+    (license license:bsd-3)))
+
+(define-public python2-tldextract
+  (package-with-python2 python-tldextract))
