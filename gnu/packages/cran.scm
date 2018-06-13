@@ -4272,3 +4272,26 @@ formatting before we can send them for publication.  The ggpubr package
 provides some easy-to-use functions for creating and customizing ggplot2-based
 publication-ready plots.")
     (license license:gpl2)))
+
+(define-public r-ellipse
+  (package
+    (name "r-ellipse")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ellipse" version))
+       (sha256
+        (base32
+         "0g82vc51m3c1k0hnpp2zla6amxxgk2mmkl8ssnsc49jv3599r6hs"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ellipse/")
+    (synopsis "Functions for drawing ellipses and ellipse-like confidence regions")
+    (description
+     "This package contains various routines for drawing ellipses and
+ellipse-like confidence regions, implementing the plots described in Murdoch
+and Chow (1996), A graphical display of large correlation matrices, The
+American Statistician 50, 178-180.  There are also routines implementing the
+profile plots described in Bates and Watts (1988), Nonlinear Regression
+Analysis and its Applications.")
+    (license license:gpl2+)))
