@@ -682,14 +682,14 @@ compare different dendrograms to one another.")
 (define-public r-getoptlong
   (package
     (name "r-getoptlong")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GetoptLong" version))
        (sha256
         (base32
-         "1d98gcvlvp9nz5lbnzr0kkpc2hbkx74hlhrnybqhg1gdwc3g09pm"))))
+         "1fl3w2n602ldybc5qj7qw4xmzzb804bsjkqwf6dswzj0vf0qiadr"))))
     (properties `((upstream-name . "GetoptLong")))
     (build-system r-build-system)
     (inputs
