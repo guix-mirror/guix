@@ -4481,7 +4481,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
   (package
     (inherit quakespasm)
     (name "vkquake")
-    (version "0.97.3")
+    (version "1.00.0")
     (source
      (origin
        (method url-fetch)
@@ -4490,7 +4490,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1p0nh2v2ilylw62fxc5qpfcmyhs0s64w8sgh036nc6kn21kbjc0d"))))
+         "0bviv18jvp41jvrabgl7l5kq4n1p6p3rywij481yswawdw6l5idh"))))
     (arguments
      `(#:make-flags
        (let ((vulkanlib (string-append (assoc-ref %build-inputs
