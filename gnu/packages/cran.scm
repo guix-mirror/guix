@@ -30,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system r)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
@@ -4406,3 +4407,31 @@ steps and provides ggplot2-based elegant data visualization.")
 clusters in a data set and offers the best clustering scheme from different
 results to the user.")
     (license license:gpl2)))
+
+(define-public r-hdf5r
+  (package
+    (name "r-hdf5r")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hdf5r" version))
+       (sha256
+        (base32
+         "1s6p4cj909kc635fh5xpl87bqlcdj3dn3r1wk5g40abimk2b0pva"))))
+    (build-system r-build-system)
+    (inputs
+     `(("hdf5" ,hdf5)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-bit64" ,r-bit64)
+       ("r-r6" ,r-r6)))
+    (home-page "https://hhoeflin.github.io/hdf5r")
+    (synopsis "Interface to the HDF5 binary data format")
+    (description
+     "HDF5 is a data model, library and file format for storing and managing
+large amounts of data.  This package provides a nearly feature complete,
+object oriented wrapper for the HDF5 API using R6 classes.  Additionally,
+functionality is added so that HDF5 objects behave very similar to their
+corresponding R counterparts.")
+    (license license:asl2.0)))
