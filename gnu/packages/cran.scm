@@ -4435,3 +4435,23 @@ object oriented wrapper for the HDF5 API using R6 classes.  Additionally,
 functionality is added so that HDF5 objects behave very similar to their
 corresponding R counterparts.")
     (license license:asl2.0)))
+
+(define-public r-writexl
+  (package
+    (name "r-writexl")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "writexl" version))
+       (sha256
+        (base32
+         "0r2v12dc4zqmr1agp6vbw0fc48i278018684x84psjjqfmnv14cf"))))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (home-page "https://github.com/ropensci/writexl")
+    (synopsis "Export data frames to xlsx format")
+    (description
+     "This package provides a data frame to xlsx exporter based on
+libxlsxwriter.")
+    (license license:bsd-2)))
