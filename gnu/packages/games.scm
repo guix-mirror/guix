@@ -74,6 +74,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gimp)
@@ -2229,10 +2230,92 @@ Transport Tycoon Deluxe.")
        ("opensfx" ,openttd-opensfx)
        ,@(package-native-inputs openttd-engine)))))
 
+(define openrct2-title-sequences
+  (package
+   (name "openrct2-title-sequences")
+   (version "0.1.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/OpenRCT2/title-sequences/releases/download/v"
+                         version "/title-sequence-v" version ".zip"))
+     (file-name (string-append name "-" version ".zip"))
+     (sha256
+      (base32
+       "0qbyxrsw8hlgaq0r5d7lx7an3idy4qbfv7yiw9byhldk763n9cfw"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("bash" ,bash)
+      ("coreutils" ,coreutils)
+      ("unzip" ,unzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder
+      (begin
+        (use-modules (guix build utils))
+        (let* ((out (assoc-ref %outputs "out"))
+               (openrct2-title-sequences (string-append out
+                                         "/share/openrct2/title-sequences"))
+               (source (assoc-ref %build-inputs "source"))
+               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+          (copy-file source (string-append ,name "-" ,version ".zip"))
+          (invoke unzip (string-append ,name "-" ,version ".zip"))
+          (delete-file (string-append ,name "-" ,version ".zip"))
+          (mkdir-p openrct2-title-sequences)
+          (copy-recursively "."
+                            openrct2-title-sequences)
+          #t))))
+   (home-page "https://github.com/OpenRCT2/OpenRCT2")
+   (synopsis "Title sequences for OpenRCT2")
+   (description
+    "openrct2-title-sequences is a set of title sequences for OpenRCT2.")
+   (license license:gpl3+)))
+
+(define openrct2-objects
+  (package
+   (name "openrct2-objects")
+   (version "1.0.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/OpenRCT2/objects/releases/download/v"
+                         version "/objects.zip"))
+     (file-name (string-append name "-" version ".zip"))
+     (sha256
+      (base32
+       "1z92afhbv13j1ig6fz0x8w9vdmfchssv16vwwhb0vj40pn1g1rwy"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("bash" ,bash)
+      ("coreutils" ,coreutils)
+      ("unzip" ,unzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder
+      (begin
+        (use-modules (guix build utils))
+        (let* ((out (assoc-ref %outputs "out"))
+               (openrct2-objects (string-append out
+                                         "/share/openrct2/objects"))
+               (source (assoc-ref %build-inputs "source"))
+               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+          (copy-file source (string-append ,name "-" ,version ".zip"))
+          (invoke unzip (string-append ,name "-" ,version ".zip"))
+          (delete-file (string-append ,name "-" ,version ".zip"))
+          (mkdir-p openrct2-objects)
+          (copy-recursively "."
+                            openrct2-objects)
+          #t))))
+   (home-page "https://github.com/OpenRCT2/OpenRCT2")
+   (synopsis "Objects for OpenRCT2")
+   (description
+    "openrct2-objects is a set of objects for OpenRCT2.")
+   (license license:gpl3+)))
+
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.1.1")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -2240,39 +2323,52 @@ Transport Tycoon Deluxe.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1bahkzlf9k92cc4zs4nk4wy59323kiw8d3wm0vjps3kp7iznqyjx"))
+         "1yrbjra27n2xxb1x47v962lc3qi8gwm5ws4f97952nvn533zrwxz"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;; no tests available
+     `(#:tests? #f ; Tests require network.
        #:phases
         (modify-phases %standard-phases
-          (add-after 'unpack 'fix-usr-share-paths
-            (lambda* (#:key make-flags outputs #:allow-other-keys)
+          (add-after 'unpack 'fix-usr-share-paths&add-data
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((titles (assoc-ref inputs "openrct2-title-sequences"))
+                    (objects (assoc-ref inputs "openrct2-objects")))
               ;; Fix some references to /usr/share.
-              (substitute* "src/openrct2/platform/linux.c"
+              (substitute* "src/openrct2/platform/Platform.Linux.cpp"
                 (("/usr/share")
-                (string-append (assoc-ref %outputs "out") "/share")))))
-          (add-after 'build 'fix-cmake-install-file
+                 (string-append (assoc-ref %outputs "out") "/share")))
+              (copy-recursively (string-append titles
+                                "/share/openrct2/title-sequences") "data/title")
+              (copy-recursively (string-append objects
+                                "/share/openrct2/objects") "data/object"))))
+          (add-before 'configure 'fixgcc7
+             (lambda _
+               (unsetenv "C_INCLUDE_PATH")
+               (unsetenv "CPLUS_INCLUDE_PATH")
+               #t))
+          (add-after 'fixgcc7 'get-rid-of-errors
             (lambda _
-              ;; The build system tries to download a file and compare hashes.
-              ;; Since we have no network, remove this so the install doesn't fail.
-              (substitute* "cmake_install.cmake"
-                (("EXPECTED_HASH SHA1=b587d83de508d0b104d14c599b76f8565900fce0")
-                "")))))))
+              ;; Don't treat warnings as errors.
+              (substitute* "CMakeLists.txt"
+                (("-Werror") "")))))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
+              ("icu4c" ,icu4c)
               ("jansson" ,jansson)
               ("libpng" ,libpng)
               ("libzip" ,libzip)
               ("mesa" ,mesa)
+              ("openrct2-objects" ,openrct2-objects)
+              ("openrct2-title-sequences" ,openrct2-title-sequences)
               ("openssl" ,openssl)
               ("sdl2" ,sdl2)
               ("speexdsp" ,speexdsp)
               ("zlib" ,zlib)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("gcc" ,gcc-7)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/OpenRCT2/OpenRCT2")
     (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
     (description "OpenRCT2 is a free software re-implementation of
