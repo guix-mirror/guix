@@ -612,7 +612,7 @@ as the 'native-search-paths' field."
              (lambda* (#:key outputs #:allow-other-keys)
                (for-each delete-file
                          (find-files (string-append (assoc-ref outputs "out") "/bin")
-                                     ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc.*)"))
+                                     ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc|gcc-.*)"))
                #t))))))))
 
 (define %generic-search-paths
