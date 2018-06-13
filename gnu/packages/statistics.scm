@@ -2603,14 +2603,14 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.9")
+    (version "1.10")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "0wq6kbhrkv3fhcy4hg5yyv9gdvf8gr4nsjwdifs4ih8lnn0dmdyb"))))
+            "0mh2f3k98w7pgz0ri34149s4kx5y0kfm27nwq64k0qwxd16hwd9r"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2622,6 +2622,7 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-mime" ,r-mime)
        ("r-rprojroot" ,r-rprojroot)
        ("r-stringr" ,r-stringr)
+       ("r-tinytex" ,r-tinytex)
        ("r-yaml" ,r-yaml)
        ;; rmarkdown works with the 2.x release of Pandoc, but with degraded
        ;; functionality.  For example, tabbed plots do not currently work with
