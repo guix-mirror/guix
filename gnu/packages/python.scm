@@ -13691,3 +13691,28 @@ Public Suffix List's private domains as well.")
 
 (define-public python2-tldextract
   (package-with-python2 python-tldextract))
+
+(define-public python-pynamecheap
+  (package
+    (name "python-pynamecheap")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyNamecheap" version))
+       (sha256
+        (base32
+         "0wkbwz208j8nfrsmzmclvxg22ymknn0mlz76wbdza9k2bx2zja6l"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page
+     "https://github.com/Bemmu/PyNamecheap")
+    (synopsis
+     "Namecheap API client in Python")
+    (description
+     "PyNamecheap is a Namecheap API client in Python.")
+    (license license:expat)))
+
+(define-public python2-pynamecheap
+  (package-with-python2 python-pynamecheap))
