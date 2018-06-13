@@ -4190,3 +4190,26 @@ generating multiple logo plots, and aiding the visualisation with annotations.
 Sequence logos can easily be combined with other ggplot2 plots.")
     ;; Unspecified version of the LGPL.
     (license license:lgpl3+)))
+
+(define-public r-ggsci
+  (package
+    (name "r-ggsci")
+    (version "2.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggsci" version))
+       (sha256
+        (base32
+         "0g73x6grbka7ahjh6z23m3wrcifp5rdfdiasbl8lq4sp6rplxwaa"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-scales" ,r-scales)))
+    (home-page "https://nanx.me/ggsci/")
+    (synopsis "Scientific journal and sci-fi themed color palettes for ggplot2")
+    (description
+     "This package provides a collection of ggplot2 color palettes inspired by
+plots in scientific journals, data visualization libraries, science fiction
+movies, and TV shows.")
+    (license license:gpl3)))
