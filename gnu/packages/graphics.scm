@@ -373,7 +373,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
 (define-public openimageio
   (package
     (name "openimageio")
-    (version "1.6.15")
+    (version "1.7.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OpenImageIO/oiio/"
@@ -381,7 +381,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "144crq0205d0w5aq4iglh2rhzf54a8rv3pksy6d533b75w5d7rq7"))))
+                "1qlmfhvl2wva4aifyiq7c4sdy61ddl7wykwvlpfys9p701xghvj7"))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see
