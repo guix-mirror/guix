@@ -294,6 +294,53 @@ the Nix package manager.")
 ;; Alias for backward compatibility.
 (define-public guix-devel guix)
 
+(define-public guix-daemon
+  ;; This package is for internal consumption: it allows us to quickly build
+  ;; the 'guix-daemon' program and use that in (guix self), used by 'guix
+  ;; pull'.
+  (package
+    (inherit guix)
+    (properties `((hidden? . #t)))
+    (name "guix-daemon")
+
+    ;; Use a minimum set of dependencies.
+    (native-inputs
+     (fold alist-delete (package-native-inputs guix)
+           '("po4a" "graphviz" "help2man")))
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("guile-git" ,guile-git)
+       ,@(package-inputs guix)))
+    (propagated-inputs '())
+
+    (arguments
+     (substitute-keyword-arguments (package-arguments guix)
+       ((#:tests? #f #f)
+        #f)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'build
+             (lambda _
+               (invoke "make" "nix/libstore/schema.sql.hh")
+               (invoke "make" "-j" (number->string
+                                    (parallel-job-count))
+                       "guix-daemon")))
+           (delete 'copy-bootstrap-guile)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "make" "install-binPROGRAMS"
+                       "install-nodist_pkglibexecSCRIPTS")
+
+               ;; We need to tell 'guix-daemon' which 'guix' command to use.
+               ;; Here we use a questionable hack where we hard-code
+               ;; "~root/.config", which could be wrong (XXX).
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* (find-files (string-append out "/libexec"))
+                   (("exec \".*/bin/guix\"")
+                    "exec ~root/.config/current/bin/guix"))
+                 #t)))
+           (delete 'wrap-program)))))))
+
 (define-public guile2.0-guix
   (package
     (inherit guix)

@@ -385,7 +385,7 @@ load path."
 (define* (whole-package name modules dependencies
                         #:key
                         (guile-version (effective-version))
-                        info
+                        info daemon
                         (command (guix-command modules
                                                #:dependencies dependencies
                                                #:guile-version guile-version)))
@@ -400,6 +400,10 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                        (mkdir-p (string-append #$output "/bin"))
                        (symlink #$command
                                 (string-append #$output "/bin/guix"))
+
+                       (when #$daemon
+                         (symlink (string-append #$daemon "/bin/guix-daemon")
+                                  (string-append #$output "/bin/guix-daemon")))
 
                        (let ((modules (string-append #$output
                                                      "/share/guile/site/"
@@ -611,6 +615,15 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                                       #:guile-version guile-version)))
            (whole-package name built-modules dependencies
                           #:command command
+
+                          ;; Include 'guix-daemon'.  XXX: Here we inject an
+                          ;; older snapshot of guix-daemon, but that's a good
+                          ;; enough approximation for now.
+                          #:daemon (module-ref (resolve-interface
+                                                '(gnu packages
+                                                      package-management))
+                                               'guix-daemon)
+
                           #:info (info-manual source)
                           #:guile-version guile-version)))
         ((= 0 pull-version)
