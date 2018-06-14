@@ -78,7 +78,7 @@
        ("libxkbfile"       ,libxkbfile)
        ("libxml2"          ,libxml2)
        ("xkeyboard-config" ,xkeyboard-config)))
-    (home-page "http://fcitx-im.org")
+    (home-page "https://fcitx-im.org")
     (synopsis "Input method framework")
     (description
      "Fcitx is an input method framework with extension support.  It has
