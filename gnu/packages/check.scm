@@ -293,13 +293,13 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.83")
+    (version "1.84")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://github.com/danmar/cppcheck/archive/"
                           version ".tar.gz"))
       (sha256
-       (base32 "15ghxwmyy09cd9mi008k4jn09c441j86qyaa4dz0is7f5dv5cdkx"))
+       (base32 "1ibz07dgs1dpfb8bmjh3qsma37wl5p6s6b4qlv5ccpshj4yjk9ma"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (home-page "http://cppcheck.sourceforge.net")
