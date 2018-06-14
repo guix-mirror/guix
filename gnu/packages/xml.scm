@@ -263,13 +263,11 @@ the @code{Graph} class and write it out in a specific file format.")
                                     (getenv "PERL5LIB")))
              #t)))))
     (native-inputs
-     `(("perl-datetime" ,perl-datetime)
-       ;; TODO package: perl-datetime-format-atom
-       ("perl-html-tagset" ,perl-html-tagset)
+     ;; TODO package: perl-datetime-format-atom
+     `(("perl-html-tagset" ,perl-html-tagset)
        ("perl-module-build-tiny" ,perl-module-build-tiny)
-       ("perl-module-install" ,perl-module-install)
-       ("perl-xml-xpath" ,perl-xml-xpath)))
-    (inputs
+       ("perl-module-install" ,perl-module-install)))
+    (propagated-inputs
      `(("perl-class-data-inheritable" ,perl-class-data-inheritable)
        ("perl-datetime" ,perl-datetime)
        ("perl-datetime-timezone" ,perl-datetime-timezone)
