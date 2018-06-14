@@ -713,14 +713,14 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 (define-public botan
   (package
     (name "botan")
-    (version "2.5.0")
+    (version "2.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://botan.randombit.net/releases/"
                                   "Botan-" version ".tgz"))
               (sha256
                (base32
-                "06zvwknhwfrkdvq2sybqbqhnd2d4nq2cszlnsddql13z7vh1z8xq"))))
+                "1iawmymmnp5j2mcjj70slivn6bgg8gbpppldc1rjqw5sbdan3wn1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
