@@ -1925,14 +1925,14 @@ create data based on random numbers and yet remain repeatable.")
 (define-public python-freezegun
   (package
     (name "python-freezegun")
-    (version "0.3.9")
+    (version "0.3.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "freezegun" version))
        (sha256
         (base32
-         "1vhf3kgdy7gpy70n3bxa3y1n6aza316137md97z8p5k0gz6wqg3q"))))
+         "08m6b42yxb9hk5lv747v9n2qsxyadmkb0k6yg0gxdanwap0slg3h"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
