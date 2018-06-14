@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -608,7 +609,7 @@ demand.")))
             (call-with-output-file #$output
               (lambda (port)
                 (display "\
-# The beginning was automatically added.
+### These lines were generated from your system configuration:
 User tor
 DataDirectory /var/lib/tor
 Log notice syslog\n" port)
@@ -627,6 +628,9 @@ HiddenServicePort ~a ~a~%"
                                     (($ <hidden-service> name mapping)
                                      (cons name mapping)))
                                   services))
+
+                (display "\
+### End of automatically generated lines.\n\n" port)
 
                 ;; Append the user's config file.
                 (call-with-input-file #$config-file
