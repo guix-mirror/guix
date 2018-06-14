@@ -1050,7 +1050,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-genshi-stripping-of-unsafe-script-tags.patch	\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-networkx2-reproducible-build.patch	\
-  %D%/packages/patches/python-nose-timer-drop-ordereddict.patch \
   %D%/packages/patches/python-pillow-fix-failing-tests.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-scikit-learn-fix-test-non-determinism.patch	\

@@ -1902,19 +1902,14 @@ create data based on random numbers and yet remain repeatable.")
 (define-public python-nose-timer
   (package
     (name "python-nose-timer")
-    (version "0.7.0")
+    (version "0.7.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "nose-timer" version))
-        (patches
-         (search-patches
-          ;; This patch will not be needed in the next version.
-          ;; It is taken from the master branch.
-          "python-nose-timer-drop-ordereddict.patch"))
         (sha256
           (base32
-            "1s32ymsnby8lz2qk55ifj9zi50dqcg6swnj5cz2rmwxg2jsslsxp"))))
+            "0ywg223p528014z5s0vzck74r4xyw3kvcp2casfnc85dkvir1zj7"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-nose" ,python-nose)
