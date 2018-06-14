@@ -416,14 +416,14 @@ XML parser and the high performance DOM implementation.")
 (define-public perl-xml-libxml-simple
   (package
     (name "perl-xml-libxml-simple")
-    (version "0.97")
+    (version "0.99")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-LibXML-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "1g8nlk3zdz2cclxf7azvsb3jfxmvy6ml8wmj774k4qjqcsqmzk0w"))))
+                "0i4ybiqdnvnbfxqslw2y392kvy7i752dl8n99bqiqv5kzk4lbzhl"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
