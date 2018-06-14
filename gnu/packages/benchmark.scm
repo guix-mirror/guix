@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,15 +35,14 @@
 (define-public fio
   (package
     (name "fio")
-    (version "3.6")
+    (version "3.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                       "http://brick.kernel.dk/snaps/"
-                       "fio-" version ".tar.bz2"))
+              (uri (string-append "http://brick.kernel.dk/snaps/"
+                                  "fio-" version ".tar.gz"))
               (sha256
                (base32
-                "1d2jibp1b2dq97f22wj6pcjl7gbd2kmhfggj2c7q3j8v9axjqsh2"))))
+                "0rw9jf2ikm19lq4jizavdvvp3vfvlm3annq7jsxl2y5nf1pi2qr7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
