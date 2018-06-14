@@ -215,7 +215,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.9.6")
+    (version "1.9.7")
     (source
      (origin
        (method url-fetch)
@@ -223,7 +223,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "0a2qkvzr0g5cbd66wi7b6r40qyp9p55y0zz2j5qg1xsqwsdhbx1n"))))
+         "08kpy874x0rx43zpyv5kwd8xj2ma91xm33i0ka2v1v788px18a2q"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
