@@ -74,7 +74,6 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gimp)
@@ -2315,7 +2314,7 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.2.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
@@ -2323,11 +2322,12 @@ Transport Tycoon Deluxe.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1yrbjra27n2xxb1x47v962lc3qi8gwm5ws4f97952nvn533zrwxz"))
+         "1bahkzlf9k92cc4zs4nk4wy59323kiw8d3wm0vjps3kp7iznqyjx"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; Tests require network.
+     `(#:configure-flags '("-DDOWNLOAD_TITLE_SEQUENCES=OFF")
+       #:tests? #f ; Tests require network.
        #:phases
         (modify-phases %standard-phases
           (add-after 'unpack 'fix-usr-share-paths&add-data
@@ -2335,23 +2335,14 @@ Transport Tycoon Deluxe.")
               (let ((titles (assoc-ref inputs "openrct2-title-sequences"))
                     (objects (assoc-ref inputs "openrct2-objects")))
               ;; Fix some references to /usr/share.
-              (substitute* "src/openrct2/platform/Platform.Linux.cpp"
+              ;; Change to Platform.Linux.cpp on 0.1.2+
+              (substitute* "src/openrct2/platform/linux.c"
                 (("/usr/share")
                  (string-append (assoc-ref %outputs "out") "/share")))
               (copy-recursively (string-append titles
                                 "/share/openrct2/title-sequences") "data/title")
               (copy-recursively (string-append objects
-                                "/share/openrct2/objects") "data/object"))))
-          (add-before 'configure 'fixgcc7
-             (lambda _
-               (unsetenv "C_INCLUDE_PATH")
-               (unsetenv "CPLUS_INCLUDE_PATH")
-               #t))
-          (add-after 'fixgcc7 'get-rid-of-errors
-            (lambda _
-              ;; Don't treat warnings as errors.
-              (substitute* "CMakeLists.txt"
-                (("-Werror") "")))))))
+                                "/share/openrct2/objects") "data/object")))))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
@@ -2367,8 +2358,7 @@ Transport Tycoon Deluxe.")
               ("speexdsp" ,speexdsp)
               ("zlib" ,zlib)))
     (native-inputs
-     `(("gcc" ,gcc-7)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/OpenRCT2/OpenRCT2")
     (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
     (description "OpenRCT2 is a free software re-implementation of
