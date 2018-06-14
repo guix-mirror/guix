@@ -420,7 +420,9 @@ required structures.")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
                                        "/" name "-" version ".tar.gz")))
-              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
+              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"
+                                       "openssl-1.1.0-CVE-2018-0495.patch"
+                                       "openssl-1.1.0-CVE-2018-0732.patch"))
               (sha256
                (base32
                 "05x509lccqjscgyi935z809pwfm708islypwhmjnb6cyvrn64daq"))))
