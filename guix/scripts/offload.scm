@@ -124,7 +124,15 @@ determined."
       (save-module-excursion
        (lambda ()
          (set-current-module %user-module)
-         (primitive-load file))))
+         (match (primitive-load file)
+           (((? build-machine? machines) ...)
+            machines)
+           (_
+            ;; Instead of crashing, assume the empty list.
+            (warning (G_ "'~a' did not return a list of build machines; \
+ignoring it~%")
+                     file)
+            '())))))
     (lambda args
       (match args
         (('system-error . rest)
