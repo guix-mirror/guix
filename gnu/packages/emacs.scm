@@ -7950,7 +7950,7 @@ close, copy, cut, paste, undo, redo.")
 (define-public emacs-password-store
   (package
     (name "emacs-password-store")
-    (version "1.7.1")
+    (version "1.7.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -7958,7 +7958,7 @@ close, copy, cut, paste, undo, redo.")
                               "password-store-" version ".tar.xz"))
               (sha256
                (base32
-                "0scqkpll2q8jhzcgcsh9kqz0gwdpvynivqjmmbzax2irjfaiklpn"))))
+                "1sl0d7nc85c6c2bmmmyb8rpmn47vhkj831l153mjlkawjvhwas27"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -7973,6 +7973,7 @@ close, copy, cut, paste, undo, redo.")
     (propagated-inputs
      `(("emacs-f" ,emacs-f)
        ("emacs-s" ,emacs-s)
+       ("emacs-with-editor" ,emacs-with-editor)
        ("password-store" ,password-store)))
     (home-page "https://git.zx2c4.com/password-store/tree/contrib/emacs")
     (synopsis "Password store (pass) support for Emacs")
