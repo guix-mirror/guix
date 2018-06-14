@@ -260,6 +260,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
+   (replacement openssl/fixed)
    (version "1.0.2o")
    (source (origin
              (method url-fetch)
@@ -395,6 +396,15 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
+
+(define openssl/fixed
+  (package
+    (inherit openssl)
+    (source (origin
+              (inherit (package-source openssl))
+              (patches (append (origin-patches (package-source openssl))
+                               (search-patches "openssl-1.0.2-CVE-2018-0495.patch"
+                                               "openssl-1.0.2-CVE-2018-0732.patch")))))))
 
 (define-public openssl-next
   (package
