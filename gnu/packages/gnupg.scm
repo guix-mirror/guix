@@ -529,8 +529,8 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
              (setenv "USERNAME" "guixbuilder")
              ;; The doctests are extremely slow and sometimes time out,
              ;; so we disable them.
-             (zero? (system* "python"
-                             "test_gnupg.py" "--no-doctests")))))))
+             (invoke "python"
+                     "test_gnupg.py" "--no-doctests"))))))
     (native-inputs
      `(("gnupg" ,gnupg-1)))
     (home-page "https://packages.python.org/python-gnupg/index.html")
