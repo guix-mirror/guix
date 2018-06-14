@@ -95,14 +95,14 @@ built-in.")
 (define-public fcitx-configtool
   (package
    (name "fcitx-configtool")
-   (version "0.4.8")
+   (version "0.4.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://download.fcitx-im.org/fcitx-configtool/"
                   name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1vaim0namw58bfafbvws1vgd4010p19zwqfbx6bd1zi5sgchdg0f"))))
+              "1yyi9jhkwn49lx9a47k1zbvwgazv4y4z72gnqgzdpgdzfrlrgi5w"))))
    (build-system cmake-build-system)
    (arguments
     `(#:configure-flags
