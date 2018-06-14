@@ -13247,3 +13247,62 @@ rate speciation and extinction.")
 junctions in RNA-seq data.  It is annotation-agnostic and offset-aware.  This
 version does count multisplits.")
       (license license:gpl3+))))
+
+(define-public minimap2
+  (package
+    (name "minimap2")
+    (version "2.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lh3/minimap2/"
+                           "releases/download/v" version "/"
+                           "minimap2-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "080w9066irkbhbyr4nmf19pzkdd2s4v31hpzlajgq2y0drr6zcsj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are none
+       #:make-flags
+       (list "CC=gcc"
+             (let ((system ,(or (%current-target-system)
+                                (%current-system))))
+               (cond
+                ((string-prefix? "x86_64" system)
+                 "all")
+                ((or (string-prefix? "armhf" system)
+                     (string-prefix? "aarch64" system))
+                 "arm_neon=1")
+                (_ "sse2only=1"))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "minimap2" bin)
+               (mkdir-p man)
+               (install-file "minimap2.1" man))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://lh3.github.io/minimap2/")
+    (synopsis "Pairwise aligner for genomic and spliced nucleotide sequences")
+    (description "Minimap2 is a versatile sequence alignment program that
+aligns DNA or mRNA sequences against a large reference database.  Typical use
+cases include:
+
+@enumerate
+@item mapping PacBio or Oxford Nanopore genomic reads to the human genome;
+@item finding overlaps between long reads with error rate up to ~15%;
+@item splice-aware alignment of PacBio Iso-Seq or Nanopore cDNA or Direct RNA
+  reads against a reference genome;
+@item aligning Illumina single- or paired-end reads;
+@item assembly-to-assembly alignment;
+@item full-genome alignment between two closely related species with
+  divergence below ~15%.
+@end enumerate\n")
+    (license license:expat)))
