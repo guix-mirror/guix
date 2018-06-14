@@ -32,6 +32,7 @@
             ensure-dot-ko
             module-aliases
             module-dependencies
+            normalize-module-name
             recursive-module-dependencies
             modules-loaded
             module-loaded?
