@@ -503,13 +503,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.24.0")
+    (version "0.25.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1jq1nlly5146k08dw31fc1pw78plya5jswznnd512c08giif0mfn"))))
+                "0d177dhy8a7472pz9v4blrlk02d8fp6s52li7z8v3dv97pvz7da7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -528,6 +528,7 @@ netcat implementation that supports TLS.")
     ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
        ;; For documentation
        ("python-sphinx" ,python-sphinx)
        ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)
@@ -537,6 +538,7 @@ netcat implementation that supports TLS.")
      `(("python-josepy" ,python-josepy)
        ("python-six" ,python-six)
        ("python-requests" ,python-requests)
+       ("python-requests-toolbelt" ,python-requests-toolbelt)
        ("python-pytz" ,python-pytz)
        ("python-pyrfc3339" ,python-pyrfc3339)
        ("python-pyasn1" ,python-pyasn1)
@@ -558,7 +560,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0w3dbz74rpabjnc3l3ybnzjdypbr65lsjqf9yn243b5kid9d8wm0"))))
+                "0kp56gwn1bnlrag9qidhm1i5ifdp5z6y1ravh3yimfrkc4cfa8sw"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
