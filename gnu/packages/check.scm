@@ -1948,7 +1948,7 @@ create data based on random numbers and yet remain repeatable.")
          ;; package does not include the Makefile.
          (replace 'check
            (lambda _
-             (zero? (system* "nosetests" "./tests/")))))))
+             (invoke "nosetests" "./tests/"))))))
     (home-page "https://github.com/spulec/freezegun")
     (synopsis "Test utility for mocking the datetime module")
     (description
