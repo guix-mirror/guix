@@ -824,7 +824,7 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-path-tiny" ,perl-path-tiny)))
-    (inputs
+    (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)))
     (home-page "http://search.cpan.org/dist/XML-XPath")
     (synopsis "Parse and evaluate XPath statements")
