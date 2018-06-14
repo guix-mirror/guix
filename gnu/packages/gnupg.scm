@@ -508,14 +508,14 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
 (define-public python-gnupg
   (package
     (name "python-gnupg")
-    (version "0.3.8")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-gnupg" version))
        (sha256
         (base32
-         "0nkbs9c8f30lra7ca39kg91x8cyxn0jb61vih4qky839gpbwwwiq"))))
+         "03dc8whhvk7ccspbk8vzfhkxli8cd9zfbss5p597g4jldgy8s59d"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -523,8 +523,6 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
          (replace 'check
            (lambda _
              (substitute* "test_gnupg.py"
-               ;; Exported keys don't have a version line!
-               (("del k1\\[1\\]") "#")
                ;; Unsure why this test fails.
                (("'test_search_keys'") "True")
                (("def test_search_keys") "def disabled__search_keys"))
