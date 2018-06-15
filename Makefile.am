@@ -11,6 +11,7 @@
 # Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 # Copyright © 2018 Nils Gillmann <ng0@n0.is>
 # Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+# Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -454,7 +455,8 @@ dist_pkgdata_DATA =				\
   berlin.guixsd.org.pub
 
 # Bash completion file.
-dist_bashcompletion_DATA = etc/completion/bash/guix
+dist_bashcompletion_DATA = etc/completion/bash/guix	\
+  etc/completion/bash/guix-daemon
 
 # Zsh completion file.
 dist_zshcompletion_DATA = etc/completion/zsh/_guix

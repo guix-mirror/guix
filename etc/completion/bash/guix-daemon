@@ -1,0 +1,30 @@
+# GNU Guix --- Functional package management for GNU
+# Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+#
+# This file is part of GNU Guix.
+#
+# GNU Guix is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# GNU Guix is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+# Bash completion for guix-daemon command.
+
+_guix_daemon_complete ()
+{
+    local options="$(${COMP_WORDS[0]} --help 2> /dev/null \
+                            | grep '^  \+-' \
+                            | sed -e's/^.*--\([a-zA-Z0-9_-]\+\)\(=\?\).*/--\1\2/g')"
+    compopt -o nospace
+    COMPREPLY=($(compgen -W "$options" -- "${COMP_WORDS[${#COMP_WORDS[*]} - 1]}"))
+}
+
+complete -F _guix_daemon_complete guix-daemon
