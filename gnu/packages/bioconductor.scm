@@ -131,6 +131,41 @@ Repeats Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by
 default.")
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-mmusculus-ucsc-mm9-masked
+  (package
+    (name "r-bsgenome-mmusculus-ucsc-mm9-masked")
+    (version "1.3.99")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Mmusculus.UCSC.mm9.masked_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "00bpbm3havqcxr4g63zhllsbpd9q6svgihks7qp7x73nm4gvq7fn"))))
+    (properties
+     `((upstream-name . "BSgenome.Mmusculus.UCSC.mm9.masked")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-mmusculus-ucsc-mm9"
+        ,r-bsgenome-mmusculus-ucsc-mm9)))
+    (home-page "http://bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm9.masked/")
+    (synopsis "Full masked genome sequences for Mouse")
+    (description
+     "This package provides full genome sequences for Mus musculus (Mouse) as
+provided by UCSC (mm9, Jul. 2007) and stored in Biostrings objects.  The
+sequences are the same as in BSgenome.Mmusculus.UCSC.mm9, except that each of
+them has the 4 following masks on top: (1) the mask of assembly gaps (AGAPS
+mask), (2) the mask of intra-contig ambiguities (AMB mask), (3) the mask of
+repeats from RepeatMasker (RM mask), and (4) the mask of repeats from Tandem
+Repeats Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by
+default."  )
+    (license license:artistic2.0)))
+
 (define-public r-hpar
   (package
     (name "r-hpar")
