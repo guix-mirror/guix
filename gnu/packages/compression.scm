@@ -2111,7 +2111,7 @@ single-member files which can't be decompressed in parallel.")
 (define-public innoextract
   (package
    (name "innoextract")
-   (version "1.6")
+   (version "1.7")
    (source
     (origin
      (method url-fetch)
@@ -2119,7 +2119,7 @@ single-member files which can't be decompressed in parallel.")
                          version ".tar.gz"))
      (sha256
       (base32
-       "08sp5vbfjvq1irhhraqkn5m2x1z209r4axhx7laf1adcw30ccapi"))
+       "0khwi9f0q0h6xfbixrrc1rfpgj0b7ajwilq7yhmxnn5lpc807f6x"))
      (file-name (string-append name "-" version ".tar.gz"))))
    (build-system cmake-build-system)
    (arguments
