@@ -613,8 +613,8 @@ If TIMEOUT is #f, simply evaluate EXP..."
          (leave (G_ "failed to talk to guix-daemon on '~a' (test returned ~s)~%")
                 name x))))
     (lambda (key . args)
-      (leave (G_ "remove evaluation on '~a' failed:~{ ~s~}~%")
-             args))))
+      (leave (G_ "remote evaluation on '~a' failed:~{ ~s~}~%")
+             name args))))
 
 (define %random-state
   (delay
