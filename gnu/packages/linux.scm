@@ -3367,7 +3367,7 @@ disks and SD cards.  This package provides the userland utilities.")
   (package
     (inherit f2fs-tools-1.7)
     (name "f2fs-tools")
-    (version "1.8.0")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3375,7 +3375,7 @@ disks and SD cards.  This package provides the userland utilities.")
                     "/f2fs-tools.git/snapshot/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1bir9ladb58ijlcvrjrq1fb1xv5ys50zdjaq0yzliib0apsyrnyl"))))
+                "05ikaim0qq3dx9x3sp43ralwz43r3b0viv62n99kabp0vf3b0hg8"))))
     (inputs
      `(("libuuid" ,util-linux)))))
 
