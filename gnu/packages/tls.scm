@@ -12,6 +12,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,10 +39,14 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages dns)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
@@ -875,3 +880,69 @@ implement the SSL3.0, TLS1.0, TLS1.1 and TLS1.2 protocol, and support RSA and
 Ephemeral (Elliptic curve and regular) Diffie Hellman key exchanges, and many
 extensions.")
     (license license:bsd-3)))
+
+(define-public dehydrated
+  (package
+    (name "dehydrated")
+    (version "0.6.2")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (uri (string-append
+                    "https://github.com/lukas2511/dehydrated/archive/v"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "03p80yj6bnzjc6dkp5hb9wpplmlrla8n5src71cnzw4rj53q8cqn"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin"))
+                (bash (in-vicinity (assoc-ref %build-inputs "bash") "bin")))
+           (mkdir-p bin)
+           (with-directory-excursion bin
+             (copy-file
+              (in-vicinity source (string-append "/dehydrated-" ,version
+                                                 "/dehydrated"))
+              (in-vicinity bin "dehydrated"))
+             (patch-shebang "dehydrated" (list bash))
+
+             ;; Do not try to write in the store.
+             (substitute* "dehydrated"
+               (("SCRIPTDIR=\"\\$.*\"") "SCRIPTDIR=~/.dehydrated"))
+
+             (setenv "PATH" bash)
+             (wrap-program "dehydrated"
+               `("PATH" ":" prefix
+                 ,(map (lambda (dir)
+                         (string-append dir "/bin"))
+                       (map (lambda (input)
+                              (assoc-ref %build-inputs input))
+                            '("coreutils"
+                              "curl"
+                              "diffutils"
+                              "gawk"
+                              "grep"
+                              "openssl"
+                              "sed"))))))
+           #t))))
+    (inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("curl" ,curl)
+       ("diffutils" ,diffutils)
+       ("gawk" ,gawk)
+       ("grep" ,grep)
+       ("openssl" ,openssl)
+       ("sed" ,sed)))
+    (home-page "https://dehydrated.io/")
+    (synopsis "Let's Encrypt/ACME client implemented as a shell script")
+    (description "Dehydrated is a client for signing certificates with an
+ACME-server (currently only provided by Let's Encrypt) implemented as a
+relatively simple Bash script.")
+    (license license:expat)))
