@@ -96,6 +96,41 @@ RepeatMasker (RM mask), and (4) the mask of repeats from Tandem Repeats
 Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by default.")
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-hsapiens-ucsc-hg19-masked
+  (package
+    (name "r-bsgenome-hsapiens-ucsc-hg19-masked")
+    (version "1.3.99")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Hsapiens.UCSC.hg19.masked_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0452pyah0kv1vsrsjbrqw4k2rm8lc2vc771dzib45gnnfz86qxrr"))))
+    (properties
+     `((upstream-name . "BSgenome.Hsapiens.UCSC.hg19.masked")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-hsapiens-ucsc-hg19"
+        ,r-bsgenome-hsapiens-ucsc-hg19)))
+    (home-page "https://bioconductor.org/packages/BSgenome.Hsapiens.UCSC.hg19.masked/")
+    (synopsis "Full masked genome sequences for Homo sapiens")
+    (description
+     "This package provides full genome sequences for Homo sapiens (Human) as
+provided by UCSC (hg19, Feb. 2009) and stored in Biostrings objects.  The
+sequences are the same as in BSgenome.Hsapiens.UCSC.hg19, except that each of
+them has the 4 following masks on top: (1) the mask of assembly gaps (AGAPS
+mask), (2) the mask of intra-contig ambiguities (AMB mask), (3) the mask of
+repeats from RepeatMasker (RM mask), and (4) the mask of repeats from Tandem
+Repeats Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by
+default.")
+    (license license:artistic2.0)))
+
 (define-public r-hpar
   (package
     (name "r-hpar")
