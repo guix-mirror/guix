@@ -61,6 +61,41 @@ melanogaster (Fly) as provided by UCSC (dm6) and stored in Biostrings
 objects.")
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-dmelanogaster-ucsc-dm3-masked
+  (package
+    (name "r-bsgenome-dmelanogaster-ucsc-dm3-masked")
+    (version "1.3.99")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Dmelanogaster.UCSC.dm3.masked_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1756csb09f1br9rj1l3f08qyh4hlymdbd0cfn8x3fq39dn45m5ap"))))
+    (properties
+     `((upstream-name . "BSgenome.Dmelanogaster.UCSC.dm3.masked")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-dmelanogaster-ucsc-dm3"
+        ,r-bsgenome-dmelanogaster-ucsc-dm3)))
+    (home-page "https://www.bioconductor.org/packages/BSgenome.Dmelanogaster.UCSC.dm3.masked/")
+    (synopsis "Full masked genome sequences for Fly")
+    (description
+     "This package provides full masked genome sequences for Drosophila
+melanogaster (Fly) as provided by UCSC (dm3, April 2006) and stored in
+Biostrings objects.  The sequences are the same as in
+BSgenome.Dmelanogaster.UCSC.dm3, except that each of them has the 4 following
+masks on top: (1) the mask of assembly gaps (AGAPS mask), (2) the mask of
+intra-contig ambiguities (AMB mask), (3) the mask of repeats from
+RepeatMasker (RM mask), and (4) the mask of repeats from Tandem Repeats
+Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by default.")
+    (license license:artistic2.0)))
+
 (define-public r-hpar
   (package
     (name "r-hpar")
