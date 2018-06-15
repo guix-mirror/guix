@@ -371,3 +371,29 @@ filtered to remove spurious regions in the genome.  Downstream steps of
 segmentation and calling are also implemented via packages DNAcopy and CGHcall,
 respectively.")
     (license license:gpl2+)))
+
+(define-public r-bayseq
+  (package
+    (name "r-bayseq")
+    (version "2.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "baySeq" version))
+       (sha256
+        (base32
+         "0hbmm01a8libara9mbxknpk0wzarwfngnfwlmhpww91a0cmy5klg"))))
+    (properties `((upstream-name . "baySeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-edger" ,r-edger)
+       ("r-genomicranges" ,r-genomicranges)))
+    (home-page "https://bioconductor.org/packages/baySeq/")
+    (synopsis "Bayesian analysis of differential expression patterns in count data")
+    (description
+     "This package identifies differential expression in high-throughput count
+data, such as that derived from next-generation sequencing machines,
+calculating estimated posterior likelihoods of differential expression (or
+more complex hypotheses) via empirical Bayesian methods.")
+    (license license:gpl3)))
