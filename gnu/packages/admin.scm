@@ -21,6 +21,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2395,7 +2396,7 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "3.4.0")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dylanaraps/neofetch/"
@@ -2403,7 +2404,7 @@ tool for remote execution and deployment.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "18rhamy910ig03rr55y9x5i6pf78yj9xc6jpm6nfh3gqja7340rb"))))
+                "014hlbzs6j4b669b64hnq8vc5knwiv9ncw9m9d193p9jsybxpm1w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
