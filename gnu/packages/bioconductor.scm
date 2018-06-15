@@ -536,3 +536,42 @@ sites across multiple conditions considering matching control in ChIP-seq
 datasets.")
     ;; Any version of the GPL.
     (license license:gpl3+)))
+
+(define-public r-riboprofiling
+  (package
+    (name "r-riboprofiling")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "RiboProfiling" version))
+       (sha256
+        (base32
+         "04yjklqdjkim7yxyk3cyvf0mmwyxyfvw2mmfzgwaaqbiyg29sli0"))))
+    (properties `((upstream-name . "RiboProfiling")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-data-table" ,r-data-table)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggbio" ,r-ggbio)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-sqldf" ,r-sqldf)))
+    (home-page "https://bioconductor.org/packages/RiboProfiling/")
+    (synopsis "Ribosome profiling data analysis")
+    (description "Starting with a BAM file, this package provides the
+necessary functions for quality assessment, read start position recalibration,
+the counting of genomic sequence reads on CDS, 3'UTR, and 5'UTR, and plotting
+of count data: pairs, log fold-change, codon frequency and coverage
+assessment, principal component analysis on codon coverage.")
+    (license license:gpl3)))
