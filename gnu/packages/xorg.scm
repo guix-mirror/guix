@@ -15,6 +15,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5854,6 +5855,34 @@ perl programs to display windows and graphics on X11 servers.")
     ;; of the extension modules in the directory Protocol/Ext: see those files
     ;; for details)."
     (license license:perl-license)))
+
+(define-public perl-x11-protocol-other
+  (package
+    (name "perl-x11-protocol-other")
+    (version "30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/K/KR/KRYDE/X11-Protocol-Other-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1mambi57cdkj82wiw1l8y2f70a60qsamdas0165hlj10drryfgrj"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-encode-hanextra" ,perl-encode-hanextra)
+       ("perl-module-util" ,perl-module-util)))
+    (propagated-inputs
+     `(("perl-x11-protocol" ,perl-x11-protocol)))
+    (home-page "http://search.cpan.org/dist/X11-Protocol-Other/")
+    (synopsis "Miscellaneous helpers for @code{X11::Protocol} connections")
+    (description
+     "@code{X11::Protocol::Other} contains window manager related functions for
+use by client programs, as per the @dfn{ICCCM} (Inter-Client Communication
+Conventions Manual) and some of the @dfn{EWMH}
+(Extended Window Manager Hints).")
+    (license license:gpl3+)))
 
 (define-public xcompmgr
   (package
