@@ -575,3 +575,31 @@ the counting of genomic sequence reads on CDS, 3'UTR, and 5'UTR, and plotting
 of count data: pairs, log fold-change, codon frequency and coverage
 assessment, principal component analysis on codon coverage.")
     (license license:gpl3)))
+
+(define-public r-riboseqr
+  (package
+    (name "r-riboseqr")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "riboSeqR" version))
+       (sha256
+        (base32
+         "0xavd1cdhi8qfjn9a1hjhflyg6jq1ydvv56z12gjz572pwz2knvn"))))
+    (properties `((upstream-name . "riboSeqR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-bayseq" ,r-bayseq)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-seqlogo" ,r-seqlogo)))
+    (home-page "https://bioconductor.org/packages/riboSeqR/")
+    (synopsis "Analysis of sequencing data from ribosome profiling experiments")
+    (description
+     "This package provides plotting functions, frameshift detection and
+parsing of genetic sequencing data from ribosome profiling experiments.")
+    (license license:gpl3)))
