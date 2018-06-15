@@ -439,7 +439,7 @@ def test_ctrl_c"))
 also initializes the boards (RAM etc).  This package provides its
 board-independent tools.")))
 
-(define (make-u-boot-package board triplet)
+(define-public (make-u-boot-package board triplet)
   "Returns a u-boot package for BOARD cross-compiled for TRIPLET."
   (let ((same-arch? (if (string-prefix? (%current-system)
                                         (gnu-triplet->nix-system triplet))

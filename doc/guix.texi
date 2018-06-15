@@ -8881,6 +8881,22 @@ Have a look at @file{gnu/system/install.scm} in the source tree,
 and see also @ref{Invoking guix system} for more information
 about the installation image.
 
+@subsection Building the Installation Image for ARM Boards
+
+Many ARM boards require a specific variant of the
+@uref{http://www.denx.de/wiki/U-Boot/, U-Boot} bootloader.
+
+If you build a disk image and the bootloader is not available otherwise
+(on another boot drive etc), it's advisable to build an image that
+includes the bootloader, specifically:
+
+@example
+guix system disk-image --system=armhf-linux -e '((@@ (gnu system install) os-with-u-boot) (@@ (gnu system install) installation-os) "A20-OLinuXino-Lime2")'
+@end example
+
+@code{A20-OLinuXino-Lime2} is the name of the board.  If you specify an invalid
+board, a list of possible boards will be printed.
+
 @node System Configuration
 @section System Configuration
 
