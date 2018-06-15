@@ -4055,7 +4055,8 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
          (delete 'configure)            ; no configure script
          (add-after 'unpack 'patch-makefile
            (lambda _
-             (substitute* "Makefile" (("chown") "#")))))))
+             (substitute* "Makefile" (("chown") "#"))
+             #t)))))
     (native-inputs
      `(("help2man" ,help2man)))
     (home-page "https://haikarainen.github.io/light")
