@@ -502,3 +502,37 @@ data, such as that derived from next-generation sequencing machines,
 calculating estimated posterior likelihoods of differential expression (or
 more complex hypotheses) via empirical Bayesian methods.")
     (license license:gpl3)))
+
+(define-public r-chipcomp
+  (package
+    (name "r-chipcomp")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ChIPComp" version))
+       (sha256
+        (base32
+         "0j9nif7z33qdxf347r9wa62hhz8qs09r2p96x3hg5yz30a10ahqs"))))
+    (properties `((upstream-name . "ChIPComp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-bsgenome-mmusculus-ucsc-mm9" ,r-bsgenome-mmusculus-ucsc-mm9)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/ChIPComp")
+    (synopsis "Quantitative comparison of multiple ChIP-seq datasets")
+    (description
+     "ChIPComp implements a statistical method for quantitative comparison of
+multiple ChIP-seq datasets.  It detects differentially bound sharp binding
+sites across multiple conditions considering matching control in ChIP-seq
+datasets.")
+    ;; Any version of the GPL.
+    (license license:gpl3+)))
