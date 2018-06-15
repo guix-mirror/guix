@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -61,7 +61,8 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26))
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 regex))
 
 (define unifont
   ;; GNU Unifont, <http://gnu.org/s/unifont>.
@@ -143,6 +144,22 @@
        ("flex" ,flex-2.6.1)
        ("texinfo" ,texinfo)
        ("help2man" ,help2man)
+
+       ;; XXX: When building GRUB 2.02 on 32-bit x86, we need a binutils
+       ;; capable of assembling 64-bit instructions.  However, our default
+       ;; binutils on 32-bit x86 is not 64-bit capable.
+       ,@(if (string-match "^i[3456]86-" (%current-system))
+             (let ((binutils (package/inherit
+                              binutils
+                              (name "binutils-i386")
+                              (arguments
+                               (substitute-keyword-arguments (package-arguments binutils)
+                                 ((#:configure-flags flags ''())
+                                  `(cons "--enable-64-bit-bfd" ,flags)))))))
+               `(("ld-wrapper" ,(make-ld-wrapper "ld-wrapper-i386"
+                                                 #:binutils binutils))
+                 ("binutils" ,binutils)))
+             '())
 
        ;; Dependencies for the test suite.  The "real" QEMU is needed here,
        ;; because several targets are used.
