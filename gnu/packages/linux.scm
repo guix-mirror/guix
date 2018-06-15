@@ -4036,23 +4036,23 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.0")
+    (version "1.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/haikarainen/" name
-                                  "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/haikarainen/light")
+                    (commit version)))
               (sha256
                (base32
-                "0r5gn6c0jcxknzybl6059dplxv46dpahchqq4gymrs7z8bp0hilp"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1qra8yzsga29bxlvq63v1db071a1xdji7i60p4kzrciidm1206js"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-after 'unpack 'patch-makefile
            (lambda _
              (substitute* "Makefile" (("chown") "#")))))))
