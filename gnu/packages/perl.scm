@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1522,6 +1523,27 @@ the caller.")
 mail, as short-lined, 7-bit, semi-compressed data streams.  Ths module
 provides a means of converting those data streams back into into binary
 data.")
+    (license perl-license)))
+
+(define-public perl-cpan-changes
+  (package
+    (name "perl-cpan-changes")
+    (version "0.400002")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/H/HA/HAARG/CPAN-Changes-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "13dy78amkhwg278sv5im0ylyskhxpfivyl2aissqqih71nlxxvh1"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/CPAN-Changes/")
+    (synopsis "Read and write @file{Changes} files")
+    (description
+     "@code{CPAN::Changes} helps users programmatically read and write
+@file{Changes} files that conform to a common specification.")
     (license perl-license)))
 
 (define-public perl-cpan-meta-check
