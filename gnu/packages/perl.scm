@@ -8515,14 +8515,14 @@ as exceptions to standard program flow.")
 (define-public perltidy
   (package
     (name "perltidy")
-    (version "20160302")
+    (version "20180220")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/perltidy/" version
                                   "/Perl-Tidy-" version ".tar.gz"))
               (sha256
                (base32
-                "19yw63yh5s3pq7k3nkw6nsamg5b8vvwyhgbizslgxg0mqgc4xl3d"))))
+                "0w1k5ffcrpx0fm9jgprrwy0290k6cmy7dyk83s61063migi3r5z9"))))
     (build-system perl-build-system)
     (home-page "http://perltidy.sourceforge.net/")
     (synopsis "Perl script tidier")
