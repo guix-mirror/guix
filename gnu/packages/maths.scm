@@ -294,14 +294,14 @@ semiconductors.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gsl/gsl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "16yfs5n444s03np1naj6yp1fsysd42kdscxzkg0k2yvfjixx0ijd"))
+                "1395y9hlhqadn5g9j8q22224fds5sd92jxi9czfavjj24myasq04"))
               (patches (search-patches "gsl-test-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
