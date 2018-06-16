@@ -10843,26 +10843,39 @@ Org-mode.  It features:
       (license license:gpl3+))))
 
 (define-public emacs-fish-completion
-  (package
-    (name "emacs-fish-completion")
-    (version "20180329")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/Ambrevar/emacs-fish-completion/archive/"
-             "3e3ed1f19fa778b7c35ad88e033dce5a6b1fc153"
-             ".tar.gz"))
-       (sha256
-        (base32
-         "16329py7fvid0bap1qhqxhdc68m9qqy1p8gc2bhng81zhm5a5zsm"))))
-    (build-system emacs-build-system)
-    (propagated-inputs `(("fish" ,fish)))
-    (home-page
-     "https://github.com/Ambrevar/emacs-fish-completion")
-    (synopsis "Fish completion for Emacs pcomplete")
-    (description
-     "This package provides completion for the Fish shell to pcomplete (used
+  (let ((commit "bac15fda1392a891070574dfe5d2d50b10831e8b"))
+    (package
+      (name "emacs-fish-completion")
+      (version (git-version "20180616" "1" commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://gitlab.com/Ambrevar/emacs-fish-completion/repository/"
+               "archive.tar.gz?ref="
+               commit))
+         (sha256
+          (base32
+           "093qzdrbkl7dhjk16zq8i13kh1phyigkblcfrbgbrxjqd2ndrfdi"))))
+      (build-system emacs-build-system)
+      (inputs `(("fish" ,fish)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((fish (assoc-ref inputs "fish")))
+                 ;; Specify the absolute file names of the various
+                 ;; programs so that everything works out-of-the-box.
+                 (emacs-substitute-variables
+                     "fish-completion.el"
+                   ("fish-completion-command"
+                    (string-append fish "/bin/fish")))))))))
+      (home-page
+       "https://gitlab.com/Ambrevar/emacs-fish-completion")
+      (synopsis "Fish completion for Emacs pcomplete")
+      (description
+       "This package provides completion for the Fish shell to pcomplete (used
 by shell and Eshell).  You can set it up globally with:
 
 @example
@@ -10877,7 +10890,7 @@ shell/Eshell mode hook.
 The package @code{emacs-bash-completion} is an optional dependency: if available,
 @code{fish-completion-complete} can be configured to fall back on bash to further
 try completing.  See @code{fish-completion-fallback-on-bash-p}.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-gif-screencast
   (let ((commit "825e606950ec842304bf75cf85baef707b853b03"))
