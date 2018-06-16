@@ -340,7 +340,8 @@ DOMAIN, a gettext domain."
 
   (computed-file "guix-manual" build))
 
-(define* (guix-command modules #:key source (dependencies '())
+(define* (guix-command modules #:optional compiled-modules
+                       #:key source (dependencies '())
                        (guile-version (effective-version)))
   "Return the 'guix' command such that it adds MODULES and DEPENDENCIES in its
 load path."
@@ -364,7 +365,8 @@ load path."
 
                     (set! %load-path (cons #$modules %load-path))
                     (set! %load-compiled-path
-                      (cons #$modules %load-compiled-path))
+                      (cons (or #$compiled-modules #$modules)
+                            %load-compiled-path))
 
                     (let ((guix-main (module-ref (resolve-interface '(guix ui))
                                                  'guix-main)))
@@ -385,14 +387,16 @@ load path."
 (define* (whole-package name modules dependencies
                         #:key
                         (guile-version (effective-version))
+                        compiled-modules
                         info daemon
                         (command (guix-command modules
                                                #:dependencies dependencies
                                                #:guile-version guile-version)))
   "Return the whole Guix package NAME that uses MODULES, a derivation of all
 the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
-'guix' program to use; INFO is the Info manual."
-  ;; TODO: Move compiled modules to 'lib/guile' instead of 'share/guile'.
+'guix' program to use; INFO is the Info manual.  When COMPILED-MODULES is
+true, it is linked as 'lib/guile/X.Y/site-ccache'; otherwise, .go files are
+assumed to be part of MODULES."
   (computed-file name
                  (with-imported-modules '((guix build utils))
                    #~(begin
@@ -414,7 +418,15 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                          (when info
                            (symlink #$info
                                     (string-append #$output
-                                                   "/share/info"))))))))
+                                                   "/share/info"))))
+
+                       ;; Object files.
+                       (when #$compiled-modules
+                         (let ((modules (string-append #$output "/lib/guile/"
+                                                       (effective-version)
+                                                       "/site-ccache")))
+                           (mkdir-p (dirname modules))
+                           (symlink #$compiled-modules modules)))))))
 
 (define* (compiled-guix source #:key (version %guix-version)
                         (pull-version 1)
@@ -577,11 +589,9 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                                          %guix-home-page-url)))
                  #:guile-for-build guile-for-build))
 
-  (define built-modules
+  (define (built-modules node-subset)
     (directory-union (string-append name "-modules")
-                     (append-map (lambda (node)
-                                   (list (node-source node)
-                                         (node-compiled node)))
+                     (append-map node-subset
 
                                  ;; Note: *CONFIG* comes first so that it
                                  ;; overrides the (guix config) module that
@@ -609,11 +619,14 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
   ;; Version 1 is when we return the full package.
   (cond ((= 1 pull-version)
          ;; The whole package, with a standard file hierarchy.
-         (let ((command (guix-command built-modules
-                                      #:source source
-                                      #:dependencies dependencies
-                                      #:guile-version guile-version)))
-           (whole-package name built-modules dependencies
+         (let* ((modules  (built-modules (compose list node-source)))
+                (compiled (built-modules (compose list node-compiled)))
+                (command  (guix-command modules compiled
+                                        #:source source
+                                        #:dependencies dependencies
+                                        #:guile-version guile-version)))
+           (whole-package name modules dependencies
+                          #:compiled-modules compiled
                           #:command command
 
                           ;; Include 'guix-daemon'.  XXX: Here we inject an
@@ -627,8 +640,11 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                           #:info (info-manual source)
                           #:guile-version guile-version)))
         ((= 0 pull-version)
-         ;; Legacy 'guix pull': just return the compiled modules.
-         built-modules)
+         ;; Legacy 'guix pull': return the .scm and .go files as one
+         ;; directory.
+         (built-modules (lambda (node)
+                          (list (node-source node)
+                                (node-compiled node)))))
         (else
          ;; Unsupported 'guix pull' version.
          #f)))
