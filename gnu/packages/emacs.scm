@@ -11217,7 +11217,22 @@ provided by other Emacs packages dealing with pass:
           (base32
            "0v66wk9nh0raih4jhrzmmyi5lbysjnmbv791vm2230ffi2hmwxnd"))))
       (build-system emacs-build-system)
-      (propagated-inputs `(("imagemagick" ,imagemagick)))
+      (inputs `(("imagemagick" ,imagemagick)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((imagemagick (assoc-ref inputs "imagemagick")))
+                 ;; Specify the absolute file names of the various
+                 ;; programs so that everything works out-of-the-box.
+                 (chmod "image+.el" #o666)
+                 (emacs-substitute-variables
+                     "image+.el"
+                   ("imagex-convert-command"
+                    (string-append imagemagick "/bin/convert"))
+                   ("imagex-identify-command"
+                    (string-append imagemagick "/bin/identify")))))))))
       (home-page "https://github.com/mhayashi1120/Emacs-imagex")
       (synopsis "Image manipulation extensions for Emacs")
       (description
