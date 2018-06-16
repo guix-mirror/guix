@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -150,7 +150,8 @@ to the default GNU unpack strategy."
       (begin
         (mkdir "src")
         (with-directory-excursion "src"
-          (zero? (system* "jar" "-xf" source))))
+          (invoke "jar" "-xf" source))
+        #t)
       ;; Use GNU unpack strategy for things that aren't jar archives.
       ((assq-ref gnu:%standard-phases 'unpack) #:source source)))
 
@@ -171,7 +172,7 @@ to the default GNU unpack strategy."
 
 (define* (build #:key (make-flags '()) (build-target "jar")
                 #:allow-other-keys)
-  (zero? (apply system* `("ant" ,build-target ,@make-flags))))
+  (apply invoke `("ant" ,build-target ,@make-flags)))
 
 (define* (generate-jar-indices #:key outputs #:allow-other-keys)
   "Generate file \"META-INF/INDEX.LIST\".  This file does not use word wraps
@@ -194,50 +195,49 @@ repack them.  This is necessary to ensure that archives are reproducible."
     (format #t "repacking ~a\n" jar)
     (let* ((dir (mkdtemp! "jar-contents.XXXXXX"))
            (manifest (string-append dir "/META-INF/MANIFEST.MF")))
-      (and (with-directory-excursion dir
-             (zero? (system* "jar" "xf" jar)))
-           (delete-file jar)
-           ;; XXX: copied from (gnu build install)
-           (for-each (lambda (file)
-                       (let ((s (lstat file)))
-                         (unless (eq? (stat:type s) 'symlink)
-                           (utime file 0 0 0 0))))
-                     (find-files dir #:directories? #t))
+      (with-directory-excursion dir
+        (invoke "jar" "xf" jar))
+      (delete-file jar)
+      ;; XXX: copied from (gnu build install)
+      (for-each (lambda (file)
+                  (let ((s (lstat file)))
+                    (unless (eq? (stat:type s) 'symlink)
+                      (utime file 0 0 0 0))))
+                (find-files dir #:directories? #t))
 
-           ;; The jar tool will always set the timestamp on the manifest file
-           ;; and the containing directory to the current time, even when we
-           ;; reuse an existing manifest file.  To avoid this we use "zip"
-           ;; instead of "jar".  It is important that the manifest appears
-           ;; first.
-           (with-directory-excursion dir
-             (let* ((files (find-files "." ".*" #:directories? #t))
-                    ;; To ensure that the reference scanner can detect all
-                    ;; store references in the jars we disable compression
-                    ;; with the "-0" option.
-                    (command (if (file-exists? manifest)
-                                 `("zip" "-0" "-X" ,jar ,manifest ,@files)
-                                 `("zip" "-0" "-X" ,jar ,@files))))
-               (unless (zero? (apply system* command))
-                 (error "'zip' failed"))))
-           (utime jar 0 0)
-           #t)))
+      ;; The jar tool will always set the timestamp on the manifest file
+      ;; and the containing directory to the current time, even when we
+      ;; reuse an existing manifest file.  To avoid this we use "zip"
+      ;; instead of "jar".  It is important that the manifest appears
+      ;; first.
+      (with-directory-excursion dir
+        (let* ((files (find-files "." ".*" #:directories? #t))
+               ;; To ensure that the reference scanner can detect all
+               ;; store references in the jars we disable compression
+               ;; with the "-0" option.
+               (command (if (file-exists? manifest)
+                            `("zip" "-0" "-X" ,jar ,manifest ,@files)
+                            `("zip" "-0" "-X" ,jar ,@files))))
+          (apply invoke command)))
+      (utime jar 0 0)
+      #t))
 
-  (every (match-lambda
-           ((output . directory)
-            (every repack-archive (find-files directory "\\.jar$"))))
-         outputs))
+  (for-each (match-lambda
+              ((output . directory)
+               (for-each repack-archive (find-files directory "\\.jar$"))))
+            outputs)
+  #t)
 
 (define* (check #:key target (make-flags '()) (tests? (not target))
                 (test-target "check")
                 #:allow-other-keys)
   (if tests?
-      (zero? (apply system* `("ant" ,test-target ,@make-flags)))
-      (begin
-        (format #t "test suite not run~%")
-        #t)))
+      (apply invoke `("ant" ,test-target ,@make-flags))
+      (format #t "test suite not run~%"))
+  #t)
 
 (define* (install #:key (make-flags '()) #:allow-other-keys)
-  (zero? (apply system* `("ant" "install" ,@make-flags))))
+  (apply invoke `("ant" "install" ,@make-flags)))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
