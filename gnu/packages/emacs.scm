@@ -11291,3 +11291,34 @@ file.")
        "@code{wgrep-helm} allows you to edit a @code{helm-grep-mode} buffer and
 apply those changes to the file buffer.")
       (license license:gpl3+))))
+
+(define-public emacs-mu4e-conversation
+  (let ((commit "b60d6bd27d7220c3dd041ff2a090e29f2166a319"))
+    (package
+      (name "emacs-mu4e-conversation")
+      (version (git-version "20180615" "1" commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://gitlab.com/Ambrevar/mu4e-conversation/"
+               "repository/archive.tar.gz?ref="
+               commit))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0x8kmi0rmbaaxn5zicm1f9yb8ynxi8074hi2n0rvymlfpxbpn0ma"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("mu" ,mu)))
+      (home-page
+       "https://gitlab.com/Ambrevar/mu4e-conversation")
+      (synopsis
+       "Show a complete thread in a single buffer")
+      (description
+       "This package offers an alternate view to mu4e e-mail display.  It
+shows all e-mails of a thread in a single view, where each correspondant has
+their own face.  Threads can be displayed linearly (in which case e-mails are
+displayed in chronological order) or as an Org document where the node tree
+maps the thread tree.")
+      (license license:gpl3+))))
