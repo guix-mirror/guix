@@ -10893,20 +10893,20 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
       (license license:gpl3+))))
 
 (define-public emacs-gif-screencast
-  (let ((commit "825e606950ec842304bf75cf85baef707b853b03"))
+  (let ((commit "12b25442b97b84abae74ecb5190a9d14ff7cfe5a"))
     (package
       (name "emacs-gif-screencast")
-      (version (git-version "20180309" "1" commit))
+      (version (git-version "20180616" "1" commit))
       (source
        (origin
          (method url-fetch)
          (uri (string-append
-               "https://github.com/Ambrevar/emacs-gif-screencast/archive/"
-               commit
-               ".tar.gz"))
+               "https://gitlab.com/Ambrevar/emacs-gif-screencast/"
+               "repository/archive.tar.gz?ref="
+               commit))
          (sha256
           (base32
-           "1f83sdx4qj4g6byvbdq7aayissbcy5lqm43djp8h0lq455nf7jkc"))))
+           "0lc457i78xjkn5idr2aaiadkh76zcsksj84z0qh80a9y775syrgh"))))
       (build-system emacs-build-system)
       (inputs
        `(("scrot" ,scrot)
@@ -10933,7 +10933,7 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
                  ("gif-screencast-optimize-program"
                   (string-append imagemagick "/bin/gifsicle")))))))))
       (home-page
-       "https://github.com/Ambrevar/emacs-gif-screencast")
+       "https://gitlab.com/Ambrevar/emacs-gif-screencast")
       (synopsis "One-frame-per-action GIF recording")
       (description
        "Call @code{gif-screencast} to start a recording.
