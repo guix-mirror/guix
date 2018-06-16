@@ -823,41 +823,36 @@ by bandwidth they use.")
 (define-public clusterssh
   (package
     (name "clusterssh")
-    (version "3.28")
+    (version "4.13.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/clusterssh/"
-                                  "1.%20ClusterSSH%20Series%203/" version
-                                  "/clusterssh-" version ".tar.gz"))
+                                  "2.%20ClusterSSH%20Series%204/"
+                                  "App-ClusterSSH-v" version ".tar.gz"))
               (sha256
                (base32
-                "1bwggpvaj2al5blg1ynapviv2kpydffpzq2zkhi81najnvzc1rr7"))))
-    (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))
-    (propagated-inputs `(("xterm" ,xterm)
-                         ("perl-tk" ,perl-tk)
-                         ("perl-x11-protocol" ,perl-x11-protocol)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'set-load-paths
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Put the perl-tk and perl-x11-protocol modules in the perl inc
-             ;; path for PROG
-             (let* ((out  (assoc-ref outputs "out"))
-                    (prog (string-append out "/bin/cssh"))
-                    (perl-ver ,(package-version perl))
-                    (x11-inc (string-append
-                              (assoc-ref inputs "perl-x11-protocol")
-                              "/lib/perl5/site_perl/" perl-ver))
-                    (tk-inc (string-append
-                             (assoc-ref inputs "perl-tk")
-                             "/lib/perl5/site_perl/" perl-ver
-                             "/x86_64-linux")))
-               (wrap-program
-                   prog
-                 `("PERL5LIB" ":" prefix (,x11-inc ,tk-inc))))
-             #t)))))
+                "0rmk2p3f2wz1h092anidjclh212rv3gxyk0c641qk3frlrjnw6mp"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-cpan-changes" ,perl-cpan-changes)
+       ("perl-file-slurp" ,perl-file-slurp)
+       ("perl-file-which" ,perl-file-which)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-readonly" ,perl-readonly)
+       ("perl-test-differences" ,perl-test-differences)
+       ("perl-test-distmanifest" ,perl-test-distmanifest)
+       ("perl-test-perltidy" ,perl-test-perltidy)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-test-trap" ,perl-test-trap)
+       ("perltidy" ,perltidy)))
+    (propagated-inputs
+     `(("xterm" ,xterm)
+       ("perl-exception-class" ,perl-exception-class)
+       ("perl-tk" ,perl-tk)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-x11-protocol" ,perl-x11-protocol)
+       ("perl-x11-protocol-other" ,perl-x11-protocol-other)))
     ;; The clusterssh.sourceforge.net address requires login to view
     (home-page "https://sourceforge.net/projects/clusterssh/")
     (synopsis "Secure concurrent multi-server terminal control")
