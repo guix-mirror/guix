@@ -9530,6 +9530,38 @@ File::Find replacement in Perl.")
 interface to File::Find::Object.")
   (license (package-license perl))))
 
+(define-public perl-file-finder
+  (package
+    (name "perl-file-finder")
+    (version "0.53")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/ME/MERLYN/File-Finder-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0x3a2xgzrka73lcmmwalq2mmpzxa7s6pm01ahxf677ksqsdc3jrf"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-text-glob" ,perl-text-glob)))
+    (home-page "http://search.cpan.org/dist/File-Finder/")
+    (synopsis "Wrapper for @code{File::Find} ala @code{find(1)}")
+    (description
+     "@code{File::Find} is great, but constructing the wanted routine can
+sometimes be a pain.  @code{File::Finder} provides a wanted-writer, using
+syntax that is directly mappable to the @code{find(1)} command's syntax.
+
+A @code{File::Finder} object contains a hash of @code{File::Find} options, and
+a series of steps that mimic find's predicates.  Initially, a
+@code{File::Finder} object has no steps.  Each step method clones the previous
+object's options and steps, and then adds the new step, returning the new
+object.  In this manner, an object can be grown, step by step, by chaining
+method calls.  Furthermore, a partial sequence can be created and held, and
+used as the head of many different sequences.")
+    (license perl-license)))
+
 (define-public perl-font-ttf
   (package
     (name "perl-font-ttf")
