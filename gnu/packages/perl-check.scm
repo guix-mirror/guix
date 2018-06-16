@@ -1165,6 +1165,32 @@ a minimum of effort.")
     ;; "Under the same license as Perl itself"
     (license perl-license)))
 
+(define-public perl-test-perltidy
+  (package
+    (name "perl-test-perltidy")
+    (version "20130104")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LA/LARRYL/Test-PerlTidy-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1j5rsb4km9rzcbd1ljavj8vm42bmilji40v2jj2k87l1ykrxj59z"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-finder" ,perl-file-finder)
+       ("perl-file-slurp" ,perl-file-slurp)
+       ("perltidy" ,perltidy)
+       ("perl-text-diff" ,perl-text-diff)))
+    (home-page "http://search.cpan.org/dist/Test-PerlTidy/")
+    (synopsis "Check that all your Perl files are tidy")
+    (description
+     "Using @code{Test::PerlTidy}, any file ending in .pl, .pm, .t or .PL will
+cause a test fail unless it is exactly as @code{perltidy} would like it to be.")
+    (license perl-license)))
+
 (define-public perl-test-trap
   (package
     (name "perl-test-trap")
