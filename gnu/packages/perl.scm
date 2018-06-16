@@ -5237,6 +5237,36 @@ strictly correct manner with ExtUtils::MakeMaker, and will run on any Perl
 installation version 5.005 or newer.")
     (license (package-license perl))))
 
+(define-public perl-module-manifest
+  (package
+    (name "perl-module-manifest")
+    (version "1.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/E/ET/ETHER/Module-Manifest-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "16skpm804a19gsgxzn1wba3lmvc7cx5q8ly4srpyd82yy47zi5d3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-params-util" ,perl-params-util)))
+    (home-page "http://search.cpan.org/dist/Module-Manifest/")
+    (synopsis "Parse and examine a Perl distribution @file{MANIFEST} file")
+    (description
+     "@code{Module::Manifest} is a simple utility module created originally for
+use in @code{Module::Inspector}.
+
+It can load a @file{MANIFEST} file that comes in a Perl distribution tarball,
+examine the contents, and perform some simple tasks.  It can also load the
+@file{MANIFEST.SKIP} file and check that.")
+    (license perl-license)))
+
 (define-public perl-module-pluggable
   (package
     (name "perl-module-pluggable")
