@@ -1704,7 +1704,9 @@ new Date();"))
                (base32
                 "1k28mka0m3isy9yr8gz84kz1f3f879rwaxrd44vdn9xbfwvwk86n"))))
     (native-inputs
-     `(("jdk" ,icedtea-7 "jdk")))))
+     `(("jdk" ,icedtea-7 "jdk")
+       ("zip" ,zip)
+       ("unzip" ,unzip)))))
 
 (define-public ant-apache-bcel
   (package
