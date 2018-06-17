@@ -1687,7 +1687,9 @@ new Date();"))
                                (string-append "-Ddist.dir="
                                               (assoc-ref outputs "out"))))))))))
     (native-inputs
-     `(("jdk" ,icedtea-8 "jdk")))))
+     `(("jdk" ,icedtea-8 "jdk")
+       ("zip" ,zip)
+       ("unzip" ,unzip)))))
 
 ;; The 1.9.x series is the last that can be built with GCJ.  The 1.10.x series
 ;; requires Java 8.
