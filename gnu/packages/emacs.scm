@@ -10734,30 +10734,8 @@ describing the key binding changes.")
       (license license:gpl3+))))
 
 (define-public emacs-evil-mu4e
-  (package
-    (name "emacs-evil-mu4e")
-    (version "0.0.8")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/JorisE/evil-mu4e/archive/"
-             "c03a0e11afda3092eb1461be09fa6a61ebc0e4f6"
-             ".tar.gz"))
-       (sha256
-        (base32
-         "1k3z5h04bqslrkq13paqf8pv9r0rf0zjl0zbb57ly043ds3nvxr2"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-evil" ,emacs-evil)
-       ("mu" ,mu)))
-    (home-page "https://github.com/JorisE/evil-mu4e")
-    (synopsis "Evil-based key bindings for mu4e")
-    (description
-     "Use keybindings for the mu4e mail reader in Emacs that make sense for
-Evil users.")
-    (license license:gpl3+)))
+  ;; Evil-mu4e is included in Evil Collection from 20180617.
+  (deprecated-package "emacs-evil-mu4e" emacs-evil-collection))
 
 (define-public emacs-evil-multiedit
   (let ((commit "ea3d9177b74ab0bc65e55df9cc0a0b42e4ef815d"))
