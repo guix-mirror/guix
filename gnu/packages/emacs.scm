@@ -1430,11 +1430,11 @@ Maps directly inside Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-graphviz-dot-mode
-  (let ((commit "fdaabbcc95d9156e3dadc84f81a4750c5b692580")
+  (let ((commit "c456a2b65c734089e6c44e87209a5a432a741b1a")
         (revision "1"))
     (package
       (name "emacs-graphviz-dot-mode")
-      (version (string-append "0.3.10-" revision "."
+      (version (string-append "0.3.11-" revision "."
                               (string-take commit 7)))
       (source (origin
                 (method git-fetch)
@@ -1444,7 +1444,7 @@ Maps directly inside Emacs.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1s1qh5r0xp6hs0rl5yz5mkmjhpg04bh449c7vgjbb1pjsl1dl714"))))
+                  "0j1r2rspaakw37b0mx7pwpvdsvixq9sw3xjbww5piihzpdxz58z1"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
