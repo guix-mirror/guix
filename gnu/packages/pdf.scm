@@ -456,6 +456,8 @@ using the DjVuLibre library.")
               (uri
                (string-append "https://pwmt.org/projects/zathura-pdf-mupdf"
                               "/download/zathura-pdf-mupdf-" version ".tar.xz"))
+              (patches
+               (search-patches "zathura-pdf-mupdf-link-to-jpeg-libraries.patch"))
               (sha256
                (base32
                 "1zbdqimav4wfgimpy3nfzl10qj7vyv23rdy2z5z7z93jwbp2rc2j"))))
