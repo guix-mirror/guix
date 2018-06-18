@@ -63,17 +63,16 @@
     %guix-home-page-url))
 
 (define %config-variables
-  ;; (guix config) variables corresponding to Guix configuration (storedir,
-  ;; localstatedir, etc.)
-  (sort (filter pair?
-                (module-map (lambda (name var)
-                              (and (not (memq name %dependency-variables))
-                                   (not (memq name %persona-variables))
-                                   (cons name (variable-ref var))))
-                            (resolve-interface '(guix config))))
-        (lambda (name+value1 name+value2)
-          (string<? (symbol->string (car name+value1))
-                    (symbol->string (car name+value2))))))
+  ;; (guix config) variables corresponding to Guix configuration.
+  (letrec-syntax ((variables (syntax-rules ()
+                               ((_)
+                                '())
+                               ((_ variable rest ...)
+                                (cons `(variable . ,variable)
+                                      (variables rest ...))))))
+    (variables %config-directory %localstatedir %state-directory
+               %store-database-directory %store-directory
+               %storedir %sysconfdir %system)))
 
 (define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
                           (package-name "GNU Guix")

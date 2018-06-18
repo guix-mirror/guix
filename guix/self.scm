@@ -26,9 +26,8 @@
   #:use-module (guix discovery)
   #:use-module (guix packages)
   #:use-module (guix sets)
-  #:use-module (guix utils)
   #:use-module (guix modules)
-  #:use-module (guix build utils)
+  #:use-module ((guix build utils) #:select (find-files))
   #:use-module ((guix build compile) #:select (%lightweight-optimizations))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -666,17 +665,16 @@ assumed to be part of MODULES."
     %guix-home-page-url))
 
 (define %config-variables
-  ;; (guix config) variables corresponding to Guix configuration (storedir,
-  ;; localstatedir, etc.)
-  (sort (filter pair?
-                (module-map (lambda (name var)
-                              (and (not (memq name %dependency-variables))
-                                   (not (memq name %persona-variables))
-                                   (cons name (variable-ref var))))
-                            (resolve-interface '(guix config))))
-        (lambda (name+value1 name+value2)
-          (string<? (symbol->string (car name+value1))
-                    (symbol->string (car name+value2))))))
+  ;; (guix config) variables corresponding to Guix configuration.
+  (letrec-syntax ((variables (syntax-rules ()
+                               ((_)
+                                '())
+                               ((_ variable rest ...)
+                                (cons `(variable . ,variable)
+                                      (variables rest ...))))))
+    (variables %config-directory %localstatedir %state-directory
+               %store-database-directory %store-directory
+               %storedir %sysconfdir %system)))
 
 (define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
                           (package-name "GNU Guix")
