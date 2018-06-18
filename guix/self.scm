@@ -672,9 +672,7 @@ assumed to be part of MODULES."
                                ((_ variable rest ...)
                                 (cons `(variable . ,variable)
                                       (variables rest ...))))))
-    (variables %config-directory %localstatedir %state-directory
-               %store-database-directory %store-directory
-               %storedir %sysconfdir %system)))
+    (variables %localstatedir %storedir %sysconfdir %system)))
 
 (define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
                           (package-name "GNU Guix")
@@ -692,6 +690,10 @@ assumed to be part of MODULES."
                                %guix-version
                                %guix-bug-report-address
                                %guix-home-page-url
+                               %store-directory
+                               %state-directory
+                               %store-database-directory
+                               %config-directory
                                %libgcrypt
                                %libz
                                %gzip
@@ -702,6 +704,26 @@ assumed to be part of MODULES."
                              ((name . value)
                               #~(define-public #$name #$value)))
                            %config-variables)
+
+                   (define %store-directory
+                     (or (and=> (getenv "NIX_STORE_DIR") canonicalize-path)
+                         %storedir))
+
+                   (define %state-directory
+                     ;; This must match `NIX_STATE_DIR' as defined in
+                     ;; `nix/local.mk'.
+                     (or (getenv "NIX_STATE_DIR")
+                         (string-append %localstatedir "/guix")))
+
+                   (define %store-database-directory
+                     (or (getenv "NIX_DB_DIR")
+                         (string-append %state-directory "/db")))
+
+                   (define %config-directory
+                     ;; This must match `GUIX_CONFIGURATION_DIRECTORY' as
+                     ;; defined in `nix/local.mk'.
+                     (or (getenv "GUIX_CONFIGURATION_DIRECTORY")
+                         (string-append %sysconfdir "/guix")))
 
                    (define %guix-package-name #$package-name)
                    (define %guix-version #$package-version)
