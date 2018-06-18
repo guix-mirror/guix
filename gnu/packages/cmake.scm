@@ -44,7 +44,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.11.3")
+    (version "3.11.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cmake.org/files/v"
@@ -52,7 +52,7 @@
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "16n310smy3h4q3i7l1hcv0hlrwdvh082f1r7s36c3zxppsv3aw98"))
+                "1xc7zwmyfa7hdarwb4hmfhhs7i5bv9q6499y93hy6zcig2glx1lg"))
               (modules '((guix build utils)))
               (snippet
                '(begin
