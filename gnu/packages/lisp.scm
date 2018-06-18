@@ -944,18 +944,19 @@ from other CLXes around the net.")
 (define-public sbcl-stumpwm
   (package
     (name "sbcl-stumpwm")
-    (version "1.0.0")
+    (version "18.05")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/stumpwm/stumpwm/archive/"
                     version ".tar.gz"))
               (sha256
-               (base32 "1maxp98gh64az3d9vz9br6zdd6rc9fmj2imvax4by85g6kxvdz1i"))
+               (base32 "1n2gaab3lwgf5r1hmwdcw13dkv9xdd7drn2shx28kfxvhdc9kbb9"))
               (file-name (string-append "stumpwm-" version ".tar.gz"))))
     (build-system asdf-build-system/sbcl)
     (inputs `(("cl-ppcre" ,sbcl-cl-ppcre)
-              ("clx" ,sbcl-clx)))
+              ("clx" ,sbcl-clx)
+              ("alexandria" ,sbcl-alexandria)))
     (outputs '("out" "lib"))
     (arguments
      '(#:phases
