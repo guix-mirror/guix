@@ -48,7 +48,8 @@ Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
-Copyright @copyright{} 2018 Pierre-Antoine Rouby
+Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
+Copyright @copyright{} 2018 Gábor Boskovits@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -15649,6 +15650,39 @@ Specify the path of the base URL.  This can be useful if
 @end table
 @end deftp
 
+@subsubheading Prometheus Node Exporter Service
+
+@cindex prometheus-node-exporter
+The Prometheus ``node exporter'' makes hardware and operating system statistics
+provided by the Linux kernel available for the Prometheus monitoring system. 
+This service should be deployed on all physical nodes and virtual machines,
+where monitoring these statistics is desirable. 
+
+@defvr {Scheme variable} prometheus-node-exporter-service-type
+This is the service type for the
+@uref{https://github.com/prometheus/node_exporter/, prometheus-node-exporter}
+service, its value must be a @code{prometheus-node-exporter-configuration}
+record as in this example:
+
+@example
+(service prometheus-node-exporter-service-type
+         (prometheus-node-exporter-configuration
+           (web-listen-address ":9100")))
+@end example
+@end defvar
+
+@deftp {Data Type} prometheus-node-exporter-configuration
+Data type representing the configuration of @command{node_exporter}.
+
+@table @asis
+@item @code{package} (default: @code{go-github-com-prometheus-node-exporter})
+The prometheus-node-exporter package to use.
+
+@item @code{web-listen-address} (default: @code{":9100"})
+Bind the web interface to the specified address.
+
+@end table
+@end deftp
 
 @node Kerberos Services
 @subsubsection Kerberos Services
