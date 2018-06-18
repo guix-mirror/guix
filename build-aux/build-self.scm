@@ -71,7 +71,9 @@
                                 (cons `(variable . ,variable)
                                       (variables rest ...))))))
     (variables %config-directory %localstatedir %state-directory
-               %store-database-directory %store-directory
+               ;; Note: No '%store-database-directory', which is too recent
+               ;; and unnecessary anyway.
+               %store-directory
                %storedir %sysconfdir %system)))
 
 (define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
