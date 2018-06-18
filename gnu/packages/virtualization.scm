@@ -98,6 +98,7 @@
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
+             (patches (search-patches "qemu-CVE-2018-11806.patch"))
              (sha256
               (base32
                "1z66spkm1prvhbq7h5mfnp0i6mmamsb938fqmdfvyrgzc7rh34z6"))))
