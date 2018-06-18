@@ -7140,7 +7140,7 @@ photo-booth-like software, such as Cheese.")
 (define-public cheese
   (package
     (name "cheese")
-    (version "3.26.0")
+    (version "3.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -7148,7 +7148,7 @@ photo-booth-like software, such as Cheese.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "01f6lsp9jkhq5v2zxlghw15bca4xqavkxqkl8977r0g13p22zxcf"))))
+                "06da5qc5hdvwwd5vkbgbx8pjx1l3mvr07yrnnv3v1hfc3wp7l7jw"))))
     (arguments
      ;; Tests require GDK.
      `(#:tests? #f

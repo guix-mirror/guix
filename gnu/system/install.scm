@@ -54,7 +54,8 @@
             novena-installation-os
             pine64-plus-installation-os
             rk3399-puma-installation-os
-            wandboard-installation-os))
+            wandboard-installation-os
+            os-with-u-boot))
 
 ;;; Commentary:
 ;;;
@@ -385,6 +386,19 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                      bash-completion
                      nvi                          ;:wq!
                      %base-packages))))
+
+(define* (os-with-u-boot os board #:key (bootloader-target "/dev/mmcblk0")
+                         (triplet "arm-linux-gnueabihf"))
+  "Given OS, amend it with the u-boot bootloader for BOARD,
+installed to BOOTLOADER-TARGET (a drive), compiled for TRIPLET.
+
+If you want a serial console, make sure to specify one in your
+operating-system's kernel-arguments (\"console=ttyS0\" or similar)."
+  (operating-system (inherit os)
+    (bootloader (bootloader-configuration
+                 (bootloader (bootloader (inherit u-boot-bootloader)
+                              (package (make-u-boot-package board triplet))))
+                 (target bootloader-target)))))
 
 (define* (embedded-installation-os bootloader bootloader-target tty
                                    #:key (extra-modules '()))

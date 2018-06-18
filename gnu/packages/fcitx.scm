@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,14 +36,14 @@
 (define-public fcitx
   (package
     (name "fcitx")
-    (version "4.2.8.6")
+    (version "4.2.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.fcitx-im.org/fcitx/"
                                   name "-" version "_dict.tar.xz"))
               (sha256
                (base32
-                "15ymd42kg920ri0f8fymq3i68g8k1kgpmdlnk9jf5fvnz6g4w0wi"))))
+                "0hyrh3v82a32ylnlvzrp6cmq56x4p1a42q5xc6njmmj2msxm34x5"))))
     (build-system cmake-build-system)
     (outputs '("out" "gtk2" "gtk3"))
     (arguments
@@ -65,7 +66,12 @@
              "-DENABLE_QT_IM_MODULE=OFF")))
     (native-inputs
      `(("doxygen"    ,doxygen)
-       ("glib:bin"   ,glib "bin")    ; for glib-genmarshal
+       ("extra-cmake-modules"
+        ;; XXX: We can't simply #:use-module due to a cycle somewhere.
+        ,(module-ref
+          (resolve-interface '(gnu packages kde-frameworks))
+          'extra-cmake-modules))
+       ("glib:bin"   ,glib "bin")       ; for glib-genmarshal
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("dbus"             ,dbus)
@@ -78,7 +84,7 @@
        ("libxkbfile"       ,libxkbfile)
        ("libxml2"          ,libxml2)
        ("xkeyboard-config" ,xkeyboard-config)))
-    (home-page "http://fcitx-im.org")
+    (home-page "https://fcitx-im.org")
     (synopsis "Input method framework")
     (description
      "Fcitx is an input method framework with extension support.  It has
@@ -89,14 +95,14 @@ built-in.")
 (define-public fcitx-configtool
   (package
    (name "fcitx-configtool")
-   (version "0.4.8")
+   (version "0.4.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://download.fcitx-im.org/fcitx-configtool/"
                   name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1vaim0namw58bfafbvws1vgd4010p19zwqfbx6bd1zi5sgchdg0f"))))
+              "1yyi9jhkwn49lx9a47k1zbvwgazv4y4z72gnqgzdpgdzfrlrgi5w"))))
    (build-system cmake-build-system)
    (arguments
     `(#:configure-flags

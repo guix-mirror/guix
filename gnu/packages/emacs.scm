@@ -436,7 +436,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.12.1")
+    (version "2.13.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -444,7 +444,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1czzknmhzbggcv3bxl5amvfpp0zrkdwl1x05qarsq6qakvc85xy3"))))
+               "1ygaah3dd3nxpyd17297xgvdcgr7pgzzwlmpnmchki0kiwgg3sbc"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
@@ -3014,6 +3014,33 @@ This provides a basic API and common UI widgets such as popup tooltips
 and popup menus.")
     (license license:gpl3+)))
 
+(define-public emacs-puppet-mode
+  (let ((commit "b3ed5057166a4f49dfa9be638523a348b55a2fd2")
+        (revision "1"))
+    (package
+      (name "emacs-puppet-mode")
+      ;; The last release, 0.3 was several years ago, and there have been many
+      ;; commits since
+      (version (git-version "0.3" revision commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://raw.githubusercontent.com/voxpupuli/puppet-mode/"
+               commit "/puppet-mode.el"))
+         (sha256
+          (base32
+           "1indycxawsl0p2aqqg754f6735q3cmah9vd886rpn0ncc3ipi1xm"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/voxpupuli/puppet-mode")
+      (synopsis "Emacs major mode for the Puppet configuration language")
+      (description
+       "This package provides support for the Puppet configuration language,
+including syntax highlighting, indentation of expressions and statements,
+linting of manifests and integration with Puppet Debugger.")
+      ;; Also incorporates work covered by the Apache License, Version 2.0
+      (license license:gpl3+))))
+
 (define-public emacs-god-mode
   (let ((commit "6cf0807b6555eb6fcf8387a4e3b667071ef38964")
         (revision "1"))
@@ -4797,7 +4824,7 @@ distribution, primarily targeting Clojure users")
 (define-public emacs-orgalist
   (package
     (name "emacs-orgalist")
-    (version "1.7")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
@@ -4805,7 +4832,7 @@ distribution, primarily targeting Clojure users")
                            "orgalist-" version ".el"))
        (sha256
         (base32
-         "13dl0l727vlny3y88gqpngcy90ly5r719s1pbmkva5gmcryb68xr"))))
+         "1wqwnmn08i0qkxm8b2iclvf6cydcn68h1p3h7r1kig2bdn5b8948"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/orgalist.html")
     (synopsis "Manage Org-like lists in non-Org buffers")
@@ -5609,7 +5636,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "47.0")
+    (version "48.0")
     (source
      (origin
        (method url-fetch)
@@ -5618,7 +5645,7 @@ highlights quasi-quoted expressions.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "0xbcc266x752y68s3g096m161irzvsqym3axzqn8rb276a8x55n7"))))
+         "07imi3hji06b3r7v7v59978q76s8a7ynmxwfc9j03pgnv965lpjy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -5626,30 +5653,35 @@ highlights quasi-quoted expressions.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _
-             ;; Configure Emacspeak according to etc/install.org.
-             (setenv "SHELL" (which "sh"))
-             (zero? (system* "make" "config"))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lisp (string-append out
+                                         "/share/emacs/site-lisp/emacspeak")))
+               (setenv "SHELL" (which "sh"))
+               ;; Configure Emacspeak according to etc/install.org.
+               (invoke "make" "config"))))
          (add-after 'build 'build-espeak
            (lambda _
-             (zero? (system* "make" "espeak"))))
+             (invoke "make" "espeak")))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (lisp (string-append out "/share/emacs/site-lisp/emacspeak"))
-                    (info (string-append out "/share/info")))
+                    (info (string-append out "/share/info"))
+                    (emacs (string-append (assoc-ref inputs "emacs")
+                                          "/bin/emacs")))
                ;; According to etc/install.org, the Emacspeak directory should
                ;; be copied to its installation destination.
                (for-each
                 (lambda (file)
                   (copy-recursively file (string-append lisp "/" file)))
-                '("etc" "info" "lisp" "media" "servers" "sounds" "stumpwm"
-                  "xsl"))
+                '("etc" "info" "js" "lisp" "media" "scapes" "servers" "sounds"
+                  "stumpwm" "xsl"))
                ;; Make sure emacspeak is loaded from the correct directory.
                (substitute* "etc/emacspeak.sh"
-                 (("exec emacs.*$")
-                  (string-append "exec emacs -l " lisp
+                 (("exec FLAVOR.*")
+                  (string-append "exec " emacs " -l " lisp
                                  "/lisp/emacspeak-setup.el $CL_ALL")))
                ;; Install the convenient startup script.
                (mkdir-p bin)
@@ -5668,10 +5700,11 @@ highlights quasi-quoted expressions.")
                #t))))
        #:tests? #f)) ; no check target
     (inputs
-     `(("espeak" ,espeak)
+     `(("emacs" ,emacs)
+       ("espeak" ,espeak)
+       ("perl" ,perl)
        ("tcl" ,tcl)
        ("tclx" ,tclx)))
-    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://emacspeak.sourceforge.net")
     (synopsis "Audio desktop interface for Emacs")
     (description
@@ -7917,7 +7950,7 @@ close, copy, cut, paste, undo, redo.")
 (define-public emacs-password-store
   (package
     (name "emacs-password-store")
-    (version "1.7.1")
+    (version "1.7.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -7925,7 +7958,7 @@ close, copy, cut, paste, undo, redo.")
                               "password-store-" version ".tar.xz"))
               (sha256
                (base32
-                "0scqkpll2q8jhzcgcsh9kqz0gwdpvynivqjmmbzax2irjfaiklpn"))))
+                "1sl0d7nc85c6c2bmmmyb8rpmn47vhkj831l153mjlkawjvhwas27"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -7940,6 +7973,7 @@ close, copy, cut, paste, undo, redo.")
     (propagated-inputs
      `(("emacs-f" ,emacs-f)
        ("emacs-s" ,emacs-s)
+       ("emacs-with-editor" ,emacs-with-editor)
        ("password-store" ,password-store)))
     (home-page "https://git.zx2c4.com/password-store/tree/contrib/emacs")
     (synopsis "Password store (pass) support for Emacs")
@@ -9934,11 +9968,11 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-racket-mode
-  (let ((commit "33877b1bb24faea68842e0396bd5718b84e47451")
+  (let ((commit "48f0cb99d3b2ca6066249546d2063d85437251c1")
         (revision "1"))
     (package
       (name "emacs-racket-mode")
-      (version (string-append "0.0.1" "-" revision "."
+      (version (string-append "0.0.2" "-" revision "."
                               (string-take commit 7)))
       (source
        (origin
@@ -9949,8 +9983,10 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0681mzwx08zwbh8qg3s26jw1jn4fw2ljp1akxqkhy08sxhafqvb1"))))
+           "0fxky8xj639bjhiab9way9daqda22301b7w85vm4b4ydgjgnc59x"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:include '("\\.el$" "\\.rkt$")))
       (propagated-inputs
        `(("emacs-faceup" ,emacs-faceup)
          ("emacs-s" ,emacs-s)))
@@ -10807,26 +10843,39 @@ Org-mode.  It features:
       (license license:gpl3+))))
 
 (define-public emacs-fish-completion
-  (package
-    (name "emacs-fish-completion")
-    (version "20180329")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/Ambrevar/emacs-fish-completion/archive/"
-             "3e3ed1f19fa778b7c35ad88e033dce5a6b1fc153"
-             ".tar.gz"))
-       (sha256
-        (base32
-         "16329py7fvid0bap1qhqxhdc68m9qqy1p8gc2bhng81zhm5a5zsm"))))
-    (build-system emacs-build-system)
-    (propagated-inputs `(("fish" ,fish)))
-    (home-page
-     "https://github.com/Ambrevar/emacs-fish-completion")
-    (synopsis "Fish completion for Emacs pcomplete")
-    (description
-     "This package provides completion for the Fish shell to pcomplete (used
+  (let ((commit "bac15fda1392a891070574dfe5d2d50b10831e8b"))
+    (package
+      (name "emacs-fish-completion")
+      (version (git-version "20180616" "1" commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://gitlab.com/Ambrevar/emacs-fish-completion/repository/"
+               "archive.tar.gz?ref="
+               commit))
+         (sha256
+          (base32
+           "093qzdrbkl7dhjk16zq8i13kh1phyigkblcfrbgbrxjqd2ndrfdi"))))
+      (build-system emacs-build-system)
+      (inputs `(("fish" ,fish)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((fish (assoc-ref inputs "fish")))
+                 ;; Specify the absolute file names of the various
+                 ;; programs so that everything works out-of-the-box.
+                 (emacs-substitute-variables
+                     "fish-completion.el"
+                   ("fish-completion-command"
+                    (string-append fish "/bin/fish")))))))))
+      (home-page
+       "https://gitlab.com/Ambrevar/emacs-fish-completion")
+      (synopsis "Fish completion for Emacs pcomplete")
+      (description
+       "This package provides completion for the Fish shell to pcomplete (used
 by shell and Eshell).  You can set it up globally with:
 
 @example
@@ -10841,7 +10890,7 @@ shell/Eshell mode hook.
 The package @code{emacs-bash-completion} is an optional dependency: if available,
 @code{fish-completion-complete} can be configured to fall back on bash to further
 try completing.  See @code{fish-completion-fallback-on-bash-p}.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-gif-screencast
   (let ((commit "825e606950ec842304bf75cf85baef707b853b03"))

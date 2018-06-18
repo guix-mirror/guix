@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -170,6 +171,8 @@
               (inherit (package-source perl))
               (uri (string-append "mirror://cpan/src/5.0/perl-"
                                   version ".tar.gz"))
+              (patches (append (origin-patches (package-source perl))
+                               (search-patches "perl-archive-tar-CVE-2018-12015.patch")))
               (sha256
                (base32
                 "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))))))
@@ -1520,6 +1523,27 @@ the caller.")
 mail, as short-lined, 7-bit, semi-compressed data streams.  Ths module
 provides a means of converting those data streams back into into binary
 data.")
+    (license perl-license)))
+
+(define-public perl-cpan-changes
+  (package
+    (name "perl-cpan-changes")
+    (version "0.400002")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/H/HA/HAARG/CPAN-Changes-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "13dy78amkhwg278sv5im0ylyskhxpfivyl2aissqqih71nlxxvh1"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/CPAN-Changes/")
+    (synopsis "Read and write @file{Changes} files")
+    (description
+     "@code{CPAN::Changes} helps users programmatically read and write
+@file{Changes} files that conform to a common specification.")
     (license perl-license)))
 
 (define-public perl-cpan-meta-check
@@ -5213,6 +5237,36 @@ strictly correct manner with ExtUtils::MakeMaker, and will run on any Perl
 installation version 5.005 or newer.")
     (license (package-license perl))))
 
+(define-public perl-module-manifest
+  (package
+    (name "perl-module-manifest")
+    (version "1.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/E/ET/ETHER/Module-Manifest-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "16skpm804a19gsgxzn1wba3lmvc7cx5q8ly4srpyd82yy47zi5d3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-params-util" ,perl-params-util)))
+    (home-page "http://search.cpan.org/dist/Module-Manifest/")
+    (synopsis "Parse and examine a Perl distribution @file{MANIFEST} file")
+    (description
+     "@code{Module::Manifest} is a simple utility module created originally for
+use in @code{Module::Inspector}.
+
+It can load a @file{MANIFEST} file that comes in a Perl distribution tarball,
+examine the contents, and perform some simple tasks.  It can also load the
+@file{MANIFEST.SKIP} file and check that.")
+    (license perl-license)))
+
 (define-public perl-module-pluggable
   (package
     (name "perl-module-pluggable")
@@ -8461,14 +8515,14 @@ as exceptions to standard program flow.")
 (define-public perltidy
   (package
     (name "perltidy")
-    (version "20160302")
+    (version "20180220")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/perltidy/" version
                                   "/Perl-Tidy-" version ".tar.gz"))
               (sha256
                (base32
-                "19yw63yh5s3pq7k3nkw6nsamg5b8vvwyhgbizslgxg0mqgc4xl3d"))))
+                "0w1k5ffcrpx0fm9jgprrwy0290k6cmy7dyk83s61063migi3r5z9"))))
     (build-system perl-build-system)
     (home-page "http://perltidy.sourceforge.net/")
     (synopsis "Perl script tidier")
@@ -9475,6 +9529,38 @@ File::Find replacement in Perl.")
   (description "File::Find::Object::Rule is an alternative Perl
 interface to File::Find::Object.")
   (license (package-license perl))))
+
+(define-public perl-file-finder
+  (package
+    (name "perl-file-finder")
+    (version "0.53")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/ME/MERLYN/File-Finder-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0x3a2xgzrka73lcmmwalq2mmpzxa7s6pm01ahxf677ksqsdc3jrf"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-text-glob" ,perl-text-glob)))
+    (home-page "http://search.cpan.org/dist/File-Finder/")
+    (synopsis "Wrapper for @code{File::Find} ala @code{find(1)}")
+    (description
+     "@code{File::Find} is great, but constructing the wanted routine can
+sometimes be a pain.  @code{File::Finder} provides a wanted-writer, using
+syntax that is directly mappable to the @code{find(1)} command's syntax.
+
+A @code{File::Finder} object contains a hash of @code{File::Find} options, and
+a series of steps that mimic find's predicates.  Initially, a
+@code{File::Finder} object has no steps.  Each step method clones the previous
+object's options and steps, and then adds the new step, returning the new
+object.  In this manner, an object can be grown, step by step, by chaining
+method calls.  Furthermore, a partial sequence can be created and held, and
+used as the head of many different sequences.")
+    (license perl-license)))
 
 (define-public perl-font-ttf
   (package

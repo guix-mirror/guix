@@ -47,14 +47,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.3.3.6")
+    (version "0.3.3.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1drk2h8zd05xrfpx7xn77pcxz0hs4nrq6figw56qk5gkvgv5kg4r"))))
+               "036ybfvldj7yfci9ipjki8smpzyxdg8c5r12bghc9yxdqh9basza"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-gcc-hardening"

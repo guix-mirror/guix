@@ -835,13 +835,13 @@ see package vignette.  To quote Rene Magritte, \"Ceci n'est pas un pipe.\"")
 (define-public r-munsell
   (package
     (name "r-munsell")
-    (version "0.4.3")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "munsell" version))
        (sha256
-        (base32 "0jdxlbjslkzaqgp058da1cgm85qvqi09wpcgpvp4hvwnmy83qz1r"))))
+        (base32 "16g1fzisbpqb15yh3pqf3iia4csppva5dnv1z88x9dg263xskwyh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-colorspace" ,r-colorspace)))
@@ -960,14 +960,14 @@ solution for sending email, including attachments, from within R.")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "1z8yqnh3alq0xriz77vifgl27msf3av6maz07fld78m90ajb6y8r"))))
+         "1sgg4krw03qkz1n4dwiya0djggk7giwd0w21qlp0pfjqi0rxq6qx"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -1289,13 +1289,13 @@ There is also a Shiny app as a user interface in this package.")
 (define-public r-highr
   (package
     (name "r-highr")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "highr" version))
               (sha256
                (base32
-                "0n9v44dxdy5fhkdmpbpa2p78whyd9z3rhhy42ipdz5m5vsr55qa3"))))
+                "1dzknqk4x7iiiq1jkh9bqm5qcvs7mbqxbkn5955050payavabfya"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/highr")
     (synopsis "Syntax highlighting for R source code")
@@ -2603,14 +2603,14 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.9")
+    (version "1.10")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "0wq6kbhrkv3fhcy4hg5yyv9gdvf8gr4nsjwdifs4ih8lnn0dmdyb"))))
+            "0mh2f3k98w7pgz0ri34149s4kx5y0kfm27nwq64k0qwxd16hwd9r"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2622,6 +2622,7 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-mime" ,r-mime)
        ("r-rprojroot" ,r-rprojroot)
        ("r-stringr" ,r-stringr)
+       ("r-tinytex" ,r-tinytex)
        ("r-yaml" ,r-yaml)
        ;; rmarkdown works with the 2.x release of Pandoc, but with degraded
        ;; functionality.  For example, tabbed plots do not currently work with
@@ -4222,13 +4223,13 @@ mechanism.")
 (define-public r-zoo
   (package
     (name "r-zoo")
-    (version "1.8-1")
+    (version "1.8-2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "zoo" version))
               (sha256
                (base32
-                "16nc5jnpkf5j9vgq3pzssv7knj30mi055wj7q3sygz3l0d88hgfr"))))
+                "1lpwigxmi5sc23xrha4gcsccsm4yfsg0sa97y6vac3pg1lliblvx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))

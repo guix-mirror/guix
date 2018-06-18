@@ -24,10 +24,11 @@
   #:use-module (guix download)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bioinformatics)
   #:use-module (gnu packages cran)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages statistics)
-  #:use-module (gnu packages bioinformatics))
+  #:use-module (gnu packages graph)
+  #:use-module (gnu packages statistics))
 
 (define-public r-bsgenome-dmelanogaster-ucsc-dm6
   (package
@@ -59,6 +60,111 @@
      "This package provides full genome sequences for Drosophila
 melanogaster (Fly) as provided by UCSC (dm6) and stored in Biostrings
 objects.")
+    (license license:artistic2.0)))
+
+(define-public r-bsgenome-dmelanogaster-ucsc-dm3-masked
+  (package
+    (name "r-bsgenome-dmelanogaster-ucsc-dm3-masked")
+    (version "1.3.99")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Dmelanogaster.UCSC.dm3.masked_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1756csb09f1br9rj1l3f08qyh4hlymdbd0cfn8x3fq39dn45m5ap"))))
+    (properties
+     `((upstream-name . "BSgenome.Dmelanogaster.UCSC.dm3.masked")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-dmelanogaster-ucsc-dm3"
+        ,r-bsgenome-dmelanogaster-ucsc-dm3)))
+    (home-page "https://www.bioconductor.org/packages/BSgenome.Dmelanogaster.UCSC.dm3.masked/")
+    (synopsis "Full masked genome sequences for Fly")
+    (description
+     "This package provides full masked genome sequences for Drosophila
+melanogaster (Fly) as provided by UCSC (dm3, April 2006) and stored in
+Biostrings objects.  The sequences are the same as in
+BSgenome.Dmelanogaster.UCSC.dm3, except that each of them has the 4 following
+masks on top: (1) the mask of assembly gaps (AGAPS mask), (2) the mask of
+intra-contig ambiguities (AMB mask), (3) the mask of repeats from
+RepeatMasker (RM mask), and (4) the mask of repeats from Tandem Repeats
+Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by default.")
+    (license license:artistic2.0)))
+
+(define-public r-bsgenome-hsapiens-ucsc-hg19-masked
+  (package
+    (name "r-bsgenome-hsapiens-ucsc-hg19-masked")
+    (version "1.3.99")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Hsapiens.UCSC.hg19.masked_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0452pyah0kv1vsrsjbrqw4k2rm8lc2vc771dzib45gnnfz86qxrr"))))
+    (properties
+     `((upstream-name . "BSgenome.Hsapiens.UCSC.hg19.masked")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-hsapiens-ucsc-hg19"
+        ,r-bsgenome-hsapiens-ucsc-hg19)))
+    (home-page "https://bioconductor.org/packages/BSgenome.Hsapiens.UCSC.hg19.masked/")
+    (synopsis "Full masked genome sequences for Homo sapiens")
+    (description
+     "This package provides full genome sequences for Homo sapiens (Human) as
+provided by UCSC (hg19, Feb. 2009) and stored in Biostrings objects.  The
+sequences are the same as in BSgenome.Hsapiens.UCSC.hg19, except that each of
+them has the 4 following masks on top: (1) the mask of assembly gaps (AGAPS
+mask), (2) the mask of intra-contig ambiguities (AMB mask), (3) the mask of
+repeats from RepeatMasker (RM mask), and (4) the mask of repeats from Tandem
+Repeats Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by
+default.")
+    (license license:artistic2.0)))
+
+(define-public r-bsgenome-mmusculus-ucsc-mm9-masked
+  (package
+    (name "r-bsgenome-mmusculus-ucsc-mm9-masked")
+    (version "1.3.99")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "BSgenome.Mmusculus.UCSC.mm9.masked_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "00bpbm3havqcxr4g63zhllsbpd9q6svgihks7qp7x73nm4gvq7fn"))))
+    (properties
+     `((upstream-name . "BSgenome.Mmusculus.UCSC.mm9.masked")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome-mmusculus-ucsc-mm9"
+        ,r-bsgenome-mmusculus-ucsc-mm9)))
+    (home-page "http://bioconductor.org/packages/BSgenome.Mmusculus.UCSC.mm9.masked/")
+    (synopsis "Full masked genome sequences for Mouse")
+    (description
+     "This package provides full genome sequences for Mus musculus (Mouse) as
+provided by UCSC (mm9, Jul. 2007) and stored in Biostrings objects.  The
+sequences are the same as in BSgenome.Mmusculus.UCSC.mm9, except that each of
+them has the 4 following masks on top: (1) the mask of assembly gaps (AGAPS
+mask), (2) the mask of intra-contig ambiguities (AMB mask), (3) the mask of
+repeats from RepeatMasker (RM mask), and (4) the mask of repeats from Tandem
+Repeats Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by
+default."  )
     (license license:artistic2.0)))
 
 (define-public r-hpar
@@ -371,3 +477,201 @@ filtered to remove spurious regions in the genome.  Downstream steps of
 segmentation and calling are also implemented via packages DNAcopy and CGHcall,
 respectively.")
     (license license:gpl2+)))
+
+(define-public r-bayseq
+  (package
+    (name "r-bayseq")
+    (version "2.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "baySeq" version))
+       (sha256
+        (base32
+         "0hbmm01a8libara9mbxknpk0wzarwfngnfwlmhpww91a0cmy5klg"))))
+    (properties `((upstream-name . "baySeq")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-edger" ,r-edger)
+       ("r-genomicranges" ,r-genomicranges)))
+    (home-page "https://bioconductor.org/packages/baySeq/")
+    (synopsis "Bayesian analysis of differential expression patterns in count data")
+    (description
+     "This package identifies differential expression in high-throughput count
+data, such as that derived from next-generation sequencing machines,
+calculating estimated posterior likelihoods of differential expression (or
+more complex hypotheses) via empirical Bayesian methods.")
+    (license license:gpl3)))
+
+(define-public r-chipcomp
+  (package
+    (name "r-chipcomp")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ChIPComp" version))
+       (sha256
+        (base32
+         "0j9nif7z33qdxf347r9wa62hhz8qs09r2p96x3hg5yz30a10ahqs"))))
+    (properties `((upstream-name . "ChIPComp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-bsgenome-mmusculus-ucsc-mm9" ,r-bsgenome-mmusculus-ucsc-mm9)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-limma" ,r-limma)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/ChIPComp")
+    (synopsis "Quantitative comparison of multiple ChIP-seq datasets")
+    (description
+     "ChIPComp implements a statistical method for quantitative comparison of
+multiple ChIP-seq datasets.  It detects differentially bound sharp binding
+sites across multiple conditions considering matching control in ChIP-seq
+datasets.")
+    ;; Any version of the GPL.
+    (license license:gpl3+)))
+
+(define-public r-riboprofiling
+  (package
+    (name "r-riboprofiling")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "RiboProfiling" version))
+       (sha256
+        (base32
+         "04yjklqdjkim7yxyk3cyvf0mmwyxyfvw2mmfzgwaaqbiyg29sli0"))))
+    (properties `((upstream-name . "RiboProfiling")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-data-table" ,r-data-table)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggbio" ,r-ggbio)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-sqldf" ,r-sqldf)))
+    (home-page "https://bioconductor.org/packages/RiboProfiling/")
+    (synopsis "Ribosome profiling data analysis")
+    (description "Starting with a BAM file, this package provides the
+necessary functions for quality assessment, read start position recalibration,
+the counting of genomic sequence reads on CDS, 3'UTR, and 5'UTR, and plotting
+of count data: pairs, log fold-change, codon frequency and coverage
+assessment, principal component analysis on codon coverage.")
+    (license license:gpl3)))
+
+(define-public r-riboseqr
+  (package
+    (name "r-riboseqr")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "riboSeqR" version))
+       (sha256
+        (base32
+         "0xavd1cdhi8qfjn9a1hjhflyg6jq1ydvv56z12gjz572pwz2knvn"))))
+    (properties `((upstream-name . "riboSeqR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-bayseq" ,r-bayseq)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-seqlogo" ,r-seqlogo)))
+    (home-page "https://bioconductor.org/packages/riboSeqR/")
+    (synopsis "Analysis of sequencing data from ribosome profiling experiments")
+    (description
+     "This package provides plotting functions, frameshift detection and
+parsing of genetic sequencing data from ribosome profiling experiments.")
+    (license license:gpl3)))
+
+(define-public r-interactionset
+  (package
+    (name "r-interactionset")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "InteractionSet" version))
+       (sha256
+        (base32
+         "0xngraq7ic80jr98i1wqp8bxdgidq6py60m2wfk82n1ixpcdck8n"))))
+    (properties
+     `((upstream-name . "InteractionSet")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/InteractionSet")
+    (synopsis "Base classes for storing genomic interaction data")
+    (description
+     "This packages provides the @code{GInteractions},
+@code{InteractionSet} and @code{ContactMatrix} objects and associated methods
+for storing and manipulating genomic interaction data from Hi-C and ChIA-PET
+experiments.")
+    (license license:gpl3)))
+
+(define-public r-genomicinteractions
+  (package
+    (name "r-genomicinteractions")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GenomicInteractions" version))
+       (sha256
+        (base32
+         "0cnagprxj0b7p6s29iyhqwxj7hgmrh75gj52y4dlil790d1bmq2q"))))
+    (properties
+     `((upstream-name . "GenomicInteractions")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-gviz" ,r-gviz)
+       ("r-igraph" ,r-igraph)
+       ("r-interactionset" ,r-interactionset)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/ComputationalRegulatoryGenomicsICL/GenomicInteractions/")
+    (synopsis "R package for handling genomic interaction data")
+    (description
+     "This R package provides tools for handling genomic interaction data,
+such as ChIA-PET/Hi-C, annotating genomic features with interaction
+information and producing various plots and statistics.")
+    (license license:gpl3)))

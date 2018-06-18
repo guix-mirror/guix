@@ -420,7 +420,7 @@ dependencies."
             ;; generator: update the queue
             (lambda (state)
               (receive (package . dependencies)
-                  (repo->guix-package package-name repo)
+                  (repo->guix-package (next state) repo)
                 (if package
                     (update state (filter (cut unknown? <>
                                                (cons (next state)

@@ -18,8 +18,9 @@
 
 (define-module (test-store-database)
   #:use-module (guix tests)
-  #:use-module ((guix store) #:hide (register-path))
+  #:use-module (guix store)
   #:use-module (guix store database)
+  #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64))
 
@@ -50,5 +51,47 @@
            (equal? (references %store file) (list ref))
            (null? (valid-derivers %store file))
            (null? (referrers %store file))))))
+
+(test-equal "new database"
+  (list 1 2)
+  (call-with-temporary-output-file
+   (lambda (db-file port)
+     (delete-file db-file)
+     (with-database db-file db
+       (sqlite-register db
+                        #:path "/gnu/foo"
+                        #:references '()
+                        #:deriver "/gnu/foo.drv"
+                        #:hash (string-append "sha256:" (make-string 64 #\e))
+                        #:nar-size 1234)
+       (sqlite-register db
+                        #:path "/gnu/bar"
+                        #:references '("/gnu/foo")
+                        #:deriver "/gnu/bar.drv"
+                        #:hash (string-append "sha256:" (make-string 64 #\a))
+                        #:nar-size 4321)
+       (let ((path-id (@@ (guix store database) path-id)))
+         (list (path-id db "/gnu/foo")
+               (path-id db "/gnu/bar")))))))
+
+(test-assert "register-path with unregistered references"
+  ;; Make sure we get a "NOT NULL constraint failed: Refs.reference" error
+  ;; when we try to add references that are not registered yet.  Better safe
+  ;; than sorry.
+  (call-with-temporary-output-file
+   (lambda (db-file port)
+     (delete-file db-file)
+     (catch 'sqlite-error
+       (lambda ()
+         (with-database db-file db
+           (sqlite-register db #:path "/gnu/foo"
+                            #:references '("/gnu/bar")
+                            #:deriver "/gnu/foo.drv"
+                            #:hash (string-append "sha256:" (make-string 64 #\e))
+                            #:nar-size 1234))
+         #f)
+       (lambda args
+         (pk 'welcome-exception! args)
+         #t)))))
 
 (test-end "store-database")

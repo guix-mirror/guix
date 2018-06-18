@@ -1391,7 +1391,12 @@ DURATION-RELATION with the current time."
                           (date->string
                            (time-utc->date
                             (generation-time profile number))
-                           "~b ~d ~Y ~T")))
+                           ;; TRANSLATORS: This is a format-string for date->string.
+                           ;; Please choose a format that corresponds to the
+                           ;; usual way of presenting dates in your locale.
+                           ;; See https://www.gnu.org/software/guile/manual/html_node/SRFI_002d19-Date-to-string.html
+                           ;; for details.
+                           (G_ "~b ~d ~Y ~T"))))
           (current (generation-number profile)))
       (if (= number current)
           ;; TRANSLATORS: The word "current" here is an adjective for

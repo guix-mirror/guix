@@ -73,7 +73,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.14")
+      (version "0.15")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://gitlab.com/janneke/mes"
@@ -81,7 +81,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                                     "/mes-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1i23jk61iibjza2s3lka56ry4ma424g2fyk8pjd5bd1dyjd0yrzf"))))
+                  "0kj2ywgii1795gxj6k29zxa0848h2j0ihbwlgn55wdalswl165dq"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
@@ -98,9 +98,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                '())
          ("perl" ,perl)))               ;build-aux/gitlog-to-changelog
       (arguments
-       `(#:make-flags (list
-                       (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:phases
+       `(#:phases
          (modify-phases %standard-phases
            (add-before 'install 'generate-changelog
              (lambda _

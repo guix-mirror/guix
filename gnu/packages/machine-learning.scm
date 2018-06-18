@@ -47,6 +47,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -786,3 +787,78 @@ main intended application of Autograd is gradient-based optimization.")
 
 (define-public python2-autograd
   (package-with-python2 python-autograd))
+
+(define-public lightgbm
+  (package
+    (name "lightgbm")
+    (version "2.0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Microsoft/LightGBM/archive/v"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "132zf0yk0545mg72hyzxm102g3hpb6ixx9hnf8zd2k55gas6cjj1"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-nose" ,python-nose)))
+    (inputs
+     `(("openmpi" ,openmpi)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
+    (arguments
+     `(#:configure-flags
+       '("-DUSE_MPI=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion ,(string-append "../LightGBM-" version)
+               (invoke "pytest" "tests/c_api_test/test_.py")))))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/Microsoft/LightGBM")
+    (synopsis "Gradient boosting framework based on decision tree algorithms")
+    (description "LightGBM is a gradient boosting framework that uses tree
+based learning algorithms.  It is designed to be distributed and efficient with
+the following advantages:
+
+@itemize
+@item Faster training speed and higher efficiency
+@item Lower memory usage
+@item Better accuracy
+@item Parallel and GPU learning supported (not enabled in this package)
+@item Capable of handling large-scale data
+@end itemize\n")
+    (license license:expat)))
+
+(define-public vowpal-wabbit
+  ;; Language bindings not included.
+  (package
+    (name "vowpal-wabbit")
+    (version "8.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/JohnLangford/vowpal_wabbit/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0clp2kb7rk5sckhllxjr5a651awf4s8dgzg4659yh4hf5cqnf0gr"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (inputs
+     `(("boost" ,boost)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-boost="
+                            (assoc-ref %build-inputs "boost")))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/JohnLangford/vowpal_wabbit")
+    (synopsis "Fast machine learning library for online learning")
+    (description "Vowpal Wabbit is a machine learning system with techniques
+such as online, hashing, allreduce, reductions, learning2search, active, and
+interactive learning.")
+    (license license:bsd-3)))

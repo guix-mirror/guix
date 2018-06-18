@@ -226,32 +226,6 @@ string StoreAPI::makeValidityRegistration(const PathSet & paths,
     return s;
 }
 
-
-ValidPathInfo decodeValidPathInfo(std::istream & str, bool hashGiven)
-{
-    ValidPathInfo info;
-    getline(str, info.path);
-    if (str.eof()) { info.path = ""; return info; }
-    if (hashGiven) {
-        string s;
-        getline(str, s);
-        info.hash = parseHash(htSHA256, s);
-        getline(str, s);
-        if (!string2Int(s, info.narSize)) throw Error("number expected");
-    }
-    getline(str, info.deriver);
-    string s; int n;
-    getline(str, s);
-    if (!string2Int(s, n)) throw Error("number expected");
-    while (n--) {
-        getline(str, s);
-        info.references.insert(s);
-    }
-    if (!str || str.eof()) throw Error("missing input");
-    return info;
-}
-
-
 string showPaths(const PathSet & paths)
 {
     string s;

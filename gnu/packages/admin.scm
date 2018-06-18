@@ -21,6 +21,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -822,41 +823,36 @@ by bandwidth they use.")
 (define-public clusterssh
   (package
     (name "clusterssh")
-    (version "3.28")
+    (version "4.13.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/clusterssh/"
-                                  "1.%20ClusterSSH%20Series%203/" version
-                                  "/clusterssh-" version ".tar.gz"))
+                                  "2.%20ClusterSSH%20Series%204/"
+                                  "App-ClusterSSH-v" version ".tar.gz"))
               (sha256
                (base32
-                "1bwggpvaj2al5blg1ynapviv2kpydffpzq2zkhi81najnvzc1rr7"))))
-    (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))
-    (propagated-inputs `(("xterm" ,xterm)
-                         ("perl-tk" ,perl-tk)
-                         ("perl-x11-protocol" ,perl-x11-protocol)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'set-load-paths
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Put the perl-tk and perl-x11-protocol modules in the perl inc
-             ;; path for PROG
-             (let* ((out  (assoc-ref outputs "out"))
-                    (prog (string-append out "/bin/cssh"))
-                    (perl-ver ,(package-version perl))
-                    (x11-inc (string-append
-                              (assoc-ref inputs "perl-x11-protocol")
-                              "/lib/perl5/site_perl/" perl-ver))
-                    (tk-inc (string-append
-                             (assoc-ref inputs "perl-tk")
-                             "/lib/perl5/site_perl/" perl-ver
-                             "/x86_64-linux")))
-               (wrap-program
-                   prog
-                 `("PERL5LIB" ":" prefix (,x11-inc ,tk-inc))))
-             #t)))))
+                "0rmk2p3f2wz1h092anidjclh212rv3gxyk0c641qk3frlrjnw6mp"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-cpan-changes" ,perl-cpan-changes)
+       ("perl-file-slurp" ,perl-file-slurp)
+       ("perl-file-which" ,perl-file-which)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-readonly" ,perl-readonly)
+       ("perl-test-differences" ,perl-test-differences)
+       ("perl-test-distmanifest" ,perl-test-distmanifest)
+       ("perl-test-perltidy" ,perl-test-perltidy)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-test-trap" ,perl-test-trap)
+       ("perltidy" ,perltidy)))
+    (propagated-inputs
+     `(("xterm" ,xterm)
+       ("perl-exception-class" ,perl-exception-class)
+       ("perl-tk" ,perl-tk)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-x11-protocol" ,perl-x11-protocol)
+       ("perl-x11-protocol-other" ,perl-x11-protocol-other)))
     ;; The clusterssh.sourceforge.net address requires login to view
     (home-page "https://sourceforge.net/projects/clusterssh/")
     (synopsis "Secure concurrent multi-server terminal control")
@@ -2359,11 +2355,23 @@ Intel DRM Driver.")
          "13r0b0hllgf8j9rh6x1knmbgvingbdmx046aazv6vck2ll120mw1"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))             ; Python 2 only
+     `(#:python ,python-2               ; Python 2 only
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke
+              "nosetests" "-v" "tests/"
+              ;; This test hangs indefinitely when run on a single core VM
+              ;; (see GNU bug #26647 and Debian bug #850230).
+              "--exclude=test_nested_execution_with_explicit_ports"
+              ;; This test randomly fails in certain environments causing too
+              ;; much noise to be useful (see Debian bug #854686).
+              "--exclude=test_should_use_sentinel_for_tasks_that_errored"))))))
     (native-inputs
-     `(("python2-fudge" ,python2-fudge)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-nose" ,python2-nose)
+     `(("python2-fudge" ,python2-fudge) ; Requires < 1.0
+       ("python2-jinja2" ,python2-jinja2) ; Requires < 3.0
+       ("python2-nose" ,python2-nose) ; Requires < 2.0
        ("python2-pynacl" ,python2-pynacl)
        ("python2-bcrypt" ,python2-bcrypt)))
     (propagated-inputs
@@ -2383,7 +2391,7 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "3.4.0")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dylanaraps/neofetch/"
@@ -2391,7 +2399,7 @@ tool for remote execution and deployment.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "18rhamy910ig03rr55y9x5i6pf78yj9xc6jpm6nfh3gqja7340rb"))))
+                "014hlbzs6j4b669b64hnq8vc5knwiv9ncw9m9d193p9jsybxpm1w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests

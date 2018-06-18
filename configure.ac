@@ -126,8 +126,9 @@ AM_CONDITIONAL([HAVE_GUILE_JSON], [test "x$have_guile_json" = "xyes"])
 
 dnl Guile-Sqlite3 is used by the (guix store ...) modules.
 GUIX_CHECK_GUILE_SQLITE3
-AM_CONDITIONAL([HAVE_GUILE_SQLITE3],
-  [test "x$guix_cv_have_recent_guile_sqlite3" = "xyes"])
+if test "x$guix_cv_have_recent_guile_sqlite3" != "xyes"; then
+  AC_MSG_ERROR([A recent Guile-SQLite3 could not be found; please install it.])
+fi
 
 dnl Make sure we have a full-fledged Guile.
 GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])

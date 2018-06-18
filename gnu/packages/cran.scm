@@ -30,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system r)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
@@ -556,14 +557,14 @@ ellipses, circles, cylinders, arrows, ...")
 (define-public r-globaloptions
   (package
     (name "r-globaloptions")
-    (version "0.0.13")
+    (version "0.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GlobalOptions" version))
        (sha256
         (base32
-         "04jvha0mafslqz5nr99xjylg9n2x31gj9v4mgyg7qcmfwpqyw3ch"))))
+         "1wlyqz1yhmhjwslrd7q69jbd9vsbjkjfc01g60kl3cdpyr8hlyjn"))))
     (properties `((upstream-name . "GlobalOptions")))
     (build-system r-build-system)
     (home-page "https://github.com/jokergoo/GlobalOptions")
@@ -576,14 +577,14 @@ validation and filtering on the values, making options invisible or private.")
 (define-public r-circlize
   (package
     (name "r-circlize")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "circlize" version))
        (sha256
         (base32
-         "0pg947gkryygikfbv6admx8gsg02b6g219j6a1sdnqij2908yxna"))))
+         "1l28maiqi549z191srncxgabx5fnvf0lld7smzwfd3vr5cx8nqww"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-colorspace" ,r-colorspace)
@@ -681,14 +682,14 @@ compare different dendrograms to one another.")
 (define-public r-getoptlong
   (package
     (name "r-getoptlong")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GetoptLong" version))
        (sha256
         (base32
-         "1d98gcvlvp9nz5lbnzr0kkpc2hbkx74hlhrnybqhg1gdwc3g09pm"))))
+         "1fl3w2n602ldybc5qj7qw4xmzzb804bsjkqwf6dswzj0vf0qiadr"))))
     (properties `((upstream-name . "GetoptLong")))
     (build-system r-build-system)
     (inputs
@@ -896,14 +897,14 @@ most popular ones.")
 (define-public r-sp
   (package
     (name "r-sp")
-    (version "1.2-7")
+    (version "1.3-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sp" version))
        (sha256
         (base32
-         "0q04yfgyjannsrzl0ppwcv0simrxrrbx2iz5mzaafc5x38zf0q3d"))))
+         "17xm1ig80p9wc860hm3bgishz6lj9fxgwqidj7rkbk4ap99qp62p"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -1009,14 +1010,14 @@ SpatialVx.")
 (define-public r-extremes
   (package
     (name "r-extremes")
-    (version "2.0-8")
+    (version "2.0-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "extRemes" version))
        (sha256
         (base32
-         "0pnpib3g2r9x8hfqhvq23j8m3jh62lp28ipnqir5yadnzv850gfm"))))
+         "0cpvcajk9xyy7662nqkyx333vrxpwsc5nmv0bfnhsbgijz5y0hvm"))))
     (properties `((upstream-name . "extRemes")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1595,14 +1596,14 @@ Core algorithms are executed in parallel on systems supporting OpenMP.")
 (define-public r-rcpproll
   (package
     (name "r-rcpproll")
-    (version "0.2.2")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppRoll" version))
        (sha256
         (base32
-         "19xzvxym8zbighndygkq4imfwc0abh4hqyq3qrr8aakyd096iisi"))))
+         "0srzfhzkk42kzrdjnhbb37946jp1p688rgysy6k3i2is8jb21zyb"))))
     (properties `((upstream-name . "RcppRoll")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1822,14 +1823,14 @@ color labels, layout, etc.")
 (define-public r-stringdist
   (package
     (name "r-stringdist")
-    (version "0.9.4.7")
+    (version "0.9.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringdist" version))
        (sha256
         (base32
-         "1qg80wmcrpkba9njvgjdg15bgw7ddks40kkfh5x61as9lhchy4i4"))))
+         "0gap1g9xwhp0zxqsznkc2carpvi80z03prr4q8m528684lznx2xa"))))
     (build-system r-build-system)
     (home-page "https://github.com/markvanderloo/stringdist")
     (synopsis "Approximate string matching and string distance functions")
@@ -2718,17 +2719,19 @@ supports arbitrary vertex/edge/graph attributes.")
 (define-public r-statnet-common
   (package
     (name "r-statnet-common")
-    (version "4.0.0")
+    (version "4.1.2")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "statnet.common" version))
         (sha256
           (base32
-            "0yw6l5b4qv0jqlg4zyczas7m12a5pyqghs6ydxy2f6v6vxkijvi0"))))
+            "0h3g687214rlycca0fjrpy1lqbqsrginxqhmhl2mb2jinqqxcfgd"))))
     (properties
       `((upstream-name . "statnet.common")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-coda" ,r-coda)))
     (home-page "https://statnet.org")
     (synopsis "R scripts and utilities used by the Statnet software")
     (description "This package provides non-statistical utilities used by the
@@ -2971,14 +2974,14 @@ Cryer and Kung-Sik Chan.")
 (define-public r-extradistr
   (package
     (name "r-extradistr")
-    (version "1.8.8")
+    (version "1.8.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "extraDistr" version))
        (sha256
         (base32
-         "0ywn4qwnamv36l1hw27l9y5kh3v6ha5781wsv2bz6szqjgg7kdb3"))))
+         "1fg8vjpal33y51iqzglk1yvy46d7js0l0wfbdy698lq8a06hq19p"))))
     (properties `((upstream-name . "extraDistr")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3041,14 +3044,14 @@ applied econometric analysis.")
 (define-public r-cubature
   (package
     (name "r-cubature")
-    (version "1.3-11")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cubature" version))
        (sha256
         (base32
-         "06f6gsvbb732p80r6hxvzh4ik546icxfvx21dyh65ypmw3kgm64k"))))
+         "1hd23b8v2kpqp5gr0va8p2q7j8w9rik6ks7zrr4b8mb2mwrakk74"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
@@ -3324,14 +3327,14 @@ environment within Shiny.")
 (define-public r-radiant-data
   (package
     (name "r-radiant-data")
-    (version "0.8.1")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "radiant.data" version))
        (sha256
         (base32
-         "1ylina1jlrmvjkj8pwg0ip5jv1038vnzyckmf542xl7g11x8rvw1"))
+         "0mbxfqn79nphii4hb6kxl2wc0w0ra16y378rp2yw9a9926zdb7mb"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3347,6 +3350,7 @@ environment within Shiny.")
        ("r-curl" ,r-curl)
        ("r-dplyr" ,r-dplyr)
        ("r-dt" ,r-dt)
+       ("r-glue" ,r-glue)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
        ("r-import" ,r-import)
@@ -3355,16 +3359,19 @@ environment within Shiny.")
        ("r-lubridate" ,r-lubridate)
        ("r-magrittr" ,r-magrittr)
        ("r-markdown" ,r-markdown)
-       ("r-pryr" ,r-pryr)
+       ("r-plotly" ,r-plotly)
        ("r-psych" ,r-psych)
        ("r-readr" ,r-readr)
+       ("r-readxl" ,r-readxl)
+       ("r-rlang" ,r-rlang)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-scales" ,r-scales)
        ("r-shiny" ,r-shiny)
        ("r-shinyace" ,r-shinyace)
        ("r-tibble" ,r-tibble)
-       ("r-tidyr" ,r-tidyr)))
+       ("r-tidyr" ,r-tidyr)
+       ("r-writexl" ,r-writexl)))
     (home-page "https://github.com/radiant-rstats/radiant.data")
     (synopsis "Data menu for Radiant: business analytics using R and Shiny")
     (description
@@ -3915,14 +3922,14 @@ exchanging spatial objects with other R packages.")
 (define-public r-later
   (package
     (name "r-later")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "later" version))
        (sha256
         (base32
-         "0l5ln7sjyi2rj7bx8iamxykqlfarv05zb9882ikizppb1cr1hgyw"))))
+         "04j2phymxgkk4hv9pfa5w3s98w5d7fvm11blrdhxmray4n618msw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -4125,14 +4132,14 @@ obtain a better initial configuration in non-metric MDS.")
 (define-public r-reticulate
   (package
     (name "r-reticulate")
-    (version "1.7")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reticulate" version))
        (sha256
         (base32
-         "1ghhc4hbmwpp79ilbdbshynhs61i8sv8z6p1al04jy7ij0lcglxy"))))
+         "0zwb4ikf021nw7axdn7qlr6bq4xkph3anfy314idkspy1iil4nmr"))))
     (build-system r-build-system)
     (inputs `(("python" ,python)))
     (propagated-inputs
@@ -4190,3 +4197,267 @@ generating multiple logo plots, and aiding the visualisation with annotations.
 Sequence logos can easily be combined with other ggplot2 plots.")
     ;; Unspecified version of the LGPL.
     (license license:lgpl3+)))
+
+(define-public r-ggsci
+  (package
+    (name "r-ggsci")
+    (version "2.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggsci" version))
+       (sha256
+        (base32
+         "0g73x6grbka7ahjh6z23m3wrcifp5rdfdiasbl8lq4sp6rplxwaa"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-scales" ,r-scales)))
+    (home-page "https://nanx.me/ggsci/")
+    (synopsis "Scientific journal and sci-fi themed color palettes for ggplot2")
+    (description
+     "This package provides a collection of ggplot2 color palettes inspired by
+plots in scientific journals, data visualization libraries, science fiction
+movies, and TV shows.")
+    (license license:gpl3)))
+
+(define-public r-ggsignif
+  (package
+    (name "r-ggsignif")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggsignif" version))
+       (sha256
+        (base32
+         "1rn58d7pb3axk6chiihryykrzw76adaa2yiafq4d0j6qbhax78f7"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)))
+    (home-page "https://github.com/const-ae/ggsignif")
+    (synopsis "Significance brackets for ggplot2")
+    (description
+     "Enrich your ggplots with group-wise comparisons.  This package provides
+an easy way to indicate if two groups are significantly different.  Commonly
+this is shown by a bracket on top connecting the groups of interest which
+itself is annotated with the level of significance.  The package provides a
+single layer that takes the groups for comparison and the test as arguments
+and adds the annotation to the plot.")
+    (license license:gpl3)))
+
+(define-public r-ggpubr
+  (package
+    (name "r-ggpubr")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggpubr" version))
+       (sha256
+        (base32
+         "0mvw215bj887958p34f0dzlrb8mgyfcz9b5zvsschvbhamqinqna"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cowplot" ,r-cowplot)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-ggsci" ,r-ggsci)
+       ("r-ggsignif" ,r-ggsignif)
+       ("r-gridextra" ,r-gridextra)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-scales" ,r-scales)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "http://www.sthda.com/english/rpkgs/ggpubr")
+    (synopsis "ggplot2-based publication-ready plots")
+    (description
+     "The ggplot2 package is an excellent and flexible package for elegant
+data visualization in R.  However the default generated plots require some
+formatting before we can send them for publication.  The ggpubr package
+provides some easy-to-use functions for creating and customizing ggplot2-based
+publication-ready plots.")
+    (license license:gpl2)))
+
+(define-public r-ellipse
+  (package
+    (name "r-ellipse")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ellipse" version))
+       (sha256
+        (base32
+         "0g82vc51m3c1k0hnpp2zla6amxxgk2mmkl8ssnsc49jv3599r6hs"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/ellipse/")
+    (synopsis "Functions for drawing ellipses and ellipse-like confidence regions")
+    (description
+     "This package contains various routines for drawing ellipses and
+ellipse-like confidence regions, implementing the plots described in Murdoch
+and Chow (1996), A graphical display of large correlation matrices, The
+American Statistician 50, 178-180.  There are also routines implementing the
+profile plots described in Bates and Watts (1988), Nonlinear Regression
+Analysis and its Applications.")
+    (license license:gpl2+)))
+
+(define-public r-flashclust
+  (package
+    (name "r-flashclust")
+    (version "1.01-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "flashClust" version))
+       (sha256
+        (base32
+         "0l4lpz451ll7f7lfxmb7ds24ppzhfg1c3ypvydglcc35p2dq99s8"))))
+    (properties `((upstream-name . "flashClust")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/flashClust/")
+    (synopsis "Implementation of optimal hierarchical clustering")
+    (description
+     "This package provides a fast implementation of hierarchical
+clustering.")
+    (license license:gpl2+)))
+
+(define-public r-factominer
+  (package
+    (name "r-factominer")
+    (version "1.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "FactoMineR" version))
+       (sha256
+        (base32
+         "1h20hydav6l2b7bngqw1av4l5rrh0wk58nhailga1f4qw9lrv259"))))
+    (properties `((upstream-name . "FactoMineR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-car" ,r-car)
+       ("r-cluster" ,r-cluster)
+       ("r-ellipse" ,r-ellipse)
+       ("r-flashclust" ,r-flashclust)
+       ("r-lattice" ,r-lattice)
+       ("r-leaps" ,r-leaps)
+       ("r-mass" ,r-mass)
+       ("r-scatterplot3d" ,r-scatterplot3d)))
+    (home-page "http://factominer.free.fr")
+    (synopsis "Multivariate exploratory data analysis and data mining")
+    (description
+     "This package provides exploratory data analysis methods to summarize,
+visualize and describe datasets.  The main principal component methods are
+available, those with the largest potential in terms of applications:
+principal component analysis (PCA) when variables are quantitative,
+correspondence analysis (CA) and multiple correspondence analysis (MCA) when
+variables are categorical, Multiple Factor Analysis when variables are
+structured in groups, etc. and hierarchical cluster analysis.")
+    (license license:gpl2+)))
+
+(define-public r-factoextra
+  (package
+    (name "r-factoextra")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "factoextra" version))
+       (sha256
+        (base32
+         "1l6m8k7qhdw8ndar8nhmym0lfyd1i2iszl1cicjax0vq23ss6xw1"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-cluster" ,r-cluster)
+       ("r-dendextend" ,r-dendextend)
+       ("r-factominer" ,r-factominer)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggpubr" ,r-ggpubr)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-reshape2" ,r-reshape2)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "http://www.sthda.com/english/rpkgs/factoextra")
+    (synopsis "Extract and visualize the results of multivariate data analyses")
+    (description
+     "This package provides some easy-to-use functions to extract and
+visualize the output of multivariate data analyses, including
+@code{PCA} (Principal Component Analysis), @code{CA} (Correspondence
+Analysis), @code{MCA} (Multiple Correspondence Analysis), @code{FAMD} (Factor
+Analysis of Mixed Data), @code{MFA} (Multiple Factor Analysis) and
+@code{HMFA} (Hierarchical Multiple Factor Analysis) functions from different R
+packages.  It contains also functions for simplifying some clustering analysis
+steps and provides ggplot2-based elegant data visualization.")
+    (license license:gpl2)))
+
+(define-public r-nbclust
+  (package
+    (name "r-nbclust")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NbClust" version))
+       (sha256
+        (base32
+         "1vwb48zy6ln1ddpqmfngii1i80n8qmqyxnzdp6gbaq96lakl3w3c"))))
+    (properties `((upstream-name . "NbClust")))
+    (build-system r-build-system)
+    (home-page "https://sites.google.com/site/malikacharrad/research/nbclust-package")
+    (synopsis "Determine the best number of clusters in a data set")
+    (description
+     "NbClust provides 30 indexes for determining the optimal number of
+clusters in a data set and offers the best clustering scheme from different
+results to the user.")
+    (license license:gpl2)))
+
+(define-public r-hdf5r
+  (package
+    (name "r-hdf5r")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hdf5r" version))
+       (sha256
+        (base32
+         "1s6p4cj909kc635fh5xpl87bqlcdj3dn3r1wk5g40abimk2b0pva"))))
+    (build-system r-build-system)
+    (inputs
+     `(("hdf5" ,hdf5)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-bit64" ,r-bit64)
+       ("r-r6" ,r-r6)))
+    (home-page "https://hhoeflin.github.io/hdf5r")
+    (synopsis "Interface to the HDF5 binary data format")
+    (description
+     "HDF5 is a data model, library and file format for storing and managing
+large amounts of data.  This package provides a nearly feature complete,
+object oriented wrapper for the HDF5 API using R6 classes.  Additionally,
+functionality is added so that HDF5 objects behave very similar to their
+corresponding R counterparts.")
+    (license license:asl2.0)))
+
+(define-public r-writexl
+  (package
+    (name "r-writexl")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "writexl" version))
+       (sha256
+        (base32
+         "0r2v12dc4zqmr1agp6vbw0fc48i278018684x84psjjqfmnv14cf"))))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (home-page "https://github.com/ropensci/writexl")
+    (synopsis "Export data frames to xlsx format")
+    (description
+     "This package provides a data frame to xlsx exporter based on
+libxlsxwriter.")
+    (license license:bsd-2)))

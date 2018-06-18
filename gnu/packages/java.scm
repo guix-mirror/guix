@@ -3304,6 +3304,39 @@ Compiler component.")))
 This component decrypts a string passed to it.")
     (license license:asl2.0)))
 
+(define-public java-plexus-cli
+  (package
+    (name "java-plexus-cli")
+    (version "1.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sonatype/plexus-cli")
+                     (commit "a776afa6bca84e5107bedb69440329cdb24ed645")))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "0xjrlay605rypv3zd7y24vlwf0039bil3n2cqw54r1ddpysq46vx"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-cli.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "src/test"))
+    (inputs
+     `(("java-commons-cli" ,java-commons-cli)
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)))
+    (native-inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-junit" ,java-junit)
+       ("java-guava" ,java-guava)))
+    (home-page "https://codehaus-plexus.github.io/plexus-cli")
+    (synopsis "CLI building library for plexus")
+    (description "This package is a library to help creating CLI around
+Plexus components.")
+    (license license:asl2.0)))
+
 (define-public java-sisu-build-api
   (package
     (name "java-sisu-build-api")
@@ -10195,3 +10228,32 @@ This module can be assimilated to a significantly improved version of log4j.
 Moreover, @code{logback-classic} natively implements the slf4j API so that you
 can readily switch back and forth between logback and other logging frameworks
 such as log4j or @code{java.util.logging} (JUL).")))
+
+(define-public java-qdox
+  (package
+    (name "java-qdox")
+    ; Newer version exists, but this version is required by java-plexus-component-metadata
+    (version "2.0-M2")
+    (source (origin
+              (method url-fetch)
+              ;; 2.0-M4, -M5 at https://github.com/paul-hammant/qdox
+              ;; Older releases at https://github.com/codehaus/qdox/
+              ;; Note: The release at maven is pre-generated. The release at
+              ;; github requires jflex.
+              (uri (string-append "http://central.maven.org/maven2/"
+                                  "com/thoughtworks/qdox/qdox/" version
+                                  "/qdox-" version "-sources.jar"))
+              (sha256
+               (base32
+                "10xxrcaicq6axszcr2jpygisa4ch4sinyx5q7kqqxv4lknrmxp5x"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "qdox.jar"
+       #:tests? #f)); no tests
+    (home-page "http://qdox.codehaus.org/")
+    (synopsis "Parse definitions from Java source files")
+    (description "QDox is a high speed, small footprint parser for extracting
+class/interface/method definitions from source files complete with JavaDoc
+@code{@@tags}.  It is designed to be used by active code generators or
+documentation tools.")
+    (license license:asl2.0)))

@@ -53,6 +53,7 @@
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4871,26 +4872,15 @@ computing.")
 (define-public python-urwid
   (package
     (name "python-urwid")
-    (version "1.3.1")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "urwid" version))
        (sha256
         (base32
-         "18cnd1wdjcas08x5qwa5ayw6jsfcn33w4d9f7q3s29fy6qzc1kng"))))
+         "1g6cpicybvbananpjikmjk8npmjk4xvak1wjzji62wc600wkwkb4"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Disable failing test. Bug filed upstream:
-         ;; https://github.com/wardi/urwid/issues/164
-         ;; TODO: check again for python-urwid > 1.3.1 or python > 3.4.3.
-         (add-after 'unpack 'disable-failing-test
-          (lambda _
-            (substitute* "urwid/tests/test_event_loops.py"
-              (("test_remove_watch_file")
-                "disable_remove_watch_file")))))))
     (home-page "http://urwid.org")
     (synopsis "Console user interface library for Python")
     (description
@@ -4899,22 +4889,7 @@ features useful for text console applications.")
     (license license:lgpl2.1+)))
 
 (define-public python2-urwid
-  (let ((python2-urwid (package-with-python2 python-urwid)))
-    (package
-      (inherit python2-urwid)
-      (arguments
-       (append
-        `(;; Explicitly using Python 2 is necessary due the argument list being
-          ;; built from only the 'delete-test_vterm.py' phase and python-urwid's
-          ;; package arguments, which by default assumes the use of Python 3.
-          #:python ,python-2
-          #:phases
-          (modify-phases %standard-phases
-            ;; Disable the vterm tests because of non-deterministic failures
-            ;; with Python 2. See https://github.com/urwid/urwid/issues/230.
-            (add-after 'unpack 'delete-test_vterm.py
-              (delete-file "urwid/tests/test_vterm.py"))))
-        (package-arguments python-urwid))))))
+  (package-with-python2 python-urwid))
 
 (define-public python-urwidtrees
   (package
@@ -6033,13 +6008,13 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.3.2")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "llfuse" version ".tar.bz2"))
               (sha256
                (base32
-                "0qxvnbz41bpvpc1vbi8qkhmpr9gj1qrrp5jdj085iqibd8l2l9cn"))))
+                "1rqww632y2zz71xmr6ch7yq80kvza9mhqr2z773k0d8l1lwzl575"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
@@ -7285,13 +7260,13 @@ applications.")
 (define-public python-click-log
   (package
     (name "python-click-log")
-    (version "0.2.1")
+    (version "0.3.2")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "click-log" version))
              (sha256
               (base32
-               "1r1x85023cslb2pwldd089jjk573mk3w78cnashs77wrx7yz8fj9"))))
+               "091i03bhxyzsdbc6kilxhivfda2f8ymz3b33xa6cj5kbzjiirz8n"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
@@ -13657,3 +13632,120 @@ introspection.")
 
 (define-public python2-fasteners
   (package-with-python2 python-fasteners))
+
+(define-public python-requests-file
+  (package
+    (name "python-requests-file")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "requests-file" version))
+       (sha256
+        (base32
+         "1yp2jaxg3v86pia0q512dg3hz6s9y5vzdivsgrba1kds05ial14g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page
+     "https://github.com/dashea/requests-file")
+    (synopsis "File transport adapter for Requests")
+    (description
+     "Requests-File is a transport adapter for use with the Requests Python
+library to allow local filesystem access via file:// URLs.")
+    (license license:asl2.0)))
+
+(define-public python2-requests-file
+  (package-with-python2 python-requests-file))
+
+(define-public python-tldextract
+  (package
+    (name "python-tldextract")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tldextract" version))
+       (sha256
+        (base32
+         "1d5s8v6kpsgazyahflhji1cfdcf89rv7l7z55v774bhzvcjp2y99"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-responses" ,python-responses)))
+    (propagated-inputs
+     `(("python-idna" ,python-idna)
+       ("python-requests" ,python-requests)
+       ("python-requests-file" ,python-requests-file)))
+    (home-page
+     "https://github.com/john-kurkowski/tldextract")
+    (synopsis
+     "Separate the TLD from the registered domain and subdomains of a URL")
+    (description
+     "TLDExtract accurately separates the TLD from the registered domain and
+subdomains of a URL, using the Public Suffix List.  By default, this includes
+the public ICANN TLDs and their exceptions.  It can optionally support the
+Public Suffix List's private domains as well.")
+    (license license:bsd-3)))
+
+(define-public python2-tldextract
+  (package-with-python2 python-tldextract))
+
+(define-public python-pynamecheap
+  (package
+    (name "python-pynamecheap")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyNamecheap" version))
+       (sha256
+        (base32
+         "0wkbwz208j8nfrsmzmclvxg22ymknn0mlz76wbdza9k2bx2zja6l"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page
+     "https://github.com/Bemmu/PyNamecheap")
+    (synopsis
+     "Namecheap API client in Python")
+    (description
+     "PyNamecheap is a Namecheap API client in Python.")
+    (license license:expat)))
+
+(define-public python2-pynamecheap
+  (package-with-python2 python-pynamecheap))
+
+(define-public python-dns-lexicon
+  (package
+    (name "python-dns-lexicon")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dns-lexicon" version))
+       (sha256
+        (base32
+         "0jdn3ns71bsybr7njgsqr9xlxsqh7zh6phn4ld0liazqdn2l5f6m"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;requires internet access
+    (propagated-inputs
+     `(("python-future" ,python-future)
+       ("python-pynamecheap" ,python-pynamecheap)
+       ("python-requests" ,python-requests)
+       ("python-tldextract" ,python-tldextract)
+       ("python-urllib3" ,python-urllib3)))
+    (home-page "https://github.com/AnalogJ/lexicon")
+    (synopsis
+     "Manipulate DNS records on various DNS providers")
+    (description
+     "Lexicon provides a way to manipulate DNS records on multiple DNS
+providers in a standardized way.  It has a CLI but it can also be used as a
+Python library.  It was designed to be used in automation, specifically with
+Let's Encrypt.")
+    (license license:expat)))
+
+(define-public python2-dns-lexicon
+  (package-with-python2 python-dns-lexicon))

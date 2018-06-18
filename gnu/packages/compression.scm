@@ -2111,7 +2111,7 @@ single-member files which can't be decompressed in parallel.")
 (define-public innoextract
   (package
    (name "innoextract")
-   (version "1.6")
+   (version "1.7")
    (source
     (origin
      (method url-fetch)
@@ -2119,7 +2119,7 @@ single-member files which can't be decompressed in parallel.")
                          version ".tar.gz"))
      (sha256
       (base32
-       "08sp5vbfjvq1irhhraqkn5m2x1z209r4axhx7laf1adcw30ccapi"))
+       "0khwi9f0q0h6xfbixrrc1rfpgj0b7ajwilq7yhmxnn5lpc807f6x"))
      (file-name (string-append name "-" version ".tar.gz"))))
    (build-system cmake-build-system)
    (arguments
@@ -2209,7 +2209,8 @@ decompression is a little bit slower.")
                                  version "/" name "-" version "-src.tar.xz"))
              (sha256
               (base32
-               "08anybdliqsbsl6x835iwzljahnm9i7v26icdjkcv33xmk6p5vw1"))))
+               "08anybdliqsbsl6x835iwzljahnm9i7v26icdjkcv33xmk6p5vw1"))
+             (patches (search-patches "upx-fix-CVE-2017-15056.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("ucl" ,ucl)))
@@ -2241,6 +2242,11 @@ decompression is a little bit slower.")
              #t))
          )))
     (home-page "https://upx.github.io/")
+    ;; CVE-2017-16869 is about Mach-O files which is not of a big concern for Guix.
+    ;; See https://github.com/upx/upx/issues/146 and
+    ;; https://nvd.nist.gov/vuln/detail?vulnId=CVE-2017-16869.
+    ;; The issue will be fixed after version 3.94.
+    (properties `((lint-hidden-cve . ("CVE-2017-16869"))))
     (synopsis "Compression tool for executables")
     (description
      "The Ultimate Packer for eXecutables (UPX) is an executable file

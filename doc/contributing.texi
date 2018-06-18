@@ -407,11 +407,18 @@ changes).  This branch is intended to be merged in @code{master} every
 2.5 months or so.
 @end table
 
-All these branches are tracked by our build farm
-and merged into @code{master} once
+All these branches are @uref{https://hydra.gnu.org/project/gnu,
+tracked by our build farm} and merged into @code{master} once
 everything has been successfully built.  This allows us to fix issues
 before they hit users, and to reduce the window during which pre-built
 binaries are not available.
+
+Generally, branches other than @code{master} are considered
+@emph{frozen} if there has been a recent evaluation, or there is a
+corresponding @code{-next} branch.  Please ask on the mailing list or
+IRC if unsure where to place a patch.
+@c TODO: It would be good with badges on the website that tracks these
+@c branches.  Or maybe even a status page.
 
 @item
 @cindex determinism, of build processes

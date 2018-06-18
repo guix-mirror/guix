@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -147,23 +147,19 @@ HTTP-PORT."
              marionette))
 
           ;; Wait for nginx to be up and running.
-          (test-eq "nginx running"
-            'running!
+          (test-assert "nginx running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'nginx)
-                'running!)
+                (start-service 'nginx))
              marionette))
 
           ;; Wait for fcgiwrap to be up and running.
-          (test-eq "fcgiwrap running"
-            'running!
+          (test-assert "fcgiwrap running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'fcgiwrap)
-                'running!)
+                (start-service 'fcgiwrap))
              marionette))
 
           ;; Make sure the PID file is created.
@@ -272,13 +268,11 @@ HTTP-PORT."
           (test-begin "git-http")
 
           ;; Wait for nginx to be up and running.
-          (test-eq "nginx running"
-            'running!
+          (test-assert "nginx running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'nginx)
-                'running!)
+                (start-service 'nginx))
              marionette))
 
           ;; Make sure Git test repository is created.

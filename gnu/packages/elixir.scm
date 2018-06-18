@@ -40,15 +40,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0acnxfwvkx1m1d0h5z051mz95n35zm468hcvc3wpmn17c15h5ihg"))
-              ;; FIXME: 27 tests (out of 4K) had to be disabled as
-              ;; they fail in the build environment.  Common failures
-              ;; are:
-              ;; - Mix.Shell.cmd() fails with error 130
-              ;; - The git_repo fixture cannot be found
-              ;; - Communication with spawned processes fails with EPIPE
-              ;; - Failure to copy files
-              (patches (search-patches "elixir-disable-failing-tests.patch"))))
+                "0acnxfwvkx1m1d0h5z051mz95n35zm468hcvc3wpmn17c15h5ihg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -70,27 +62,6 @@
                  (("#!/usr/bin/env elixir")
                   (string-append "#!" out "/bin/elixir"))))
              #t))
-         (add-after 'unpack 'fix-or-disable-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Some tests require access to a home directory.
-             (setenv "HOME" "/tmp")
-
-             ;; FIXME: These tests fail because the "git_repo" fixture does
-             ;; not exist or cannot be found.
-             (delete-file "lib/mix/test/mix/tasks/deps.git_test.exs")
-
-             ;; FIXME: Mix.Shell.cmd() always fails with error code 130.
-             (delete-file "lib/mix/test/mix/shell_test.exs")
-
-             ;; FIXME:
-             ;; disabled failing impure tests to make it build again.
-             ;; related discussion: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=28034#14
-             (delete-file "lib/elixir/test/elixir/kernel/cli_test.exs")
-             (delete-file "lib/elixir/test/elixir/kernel/dialyzer_test.exs")
-             (delete-file "lib/iex/test/iex/helpers_test.exs")
-             (delete-file "lib/ex_unit/test/ex_unit/capture_io_test.exs")
-
-             #t))
          (add-before 'build 'make-current
            ;; The Elixir compiler checks whether or not to compile files by
            ;; inspecting their timestamps.  When the timestamp is equal to the
@@ -101,6 +72,11 @@
                          (let ((recent 1400000000))
                            (utime file recent recent 0 0)))
                        (find-files "." ".*"))
+             #t))
+         (add-before 'check 'set-home
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Some tests require access to a home directory.
+             (setenv "HOME" "/tmp")
              #t))
          (delete 'configure))))
     (inputs

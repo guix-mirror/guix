@@ -1350,16 +1350,17 @@ networks.")
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "2.0.0")
+    (version "2.0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/sivel/speedtest-cli/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sivel/speedtest-cli")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "16kcpba7nmszz2h0fq7qvv6src20syck2wlknaacg69kk88aybbk"))))
+         "0vv2z37g2kgm2dzkfa4bhri92hs0d1acxi8z66gznsl5148q7sdi"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")
@@ -1901,3 +1902,36 @@ eight bytes) tools
 low-level I/O programming that provides developers with a consistent
 asynchronous model using a modern C++ approach.")
     (license license:boost1.0)))
+
+(define-public shadowsocks
+  ;; There are some security fixes after the last release.
+  (let* ((commit "e332ec93e9c90f1cbee676b022bf2c5d5b7b1239")
+         (revision "0")
+         (version (git-version "2.8.2" revision commit)))
+    (package
+      (name "shadowsocks")
+      (version version)
+      (home-page "https://github.com/shadowsocks/shadowsocks")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1idd9b4f2pnhcpk1bh030hqg5zq25gkwxd53xi3c0cj242w7sp2j"))
+                (file-name (git-file-name name version))))
+      (build-system python-build-system)
+      (synopsis "Fast tunnel proxy that helps you bypass firewalls")
+      (description
+       "This package is a fast tunnel proxy that helps you bypass firewalls.
+
+Features:
+@itemize
+@item TCP & UDP support
+@item User management API
+@item TCP Fast Open
+@item Workers and graceful restart
+@item Destination IP blacklist
+@end itemize")
+      (license license:asl2.0))))

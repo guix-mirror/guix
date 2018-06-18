@@ -6939,13 +6939,13 @@ Bioconductor, CRAN, and Github.")
 (define-public r-biocviews
   (package
     (name "r-biocviews")
-    (version "1.48.0")
+    (version "1.48.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biocViews" version))
               (sha256
                (base32
-                "1yx2lir67ny0j150wyfqca0wsxp84byri8nscbs9qlndkh2jppq9"))))
+                "1q5z6xxhjyibr165di7iyachw4gd4bdrxkd8rjkcklnngsrx1azm"))))
     (properties
      `((upstream-name . "biocViews")))
     (build-system r-build-system)
@@ -7128,13 +7128,13 @@ abnormal copy number.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.18.2")
+    (version "0.18.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "0qvj2j0zl4djjl7vrwc6xak6h8dxr53iwypfbcvfb3sh7jwhdiz5"))))
+                "02bps2rpjqx2npwxq3x62ncwi9ggr165cwi56h6hld28bw2gddy8"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -9705,13 +9705,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "2.3.1")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0hi59rgdrr2iqfvx5bq7yq02hbjxkjl1fzidqj14z0ypq0nzbjys"))
+                "1sjpy5rrpvlpm6hs7qy7qpglgbp7zrgfybcsalpmjb51rhxhgcg1"))
               ;; Delete pre-built jar.
               (snippet
                '(begin (delete-file "inst/java/ModularityOptimizer.jar")
@@ -9755,6 +9755,7 @@ Main-Class: ModularityOptimizer\n")))
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggridges" ,r-ggridges)
        ("r-gplots" ,r-gplots)
+       ("r-hdf5r" ,r-hdf5r)
        ("r-hmisc" ,r-hmisc)
        ("r-ica" ,r-ica)
        ("r-igraph" ,r-igraph)
@@ -12905,7 +12906,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.15")
+    (version "0.0.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12913,7 +12914,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "11v9v3vyda0sv4cl45nki7mm4v4bjfcdq7a70kcvi9h465nq66wg"))))
+                "0s53840z53pih0jkllmcfb2la7c36zxmf229fshhyq8n6a2hgr8f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; parts of the tests rely on access to the network
@@ -12985,7 +12986,7 @@ in an easily configurable manner.")
 (define-public pigx-bsseq
   (package
     (name "pigx-bsseq")
-    (version "0.0.8")
+    (version "0.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
@@ -12993,7 +12994,7 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0irlnlhhw9fd4ha7hksrxn3y7j76mz5qq1wjswbs9p364laqg69y"))))
+                "0j1dfjk8m1p1h6d5yw63scjlbx56z8gixmbw626w1vcyblg0frmz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -13052,7 +13053,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.4")
+    (version "0.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -13060,7 +13061,7 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1pvjm6f3mascprs65vflggwwg5v925knvgal7k7a6nnlmw5qndrf"))))
+                "0a73rilv0vnw42d5rsdq205h4f0x8j3jqv998janh4s324c6w2kj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -13088,6 +13089,7 @@ methylation and segmentation.")
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)
        ("python-pandas" ,python-pandas)
+       ("python-magic" ,python-magic)
        ("python-numpy" ,python-numpy)
        ("python-loompy" ,python-loompy)
        ("ghc-pandoc" ,ghc-pandoc-1)
@@ -13245,3 +13247,62 @@ rate speciation and extinction.")
 junctions in RNA-seq data.  It is annotation-agnostic and offset-aware.  This
 version does count multisplits.")
       (license license:gpl3+))))
+
+(define-public minimap2
+  (package
+    (name "minimap2")
+    (version "2.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lh3/minimap2/"
+                           "releases/download/v" version "/"
+                           "minimap2-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "080w9066irkbhbyr4nmf19pzkdd2s4v31hpzlajgq2y0drr6zcsj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are none
+       #:make-flags
+       (list "CC=gcc"
+             (let ((system ,(or (%current-target-system)
+                                (%current-system))))
+               (cond
+                ((string-prefix? "x86_64" system)
+                 "all")
+                ((or (string-prefix? "armhf" system)
+                     (string-prefix? "aarch64" system))
+                 "arm_neon=1")
+                (_ "sse2only=1"))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "minimap2" bin)
+               (mkdir-p man)
+               (install-file "minimap2.1" man))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://lh3.github.io/minimap2/")
+    (synopsis "Pairwise aligner for genomic and spliced nucleotide sequences")
+    (description "Minimap2 is a versatile sequence alignment program that
+aligns DNA or mRNA sequences against a large reference database.  Typical use
+cases include:
+
+@enumerate
+@item mapping PacBio or Oxford Nanopore genomic reads to the human genome;
+@item finding overlaps between long reads with error rate up to ~15%;
+@item splice-aware alignment of PacBio Iso-Seq or Nanopore cDNA or Direct RNA
+  reads against a reference genome;
+@item aligning Illumina single- or paired-end reads;
+@item assembly-to-assembly alignment;
+@item full-genome alignment between two closely related species with
+  divergence below ~15%.
+@end enumerate\n")
+    (license license:expat)))

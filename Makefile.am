@@ -11,6 +11,7 @@
 # Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 # Copyright © 2018 Nils Gillmann <ng0@n0.is>
 # Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+# Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -262,11 +263,7 @@ STORE_MODULES =					\
   guix/store/database.scm			\
   guix/store/deduplication.scm
 
-if HAVE_GUILE_SQLITE3
 MODULES += $(STORE_MODULES)
-else
-MODULES_NOT_COMPILED += $(STORE_MODULES)
-endif !HAVE_GUILE_SQLITE3
 
 # Internal modules with test suite support.
 dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
@@ -300,6 +297,7 @@ EXAMPLES =					\
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go $(dist_noinst_DATA:%.scm=%.go)
 
 nobase_dist_guilemodule_DATA =					\
+  guix/store/schema.sql						\
   $(MODULES) $(MODULES_NOT_COMPILED) $(AUX_FILES) $(EXAMPLES)	\
   $(MISC_DISTRO_FILES)
 nobase_nodist_guilemodule_DATA = guix/config.scm
@@ -378,7 +376,9 @@ SCM_TESTS =					\
   tests/scripts-build.scm			\
   tests/containers.scm				\
   tests/pack.scm				\
-  tests/import-utils.scm
+  tests/import-utils.scm			\
+  tests/store-database.scm			\
+  tests/store-deduplication.scm
 
 if HAVE_GUILE_JSON
 
@@ -387,14 +387,6 @@ SCM_TESTS += 					\
   tests/cpan.scm				\
   tests/gem.scm					\
   tests/crate.scm
-
-endif
-
-if HAVE_GUILE_SQLITE3
-
-SCM_TESTS +=					\
-  tests/store-database.scm			\
-  tests/store-deduplication.scm
 
 endif
 
@@ -413,13 +405,6 @@ SH_TESTS =					\
   tests/guix-environment-container.sh		\
   tests/guix-graph.sh				\
   tests/guix-lint.sh
-
-if BUILD_DAEMON
-
-SH_TESTS += tests/guix-register.sh
-
-endif BUILD_DAEMON
-
 
 TESTS = $(SCM_TESTS) $(SH_TESTS)
 
@@ -470,7 +455,8 @@ dist_pkgdata_DATA =				\
   berlin.guixsd.org.pub
 
 # Bash completion file.
-dist_bashcompletion_DATA = etc/completion/bash/guix
+dist_bashcompletion_DATA = etc/completion/bash/guix	\
+  etc/completion/bash/guix-daemon
 
 # Zsh completion file.
 dist_zshcompletion_DATA = etc/completion/zsh/_guix

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -517,13 +518,11 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
 
           (test-begin "mcron")
 
-          (test-eq "service running"
-            'running!
+          (test-assert "service running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'mcron)
-                'running!)
+                (start-service 'mcron))
              marionette))
 
           ;; Make sure root's mcron job runs, has its cwd set to "/root", and
@@ -619,32 +618,43 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
 
           (test-begin "avahi")
 
-          (test-assert "wait for services"
+          (test-assert "nscd PID file is created"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
+                (start-service 'nscd))
+             marionette))
 
-                (start-service 'nscd)
+          (test-assert "nscd is listening on its socket"
+            (marionette-eval
+             ;; XXX: Work around a race condition in nscd: nscd creates its
+             ;; PID file before it is listening on its socket.
+             '(let ((sock (socket PF_UNIX SOCK_STREAM 0)))
+                (let try ()
+                  (catch 'system-error
+                    (lambda ()
+                      (connect sock AF_UNIX "/var/run/nscd/socket")
+                      (close-port sock)
+                      (format #t "nscd is ready~%")
+                      #t)
+                    (lambda args
+                      (format #t "waiting for nscd...~%")
+                      (usleep 500000)
+                      (try)))))
+             marionette))
 
-                ;; XXX: Work around a race condition in nscd: nscd creates its
-                ;; PID file before it is listening on its socket.
-                (let ((sock (socket PF_UNIX SOCK_STREAM 0)))
-                  (let try ()
-                    (catch 'system-error
-                      (lambda ()
-                        (connect sock AF_UNIX "/var/run/nscd/socket")
-                        (close-port sock)
-                        (format #t "nscd is ready~%"))
-                      (lambda args
-                        (format #t "waiting for nscd...~%")
-                        (usleep 500000)
-                        (try)))))
+          (test-assert "avahi is running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'avahi-daemon))
+             marionette))
 
-                ;; Wait for the other useful things.
-                (start-service 'avahi-daemon)
-                (start-service 'networking)
-
-                #t)
+          (test-assert "network is up"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'networking))
              marionette))
 
           (test-equal "avahi-resolve-host-name"

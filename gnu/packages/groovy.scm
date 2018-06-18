@@ -1107,7 +1107,7 @@ and modify groovy's @dfn{Abstract Syntax Tree} (AST).")))
                      "groovy-jmx" "groovy-json" "groovy-jsr223"
                      "groovy-nio" "groovy-servlet" "groovy-sql"
                      "groovy-swing" "groovy-templates" "groovy-testng"
-                     "java-commons-cli" "java-asm"
+                     "groovy-xml" "java-commons-cli" "java-asm"
                      "java-classpathx-servletapi" "java-xstream"
                      "java-jansi" "java-jline-2"))
                  ;; antlr.jar is present twice in antlr2.  Symlink doesn't like
@@ -1140,6 +1140,7 @@ and modify groovy's @dfn{Abstract Syntax Tree} (AST).")))
        ("groovy-swing" ,groovy-swing)
        ("groovy-templates" ,groovy-templates)
        ("groovy-testng" ,groovy-testng)
+       ("groovy-xml" ,groovy-xml)
        ("java-commons-cli" ,java-commons-cli)
        ("java-asm" ,java-asm)
        ("java-classpathx-servletapi" ,java-classpathx-servletapi)

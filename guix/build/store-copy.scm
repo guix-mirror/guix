@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,10 +18,22 @@
 
 (define-module (guix build store-copy)
   #:use-module (guix build utils)
+  #:use-module (guix sets)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 ftw)
-  #:export (read-reference-graph
+  #:use-module (ice-9 vlist)
+  #:export (store-info?
+            store-info
+            store-info-item
+            store-info-deriver
+            store-info-references
+
+            read-reference-graph
+
             closure-size
             populate-store))
 
@@ -34,19 +46,94 @@
 ;;;
 ;;; Code:
 
+;; Information about a store item as produced by #:references-graphs.
+(define-record-type <store-info>
+  (store-info item deriver references)
+  store-info?
+  (item        store-info-item)                   ;string
+  (deriver     store-info-deriver)                ;#f | string
+  (references  store-info-references))            ;?
+
+;; TODO: Factorize with that in (guix store).
+(define (topological-sort nodes edges)
+  "Return NODES in topological order according to EDGES.  EDGES must be a
+one-argument procedure that takes a node and returns the nodes it is connected
+to."
+  (define (traverse)
+    ;; Do a simple depth-first traversal of all of PATHS.
+    (let loop ((nodes nodes)
+               (visited (setq))
+               (result '()))
+      (match nodes
+        ((head tail ...)
+         (if (set-contains? visited head)
+             (loop tail visited result)
+             (call-with-values
+                 (lambda ()
+                   (loop (edges head)
+                         (set-insert head visited)
+                         result))
+               (lambda (visited result)
+                 (loop tail visited (cons head result))))))
+        (()
+         (values visited result)))))
+
+  (call-with-values traverse
+    (lambda (_ result)
+      (reverse result))))
+
 (define (read-reference-graph port)
-  "Return a list of store paths from the reference graph at PORT.
-The data at PORT is the format produced by #:references-graphs."
-  (let loop ((line   (read-line port))
-             (result '()))
-    (cond ((eof-object? line)
-           (delete-duplicates result))
-          ((string-prefix? "/" line)
-           (loop (read-line port)
-                 (cons line result)))
-          (else
-           (loop (read-line port)
-                 result)))))
+  "Read the reference graph as produced by #:references-graphs from PORT and
+return it as a list of <store-info> records in topological order--i.e., leaves
+come first.  IOW, store items in the resulting list can be registered in the
+order in which they appear.
+
+The reference graph format consists of sequences of lines like this:
+
+     FILE
+     DERIVER
+     NUMBER-OF-REFERENCES
+     REF1
+     ...
+     REFN
+
+It is meant as an internal format."
+  (let loop ((result '())
+             (table vlist-null)
+             (referrers vlist-null))
+    (match (read-line port)
+      ((? eof-object?)
+       ;; 'guix-daemon' gives us something that's in "reverse topological
+       ;; order"--i.e., leaves (items with zero references) come last.  Here
+       ;; we compute the topological order that we want: leaves come first.
+       (let ((unreferenced? (lambda (item)
+                              (let ((referrers (vhash-fold* cons '()
+                                                            (store-info-item item)
+                                                            referrers)))
+                                (or (null? referrers)
+                                    (equal? (list item) referrers))))))
+         (topological-sort (filter unreferenced? result)
+                           (lambda (item)
+                             (map (lambda (item)
+                                    (match (vhash-assoc item table)
+                                      ((_ . node) node)))
+                                  (store-info-references item))))))
+      (item
+       (let* ((deriver (match (read-line port)
+                         ("" #f)
+                         (line line)))
+              (count   (string->number (read-line port)))
+              (refs    (unfold-right (cut >= <> count)
+                                     (lambda (n)
+                                       (read-line port))
+                                     1+
+                                     0))
+              (item    (store-info item deriver refs)))
+         (loop (cons item result)
+               (vhash-cons (store-info-item item) item table)
+               (fold (cut vhash-cons <> item <>)
+                     referrers
+                     refs)))))))
 
 (define (file-size file)
   "Return the size of bytes of FILE, entering it if FILE is a directory."
@@ -72,7 +159,8 @@ The data at PORT is the format produced by #:references-graphs."
   "Return an estimate of the size of the closure described by
 REFERENCE-GRAPHS, a list of reference-graph files."
   (define (graph-from-file file)
-    (call-with-input-file file read-reference-graph))
+    (map store-info-item
+         (call-with-input-file file read-reference-graph)))
 
   (define items
     (delete-duplicates (append-map graph-from-file reference-graphs)))
@@ -88,7 +176,8 @@ REFERENCE-GRAPHS, a list of reference-graph files."
   (define (things-to-copy)
     ;; Return the list of store files to copy to the image.
     (define (graph-from-file file)
-      (call-with-input-file file read-reference-graph))
+      (map store-info-item
+           (call-with-input-file file read-reference-graph)))
 
     (delete-duplicates (append-map graph-from-file reference-graphs)))
 

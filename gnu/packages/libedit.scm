@@ -28,7 +28,7 @@
 (define-public libedit
   (package
     (name "libedit")
-    (version "20170329-3.1")
+    (version "20180525-3.1")
     (source
      (origin
       (method url-fetch)
@@ -36,7 +36,7 @@
                           "/" name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1gnlgl0x8g9ky59s70nriy5gv47676d1s4ypvbv8y11apl7xkwli"))))
+        "05iicng4kag5hxdc7adbyj1gm3qbmvcc33m9cyx5gys0s67yl6y4"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))

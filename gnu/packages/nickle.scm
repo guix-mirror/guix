@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,14 +28,14 @@
 (define-public nickle
   (package
     (name "nickle")
-    (version "2.77")
+    (version "2.81")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nickle.org/release/nickle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0rhij7cn1zkn8wzxyjkamz9fs262zyg80p6v6i864hdalg4plpm3"))))
+                "1daqsflnqqgfkq6w6dknbm42avz70f5qxn7qidvgp472i4a37acr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("readline" ,readline)))

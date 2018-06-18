@@ -89,8 +89,6 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
-      ("guix"       (ref '(gnu packages package-management)
-                         'guix-register))
       ("guile2.0-json" (ref '(gnu packages guile) 'guile2.0-json))
       ("guile2.0-ssh"  (ref '(gnu packages ssh) 'guile2.0-ssh))
       ("guile2.0-git"  (ref '(gnu packages guile) 'guile2.0-git))
@@ -342,7 +340,8 @@ DOMAIN, a gettext domain."
 
   (computed-file "guix-manual" build))
 
-(define* (guix-command modules #:key source (dependencies '())
+(define* (guix-command modules #:optional compiled-modules
+                       #:key source (dependencies '())
                        (guile-version (effective-version)))
   "Return the 'guix' command such that it adds MODULES and DEPENDENCIES in its
 load path."
@@ -366,7 +365,8 @@ load path."
 
                     (set! %load-path (cons #$modules %load-path))
                     (set! %load-compiled-path
-                      (cons #$modules %load-compiled-path))
+                      (cons (or #$compiled-modules #$modules)
+                            %load-compiled-path))
 
                     (let ((guix-main (module-ref (resolve-interface '(guix ui))
                                                  'guix-main)))
@@ -387,14 +387,16 @@ load path."
 (define* (whole-package name modules dependencies
                         #:key
                         (guile-version (effective-version))
-                        info
+                        compiled-modules
+                        info daemon
                         (command (guix-command modules
                                                #:dependencies dependencies
                                                #:guile-version guile-version)))
   "Return the whole Guix package NAME that uses MODULES, a derivation of all
 the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
-'guix' program to use; INFO is the Info manual."
-  ;; TODO: Move compiled modules to 'lib/guile' instead of 'share/guile'.
+'guix' program to use; INFO is the Info manual.  When COMPILED-MODULES is
+true, it is linked as 'lib/guile/X.Y/site-ccache'; otherwise, .go files are
+assumed to be part of MODULES."
   (computed-file name
                  (with-imported-modules '((guix build utils))
                    #~(begin
@@ -402,6 +404,10 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                        (mkdir-p (string-append #$output "/bin"))
                        (symlink #$command
                                 (string-append #$output "/bin/guix"))
+
+                       (when #$daemon
+                         (symlink (string-append #$daemon "/bin/guix-daemon")
+                                  (string-append #$output "/bin/guix-daemon")))
 
                        (let ((modules (string-append #$output
                                                      "/share/guile/site/"
@@ -412,7 +418,15 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                          (when info
                            (symlink #$info
                                     (string-append #$output
-                                                   "/share/info"))))))))
+                                                   "/share/info"))))
+
+                       ;; Object files.
+                       (when #$compiled-modules
+                         (let ((modules (string-append #$output "/lib/guile/"
+                                                       (effective-version)
+                                                       "/site-ccache")))
+                           (mkdir-p (dirname modules))
+                           (symlink #$compiled-modules modules)))))))
 
 (define* (compiled-guix source #:key (version %guix-version)
                         (pull-version 1)
@@ -482,7 +496,9 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                  ;; but we don't need to compile it; not compiling it allows
                  ;; us to avoid an extra dependency on guile-gdbm-ffi.
                  #:extra-files
-                 `(("guix/man-db.scm" ,(local-file "../guix/man-db.scm")))
+                 `(("guix/man-db.scm" ,(local-file "../guix/man-db.scm"))
+                   ("guix/store/schema.sql"
+                    ,(local-file "../guix/store/schema.sql")))
 
                  #:guile-for-build guile-for-build))
 
@@ -563,7 +579,6 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                                          #:gzip gzip
                                          #:bzip2 bzip2
                                          #:xz xz
-                                         #:guix guix
                                          #:package-name
                                          %guix-package-name
                                          #:package-version
@@ -574,11 +589,9 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                                          %guix-home-page-url)))
                  #:guile-for-build guile-for-build))
 
-  (define built-modules
+  (define (built-modules node-subset)
     (directory-union (string-append name "-modules")
-                     (append-map (lambda (node)
-                                   (list (node-source node)
-                                         (node-compiled node)))
+                     (append-map node-subset
 
                                  ;; Note: *CONFIG* comes first so that it
                                  ;; overrides the (guix config) module that
@@ -606,17 +619,32 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
   ;; Version 1 is when we return the full package.
   (cond ((= 1 pull-version)
          ;; The whole package, with a standard file hierarchy.
-         (let ((command (guix-command built-modules
-                                      #:source source
-                                      #:dependencies dependencies
-                                      #:guile-version guile-version)))
-           (whole-package name built-modules dependencies
+         (let* ((modules  (built-modules (compose list node-source)))
+                (compiled (built-modules (compose list node-compiled)))
+                (command  (guix-command modules compiled
+                                        #:source source
+                                        #:dependencies dependencies
+                                        #:guile-version guile-version)))
+           (whole-package name modules dependencies
+                          #:compiled-modules compiled
                           #:command command
+
+                          ;; Include 'guix-daemon'.  XXX: Here we inject an
+                          ;; older snapshot of guix-daemon, but that's a good
+                          ;; enough approximation for now.
+                          #:daemon (module-ref (resolve-interface
+                                                '(gnu packages
+                                                      package-management))
+                                               'guix-daemon)
+
                           #:info (info-manual source)
                           #:guile-version guile-version)))
         ((= 0 pull-version)
-         ;; Legacy 'guix pull': just return the compiled modules.
-         built-modules)
+         ;; Legacy 'guix pull': return the .scm and .go files as one
+         ;; directory.
+         (built-modules (lambda (node)
+                          (list (node-source node)
+                                (node-compiled node)))))
         (else
          ;; Unsupported 'guix pull' version.
          #f)))
@@ -628,8 +656,7 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
 
 (define %dependency-variables
   ;; (guix config) variables corresponding to dependencies.
-  '(%libgcrypt %libz %xz %gzip %bzip2 %nix-instantiate
-    %sbindir %guix-register-program))
+  '(%libgcrypt %libz %xz %gzip %bzip2 %nix-instantiate))
 
 (define %persona-variables
   ;; (guix config) variables that define Guix's persona.
@@ -651,7 +678,7 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
           (string<? (symbol->string (car name+value1))
                     (symbol->string (car name+value2))))))
 
-(define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2 guix
+(define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
                           (package-name "GNU Guix")
                           (package-version "0")
                           (bug-report-address "bug-guix@gnu.org")
@@ -667,8 +694,6 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                                %guix-version
                                %guix-bug-report-address
                                %guix-home-page-url
-                               %sbindir
-                               %guix-register-program
                                %libgcrypt
                                %libz
                                %gzip
@@ -685,17 +710,6 @@ the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
                    (define %guix-version #$package-version)
                    (define %guix-bug-report-address #$bug-report-address)
                    (define %guix-home-page-url #$home-page-url)
-
-                   (define %sbindir
-                     ;; This is used to define '%guix-register-program'.
-                     ;; TODO: Use a derivation that builds nothing but the
-                     ;; C++ part.
-                     #+(and guix (file-append guix "/sbin")))
-
-                   (define %guix-register-program
-                     (or (getenv "GUIX_REGISTER")
-                         (and %sbindir
-                              (string-append %sbindir "/guix-register"))))
 
                    (define %gzip
                      #+(and gzip (file-append gzip "/bin/gzip")))

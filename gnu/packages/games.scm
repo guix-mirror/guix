@@ -1822,7 +1822,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.1")
+    (version "1.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -1831,7 +1831,7 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1mzrnbv71b4s41c5x8clhb53l8lidiwzny1hl828228pvys5bxkb"))))
+                "06648041nr77sgzr7jpmcn37cma3hp41qynp50xzddx28l17zwg9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
@@ -2229,6 +2229,88 @@ Transport Tycoon Deluxe.")
        ("opensfx" ,openttd-opensfx)
        ,@(package-native-inputs openttd-engine)))))
 
+(define openrct2-title-sequences
+  (package
+   (name "openrct2-title-sequences")
+   (version "0.1.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/OpenRCT2/title-sequences/releases/download/v"
+                         version "/title-sequence-v" version ".zip"))
+     (file-name (string-append name "-" version ".zip"))
+     (sha256
+      (base32
+       "0qbyxrsw8hlgaq0r5d7lx7an3idy4qbfv7yiw9byhldk763n9cfw"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("bash" ,bash)
+      ("coreutils" ,coreutils)
+      ("unzip" ,unzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder
+      (begin
+        (use-modules (guix build utils))
+        (let* ((out (assoc-ref %outputs "out"))
+               (openrct2-title-sequences (string-append out
+                                         "/share/openrct2/title-sequences"))
+               (source (assoc-ref %build-inputs "source"))
+               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+          (copy-file source (string-append ,name "-" ,version ".zip"))
+          (invoke unzip (string-append ,name "-" ,version ".zip"))
+          (delete-file (string-append ,name "-" ,version ".zip"))
+          (mkdir-p openrct2-title-sequences)
+          (copy-recursively "."
+                            openrct2-title-sequences)
+          #t))))
+   (home-page "https://github.com/OpenRCT2/OpenRCT2")
+   (synopsis "Title sequences for OpenRCT2")
+   (description
+    "openrct2-title-sequences is a set of title sequences for OpenRCT2.")
+   (license license:gpl3+)))
+
+(define openrct2-objects
+  (package
+   (name "openrct2-objects")
+   (version "1.0.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/OpenRCT2/objects/releases/download/v"
+                         version "/objects.zip"))
+     (file-name (string-append name "-" version ".zip"))
+     (sha256
+      (base32
+       "1z92afhbv13j1ig6fz0x8w9vdmfchssv16vwwhb0vj40pn1g1rwy"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("bash" ,bash)
+      ("coreutils" ,coreutils)
+      ("unzip" ,unzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder
+      (begin
+        (use-modules (guix build utils))
+        (let* ((out (assoc-ref %outputs "out"))
+               (openrct2-objects (string-append out
+                                         "/share/openrct2/objects"))
+               (source (assoc-ref %build-inputs "source"))
+               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+          (copy-file source (string-append ,name "-" ,version ".zip"))
+          (invoke unzip (string-append ,name "-" ,version ".zip"))
+          (delete-file (string-append ,name "-" ,version ".zip"))
+          (mkdir-p openrct2-objects)
+          (copy-recursively "."
+                            openrct2-objects)
+          #t))))
+   (home-page "https://github.com/OpenRCT2/OpenRCT2")
+   (synopsis "Objects for OpenRCT2")
+   (description
+    "openrct2-objects is a set of objects for OpenRCT2.")
+   (license license:gpl3+)))
+
 (define-public openrct2
   (package
     (name "openrct2")
@@ -2244,35 +2326,39 @@ Transport Tycoon Deluxe.")
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;; no tests available
+     `(#:configure-flags '("-DDOWNLOAD_TITLE_SEQUENCES=OFF")
+       #:tests? #f ; Tests require network.
        #:phases
         (modify-phases %standard-phases
-          (add-after 'unpack 'fix-usr-share-paths
-            (lambda* (#:key make-flags outputs #:allow-other-keys)
+          (add-after 'unpack 'fix-usr-share-paths&add-data
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((titles (assoc-ref inputs "openrct2-title-sequences"))
+                    (objects (assoc-ref inputs "openrct2-objects")))
               ;; Fix some references to /usr/share.
+              ;; Change to Platform.Linux.cpp on 0.1.2+
               (substitute* "src/openrct2/platform/linux.c"
                 (("/usr/share")
-                (string-append (assoc-ref %outputs "out") "/share")))))
-          (add-after 'build 'fix-cmake-install-file
-            (lambda _
-              ;; The build system tries to download a file and compare hashes.
-              ;; Since we have no network, remove this so the install doesn't fail.
-              (substitute* "cmake_install.cmake"
-                (("EXPECTED_HASH SHA1=b587d83de508d0b104d14c599b76f8565900fce0")
-                "")))))))
+                 (string-append (assoc-ref %outputs "out") "/share")))
+              (copy-recursively (string-append titles
+                                "/share/openrct2/title-sequences") "data/title")
+              (copy-recursively (string-append objects
+                                "/share/openrct2/objects") "data/object")))))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
+              ("icu4c" ,icu4c)
               ("jansson" ,jansson)
               ("libpng" ,libpng)
               ("libzip" ,libzip)
               ("mesa" ,mesa)
+              ("openrct2-objects" ,openrct2-objects)
+              ("openrct2-title-sequences" ,openrct2-title-sequences)
               ("openssl" ,openssl)
               ("sdl2" ,sdl2)
               ("speexdsp" ,speexdsp)
               ("zlib" ,zlib)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/OpenRCT2/OpenRCT2")
     (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
     (description "OpenRCT2 is a free software re-implementation of
@@ -3165,53 +3251,6 @@ programmers may also add their own favorite language.")
 application that locks the keyboard and mouse and instead displays bright
 colors, pictures, and sounds.")
     (license license:gpl3+)))
-
-(define-public mrrescue
-  (package
-    (name "mrrescue")
-    (version "1.02e")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/SimonLarsen/mrrescue/releases/"
-                    "download/" version "/" name version ".love"))
-              (file-name (string-append name "-" version ".love"))
-              (sha256
-               (base32
-                "0jwzbwkgp1l5ia6c7s760gmdirbsncp6nfqp7vqdqsfb63la9gl2"))))
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let* ((out     (assoc-ref %outputs "out"))
-                (bindir  (string-append out "/bin"))
-                (prog    (string-append bindir "/mrrescue"))
-                (source  (assoc-ref %build-inputs "source"))
-                (bash    (string-append (assoc-ref %build-inputs "bash")
-                                        "/bin/bash"))
-                (love    (string-append (assoc-ref %build-inputs "love")
-                                        "/bin/love")))
-           (mkdir-p bindir)
-           (with-output-to-file prog
-             (lambda ()
-               (format #t "#!~a~%" bash)
-               (format #t "exec -a mrrescue \"~a\" \"~a\"~%" love source)))
-           (chmod prog #o755)
-           #t))))
-    (inputs
-     `(("bash" ,bash)
-       ("love" ,love)))
-    (home-page "http://tangramgames.dk/games/mrrescue")
-    (synopsis "Arcade-style fire fighting game")
-    (description
-     "Mr. Rescue is an arcade styled 2d action game centered around evacuating
-civilians from burning buildings.  The game features fast paced fire
-extinguishing action, intense boss battles, a catchy soundtrack and lots of
-throwing people around in pseudo-randomly generated buildings.")
-    (license (list license:zlib             ; for source code
-                   license:cc-by-sa3.0))))  ; for graphics and music assets
 
 (define-public hyperrogue
   (package
@@ -4481,7 +4520,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
   (package
     (inherit quakespasm)
     (name "vkquake")
-    (version "0.97.3")
+    (version "1.00.0")
     (source
      (origin
        (method url-fetch)
@@ -4490,7 +4529,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1p0nh2v2ilylw62fxc5qpfcmyhs0s64w8sgh036nc6kn21kbjc0d"))))
+         "0bviv18jvp41jvrabgl7l5kq4n1p6p3rywij481yswawdw6l5idh"))))
     (arguments
      `(#:make-flags
        (let ((vulkanlib (string-append (assoc-ref %build-inputs

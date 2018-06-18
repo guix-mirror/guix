@@ -13,6 +13,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -362,6 +363,30 @@ to forget a file, or miss that some unexpected file was added.  This module
 simplifies maintaining test directories by tracking their status as they are
 modified or tested with this API, making it simple to test both individual
 files, as well as to verify that there are no missing or unknown files.")
+    (license perl-license)))
+
+(define-public perl-test-distmanifest
+  (package
+    (name "perl-test-distmanifest")
+    (version "1.014")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/E/ET/ETHER/Test-DistManifest-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1ifpff5simjslabwy7ac6kdylv4c0b5b39fgpwf9ha16yh6w49ix"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-module-manifest" ,perl-module-manifest)))
+    (home-page "https://github.com/jawnsy/Test-DistManifest")
+    (synopsis "Author test that validates a package @file{MANIFEST}")
+    (description
+     "@code{Test::DistManifest} provides a simple method of testing that a
+@file{MANIFEST} file matches its distribution.")
     (license perl-license)))
 
 (define-public perl-test-eol
@@ -1138,6 +1163,32 @@ a minimum of effort.")
     (home-page (string-append "http://search.cpan.org/~fdaly//"
                               "Test-Tester-" version))
     ;; "Under the same license as Perl itself"
+    (license perl-license)))
+
+(define-public perl-test-perltidy
+  (package
+    (name "perl-test-perltidy")
+    (version "20130104")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LA/LARRYL/Test-PerlTidy-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1j5rsb4km9rzcbd1ljavj8vm42bmilji40v2jj2k87l1ykrxj59z"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-finder" ,perl-file-finder)
+       ("perl-file-slurp" ,perl-file-slurp)
+       ("perltidy" ,perltidy)
+       ("perl-text-diff" ,perl-text-diff)))
+    (home-page "http://search.cpan.org/dist/Test-PerlTidy/")
+    (synopsis "Check that all your Perl files are tidy")
+    (description
+     "Using @code{Test::PerlTidy}, any file ending in .pl, .pm, .t or .PL will
+cause a test fail unless it is exactly as @code{perltidy} would like it to be.")
     (license perl-license)))
 
 (define-public perl-test-trap

@@ -77,6 +77,7 @@
             nginx-configuration-upstream-blocks
             nginx-configuration-server-names-hash-bucket-size
             nginx-configuration-server-names-hash-bucket-max-size
+            nginx-configuration-extra-content
             nginx-configuration-file
 
             <nginx-server-configuration>
@@ -431,6 +432,8 @@
                                  (default #f))
   (server-names-hash-bucket-max-size nginx-configuration-server-names-hash-bucket-max-size
                                      (default #f))
+  (extra-content nginx-configuration-extra-content
+                 (default ""))
   (file          nginx-configuration-file         ;#f | string | file-like
                  (default #f)))
 
@@ -521,7 +524,8 @@ of index files."
                 (nginx log-directory run-directory
                  server-blocks upstream-blocks
                  server-names-hash-bucket-size
-                 server-names-hash-bucket-max-size)
+                 server-names-hash-bucket-max-size
+                 extra-content)
    (apply mixed-text-file "nginx.conf"
           (flatten
            "user nginx nginx;\n"
@@ -550,7 +554,8 @@ of index files."
            "\n"
            (map emit-nginx-upstream-config upstream-blocks)
            (map emit-nginx-server-config server-blocks)
-           "}\n"
+           extra-content
+           "\n}\n"
            "events {}\n"))))
 
 (define %nginx-accounts

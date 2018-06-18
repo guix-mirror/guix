@@ -4024,14 +4024,14 @@ objects in HTML format.")
 (define-public r-rjson
   (package
     (name "r-rjson")
-    (version "0.2.19")
+    (version "0.2.20")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rjson" version))
        (sha256
         (base32
-         "1g29vp3gfbh73a5br68jydsrigia4vnr5avc84avgwl6353749jw"))))
+         "0v1zvdd3svnavklh7y5xbwrrkbvx6053r4c5hgnk7hz7bqg7qa1s"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/rjson")
     (synopsis "JSON library for R")
@@ -6117,6 +6117,11 @@ infrastructure")))
     (inherit java-eclipse-jetty-security)
     (version (package-version java-eclipse-jetty-util-9.2))
     (source (package-source java-eclipse-jetty-util-9.2))
+    (arguments
+     `(#:test-exclude
+       ;; This test fails.
+       (list "**/ConstraintTest.*")
+       ,@(package-arguments java-eclipse-jetty-security)))
     (inputs
      `(("util" ,java-eclipse-jetty-util-9.2)
        ("http" ,java-eclipse-jetty-http-9.2)
@@ -6181,6 +6186,107 @@ container.")))
        ("http-test" ,java-eclipse-jetty-http-test-classes-9.2)
        ("server" ,java-eclipse-jetty-server-9.2)
        ,@(package-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public java-eclipse-jetty-xml
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-xml")
+    (arguments
+     `(#:jar-name "eclipse-jetty-xml.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; most tests require network
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-xml")
+             #t)))))
+    (inputs
+     `(("java-eclipse-jetty-util" ,java-eclipse-jetty-util)))
+    (native-inputs
+     `(("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
+       ,@(package-native-inputs java-eclipse-jetty-util)))))
+
+(define-public java-eclipse-jetty-xml-9.2
+  (package
+    (inherit java-eclipse-jetty-xml)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (arguments
+     `(#:jar-name "eclipse-jetty-xml.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; most tests require network
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-xml")
+             #t)))))
+    (inputs
+     `(("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("java-eclipse-jetty-io-9.2" ,java-eclipse-jetty-io-9.2)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public java-eclipse-jetty-webapp
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-webapp")
+    (arguments
+     `(#:jar-name "eclipse-jetty-webapp.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       ;; One test fails
+       #:test-exclude (list "**/WebAppContextTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-webapp")
+             #t)))))
+    (inputs
+     `(("java-eclipse-jetty-util" ,java-eclipse-jetty-util)
+       ("java-eclipse-jetty-http" ,java-eclipse-jetty-http)
+       ("java-eclipse-jetty-server" ,java-eclipse-jetty-server)
+       ("java-eclipse-jetty-servlet" ,java-eclipse-jetty-servlet)
+       ("java-eclipse-jetty-security" ,java-eclipse-jetty-security)
+       ("java-eclipse-jetty-xml" ,java-eclipse-jetty-xml)
+       ("java-tomcat" ,java-tomcat)))
+    (native-inputs
+     `(("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
+       ,@(package-native-inputs java-eclipse-jetty-util)))))
+
+(define-public java-eclipse-jetty-webapp-9.2
+  (package
+    (inherit java-eclipse-jetty-webapp)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (arguments
+     `(#:jar-name "eclipse-jetty-webapp.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-exclude (list "**/WebAppContextTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-webapp")
+             #t)))))
+    (inputs
+     `(("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
+       ("java-eclipse-jetty-http-9.2" ,java-eclipse-jetty-http-9.2)
+       ("java-eclipse-jetty-server-9.2" ,java-eclipse-jetty-server-9.2)
+       ("java-eclipse-jetty-servlet-9.2" ,java-eclipse-jetty-servlet-9.2)
+       ("java-eclipse-jetty-security-9.2" ,java-eclipse-jetty-security-9.2)
+       ("java-eclipse-jetty-xml-9.2" ,java-eclipse-jetty-xml-9.2)
+       ("java-tomcat" ,java-tomcat)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("java-eclipse-jetty-io-9.2" ,java-eclipse-jetty-io-9.2)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
 
 (define-public java-jsoup
   (package

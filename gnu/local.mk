@@ -581,6 +581,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/azr3.patch				\
   %D%/packages/patches/bash-completion-directories.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
+  %D%/packages/patches/bind-CVE-2018-5738.patch			\
+  %D%/packages/patches/binutils-aarch64-symbol-relocation.patch	\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/boost-fix-icu-build.patch		\
@@ -641,7 +643,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/e2fsprogs-glibc-2.27.patch		\
   %D%/packages/patches/eigen-arm-neon-fixes.patch		\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
-  %D%/packages/patches/elixir-disable-failing-tests.patch	\
   %D%/packages/patches/elogind-glibc-2.27.patch			\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/emacs-browse-at-remote-cgit-gnu.patch	\
@@ -671,6 +672,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/file-CVE-2017-1000249.patch		\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/findutils-test-xargs.patch		\
+  %D%/packages/patches/flann-cmake-3.11.patch			\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/fltk-shared-lib-defines.patch		\
   %D%/packages/patches/fltk-xfont-on-demand.patch		\
@@ -744,7 +746,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gnome-todo-libical-compat.patch		\
   %D%/packages/patches/gnome-tweak-tool-search-paths.patch	\
   %D%/packages/patches/gnucash-price-quotes-perl.patch		\
-  %D%/packages/patches/gnupg-1.4-CVE-2018-12020.patch		\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gnutls-skip-pkgconfig-test.patch		\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
@@ -982,12 +983,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch		\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
-  %D%/packages/patches/password-store-gnupg-compat.patch	\
   %D%/packages/patches/patchelf-page-size.patch			\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/perf-gcc-ice.patch			\
+  %D%/packages/patches/perl-archive-tar-CVE-2018-12015.patch	\
   %D%/packages/patches/perl-file-path-CVE-2017-6512.patch	\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-dbd-mysql-CVE-2017-10788.patch	\
@@ -1050,7 +1051,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-genshi-stripping-of-unsafe-script-tags.patch	\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-networkx2-reproducible-build.patch	\
-  %D%/packages/patches/python-nose-timer-drop-ordereddict.patch \
   %D%/packages/patches/python-pillow-fix-failing-tests.patch	\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   %D%/packages/patches/python-scikit-learn-fix-test-non-determinism.patch	\
@@ -1111,7 +1111,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
   %D%/packages/patches/steghide-fixes.patch			\
-  %D%/packages/patches/strace-kernel-4.16.patch			\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
@@ -1157,6 +1156,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ustr-fix-build-with-gcc-5.patch		\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
+  %D%/packages/patches/upx-fix-CVE-2017-15056.patch		\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/valgrind-glibc-compat.patch		\
   %D%/packages/patches/vinagre-revert-1.patch                   \

@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,9 +27,12 @@
 (define-module (gnu packages package-management)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages attr)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -36,6 +40,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -208,12 +213,13 @@
                         (let* ((out    (assoc-ref outputs "out"))
                                (guile  (assoc-ref inputs "guile"))
                                (json   (assoc-ref inputs "guile-json"))
+                               (sqlite (assoc-ref inputs "guile-sqlite3"))
                                (git    (assoc-ref inputs "guile-git"))
                                (bs     (assoc-ref inputs
                                                   "guile-bytestructures"))
                                (ssh    (assoc-ref inputs "guile-ssh"))
                                (gnutls (assoc-ref inputs "gnutls"))
-                               (deps   (list json gnutls git bs ssh))
+                               (deps   (list json sqlite gnutls git bs ssh))
                                (effective
                                 (read-line
                                  (open-pipe* OPEN_READ
@@ -270,6 +276,7 @@
       (propagated-inputs
        `(("gnutls" ,gnutls)
          ("guile-json" ,guile-json)
+         ("guile-sqlite3" ,guile-sqlite3)
          ("guile-ssh" ,guile-ssh)
          ("guile-git" ,guile-git)))
 
@@ -287,23 +294,24 @@ the Nix package manager.")
 ;; Alias for backward compatibility.
 (define-public guix-devel guix)
 
-(define-public guix-register
+(define-public guix-daemon
   ;; This package is for internal consumption: it allows us to quickly build
-  ;; the 'guix-register' program, which is referred to by (guix config).
-  ;; TODO: Remove this hack when 'guix-register' has been superseded by Scheme
-  ;; code.
+  ;; the 'guix-daemon' program and use that in (guix self), used by 'guix
+  ;; pull'.
   (package
     (inherit guix)
     (properties `((hidden? . #t)))
-    (name "guix-register")
+    (name "guix-daemon")
 
     ;; Use a minimum set of dependencies.
     (native-inputs
      (fold alist-delete (package-native-inputs guix)
            '("po4a" "graphviz" "help2man")))
-    (propagated-inputs
+    (inputs
      `(("gnutls" ,gnutls)
-       ("guile-git" ,guile-git)))
+       ("guile-git" ,guile-git)
+       ,@(package-inputs guix)))
+    (propagated-inputs '())
 
     (arguments
      (substitute-keyword-arguments (package-arguments guix)
@@ -316,11 +324,21 @@ the Nix package manager.")
                (invoke "make" "nix/libstore/schema.sql.hh")
                (invoke "make" "-j" (number->string
                                     (parallel-job-count))
-                       "guix-register")))
+                       "guix-daemon")))
            (delete 'copy-bootstrap-guile)
            (replace 'install
-             (lambda _
-               (invoke "make" "install-sbinPROGRAMS")))
+             (lambda* (#:key outputs #:allow-other-keys)
+               (invoke "make" "install-binPROGRAMS"
+                       "install-nodist_pkglibexecSCRIPTS")
+
+               ;; We need to tell 'guix-daemon' which 'guix' command to use.
+               ;; Here we use a questionable hack where we hard-code
+               ;; "~root/.config", which could be wrong (XXX).
+               (let ((out (assoc-ref outputs "out")))
+                 (substitute* (find-files (string-append out "/libexec"))
+                   (("exec \".*/bin/guix\"")
+                    "exec ~root/.config/current/bin/guix"))
+                 #t)))
            (delete 'wrap-program)))))))
 
 (define-public guile2.0-guix
@@ -528,13 +546,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "95")
+    (version "96")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0aksxxivxli6l3fylxgl771hw0h7l8x35l76cmj0d12zgx54w0a1"))))
+                "1x66f2x8miy3giff14higpcs70c0zb5d3gj6yn8ac6p183sngl72"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -883,3 +901,57 @@ Microsoft cabinet (.@dfn{CAB}) files.")
 and sign Windows@tie{}Installer (.@dfn{MSI}) files.  It aims to be a solution
 for packaging and deployment of cross-compiled Windows applications.")
     (license license:lgpl2.1+)))
+
+(define-public libostree
+  (package
+    (name "libostree")
+    (version "2018.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ostreedev/ostree/releases/download/v"
+                    version "/libostree-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0q82d6rvp119nx7ck7j63a591kz8vg7v465kf9ygh8kzg875l3xd"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Don't try to use the non-existing '/var/tmp' as test
+             ;; directory.
+             (setenv "TEST_TMPDIR" (getenv "TMPDIR"))
+             #t)))
+       ;; XXX: fails with:
+       ;;     tap-driver.sh: internal error getting exit status
+       ;;     tap-driver.sh: fatal: I/O or internal error
+       #:tests? #f))
+    (native-inputs
+     `(("attr" ,attr)                   ; for tests
+       ("bison" ,bison)
+       ("glib:bin" ,glib "bin")          ; for 'glib-mkenums'
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("avahi" ,avahi)
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("e2fsprogs" ,e2fsprogs)
+       ("fuse" ,fuse)
+       ("glib" ,glib)
+       ("gpgme" ,gpgme)
+       ("libarchive" ,libarchive)
+       ("libsoup" ,libsoup)
+       ("nettle" ,nettle)               ; required by 'libarchive.la'
+       ("util-linux" ,util-linux)))
+    (home-page "https://ostree.readthedocs.io/en/latest/")
+    (synopsis "Operating system and container binary deployment and upgrades")
+    (description
+     "@code{libostree} is both a shared library and suite of command line
+tools that combines a \"git-like\" model for committing and downloading
+bootable filesystem trees, along with a layer for deploying them and managing
+the bootloader configuration.")
+    (license license:lgpl2.0+)))

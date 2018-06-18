@@ -295,6 +295,12 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                  (or (%current-target-system) (%current-system)))
            ((or "x86_64" "i386")
             `(("gcc" ,gcc-7)))
+           ("arm64"
+            ;; Work around a binutils 2.30 bug where some kernel symbols would
+            ;; be incorrectly marked as relocatable:
+            ;; <https://sourceware.org/bugzilla/show_bug.cgi?id=22764>.
+            `(("ld-wrapper" ,(make-ld-wrapper "ld-wrapper"
+                                              #:binutils binutils/fixed))))
            (_
             '()))
        ,@(match (and configuration-file
@@ -395,8 +401,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17")
-(define %linux-libre-hash "0abbqrq96kn97jr02mf4ahqg7hl9vhq95c1l2z0s7jqrmhv1n8pb")
+(define %linux-libre-version "4.17.2")
+(define %linux-libre-hash "0xkswi9vhbzi466pqvyli7glkvdyxhphn8yjg69kpw37rpw8ix5l")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -404,8 +410,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.48")
-(define %linux-libre-4.14-hash "011lkq30gpvbgvg2p1nw2kqkig9a3qridy678rkx3fpah0ya4rhd")
+(define %linux-libre-4.14-version "4.14.50")
+(define %linux-libre-4.14-hash "19k7s33dyykm2vh1zpxxh3qrbjcx2p2md2r8s8z5mbv8yaldgvmj")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -414,14 +420,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.107"
-                    "0560sy53l42wi1jidwdbhjaa9p6kf46snk2hfcjk9f0ciiiiz5gi"
+  (make-linux-libre "4.9.109"
+                    "1i27fmlr0b05n4qri2vxdbg0qddwk1clyaramwbl3w0w10k63qkc"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.136"
-                    "0bc278l9arl8bb2gvcg02x57h66b4r8iaan3r4kzqbmkfspkl2gi"
+  (make-linux-libre "4.4.138"
+                    "1030ra5gn24qmx8lsnhr6kfnfm60avzs23r81dl7mvzr5dci8vsl"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -914,16 +920,15 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.22")
+    (version "4.23")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
              (uri (string-append home-page "/files/" version
                                  "/strace-" version ".tar.xz"))
-             (patches (search-patches "strace-kernel-4.16.patch"))
              (sha256
               (base32
-               "17dkpnsjxmys1ydidm9wcvc3wscsz44fmlxw3dclspn9cj9d1306"))))
+               "1bcsq2gbpcb81ayryvn56a6kjx42fc21la6qgds35n0xbybacq3q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2995,7 +3000,10 @@ arrays when needed.")
              (let ((lvm2 (assoc-ref inputs "lvm2"))
                    (udev (assoc-ref inputs "udev")))
                (substitute* "Makefile.inc"
-                 (("\\$\\(prefix\\)/usr") "$(prefix)"))
+                 (("\\$\\(prefix\\)/usr") "$(prefix)")
+                 ;; Do not save timestamp to avoid gzip "timestamp
+                 ;; out-of-range" warnings.
+                 (("gzip -9") "gzip -9n"))
                (substitute* '("kpartx/Makefile" "libmultipath/Makefile")
                  (("/usr/include/libdevmapper.h")
                   (string-append lvm2 "/include/libdevmapper.h"))
@@ -3364,7 +3372,7 @@ disks and SD cards.  This package provides the userland utilities.")
   (package
     (inherit f2fs-tools-1.7)
     (name "f2fs-tools")
-    (version "1.8.0")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3372,7 +3380,7 @@ disks and SD cards.  This package provides the userland utilities.")
                     "/f2fs-tools.git/snapshot/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1bir9ladb58ijlcvrjrq1fb1xv5ys50zdjaq0yzliib0apsyrnyl"))))
+                "05ikaim0qq3dx9x3sp43ralwz43r3b0viv62n99kabp0vf3b0hg8"))))
     (inputs
      `(("libuuid" ,util-linux)))))
 
@@ -4033,26 +4041,27 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.0")
+    (version "1.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/haikarainen/" name
-                                  "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/haikarainen/light")
+                    (commit version)))
               (sha256
                (base32
-                "0r5gn6c0jcxknzybl6059dplxv46dpahchqq4gymrs7z8bp0hilp"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1qra8yzsga29bxlvq63v1db071a1xdji7i60p4kzrciidm1206js"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-after 'unpack 'patch-makefile
            (lambda _
-             (substitute* "Makefile" (("chown") "#")))))))
+             (substitute* "Makefile" (("chown") "#"))
+             #t)))))
     (native-inputs
      `(("help2man" ,help2man)))
     (home-page "https://haikarainen.github.io/light")
@@ -4405,14 +4414,14 @@ available in the kernel Linux.")
 (define-public cpuid
   (package
     (name "cpuid")
-    (version "20180419")
+    (version "20180519")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.etallen.com/cpuid/cpuid-"
                                   version ".src.tar.gz"))
               (sha256
                (base32
-                "0cnxj72pjalsszhn862r6shw64zbrkw0k3mm36fn93bivswjnj12"))))
+                "16pzwyifc9glpk1hm6bqb5d1a7cw0qnqiamh5sbvqg7j6sz26y4n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("CC=gcc")

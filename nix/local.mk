@@ -120,7 +120,6 @@ libstore_a_CXXFLAGS = $(AM_CXXFLAGS)		\
   $(SQLITE3_CFLAGS) $(LIBGCRYPT_CFLAGS)
 
 bin_PROGRAMS = guix-daemon
-sbin_PROGRAMS = guix-register
 
 guix_daemon_SOURCES =				\
   %D%/nix-daemon/nix-daemon.cc			\
@@ -138,24 +137,9 @@ guix_daemon_LDADD =				\
 guix_daemon_headers =				\
   %D%/nix-daemon/shared.hh
 
-
-guix_register_SOURCES =				\
-  %D%/guix-register/guix-register.cc
-
-guix_register_CPPFLAGS =			\
-  $(libutil_a_CPPFLAGS)				\
-  $(libstore_a_CPPFLAGS)			\
-  -I$(top_srcdir)/%D%/libstore
-
-# XXX: Should we start using shared libs?
-guix_register_LDADD =				\
-  libstore.a libutil.a libformat.a -lz		\
-  $(SQLITE3_LIBS) $(LIBGCRYPT_LIBS)
-
 if HAVE_LIBBZ2
 
 guix_daemon_LDADD += -lbz2
-guix_register_LDADD += -lbz2
 
 endif HAVE_LIBBZ2
 
@@ -163,7 +147,7 @@ noinst_HEADERS =						\
   $(libformat_headers) $(libutil_headers) $(libstore_headers)	\
   $(guix_daemon_headers)
 
-%D%/libstore/schema.sql.hh: %D%/libstore/schema.sql
+%D%/libstore/schema.sql.hh: guix/store/schema.sql
 	$(AM_V_GEN)$(GUILE) --no-auto-compile -c		\
 	  "(use-modules (rnrs io ports))			\
 	   (call-with-output-file \"$@\"			\

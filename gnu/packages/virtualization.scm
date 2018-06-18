@@ -45,6 +45,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
@@ -52,6 +53,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
@@ -71,6 +73,7 @@
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+
                                                asl2.0))
   #:use-module (guix packages)
@@ -863,4 +866,111 @@ packaged according to the
 @uref{https://github.com/opencontainers/runtime-spec/blob/master/spec.md, Open
 Container Initiative (OCI) format} and is a compliant implementation of the
 Open Container Initiative specification.")
+    (license asl2.0)))
+
+(define-public umoci
+  (package
+    (name "umoci")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/openSUSE/umoci/releases/download/v"
+                    version "/umoci.tar.xz"))
+              (file-name (string-append "umoci-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0hg7hs4dagj2fgymm4b4s68k1v2k2093s3jg0d94j0ixhfmyg9nd"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/openSUSE/umoci"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source import-path #:allow-other-keys)
+             ;; Unpack the tarball into 'umoci' instead of "runc-${version}".
+             (let ((dest (string-append "src/" import-path)))
+               (mkdir-p dest)
+               (invoke "tar" "-C" (string-append "src/" import-path)
+                       "--strip-components=1"
+                       "-xvf" source))))
+         (replace 'build
+           (lambda* (#:key import-path #:allow-other-keys)
+             (chdir (string-append "src/" import-path))
+             ;; TODO: build manpages with 'go-md2man'.
+             (invoke "make" "SHELL=bash")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bindir (string-append out "/bin")))
+               (install-file "umoci" bindir)
+               #t))))))
+    (home-page "https://umo.ci/")
+    (synopsis "Tool for modifying Open Container images")
+    (description
+     "@command{umoci} is a tool that allows for high-level modification of an
+Open Container Initiative (OCI) image layout and its tagged images.")
+    (license asl2.0)))
+
+(define-public skopeo
+  (package
+    (name "skopeo")
+    (version "0.1.28")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/projectatomic/skopeo")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "068nwrr3nr27alravcq1sxyhdd5jjr24213vdgn1dqva3885gbi0"))))
+    (build-system go-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("btrfs-progs" ,btrfs-progs)
+       ("eudev" ,eudev)
+       ("libassuan" ,libassuan)
+       ("libselinux" ,libselinux)
+       ("libostree" ,libostree)
+       ("lvm2" ,lvm2)
+       ("glib" ,glib)
+       ("gpgme" ,gpgme)))
+    (arguments
+     '(#:import-path "github.com/projectatomic/skopeo"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key import-path #:allow-other-keys)
+             (chdir (string-append "src/" import-path))
+             ;; TODO: build manpages with 'go-md2man'.
+             (invoke "make" "binary-local")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "make" "install-binary" "install-completions"
+                       (string-append "PREFIX=" out))))))))
+    (home-page "https://github.com/projectatomic/skopeo")
+    (synopsis "Interact with container images and container image registries")
+    (description
+     "@command{skopeo} is a command line utility providing various operations
+with container images and container image registries.  It can:
+@enumerate
+
+@item Copy container images between various containers image stores,
+converting them as necessary.
+
+@item Convert a Docker schema 2 or schema 1 container image to an OCI image.
+
+@item Inspect a repository on a container registry without needlessly pulling
+the image.
+
+@item Sign and verify container images.
+
+@item Delete container images from a remote container registry.
+
+@end enumerate")
     (license asl2.0)))

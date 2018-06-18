@@ -25,6 +25,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build store-copy)
   #:use-module (guix build syscalls)
+  #:use-module ((guix store database) #:select (reset-timestamps))
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
   #:use-module (gnu system uuid)
@@ -345,7 +346,7 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
     ;; Optionally, register the inputs in the image's store.
     (when register-closures?
       (unless copy-closures?
-        ;; XXX: 'guix-register' wants to palpate the things it registers, so
+        ;; XXX: 'register-closure' wants to palpate the things it registers, so
         ;; bind-mount the store on the target.
         (mkdir-p target-store)
         (mount (%store-directory) target-store "" MS_BIND))
@@ -354,6 +355,7 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
       (for-each (lambda (closure)
                   (register-closure target
                                     (string-append "/xchg/" closure)
+                                    #:reset-timestamps? copy-closures?
                                     #:deduplicate? deduplicate?))
                 closures)
       (unless copy-closures?
@@ -363,7 +365,7 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
     (display "populating...\n")
     (populate-root-file-system system-directory target)
 
-    ;; 'guix-register' resets timestamps and everything, so no need to do it
+    ;; 'register-closure' resets timestamps and everything, so no need to do it
     ;; once more in that case.
     (unless register-closures?
       (reset-timestamps target))))
