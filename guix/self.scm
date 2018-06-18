@@ -655,7 +655,7 @@ assumed to be part of MODULES."
 
 (define %dependency-variables
   ;; (guix config) variables corresponding to dependencies.
-  '(%libgcrypt %libz %xz %gzip %bzip2 %nix-instantiate))
+  '(%libgcrypt %libz %xz %gzip %bzip2))
 
 (define %persona-variables
   ;; (guix config) variables that define Guix's persona.
@@ -696,8 +696,7 @@ assumed to be part of MODULES."
                                %libz
                                %gzip
                                %bzip2
-                               %xz
-                               %nix-instantiate))
+                               %xz))
 
                    #$@(map (match-lambda
                              ((name . value)
@@ -721,13 +720,10 @@ assumed to be part of MODULES."
                             (file-append libgcrypt "/lib/libgcrypt")))
                    (define %libz
                      #+(and zlib
-                            (file-append zlib "/lib/libz")))
-
-                   (define %nix-instantiate       ;for (guix import snix)
-                     "nix-instantiate"))
+                            (file-append zlib "/lib/libz"))))
 
                ;; Guile 2.0 *requires* the 'define-module' to be at the
-               ;; top-level or it 'toplevel-ref' in the resulting .go file are
+               ;; top-level or the 'toplevel-ref' in the resulting .go file are
                ;; made relative to a nonexistent anonymous module.
                #:splice? #t))
 

@@ -53,7 +53,7 @@
 
 (define %dependency-variables
   ;; (guix config) variables corresponding to dependencies.
-  '(%libgcrypt %libz %xz %gzip %bzip2 %nix-instantiate))
+  '(%libgcrypt %libz %xz %gzip %bzip2))
 
 (define %persona-variables
   ;; (guix config) variables that define Guix's persona.
@@ -94,8 +94,7 @@
                                %libz
                                %gzip
                                %bzip2
-                               %xz
-                               %nix-instantiate))
+                               %xz))
 
                    ;; XXX: Work around <http://bugs.gnu.org/15602>.
                    (eval-when (expand load eval)
@@ -121,10 +120,7 @@
                               (file-append libgcrypt "/lib/libgcrypt")))
                      (define %libz
                        #+(and zlib
-                              (file-append zlib "/lib/libz")))
-
-                     (define %nix-instantiate     ;for (guix import snix)
-                       "nix-instantiate")))))
+                              (file-append zlib "/lib/libz")))))))
 
 
 ;;;

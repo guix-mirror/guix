@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -283,7 +283,7 @@ ATTRIBUTE is true, only that attribute is considered."
   platform = (import ~a/pkgs/top-level/platforms.nix).sheevaplug;
 }" nixpkgs)))
       (apply open-pipe* OPEN_READ
-             %nix-instantiate "--strict" "--eval-only" "--xml"
+             "nix-instantiate" "--strict" "--eval-only" "--xml"
 
              ;; Pass a dummy `crossSystem' argument so that `buildInputs' and
              ;; `nativeBuildInputs' are not coalesced.
