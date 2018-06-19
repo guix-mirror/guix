@@ -602,7 +602,7 @@ process, passing on the arguments as command line arguments.")
 (define-public emacs-ghub
   (package
     (name "emacs-ghub")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -611,7 +611,7 @@ process, passing on the arguments as command line arguments.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1zrb3xk04a228g2ahx0r02d0d3xskj60q73qavvmm2i56r66cxvc"))))
+                "0d0qj5r1bm2aidi61rigrdaycxnyb7y1ivb3h8rpvvapsf8sk7z0"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
