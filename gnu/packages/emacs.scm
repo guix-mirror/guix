@@ -3199,6 +3199,27 @@ started with 20 minutes.  All values are customizable.")
 organizer.")
     (license license:gpl3+)))
 
+(define-public emacs-atom-one-dark-theme
+  (let ((commit "1f1185bf667a38d3d0d180ce85fd4c131818aae2")
+        (revision "0"))
+    (package
+     (name "emacs-atom-one-dark-theme")
+     (version (git-version "0.4.0" revision commit))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jonathanchu/atom-one-dark-theme.git")
+                    (commit commit)))
+              (sha256
+               (base32
+                "1alma16hg3mfjly8a9s3mrswkjjx4lrpdnf43869hn2ibkn7zx9z"))
+              (file-name (git-file-name name version))))
+     (build-system emacs-build-system)
+     (home-page "https://github.com/jonathanchu/atom-one-dark-theme")
+     (synopsis "Atom One Dark color theme for Emacs")
+     (description "An Emacs port of the Atom One Dark theme from Atom.io.")
+     (license license:gpl3+))))
+
 (define-public emacs-zenburn-theme
   (package
     (name "emacs-zenburn-theme")
