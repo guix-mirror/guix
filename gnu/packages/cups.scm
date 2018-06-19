@@ -40,6 +40,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages scanner)
   #:use-module (gnu packages tls)
   #:use-module (guix build-system gnu)
@@ -424,7 +425,8 @@ device-specific programs to convert and print many types of files.")
          ,(string-append "--with-icondir="
                          (assoc-ref %outputs "out") "/share/applications")
          ,(string-append "--with-systraydir="
-                         (assoc-ref %outputs "out") "/etc/xdg"))
+                         (assoc-ref %outputs "out") "/etc/xdg")
+         "--enable-qt5" "--disable-qt4")
 
        #:imported-modules ((guix build python-build-system)
                            ,@%gnu-build-system-modules)
@@ -463,7 +465,7 @@ device-specific programs to convert and print many types of files.")
                            (string-append "hplip_confdir = " out
                                           "/etc/hp"))
                           (("halpredir = /usr/share/hal/fdi/preprobe/10osvendor")
-                           ;; Note: We don't use hal.
+                           ;; We don't use hal.
                            (string-append "halpredir = " out
                                           "/share/hal/fdi/preprobe/10osvendor"))
                           (("rulesdir = /etc/udev/rules.d")
@@ -477,23 +479,30 @@ device-specific programs to convert and print many types of files.")
                           (("/etc/sane.d")
                            (string-append out "/etc/sane.d"))))))
 
-                  ;; Wrap bin/* so that the Python libs are found.
+                  ;; Wrap bin/* so that the Python libraries are found.
                   (add-after 'install 'wrap-binaries
                     (assoc-ref python:%standard-phases 'wrap)))))
 
-    ;; Python3 support is available starting from hplip@3.15.2.
-    (inputs `(("libjpeg" ,libjpeg)
-              ("cups-minimal" ,cups-minimal)
-              ("libusb" ,libusb)
-              ("sane-backends" ,sane-backends-minimal)
-              ("zlib" ,zlib)
-              ("dbus" ,dbus)
-              ("python-wrapper" ,python-wrapper)
-              ("python" ,python)
-              ;; TODO: Make hp-setup find python-dbus.
-              ("python-dbus" ,python-dbus)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("perl" ,perl)))))
+    ;; Note that the error messages printed by the tools in the case of
+    ;; missing dependencies are often downright misleading.
+    ;; TODO: hp-toolbox still fails to start with:
+    ;;   from dbus.mainloop.pyqt5 import DBusQtMainLoop
+    ;;   ModuleNotFoundError: No module named 'dbus.mainloop.pyqt5'
+    (inputs
+     `(("cups-minimal" ,cups-minimal)
+       ("dbus" ,dbus)
+       ("libjpeg" ,libjpeg)
+       ("libusb" ,libusb)
+       ("python" ,python)
+       ("python-dbus" ,python-dbus)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyqt" ,python-pyqt)
+       ("python-wrapper" ,python-wrapper)
+       ("sane-backends" ,sane-backends-minimal)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))))
 
 (define-public foomatic-filters
   (package
