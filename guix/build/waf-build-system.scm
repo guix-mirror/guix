@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +38,8 @@
       (begin
          (format #t "running \"python waf\" with command ~s and parameters ~s~%"
                 command params)
-         (zero? (apply system* "python" "waf" command params)))
+         (apply invoke "python" "waf" command params)
+         #t)
       (error "no waf found")))
 
 (define* (configure #:key target native-inputs inputs outputs
