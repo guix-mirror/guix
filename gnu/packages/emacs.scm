@@ -2662,7 +2662,7 @@ build jobs.")
 (define-public emacs-company
   (package
     (name "emacs-company")
-    (version "0.9.3")
+    (version "0.9.6")
     (source
      (origin
        (method url-fetch)
@@ -2671,7 +2671,7 @@ build jobs.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fyrpchpdmvszssy1qmsw41aqpv6q5rybvs1bw00nv9xdhiaq4vh"))))
+         "0a7zvmfvxh9w67myvcj2511ayk0fvkm06cdg38y8khnsx63jrr4k"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
