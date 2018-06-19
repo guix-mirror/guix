@@ -1025,17 +1025,16 @@ hash/signatures.")
 (define-public libyaml
   (package
     (name "libyaml")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://pyyaml.org/download/libyaml/yaml-"
              version ".tar.gz"))
-       (patches (search-patches "libyaml-CVE-2014-9130.patch"))
        (sha256
         (base32
-         "0j9731s5zjb8mjx7wzf6vh7bsqi38ay564x6s9nri2nh9cdrg9kx"))))
+         "0a87931cx5m14a1x8rbjix3nz7agrcgndf4h392vm62a4rby9240"))))
     (build-system gnu-build-system)
     (home-page "http://pyyaml.org/wiki/LibYAML")
     (synopsis "YAML 1.1 parser and emitter written in C")
