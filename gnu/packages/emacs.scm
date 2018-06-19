@@ -7237,7 +7237,7 @@ messaging service.")
 (define-public emacs-bash-completion
   (package
    (name "emacs-bash-completion")
-   (version "2.0.0")
+   (version "2.1.0")
    (source
     (origin
       (method url-fetch)
@@ -7247,7 +7247,7 @@ messaging service.")
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "0mkci4a1fy8z4cmry8mx5vsx4f16a8r454slnh7lqzidnhfi63hj"))))
+        "1z0qck3v3ra6ivacn8n04w1v33a4xn01xx860761q31qzsv3sksq"))))
    (inputs `(("bash" ,bash)))
    (build-system emacs-build-system)
    (arguments
