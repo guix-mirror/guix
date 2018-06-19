@@ -1194,6 +1194,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
   %D%/packages/patches/wpa-supplicant-krack-followups.patch	\
   %D%/packages/patches/wxmaxima-do-not-use-old-gnuplot-parameters.patch	\
+  %D%/packages/patches/x265-fix-ppc64le-build.patch		\
   %D%/packages/patches/xboing-CVE-2004-0149.patch		\
   %D%/packages/patches/xdotool-fix-makefile.patch               \
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
