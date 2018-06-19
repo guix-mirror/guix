@@ -991,7 +991,7 @@ project derived from the original Calm Window Manager.")
        ("glib" ,glib)
        ("glibmm" ,glibmm)))
     (native-inputs
-     `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags (list
                           (string-append "--prefix=" %output)
