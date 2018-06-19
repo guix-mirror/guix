@@ -23,29 +23,29 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages cups)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages groff)
-  #:use-module (gnu packages libusb)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages pretty-print)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages scanner)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages fonts) ;font-dejavu
+  #:use-module (gnu packages fonts)     ; font-dejavu
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages groff)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages scanner)
+  #:use-module (gnu packages tls)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages))
 
 (define-public cups-filters
   (package
