@@ -3314,8 +3314,8 @@ colors, pictures, and sounds.")
     (synopsis "Arcade-style fire fighting game")
     (description
      "Mr. Rescue is an arcade styled 2d action game centered around evacuating
-civilians from burning buildings.  The game features fast paced fire
-extinguishing action, intense boss battles, a catchy soundtrack and lots of
+civilians from burning buildings.  The game features fast-paced fire
+extinguishing action, intense boss battles, a catchy soundtrack, and lots of
 throwing people around in pseudo-randomly generated buildings.")
     (license (list license:zlib             ; for source code
                    license:cc-by-sa3.0))))  ; for graphics and music assets
