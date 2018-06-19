@@ -3267,25 +3267,46 @@ colors, pictures, and sounds.")
                 "0jwzbwkgp1l5ia6c7s760gmdirbsncp6nfqp7vqdqsfb63la9gl2"))))
     (build-system trivial-build-system)
     (arguments
-     '(#:modules ((guix build utils))
+     `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils))
-         (let* ((out     (assoc-ref %outputs "out"))
-                (bindir  (string-append out "/bin"))
-                (prog    (string-append bindir "/mrrescue"))
-                (source  (assoc-ref %build-inputs "source"))
-                (bash    (string-append (assoc-ref %build-inputs "bash")
-                                        "/bin/bash"))
-                (love    (string-append (assoc-ref %build-inputs "love")
-                                        "/bin/love")))
-           (mkdir-p bindir)
-           (with-output-to-file prog
+         (let* ((out    (assoc-ref %outputs "out"))
+                (script (string-append out "/bin/" ,name))
+                (data   (string-append out "/share/" ,name))
+                (source (assoc-ref %build-inputs "source"))
+                (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip"))
+                (patch  (string-append (assoc-ref %build-inputs "patch")
+                                       "/bin/patch"))
+                (bash   (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/bash"))
+                (love   (string-append (assoc-ref %build-inputs "love")
+                                       "/bin/love")))
+
+           (mkdir-p (dirname script))
+           (with-output-to-file script
              (lambda ()
                (format #t "#!~a~%" bash)
-               (format #t "exec -a mrrescue \"~a\" \"~a\"~%" love source)))
-           (chmod prog #o755)
+               (format #t "exec -a ~a \"~a\" \"~a\"~%" ,name love data)))
+           (chmod script #o755)
+
+           ;; The better way to package this game would be to install *only* the
+           ;; script above, pointing to the unextracted .love file in the store.
+           ;; However, mrrescue 1.02e needs to be patched to work with Love 11.
+           ;; Instead of extracting the .love file, patching it, and re-zipping
+           ;; it to the store, simply point the script to the extracted patched
+           ;; data directory directly.
+           (mkdir-p data)
+           (with-directory-excursion data
+             (invoke unzip source)
+             (invoke patch "-p1" "-i"
+                     (assoc-ref %build-inputs "love-11.patch")))
            #t))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("patch" ,patch)
+       ("love-11.patch" ,(search-patch "mrrescue-support-love-11.patch"))))
     (inputs
      `(("bash" ,bash)
        ("love" ,love)))
