@@ -616,9 +616,6 @@ unset PATH
 GUIX_PROFILE=/run/current-system/profile ; \\
 . /run/current-system/profile/etc/profile
 
-# Prepend setuid programs.
-export PATH=/run/setuid-programs:$PATH
-
 # Since 'lshd' does not use pam_env, /etc/environment must be explicitly
 # loaded when someone logs in via SSH.  See <http://bugs.gnu.org/22175>.
 # We need 'PATH' to be defined here, for 'cat' and 'cut'.  Do this before
@@ -644,6 +641,9 @@ do
     export PATH=\"$profile/bin:$PATH\"
   fi
 done
+
+# Prepend setuid programs.
+export PATH=/run/setuid-programs:$PATH
 
 # Arrange so that ~/.config/guix/current/share/info comes first.
 export INFOPATH=\"$HOME/.config/guix/current/share/info:$INFOPATH\"

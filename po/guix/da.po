@@ -4,12 +4,16 @@
 # Joe Hansen <joedalton2@yahoo.dk>, 2015, 2016, 2017, 2018.
 #
 # build -> kompilering
+# consider -> tag i betragtning (men mon ikke tag hensyn til eller overvej
+#             er bedre)
 # derivation -> derivat
 # emit -> opret
 # garbage -> affald (spild, bedre forslag?)
 # in a row -> i træk
 # item -> element
+# replacement -> erstatning
 # specify -> angiv
+# substitut -> substitut
 # unloading -> afslutter
 #
 msgid ""
@@ -17,7 +21,7 @@ msgstr ""
 "Project-Id-Version: guix 0.15.0-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2018-04-27 19:13+0200\n"
-"PO-Revision-Date: 2018-06-05 20:58+0200\n"
+"PO-Revision-Date: 2018-06-15 20:58+0200\n"
 "Last-Translator: joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -228,7 +232,7 @@ msgid ""
 "Consider running 'guix pull' followed by\n"
 "'~a' to get up-to-date packages and security updates.\n"
 msgstr ""
-"Overvej at afvikle »guix pull« efterfulgt af\n"
+"Tag i betragtning at afvikle »guix pull« efterfulgt af\n"
 "»~a« for at få opdaterede pakker og sikkerhedsopdateringer.\n"
 
 #: guix/scripts/build.scm:81
@@ -319,7 +323,7 @@ msgid ""
 "      --fallback         fall back to building when the substituter fails"
 msgstr ""
 "\n"
-"      --fallback         fald tilbage til kompilering når erstatningen fejler"
+"      --fallback         fald tilbage til kompilering når substituten fejler"
 
 #: guix/scripts/build.scm:353
 msgid ""
@@ -1240,7 +1244,7 @@ msgid ""
 "  export GUILE_LOAD_COMPILED_PATH=$HOME/.guix-profile/lib/guile/~a/site-ccache:$GUILE_LOAD_COMPILED_PATH\n"
 "\n"
 msgstr ""
-"Guile-Git mangler men er ikke krævet af »guix pull«.\n"
+"Guile-Git mangler men er nu krævet af »guix pull«.\n"
 "Installer den ved at køre:\n"
 "\n"
 "  guix package -i ~a\n"
@@ -1310,7 +1314,7 @@ msgstr "kan ikke gennemtvinge brugen af Let's Encrypt-certifikater~%"
 #: guix/scripts/pull.scm:219
 #, scheme-format
 msgid "please upgrade Guile-Git~%"
-msgstr "opgrader venligst til Guile-Git~%"
+msgstr "opgrader venligst Guile-Git~%"
 
 #: guix/scripts/pull.scm:227
 #, scheme-format
@@ -1656,8 +1660,8 @@ msgid ""
 "label, you need to add @code{(title 'label)} to your @code{file-system}\n"
 "definition."
 msgstr ""
-"Hvis »~a« er et filsystem\n"
-"etiket, du skal tilføje @code{(title 'label)} til din @code{file-system}-\n"
+"Hvis »~a« er en filsystemetiket,\n"
+"skal du tilføje @code{(title 'label)} til din @code{file-system}-\n"
 "definition."
 
 #: guix/scripts/system.scm:637
@@ -1678,7 +1682,7 @@ msgstr "~a blev ikke fundet: »guix pull« blev aldrig kørt~%"
 #: guix/scripts/system.scm:742
 #, scheme-format
 msgid "Consider running 'guix pull' before 'reconfigure'.~%"
-msgstr "Overvej at køre »guix pull« før »reconfigure«.~%"
+msgstr "Tag i betragtning at køre »guix pull« før »reconfigure«.~%"
 
 #: guix/scripts/system.scm:743
 #, scheme-format
@@ -1706,7 +1710,7 @@ msgstr "De gyldige værdier for HANDLING er:\n"
 
 #: guix/scripts/system.scm:911
 msgid "   search           search for existing service types\n"
-msgstr "   søg              søg efter eksisterende tjenestetyper\n"
+msgstr "   search           søg efter eksisterende tjenestetyper\n"
 
 #: guix/scripts/system.scm:913
 msgid "   reconfigure      switch to a new operating system configuration\n"
@@ -1775,8 +1779,9 @@ msgid ""
 "                         instead of reading FILE, when applicable"
 msgstr ""
 "\n"
-"  -e, --expression=UDTRYK overvej hvad operativsystemets UDTRYK evaluerer\n"
-"                          til i stedet for at læse FIL, når anvendelig"
+"  -e, --expression=UDTRYK tag i betragtning hvad operativsystemets UDTRYK\n"
+"                          evaluerer til i stedet for at læse FIL, når\n"
+"                          anvendelig"
 
 #: guix/scripts/system.scm:946
 msgid ""
@@ -1799,7 +1804,7 @@ msgstr ""
 "\n"
 "      --file-system-type=TYPE\n"
 "                         for »disk-image«, lav et rodfilsystem med TYPE (typen)\n"
-"                         (en af »ext4«, »iso9660«)"
+"                         (enten »ext4« eller »iso9660«)"
 
 #: guix/scripts/system.scm:953
 msgid ""
@@ -1865,7 +1870,7 @@ msgstr ""
 #: guix/scripts/system.scm:1066
 #, scheme-format
 msgid "both file and expression cannot be specified~%"
-msgstr "både fil og udtryk kan ikke angives~%"
+msgstr "fil og udtryk kan ikke angives samtidigt~%"
 
 #: guix/scripts/system.scm:1073
 #, scheme-format
@@ -2354,7 +2359,7 @@ msgstr "brugeren »~a« blev ikke fundet: ~a~%"
 #: guix/scripts/publish.scm:910
 #, scheme-format
 msgid "server running as root; consider using the '--user' option!~%"
-msgstr "server kører som root; overvej at bruge tilvalget »--user«!~%"
+msgstr "server kører som root; tag i betragtning at bruge tilvalget »--user«!~%"
 
 #: guix/scripts/publish.scm:915
 #, scheme-format
@@ -2427,7 +2432,7 @@ msgid ""
 "  -s, --system=SYSTEM    consider packages for SYSTEM--e.g., \"i686-linux\""
 msgstr ""
 "\n"
-"  -s, --system=SYSTEM    overvej pakker for SYSTEM--f.eks., »i686-linux«"
+"  -s, --system=SYSTEM    tag i betragtning pakker for SYSTEM--f.eks., »i686-linux«"
 
 #. TRANSLATORS: "closure" and "self" must not be translated.
 #: guix/scripts/size.scm:238
@@ -2575,7 +2580,7 @@ msgid ""
 "  -e, --expression=EXPR  consider the package EXPR evaluates to"
 msgstr ""
 "\n"
-"  -e, --expression=UDTRYK overvej pakken UDTRYK evaluerer til"
+"  -e, --expression=UDTRYK tag i betragtning pakken UDTRYK evaluerer til"
 
 #: guix/scripts/challenge.scm:191
 #, scheme-format
@@ -2771,7 +2776,7 @@ msgstr "~a: ukendt pakkeformat"
 
 #: guix/scripts/weather.scm:72
 msgid "computing ~h package derivations for ~a...~%"
-msgstr "beregner ~h pakkeafledninger for ~a...~%"
+msgstr "beregner ~h pakkederivater for ~a...~%"
 
 #: guix/scripts/weather.scm:161
 msgid "looking for ~h store items on ~a...~%"
@@ -2779,12 +2784,12 @@ msgstr "kigger efter ~h lagerelementer på  ~a...~%"
 
 #: guix/scripts/weather.scm:173
 msgid "  ~2,1f% substitutes available (~h out of ~h)~%"
-msgstr "  ~2,1f% erstatninger tilgængelige (~h ud af ~h)~%"
+msgstr "  ~2,1f% substitutter tilgængelige (~h ud af ~h)~%"
 
 #: guix/scripts/weather.scm:179
 #, scheme-format
 msgid "  unknown substitute sizes~%"
-msgstr "  ukendte erstatningsstørrelser~%"
+msgstr "  ukendte substitutstørrelser~%"
 
 #: guix/scripts/weather.scm:182
 msgid "  ~,1h MiB of nars (compressed)~%"
@@ -2849,7 +2854,7 @@ msgid ""
 "Report the availability of substitutes.\n"
 msgstr ""
 "Brug: guix weather [TILVALG]\n"
-"Rapporter tilgængelighed over erstatninger.\n"
+"Rapporter tilgængelighed over substitutter.\n"
 
 #: guix/scripts/weather.scm:249
 msgid ""
@@ -2859,7 +2864,7 @@ msgid ""
 msgstr ""
 "\n"
 "      --substitute-urls=ADRESSER\n"
-"                         kontroller for tilgængelige erstatninger på URLS\n"
+"                         kontroller for tilgængelige substitutter på URLS\n"
 "                         (ADRESSER)"
 
 #: guix/scripts/weather.scm:252
@@ -2870,7 +2875,7 @@ msgid ""
 msgstr ""
 "\n"
 "  -m, --manifest=MANIFEST\n"
-"                         slå erstatninger op for pakker angivet i MANIFEST"
+"                         slå substitutter op for pakker angivet i MANIFEST"
 
 #: guix/scripts/weather.scm:255
 msgid ""
@@ -2878,7 +2883,8 @@ msgid ""
 "  -s, --system=SYSTEM    consider substitutes for SYSTEM--e.g., \"i686-linux\""
 msgstr ""
 "\n"
-"  -s, --system=SYSTEM    overvej erstatninger for SYSTEM--f.eks., »i686-linux«"
+"  -s, --system=SYSTEM    tag i betragtning substitutter for SYSTEM--f.eks.,\n"
+"»i686-linux«"
 
 #: guix/scripts/weather.scm:279
 #, scheme-format
@@ -2891,7 +2897,7 @@ msgstr "Opdater for GNU-pakker"
 
 #: guix/gnu-maintenance.scm:579
 msgid "Updater for GNU packages only available via FTP"
-msgstr "Opdater kun for GNU-pakker tilgængelige via FTP"
+msgstr "Opdateringsprogram for GNU-pakker er kun tilgængelig via FTP"
 
 #: guix/gnu-maintenance.scm:588
 msgid "Updater for KDE packages"
@@ -3247,7 +3253,7 @@ msgstr[1] "~:[De følgende derivater ville blive kompileret:~%~{   ~a~%~}~;~]"
 #. translated to the corresponding abbreviation.
 #: guix/ui.scm:819
 msgid "~:[~,1h MB would be downloaded:~%~{   ~a~%~}~;~]"
-msgstr "~:[D,1h MB ville blive hentet:~%~{   ~a~%~}~;~]"
+msgstr "~:[~,1h MB ville blive hentet:~%~{   ~a~%~}~;~]"
 
 #: guix/ui.scm:824
 #, scheme-format

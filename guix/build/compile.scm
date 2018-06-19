@@ -196,6 +196,20 @@ files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
       (unless (zero? total)
         (report-compilation #f total total)))))
 
+(eval-when (eval load)
+  (when (and (string=? "2" (major-version))
+             (or (string=? "0" (minor-version))
+                 (and (string=? (minor-version) "2")
+                      (< (string->number (micro-version)) 4))))
+    ;; Work around <https://bugs.gnu.org/31878> on Guile < 2.2.4.
+    ;; Serialize 'try-module-autoload' calls.
+    (set! (@ (guile) try-module-autoload)
+      (let ((mutex (make-mutex 'recursive))
+            (real  (@ (guile) try-module-autoload)))
+        (lambda* (module #:optional version)
+          (with-mutex mutex
+            (real module version)))))))
+
 ;;; Local Variables:
 ;;; eval: (put 'with-augmented-search-path 'scheme-indent-function 2)
 ;;; eval: (put 'with-target 'scheme-indent-function 1)

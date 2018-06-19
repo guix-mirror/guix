@@ -2530,7 +2530,7 @@ It is used to cotrol the pointer with a joystick device.")
 (define-public xf86-input-mouse
   (package
     (name "xf86-input-mouse")
-    (version "1.9.2")
+    (version "1.9.3")
     (source
       (origin
         (method url-fetch)
@@ -2540,7 +2540,7 @@ It is used to cotrol the pointer with a joystick device.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0bsbgww9421792zan43j60mndqprhfxhc48agsi15d3abjqda9gl"))))
+            "1iawr1wyl2qch1mqszcs0s84i92mh4xxprflnycbw1adc18b7v4k"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -5636,7 +5636,7 @@ user-friendly mechanism to start the X server.")
 (define-public libxaw3d
   (package
     (name "libxaw3d")
-    (version "1.6.2")
+    (version "1.6.3")
     (source
       (origin
         (method url-fetch)
@@ -5646,7 +5646,7 @@ user-friendly mechanism to start the X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0awplv1nf53ywv01yxphga3v6dcniwqnxgnb0cn4khb121l12kxp"))))
+            "0i653s8g25cc0mimkwid9366bqkbyhdyjhckx7bw77j20hzrkfid"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)

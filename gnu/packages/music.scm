@@ -2683,7 +2683,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
 (define-public schismtracker
   (package
     (name "schismtracker")
-    (version "20170910")
+    (version "20180513")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2692,7 +2692,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01gfcjngbpv87y9w5jln8k313hycpkb1d617hdy2cdw2hxqzlclz"))
+                "1yjfd02arb51n0vyv11qgpn6imh7hcqnc3953cbvgwb4cnrswk9f"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
@@ -2706,7 +2706,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autoconf
-           (lambda _ (zero? (system* "autoreconf" "-vfi"))))
+           (lambda _ (invoke "autoreconf" "-vfi")))
          (add-before 'configure 'link-libm
            (lambda _ (setenv "LIBS" "-lm") #t)))))
     (native-inputs

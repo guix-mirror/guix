@@ -1430,11 +1430,11 @@ Maps directly inside Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-graphviz-dot-mode
-  (let ((commit "fdaabbcc95d9156e3dadc84f81a4750c5b692580")
+  (let ((commit "c456a2b65c734089e6c44e87209a5a432a741b1a")
         (revision "1"))
     (package
       (name "emacs-graphviz-dot-mode")
-      (version (string-append "0.3.10-" revision "."
+      (version (string-append "0.3.11-" revision "."
                               (string-take commit 7)))
       (source (origin
                 (method git-fetch)
@@ -1444,7 +1444,7 @@ Maps directly inside Emacs.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1s1qh5r0xp6hs0rl5yz5mkmjhpg04bh449c7vgjbb1pjsl1dl714"))))
+                  "0j1r2rspaakw37b0mx7pwpvdsvixq9sw3xjbww5piihzpdxz58z1"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
@@ -2662,7 +2662,7 @@ build jobs.")
 (define-public emacs-company
   (package
     (name "emacs-company")
-    (version "0.9.3")
+    (version "0.9.6")
     (source
      (origin
        (method url-fetch)
@@ -2671,7 +2671,7 @@ build jobs.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fyrpchpdmvszssy1qmsw41aqpv6q5rybvs1bw00nv9xdhiaq4vh"))))
+         "0a7zvmfvxh9w67myvcj2511ayk0fvkm06cdg38y8khnsx63jrr4k"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -7237,7 +7237,7 @@ messaging service.")
 (define-public emacs-bash-completion
   (package
    (name "emacs-bash-completion")
-   (version "2.0.0")
+   (version "2.1.0")
    (source
     (origin
       (method url-fetch)
@@ -7247,7 +7247,7 @@ messaging service.")
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "0mkci4a1fy8z4cmry8mx5vsx4f16a8r454slnh7lqzidnhfi63hj"))))
+        "1z0qck3v3ra6ivacn8n04w1v33a4xn01xx860761q31qzsv3sksq"))))
    (inputs `(("bash" ,bash)))
    (build-system emacs-build-system)
    (arguments
@@ -10893,20 +10893,20 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
       (license license:gpl3+))))
 
 (define-public emacs-gif-screencast
-  (let ((commit "825e606950ec842304bf75cf85baef707b853b03"))
+  (let ((commit "12b25442b97b84abae74ecb5190a9d14ff7cfe5a"))
     (package
       (name "emacs-gif-screencast")
-      (version (git-version "20180309" "1" commit))
+      (version (git-version "20180616" "1" commit))
       (source
        (origin
          (method url-fetch)
          (uri (string-append
-               "https://github.com/Ambrevar/emacs-gif-screencast/archive/"
-               commit
-               ".tar.gz"))
+               "https://gitlab.com/Ambrevar/emacs-gif-screencast/"
+               "repository/archive.tar.gz?ref="
+               commit))
          (sha256
           (base32
-           "1f83sdx4qj4g6byvbdq7aayissbcy5lqm43djp8h0lq455nf7jkc"))))
+           "0lc457i78xjkn5idr2aaiadkh76zcsksj84z0qh80a9y775syrgh"))))
       (build-system emacs-build-system)
       (inputs
        `(("scrot" ,scrot)
@@ -10933,7 +10933,7 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
                  ("gif-screencast-optimize-program"
                   (string-append imagemagick "/bin/gifsicle")))))))))
       (home-page
-       "https://github.com/Ambrevar/emacs-gif-screencast")
+       "https://gitlab.com/Ambrevar/emacs-gif-screencast")
       (synopsis "One-frame-per-action GIF recording")
       (description
        "Call @code{gif-screencast} to start a recording.
@@ -11217,7 +11217,22 @@ provided by other Emacs packages dealing with pass:
           (base32
            "0v66wk9nh0raih4jhrzmmyi5lbysjnmbv791vm2230ffi2hmwxnd"))))
       (build-system emacs-build-system)
-      (propagated-inputs `(("imagemagick" ,imagemagick)))
+      (inputs `(("imagemagick" ,imagemagick)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((imagemagick (assoc-ref inputs "imagemagick")))
+                 ;; Specify the absolute file names of the various
+                 ;; programs so that everything works out-of-the-box.
+                 (chmod "image+.el" #o666)
+                 (emacs-substitute-variables
+                     "image+.el"
+                   ("imagex-convert-command"
+                    (string-append imagemagick "/bin/convert"))
+                   ("imagex-identify-command"
+                    (string-append imagemagick "/bin/identify")))))))))
       (home-page "https://github.com/mhayashi1120/Emacs-imagex")
       (synopsis "Image manipulation extensions for Emacs")
       (description

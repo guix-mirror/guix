@@ -35,7 +35,6 @@
             %system
             %libgcrypt
             %libz
-            %nix-instantiate
             %gzip
             %bzip2
             %xz))
@@ -94,9 +93,6 @@
 
 (define %libz
   "@LIBZ@")
-
-(define %nix-instantiate
-  "@NIX_INSTANTIATE@")
 
 (define %gzip
   "@GZIP@")

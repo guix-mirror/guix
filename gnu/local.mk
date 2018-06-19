@@ -974,6 +974,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/openscenegraph-ffmpeg3.patch             \
   %D%/packages/patches/opensmtpd-fix-crash.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
+  %D%/packages/patches/openssl-1.0.2-CVE-2018-0495.patch	\
+  %D%/packages/patches/openssl-1.0.2-CVE-2018-0732.patch	\
+  %D%/packages/patches/openssl-1.1.0-CVE-2018-0495.patch	\
+  %D%/packages/patches/openssl-1.1.0-CVE-2018-0732.patch	\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
@@ -1068,6 +1072,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
+  %D%/packages/patches/qemu-CVE-2018-11806.patch 		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\

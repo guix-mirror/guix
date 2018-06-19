@@ -26,9 +26,8 @@
   #:use-module (guix discovery)
   #:use-module (guix packages)
   #:use-module (guix sets)
-  #:use-module (guix utils)
   #:use-module (guix modules)
-  #:use-module (guix build utils)
+  #:use-module ((guix build utils) #:select (find-files))
   #:use-module ((guix build compile) #:select (%lightweight-optimizations))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -656,7 +655,7 @@ assumed to be part of MODULES."
 
 (define %dependency-variables
   ;; (guix config) variables corresponding to dependencies.
-  '(%libgcrypt %libz %xz %gzip %bzip2 %nix-instantiate))
+  '(%libgcrypt %libz %xz %gzip %bzip2))
 
 (define %persona-variables
   ;; (guix config) variables that define Guix's persona.
@@ -666,17 +665,14 @@ assumed to be part of MODULES."
     %guix-home-page-url))
 
 (define %config-variables
-  ;; (guix config) variables corresponding to Guix configuration (storedir,
-  ;; localstatedir, etc.)
-  (sort (filter pair?
-                (module-map (lambda (name var)
-                              (and (not (memq name %dependency-variables))
-                                   (not (memq name %persona-variables))
-                                   (cons name (variable-ref var))))
-                            (resolve-interface '(guix config))))
-        (lambda (name+value1 name+value2)
-          (string<? (symbol->string (car name+value1))
-                    (symbol->string (car name+value2))))))
+  ;; (guix config) variables corresponding to Guix configuration.
+  (letrec-syntax ((variables (syntax-rules ()
+                               ((_)
+                                '())
+                               ((_ variable rest ...)
+                                (cons `(variable . ,variable)
+                                      (variables rest ...))))))
+    (variables %localstatedir %storedir %sysconfdir %system)))
 
 (define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
                           (package-name "GNU Guix")
@@ -694,17 +690,40 @@ assumed to be part of MODULES."
                                %guix-version
                                %guix-bug-report-address
                                %guix-home-page-url
+                               %store-directory
+                               %state-directory
+                               %store-database-directory
+                               %config-directory
                                %libgcrypt
                                %libz
                                %gzip
                                %bzip2
-                               %xz
-                               %nix-instantiate))
+                               %xz))
 
                    #$@(map (match-lambda
                              ((name . value)
                               #~(define-public #$name #$value)))
                            %config-variables)
+
+                   (define %store-directory
+                     (or (and=> (getenv "NIX_STORE_DIR") canonicalize-path)
+                         %storedir))
+
+                   (define %state-directory
+                     ;; This must match `NIX_STATE_DIR' as defined in
+                     ;; `nix/local.mk'.
+                     (or (getenv "NIX_STATE_DIR")
+                         (string-append %localstatedir "/guix")))
+
+                   (define %store-database-directory
+                     (or (getenv "NIX_DB_DIR")
+                         (string-append %state-directory "/db")))
+
+                   (define %config-directory
+                     ;; This must match `GUIX_CONFIGURATION_DIRECTORY' as
+                     ;; defined in `nix/local.mk'.
+                     (or (getenv "GUIX_CONFIGURATION_DIRECTORY")
+                         (string-append %sysconfdir "/guix")))
 
                    (define %guix-package-name #$package-name)
                    (define %guix-version #$package-version)
@@ -723,13 +742,10 @@ assumed to be part of MODULES."
                             (file-append libgcrypt "/lib/libgcrypt")))
                    (define %libz
                      #+(and zlib
-                            (file-append zlib "/lib/libz")))
-
-                   (define %nix-instantiate       ;for (guix import snix)
-                     "nix-instantiate"))
+                            (file-append zlib "/lib/libz"))))
 
                ;; Guile 2.0 *requires* the 'define-module' to be at the
-               ;; top-level or it 'toplevel-ref' in the resulting .go file are
+               ;; top-level or the 'toplevel-ref' in the resulting .go file are
                ;; made relative to a nonexistent anonymous module.
                #:splice? #t))
 

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
 (define-public gnu-pw-mgr
   (package
     (name "gnu-pw-mgr")
-    (version "2.0")
+    (version "2.3.1")
     (source
      (origin
       (method url-fetch)
@@ -38,8 +38,16 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "19qvg37snfa8s06q5crx25m1r1n4l0wvfpkbdxz17q7whp0plrl6"))))
+        "05vv6n5sqdswhzm21cqn8m2p6avblxl3cv7b39nqx8yxf58gi2xv"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-more-shebangs
+           (lambda _
+             (substitute* "tests/dom.test"
+               (("/usr/bin/printf") (which "printf")))
+             #t)))))
     (native-inputs
      `(("which" ,which)
        ("autogen" ,autogen)))

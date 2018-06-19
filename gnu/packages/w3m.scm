@@ -42,10 +42,9 @@
     (version "0.5.3+git20180125")
     (source (origin
               (method git-fetch)
-              ;; Debian's fork of w3m is the only one that is still
-              ;; maintained.
+              ;; Debian's fork of w3m is the only one that is still maintained.
               (uri (git-reference
-                    (url "https://anonscm.debian.org/cgit/collab-maint/w3m.git")
+                    (url "https://salsa.debian.org/debian/w3m.git")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256

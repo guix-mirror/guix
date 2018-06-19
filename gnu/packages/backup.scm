@@ -826,10 +826,12 @@ is like a time machine for your data. ")
     (license (license:fsf-free "file://COPYING"
                                "Open Software License 2.0"))))
 
-(define-public restic ; bundled / vendored dependencies
+(define-public restic
   (package
     (name "restic")
     (version "0.9.1")
+    ;; TODO Try packaging the bundled / vendored dependencies in the 'vendor/'
+    ;; directory.
     (source (origin
               (method url-fetch)
               (uri (string-append

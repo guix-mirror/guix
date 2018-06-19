@@ -260,6 +260,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
+   (replacement openssl/fixed)
    (version "1.0.2o")
    (source (origin
              (method url-fetch)
@@ -396,6 +397,15 @@ required structures.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
 
+(define openssl/fixed
+  (package
+    (inherit openssl)
+    (source (origin
+              (inherit (package-source openssl))
+              (patches (append (origin-patches (package-source openssl))
+                               (search-patches "openssl-1.0.2-CVE-2018-0495.patch"
+                                               "openssl-1.0.2-CVE-2018-0732.patch")))))))
+
 (define-public openssl-next
   (package
     (inherit openssl)
@@ -410,7 +420,9 @@ required structures.")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
                                        "/" name "-" version ".tar.gz")))
-              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
+              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"
+                                       "openssl-1.1.0-CVE-2018-0495.patch"
+                                       "openssl-1.1.0-CVE-2018-0732.patch"))
               (sha256
                (base32
                 "05x509lccqjscgyi935z809pwfm708islypwhmjnb6cyvrn64daq"))))
