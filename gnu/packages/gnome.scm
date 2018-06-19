@@ -6486,6 +6486,12 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
              (substitute* '("Makefile.am")
                (("\\$\\(DESTDIR\\)/usr/share")
                 "$(datadir)"))
+             #t))
+         (add-after 'unpack 'disable-configure-during-bootstrap
+           (lambda _
+             ;; Do not run configure as part of autogen.sh because references
+             ;; to /bin are not fixed yet.
+             (setenv "NOCONFIGURE" "y")
              #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
