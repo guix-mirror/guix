@@ -1702,3 +1702,33 @@ with the
 @uref{https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html,
 GNU extensions} to the POSIX recommendations for command-line options.")
       (license license:bsd-3))))
+
+(define-public go-github-com-sirupsen-logrus
+  (package
+    (name "go-github-com-sirupsen-logrus")
+    (version "1.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sirupsen/logrus.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "0g5z7al7kky11ai2dhac6gkp3b5pxsvx72yj3xg4wg3265gbn7yz"))))
+    (build-system go-build-system)
+    (native-inputs
+     `(("go-golang-org-x-crypto-ssh-terminal"
+        ,go-golang-org-x-crypto-ssh-terminal)
+       ("go-github-com-stretchr-testify"
+        ,go-github-com-stretchr-testify)
+       ("go-golang-org-x-sys-unix"
+        ,go-golang-org-x-sys-unix)))
+    (arguments
+     '(#:tests? #f                    ;FIXME missing dependencies
+       #:import-path "github.com/sirupsen/logrus"))
+    (home-page "https://github.com/sirupsen/logrus")
+    (synopsis "Structured, pluggable logging for Go")
+    (description "Logrus is a structured logger for Go, completely API
+compatible with the standard library logger.")
+    (license license:expat)))
