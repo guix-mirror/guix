@@ -1793,3 +1793,50 @@ finding resources located relative to the executable file.")
 run programs as a service using a variety of supervisors, including systemd,
 SysVinit, and more.")
       (license license:zlib))))
+
+(define-public go-github-com-docker-distribution
+  (let ((commit "325b0804fef3a66309d962357aac3c2ce3f4d329")
+        (revision "0"))
+    (package
+      (name "go-github-com-docker-distribution")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       ;; FIXME: This bundles many things, see
+       ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=31881#41>.
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/docker/distribution")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1yg2zrikn3vkvkx5mn51p6bfjk840qdkn7ahhhvvcsc8mpigrjc6"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("go-golang-org-x-sys-unix"
+          ,go-golang-org-x-sys-unix)
+         ("go-github-com-sirupsen-logrus"
+          ,go-github-com-sirupsen-logrus)
+         ("go-golang-org-x-crypto-ssh-terminal"
+          ,go-golang-org-x-crypto-ssh-terminal)))
+      (arguments
+       '(#:import-path "github.com/docker/distribution"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map (lambda (file)
+                      (make-file-writable file))
+                    (find-files
+                     (assoc-ref outputs "out")
+                     ".*\\.gz$"))
+               #t)))))
+      (home-page
+       "https://github.com/docker/distribution")
+      (synopsis "This package is Docker toolset to pack, ship, store, and
+deliver content")
+      (description "Docker Distribution is Docker toolset to pack, ship,
+store, and deliver content.  It's containe Docker Registry 2.0 and libraries
+to interacting with distribution components.")
+      (license license:asl2.0))))
