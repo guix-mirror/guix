@@ -1999,7 +1999,7 @@ directory full of HOWTOs.")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "6.20170818")
+    (version "6.20180529")
     (source
      (origin
        (method url-fetch)
@@ -2007,7 +2007,7 @@ directory full of HOWTOs.")
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
         (base32
-         "0ybxixbqvy4rx6mq9s02rh349rbr04hb17z4bfayin0qwa5kzpvx"))))
+         "1rx0m4yrl3gl2ca8rbbv74fdlg4s2jnddzljhph7271a7bpyxsx5"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -2101,6 +2101,7 @@ directory full of HOWTOs.")
        ("ghc-split" ,ghc-split)
        ("ghc-stm" ,ghc-stm)
        ("ghc-stm-chans" ,ghc-stm-chans)
+       ("ghc-tagsoup" ,ghc-tagsoup)
        ("ghc-text" ,ghc-text)
        ("ghc-unix-compat" ,ghc-unix-compat)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
