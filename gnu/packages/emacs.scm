@@ -312,12 +312,12 @@ editor (without an X toolkit)" )
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'autogen
-                      (lambda _
-                        (zero? (system* "sh" "autogen.sh"))))
+             (lambda _
+               (invoke "sh" "autogen.sh")))
            ;; Build sometimes fails: deps/dispnew.d: No such file or directory
            (add-before 'build 'make-deps-dir
              (lambda _
-               (zero? (system* "mkdir" "-p" "src/deps"))))))))))
+               (invoke "mkdir" "-p" "src/deps")))))))))
 
 
 ;;;
