@@ -310,11 +310,18 @@ the Nix package manager.")
     (inputs
      `(("gnutls" ,gnutls)
        ("guile-git" ,guile-git)
-       ,@(package-inputs guix)))
+       ,@(fold alist-delete (package-inputs guix)
+               '("boot-guile" "boot-guile/i686" "util-linux"))))
+
     (propagated-inputs '())
 
     (arguments
      (substitute-keyword-arguments (package-arguments guix)
+       ((#:configure-flags flags '())
+        ;; Pretend we have those libraries; we don't actually need them.
+        `(append ,flags
+                 '("guix_cv_have_recent_guile_sqlite3=yes"
+                   "guix_cv_have_recent_guile_ssh=yes")))
        ((#:tests? #f #f)
         #f)
        ((#:phases phases '%standard-phases)
