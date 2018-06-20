@@ -3330,7 +3330,7 @@ differences (added or removed nodes) between two XML/HTML documents.")
 (define-public ruby-rack
   (package
     (name "ruby-rack")
-    (version "2.0.3")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
@@ -3342,7 +3342,7 @@ differences (added or removed nodes) between two XML/HTML documents.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "12bnqrcg43x9hsswjqg31qqwk8cwj2fh0d2m179y20bjghhn54kx"))
+         "1k1k4wk10l6bxx46pw58j2p3nmyzjqnr65hbjjqydd6517fmxgib"))
        ;; Ignore test which fails inside the build environment but works
        ;; outside.
        (patches (search-patches "ruby-rack-ignore-failing-test.patch"))))
