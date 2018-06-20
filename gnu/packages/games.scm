@@ -4542,7 +4542,7 @@ Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
 (define-public quakespasm
   (package
     (name "quakespasm")
-    (version "0.93.0")
+    (version "0.93.1")
     (source
      (origin
        (method url-fetch)
@@ -4550,7 +4550,7 @@ Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
                            version ".tgz"))
        (sha256
         (base32
-         "0b2nz7w4za32pc34r62ql270z692qcjs2pm0i3svkxkvfammhdfq"))))
+         "1bimv18f6rzhyjz78yvw2vqr5n0kdqbcqmq7cb3m951xgsxfcgpd"))))
     (arguments
      `(#:tests? #f
        #:make-flags '("CC=gcc"
