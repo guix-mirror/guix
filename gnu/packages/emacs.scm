@@ -5865,7 +5865,7 @@ source file, @file{jl-encrypt.el}.")
 (define-public emacs-htmlize
   (package
     (name "emacs-htmlize")
-    (version "1.51")
+    (version "1.53")
     (source
      (origin
        (method url-fetch)
@@ -5875,7 +5875,7 @@ source file, @file{jl-encrypt.el}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fy1lybzrxl8a8r88f6p19nz8ygmvcxhxbnymkxh7jqaz25viwld"))))
+         "1lzaf9m1qr9dhw4nn53g6wszk2vqw95gpsbrc3y85bams4cn24ga"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/hniksic/emacs-htmlize")
     (synopsis "Convert buffer text and decorations to HTML")
