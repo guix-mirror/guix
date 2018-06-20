@@ -793,7 +793,7 @@ provides an optional IDE-like error list.")
          (modify-phases %standard-phases
            (add-after 'unpack 'autoconf
              (lambda _
-               (zero? (system* "autoconf"))))
+               (invoke "autoconf")))
            (add-before 'configure 'support-emacs!
              (lambda _
                ;; For some reason 'AC_PATH_EMACS' thinks that 'Emacs 26' is
@@ -824,13 +824,13 @@ provides an optional IDE-like error list.")
                  #t)))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (and (zero? (system* "make" "install" "install-icons"))
-                    (with-directory-excursion
-                        (string-append (assoc-ref outputs "out")
-                                       "/share/emacs/site-lisp")
-                      (for-each delete-file '("ChangeLog" "ChangeLog.1"))
-                      (symlink "w3m-load.el" "w3m-autoloads.el")
-                      #t)))))))
+               (invoke "make" "install" "install-icons")
+               (with-directory-excursion
+                   (string-append (assoc-ref outputs "out")
+                                  "/share/emacs/site-lisp")
+                 (for-each delete-file '("ChangeLog" "ChangeLog.1"))
+                 (symlink "w3m-load.el" "w3m-autoloads.el")
+                 #t))))))
       (home-page "http://emacs-w3m.namazu.org/")
       (synopsis "Simple Web browser for Emacs based on w3m")
       (description
