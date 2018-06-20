@@ -2411,19 +2411,21 @@ are only two levels to play with, but they are very addictive.")
 (define-public pioneers
   (package
     (name "pioneers")
-    (version "15.4")
+    (version "15.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/pio/"
                                   "pioneers-" version ".tar.gz"))
               (sha256
                (base32
-                "1p1d18hrfmqcnghip3shkzcs5qkz6j99jvkdkqfi7pqdvjc323cs"))))
+                "037gdiiw690jw3wd1s9lxmkqx0caxyk0b4drpm7i9p28gig43q9y"))))
     (build-system gnu-build-system)
-    (inputs `(("gtk+" ,gtk+)
-              ("librsvg" ,librsvg)
-              ("avahi" ,avahi)))
+    (inputs `(("avahi" ,avahi)
+              ("gtk+" ,gtk+)
+              ("librsvg" ,librsvg)))
     (native-inputs `(("intltool" ,intltool)
+                     ("itstool" ,itstool)
+                     ("libxml2" ,libxml2)
                      ("pkg-config" ,pkg-config)))
     (synopsis "Board game inspired by The Settlers of Catan")
     (description "Pioneers is an emulation of the board game The Settlers of
