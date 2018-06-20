@@ -135,7 +135,8 @@
               (patches
                (search-patches
                 "ocaml-CVE-2015-8869.patch"
-                "ocaml-Add-a-.file-directive.patch"))))
+                "ocaml-Add-a-.file-directive.patch"
+                "ocaml-enable-ocamldoc-reproducibility.patch"))))
     (build-system gnu-build-system)
     (native-search-paths
      (list (search-path-specification
