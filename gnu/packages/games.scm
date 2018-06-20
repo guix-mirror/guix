@@ -1616,23 +1616,20 @@ reference interpreter, using the Glk API.")
 (define-public fizmo
   (package
     (name "fizmo")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://christoph-ender.de/fizmo/source/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1sd988db2302r7cbfcfghbmg8ck43c6hvnlnlpb0rqxb7pm9cwyy"))))
+                "1amyc4n41jf08kxmdgkk30bzzx54miaxa97w28f417qwn8lrl98w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
        (let ((libjpeg (assoc-ref %build-inputs "libjpeg"))
              (ncurses (assoc-ref %build-inputs "ncurses")))
-         (list (string-append "jpeg_CFLAGS=-I" libjpeg "/include")
-               (string-append "jpeg_LIBS=-ljpeg")
-               (string-append "ncursesw_CFLAGS=-I" ncurses "/include")
-               (string-append "ncursesw_LIBS=-lncursesw")))))
+         (list (string-append "--with-jpeg-includedir=" libjpeg "/include")))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
