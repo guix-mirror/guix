@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -201,10 +202,10 @@ the core SELinux management utilities.")
              (lambda _ (chdir ,name) #t))
            (add-after 'build 'pywrap
              (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "pywrap" make-flags))))
+               (apply invoke "make" "pywrap" make-flags)))
            (add-after 'install 'install-pywrap
              (lambda* (#:key make-flags #:allow-other-keys)
-               (zero? (apply system* "make" "install-pywrap" make-flags))))))))
+               (apply invoke "make" "install-pywrap" make-flags)))))))
     (inputs
      `(("libsepol" ,libsepol)
        ("libselinux" ,libselinux)
