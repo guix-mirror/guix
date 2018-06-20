@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -74,6 +74,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)
@@ -1233,3 +1234,40 @@ related games such as Heretic and Hexen.  It comes with a 3d preview mode and
 a 2D editor view.")
     (home-page "http://eureka-editor.sourceforge.net/")
     (license license:gpl2+)))
+
+(define-public guile-chickadee
+  (package
+    (name "guile-chickadee")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.dthompson.us/chickadee/"
+                                  "chickadee-" version ".tar.gz"))
+              (sha256
+               (base32
+                "10qx0ha5gsayybd186r1my7vc7rf5fbzp9jvmc4xg9a8wz8rqhah"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
+    (propagated-inputs
+     `(("guile-opengl" ,guile-opengl)
+       ("guile-sdl2" ,guile-sdl2)))
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (home-page "https://dthompson.us/projects/chickadee.html")
+    (synopsis "Game development toolkit for Guile Scheme with SDL2 and OpenGL")
+    (description "Chickadee is a game development toolkit for Guile Scheme
+built on top of SDL2 and OpenGL.  Chickadee aims to provide all the features
+that parenthetically inclined game developers need to make 2D (and eventually
+3D) games in Scheme, such as:
+
+@enumerate
+@item extensible, fixed-timestep game loop
+@item OpenGL-based rendering engine
+@item keyboard, mouse, controller input
+@item REPL-driven development model
+@end enumerate\n")
+    (license license:gpl3+)))
