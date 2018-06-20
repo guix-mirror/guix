@@ -8967,10 +8967,10 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
        (modify-phases %standard-phases
          (add-before 'install 'check
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-l" "test/m-buffer-test.el"
-                             "-l" "test/m-buffer-at-test.el"
-                             "-f" "ert-run-tests-batch-and-exit")))))))
+             (invoke "emacs" "--batch" "-L" "."
+                     "-l" "test/m-buffer-test.el"
+                     "-l" "test/m-buffer-at-test.el"
+                     "-f" "ert-run-tests-batch-and-exit"))))))
     (build-system emacs-build-system)
     (home-page "https://github.com/phillord/m-buffer-el")
     (synopsis "List oriented buffer operations for Emacs")
