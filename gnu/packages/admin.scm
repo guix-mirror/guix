@@ -2409,9 +2409,9 @@ tool for remote execution and deployment.")
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
     (home-page "https://github.com/dylanaraps/neofetch")
-    (synopsis "System info script")
-    (description "Neofetch is a CLI system information tool written in Bash.
-Neofetch displays information about your system next to an image, your OS
+    (synopsis "System information script")
+    (description "Neofetch is a command-line system information tool written in
+Bash.  Neofetch displays information about your system next to an image, your OS
 logo, or any ASCII file of your choice.  The main purpose of Neofetch is to be
 used in screenshots to show other users what operating system or distribution
 you are running, what theme or icon set you are using, etc.")
