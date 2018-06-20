@@ -1153,7 +1153,7 @@ than @code{electric-indent-mode}.")
          (add-before 'install 'make-info
            (lambda _
              (with-directory-excursion "docs"
-               (zero? (system* "make" "info")))))
+               (invoke "make" "info"))))
          (add-after 'install 'install-info
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
