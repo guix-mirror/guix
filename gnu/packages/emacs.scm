@@ -3650,9 +3650,9 @@ automatically.")
              (let* ((out (assoc-ref outputs "out"))
                     (info (string-append out "/share/info")))
                (with-directory-excursion "doc"
-                 (unless (zero? (system* "makeinfo" "ivy.texi"))
-                   (error "makeinfo failed"))
-                 (install-file "ivy.info" info))))))))
+                 (invoke "makeinfo" "ivy.texi")
+                 (install-file "ivy.info" info)
+                 #t)))))))
     (propagated-inputs
      `(("emacs-hydra" ,emacs-hydra)))
     (native-inputs
