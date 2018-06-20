@@ -702,8 +702,7 @@ only a handful of functions that are not resource-specific.")
                           files))
 
               (with-directory-excursion "doc"
-                (unless (zero? (system* "makeinfo" "haskell-mode.texi"))
-                  (error "makeinfo failed"))
+                (invoke "makeinfo" "haskell-mode.texi")
                 (install-file "haskell-mode.info" info))
                (copy-to-dir doc '("CONTRIBUTING.md" "NEWS" "README.md"))
                (copy-to-dir el-dir (find-files "." "\\.elc?"))
