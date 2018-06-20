@@ -1454,13 +1454,12 @@ Maps directly inside Emacs.")
                  (substitute* "Makefile"
                    (("\\/usr\\/bin\\/gzip")
                     (string-append (assoc-ref inputs "gzip") "/bin/gzip")))
-                 (zero?
-                  (system* "make"
-                           "clean"
-                           "info"
-                           (string-append "TEXINFODIR="
-                                          (assoc-ref inputs "texinfo")
-                                          "/bin"))))))
+                 (invoke "make"
+                         "clean"
+                         "info"
+                         (string-append "TEXINFODIR="
+                                        (assoc-ref inputs "texinfo")
+                                        "/bin")))))
            (add-after 'install 'install-info
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out  (assoc-ref outputs "out"))
