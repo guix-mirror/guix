@@ -1732,3 +1732,31 @@ GNU extensions} to the POSIX recommendations for command-line options.")
     (description "Logrus is a structured logger for Go, completely API
 compatible with the standard library logger.")
     (license license:expat)))
+
+(define-public go-github-com-kardianos-osext
+  (let ((commit "ae77be60afb1dcacde03767a8c37337fad28ac14")
+        (revision "1"))
+    (package
+      (name "go-github-com-kardianos-osext")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/kardianos/osext")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "056dkgxrqjj5r18bnc3knlpgdz5p3yvp12y4y978hnsfhwaqvbjz"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/kardianos/osext"
+         ;; The tests are flaky:
+         ;; <https://github.com/kardianos/osext/issues/21>
+         #:tests? #f))
+      (synopsis "Find the running executable")
+      (description "Osext provides a method for finding the current executable
+file that is running.  This can be used for upgrading the current executable or
+finding resources located relative to the executable file.")
+      (home-page "https://github.com/kardianos/osext")
+      (license license:bsd-3))))
