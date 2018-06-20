@@ -2393,13 +2393,13 @@ tool for remote execution and deployment.")
     (name "neofetch")
     (version "5.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dylanaraps/neofetch/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dylanaraps/neofetch")
+                    (commit version)))
               (sha256
                (base32
-                "1cwmv54rrr6laqpkkczfyl45ggf8j0xcbnwlg41qmf43px9lhkra"))))
+                "0yzyi2p0d8xp576lxyv5m9h60dl1d5dmrn40aad307872835b9rr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
