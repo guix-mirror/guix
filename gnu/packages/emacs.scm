@@ -1562,7 +1562,7 @@ filters, new key bindings and faces.  It can be enabled by
            (lambda _ (chdir "server") #t))
          (add-after 'enter-server-dir 'autogen
            (lambda _
-             (zero? (system* "bash" "autogen.sh"))))
+             (invoke "bash" "autogen.sh")))
 
          ;; Build emacs side using 'emacs-build-system'.
          (add-after 'compress-documentation 'enter-lisp-dir
