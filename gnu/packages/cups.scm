@@ -397,8 +397,10 @@ device-specific programs to convert and print many types of files.")
                   #t))))
     (build-system gnu-build-system)
     (home-page "http://hplipopensource.com/")
-    (synopsis "HP Printer Drivers")
-    (description "Hewlett-Packard Printer Drivers and PPDs.")
+    (synopsis "HP printer drivers")
+    (description
+     "Hewlett-Packard printer drivers and PostScript Printer Descriptions
+(@dfn{PPD}s).")
 
     ;; The 'COPYING' file lists directories where each of these 3 licenses
     ;; applies.
