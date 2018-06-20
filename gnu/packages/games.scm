@@ -1619,7 +1619,7 @@ reference interpreter, using the Glk API.")
     (version "0.8.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://christoph-ender.de/fizmo/source/"
+              (uri (string-append "https://fizmo.spellbreaker.org/source/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -1640,7 +1640,7 @@ reference interpreter, using the Glk API.")
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
        ("sdl2" ,sdl2)))
-    (home-page "https://christoph-ender.de/fizmo/")
+    (home-page "https://fizmo.spellbreaker.org/")
     (synopsis "Z-machine interpreter")
     (description
      "Fizmo is a console-based Z-machine interpreter.  It is used to play
