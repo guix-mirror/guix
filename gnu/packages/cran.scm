@@ -3540,14 +3540,14 @@ extracting and replacing data in arrays.")
 (define-public r-prroc
   (package
     (name "r-prroc")
-    (version "1.3")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "PRROC" version))
        (sha256
         (base32
-         "03hvh92lq4i4w4mla9bvwrwb4626f4hvlxgdn57hamp70960vjyc"))))
+         "1m28h8pcd78049lz2qixhkcr9h5b3jik3maqzfbvq9y58z71i4a7"))))
     (properties `((upstream-name . "PRROC")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/PRROC/")
