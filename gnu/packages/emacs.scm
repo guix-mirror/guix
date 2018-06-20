@@ -4104,14 +4104,15 @@ programming language.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "Makeconf"
                  (("SHELL = /bin/sh")
-                  (string-append "SHELL = " (which "sh"))))))
+                  (string-append "SHELL = " (which "sh"))))
+               #t))
            ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
            ;; them in HOME, so it needs to be writeable.
            (add-before 'build 'set-HOME
              (lambda _ (setenv "HOME" "/tmp") #t))
            (replace 'check
              (lambda _
-               (zero? (system* "make" "test"))))))))
+               (invoke "make" "test")))))))
     (inputs
      `(("emacs" ,emacs-minimal)
        ("r-minimal" ,r-minimal)))
