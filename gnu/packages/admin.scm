@@ -2391,7 +2391,7 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "4.0.2")
+    (version "5.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/dylanaraps/neofetch/"
@@ -2399,7 +2399,7 @@ tool for remote execution and deployment.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "014hlbzs6j4b669b64hnq8vc5knwiv9ncw9m9d193p9jsybxpm1w"))))
+                "1cwmv54rrr6laqpkkczfyl45ggf8j0xcbnwlg41qmf43px9lhkra"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
