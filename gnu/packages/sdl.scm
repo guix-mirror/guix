@@ -349,7 +349,7 @@ directory.")
 (define-public sdl2-image
   (package (inherit sdl-image)
     (name "sdl2-image")
-    (version "2.0.2")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -357,7 +357,7 @@ directory.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1s3ciydixrgv34vlf45ak5syq5nlfaqf19wf162lbz4ixxd0gpvj"))))
+                "0s13dmakn21q6yw8avl67d4zkxzl1wap6l5nwf6cvzrmlxfw441m"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-image))))
 
