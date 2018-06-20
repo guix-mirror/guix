@@ -30,6 +30,8 @@
   #:use-module (gnu services mcron)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services networking)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages package-management)
@@ -37,11 +39,13 @@
   #:use-module (gnu packages tmux)
   #:use-module (guix gexp)
   #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:export (run-basic-test
             %test-basic-os
             %test-halt
+            %test-cleanup
             %test-mcron
             %test-nss-mdns))
 
@@ -470,6 +474,73 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
                #:imported-modules '((gnu services herd)
                                     (guix combinators)))))
       (run-halt-test (virtual-machine os))))))
+
+
+;;;
+;;; Cleanup of /tmp, /var/run, etc.
+;;;
+
+(define %cleanup-os
+  (simple-operating-system
+   (simple-service 'dirty-things
+                   boot-service-type
+                   (with-monad %store-monad
+                     (let ((script (plain-file
+                                    "create-utf8-file.sh"
+                                    (string-append
+                                     "echo $0: dirtying /tmp...\n"
+                                     "set -e; set -x\n"
+                                     "touch /witness\n"
+                                     "exec touch /tmp/λαμβδα"))))
+                       (with-imported-modules '((guix build utils))
+                         (return #~(begin
+                                     (setenv "PATH"
+                                             #$(file-append coreutils "/bin"))
+                                     (invoke #$(file-append bash "/bin/sh")
+                                             #$script)))))))))
+
+(define (run-cleanup-test name)
+  (define os
+    (marionette-operating-system %cleanup-os
+                                 #:imported-modules '((gnu services herd)
+                                                      (guix combinators))))
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (srfi srfi-64)
+                       (ice-9 match))
+
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "cleanup")
+
+          (test-assert "dirty service worked"
+            (marionette-eval '(file-exists? "/witness") marionette))
+
+          (test-equal "/tmp cleaned up"
+            '("." "..")
+            (marionette-eval '(begin
+                                (use-modules (ice-9 ftw))
+                                (scandir "/tmp"))
+                             marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "cleanup" test))
+
+(define %test-cleanup
+  ;; See <https://bugs.gnu.org/26353>.
+  (system-test
+   (name "cleanup")
+   (description "Make sure the 'cleanup' service can remove files with
+non-ASCII names from /tmp.")
+   (value (run-cleanup-test name))))
 
 
 ;;;

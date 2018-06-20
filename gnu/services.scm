@@ -394,8 +394,14 @@ boot."
                      (delete-file "/etc/passwd.lock")
                      (delete-file "/etc/.pwd.lock") ;from 'lckpwdf'
 
+                     ;; Force file names to be decoded as UTF-8.  See
+                     ;; <https://bugs.gnu.org/26353>.
+                     (setenv "GUIX_LOCPATH"
+                             #+(file-append glibc-utf8-locales "/lib/locale"))
+                     (setlocale LC_CTYPE "en_US.utf8")
                      (delete-file-recursively "/tmp")
                      (delete-file-recursively "/var/run")
+
                      (mkdir "/tmp")
                      (chmod "/tmp" #o1777)
                      (mkdir "/var/run")
