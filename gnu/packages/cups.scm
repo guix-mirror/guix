@@ -379,14 +379,14 @@ device-specific programs to convert and print many types of files.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.18.3")
+    (version "3.18.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "0x5xs86v18w46rxz5whc15bl4fb7p4km6xqjpwzclp83nl7rl01y"))
+                "0zbv6cp9n3xypf2fg4j6fpz8zkvl0z08lyc1vq1gd04ln1l3xkqf"))
               (modules '((guix build utils)))
               (snippet
                ;; Fix type mismatch.
