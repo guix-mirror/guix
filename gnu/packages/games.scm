@@ -1691,8 +1691,8 @@ Protocol).")
     (inputs
      `(("glu" ,glu)
        ("sfml" ,sfml)))
-    (synopsis "High speed arctic racing game based on Tux Racer")
-    ;; Snarfed straight from Debian
+    (synopsis "High-speed arctic racing game based on Tux Racer")
+    ;; Snarfed straight from Debian.
     (description "Extreme Tux Racer, or etracer as it is called for short, is
 a simple OpenGL racing game featuring Tux, the Linux mascot.  The goal of the
 game is to slide down a snow- and ice-covered mountain as quickly as possible,
