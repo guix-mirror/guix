@@ -618,7 +618,7 @@ process, passing on the arguments as command line arguments.")
        (modify-phases %standard-phases
          (add-before 'install 'make-info
            (lambda _
-             (zero? (system* "make" "info")))))))
+             (invoke "make" "info"))))))
     (native-inputs
      `(("texinfo" ,texinfo)))
     (home-page "https://github.com/magit/ghub")
