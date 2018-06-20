@@ -337,15 +337,14 @@ containing the given entries."
 turn refers to everything the operating system needs: its kernel, initrd,
 system profile, boot script, and so on.")))
 
-(define (compute-boot-script _ mexps)
-  ;; Reverse MEXPS so that extensions appear in the boot script in the right
+(define (compute-boot-script _ gexps)
+  ;; Reverse GEXPS so that extensions appear in the boot script in the right
   ;; order.  That is, user extensions would come first, and extensions added
   ;; by 'essential-services' (e.g., running shepherd) are guaranteed to come
   ;; last.
-  (mlet %store-monad ((gexps (sequence %store-monad (reverse mexps))))
-    (gexp->file "boot"
-                ;; Clean up and activate the system, then spawn shepherd.
-                #~(begin #$@gexps))))
+  (gexp->file "boot"
+              ;; Clean up and activate the system, then spawn shepherd.
+              #~(begin #$@(reverse gexps))))
 
 (define (boot-script-entry mboot)
   "Return, as a monadic value, an entry for the boot script in the system
@@ -354,9 +353,9 @@ directory."
     (return `(("boot" ,boot)))))
 
 (define boot-service-type
-  ;; The service of this type is extended by being passed gexps as monadic
-  ;; values.  It aggregates them in a single script, as a monadic value, which
-  ;; becomes its 'parameters'.  It is the only service that extends nothing.
+  ;; The service of this type is extended by being passed gexps.  It
+  ;; aggregates them in a single script, as a monadic value, which becomes its
+  ;; value.
   (service-type (name 'boot)
                 (extensions
                  (list (service-extension system-service-type
@@ -372,48 +371,46 @@ by the initrd once the root file system is mounted.")))
   (service boot-service-type #t))
 
 (define (cleanup-gexp _)
-  "Return as a monadic value a gexp to clean up /tmp and similar places upon
-boot."
-  (with-monad %store-monad
-    (with-imported-modules '((guix build utils))
-      (return #~(begin
-                  (use-modules (guix build utils))
+  "Return a gexp to clean up /tmp and similar places upon boot."
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
 
-                  ;; Clean out /tmp and /var/run.
-                  ;;
-                  ;; XXX This needs to happen before service activations, so it
-                  ;; has to be here, but this also implicitly assumes that /tmp
-                  ;; and /var/run are on the root partition.
-                  (letrec-syntax ((fail-safe (syntax-rules ()
-                                               ((_ exp rest ...)
-                                                (begin
-                                                  (catch 'system-error
-                                                    (lambda () exp)
-                                                    (const #f))
-                                                  (fail-safe rest ...)))
-                                               ((_)
-                                                #t))))
-                    ;; Ignore I/O errors so the system can boot.
-                    (fail-safe
-                     ;; Remove stale Shadow lock files as they would lead to
-                     ;; failures of 'useradd' & co.
-                     (delete-file "/etc/group.lock")
-                     (delete-file "/etc/passwd.lock")
-                     (delete-file "/etc/.pwd.lock") ;from 'lckpwdf'
+        ;; Clean out /tmp and /var/run.
+        ;;
+        ;; XXX This needs to happen before service activations, so it
+        ;; has to be here, but this also implicitly assumes that /tmp
+        ;; and /var/run are on the root partition.
+        (letrec-syntax ((fail-safe (syntax-rules ()
+                                     ((_ exp rest ...)
+                                      (begin
+                                        (catch 'system-error
+                                          (lambda () exp)
+                                          (const #f))
+                                        (fail-safe rest ...)))
+                                     ((_)
+                                      #t))))
+          ;; Ignore I/O errors so the system can boot.
+          (fail-safe
+           ;; Remove stale Shadow lock files as they would lead to
+           ;; failures of 'useradd' & co.
+           (delete-file "/etc/group.lock")
+           (delete-file "/etc/passwd.lock")
+           (delete-file "/etc/.pwd.lock")         ;from 'lckpwdf'
 
-                     ;; Force file names to be decoded as UTF-8.  See
-                     ;; <https://bugs.gnu.org/26353>.
-                     (setenv "GUIX_LOCPATH"
-                             #+(file-append glibc-utf8-locales "/lib/locale"))
-                     (setlocale LC_CTYPE "en_US.utf8")
-                     (delete-file-recursively "/tmp")
-                     (delete-file-recursively "/var/run")
+           ;; Force file names to be decoded as UTF-8.  See
+           ;; <https://bugs.gnu.org/26353>.
+           (setenv "GUIX_LOCPATH"
+                   #+(file-append glibc-utf8-locales "/lib/locale"))
+           (setlocale LC_CTYPE "en_US.utf8")
+           (delete-file-recursively "/tmp")
+           (delete-file-recursively "/var/run")
 
-                     (mkdir "/tmp")
-                     (chmod "/tmp" #o1777)
-                     (mkdir "/var/run")
-                     (chmod "/var/run" #o755)
-                     (delete-file-recursively "/run/udev/watch.old"))))))))
+           (mkdir "/tmp")
+           (chmod "/tmp" #o1777)
+           (mkdir "/var/run")
+           (chmod "/var/run" #o755)
+           (delete-file-recursively "/run/udev/watch.old"))))))
 
 (define cleanup-service-type
   ;; Service that cleans things up in /tmp and similar.
@@ -432,44 +429,39 @@ ACTIVATION-SCRIPT-TYPE."
 
 (define (activation-script gexps)
   "Return the system's activation script, which evaluates GEXPS."
-  (define (service-activations)
-    ;; Return the activation scripts for SERVICES.
-    (mapm %store-monad
-          (cut gexp->file "activate-service" <>)
-          gexps))
+  (define actions
+    (map (cut scheme-file "activate-service" <>) gexps))
 
-  (mlet* %store-monad ((actions (service-activations)))
-    (gexp->file "activate"
-                (with-imported-modules (source-module-closure
-                                        '((gnu build activation)
-                                          (guix build utils)))
-                  #~(begin
-                      (use-modules (gnu build activation)
-                                   (guix build utils))
+  (scheme-file "activate"
+               (with-imported-modules (source-module-closure
+                                       '((gnu build activation)
+                                         (guix build utils)))
+                 #~(begin
+                     (use-modules (gnu build activation)
+                                  (guix build utils))
 
-                      ;; Make sure the user accounting database exists.  If it
-                      ;; does not exist, 'setutxent' does not create it and
-                      ;; thus there is no accounting at all.
-                      (close-port (open-file "/var/run/utmpx" "a0"))
+                     ;; Make sure the user accounting database exists.  If it
+                     ;; does not exist, 'setutxent' does not create it and
+                     ;; thus there is no accounting at all.
+                     (close-port (open-file "/var/run/utmpx" "a0"))
 
-                      ;; Same for 'wtmp', which is populated by mingetty et
-                      ;; al.
-                      (mkdir-p "/var/log")
-                      (close-port (open-file "/var/log/wtmp" "a0"))
+                     ;; Same for 'wtmp', which is populated by mingetty et
+                     ;; al.
+                     (mkdir-p "/var/log")
+                     (close-port (open-file "/var/log/wtmp" "a0"))
 
-                      ;; Set up /run/current-system.  Among other things this
-                      ;; sets up locales, which the activation snippets
-                      ;; executed below may expect.
-                      (activate-current-system)
+                     ;; Set up /run/current-system.  Among other things this
+                     ;; sets up locales, which the activation snippets
+                     ;; executed below may expect.
+                     (activate-current-system)
 
-                      ;; Run the services' activation snippets.
-                      ;; TODO: Use 'load-compiled'.
-                      (for-each primitive-load '#$actions))))))
+                     ;; Run the services' activation snippets.
+                     ;; TODO: Use 'load-compiled'.
+                     (for-each primitive-load '#$actions)))))
 
 (define (gexps->activation-gexp gexps)
   "Return a gexp that runs the activation script containing GEXPS."
-  (mlet %store-monad ((script (activation-script gexps)))
-    (return #~(primitive-load #$script))))
+  #~(primitive-load #$(activation-script gexps)))
 
 (define (second-argument a b) b)
 

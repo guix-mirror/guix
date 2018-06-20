@@ -22,7 +22,6 @@
   #:use-module (guix sets)
   #:use-module (guix gexp)
   #:use-module (guix store)
-  #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix derivations)                 ;imported-modules, etc.
   #:use-module (gnu services)
@@ -66,26 +65,25 @@
 
 
 (define (shepherd-boot-gexp services)
-  (with-monad %store-monad
-    (return #~(begin
-                ;; Keep track of the booted system.
-                (false-if-exception (delete-file "/run/booted-system"))
-                (symlink (readlink "/run/current-system")
-                         "/run/booted-system")
+  #~(begin
+      ;; Keep track of the booted system.
+      (false-if-exception (delete-file "/run/booted-system"))
+      (symlink (readlink "/run/current-system")
+               "/run/booted-system")
 
-                ;; Close any remaining open file descriptors to be on the safe
-                ;; side.  This must be the very last thing we do, because
-                ;; Guile has internal FDs such as 'sleep_pipe' that need to be
-                ;; alive.
-                (let loop ((fd 3))
-                  (when (< fd 1024)
-                    (false-if-exception (close-fdes fd))
-                    (loop (+ 1 fd))))
+      ;; Close any remaining open file descriptors to be on the safe
+      ;; side.  This must be the very last thing we do, because
+      ;; Guile has internal FDs such as 'sleep_pipe' that need to be
+      ;; alive.
+      (let loop ((fd 3))
+        (when (< fd 1024)
+          (false-if-exception (close-fdes fd))
+          (loop (+ 1 fd))))
 
-                ;; Start shepherd.
-                (execl #$(file-append shepherd "/bin/shepherd")
-                       "shepherd" "--config"
-                       #$(shepherd-configuration-file services))))))
+      ;; Start shepherd.
+      (execl #$(file-append shepherd "/bin/shepherd")
+             "shepherd" "--config"
+             #$(shepherd-configuration-file services))))
 
 (define shepherd-root-service-type
   (service-type

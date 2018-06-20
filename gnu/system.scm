@@ -819,7 +819,6 @@ we're running in the final root.  When CONTAINER? is true, skip all
 hardware-related operations as necessary when booting a Linux container."
   (let* ((services (operating-system-services os #:container? container?))
          (boot     (fold-services services #:target-type boot-service-type)))
-    ;; BOOT is the script as a monadic value.
     (service-value boot)))
 
 (define (operating-system-user-accounts os)

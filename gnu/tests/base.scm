@@ -484,20 +484,19 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
   (simple-operating-system
    (simple-service 'dirty-things
                    boot-service-type
-                   (with-monad %store-monad
-                     (let ((script (plain-file
-                                    "create-utf8-file.sh"
-                                    (string-append
-                                     "echo $0: dirtying /tmp...\n"
-                                     "set -e; set -x\n"
-                                     "touch /witness\n"
-                                     "exec touch /tmp/λαμβδα"))))
-                       (with-imported-modules '((guix build utils))
-                         (return #~(begin
-                                     (setenv "PATH"
-                                             #$(file-append coreutils "/bin"))
-                                     (invoke #$(file-append bash "/bin/sh")
-                                             #$script)))))))))
+                   (let ((script (plain-file
+                                  "create-utf8-file.sh"
+                                  (string-append
+                                   "echo $0: dirtying /tmp...\n"
+                                   "set -e; set -x\n"
+                                   "touch /witness\n"
+                                   "exec touch /tmp/λαμβδα"))))
+                     (with-imported-modules '((guix build utils))
+                       #~(begin
+                           (setenv "PATH"
+                                   #$(file-append coreutils "/bin"))
+                           (invoke #$(file-append bash "/bin/sh")
+                                   #$script)))))))
 
 (define (run-cleanup-test name)
   (define os
