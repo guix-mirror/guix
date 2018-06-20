@@ -2407,27 +2407,7 @@ tool for remote execution and deployment.")
        (list (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-target-directories
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "Makefile"
-                 (("\\$\\(DESTDIR\\)/etc/")
-                  "$(PREFIX)/etc/"))
-               (substitute* "neofetch"
-                 (("\"/etc/neofetch")
-                  (string-append "\"" out "/etc/neofetch"))
-                 (("\"/usr/share/neofetch")
-                  (string-append "\"" out "/share/neofetch"))))
-             #t))
-         (delete 'configure)            ; no configure script
-         (replace 'install
-           (lambda* (#:key make-flags outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name "-" ,version))
-                    (etc (string-append doc "/examples/etc")))
-               (zero? (apply system* `("make" ,@make-flags
-                                       ,(string-append "SYSCONFDIR=" etc)
-                                       "install")))))))))
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/dylanaraps/neofetch")
     (synopsis "System info script")
     (description "Neofetch is a CLI system information tool written in Bash.
