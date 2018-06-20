@@ -585,7 +585,7 @@ support for Git-SVN.")
        (modify-phases %standard-phases
          (add-before 'install 'make-info
            (lambda _
-             (zero? (system* "make" "info")))))))
+             (invoke "make" "info"))))))
     (native-inputs
      `(("texinfo" ,texinfo)))
     (propagated-inputs
