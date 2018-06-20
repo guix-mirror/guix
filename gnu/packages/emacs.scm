@@ -1725,7 +1725,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
 (define-public emacs-d-mode
   (package
     (name "emacs-d-mode")
-    (version "2.0.8")
+    (version "2.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1734,7 +1734,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0knpgi55jm09282aqf8pv55zillpnpzf9f4sgm6gwsmvxf17xaw0"))))
+                "127aa77ix3p7w4g339bx026df9y649dahlr3v359z0hs40zjz3kd"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-undercover" ,emacs-undercover)))
