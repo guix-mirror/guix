@@ -334,7 +334,11 @@ containing the given entries."
                 (extend system-derivation)))
 
 (define (compute-boot-script _ mexps)
-  (mlet %store-monad ((gexps (sequence %store-monad mexps)))
+  ;; Reverse MEXPS so that extensions appear in the boot script in the right
+  ;; order.  That is, user extensions would come first, and extensions added
+  ;; by 'essential-services' (e.g., running shepherd) are guaranteed to come
+  ;; last.
+  (mlet %store-monad ((gexps (sequence %store-monad (reverse mexps))))
     (gexp->file "boot"
                 ;; Clean up and activate the system, then spawn shepherd.
                 #~(begin #$@gexps))))
