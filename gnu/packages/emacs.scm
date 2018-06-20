@@ -6148,13 +6148,13 @@ which code derived from Kelvin H's org-page.")
        (modify-phases %standard-phases
          (add-after 'unpack 'regenerate-el-files
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "make"
-                             (string-append "PROTO_PATH="
-                                            (assoc-ref inputs "xcb-proto")
-                                            "/share/xcb")
-                             (string-append "EMACS_BIN="
-                                            (assoc-ref inputs "emacs")
-                                            "/bin/emacs -Q"))))))))
+             (invoke "make"
+                     (string-append "PROTO_PATH="
+                                    (assoc-ref inputs "xcb-proto")
+                                    "/share/xcb")
+                     (string-append "EMACS_BIN="
+                                    (assoc-ref inputs "emacs")
+                                    "/bin/emacs -Q")))))))
     (native-inputs `(("xcb-proto" ,xcb-proto)))
     (home-page "https://github.com/ch11ng/xelb")
     (synopsis "X protocol Emacs Lisp binding")
