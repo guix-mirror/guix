@@ -424,6 +424,41 @@ the plog header-only C++ logging library, and a method to log to R's standard
 error stream.")
     (license license:expat)))
 
+(define-public r-pls
+  (package
+    (name "r-pls")
+    (version "2.6-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pls" version))
+       (sha256
+        (base32
+         "15j59p5x0rkdrk7iqzkipsy50rsyjl31w8zxc4w3v1j5gzxhi1rx"))))
+    (build-system r-build-system)
+    (home-page "http://mevik.net/work/software/pls.html")
+    (synopsis "Partial Least Squares and Principal Component Regression")
+    (description
+     "The pls package implements multivariate regression methods: Partial Least
+Squares Regression (@dfn{PLSR}), Principal Component Regression (@dfn{PCR}), and
+Canonical Powered Partial Least Squares (@dfn{CPPLS}).  It supports:
+
+@itemize
+@item several algorithms: the traditional orthogonal scores (@dfn{NIPALS}) PLS
+algorithm, kernel PLS, wide kernel PLS, Simpls, and PCR through @code{svd}
+@item multi-response models (or @dfn{PLS2})
+@item flexible cross-validation
+@item Jackknife variance estimates of regression coefficients
+@item extensive and flexible plots: scores, loadings, predictions, coefficients,
+(R)MSEP, R², and correlation loadings
+@item formula interface, modelled after @code{lm()}, with methods for predict,
+print, summary, plot, update, etc.
+@item extraction functions for coefficients, scores, and loadings
+@item MSEP, RMSEP, and R² estimates
+@item multiplicative scatter correction (@dfn{MSC})
+@end itemize\n")
+    (license license:gpl2)))
+
 (define-public r-rcpp
   (package
     (name "r-rcpp")
