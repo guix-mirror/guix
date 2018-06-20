@@ -485,7 +485,7 @@ automata.  The following features are available:
              ;; link with libX11, even though we're using the GL backend.
              (substitute* "CMakeLists.txt"
                (("\\$\\{X11_LIBRARIES\\}") "-lX11"))
-             )))))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
