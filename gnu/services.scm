@@ -331,7 +331,11 @@ containing the given entries."
   (service-type (name 'system)
                 (extensions '())
                 (compose identity)
-                (extend system-derivation)))
+                (extend system-derivation)
+                (description
+                 "Build the operating system top-level directory, which in
+turn refers to everything the operating system needs: its kernel, initrd,
+system profile, boot script, and so on.")))
 
 (define (compute-boot-script _ mexps)
   ;; Reverse MEXPS so that extensions appear in the boot script in the right
@@ -358,7 +362,10 @@ directory."
                  (list (service-extension system-service-type
                                           boot-script-entry)))
                 (compose identity)
-                (extend compute-boot-script)))
+                (extend compute-boot-script)
+                (description
+                 "Produce the operating system's boot script, which is spawned
+by the initrd once the root file system is mounted.")))
 
 (define %boot-service
   ;; The service that produces the boot script.
@@ -413,7 +420,10 @@ boot."
   (service-type (name 'cleanup)
                 (extensions
                  (list (service-extension boot-service-type
-                                          cleanup-gexp)))))
+                                          cleanup-gexp)))
+                (description
+                 "Delete files from @file{/tmp}, @file{/var/run}, and other
+temporary locations at boot time.")))
 
 (define* (activation-service->script service)
   "Return as a monadic value the activation script for SERVICE, a service of
@@ -469,7 +479,10 @@ ACTIVATION-SCRIPT-TYPE."
                  (list (service-extension boot-service-type
                                           gexps->activation-gexp)))
                 (compose identity)
-                (extend second-argument)))
+                (extend second-argument)
+                (description
+                 "Run @dfn{activation} code at boot time and upon
+@command{guix system reconfigure} completion.")))
 
 (define %activation-service
   ;; The activation service produces the activation script from the gexps it
@@ -517,7 +530,10 @@ ACTIVATION-SCRIPT-TYPE."
                              (lambda (files)
                                #~(activate-special-files '#$files)))))
    (compose concatenate)
-   (extend append)))
+   (extend append)
+   (description
+    "Add special files to the root file system---e.g.,
+@file{/usr/bin/env}.")))
 
 (define (extra-special-file file target)
   "Use TARGET as the \"special file\" FILE.  For example, TARGET might be
@@ -551,7 +567,8 @@ directory."
                                          #~(activate-etc #$etc))))
                   (service-extension system-service-type etc-entry)))
                 (compose concatenate)
-                (extend append)))
+                (extend append)
+                (description "Populate the @file{/etc} directory.")))
 
 (define (etc-service files)
   "Return a new service of ETC-SERVICE-TYPE that populates /etc with FILES.
@@ -566,7 +583,10 @@ FILES must be a list of name/file-like object pairs."
                                             #~(activate-setuid-programs
                                                (list #$@programs))))))
                 (compose concatenate)
-                (extend append)))
+                (extend append)
+                (description
+                 "Populate @file{/run/setuid-programs} with the specified
+executables, making them setuid-root.")))
 
 (define (packages->profile-entry packages)
   "Return a system entry for the profile containing PACKAGES."
@@ -583,7 +603,11 @@ FILES must be a list of name/file-like object pairs."
                  (list (service-extension system-service-type
                                           packages->profile-entry)))
                 (compose concatenate)
-                (extend append)))
+                (extend append)
+                (description
+                 "This is the @dfn{system profile}, available as
+@file{/run/current-system/profile}.  It contains packages that the sysadmin
+wants to be globally available to all the system users.")))
 
 (define (firmware->activation-gexp firmware)
   "Return a gexp to make the packages listed in FIRMWARE loadable by the
@@ -599,7 +623,11 @@ kernel."
                  (list (service-extension activation-service-type
                                           firmware->activation-gexp)))
                 (compose concatenate)
-                (extend append)))
+                (extend append)
+                (description
+                 "Make ``firmware'' files loadable by the operating system
+kernel.  Firmware may then be uploaded to some of the machine's devices, such
+as Wifi cards.")))
 
 (define (gc-roots->system-entry roots)
   "Return an entry in the system's output containing symlinks to ROOTS."
@@ -626,7 +654,10 @@ kernel."
                  (list (service-extension system-service-type
                                           gc-roots->system-entry)))
                 (compose concatenate)
-                (extend append)))
+                (extend append)
+                (description
+                 "Register garbage-collector roots---i.e., store items that
+will not be reclaimed by the garbage collector.")))
 
 
 ;;;
