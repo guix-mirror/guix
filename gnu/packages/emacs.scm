@@ -1497,7 +1497,7 @@ diagrams.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
