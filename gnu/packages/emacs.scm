@@ -108,6 +108,7 @@
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages gnupg)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -11282,4 +11283,34 @@ shows all e-mails of a thread in a single view, where each correspondant has
 their own face.  Threads can be displayed linearly (in which case e-mails are
 displayed in chronological order) or as an Org document where the node tree
 maps the thread tree.")
+      (license license:gpl3+))))
+
+(define-public emacs-pinentry
+  (let ((commit "dcc9ba03252ee5d39e03bba31b420e0708c3ba0c")
+        (revision "1"))
+    (package
+      (name "emacs-pinentry")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "http://git.savannah.gnu.org/cgit/emacs/elpa.git/plain"
+               "/packages/pinentry/pinentry.el?id=" commit))
+         (file-name (string-append "pinentry.el"))
+         (sha256
+          (base32
+           "1lf30q6r8nz5cjzclbb9bbymsk2y75nskvb55hnjdv93gr3j0sik"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("gnupg" ,gnupg)))
+      (home-page "https://elpa.gnu.org/packages/pinentry.html")
+      (synopsis "GnuPG Pinentry server implementation")
+      (description
+       "This package allows GnuPG passphrase to be prompted through the
+minibuffer instead of graphical dialog.
+
+To use, add @code{allow-emacs-pinentry} to @code{~/.gnupg/gpg-agent.conf},
+reload the configuration with @code{gpgconf --reload gpg-agent}, and start the
+server with @code{M-x pinentry-start}.")
       (license license:gpl3+))))
