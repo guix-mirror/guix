@@ -359,6 +359,9 @@ marked as 'needed-for-boot'."
     (remove file-system-needed-for-boot?
             (operating-system-file-systems os)))
 
+  (define mapped-devices-for-boot
+    (operating-system-boot-mapped-devices os))
+
   (define (device-mappings fs)
     (let ((device (file-system-device fs)))
       (if (string? device)                        ;title is 'device
@@ -374,21 +377,23 @@ marked as 'needed-for-boot'."
     (file-system
       (inherit fs)
       (dependencies
-       (delete-duplicates (append (device-mappings fs)
-                                  (file-system-dependencies fs))
-                          eq?))))
+       (delete-duplicates
+        (remove (cut member <> mapped-devices-for-boot)
+                (append (device-mappings fs)
+                        (file-system-dependencies fs)))
+        eq?))))
 
   (service file-system-service-type
            (map add-dependencies file-systems)))
 
-(define (mapped-device-user device file-systems)
-  "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
+(define (mapped-device-users device file-systems)
+  "Return the subset of FILE-SYSTEMS that use DEVICE."
   (let ((target (string-append "/dev/mapper/" (mapped-device-target device))))
-    (find (lambda (fs)
-            (or (member device (file-system-dependencies fs))
-                (and (string? (file-system-device fs))
-                     (string=? (file-system-device fs) target))))
-          file-systems)))
+    (filter (lambda (fs)
+              (or (member device (file-system-dependencies fs))
+                  (and (string? (file-system-device fs))
+                       (string=? (file-system-device fs) target))))
+            file-systems)))
 
 (define (operating-system-user-mapped-devices os)
   "Return the subset of mapped devices that can be installed in
@@ -396,9 +401,8 @@ user-land--i.e., those not needed during boot."
   (let ((devices      (operating-system-mapped-devices os))
         (file-systems (operating-system-file-systems os)))
    (filter (lambda (md)
-             (let ((user (mapped-device-user md file-systems)))
-               (or (not user)
-                   (not (file-system-needed-for-boot? user)))))
+             (let ((users (mapped-device-users md file-systems)))
+               (not (any file-system-needed-for-boot? users))))
            devices)))
 
 (define (operating-system-boot-mapped-devices os)
@@ -407,8 +411,8 @@ from the initrd."
   (let ((devices      (operating-system-mapped-devices os))
         (file-systems (operating-system-file-systems os)))
    (filter (lambda (md)
-             (let ((user (mapped-device-user md file-systems)))
-               (and user (file-system-needed-for-boot? user))))
+             (let ((users (mapped-device-users md file-systems)))
+               (any file-system-needed-for-boot? users)))
            devices)))
 
 (define (device-mapping-services os)
