@@ -1845,30 +1845,27 @@ MIME type directly to the browser, without being processed through Catalyst.")
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
-    (version "5.90115")
+    (version "5.90118")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Catalyst-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "0kh3ng6pjpxmndq9vrn515f70x7h44ish5bsgjwj4pjvchcyivzm"))))
+         "0cws3szx3vvh0372qdx8fypgv6qphcc3v81rbq30sl1ghby7ksd3"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     `(("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-cgi-simple" ,perl-cgi-simple)
        ("perl-cgi-struct" ,perl-cgi-struct)
        ("perl-class-c3-adopt-next" ,perl-class-c3-adopt-next)
-       ("perl-class-data-inheritable" ,perl-class-data-inheritable)
        ("perl-class-date" ,perl-class-date)
        ("perl-class-load" ,perl-class-load)
        ("perl-data-dump" ,perl-data-dump)
        ("perl-http-body" ,perl-http-body)
        ("perl-http-message" ,perl-http-message)
-       ("perl-http-request-ascgi" ,perl-http-request-ascgi)
        ("perl-io-stringy" ,perl-io-stringy)
        ("perl-json-maybexs" ,perl-json-maybexs)
        ("perl-libwww" ,perl-libwww)
@@ -1878,8 +1875,6 @@ MIME type directly to the browser, without being processed through Catalyst.")
         ,perl-moosex-emulate-class-accessor-fast)
        ("perl-moosex-getopt" ,perl-moosex-getopt)
        ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)
-       ("perl-moosex-role-withoverloading" ,perl-moosex-role-withoverloading)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-path-class" ,perl-path-class)
        ("perl-plack" ,perl-plack)
