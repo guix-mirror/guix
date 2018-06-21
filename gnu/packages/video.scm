@@ -2819,8 +2819,8 @@ alpha blending etc).")
        (modify-phases %standard-phases
          (add-after 'unpack 'autotools
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
-    ;; TODO: opencv for additional face detection filters
+             (invoke "sh" "autogen.sh"))))))
+    ;; TODO: opencv for additional face detection filters.
     (inputs
      `(("gavl" ,gavl)
        ("cairo" ,cairo)))
