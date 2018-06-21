@@ -5468,8 +5468,8 @@ Yasnippet.")
       (license license:gpl2+))))
 
 (define-public emacs-helm-system-packages
-  (let ((commit "986b7bd360a705053500c4ce2c9bea03dd7b24a6")
-        (revision "1"))
+  (let ((commit "b41f8f251695cf236e9d1627070049a5b41aa38a")
+        (revision "2"))
     (package
       (name "emacs-helm-system-packages")
       (version (git-version "1.9.0" revision commit))
@@ -5481,7 +5481,7 @@ Yasnippet.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "19iklhpxgh5xx6h4dysf58nd46lmyb46xj601lf7kbwl6yq0y61f"))))
+                  "1wrsx1j86c9a74nsdndjv21slzl46idd3p6wqy5wnasawj0kfn8r"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)))
