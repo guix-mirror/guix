@@ -2579,7 +2579,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
              #t))
          (add-after 'change-to-build-dir 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Utility for reading media metadata")
     (description "MediaInfo is a utility used for retrieving technical
