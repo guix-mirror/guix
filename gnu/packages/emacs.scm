@@ -4495,7 +4495,7 @@ the file buffer.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "2.9.0")
+    (version "2.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4504,7 +4504,7 @@ the file buffer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1798gn0za11cxdbi436javfczv4abniccxcl0jppl463r8lzb8is"))))
+                "1f7m09i8gr0gk5nw5dn7rpdz20dg3hl4p77dpygkhl82yhk9q2ql"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
