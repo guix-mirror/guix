@@ -2079,7 +2079,7 @@ application classes.")
 (define-public perl-catalystx-script-server-starman
   (package
     (name "perl-catalystx-script-server-starman")
-    (version "0.02")
+    (version "0.03")
     (source
      (origin
        (method url-fetch)
@@ -2088,7 +2088,7 @@ application classes.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0h02mpkc4cmi3jpvcd7iw7xyzx55bqvvl1qkf967gqkvpklm0qx5"))))
+         "08jvibq4v8xjj0c3cr93h0w8w0c88ajwjn37xjy7ygxl9krlffp6"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
