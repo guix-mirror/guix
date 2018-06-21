@@ -1956,14 +1956,14 @@ analysis of multiply imputed data sets.")
 (define-public r-mice
   (package
     (name "r-mice")
-    (version "3.0.0")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mice" version))
        (sha256
         (base32
-         "1p8a5ham90iaak4w17114pdnw535r2l9sxr402yrkc4gbwfbpdlq"))))
+         "0xpn215yfzib4hw09cwilnyg9zbvq460njavfvm84mvgwbm25byi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
