@@ -854,17 +854,19 @@ quantities.")
 (define-public r-progress
   (package
     (name "r-progress")
-    (version "1.1.2")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "progress" version))
        (sha256
         (base32
-         "1fxakchfjr5vj59s9sxynd7crpz97xj42438rmkhkf3rjpyspx59"))))
+         "1rhwm0bdw30z3rvl0bn56xprjl3zrdy7150w4gl4bkvn2d6h9fav"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-prettyunits" ,r-prettyunits)
+     `(("r-crayon" ,r-crayon)
+       ("r-hms" ,r-hms)
+       ("r-prettyunits" ,r-prettyunits)
        ("r-r6" ,r-r6)))
     (home-page "https://github.com/gaborcsardi/progress")
     (synopsis "Terminal progress bars")
