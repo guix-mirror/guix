@@ -1039,8 +1039,7 @@ treaming protocols.")
                 (("#! /bin/sh") (string-append "#!" (which "sh"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
-              (zero? (system*
-                      "./configure"
+              (invoke "./configure"
                       (string-append "--extra-cflags=-I"
                                      libx11 "/include") ; to detect libx11
                       "--disable-ffmpeg_a" ; disables bundled ffmpeg
@@ -1062,7 +1061,7 @@ treaming protocols.")
                                     (or (%current-target-system)
                                         (nix-system->gnu-triplet
                                          (%current-system)))))))
-                      "--disable-iwmmxt"))))))))
+                      "--disable-iwmmxt")))))))
     (home-page "https://www.mplayerhq.hu/design7/news.html")
     (synopsis "Audio and video player")
     (description "MPlayer is a movie player.  It plays most MPEG/VOB, AVI,
