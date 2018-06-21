@@ -461,7 +461,7 @@ automata.  The following features are available:
 (define-public meandmyshadow
   (package
     (name "meandmyshadow")
-    (version "0.4")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/meandmyshadow/"
@@ -469,7 +469,7 @@ automata.  The following features are available:
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "1dpb7s32b2psj5w3nr5kqibib8nndi86mw8gxp4hmxwrfiisf86d"))))
+                "0wl5dc75qy001s6043cx0vr2l5y2qfv1cldqnwill9sfygqj9p95"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; there are no tests
@@ -485,7 +485,7 @@ automata.  The following features are available:
              ;; link with libX11, even though we're using the GL backend.
              (substitute* "CMakeLists.txt"
                (("\\$\\{X11_LIBRARIES\\}") "-lX11"))
-             )))))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1616,23 +1616,20 @@ reference interpreter, using the Glk API.")
 (define-public fizmo
   (package
     (name "fizmo")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://christoph-ender.de/fizmo/source/"
+              (uri (string-append "https://fizmo.spellbreaker.org/source/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1sd988db2302r7cbfcfghbmg8ck43c6hvnlnlpb0rqxb7pm9cwyy"))))
+                "1amyc4n41jf08kxmdgkk30bzzx54miaxa97w28f417qwn8lrl98w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
        (let ((libjpeg (assoc-ref %build-inputs "libjpeg"))
              (ncurses (assoc-ref %build-inputs "ncurses")))
-         (list (string-append "jpeg_CFLAGS=-I" libjpeg "/include")
-               (string-append "jpeg_LIBS=-ljpeg")
-               (string-append "ncursesw_CFLAGS=-I" ncurses "/include")
-               (string-append "ncursesw_LIBS=-lncursesw")))))
+         (list (string-append "--with-jpeg-includedir=" libjpeg "/include")))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1643,7 +1640,7 @@ reference interpreter, using the Glk API.")
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
        ("sdl2" ,sdl2)))
-    (home-page "https://christoph-ender.de/fizmo/")
+    (home-page "https://fizmo.spellbreaker.org/")
     (synopsis "Z-machine interpreter")
     (description
      "Fizmo is a console-based Z-machine interpreter.  It is used to play
@@ -1679,7 +1676,7 @@ Protocol).")
 (define-public extremetuxracer
   (package
     (name "extremetuxracer")
-    (version "0.7.4")
+    (version "0.7.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1687,15 +1684,15 @@ Protocol).")
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
-                "0d2j4ybdjmimg67v2fndgahgq4fvgz3fpfb3a4l1ar75n6hy776s"))))
+                "1ly63316c07i0gyqqmyzsyvygsvygn0fpk3bnbg25fi6li99rlsg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("glu" ,glu)
        ("sfml" ,sfml)))
-    (synopsis "High speed arctic racing game based on Tux Racer")
-    ;; Snarfed straight from Debian
+    (synopsis "High-speed arctic racing game based on Tux Racer")
+    ;; Snarfed straight from Debian.
     (description "Extreme Tux Racer, or etracer as it is called for short, is
 a simple OpenGL racing game featuring Tux, the Linux mascot.  The goal of the
 game is to slide down a snow- and ice-covered mountain as quickly as possible,
@@ -2411,19 +2408,21 @@ are only two levels to play with, but they are very addictive.")
 (define-public pioneers
   (package
     (name "pioneers")
-    (version "15.4")
+    (version "15.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/pio/"
                                   "pioneers-" version ".tar.gz"))
               (sha256
                (base32
-                "1p1d18hrfmqcnghip3shkzcs5qkz6j99jvkdkqfi7pqdvjc323cs"))))
+                "037gdiiw690jw3wd1s9lxmkqx0caxyk0b4drpm7i9p28gig43q9y"))))
     (build-system gnu-build-system)
-    (inputs `(("gtk+" ,gtk+)
-              ("librsvg" ,librsvg)
-              ("avahi" ,avahi)))
+    (inputs `(("avahi" ,avahi)
+              ("gtk+" ,gtk+)
+              ("librsvg" ,librsvg)))
     (native-inputs `(("intltool" ,intltool)
+                     ("itstool" ,itstool)
+                     ("libxml2" ,libxml2)
                      ("pkg-config" ,pkg-config)))
     (synopsis "Board game inspired by The Settlers of Catan")
     (description "Pioneers is an emulation of the board game The Settlers of
@@ -3251,6 +3250,74 @@ programmers may also add their own favorite language.")
 application that locks the keyboard and mouse and instead displays bright
 colors, pictures, and sounds.")
     (license license:gpl3+)))
+
+(define-public mrrescue
+  (package
+    (name "mrrescue")
+    (version "1.02e")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/SimonLarsen/mrrescue/releases/"
+                    "download/" version "/" name version ".love"))
+              (file-name (string-append name "-" version ".love"))
+              (sha256
+               (base32
+                "0jwzbwkgp1l5ia6c7s760gmdirbsncp6nfqp7vqdqsfb63la9gl2"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out    (assoc-ref %outputs "out"))
+                (script (string-append out "/bin/" ,name))
+                (data   (string-append out "/share/" ,name))
+                (source (assoc-ref %build-inputs "source"))
+                (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip"))
+                (patch  (string-append (assoc-ref %build-inputs "patch")
+                                       "/bin/patch"))
+                (bash   (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/bash"))
+                (love   (string-append (assoc-ref %build-inputs "love")
+                                       "/bin/love")))
+
+           (mkdir-p (dirname script))
+           (with-output-to-file script
+             (lambda ()
+               (format #t "#!~a~%" bash)
+               (format #t "exec -a ~a \"~a\" \"~a\"~%" ,name love data)))
+           (chmod script #o755)
+
+           ;; The better way to package this game would be to install *only* the
+           ;; script above, pointing to the unextracted .love file in the store.
+           ;; However, mrrescue 1.02e needs to be patched to work with Love 11.
+           ;; Instead of extracting the .love file, patching it, and re-zipping
+           ;; it to the store, simply point the script to the extracted patched
+           ;; data directory directly.
+           (mkdir-p data)
+           (with-directory-excursion data
+             (invoke unzip source)
+             (invoke patch "-p1" "-i"
+                     (assoc-ref %build-inputs "love-11.patch")))
+           #t))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("patch" ,patch)
+       ("love-11.patch" ,(search-patch "mrrescue-support-love-11.patch"))))
+    (inputs
+     `(("bash" ,bash)
+       ("love" ,love)))
+    (home-page "http://tangramgames.dk/games/mrrescue")
+    (synopsis "Arcade-style fire fighting game")
+    (description
+     "Mr. Rescue is an arcade styled 2d action game centered around evacuating
+civilians from burning buildings.  The game features fast-paced fire
+extinguishing action, intense boss battles, a catchy soundtrack, and lots of
+throwing people around in pseudo-randomly generated buildings.")
+    (license (list license:zlib             ; for source code
+                   license:cc-by-sa3.0))))  ; for graphics and music assets
 
 (define-public hyperrogue
   (package
@@ -4475,7 +4542,7 @@ Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
 (define-public quakespasm
   (package
     (name "quakespasm")
-    (version "0.93.0")
+    (version "0.93.1")
     (source
      (origin
        (method url-fetch)
@@ -4483,7 +4550,7 @@ Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
                            version ".tgz"))
        (sha256
         (base32
-         "0b2nz7w4za32pc34r62ql270z692qcjs2pm0i3svkxkvfammhdfq"))))
+         "1bimv18f6rzhyjz78yvw2vqr5n0kdqbcqmq7cb3m951xgsxfcgpd"))))
     (arguments
      `(#:tests? #f
        #:make-flags '("CC=gcc"

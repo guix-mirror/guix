@@ -2391,15 +2391,15 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "4.0.2")
+    (version "5.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dylanaraps/neofetch/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dylanaraps/neofetch")
+                    (commit version)))
               (sha256
                (base32
-                "014hlbzs6j4b669b64hnq8vc5knwiv9ncw9m9d193p9jsybxpm1w"))))
+                "0yzyi2p0d8xp576lxyv5m9h60dl1d5dmrn40aad307872835b9rr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -2407,27 +2407,7 @@ tool for remote execution and deployment.")
        (list (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-target-directories
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "Makefile"
-                 (("\\$\\(DESTDIR\\)/etc/")
-                  "$(PREFIX)/etc/"))
-               (substitute* "neofetch"
-                 (("\"/etc/neofetch")
-                  (string-append "\"" out "/etc/neofetch"))
-                 (("\"/usr/share/neofetch")
-                  (string-append "\"" out "/share/neofetch"))))
-             #t))
-         (delete 'configure)            ; no configure script
-         (replace 'install
-           (lambda* (#:key make-flags outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name "-" ,version))
-                    (etc (string-append doc "/examples/etc")))
-               (zero? (apply system* `("make" ,@make-flags
-                                       ,(string-append "SYSCONFDIR=" etc)
-                                       "install")))))))))
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/dylanaraps/neofetch")
     (synopsis "System info script")
     (description "Neofetch is a CLI system information tool written in Bash.
@@ -2669,7 +2649,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.11-1")
+      (version "3.0.12-1")
       (source
        (origin
          (method git-fetch)
@@ -2678,7 +2658,7 @@ Python loading in HPC environments.")
                (commit version)))
          (sha256
           (base32
-           "07wihl4gsamq98mhxvm6k4vpphym75467cxfa19b3g5ggpyq894g"))))
+           "1a2sjz90gzzvhp63x89hs0a424rkd13qrff2njqmjxp322zyp527"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash)

@@ -551,10 +551,26 @@ list of services."
       ;; TRANSLATORS: Please preserve the two-space indentation.
       (format #t (G_ "  label: ~a~%") label)
       (format #t (G_ "  bootloader: ~a~%") bootloader-name)
-      (format #t (G_ "  root device: ~a~%")
-              (if (uuid? root-device)
-                  (uuid->string root-device)
-                  root-device))
+
+      ;; TRANSLATORS: The '~[', '~;', and '~]' sequences in this string must
+      ;; be preserved.  They denote conditionals, such that the result will
+      ;; look like:
+      ;;   root device: UUID: 12345-678
+      ;; or:
+      ;;   root device: label: "my-root"
+      ;; or just:
+      ;;   root device: /dev/sda3
+      (format #t (G_ "  root device: ~[UUID: ~a~;label: ~s~;~a~]~%")
+              (cond ((uuid? root-device) 0)
+                    ((file-system-label? root-device) 1)
+                    (else 2))
+              (cond ((uuid? root-device)
+                     (uuid->string root-device))
+                    ((file-system-label? root-device)
+                     (file-system-label->string root-device))
+                    (else
+                     root-device)))
+
       (format #t (G_ "  kernel: ~a~%") kernel))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))

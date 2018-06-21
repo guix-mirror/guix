@@ -3625,7 +3625,7 @@ complex transformations and code analysis tools.")
      `(("java-aqute-bndlib" ,java-aqute-bndlib-bootstrap)
        ("java-aqute-libg" ,java-aqute-libg-bootstrap)
        ,@(delete `("java-aqute-bndlib" ,java-aqute-bndlib)
-                 (delete `("java-aqute-libg", java-aqute-libg)
+                 (delete `("java-aqute-libg" ,java-aqute-libg)
                          (package-inputs java-asm)))))))
 
 (define-public java-cglib

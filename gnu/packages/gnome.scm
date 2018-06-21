@@ -6486,6 +6486,12 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
              (substitute* '("Makefile.am")
                (("\\$\\(DESTDIR\\)/usr/share")
                 "$(datadir)"))
+             #t))
+         (add-after 'unpack 'disable-configure-during-bootstrap
+           (lambda _
+             ;; Do not run configure as part of autogen.sh because references
+             ;; to /bin are not fixed yet.
+             (setenv "NOCONFIGURE" "y")
              #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -6535,6 +6541,14 @@ simple and consistent.")
                (base32
                 "1ya1cqvv8q847c0rpcg6apzky87q3h04y8jz5nmi52qk6kg8si0b"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-configure-during-bootstrap
+           (lambda _
+             (substitute* "autogen.sh"
+               (("^\"\\$srcdir/configure\".*") ""))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -7273,7 +7287,7 @@ mp3, Ogg Vorbis and FLAC")
                            ("libxtst" ,libxtst)
                            ("dconf" ,dconf)
                            ("libice" ,libice)))
-      (inputs `(("libsm", libsm)
+      (inputs `(("libsm" ,libsm)
                 ("python-cheetah" ,python2-cheetah)))
       (native-inputs `(("glib" ,glib "bin")
                        ("pkg-config" ,pkg-config)

@@ -6939,13 +6939,13 @@ Bioconductor, CRAN, and Github.")
 (define-public r-biocviews
   (package
     (name "r-biocviews")
-    (version "1.48.1")
+    (version "1.48.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biocViews" version))
               (sha256
                (base32
-                "1q5z6xxhjyibr165di7iyachw4gd4bdrxkd8rjkcklnngsrx1azm"))))
+                "01yiafayl1m5704xdd2cn3zjc78rs10dqyz66lr3qkf6d8w66938"))))
     (properties
      `((upstream-name . "biocViews")))
     (build-system r-build-system)
@@ -7083,14 +7083,14 @@ support for default values, positional argument support, etc.")
 (define-public r-optparse
   (package
     (name "r-optparse")
-    (version "1.4.4")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "optparse" version))
        (sha256
         (base32
-         "1ff4wmsszrb3spwfp7ynfs8w11qpy1sdzfxm1wk8dqqvdwris7qb"))))
+         "1d7v5gl45x4amsfmzn5zyyffyqlc7a82h01szlnda22viyxids0h"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-getopt" ,r-getopt)))
@@ -7587,13 +7587,13 @@ files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "0n3w57cwy911q812wc8658y0v3xgpmg379sj98kfqdxa80z1mxdf"))))
+                "0sjwszxdi0vkj2i2di5i46gh9chc660yr3gs5nk9qnqp77713zds"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
@@ -10070,14 +10070,14 @@ provide added flexibility for data combination and manipulation.")
 (define-public r-complexheatmap
   (package
     (name "r-complexheatmap")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ComplexHeatmap" version))
        (sha256
         (base32
-         "0z57mrginzd40niy51dvnyqgbrij05ji0dbwqs3x2as80sq28i3q"))))
+         "0qjwz1hzpjnc90jiinjkikfnr0shi72q3zfdjjz7pxydy0mglq8n"))))
     (properties
      `((upstream-name . "ComplexHeatmap")))
     (build-system r-build-system)

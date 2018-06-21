@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -503,7 +504,16 @@ sound and device input (keyboards, joysticks, mice, etc.).")
              (string-append "--with-libsdl2-ttf-prefix="
                             (assoc-ref %build-inputs "sdl2-ttf"))
              (string-append "--with-libsdl2-mixer-prefix="
-                            (assoc-ref %build-inputs "sdl2-mixer")))))
+                            (assoc-ref %build-inputs "sdl2-mixer")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-makefile
+           (lambda _
+             ;; Install compiled Guile files in the expected place.
+             (substitute* '("Makefile")
+               (("^godir = .*$")
+                "godir = $(moddir)\n"))
+             #t)))))
     (native-inputs
      `(("guile" ,guile-2.2)
        ("pkg-config" ,pkg-config)))

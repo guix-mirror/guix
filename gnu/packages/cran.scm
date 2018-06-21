@@ -424,6 +424,41 @@ the plog header-only C++ logging library, and a method to log to R's standard
 error stream.")
     (license license:expat)))
 
+(define-public r-pls
+  (package
+    (name "r-pls")
+    (version "2.6-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pls" version))
+       (sha256
+        (base32
+         "15j59p5x0rkdrk7iqzkipsy50rsyjl31w8zxc4w3v1j5gzxhi1rx"))))
+    (build-system r-build-system)
+    (home-page "http://mevik.net/work/software/pls.html")
+    (synopsis "Partial Least Squares and Principal Component Regression")
+    (description
+     "The pls package implements multivariate regression methods: Partial Least
+Squares Regression (@dfn{PLSR}), Principal Component Regression (@dfn{PCR}), and
+Canonical Powered Partial Least Squares (@dfn{CPPLS}).  It supports:
+
+@itemize
+@item several algorithms: the traditional orthogonal scores (@dfn{NIPALS}) PLS
+algorithm, kernel PLS, wide kernel PLS, Simpls, and PCR through @code{svd}
+@item multi-response models (or @dfn{PLS2})
+@item flexible cross-validation
+@item Jackknife variance estimates of regression coefficients
+@item extensive and flexible plots: scores, loadings, predictions, coefficients,
+(R)MSEP, R², and correlation loadings
+@item formula interface, modelled after @code{lm()}, with methods for predict,
+print, summary, plot, update, etc.
+@item extraction functions for coefficients, scores, and loadings
+@item MSEP, RMSEP, and R² estimates
+@item multiplicative scatter correction (@dfn{MSC})
+@end itemize\n")
+    (license license:gpl2)))
+
 (define-public r-rcpp
   (package
     (name "r-rcpp")
@@ -819,17 +854,19 @@ quantities.")
 (define-public r-progress
   (package
     (name "r-progress")
-    (version "1.1.2")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "progress" version))
        (sha256
         (base32
-         "1fxakchfjr5vj59s9sxynd7crpz97xj42438rmkhkf3rjpyspx59"))))
+         "1rhwm0bdw30z3rvl0bn56xprjl3zrdy7150w4gl4bkvn2d6h9fav"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-prettyunits" ,r-prettyunits)
+     `(("r-crayon" ,r-crayon)
+       ("r-hms" ,r-hms)
+       ("r-prettyunits" ,r-prettyunits)
        ("r-r6" ,r-r6)))
     (home-page "https://github.com/gaborcsardi/progress")
     (synopsis "Terminal progress bars")
@@ -1714,14 +1751,14 @@ provides a one-row summary of model-level statistics.")
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "1car3a3mqn87pz049cbgkaayz86970mvkapk6al2k7jjw76306l9"))))
+         "1vqh3pxs4n1azhnd1lzg91vasya6g323kllhbrw177j7kdxqyimy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -1733,6 +1770,7 @@ provides a one-row summary of model-level statistics.")
        ("r-lubridate" ,r-lubridate)
        ("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)
+       ("r-pls" ,r-pls)
        ("r-purrr" ,r-purrr)
        ("r-rcpproll" ,r-rcpproll)
        ("r-rlang" ,r-rlang)
@@ -1918,14 +1956,14 @@ analysis of multiply imputed data sets.")
 (define-public r-mice
   (package
     (name "r-mice")
-    (version "3.0.0")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mice" version))
        (sha256
         (base32
-         "1p8a5ham90iaak4w17114pdnw535r2l9sxr402yrkc4gbwfbpdlq"))))
+         "0xpn215yfzib4hw09cwilnyg9zbvq460njavfvm84mvgwbm25byi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -2570,14 +2608,14 @@ iVAT).")
 (define-public r-xfun
   (package
     (name "r-xfun")
-    (version "0.1")
+    (version "0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xfun" version))
        (sha256
         (base32
-         "1sm51gmwgw876d6d1q8smxmfgfh6zsnykfx8qp8z6jmh0fvd89pj"))))
+         "0zl22fcw90kdvzkjyf6vbmdmn9rz3bl51522fasvmykypffyng4a"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/xfun")
     (synopsis "Miscellaneous functions")
@@ -3540,14 +3578,14 @@ extracting and replacing data in arrays.")
 (define-public r-prroc
   (package
     (name "r-prroc")
-    (version "1.3")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "PRROC" version))
        (sha256
         (base32
-         "03hvh92lq4i4w4mla9bvwrwb4626f4hvlxgdn57hamp70960vjyc"))))
+         "1m28h8pcd78049lz2qixhkcr9h5b3jik3maqzfbvq9y58z71i4a7"))))
     (properties `((upstream-name . "PRROC")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/PRROC/")

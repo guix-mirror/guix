@@ -44,6 +44,7 @@
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -393,6 +394,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
         (sha256
          (base32
           "0qx8mavwdzdpkkby7n29i9av7zsnklavacwfz537mf62q2pzjnbf"))
+        (patches (search-patches "x265-fix-ppc64le-build.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -401,7 +403,9 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
        ;; Currently the source code doesn't check for aarch64.
-       ,@(if (string-prefix? "aarch64" (or (%current-target-system) (%current-system)))
+       ,@(if (any (cute string-prefix? <> (or (%current-system)
+                                              (%current-target-system)))
+                  '("armhf" "aarch64"))
            '(#:configure-flags '("-DENABLE_PIC=TRUE"))
            '())
        #:phases
@@ -1218,7 +1222,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.05.09")
+    (version "2018.06.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1226,7 +1230,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0sl4bi2jls3417rd62awbqdq1b6wskkjbfwpnyw4a61qarfxid1d"))))
+                "0ys2mc84r7mjpn7rykb57sn3ii1kp3divjdn2ivwqknj8jrzg3z6"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

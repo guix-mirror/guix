@@ -1702,3 +1702,92 @@ with the
 @uref{https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html,
 GNU extensions} to the POSIX recommendations for command-line options.")
       (license license:bsd-3))))
+
+(define-public go-github-com-sirupsen-logrus
+  (package
+    (name "go-github-com-sirupsen-logrus")
+    (version "1.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sirupsen/logrus.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "0g5z7al7kky11ai2dhac6gkp3b5pxsvx72yj3xg4wg3265gbn7yz"))))
+    (build-system go-build-system)
+    (native-inputs
+     `(("go-golang-org-x-crypto-ssh-terminal"
+        ,go-golang-org-x-crypto-ssh-terminal)
+       ("go-github-com-stretchr-testify"
+        ,go-github-com-stretchr-testify)
+       ("go-golang-org-x-sys-unix"
+        ,go-golang-org-x-sys-unix)))
+    (arguments
+     '(#:tests? #f                    ;FIXME missing dependencies
+       #:import-path "github.com/sirupsen/logrus"))
+    (home-page "https://github.com/sirupsen/logrus")
+    (synopsis "Structured, pluggable logging for Go")
+    (description "Logrus is a structured logger for Go, completely API
+compatible with the standard library logger.")
+    (license license:expat)))
+
+(define-public go-github-com-kardianos-osext
+  (let ((commit "ae77be60afb1dcacde03767a8c37337fad28ac14")
+        (revision "1"))
+    (package
+      (name "go-github-com-kardianos-osext")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/kardianos/osext")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "056dkgxrqjj5r18bnc3knlpgdz5p3yvp12y4y978hnsfhwaqvbjz"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/kardianos/osext"
+         ;; The tests are flaky:
+         ;; <https://github.com/kardianos/osext/issues/21>
+         #:tests? #f))
+      (synopsis "Find the running executable")
+      (description "Osext provides a method for finding the current executable
+file that is running.  This can be used for upgrading the current executable or
+finding resources located relative to the executable file.")
+      (home-page "https://github.com/kardianos/osext")
+      (license license:bsd-3))))
+
+(define-public go-github-com-ayufan-golang-kardianos-service
+  (let ((commit "0c8eb6d8fff2e2fb884a7bfd23e183fb63c0eff3")
+        (revision "0"))
+    (package
+      (name "go-github-com-ayufan-golang-kardianos-service")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/ayufan/golang-kardianos-service.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0x0cn7l5gda2khsfypix7adxd5yqighzn04mxjw6hc4ayrh7his5"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("go-github-com-kardianos-osext"
+          ,go-github-com-kardianos-osext)))
+      (arguments
+       '(#:tests? #f                ;FIXME tests fail: Service is not running.
+         #:import-path "github.com/ayufan/golang-kardianos-service"))
+      (home-page "https://github.com/ayufan/golang-kardianos-service")
+      (synopsis "Go interface to a variety of service supervisors")
+      (description "This package provides @code{service}, a Go module that can
+run programs as a service using a variety of supervisors, including systemd,
+SysVinit, and more.")
+      (license license:zlib))))

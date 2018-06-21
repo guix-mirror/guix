@@ -312,12 +312,12 @@ editor (without an X toolkit)" )
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'autogen
-                      (lambda _
-                        (zero? (system* "sh" "autogen.sh"))))
+             (lambda _
+               (invoke "sh" "autogen.sh")))
            ;; Build sometimes fails: deps/dispnew.d: No such file or directory
            (add-before 'build 'make-deps-dir
              (lambda _
-               (zero? (system* "mkdir" "-p" "src/deps"))))))))))
+               (invoke "mkdir" "-p" "src/deps")))))))))
 
 
 ;;;
@@ -411,7 +411,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.7.2")
+    (version "2.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -420,7 +420,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jqi3axcs0cb1pcv1jxxc2a09v6psrm33wwl6hmyshzl8kbxs2mv"))))
+                "1ln2s0kckzkv50qmr6x1kb2j30cfjii0vs6lpghg7ff4lav8jqgh"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -585,7 +585,7 @@ support for Git-SVN.")
        (modify-phases %standard-phases
          (add-before 'install 'make-info
            (lambda _
-             (zero? (system* "make" "info")))))))
+             (invoke "make" "info"))))))
     (native-inputs
      `(("texinfo" ,texinfo)))
     (propagated-inputs
@@ -602,7 +602,7 @@ process, passing on the arguments as command line arguments.")
 (define-public emacs-ghub
   (package
     (name "emacs-ghub")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -611,14 +611,14 @@ process, passing on the arguments as command line arguments.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1zrb3xk04a228g2ahx0r02d0d3xskj60q73qavvmm2i56r66cxvc"))))
+                "0d0qj5r1bm2aidi61rigrdaycxnyb7y1ivb3h8rpvvapsf8sk7z0"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'install 'make-info
            (lambda _
-             (zero? (system* "make" "info")))))))
+             (invoke "make" "info"))))))
     (native-inputs
      `(("texinfo" ,texinfo)))
     (home-page "https://github.com/magit/ghub")
@@ -702,8 +702,7 @@ only a handful of functions that are not resource-specific.")
                           files))
 
               (with-directory-excursion "doc"
-                (unless (zero? (system* "makeinfo" "haskell-mode.texi"))
-                  (error "makeinfo failed"))
+                (invoke "makeinfo" "haskell-mode.texi")
                 (install-file "haskell-mode.info" info))
                (copy-to-dir doc '("CONTRIBUTING.md" "NEWS" "README.md"))
                (copy-to-dir el-dir (find-files "." "\\.elc?"))
@@ -794,7 +793,7 @@ provides an optional IDE-like error list.")
          (modify-phases %standard-phases
            (add-after 'unpack 'autoconf
              (lambda _
-               (zero? (system* "autoconf"))))
+               (invoke "autoconf")))
            (add-before 'configure 'support-emacs!
              (lambda _
                ;; For some reason 'AC_PATH_EMACS' thinks that 'Emacs 26' is
@@ -825,13 +824,13 @@ provides an optional IDE-like error list.")
                  #t)))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (and (zero? (system* "make" "install" "install-icons"))
-                    (with-directory-excursion
-                        (string-append (assoc-ref outputs "out")
-                                       "/share/emacs/site-lisp")
-                      (for-each delete-file '("ChangeLog" "ChangeLog.1"))
-                      (symlink "w3m-load.el" "w3m-autoloads.el")
-                      #t)))))))
+               (invoke "make" "install" "install-icons")
+               (with-directory-excursion
+                   (string-append (assoc-ref outputs "out")
+                                  "/share/emacs/site-lisp")
+                 (for-each delete-file '("ChangeLog" "ChangeLog.1"))
+                 (symlink "w3m-load.el" "w3m-autoloads.el")
+                 #t))))))
       (home-page "http://emacs-w3m.namazu.org/")
       (synopsis "Simple Web browser for Emacs based on w3m")
       (description
@@ -1154,7 +1153,7 @@ than @code{electric-indent-mode}.")
          (add-before 'install 'make-info
            (lambda _
              (with-directory-excursion "docs"
-               (zero? (system* "make" "info")))))
+               (invoke "make" "info"))))
          (add-after 'install 'install-info
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -1455,13 +1454,12 @@ Maps directly inside Emacs.")
                  (substitute* "Makefile"
                    (("\\/usr\\/bin\\/gzip")
                     (string-append (assoc-ref inputs "gzip") "/bin/gzip")))
-                 (zero?
-                  (system* "make"
-                           "clean"
-                           "info"
-                           (string-append "TEXINFODIR="
-                                          (assoc-ref inputs "texinfo")
-                                          "/bin"))))))
+                 (invoke "make"
+                         "clean"
+                         "info"
+                         (string-append "TEXINFODIR="
+                                        (assoc-ref inputs "texinfo")
+                                        "/bin")))))
            (add-after 'install 'install-info
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out  (assoc-ref outputs "out"))
@@ -1499,7 +1497,7 @@ diagrams.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -1564,7 +1562,7 @@ filters, new key bindings and faces.  It can be enabled by
            (lambda _ (chdir "server") #t))
          (add-after 'enter-server-dir 'autogen
            (lambda _
-             (zero? (system* "bash" "autogen.sh"))))
+             (invoke "bash" "autogen.sh")))
 
          ;; Build emacs side using 'emacs-build-system'.
          (add-after 'compress-documentation 'enter-lisp-dir
@@ -1727,7 +1725,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
 (define-public emacs-d-mode
   (package
     (name "emacs-d-mode")
-    (version "2.0.8")
+    (version "2.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1736,7 +1734,7 @@ management tasks from Emacs.  To begin with, run @code{M-x guix-about} or
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0knpgi55jm09282aqf8pv55zillpnpzf9f4sgm6gwsmvxf17xaw0"))))
+                "127aa77ix3p7w4g339bx026df9y649dahlr3v359z0hs40zjz3kd"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-undercover" ,emacs-undercover)))
@@ -2971,8 +2969,8 @@ in @code{html-mode}.")
                  (substitute* "Makefile"
                    (("infodir=/usr/local/info")
                     (string-append "infodir=" info-dir)))
-                 (system* "make" "html/index.html")
-                 (system* "make" "slime.info")
+                 (invoke "make" "html/index.html")
+                 (invoke "make" "slime.info")
                  (install-file "slime.info" info-dir)
                  (copy-recursively "html" (string-append doc-dir "/html")))
                (for-each (lambda (f)
@@ -3652,9 +3650,9 @@ automatically.")
              (let* ((out (assoc-ref outputs "out"))
                     (info (string-append out "/share/info")))
                (with-directory-excursion "doc"
-                 (unless (zero? (system* "makeinfo" "ivy.texi"))
-                   (error "makeinfo failed"))
-                 (install-file "ivy.info" info))))))))
+                 (invoke "makeinfo" "ivy.texi")
+                 (install-file "ivy.info" info)
+                 #t)))))))
     (propagated-inputs
      `(("emacs-hydra" ,emacs-hydra)))
     (native-inputs
@@ -4106,14 +4104,15 @@ programming language.")
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "Makeconf"
                  (("SHELL = /bin/sh")
-                  (string-append "SHELL = " (which "sh"))))))
+                  (string-append "SHELL = " (which "sh"))))
+               #t))
            ;; FIXME: the texlive-union insists on regenerating fonts.  It stores
            ;; them in HOME, so it needs to be writeable.
            (add-before 'build 'set-HOME
              (lambda _ (setenv "HOME" "/tmp") #t))
            (replace 'check
              (lambda _
-               (zero? (system* "make" "test"))))))))
+               (invoke "make" "test")))))))
     (inputs
      `(("emacs" ,emacs-minimal)
        ("r-minimal" ,r-minimal)))
@@ -4727,36 +4726,38 @@ news items, openrc and runscripts.")
     (license license:gpl2+)))
 
 (define-public emacs-evil
-  (package
-    (name "emacs-evil")
-    (version "1.2.13")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/emacs-evil/evil/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1z63zsxmsc6mh74wv6065carwqmgs7b7lz5044s12xvgsjfbwi8h"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-undo-tree" ,emacs-undo-tree)
-       ("emacs-goto-chg" ,emacs-goto-chg)))
-    (home-page "https://github.com/emacs-evil/evil")
-    (synopsis "Extensible Vi layer for Emacs")
-    (description
-     "Evil is an extensible vi layer for Emacs.  It emulates the
+  (let ((commit "230b87212c81aaa68ef5547a6b998d9c365fe139"))
+    (package
+      (name "emacs-evil")
+      (version (git-version "1.2.13" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-evil/evil")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0c9zy3bpck10gcrv79kd3h7i4ygd5bgbgy773n0lg7a2r5kwn1gx"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-undo-tree" ,emacs-undo-tree)
+         ("emacs-goto-chg" ,emacs-goto-chg)))
+      (home-page "https://github.com/emacs-evil/evil")
+      (synopsis "Extensible Vi layer for Emacs")
+      (description
+       "Evil is an extensible vi layer for Emacs.  It emulates the
 main features of Vim, and provides facilities for writing custom
 extensions.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-evil-collection
-  (let ((commit "f40704a57fd33b4bfad64147a2b771fc8961fdfc")
+  (let ((commit "ac21b8957cfc22485cdaa316384edf9cb220d837")
         (revision "1"))
     (package
       (name "emacs-evil-collection")
-      (version (git-version "20180425" revision commit))
+      (version (git-version "20180617" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -4765,7 +4766,7 @@ extensions.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "0qn19k0f3isnbi1hkmcf3qjxbyvp23m5ak5ny7623qgwb2nwz1l5"))))
+                  "082a3c5c2ls9ryqrl5kzb4z6bcprhqx8pypnlj1razbld3lny934"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
@@ -5866,7 +5867,7 @@ source file, @file{jl-encrypt.el}.")
 (define-public emacs-htmlize
   (package
     (name "emacs-htmlize")
-    (version "1.51")
+    (version "1.53")
     (source
      (origin
        (method url-fetch)
@@ -5876,7 +5877,7 @@ source file, @file{jl-encrypt.el}.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fy1lybzrxl8a8r88f6p19nz8ygmvcxhxbnymkxh7jqaz25viwld"))))
+         "1lzaf9m1qr9dhw4nn53g6wszk2vqw95gpsbrc3y85bams4cn24ga"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/hniksic/emacs-htmlize")
     (synopsis "Convert buffer text and decorations to HTML")
@@ -6149,13 +6150,13 @@ which code derived from Kelvin H's org-page.")
        (modify-phases %standard-phases
          (add-after 'unpack 'regenerate-el-files
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "make"
-                             (string-append "PROTO_PATH="
-                                            (assoc-ref inputs "xcb-proto")
-                                            "/share/xcb")
-                             (string-append "EMACS_BIN="
-                                            (assoc-ref inputs "emacs")
-                                            "/bin/emacs -Q"))))))))
+             (invoke "make"
+                     (string-append "PROTO_PATH="
+                                    (assoc-ref inputs "xcb-proto")
+                                    "/share/xcb")
+                     (string-append "EMACS_BIN="
+                                    (assoc-ref inputs "emacs")
+                                    "/bin/emacs -Q")))))))
     (native-inputs `(("xcb-proto" ,xcb-proto)))
     (home-page "https://github.com/ch11ng/xelb")
     (synopsis "X protocol Emacs Lisp binding")
@@ -8968,10 +8969,10 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
        (modify-phases %standard-phases
          (add-before 'install 'check
            (lambda* (#:key inputs #:allow-other-keys)
-             (zero? (system* "emacs" "--batch" "-L" "."
-                             "-l" "test/m-buffer-test.el"
-                             "-l" "test/m-buffer-at-test.el"
-                             "-f" "ert-run-tests-batch-and-exit")))))))
+             (invoke "emacs" "--batch" "-L" "."
+                     "-l" "test/m-buffer-test.el"
+                     "-l" "test/m-buffer-at-test.el"
+                     "-f" "ert-run-tests-batch-and-exit"))))))
     (build-system emacs-build-system)
     (home-page "https://github.com/phillord/m-buffer-el")
     (synopsis "List oriented buffer operations for Emacs")
@@ -10702,27 +10703,8 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-ediff
-  (package
-    (name "emacs-evil-ediff")
-    (version "20170724")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/emacs-evil/evil-ediff/archive/"
-             "67b0e69f65c196eff5b39dacb7a9ec05bb919c74"
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0j2x26zfc6md54mjf76qpybil4yal70lp5bifcz62l1f8fc1vvlq"))))
-    (build-system emacs-build-system)
-    (propagated-inputs `(("emacs-evil" ,emacs-evil)))
-    (home-page "https://github.com/emacs-evil/evil-ediff")
-    (synopsis "Make Ediff a little evil")
-    (description
-     "This Emacs package configures Ediff to be friendlier to users of Vi-like
-keybindings.  Consult the help buffer for more information.")
-    (license license:gpl3+)))
+  ;; Evil-Ediff is included in Evil Collection from 20180617.
+  (deprecated-package "emacs-evil-ediff" emacs-evil-collection))
 
 (define-public emacs-evil-magit
   (let ((commit "dbf5a646a7ce1c35c229dfdc423bd5ecd927a3a8"))
@@ -10754,30 +10736,8 @@ describing the key binding changes.")
       (license license:gpl3+))))
 
 (define-public emacs-evil-mu4e
-  (package
-    (name "emacs-evil-mu4e")
-    (version "0.0.8")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/JorisE/evil-mu4e/archive/"
-             "c03a0e11afda3092eb1461be09fa6a61ebc0e4f6"
-             ".tar.gz"))
-       (sha256
-        (base32
-         "1k3z5h04bqslrkq13paqf8pv9r0rf0zjl0zbb57ly043ds3nvxr2"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-evil" ,emacs-evil)
-       ("mu" ,mu)))
-    (home-page "https://github.com/JorisE/evil-mu4e")
-    (synopsis "Evil-based key bindings for mu4e")
-    (description
-     "Use keybindings for the mu4e mail reader in Emacs that make sense for
-Evil users.")
-    (license license:gpl3+)))
+  ;; Evil-mu4e is included in Evil Collection from 20180617.
+  (deprecated-package "emacs-evil-mu4e" emacs-evil-collection))
 
 (define-public emacs-evil-multiedit
   (let ((commit "ea3d9177b74ab0bc65e55df9cc0a0b42e4ef815d"))
@@ -11291,4 +11251,35 @@ file.")
       (description
        "@code{wgrep-helm} allows you to edit a @code{helm-grep-mode} buffer and
 apply those changes to the file buffer.")
+      (license license:gpl3+))))
+
+(define-public emacs-mu4e-conversation
+  (let ((commit "b60d6bd27d7220c3dd041ff2a090e29f2166a319"))
+    (package
+      (name "emacs-mu4e-conversation")
+      (version (git-version "20180615" "1" commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://gitlab.com/Ambrevar/mu4e-conversation/"
+               "repository/archive.tar.gz?ref="
+               commit))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0x8kmi0rmbaaxn5zicm1f9yb8ynxi8074hi2n0rvymlfpxbpn0ma"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("mu" ,mu)))
+      (home-page
+       "https://gitlab.com/Ambrevar/mu4e-conversation")
+      (synopsis
+       "Show a complete thread in a single buffer")
+      (description
+       "This package offers an alternate view to mu4e e-mail display.  It
+shows all e-mails of a thread in a single view, where each correspondant has
+their own face.  Threads can be displayed linearly (in which case e-mails are
+displayed in chronological order) or as an Org document where the node tree
+maps the thread tree.")
       (license license:gpl3+))))

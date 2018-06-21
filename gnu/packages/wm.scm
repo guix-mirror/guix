@@ -103,7 +103,7 @@ nested include statements).")
 (define-public bspwm
   (package
     (name "bspwm")
-    (version "0.9.4")
+    (version "0.9.5")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -113,7 +113,7 @@ nested include statements).")
              version ".tar.gz"))
        (sha256
         (base32
-         "0yjr0vzbj3ar8qfr6gvpvjd82ay8iy1sg2fkw2swghlqiy6ix4kw"))))
+         "10pph8wxqysgk7b2h0svs0nwacn1a4y44jnzzry32pd1ysx92d97"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
@@ -123,10 +123,13 @@ nested include statements).")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-wm" ,xcb-util-wm)))
     (arguments
-     '(#:phases (modify-phases %standard-phases (delete 'configure))
-       #:tests? #f  ; no check target
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure))           ; no configure script
+       #:tests? #f                      ; no check target
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" %output))))
     (home-page "https://github.com/baskerville/bspwm")
     (synopsis "Tiling window manager based on binary space partitioning")
     (description "bspwm is a tiling window manager that represents windows as
@@ -988,7 +991,7 @@ project derived from the original Calm Window Manager.")
        ("glib" ,glib)
        ("glibmm" ,glibmm)))
     (native-inputs
-     `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags (list
                           (string-append "--prefix=" %output)

@@ -1776,7 +1776,7 @@ file for more details.")
      `(("zlib" ,zlib)
        ("crypto++" ,crypto++)
        ("libpng" ,libpng)
-       ("wxwidgets-gtk2", wxwidgets-gtk2)))
+       ("wxwidgets-gtk2" ,wxwidgets-gtk2)))
     (home-page "http://amule.org/")
     (synopsis "Peer-to-peer client for the eD2K and Kademlia networks")
     (description
