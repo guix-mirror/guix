@@ -1028,27 +1028,8 @@ light user interface.")
     (license license:gpl3+)))
 
 (define-public emacs-emms-player-mpv
-  (package
-    (name "emacs-emms-player-mpv")
-    (version "0.1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dochang/emms-player-mpv/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "05qwbagc4i7yn7i94r1hdgj6wc5xijy1pxqv08pwsmli9rqj51n9"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emms" ,emms)))
-    (home-page "https://github.com/dochang/emms-player-mpv/")
-    (synopsis "Mpv support for EMMS")
-    (description
-     "This package provides an EMMS player that uses mpv.  It supports pause
-and seeking.")
-    (license license:gpl3+)))
+  ;; A new mpv backend is included in Emms from 5.0.
+  (deprecated-package "emacs-emms-player-mpv" emms))
 
 (define-public emacs-emms-mode-line-cycle
   (package
