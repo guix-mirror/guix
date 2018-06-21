@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages freeipmi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mpi)
@@ -68,20 +70,28 @@
                   ;; Patch hard coded '/bin/sh' in the lin ending in:
                   ;; $Global::shell = $ENV{'PARALLEL_SHELL'} ||
                   ;;  parent_shell($$) || $ENV{'SHELL'} || "/bin/sh";
-                  (("/bin/sh\\\";\n$") (string-append (which "sh") "\";\n"))
-                  ;; Patch call to 'ps' and 'perl' commands.
-                  ((" ps ") (string-append " " (which "ps") " "))
-                  ((" perl -") (string-append " " (which "perl") " -"))))
+                  (("/bin/sh\\\";\n$") (string-append (which "sh") "\";\n"))))
               (list "src/parallel" "src/sem"))
              #t))
-         (add-after 'install 'post-install-test
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/parallel")
+                 `("PATH" ":" prefix
+                   ,(map (lambda (input)
+                           (string-append (assoc-ref inputs input) "/bin"))
+                         '("perl"
+                           "procps"))))
+               #t)))
+         (add-after 'wrap-program 'post-install-test
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke (string-append
                       (assoc-ref outputs "out") "/bin/parallel")
                      "echo"
                      ":::" "1" "2" "3"))))))
     (inputs
-     `(("perl" ,perl)
+     `(("bash" ,bash)
+       ("perl" ,perl)
        ("procps" ,procps)))
     (home-page "https://www.gnu.org/software/parallel/")
     (synopsis "Build and execute command lines in parallel")
