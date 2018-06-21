@@ -2621,8 +2621,8 @@ many codecs and formats supported by libmediainfo.")
                       #t))
                   (replace 'configure
                     (lambda _
-                      (zero? (system* "./genMakefiles"
-                                      "linux-with-shared-libraries")))))))
+                      (invoke "./genMakefiles"
+                              "linux-with-shared-libraries"))))))
     (home-page "http://www.live555.com/liveMedia/")
     (synopsis "Set of C++ libraries for multimedia streaming")
     (description "This code forms a set of C++ libraries for multimedia
