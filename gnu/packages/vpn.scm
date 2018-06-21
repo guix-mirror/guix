@@ -161,7 +161,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
            (delete 'configure)          ; no configure script
            (replace 'build
              (lambda _
-               (zero? (system* "gcc" "-o" "netunshare" "netunshare.c"))))
+               (invoke "gcc" "-o" "netunshare" "netunshare.c")))
            (replace 'install
              ;; There is no Makefile; manually install the relevant files.
              (lambda* (#:key outputs #:allow-other-keys)
@@ -193,7 +193,8 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                                     "sed"
                                     "which")))))
                   (find-files (string-append out "/etc/vpnc/vpnc-script")
-                              "^vpnc-script"))))))
+                              "^vpnc-script"))
+                 #t))))
          #:tests? #f))                  ; no tests
       (home-page "http://git.infradead.org/users/dwmw2/vpnc-scripts.git")
       (synopsis "Network configuration scripts for Cisco VPN clients")
