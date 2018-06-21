@@ -2520,7 +2520,7 @@ practically any type of media.")
              #t))
          (add-after 'change-to-build-dir 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Library for retrieving media metadata")
     (description "MediaInfo is a library used for retrieving technical
