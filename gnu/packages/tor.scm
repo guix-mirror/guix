@@ -294,7 +294,7 @@ from you.")
          (modify-phases %standard-phases
            (replace 'check
              (lambda _
-               (zero? (system* "./run_tests.py" "--unit")))))))
+               (invoke "./run_tests.py" "--unit"))))))
       ;; A Nyx home page is ‘being worked on’.  Use Arm's for now, which at
       ;; least mentions the new source repository:
       (home-page "http://www.atagar.com/arm/")
