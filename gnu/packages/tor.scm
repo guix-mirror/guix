@@ -263,6 +263,8 @@ from you.")
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
+       (patches
+        (search-patches "nyx-show-header-stats-with-python3.patch"))
        (sha256
         (base32
          "0pm7vfcqr02pzqz4b2f6sw5prxxmgqwr1912am42xmy2i53n7nrq"))))
