@@ -9662,31 +9662,8 @@ time is being spent during Emacs startup in order to optimize startup time.")
     (license license:gpl3+)))
 
 (define-public emacs-emms-player-simple-mpv
-  (let ((commit "101d120ccdee1c2c213fd2f0423c858b21649c00")
-        (revision "1"))
-    (package
-      (name "emacs-emms-player-simple-mpv")
-      (version (string-append "0.4.0" "-" revision "."
-                              (string-take commit 7)))
-
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/momomo5717/emms-player-simple-mpv.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1i6rxkm0ra0jbkkwgkwxg3vk5xfl794h1gkgnlpscynz0v94b6ll"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-emms" ,emms)))
-      (home-page "https://github.com/momomo5717/emms-player-simple-mpv")
-      (synopsis "Extension of @file{emms-player-simple.el} for mpv JSON IPC")
-      (description "@code{emms-player-simple-mpv} provides macros and
-functions for defining emms simple players of mpv.")
-      (license license:gpl3+))))
+  ;; A new mpv backend is included in Emms from 5.0.
+  (deprecated-package "emacs-emms-player-simple-mpv" emms))
 
 (define-public emacs-magit-org-todos-el
   (let ((commit "df206287737b9671f2e36ae7b1474ebbe9940d2a"))
