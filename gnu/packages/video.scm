@@ -2363,7 +2363,7 @@ supported players in addition to this package.")
              ;; Patch the Makefile so that it doesn't bootstrap again.
              (substitute* "gtk/module.rules"
                ((".*autogen\\.sh.*") ""))
-             (zero? (system* "sh" "./gtk/autogen.sh"))))
+             (invoke "sh" "./gtk/autogen.sh")))
          (add-before 'configure 'disable-contrib
            (lambda _
              (substitute* "make/include/main.defs"
@@ -2385,9 +2385,9 @@ supported players in addition to this package.")
              ;; errors on unrecognized arguments,
              ;; e.g. --enable-fast-install
              (let ((out (assoc-ref outputs "out")))
-               (zero? (apply system* "./configure"
-                             (string-append "--prefix=" out)
-                             (or configure-flags '()))))))
+               (apply invoke "./configure"
+                      (string-append "--prefix=" out)
+                      (or configure-flags '())))))
          (add-after 'configure 'chdir-build
            (lambda _ (chdir "./build") #t)))))
     (home-page "https://handbrake.fr")
