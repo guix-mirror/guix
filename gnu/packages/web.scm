@@ -3802,13 +3802,13 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.4.3")
+    (version "1.4.4.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "15ghxcyg9h0za3qy077fnn3izbpihskvaqwsppm2s43a771imsf6"))))
+                "12kwq10xa8glrip7rai9xb4hnpysng00g2l0rw7swfzq5lk4z966"))))
     (build-system r-build-system)
     (native-inputs `(("r-rcpp" ,r-rcpp)))
     (propagated-inputs
