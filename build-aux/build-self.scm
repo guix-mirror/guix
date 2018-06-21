@@ -232,11 +232,12 @@ person's version identifier."
 
                         ;; (gnu packages …) modules are going to be looked up
                         ;; under SOURCE.  (guix config) is looked up in FRONT.
-                        (match %load-path
-                          ((#$source _ ...)
-                           #t)                    ;already done
-                          ((front _ ...)
-                           (set! %load-path (list #$source front))))
+                        (match (command-line)
+                          ((_ source _ ...)
+                           (match %load-path
+                             ((front _ ...)
+                              (unless (string=? front source) ;already done?
+                                (set! %load-path (list source front)))))))
 
                         ;; Only load our own modules or those of Guile.
                         (match %load-compiled-path
@@ -264,7 +265,7 @@ person's version identifier."
                           (loop (cdr spin))))
 
                       (match (command-line)
-                        ((_ _ system)
+                        ((_ source system version)
                          (with-store store
                            (call-with-new-thread
                             (lambda ()
@@ -273,7 +274,7 @@ person's version identifier."
                            (display
                             (and=>
                              (run-with-store store
-                               (guix-derivation #$source #$version
+                               (guix-derivation source version
                                                 #$guile-version
                                                 #:pull-version
                                                 #$pull-version)
@@ -304,7 +305,7 @@ files."
                        (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
                        (open-pipe* OPEN_READ
                                    (derivation->output-path build)
-                                   source system)))
+                                   source system version)))
              (str    (get-string-all pipe))
              (status (close-pipe pipe)))
         (match str
