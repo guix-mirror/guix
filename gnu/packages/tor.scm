@@ -295,12 +295,10 @@ from you.")
            (replace 'check
              (lambda _
                (invoke "./run_tests.py" "--unit"))))))
-      ;; A Nyx home page is ‘being worked on’.  Use Arm's for now, which at
-      ;; least mentions the new source repository:
-      (home-page "http://www.atagar.com/arm/")
+      (home-page "https://nyx.torproject.org/")
       (synopsis "Tor relay status monitor")
-      (description "Nyx (formerly Anonymizing Relay Monitor or \"arm\")
-monitors the performance of relays participating in the
+      (description
+       "Nyx monitors the performance of relays participating in the
 @uref{https://www.torproject.org/, Tor anonymity network}.  It displays this
 information visually and in real time, using a curses-based terminal interface.
 This makes Nyx well-suited for remote shell connections and servers without a
