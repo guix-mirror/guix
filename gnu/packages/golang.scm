@@ -42,6 +42,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages lua)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -2060,4 +2061,48 @@ makes it possible to handle ANSI color escapes on Windows.")
       (synopsis "Small, fast library to create ANSI colored strings and codes")
       (description "This package provides @code{ansi}, a Go module that can
 generate ANSI colored strings.")
+      (license license:expat))))
+
+(define-public go-github-com-aarzilli-golua
+  (let ((commit "03fc4642d792b1f2bc5e7343b403cf490f8c501d")
+        (revision "0"))
+    (package
+      (name "go-github-com-aarzilli-golua")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/aarzilli/golua")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1d9hr29i36cza98afj3g6rs3l7xbkprwzz0blcxsr9dd7nak20di"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("lua" ,lua)))
+      (arguments
+       `(#:unpack-path "github.com/aarzilli/golua"
+         #:import-path "github.com/aarzilli/golua/lua"
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'build
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "install"
+                       "-v"  ; print the name of packages as they are compiled
+                       "-x"  ; print each command as it is invoked
+                       "-ldflags=-s -w" ; strip the symbol table and debug
+                       "-tags" "llua" ; Latest Lua on Guix does not have a version number.
+                       import-path)))
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-tags" "llua" ; Latest Lua on Guix does not have a version number.
+                       import-path))))))
+      (home-page "https://github.com/aarzilli/golua")
+      (synopsis "Go Bindings for the Lua C API")
+      (description "This package provides @code{lua}, a Go module that can
+run a Lua virtual machine.")
       (license license:expat))))
