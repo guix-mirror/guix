@@ -4485,13 +4485,13 @@ them as the version argument or in a SCM managed file.")
 (define-public python-pathpy
   (package
     (name "python-pathpy")
-    (version "11.0")
+    (version "11.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "path.py" version))
        (sha256
-        (base32 "12s84maimiz61980q065rjgi8ang6xw2wwm64m0lmfks51dlw4qn"))))
+        (base32 "07x15v8c7ry9bvycw294c9yq6ky9v2b0dalvgi6rn38ilh69vsz7"))))
     ;; (outputs '("out" "doc"))
     (build-system python-build-system)
     (propagated-inputs
