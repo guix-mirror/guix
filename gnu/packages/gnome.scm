@@ -6312,7 +6312,7 @@ fit the GNOME desktop.")
 (define-public gnome-dictionary
   (package
     (name "gnome-dictionary")
-    (version "3.24.0")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6320,8 +6320,9 @@ fit the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1wnrpg8yndacq0xnzc84d519yp7f28brzklm3a48xcgs1i50drs1"))))
-    (build-system glib-or-gtk-build-system)
+                "007k2bq8iplg4psdpz074r5d4zxvn4s95qym4rw9hs6giljbrf0n"))))
+    (build-system meson-build-system)
+    (arguments '(#:glib-or-gtk? #t))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
