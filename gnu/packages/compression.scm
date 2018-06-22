@@ -604,39 +604,40 @@ with the sfArk algorithm.")
     (license license:gpl3+)))
 
 (define-public sfarkxtc
- (let ((commit "b5e0a2ba3921f019d74d4b92bd31c36dd19d2cf1"))
-  (package
-    (name "sfarkxtc")
-    (version (string-take commit 10))
-    (source (origin
-              ;; There are no release tarballs, so we just fetch the latest
-              ;; commit at this time.
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/raboof/sfarkxtc.git")
-                    (commit commit)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0f5x6i46qfl6ry21s7g2p4sd4b2r1g4fb03yqi2vv4kq3saryhvj"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (substitute* "Makefile"
-                      (("/usr/local") (assoc-ref outputs "out")))
-                    #t)))))
-    (inputs
-     `(("zlib" ,zlib)
-       ("sfarklib" ,sfarklib)))
-    (home-page "https://github.com/raboof/sfarkxtc")
-    (synopsis "Basic sfArk decompressor")
-    (description "SfArk extractor converts SoundFonts in the compressed legacy
+  (let ((commit "13cd6f93725a90d91ec5ea75babf1dbd694ac463")
+        (revision "1"))
+    (package
+      (name "sfarkxtc")
+      (version (git-version "0" revision commit))
+      (source (origin
+                ;; There are no release tarballs, so we just fetch the latest
+                ;; commit at this time.
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/raboof/sfarkxtc.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1mb1jyk1m11l1gppd9hmql9cyp55sdf7jk5rbc7acky1z4k4mv19"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ;no "check" target
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "Makefile"
+                 (("/usr/local") (assoc-ref outputs "out")))
+               #t)))))
+      (inputs
+       `(("zlib" ,zlib)
+         ("sfarklib" ,sfarklib)))
+      (home-page "https://github.com/raboof/sfarkxtc")
+      (synopsis "Basic sfArk decompressor")
+      (description "SfArk extractor converts SoundFonts in the compressed legacy
 sfArk file format to the uncompressed sf2 format.")
-    (license license:gpl3+))))
+      (license license:gpl3+))))
 
 (define-public libmspack
   (package
