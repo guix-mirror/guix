@@ -41,6 +41,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system glib-or-gtk)
@@ -3781,32 +3782,43 @@ notation and includes basic support for digital audio.")
     (license license:gpl2)))
 
 (define-public patchmatrix
-  (package
-    (name "patchmatrix")
-    (version "0.12.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/OpenMusicKontrollers/patchmatrix.git")
-                    (commit version)))
-              (file-name (string-append "patchmatrix-" version "-checkout"))
-              (sha256
-               (base32
-                "19ivp7h5vq6r1qhmycjxzvrgg7fc4a3v5vb3n4c7afs4z3pj53zi"))))
-    (build-system cmake-build-system)
-    (arguments '(#:tests? #f))          ; no test target
-    (inputs
-     `(("jack" ,jack-1)
-       ("lv2" ,lv2)
-       ("mesa" ,mesa)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "https://github.com/OpenMusicKontrollers/patchmatrix")
-    (synopsis "Simple JACK patch bay")
-    (description "PatchMatrix is a patch bay for the JACK audio connection
+  ;; There have been no releases for more than a year.
+  (let ((commit "a0b0b1e791f4574d5abd059cfe1819c71e8b18d5")
+        (revision "1"))
+    (package
+      (name "patchmatrix")
+      (version (git-version "0.12.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/OpenMusicKontrollers/patchmatrix.git")
+                      (commit commit)))
+                (file-name (string-append "patchmatrix-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0pph4ra7aci3rbpqvvr564pi16vxrk448bmvp8985cd9lbjlrp3m"))))
+      (build-system meson-build-system)
+      (arguments
+       '(#:tests? #f          ; no test target
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map make-file-writable
+                    (find-files (assoc-ref outputs "out") ".*\\.gz$"))
+               #t)))))
+      (inputs
+       `(("jack" ,jack-1)
+         ("lv2" ,lv2)
+         ("mesa" ,mesa)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/OpenMusicKontrollers/patchmatrix")
+      (synopsis "Simple JACK patch bay")
+      (description "PatchMatrix is a patch bay for the JACK audio connection
 kit.  It provides a patch bay in flow matrix style for audio, MIDI, CV, and
 OSC connections.")
-    (license license:artistic2.0)))
+      (license license:artistic2.0))))
 
 (define-public sorcer
   (package
