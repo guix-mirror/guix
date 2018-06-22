@@ -12906,7 +12906,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.16")
+    (version "0.0.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12914,20 +12914,10 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0s53840z53pih0jkllmcfb2la7c36zxmf229fshhyq8n6a2hgr8f"))))
+                "1c0x5lswvc8v9fw4iynl5rcfs7h7clzp4hqdnl65ia7rk35n4zg9"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ; parts of the tests rely on access to the network
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           ;; Make sure the executable finds all R modules.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/pigx-chipseq")
-                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
-                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
-             #t)))))
+    ;; parts of the tests rely on access to the network
+    (arguments '(#:tests? #f))
     (inputs
      `(("grep" ,grep)
        ("coreutils" ,coreutils)
