@@ -256,22 +256,22 @@ Additionally, various channel-specific options can be negotiated.")
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'autoreconf
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (zero? (system* "autoreconf" "-vfi"))))
+                      (invoke "autoreconf" "-vfi")))
                   (add-before 'build 'fix-libguile-ssh-file-name
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Build and install libguile-ssh.so so that we can use
                       ;; its absolute file name in .scm files, before we build
                       ;; the .go files.
-                      (and (zero? (system* "make" "install"
-                                           "-C" "libguile-ssh"
-                                           "-j" (number->string
-                                                 (parallel-job-count))))
-                           (let* ((out      (assoc-ref outputs "out"))
-                                  (libdir   (string-append out "/lib")))
-                             (substitute* (find-files "." "\\.scm$")
-                               (("\"libguile-ssh\"")
-                                (string-append "\"" libdir "/libguile-ssh\"")))
-                             #t))))
+                      (let* ((out (assoc-ref outputs "out"))
+                             (lib (string-append out "/lib")))
+                        (invoke "make" "install"
+                                "-C" "libguile-ssh"
+                                "-j" (number->string
+                                      (parallel-job-count)))
+                        (substitute* (find-files "." "\\.scm$")
+                          (("\"libguile-ssh\"")
+                           (string-append "\"" lib "/libguile-ssh\"")))
+                        #t)))
                   (add-after 'install 'remove-bin-directory
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
