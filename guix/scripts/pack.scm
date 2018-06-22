@@ -364,9 +364,9 @@ the image."
   (define build
     ;; Guile-JSON is required by (guix docker).
     (with-extensions (list json)
-      (with-imported-modules `(,@(source-module-closure '((guix docker))
+      (with-imported-modules `(,@(source-module-closure '((guix docker)
+                                                          (guix build store-copy))
                                                         #:select? not-config?)
-                               (guix build store-copy)
                                ((guix config) => ,config))
         #~(begin
             (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
