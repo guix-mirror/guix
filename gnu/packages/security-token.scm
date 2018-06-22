@@ -28,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages autotools)
@@ -92,15 +93,14 @@ readers and is needed to communicate with such devices through the
   (package
     (name "eid-mw")
     (version "4.3.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Fedict/eid-mw/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ay9znry9dkhhn783paqy8czvv3w5gdpmq8ag8znx9akza8c929z"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Fedict/eid-mw")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0hrlk0k6vij2jjfwwqgcwv33aivln9flpkxbngk7hvg1s3al7ya1"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
