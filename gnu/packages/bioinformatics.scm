@@ -12725,7 +12725,7 @@ contains
        #:phases
        (modify-phases %standard-phases
          ;; FIXME: fails with "java.io.FileNotFoundException:
-         ;; /gnu/store/q76y0ximcziplgfpbn26kbw4h3s14f33-dropseq-tools-1.13/share/java/lib/biojava-alignment.jar"
+         ;; /gnu/store/…-dropseq-tools-1.13/share/java/lib/biojava-alignment.jar"
          (delete 'generate-jar-indices)
          ;; All dependencies must be linked to "lib", because that's where
          ;; they will be searched for when the Class-Path property of the
