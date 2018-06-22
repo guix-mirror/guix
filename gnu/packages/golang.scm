@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1975,3 +1976,29 @@ which satisfies the cron expression.")
        "This package provides a Go library for encode and decode YAML
 values.")
       (license license:asl2.0))))
+
+(define-public go-github-com-mattn-go-isatty
+  (let ((commit "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c")
+        (revision "0"))
+    (package
+      (name "go-github-com-mattn-go-isatty")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mattn/go-isatty")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0zs92j2cqaw9j8qx1sdxpv3ap0rgbs0vrvi72m40mg8aa36gd39w"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/mattn/go-isatty"))
+      (home-page "https://github.com/mattn/go-isatty")
+      (synopsis "Provide @code{isatty} for Golang")
+      (description "This package provides @code{isatty}, a Go module that can
+tell you whether a file descriptor points to a terminal and the type of the
+terminal.")
+      (license license:expat))))
