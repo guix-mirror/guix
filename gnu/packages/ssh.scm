@@ -331,7 +331,7 @@ libssh library.")
     (arguments
      ;; Replace configure phase as the ./configure script does not link
      ;; CONFIG_SHELL and SHELL passed as parameters
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs inputs system build target
@@ -351,7 +351,7 @@ libssh library.")
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/corkscrew")))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
                (install-file "README" doc)
                #t))))))
     (home-page "http://www.agroman.net/corkscrew")
