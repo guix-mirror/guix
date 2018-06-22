@@ -7302,9 +7302,10 @@ mp3, Ogg Vorbis and FLAC")
                        ("gobject-introspection" ,gobject-introspection)
                        ("python2" ,python-2)))
       (synopsis "Tool to help prevent repetitive strain injury (RSI)")
-      (description "Workrave is a program that assists in the recovery and
-prevention of repetitive strain injury (RSI).  The program frequently alerts
-you to take micro-pauses, rest breaks and restricts you to your daily limit")
+      (description
+       "Workrave is a program that assists in the recovery and prevention of
+repetitive strain injury (@dfn{RSI}).  The program frequently alerts you to take
+micro-pauses and rest breaks, and restricts you to your daily limit.")
       (home-page "http://www.workrave.org")
       (license license:gpl3+))))
 
