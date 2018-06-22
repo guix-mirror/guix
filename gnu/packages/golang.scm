@@ -2300,3 +2300,32 @@ It provides a function, @code{Formatter}, that can be used with any function
 that accepts a format string.  It also provides convenience wrappers for
 functions in packages @code{fmt} and @code{log}.")
       (license license:expat))))
+
+(define-public go-github-com-michiwend-gomusicbrainz
+  (let ((commit "0cdeb13f9b24d2c714feb7e3c63d595cf7121d7d")
+        (revision "0"))
+    (package
+      (name "go-github-com-michiwend-gomusicbrainz")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/michiwend/gomusicbrainz")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1li9daw0kghb80rdmxbh7g72qhxcvx3rvhwq5gs0jrr9hb8pjvcn"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("go-github-com-michiwend-golang-pretty" ,go-github-com-michiwend-golang-pretty)
+         ("go-github-com-kr-text" ,go-github-com-kr-text)))
+      (arguments
+       `(#:import-path "github.com/michiwend/gomusicbrainz"))
+      (home-page "https://github.com/michiwend/gomusicbrainz")
+      (synopsis "MusicBrainz WS2 client library for Golang")
+      (description "Currently GoMusicBrainz provides methods to perform search
+and lookup requests.  Browse requests are not supported yet.")
+      (license license:expat))))
