@@ -423,7 +423,7 @@ everything from small to very large projects with speed and efficiency.")
              #t))
          ;; Run checks more verbosely.
          (replace 'check
-           (lambda _ (zero? (system* "./libgit2_clar" "-v" "-Q")))))))
+           (lambda _ (invoke "./libgit2_clar" "-v" "-Q"))))))
     (inputs
      `(("libssh2" ,libssh2)
        ("http-parser" ,http-parser)
