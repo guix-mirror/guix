@@ -200,7 +200,6 @@ CLEANFILES +=					\
   $(nodist_upstartjob_DATA)
 
 EXTRA_DIST +=					\
-  %D%/libstore/schema.sql			\
   %D%/AUTHORS					\
   %D%/COPYING					\
   etc/guix-daemon.service.in			\
