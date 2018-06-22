@@ -34,7 +34,6 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages bash)
   #:use-module (gnu packages freeipmi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mpi)
@@ -90,8 +89,7 @@
                      "echo"
                      ":::" "1" "2" "3"))))))
     (inputs
-     `(("bash" ,bash)
-       ("perl" ,perl)
+     `(("perl" ,perl)
        ("procps" ,procps)))
     (home-page "https://www.gnu.org/software/parallel/")
     (synopsis "Build and execute command lines in parallel")
