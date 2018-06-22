@@ -370,14 +370,13 @@ all common programming languages.  Vala bindings are also provided.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out         (assoc-ref outputs "out"))
                     (bashcompdir (string-append out "/etc/bash_completion.d")))
-               (zero? (system*
-                       "make" "install"
+               (invoke "make" "install"
                        (string-append "bashcompdir=" bashcompdir)
                        ;; Don't install files into /var and /etc.
                        "LXCPATH=/tmp/var/lib/lxc"
                        "localstatedir=/tmp/var"
                        "sysconfdir=/tmp/etc"
-                       "sysconfigdir=/tmp/etc/default"))))))))
+                       "sysconfigdir=/tmp/etc/default")))))))
     (synopsis "Linux container tools")
     (home-page "https://linuxcontainers.org/")
     (description
