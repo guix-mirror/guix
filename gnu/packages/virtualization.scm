@@ -52,6 +52,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
@@ -65,6 +66,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
@@ -770,7 +772,7 @@ Machine Protocol.")
 (define-public lookingglass
   (package
    (name "lookingglass")
-   (version "a10")
+   (version "a11")
    (source
     (origin
      (method url-fetch)
@@ -779,7 +781,7 @@ Machine Protocol.")
      (file-name (string-append name "-" version))
      (sha256
       (base32
-       "0zlxg9ibzr0a598wr5nl1pb4l7mzsqn8ip72v4frph0vwsm5il6c"))))
+       "11qwyp332l66sqksqa0z9439yi4accmbq7wjc6kikc5fimdh9wk5"))))
    (build-system gnu-build-system)
    (inputs `(("fontconfig" ,fontconfig)
              ("glu" ,glu)
@@ -788,9 +790,12 @@ Machine Protocol.")
              ("sdl2" ,sdl2)
              ("sdl2-ttf" ,sdl2-ttf)
              ("spice-protocol" ,spice-protocol)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (native-inputs `(("libconfig" ,libconfig)
+                    ("nettle" ,nettle)
+                    ("pkg-config" ,pkg-config)))
    (arguments
     `(#:tests? #f ;; No tests are available.
+      #:make-flags '("CC=gcc")
       #:phases (modify-phases %standard-phases
                  (replace 'configure
                    (lambda* (#:key outputs #:allow-other-keys)
