@@ -2199,3 +2199,44 @@ Damerau-Levenshtein distance.  Takes a string value input from the user.
 Looks for an identical word on a list of words, if none is found, look for a
 similar word.")
       (license license:expat))))
+
+(define-public go-github-com-stevedonovan-luar
+  (let ((commit "22d247e5366095f491cd83edf779ee99a78f5ead")
+        (revision "0"))
+    (package
+      (name "go-github-com-stevedonovan-luar")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/stevedonovan/luar")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1acjgw9cz1l0l9mzkyk7irz6cfk31wnxgbwa805fvm1rqcjzin2c"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("go-github-com-aarzilli-golua" ,go-github-com-aarzilli-golua)))
+      (arguments
+       `(#:tests? #f                    ; Upstream tests are broken.
+         #:import-path "github.com/stevedonovan/luar"))
+      (home-page "https://github.com/stevedonovan/luar")
+      (synopsis "Lua reflection bindings for Go")
+      (description "Luar is designed to make using Lua from Go more
+convenient.  Go structs, slices and maps can be automatically converted to Lua
+tables and vice-versa.  The resulting conversion can either be a copy or a
+proxy.  In the latter case, any change made to the result will reflect on the
+source.
+
+Any Go function can be made available to Lua scripts, without having to write
+C-style wrappers.
+
+Luar support cyclic structures (lists, etc.).
+
+User-defined types can be made available to Lua as well: their exported
+methods can be called and usual operations such as indexing or arithmetic can
+be performed.")
+      (license license:expat))))
