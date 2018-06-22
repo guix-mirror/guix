@@ -2240,3 +2240,29 @@ User-defined types can be made available to Lua as well: their exported
 methods can be called and usual operations such as indexing or arithmetic can
 be performed.")
       (license license:expat))))
+
+(define-public go-github-com-kr-text
+  (let ((commit "e2ffdb16a802fe2bb95e2e35ff34f0e53aeef34f")
+        (revision "0"))
+    (package
+      (name "go-github-com-kr-text")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/kr/text")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1gm5bsl01apvc84bw06hasawyqm4q84vx1pm32wr9jnd7a8vjgj1"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/kr/text"))
+      (home-page "https://github.com/kr/text")
+      (synopsis "Go package for manipulating paragraphs of text")
+      (description "Package @code{text} provides manipulation Go functions for
+paragraphs of text.")
+      (license license:expat))))
