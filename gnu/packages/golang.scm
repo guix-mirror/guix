@@ -43,6 +43,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages mp3)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -2329,3 +2330,31 @@ functions in packages @code{fmt} and @code{log}.")
       (description "Currently GoMusicBrainz provides methods to perform search
 and lookup requests.  Browse requests are not supported yet.")
       (license license:expat))))
+
+(define-public go-github-com-wtolson-go-taglib
+  (let ((commit "6e68349ff94ecea412de7e748cb5eaa26f472777")
+        (revision "0"))
+    (package
+      (name "go-github-com-wtolson-go-taglib")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/wtolson/go-taglib")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1cpjqnrviwflz150g78iir5ndrp3hh7a93zbp4dwbg6sb2q141p2"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("taglib" ,taglib)))
+      (arguments
+       `(#:import-path "github.com/wtolson/go-taglib"))
+      (home-page "https://github.com/wtolson/go-taglib")
+      (synopsis "Go wrapper for taglib")
+      (description "Go wrapper for taglib")
+      (license license:unlicense))))
