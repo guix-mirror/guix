@@ -233,7 +233,7 @@ and triple stores.")
     (version "0.28.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://download.drobilla.net/serd-"
+             (uri (string-append "https://download.drobilla.net/serd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
@@ -250,7 +250,7 @@ and triple stores.")
                     (string-append "-Wl,-rpath="
                                    (assoc-ref outputs "out") "/lib"))
             #t)))))
-    (home-page "http://drobilla.net/software/serd/")
+    (home-page "https://drobilla.net/software/serd/")
     (synopsis "Library for RDF syntax supporting Turtle and NTriples")
     (description
      "Serd is a lightweight C library for RDF syntax which supports reading
@@ -267,7 +267,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
     (version "0.16.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://download.drobilla.net/sord-"
+             (uri (string-append "https://download.drobilla.net/sord-"
                                  version ".tar.bz2"))
              (sha256
               (base32
@@ -288,7 +288,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
      `(("serd" ,serd)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://drobilla.net/software/sord/")
+    (home-page "https://drobilla.net/software/sord/")
     (synopsis "C library for storing RDF data in memory")
     (description
      "Sord is a lightweight C library for storing RDF data in memory.")

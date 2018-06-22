@@ -284,7 +284,7 @@ functions which were removed.")
     (version "1.4.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.drobilla.net/ganv-"
+              (uri (string-append "https://download.drobilla.net/ganv-"
                                   version ".tar.bz2"))
               (sha256
                (base32
@@ -309,7 +309,7 @@ functions which were removed.")
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
-    (home-page "http://drobilla.net/software/ganv/")
+    (home-page "https://drobilla.net/software/ganv/")
     (synopsis "GTK+ widget for interactive graph-like environments")
     (description
      "Ganv is an interactive GTK+ widget for interactive “boxes and lines” or
@@ -328,7 +328,7 @@ diagrams.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "http://git.drobilla.net/ganv.git")
+                      (url "https://git.drobilla.net/ganv.git")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256

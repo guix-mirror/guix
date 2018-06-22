@@ -3197,7 +3197,7 @@ plugins, a switch trigger, a toggle switch, and a peakmeter.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "http://git.drobilla.net/ingen.git")
+               (url "https://git.drobilla.net/ingen.git")
                (commit commit)))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
@@ -3258,7 +3258,7 @@ plugins, a switch trigger, a toggle switch, and a peakmeter.")
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("python-pygments" ,python-pygments)))
-      (home-page "http://drobilla.net/software/ingen")
+      (home-page "https://drobilla.net/software/ingen")
       (synopsis "Modular audio processing system")
       (description "Ingen is a modular audio processing system for JACK and
 LV2 based systems.  Ingen is built around LV2 technology and a strict
