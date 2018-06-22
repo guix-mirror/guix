@@ -2106,3 +2106,41 @@ generate ANSI colored strings.")
       (description "This package provides @code{lua}, a Go module that can
 run a Lua virtual machine.")
       (license license:expat))))
+
+(define-public go-gitlab-com-ambrevar-golua-unicode
+  (let ((commit "97ce517e7a1fe2407a90c317a9c74b173d396144")
+        (revision "0"))
+    (package
+      (name "go-gitlab-com-ambrevar-golua-unicode")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://gitlab.com/ambrevar/golua")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1izcp7p8nagjwqd13shb0020w7xhppib1a3glw2d1468bflhksnm"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("lua" ,lua)
+         ("go-github-com-aarzilli-golua" ,go-github-com-aarzilli-golua)))
+      (arguments
+       `(#:unpack-path "gitlab.com/ambrevar/golua"
+         #:import-path "gitlab.com/ambrevar/golua/unicode"
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (setenv "USER" "homeless-dude")
+               (invoke "go" "test" import-path))))))
+      (home-page "https://gitlab.com/ambrevar/golua")
+      (synopsis "Add Unicode support to Golua")
+      (description "This extension to Arzilli's Golua adds Unicode support to
+all functions from the Lua string library.  Lua patterns are replaced by Go
+regexps.  This breaks compatibility with Lua, but Unicode support breaks it
+anyways and Go regexps are more powerful.")
+      (license license:expat))))
