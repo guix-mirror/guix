@@ -2144,3 +2144,30 @@ all functions from the Lua string library.  Lua patterns are replaced by Go
 regexps.  This breaks compatibility with Lua, but Unicode support breaks it
 anyways and Go regexps are more powerful.")
       (license license:expat))))
+
+(define-public go-github-com-yookoala-realpath
+  (let ((commit "d19ef9c409d9817c1e685775e53d361b03eabbc8")
+        (revision "0"))
+    (package
+      (name "go-github-com-yookoala-realpath")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/yookoala/realpath")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0qvz1dcdldf53rq69fli76z5k1vr7prx9ds1d5rpzgs68kwn40nw"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/yookoala/realpath"))
+      (home-page "https://github.com/yookoala/realpath")
+      (synopsis "@code{realpath} for Golang")
+      (description "This package provides @code{realpath}, a Go module that
+when provided with a valid relative path / alias path, it will return you with
+a string of its real absolute path in the system.")
+      (license license:bsd-style))))
