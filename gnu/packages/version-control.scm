@@ -466,12 +466,12 @@ write native speed custom Git applications in any language with bindings.")
          (delete 'configure)
          (replace 'build
            (lambda _
-             (zero? (system* "make"))))
+             (invoke "make")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "make" "install"
-                               (string-append "PREFIX=" out)))))))))
+               (invoke "make" "install"
+                       (string-append "PREFIX=" out))))))))
     (home-page "https://www.agwa.name/projects/git-crypt")
     (synopsis "Transparent encryption of files in a git repository")
     (description "git-crypt enables transparent encryption and decryption of
