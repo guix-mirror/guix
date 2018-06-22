@@ -11449,7 +11449,7 @@ applications for tackling some common problems in a user-friendly way.")
        ("python2-numpy" ,python2-numpy)
        ("python2-matplotlib" ,python2-matplotlib)
        ("python2-pysam" ,python2-pysam)))
-    (home-page "http://3dgenomes.github.io/TADbit/")
+    (home-page "https://3dgenomes.github.io/TADbit/")
     (synopsis "Analyze, model, and explore 3C-based data")
     (description
      "TADbit is a complete Python library to deal with all steps to analyze,

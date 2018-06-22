@@ -256,7 +256,7 @@ services.")
     (origin
      (method url-fetch)
       (uri (string-append
-            "http://projects.gw-computing.net/attachments/download/615/dfc-"
+            "https://projects.gw-computing.net/attachments/download/615/dfc-"
             version ".tar.gz"))
       (sha256
        (base32
@@ -264,7 +264,7 @@ services.")
    (build-system cmake-build-system)
    (arguments '(#:tests? #f)) ; There are no tests.
    (native-inputs `(("gettext" ,gettext-minimal)))
-   (home-page "http://projects.gw-computing.net/projects/dfc")
+   (home-page "https://projects.gw-computing.net/projects/dfc")
    (synopsis "Display file system space usage using graphs and colors")
    (description
     "dfc (df color) is a modern version of df.  It uses colors, draws pretty
@@ -508,7 +508,7 @@ allow automatic login and starting any app.")
      "This package provides the /etc/services, /etc/protocols, and /etc/rpc
 files, which contain information about the IANA-assigned port, protocol, and
 ONC RPC numbers.")
-    (home-page "http://packages.debian.org/sid/netbase")
+    (home-page "https://packages.debian.org/sid/netbase")
     (license license:gpl2)))
 
 (define-public netcat
@@ -753,7 +753,7 @@ tools: server, client, and relay agent.")
     (version "1.8.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.tcpdump.org/release/libpcap-"
+              (uri (string-append "https://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -762,7 +762,7 @@ tools: server, client, and relay agent.")
     (native-inputs `(("bison" ,bison) ("flex" ,flex)))
     (arguments '(#:configure-flags '("--with-pcap=linux")
                  #:tests? #f))                    ; no 'check' target
-    (home-page "http://www.tcpdump.org")
+    (home-page "https://www.tcpdump.org")
     (synopsis "Network packet capture library")
     (description
      "libpcap is an interface for user-level packet capture.  It provides a
@@ -778,7 +778,7 @@ network statistics collection, security monitoring, network debugging, etc.")
     (version "4.9.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
+              (uri (string-append "https://www.tcpdump.org/release/tcpdump-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -787,7 +787,7 @@ network statistics collection, security monitoring, network debugging, etc.")
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
     (native-inputs `(("perl" ,perl)))        ; for tests
-    (home-page "http://www.tcpdump.org/")
+    (home-page "https://www.tcpdump.org/")
     (synopsis "Network packet analyzer")
     (description
      "Tcpdump is a command-line tool to analyze network traffic passing
@@ -1043,7 +1043,7 @@ commands and their arguments.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://w1.fi/releases/wpa_supplicant-"
+                    "https://w1.fi/releases/wpa_supplicant-"
                     version
                     ".tar.gz"))
               (patches (search-patches "wpa-supplicant-CVE-2017-13082.patch"
@@ -1104,7 +1104,7 @@ commands and their arguments.")
        ("libgcrypt" ,libgcrypt)))                 ;needed by crypto_gnutls.c
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://w1.fi/wpa_supplicant/")
+    (home-page "https://w1.fi/wpa_supplicant/")
     (synopsis "Connecting to WPA and WPA2-protected wireless networks")
     (description
      "wpa_supplicant is a WPA Supplicant with support for WPA and WPA2 (IEEE
@@ -1221,7 +1221,7 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                          (string-append "--mandir=" out
                                         "/share/man")))))))
        #:tests? #f))
-    (home-page "http://kernel.org")               ; really, no home page
+    (home-page "https://www.kernel.org") ; really, no home page
     (synopsis "Send a wake-on-LAN packet")
     (description
      "WakeLan broadcasts a properly formatted UDP packet across the local area
@@ -1456,7 +1456,7 @@ track changes in important system configuration files.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://people.redhat.com/sgrubb/libcap-ng/libcap-ng-"
+                    "https://people.redhat.com/sgrubb/libcap-ng/libcap-ng-"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -1792,13 +1792,13 @@ platform-specific methods.")
     (version "2.4.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://people.redhat.com/sgrubb/audit/"
+              (uri (string-append "https://people.redhat.com/sgrubb/audit/"
                                   "audit-" version ".tar.gz"))
               (sha256
                (base32
                 "1q1q51dvxscbi4kbakmd4bn0xrvwwaiwvaya79925cbrqwzxsg77"))))
     (build-system gnu-build-system)
-    (home-page "http://people.redhat.com/sgrubb/audit/")
+    (home-page "https://people.redhat.com/sgrubb/audit/")
     (arguments
      `(#:configure-flags (list "--with-python=no")
        #:phases
@@ -2127,7 +2127,7 @@ with @code{ChallengeResponseAuthentication} and @code{PrivilegeSeparation}
 enabled, and supports extensive configuration either by PAM options or in
 krb5.conf or both.  PKINIT is supported with recent versions of both MIT
 Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
-    (home-page "http://www.eyrie.org/~eagle/software/pam-krb5")
+    (home-page "https://www.eyrie.org/~eagle/software/pam-krb5")
     ;; Dual licenced under  a homebrew non-copyleft OR GPL (any version)
     ;; However, the tarball does not contain a copy of the GPL,  so unless
     ;; we put one in, we cannot distribute it under GPL without violating
