@@ -555,14 +555,14 @@ MusePack, Monkey's Audio, and WavPack files.")
     (name "extempore")
     (version "0.7.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/digego/extempore/archive/"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/digego/extempore.git")
+                    (commit version)))
               (sha256
                (base32
-                "1wap1mvsicrhlazikf7l8zxg37fir8bmnh9rin28m1rix730vcch"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "12fsp7zkfxb9kykwq46l88kcbbici9arczrrsl4qn87m6vm5349l"))
+              (file-name (string-append name "-" version "-checkout"))))
     (build-system cmake-build-system)
     (arguments
      `(;; The default target also includes ahead-of-time compilation of the
