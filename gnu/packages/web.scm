@@ -2180,19 +2180,21 @@ HTTP requests.")
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
-    (version "1.115")
+    (version "1.15")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/"
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
                            "CGI-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "1nkyb1m1g5r47xykflf68dplanih5p15njv82frbgbsms34kp1sg"))))
+         "013dcy9k4sj9alkksk5aqz65ryxw0rxgg71c7w666y941gd8n46q"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-io-stringy" ,perl-io-stringy))) ;for IO::Scalar
+     `(("perl-io-stringy" ,perl-io-stringy) ; for IO::Scalar
+       ("perl-module-build" ,perl-module-build)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)))
     (home-page "http://search.cpan.org/dist/CGI-Simple")
     (synopsis "CGI interface that is CGI.pm compliant")
     (description "CGI::Simple provides a relatively lightweight drop in
