@@ -500,7 +500,7 @@ board-independent tools.")))
                                                (string-drop-right file-name
                                                                   suffix-len))))
                                    (sort entries string-ci<)))
-                       #f)))))
+                       (error "Invalid boardname ~s." ,board))))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
