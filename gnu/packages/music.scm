@@ -50,6 +50,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system go)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
@@ -128,6 +129,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages golang)
+  #:use-module (gnu packages lua)
   #:use-module ((srfi srfi-1) #:select (last)))
 
 (define-public aria-maestosa
@@ -4131,3 +4134,89 @@ at @code{musicbrainz.org}.")
 It can be used in daemon mode along with the Music-on-Console (MOC) and cmus
 console music players.")
     (license license:gpl3+)))
+
+(define-public demlo
+  (let ((commit "fe9ec4c8ac2fa995ec18e6ac86d50d46df06ec01")
+        (revision "0"))
+    (package
+      (name "demlo")
+      (version (git-version "3.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://gitlab.com/ambrevar/demlo")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1afkbqhzn6da7zaf5ab7dvyqj1izqhzprwfb4hw448fllda9bdvk"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("lua" ,lua)
+         ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
+         ("go-github-com-mattn-go-colorable" ,go-github-com-mattn-go-colorable)
+         ("go-github-com-aarzilli-golua" ,go-github-com-aarzilli-golua)
+         ("go-gitlab-com-ambrevar-damerau" ,go-gitlab-com-ambrevar-damerau)
+         ("go-gitlab-com-ambrevar-golua-unicode" ,go-gitlab-com-ambrevar-golua-unicode)
+         ("go-github-com-mgutz-ansi" ,go-github-com-mgutz-ansi)
+         ("go-github-com-michiwend-gomusicbrainz" ,go-github-com-michiwend-gomusicbrainz)
+         ("go-github-com-stevedonovan-luar" ,go-github-com-stevedonovan-luar)
+         ("go-github-com-wtolson-go-taglib" ,go-github-com-wtolson-go-taglib)
+         ("go-github-com-yookoala-realpath" ,go-github-com-yookoala-realpath)))
+      (inputs
+       `(("chromaprint" ,chromaprint)
+         ("ffmpeg" ,ffmpeg)))
+      (arguments
+       `(#:import-path "gitlab.com/ambrevar/demlo"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (ffmpeg (assoc-ref inputs "ffmpeg"))
+                     (chromaprint (assoc-ref inputs "chromaprint")))
+                 (wrap-program (string-append out "/bin/demlo")
+                   `("XDG_DATA_DIRS" ":" prefix (,out))
+                   `("PATH" ":" prefix
+                     ,(map (lambda (dir)
+                             (string-append dir "/bin:"
+                                            dir "/sbin"))
+                           (list ffmpeg chromaprint))))
+                 #t)))
+           (add-after 'install-source 'install-scripts
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (root (string-append out "/src/gitlab.com/ambrevar/demlo"))
+                      (xdg-data-dirs (string-append out "/demlo")))
+                 (copy-recursively (string-append root "/actions")
+                                   (string-append xdg-data-dirs "/actions"))
+                 (copy-recursively (string-append root "/scripts")
+                                   (string-append xdg-data-dirs "/scripts"))
+                 (install-file (string-append root "/config.lua") xdg-data-dirs)
+                 ;; TODO: Test fish completion.
+                 (install-file (string-append root "/completion/demlo.fish")
+                               (string-append out "/share/fish/vendor_completions.d"))
+                 #t))))))
+      (home-page "https://gitlab.com/ambrevar/demlo")
+      (synopsis "Dynamic and extensible music library organizer")
+      (description "Demlo is a music library organizer.  It can encode, fix
+case, change folder hierarchy according to tags or file properties, tag from
+an online database, copy covers while ignoring duplicates or those below a
+quality threshold, and much more.  It makes it possible to manage your
+libraries uniformly and dynamically.  You can write your own rules to fit your
+needs best.
+
+Demlo can address any of these recurring music library issues (and much more):
+
+@itemize
+@item Fix the lack of folder structure.
+@item Normalize tags, fix their case, chose which tags to keep and which to
+discard.
+@item Handle lossy and lossless audio differently.
+@item Handle mp3 id3tags hell...
+@item Handle multiple covers, whether embedded and/or external, resize covers,
+discard bad quality ones.
+@end itemize\n")
+      (license license:expat))))
