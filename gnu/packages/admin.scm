@@ -865,7 +865,7 @@ over ssh connections.")
 (define-public rename
   (package
     (name "rename")
-    (version "0.20")
+    (version "0.35")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -873,7 +873,7 @@ over ssh connections.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1cf6xx2hiy1xalp35fh8g73j67r0w0g66jpcbc6971x9jbm7bvjy"))))
+                "052iqmn7ya3w1nadpiyavmr3rx566r0lbflx94y8b5wx9q5c16rq"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
