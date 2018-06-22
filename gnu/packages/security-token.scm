@@ -121,9 +121,14 @@ readers and is needed to communicate with such devices through the
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; The github tarball doesn't contain a configure script.
-         (add-before 'configure 'autoreconf
-           (lambda _ (zero? (system* "autoreconf" "-i")))))))
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             ;; configure.ac relies on ‘git --describe’ to get the version.
+             ;; Patch it to just return the real version number directly.
+             (substitute* "scripts/build-aux/genver.sh"
+               (("/bin/sh") (which "sh"))
+               (("\\$GITDESC") ,version))
+             (invoke "sh" "./bootstrap.sh"))))))
     (synopsis "Belgian eID Middleware")
     (description "The Belgian eID Middleware is required to authenticate with
 online services using the Belgian electronic identity card.")
