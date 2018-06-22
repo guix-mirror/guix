@@ -345,9 +345,9 @@ libssh library.")
                              ,(string-append "--build=" build)
                              ,(string-append "--host=" (or target build)))))
                (setenv "CONFIG_SHELL" bash)
-               (zero? (apply system* bash
-                             (string-append "." "/configure")
-                             flags)))))
+               (apply invoke bash
+                      (string-append "." "/configure")
+                      flags))))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
