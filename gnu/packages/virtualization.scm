@@ -130,28 +130,27 @@
 
                ;; The binaries need to be linked against -lrt.
                (setenv "LDFLAGS" "-lrt")
-               (zero?
-                (apply system*
-                       `("./configure"
-                         ,(string-append "--cc=" (which "gcc"))
-                         ;; Some architectures insist on using HOST_CC
-                         ,(string-append "--host-cc=" (which "gcc"))
-                         "--disable-debug-info" ; save build space
-                         "--enable-virtfs"      ; just to be sure
-                         ,(string-append "--prefix=" out)
-                         ,(string-append "--sysconfdir=/etc")
-                         ,@configure-flags))))))
+               (apply invoke
+                      `("./configure"
+                        ,(string-append "--cc=" (which "gcc"))
+                        ;; Some architectures insist on using HOST_CC
+                        ,(string-append "--host-cc=" (which "gcc"))
+                        "--disable-debug-info" ; save build space
+                        "--enable-virtfs"      ; just to be sure
+                        ,(string-append "--prefix=" out)
+                        ,(string-append "--sysconfdir=/etc")
+                        ,@configure-flags)))))
          (add-after 'install 'install-info
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Install the Info manual, unless Texinfo is missing.
-             (or (not (assoc-ref inputs "texinfo"))
-                 (let ((out (assoc-ref outputs "out")))
-                   (and (zero? (system* "make" "info"))
-                        (let ((infodir (string-append out "/share/info")))
-                          (for-each (lambda (info)
-                                      (install-file info infodir))
-                                    (find-files "." "\\.info"))
-                          #t))))))
+             (when (assoc-ref inputs "texinfo")
+               (let* ((out  (assoc-ref outputs "out"))
+                      (dir (string-append out "/share/info")))
+                 (invoke "make" "info")
+                 (for-each (lambda (info)
+                             (install-file info dir))
+                           (find-files "." "\\.info"))))
+             #t))
          ;; Create a wrapper for Samba. This allows QEMU to use Samba without
          ;; pulling it in as an input. Note that you need to explicitly install
          ;; Samba in your Guix profile for Samba support.
