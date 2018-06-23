@@ -1080,6 +1080,18 @@ generally generated from plugin sources using maven-plugin-plugin.")))
              (mkdir-p "build/classes/")
              (copy-recursively "src/main/resources" "build/classes")
              #t))
+         (add-after 'copy-resources 'fill-properties
+           (lambda _
+             ;; This file controls the output of some mvn subcommands, such as
+             ;; mvn -version.
+             (substitute* "build/classes/org/apache/maven/messages/build.properties"
+               (("\\$\\{buildNumber\\}") "guix_build")
+               (("\\$\\{timestamp\\}") "0")
+               (("\\$\\{project.version\\}") ,(package-version maven-artifact))
+               (("\\$\\{distributionId\\}") "apache-maven")
+               (("\\$\\{distributionShortName\\}") "Maven")
+               (("\\$\\{distributionName\\}") "Apache Maven"))
+             #t))
          (add-before 'build 'generate-sisu-named
            (lambda _
              (mkdir-p "build/classes/META-INF/sisu")
