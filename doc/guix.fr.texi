@@ -37,7 +37,7 @@ Lassieur@* Copyright @copyright{} 2017 Mathieu Othacehe@* Copyright
 @copyright{} 2017 Federico Beffa@* Copyright @copyright{} 2017 Carlo
 Zancanaro@* Copyright @copyright{} 2017 Thomas Danckaert@* Copyright
 @copyright{} 2017 humanitiesNerd@* Copyright @copyright{} 2017 Christopher
-Allan Webber@* Copyright @copyright{} 2017 Marius Bakke@* Copyright
+Allan Webber@* Copyright @copyright{} 2017, 2018 Marius Bakke@* Copyright
 @copyright{} 2017 Hartmut Goebel@* Copyright @copyright{} 2017 Maxim
 Cournoyer@* Copyright @copyright{} 2017, 2018 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@* Copyright @copyright{} 2017
@@ -56,26 +56,27 @@ Documentation License ».
 
 @dircategory Administration système
 @direntry
-* Guix: (guix).              Gérer les logiciels installés et la 
+* Guix: (guix.fr).           Gérer les logiciels installés et la 
                                configuration du système.
-* guix package : (guix)Invoquer guix package.  Intaller, supprimer et 
-                                                   mettre à jour des paquets.
-* guix gc : (guix)Invoquer guix gc.  Récupérer de l'espace disque 
-                                         inutilisé.
-* guix pull : (guix)Invoquer guix pull.  Mettre à jour la liste des 
-                                             paquets disponibles.
-* guix system : (guix)Invoquer guix system.  Gérer la configuration du 
-                                                 système d'exploitation.
+* guix package : (guix.fr)Invoquer guix package.  Intaller, supprimer et 
+                                                      mettre à jour des 
+                                                      paquets.
+* guix gc : (guix.fr)Invoquer guix gc.  Récupérer de l'espace disque 
+                                            inutilisé.
+* guix pull : (guix.fr)Invoquer guix pull.  Mettre à jour la liste des 
+                                                paquets disponibles.
+* guix system : (guix.fr)Invoquer guix system.  Gérer la configuration du 
+                                                    système d'exploitation.
 @end direntry
 
 @dircategory Développement logiciel
 @direntry
-* guix environment : (guix)Invoquer guix environment.  Construire des 
-                                                           environnements de 
-                                                           construction avec 
-                                                           Guix.
-* guix build : (guix)Invoquer guix build.  Construire des paquets.
-* guix pack : (guix) Invoquer guix pack.  Créer des lots binaires.
+* guix environment : (guix.fr)Invoquer guix environment.  Construire des 
+                                                              environnements 
+                                                              de construction 
+                                                              avec Guix.
+* guix build : (guix.fr)Invoquer guix build.  Construire des paquets.
+* guix pack : (guix.fr) Invoquer guix pack.  Créer des lots binaires.
 @end direntry
 
 @titlepage
@@ -293,7 +294,7 @@ Services
 * Services d'impression::    Support pour les imprimantes locales et 
                                distantes.
 * Services de bureaux::      D-Bus et les services de bureaux.
-* Sound Services::           ALSA and Pulseaudio services.
+* Services de son::          Services ALSA et Pulseaudio.
 * Services de bases de données::  Bases SQL, clefs-valeurs, etc.
 * Services de courriels::    IMAP, POP3, SMTP, et tout ça.
 * Services de messagerie::   Services de messagerie.
@@ -693,6 +694,9 @@ ultérieure, dont 2.2.x,
 @uref{http://gnutls.org/, GnuTLS}, en particulier ses liaisons Guile
 (@pxref{Guile Preparations, how to install the GnuTLS bindings for Guile,,
 gnutls-guile, GnuTLS-Guile}),
+@item
+@c FIXME: Specify a version number once a release has been made.
+@uref{https://notabug.org/civodul/guile-sqlite3, Guile-SQLite3} ;
 @item
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, d'août 2017 ou
@@ -2283,14 +2287,15 @@ version: 3.4.3
 
 @item --list-installed[=@var{regexp}]
 @itemx -I [@var{regexp}]
-List the currently installed packages in the specified profile, with the
-most recently installed packages shown last.  When @var{regexp} is
-specified, list only installed packages whose name matches @var{regexp}.
+Liste les paquets actuellement installés dans le profil spécifié, avec les
+paquets les plus récemment installés en dernier.  Lorsque @var{regexp} est
+spécifié, liste uniquement les paquets installés dont le nom correspond à
+@var{regexp}.
 
-For each installed package, print the following items, separated by tabs:
-the package name, its version string, the part of the package that is
-installed (for instance, @code{out} for the default output, @code{include}
-for its headers, etc.), and the path of this package in the store.
+Pour chaque paquet installé, affiche les éléments suivants, séparés par des
+tabulations : le nom du paquet, sa version, la partie du paquet qui est
+installé (par exemple, @code{out} pour la sortie par défaut, @code{include}
+pour ses en-têtes, etc) et le chemin du paquet dans le dépôt.
 
 @item --list-available[=@var{regexp}]
 @itemx -A [@var{regexp}]
@@ -2298,8 +2303,8 @@ Lister les paquets actuellement disponibles dans la distribution pour ce
 système (@pxref{Distribution GNU}).  Lorsque @var{regexp} est spécifié,
 liste uniquement les paquets dont le nom correspond à @var{regexp}.
 
-For each package, print the following items separated by tabs: its name, its
-version string, the parts of the package (@pxref{Des paquets avec plusieurs résultats}), and the source location of its definition.
+Pour chaque paquet, affiche les éléments suivants séparés par des
+tabulations : son nom, sa version, les parties du paquet (@pxref{Des paquets avec plusieurs résultats}), et l'emplacement de sa définition.
 
 @item --list-generations[=@var{motif}]
 @itemx -l [@var{motif}]
@@ -2877,12 +2882,55 @@ Chaque utilisateur peut mettre à jour sa copie de Guix avec @command{guix
 pull} et l'effet est limité à l'utilisateur qui a lancé @command{guix
 pull}.  Par exemple, lorsque l'utilisateur @code{root} lance @command{guix
 pull}, cela n'a pas d'effet sur la version de Guix que vois @code{alice} et
-vice-versa@footnote{Sous le capot, @command{guix pull} met à jour le lien
-symbolique @file{~/.config/guix/latest} pour qu'il pointe vers la dernière
-version de Guix et la commande @command{guix} charge son code depuis cet
-endroit.  Actuellement la seule manière de revenir en arrière sur une
-invocation de @command{guix pull} est de mettre à jour manuellement le lien
-symbolique pour qu'il pointe vers une version précédente de Guix.}.
+vice-versa
+
+Le résultat après avoir lancé @command{guix pull} est un @dfn{profil}
+disponible sous @file{~/.config/guix/current} contenant la dernière version
+de Guix.  Ainsi, assurez-vous de l'ajouter au début de votre chemin de
+recherche pour que vous utilisiez la dernière version.  Le même conseil
+s'applique au manuel Info (@pxref{Documentation}) :
+
+@example
+export PATH="$HOME/.config/guix/current/bin:$PATH"
+export INFOPATH="$HOME/.config/guix/current/share/info:$INFOPATH"
+@end example
+
+L'option @code{--list-generations} ou @code{-l} liste les anciennes
+générations produites par @command{guix pull}, avec des détails sur leur
+origine :
+
+@example
+$ guix pull -l
+Génération 1	10 juin 2018 00:18:18
+  guix 65956ad
+    URL du dépôt : https://git.savannah.gnu.org/git/guix.git
+    branche : origin/master
+    commit : 65956ad3526ba09e1f7a40722c96c6ef7c0936fe
+
+Génération 2	11 juin 2018 11:02:49
+  guix e0cc7f6
+    URL du dépôt : https://git.savannah.gnu.org/git/guix.git
+    branche : origin/master
+    commit : e0cc7f669bec22c37481dd03a7941c7d11a64f1d
+
+Génération 3	13 juin 2018 23:31:07	(actuelle)
+  guix 844cc1c
+    URL du dépôt : https://git.savannah.gnu.org/git/guix.git
+    branche : origin/master
+    commit : 844cc1c8f394f03b404c5bb3aee086922373490c
+@end example
+
+Ce profil @code{~/.config/guix/current} fonctionne comme les autres profils
+créés par @command{guix package} (@pxref{Invoquer guix package}).
+C'est-à-dire que vous pouvez lister les générations, revenir en arrière à
+une génération précédente — c.-à-d.@: la version de Guix précédente — etc :
+
+@example
+$ guix package -p ~/.config/guix/current --roll-back
+passé de la génération 3 à 2
+$ guix package -p ~/.config/guix/current --delete-generations=1
+suppression de /home/charlie/.config/guix/current-1-link
+@end example
 
 La commande @command{guix pull} est typiquement invoquée sans arguments mais
 il supporte les options suivantes :
@@ -2907,6 +2955,13 @@ chaîne hexadécimale.
 @item --branch=@var{branche}
 Déployer le haut de la @var{branche}, le nom d'une branche Git disponible
 sur le répertoire à @var{url}.
+
+@item --list-generations[=@var{motif}]
+@itemx -l [@var{motif}]
+Liste toutes les générations de @file{~/.config/guix/current} ou, si
+@var{motif} est fournit, le sous-ensemble des générations qui correspondent
+à @var{motif}.  La syntaxe de @var{motif} est la même qu'avec @code{guix
+package --list-generations} (@pxref{Invoquer guix package}).
 
 @item --bootstrap
 Utiliser le programme d'amorçage Guile pour construire la dernière version
@@ -2972,16 +3027,17 @@ guix pack -S /opt/gnu/bin=bin guile emacs geiser
 De cette façon, les utilisateurs peuvent joyeusement taper
 @file{/opt/gnu/bin/guile} et profiter.
 
-@cindex relocatable binaries, with @command{guix pack}
-What if the recipient of your pack does not have root privileges on their
-machine, and thus cannot unpack it in the root file system? In that case,
-you will want to use the @code{--relocatable} option (see below).  This
-option produces @dfn{relocatable binaries}, meaning they they can be placed
-anywhere in the file system hierarchy: in the example above, users can
-unpack your tarball in their home directory and directly run
-@file{./opt/gnu/bin/guile}.
+@cindex binaires repositionnables, avec @command{guix pack}
+Et si le destinataire de votre pack n'a pas les privilèges root sur sa
+machine, et ne peut donc pas le décompresser dans le système de fichiers
+racine ?  Dans ce cas, vous pourriez utiliser l'option @code{--relocatable}
+(voir plus bas).  Cette option produite des @dfn{binaire repositionnables},
+ce qui signifie qu'ils peuvent être placés n'importe où dans l'arborescence
+du système de fichiers : dans l'exemple au-dessus, les utilisateurs peuvent
+décompresser votre archive dans leur répertoire personnel et lancer
+directement @file{./opt/gnu/bin/guile}.
 
-@cindex Docker, build an image with guix pack
+@cindex Docker, construire une image avec guix pack
 Autrement, vous pouvez produire un pack au format d'image Docker avec la
 commande suivante :
 
@@ -2995,21 +3051,21 @@ Le résultat est une archive tar qui peut être passée à la commande
 @uref{https://docs.docker.com/engine/reference/commandline/load/,
 documentation de Docker} pour plus d'informations.
 
-@cindex Singularity, build an image with guix pack
-@cindex SquashFS, build an image with guix pack
-Yet another option is to produce a SquashFS image with the following
-command:
+@cindex Singularity, construire une image avec guix pack
+@cindex SquashFS, construire une image avec guix pack
+Autrement, vous pouvez produire une image SquashFS avec la commande suivante
+:
 
 @example
 guix pack -f squashfs guile emacs geiser
 @end example
 
 @noindent
-The result is a SquashFS file system image that can either be mounted or
-directly be used as a file system container image with the
-@uref{http://singularity.lbl.gov, Singularity container execution
-environment}, using commands like @command{singularity shell} or
-@command{singularity exec}.
+Le résultat est une image de système de fichiers SquashFS qui peut soit être
+montée directement soit être utilisée comme image de conteneur de système de
+fichiers avec l'@uref{http://singularity.lbl.gov, environnement d'exécution
+conteneurisé Singularity}, avec des commandes comme @command{singularity
+shell} ou @command{singularity exec}.
 
 Diverses options en ligne de commande vous permettent de personnaliser votre
 pack :
@@ -3032,24 +3088,25 @@ Cela produit une archive tar qui suit la
 spécification des images Docker}.
 
 @item squashfs
-This produces a SquashFS image containing all the specified binaries and
-symlinks, as well as empty mount points for virtual file systems like
-procfs.
+Cela produit une image SquashFS contenant tous les binaires et liens
+symboliques spécifiés, ainsi que des points de montages vides pour les
+systèmes de fichiers virtuels comme procfs.
 @end table
 
 @item --relocatable
 @itemx -R
-Produce @dfn{relocatable binaries}---i.e., binaries that can be placed
-anywhere in the file system hierarchy and run from there.  For example, if
-you create a pack containing Bash with:
+Produit des @dfn{binaires repositionnables} — c.-à-d.@: des binaires que
+vous pouvez placer n'importe où dans l'arborescence du système de fichiers
+et les lancer à partir de là.  Par exemple, si vous créez un pack contenant
+Bash avec :
 
 @example
 guix pack -R -S /mybin=bin bash
 @end example
 
 @noindent
-... you can copy that pack to a machine that lacks Guix, and from your home
-directory as a normal user, run:
+… vous pouvez copier ce pack sur une machine qui n'a pas Guix et depuis
+votre répertoire personnel en tant qu'utilisateur non-privilégié, lancer :
 
 @example
 tar xf pack.tar.gz
@@ -3057,17 +3114,19 @@ tar xf pack.tar.gz
 @end example
 
 @noindent
-In that shell, if you type @code{ls /gnu/store}, you'll notice that
-@file{/gnu/store} shows up and contains all the dependencies of @code{bash},
-even though the machine actually lacks @file{/gnu/store} altogether! That is
-probably the simplest way to deploy Guix-built software on a non-Guix
-machine.
+Dans ce shell, si vous tapez @code{ls /gnu/store}, vous remarquerez que
+@file{/gnu/store} apparaît et contient toutes les dépendances de
+@code{bash}, même si la machine n'a pas du tout de @file{/gnu/store} !
+C'est sans doute la manière la plus simple de déployer du logiciel construit
+avec Guix sur une machine sans Guix.
 
-There's a gotcha though: this technique relies on the @dfn{user namespace}
-feature of the kernel Linux, which allows unprivileged users to mount or
-change root.  Old versions of Linux did not support it, and some GNU/Linux
-distributions turn it off; on these systems, programs from the pack
-@emph{will fail to run}, unless they are unpacked in the root file system.
+Il y a un inconvénient cependant : cette technique repose sur les
+@dfn{espaces de noms} du noyau Linux qui permettent à des utilisateurs
+non-privilégiés de monter des systèmes de fichiers ou de changer de racine.
+Les anciennes versions de Linux ne le supportaient pas et certaines
+distributions GNU/Linux les désactivent ; sur ces système, les programme du
+pack @emph{ne fonctionneront pas} à moins qu'ils ne soient décompressés à la
+racine du système de fichiers.
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}
@@ -3823,587 +3882,624 @@ Le paquet Guile à utiliser dans le processus de correction.  Lorsqu'elle est
 @section Systèmes de construction
 
 @cindex système de construction
-Each package definition specifies a @dfn{build system} and arguments for
-that build system (@pxref{Définition des paquets}).  This @code{build-system}
-field represents the build procedure of the package, as well as implicit
-dependencies of that build procedure.
+Chaque définition de paquet définie un @dfn{système de construction} et des
+arguments pour ce système de construction (@pxref{Définition des paquets}).  Ce
+champ @code{build-system} représente la procédure de construction du paquet,
+ainsi que des dépendances implicites pour cette procédure de construction.
 
-Build systems are @code{<build-system>} objects.  The interface to create
-and manipulate them is provided by the @code{(guix build-system)} module,
-and actual build systems are exported by specific modules.
+Les systèmes de construction sont des objets
+@code{<build-system>}. L'interface pour les créer et les manipuler est
+fournie par le module @code{(guix build-system)} et les systèmes de
+construction eux-mêmes sont exportés par des modules spécifiques.
 
-@cindex bag (low-level package representation)
-Under the hood, build systems first compile package objects to @dfn{bags}.
-A @dfn{bag} is like a package, but with less ornamentation---in other words,
-a bag is a lower-level representation of a package, which includes all the
-inputs of that package, including some that were implicitly added by the
-build system.  This intermediate representation is then compiled to a
-derivation (@pxref{Dérivations}).
-
-Build systems accept an optional list of @dfn{arguments}.  In package
-definitions, these are passed @i{via} the @code{arguments} field
-(@pxref{Définition des paquets}).  They are typically keyword arguments
-(@pxref{Optional Arguments, keyword arguments in Guile,, guile, GNU Guile
-Reference Manual}).  The value of these arguments is usually evaluated in
-the @dfn{build stratum}---i.e., by a Guile process launched by the daemon
+@cindex sac (représentation à bas-niveau des paquets)
+Sous le capot, les systèmes de construction compilent d'abord des objets
+paquets en @dfn{sacs}.  Un @dfn{sac} est comme un paquet, mais avec moins de
+décoration — en d'autres mots, un sac est une représentation à bas-niveau
+d'un paquet, qui inclus toutes les entrées de ce paquet, dont certaines ont
+été implicitement ajoutées par le système de construction.  Cette
+représentation intermédiaire est ensuite compilée en une dérivation
 (@pxref{Dérivations}).
 
-The main build system is @var{gnu-build-system}, which implements the
-standard build procedure for GNU and many other packages.  It is provided by
-the @code{(guix build-system gnu)} module.
+Les systèmes de construction acceptent une liste d'@dfn{arguments}
+facultatifs.  Dans les définitions de paquets, ils sont passés @i{via} le
+champ @code{arguments} (@pxref{Définition des paquets}).  Ce sont typiquement des
+arguments par mot-clef (@pxref{Optional Arguments, keyword arguments in
+Guile,, guile, GNU Guile Reference Manual}).  La valeur de ces arguments est
+habituellement évaluée dans la @dfn{strate de construction} — c.-à-d.@: par
+un processus Guile lancé par le démon (@pxref{Dérivations}).
 
-@defvr {Scheme Variable} gnu-build-system
-@var{gnu-build-system} represents the GNU Build System, and variants thereof
-(@pxref{Configuration, configuration and makefile conventions,, standards,
-GNU Coding Standards}).
+Le système de construction principal est le @var{gnu-build-system} qui
+implémente les procédures de construction standard pour les paquets GNU et
+de nombreux autres.  Il est fournit par le module @code{(guix build-system
+gnu)}.
 
-@cindex build phases
-In a nutshell, packages using it are configured, built, and installed with
-the usual @code{./configure && make && make check && make install} command
-sequence.  In practice, a few additional steps are often needed.  All these
-steps are split up in separate @dfn{phases}, notably@footnote{Please see the
-@code{(guix build gnu-build-system)} modules for more details about the
-build phases.}:
+@defvr {Variable Scheme} gnu-build-system
+@var{gnu-build-system} représente le système de construction GNU et ses
+variantes (@pxref{Configuration, configuration and makefile conventions,,
+standards, GNU Coding Standards}).
+
+@cindex phases de construction
+En résumé, les paquets qui l'utilisent sont configurés, construits et
+installés avec la séquence @code{./configure && make && make check && make
+install} habituelle.  En pratique, des étapes supplémentaires sont souvent
+requises.  Toutes ces étapes sont séparées dans des @dfn{phases}
+différentes, notamment@footnote{Regardez les modules @code{(guix build
+gnu-build-system)} pour plus de détails sur les phases de construction.}:
 
 @table @code
 @item unpack
-Unpack the source tarball, and change the current directory to the extracted
-source tree.  If the source is actually a directory, copy it to the build
-tree, and enter that directory.
+Décompresse l'archive des sources et se déplace dans l'arborescence des
+sources fraîchement extraites.  Si la source est en fait un répertoire, le
+copie dans l'arborescence de construction et entre dans ce répertoire.
 
 @item patch-source-shebangs
-Patch shebangs encountered in source files so they refer to the right store
-file names.  For instance, this changes @code{#!/bin/sh} to
-@code{#!/gnu/store/@dots{}-bash-4.3/bin/sh}.
+Corrige les shebangs (@code{#!}) rencontrés dans les fichiers pour qu'ils se
+réfèrent aux bons noms de fichiers.  Par exemple, elle change
+@code{#!/bin/sh} en @code{#!/gnu/store/@dots{}-bash-4.3/bin/sh}.
 
 @item configure
-Run the @file{configure} script with a number of default options, such as
-@code{--prefix=/gnu/store/@dots{}}, as well as the options specified by the
-@code{#:configure-flags} argument.
+Lance le script @code{configure} avec un certain nombre d'options par
+défaut, comme @code{--prefix=/gnu/store/@dots{}}, ainsi que les options
+spécifiées par l'argument @code{#:configure-flags}.
 
 @item build
-Run @code{make} with the list of flags specified with @code{#:make-flags}.
-If the @code{#:parallel-build?} argument is true (the default), build with
-@code{make -j}.
+Lance @code{make} avec la liste des drapeaux spécifiés avec
+@code{#:make-flags}.  Si l'argument @code{#:parallel-build?} est vrai (par
+défaut), construit avec @code{make -j}.
 
 @item check
-Run @code{make check}, or some other target specified with
-@code{#:test-target}, unless @code{#:tests? #f} is passed.  If the
-@code{#:parallel-tests?} argument is true (the default), run @code{make
+Lance @code{make check}, ou une autre cible spécifiée par
+@code{#:test-target}, à moins que @code{#:tests? #f} ne soit passé.  Si
+l'argument @code{#:parallel-tests?} est vrai (par défaut), lance @code{make
 check -j}.
 
 @item install
-Run @code{make install} with the flags listed in @code{#:make-flags}.
+Lance @code{make install} avec les drapeaux listés dans @code{#:make-flags}.
 
 @item patch-shebangs
-Patch shebangs on the installed executable files.
+Corrige les shebangs des fichiers exécutables installés.
 
 @item strip
-Strip debugging symbols from ELF files (unless @code{#:strip-binaries?} is
-false), copying them to the @code{debug} output when available
-(@pxref{Installer les fichiers de débogage}).
+Nettoie les symboles de débogage dans les fichiers ELF (à moins que
+@code{#:strip-binaries?} ne soit faux), les copie dans la sortie
+@code{debug} lorsqu'elle est disponible (@pxref{Installer les fichiers de débogage}).
 @end table
 
 @vindex %standard-phases
-The build-side module @code{(guix build gnu-build-system)} defines
-@var{%standard-phases} as the default list of build phases.
-@var{%standard-phases} is a list of symbol/procedure pairs, where the
-procedure implements the actual phase.
+Le module du côté du constructeur @code{(guix build gnu-build-system)}
+définie @var{%standard-phases} comme la liste par défaut des phases de
+construction.  @var{%standard-phases}  est une liste de paires de symboles
+et de procédures, où la procédure implémente la phase en question.
 
-The list of phases used for a particular package can be changed with the
-@code{#:phases} parameter.  For instance, passing:
+La liste des phases utilisées par un paquet particulier peut être modifiée
+avec le paramètre @code{#:phases}.  Par exemple, en passant :
 
 @example
 #:phases (modify-phases %standard-phases (delete 'configure))
 @end example
 
-means that all the phases described above will be used, except the
-@code{configure} phase.
+signifie que toutes les procédures décrites plus haut seront utilisées, sauf
+la phase @code{configure}.
 
-In addition, this build system ensures that the ``standard'' environment for
-GNU packages is available.  This includes tools such as GCC, libc,
-Coreutils, Bash, Make, Diffutils, grep, and sed (see the @code{(guix
-build-system gnu)} module for a complete list).  We call these the
-@dfn{implicit inputs} of a package, because package definitions do not have
-to mention them.
+En plus, ce système de construction s'assure que l'environnement « standard
+» pour les paquets GNU est disponible.  Cela inclus des outils comme GCC,
+libc, Coreutils, Bash, Make, Diffutils, grep et sed (voir le module
+@code{(guix build-system gnu)} pour une liste complète).  Nous les appelons
+les @dfn{entrées implicites} d'un paquet parce que la définition du paquet
+ne les mentionne pas.
 @end defvr
 
-Other @code{<build-system>} objects are defined to support other conventions
-and tools used by free software packages.  They inherit most of
-@var{gnu-build-system}, and differ mainly in the set of inputs implicitly
-added to the build process, and in the list of phases executed.  Some of
-these build systems are listed below.
+D'autres objets @code{<build-system>} sont définis pour supporter d'autres
+conventions et outils utilisés par les paquets de logiciels libres.  Ils
+héritent de la plupart de @var{gnu-build-system} et diffèrent surtout dans
+l'ensemble des entrées implicites ajoutées au processus de construction et
+dans la liste des phases exécutées.  Certains de ces systèmes de
+construction sont listés ci-dessous.
 
-@defvr {Scheme Variable} ant-build-system
-This variable is exported by @code{(guix build-system ant)}.  It implements
-the build procedure for Java packages that can be built with
-@url{http://ant.apache.org/, Ant build tool}.
+@defvr {Variable Scheme} ant-build-system
+Cette variable est exportée par @code{(guix build-system ant)}.  Elle
+implémente la procédure de construction pour les paquets Java qui peuvent
+être construits avec @url{http://ant.apache.org/, l'outil de construction
+Ant}.
 
-It adds both @code{ant} and the @dfn{Java Development Kit} (JDK) as provided
-by the @code{icedtea} package to the set of inputs.  Different packages can
-be specified with the @code{#:ant} and @code{#:jdk} parameters,
-respectively.
+Elle ajoute à la fois @code{ant} et the @dfn{kit de développement Java}
+(JDK) fournit par le paquet @code{icedtea} à l'ensemble des entrées.  Des
+paquets différents peuvent être spécifiés avec les paramètres @code{#:ant}
+et @code{#:jdk} respectivement.
 
-When the original package does not provide a suitable Ant build file, the
-parameter @code{#:jar-name} can be used to generate a minimal Ant build file
-@file{build.xml} with tasks to build the specified jar archive.  In this
-case the parameter @code{#:source-dir} can be used to specify the source
-sub-directory, defaulting to ``src''.
+Lorsque le paquet d'origine ne fournit pas de fichier de construction Ant
+acceptable, le paramètre @code{#:jar-name} peut être utilisé pour générer un
+fichier de construction Ant @file{build.xml} minimal, avec des tâches pour
+construire l'archive jar spécifiée.  Dans ce cas, le paramètre
+@code{#:source-dir} peut être utilisé pour spécifier le sous-répertoire des
+sources, par défaut « src ».
 
-The @code{#:main-class} parameter can be used with the minimal ant buildfile
-to specify the main class of the resulting jar.  This makes the jar file
-executable.  The @code{#:test-include} parameter can be used to specify the
-list of junit tests to run. It defaults to @code{(list "**/*Test.java")}.
-The @code{#:test-exclude} can be used to disable some tests. It defaults to
-@code{(list "**/Abstract*.java")}, because abstract classes cannot be run as
-tests.
+Le paramètre @code{#:main-class} peut être utilisé avec le fichier de
+construction minimal pour spécifier la classe principale du jar.  Cela rend
+le fichier jar exécutable.  Le paramètre @code{#:test-include} peut être
+utilisé pour spécifier la liste des tests junit à lancer.  Il vaut par
+défaut @code{(list "**/*Test.java")}.  Le paramètre @code{#:test-exclude}
+peut être utilisé pour désactiver certains tests.  Sa valeur par défaut est
+@code{(list "**/Abstract*.java")}, parce que les classes abstraites ne
+peuvent pas être utilisées comme des tests.
 
-The parameter @code{#:build-target} can be used to specify the Ant task that
-should be run during the @code{build} phase.  By default the ``jar'' task
-will be run.
-
-@end defvr
-
-@defvr {Scheme Variable} android-ndk-build-system
-@cindex Android distribution
-@cindex Android NDK build system
-This variable is exported by @code{(guix build-system android-ndk)}.  It
-implements a build procedure for Android NDK (native development kit)
-packages using a Guix-specific build process.
-
-The build system assumes that packages install their public interface
-(header) files to the subdirectory "include" of the "out" output and their
-libraries to the subdirectory "lib" of the "out" output.
-
-It's also assumed that the union of all the dependencies of a package has no
-conflicting files.
-
-For the time being, cross-compilation is not supported - so right now the
-libraries and header files are assumed to be host tools.
+Le paramètre @code{#:build-target} peut être utilisé pour spécifier la tâche
+Ant qui devrait être lancée pendant la phase @code{build}.  Par défaut la
+tâche « jar » sera lancée.
 
 @end defvr
 
-@defvr {Scheme Variable} asdf-build-system/source
-@defvrx {Scheme Variable} asdf-build-system/sbcl
-@defvrx {Scheme Variable} asdf-build-system/ecl
+@defvr {Variable Scheme} android-ndk-build-system
+@cindex Distribution android
+@cindex système de construction Android NDK
+Cette variable est exportée par @code{(guix build-system android-ndk)}.
+Elle implémente une procédure de construction pour les paquets du NDK
+Android (@i{native development kit}) avec des processus de construction
+spécifiques à Guix.
 
-These variables, exported by @code{(guix build-system asdf)}, implement
-build procedures for Common Lisp packages using
-@url{https://common-lisp.net/project/asdf/, ``ASDF''}. ASDF is a system
-definition facility for Common Lisp programs and libraries.
+Le système de construction suppose que les paquets installent leur interface
+publique (les en-têtes) dans un sous-répertoire de « include » de la sortie
+« out » et leurs bibliothèques dans le sous-répertoire « lib » de la sortie
+« out ».
 
-The @code{asdf-build-system/source} system installs the packages in source
-form, and can be loaded using any common lisp implementation, via ASDF.  The
-others, such as @code{asdf-build-system/sbcl}, install binary systems in the
-format which a particular implementation understands.  These build systems
-can also be used to produce executable programs, or lisp images which
-contain a set of packages pre-loaded.
+Il est aussi supposé que l'union de toutes les dépendances d'un paquet n'a
+pas de fichiers en conflit.
 
-The build system uses naming conventions.  For binary packages, the package
-name should be prefixed with the lisp implementation, such as @code{sbcl-}
-for @code{asdf-build-system/sbcl}.
-
-Additionally, the corresponding source package should be labeled using the
-same convention as python packages (see @ref{Modules python}), using the
-@code{cl-} prefix.
-
-For binary packages, each system should be defined as a Guix package.  If
-one package @code{origin} contains several systems, package variants can be
-created in order to build all the systems.  Source packages, which use
-@code{asdf-build-system/source}, may contain several systems.
-
-In order to create executable programs and images, the build-side procedures
-@code{build-program} and @code{build-image} can be used.  They should be
-called in a build phase after the @code{create-symlinks} phase, so that the
-system which was just built can be used within the resulting image.
-@code{build-program} requires a list of Common Lisp expressions to be passed
-as the @code{#:entry-program} argument.
-
-If the system is not defined within its own @code{.asd} file of the same
-name, then the @code{#:asd-file} parameter should be used to specify which
-file the system is defined in.  Furthermore, if the package defines a system
-for its tests in a separate file, it will be loaded before the tests are run
-if it is specified by the @code{#:test-asd-file} parameter.  If it is not
-set, the files @code{<system>-tests.asd}, @code{<system>-test.asd},
-@code{tests.asd}, and @code{test.asd} will be tried if they exist.
-
-If for some reason the package must be named in a different way than the
-naming conventions suggest, the @code{#:asd-system-name} parameter can be
-used to specify the name of the system.
+Pour l'instant, la compilation croisée n'est pas supportées — donc pour
+l'instant les bibliothèques et les fichiers d'en-têtes sont supposés être
+des outils de l'hôte.
 
 @end defvr
 
-@defvr {Scheme Variable} cargo-build-system
-@cindex Rust programming language
-@cindex Cargo (Rust build system)
-This variable is exported by @code{(guix build-system cargo)}.  It supports
-builds of packages using Cargo, the build tool of the
-@uref{https://www.rust-lang.org, Rust programming language}.
+@defvr {Variable Scheme} asdf-build-system/source
+@defvrx {Variable Scheme} asdf-build-system/sbcl
+@defvrx {Variable Scheme} asdf-build-system/ecl
 
-In its @code{configure} phase, this build system replaces dependencies
-specified in the @file{Carto.toml} file with inputs to the Guix package.
-The @code{install} phase installs the binaries, and it also installs the
-source code and @file{Cargo.toml} file.
+Ces variables, exportées par @code{(guix build-system asdf)}, implémentent
+les procédures de constructions pour les paquets en Common Lisp qui
+utilisent @url{https://common-lisp.net/project/asdf/, ``ASDF''}.  ASDF est
+un dispositif de définition de systèmes pour les programmes et les
+bibliothèques en Common Lisp.
+
+Le système @code{asdf-build-system/source} installe les paquets au format
+source qui peuvent être chargés avec n'importe quelle implémentation de
+common lisp, via ASDF.  Les autres, comme @code{asdf-build-system/sbcl},
+installent des binaires au format qu'un implémentation particulière
+comprend.  Ces systèmes de constructions peuvent aussi être utilisés pour
+produire des programmes exécutables ou des images lisp qui contiennent un
+ensemble de paquets pré-chargés.
+
+Le système de construction utilise des conventions de nommage.  Pour les
+paquets binaires, le nom du paquet devrait être préfixé par l'implémentation
+lisp, comme @code{sbcl-} pour @code{asdf-build-system/sbcl}.
+
+En plus, le paquet source correspondant devrait étiquetté avec la même
+convention que les paquets python (voir @ref{Modules python}), avec le
+préfixe @code{cl-}.
+
+Pour les paquets binaires, chaque système devrait être défini comme un
+paquet Guix.  Si un paquet @code{origine} contient plusieurs systèmes, on
+peut créer des variantes du paquet pour construire tous les systèmes.  Les
+paquets sources, qui utilisent @code{asdf-build-system/source}, peuvent
+contenir plusieurs systèmes.
+
+Pour créer des programmes exécutables et des images, les procédures côté
+construction @code{build-program} et @code{build-image} peuvent être
+utilisées.  Elles devraient être appelées dans une phase de construction
+après la phase @code{create-symlinks} pour que le système qui vient d'être
+construit puisse être utilisé dans l'image créée.  @code{build-program}
+requiert une liste d'expressions Common Lisp dans l'argument
+@code{#:entry-program}.
+
+Si le système n'est pas défini dans son propre fichier @code{.asd} du même
+nom, alors le paramètre @code{#:asd-file} devrait être utilisé pour
+spécifier dans quel fichier le système est défini.  De plus, si le paquet
+défini un système pour ses tests dans un fichier séparé, il sera chargé
+avant que les tests ne soient lancés s'il est spécifié par le paramètre
+@code{#:test-asd-file}.  S'il n'est pas spécifié, les fichiers
+@code{<system>-tests.asd}, @code{<system>-test.asd}, @code{tests.asd} et
+@code{test.asd} seront testés.
+
+Si pour quelque raison que ce soit le paquet doit être nommé d'une manière
+différente de ce que la convention de nommage suggère, le paramètre
+@code{#:asd-system-name} peut être utilisé pour spécifier le nom du système.
+
 @end defvr
 
-@defvr {Scheme Variable} cmake-build-system
-This variable is exported by @code{(guix build-system cmake)}.  It
-implements the build procedure for packages using the
-@url{http://www.cmake.org, CMake build tool}.
+@defvr {Variable Scheme} cargo-build-system
+@cindex Langage de programmation Rust
+@cindex Cargo (système de construction Rust)
+Cette variable est exportée par @code{(guix build-system cargo)}.  Elle
+supporte les construction de paquets avec Cargo, le système de construction
+du @uref{https://www.rust-lang.org, langage de programmation Rust}.
 
-It automatically adds the @code{cmake} package to the set of inputs.  Which
-package is used can be specified with the @code{#:cmake} parameter.
-
-The @code{#:configure-flags} parameter is taken as a list of flags passed to
-the @command{cmake} command.  The @code{#:build-type} parameter specifies in
-abstract terms the flags passed to the compiler; it defaults to
-@code{"RelWithDebInfo"} (short for ``release mode with debugging
-information''), which roughly means that code is compiled with @code{-O2
--g}, as is the case for Autoconf-based packages by default.
+Dans sa phase @code{configure}, ce système de construction remplace les
+dépendances spécifiées dans le fichier @file{Cargo.toml} par des paquets
+Guix.  La phase @code{install} installe les binaires et installe aussi le
+code source et le fichier @file{Cargo.toml}.
 @end defvr
 
-@defvr {Scheme Variable} go-build-system
-This variable is exported by @code{(guix build-system go)}.  It implements a
-build procedure for Go packages using the standard
-@url{https://golang.org/cmd/go/#hdr-Compile_packages_and_dependencies, Go
-build mechanisms}.
+@defvr {Variable Scheme} cmake-build-system
+Cette variable est exportée par @code{(guix build-system cmake)}.  Elle
+implémente la procédure de construction des paquets qui utilisent
+l'@url{http://www.cmake.org, outils de construction CMake}.
 
-The user is expected to provide a value for the key @code{#:import-path}
-and, in some cases, @code{#:unpack-path}.  The
-@url{https://golang.org/doc/code.html#ImportPaths, import path} corresponds
-to the file system path expected by the package's build scripts and any
-referring packages, and provides a unique way to refer to a Go package.  It
-is typically based on a combination of the package source code's remote URI
-and file system hierarchy structure.  In some cases, you will need to unpack
-the package's source code to a different directory structure than the one
-indicated by the import path, and @code{#:unpack-path} should be used in
-such cases.
+Elle ajoute automatiquement le paquet @code{cmake} à l'ensemble des
+entrées.  Le paquet utilisé peut être spécifié par le paramètre
+@code{#:cmake}.
 
-Packages that provide Go libraries should be installed along with their
-source code.  The key @code{#:install-source?}, which defaults to @code{#t},
-controls whether or not the source code is installed.  It can be set to
-@code{#f} for packages that only provide executable files.
+Le paramètre @code{#:configure-flags} est pris comme une liste de drapeaux à
+passer à la commande @command{cmake}.  Le paramètre @code{#:build-type}
+spécifie en termes abstrait les drapeaux passés au compilateur ; sa valeur
+par défaut est @code{"RelWithDebInfo"} (ce qui veut dire « mode public avec
+les informations de débogage » en plus court), ce qui signifie en gros que
+le code sera compilé avec @code{-O2 -g} comme pour les paquets autoconf par
+défaut.
 @end defvr
 
-@defvr {Scheme Variable} glib-or-gtk-build-system
-This variable is exported by @code{(guix build-system glib-or-gtk)}.  It is
-intended for use with packages making use of GLib or GTK+.
+@defvr {Variable Scheme} go-build-system
+Cette variable est exportée par @code{(guix build-system go)}.  Elle
+implémente la procédure pour les paquets Go utilisant les
+@url{https://golang.org/cmd/go/#hdr-Compile_packages_and_dependencies,
+mécanismes de construction Go} standard.
 
-This build system adds the following two phases to the ones defined by
-@var{gnu-build-system}:
+L'utilisateur doit fournir une valeur à la clef @code{#:import-path} et,
+dans certains cas, @code{#:unpack-path}.  Le
+@url{https://golang.org/doc/code.html#ImportPaths, chemin d'import}
+correspond au chemin dans le système de fichiers attendu par le script de
+construction du paquet et les paquets qui s'y réfèrent et fournit une
+manière unique de se référer à un paquet Go.  Il est typiquement basé sur
+une combinaison de l'URI du code source du paquet et d'une structure
+hiérarchique du système de fichier.  Dans certains cas, vous devrez extraire
+le code source du paquet dans une structure de répertoires différente que
+celle indiquée par le chemin d'import et @code{#:unpack-path} devrait être
+utilisé dans ces cas-là.
+
+Les paquets qui fournissent des bibliothèques Go devraient être installées
+avec leur code source.  La clef @code{#:install-soruce?}, qui vaut @code{#t}
+par défaut, contrôle l'installation du code source.  Elle peut être mise à
+@code{#f} pour les paquets qui ne fournissent que des fichiers exécutables.
+@end defvr
+
+@defvr {Variable Scheme} glib-or-gtk-build-system
+Cette variable est exportée par @code{(guix build-system glib-or-gtk)}.
+Elle est conçue pour être utilisée par des paquets qui utilisent GLib ou
+GTK+.
+
+Ce système de construction ajoute les deux phases suivantes à celles
+définies par @var{gnu-build-system} :
 
 @table @code
 @item glib-or-gtk-wrap
-The phase @code{glib-or-gtk-wrap} ensures that programs in @file{bin/} are
-able to find GLib ``schemas'' and
-@uref{https://developer.gnome.org/gtk3/stable/gtk-running.html, GTK+
-modules}.  This is achieved by wrapping the programs in launch scripts that
-appropriately set the @code{XDG_DATA_DIRS} and @code{GTK_PATH} environment
-variables.
+La phase @code{glib-or-gtk-wrap} s'assure que les programmes dans
+@file{bin/} sont capable de trouver les « schemas » GLib et les
+@uref{https://developer.gnome.org/gtk3/stable/gtk-running.html, modules
+GTK+}.  Ceci est fait en enveloppant les programmes dans des scripts de
+lancement qui initialisent correctement les variables d'environnement
+@code{XDG_DATA_DIRS} et @code{GTK_PATH}.
 
-It is possible to exclude specific package outputs from that wrapping
-process by listing their names in the
-@code{#:glib-or-gtk-wrap-excluded-outputs} parameter.  This is useful when
-an output is known not to contain any GLib or GTK+ binaries, and where
-wrapping would gratuitously add a dependency of that output on GLib and
-GTK+.
+Il est possible d'exclure des sorties spécifiques de ce processus
+d'enveloppage en listant leur nom dans le paramètre
+@code{#:glib-or-gtk-wrap-excluded-outputs}.  C'est utile lorsqu'une sortie
+est connue pour ne pas contenir de binaires GLib ou GTK+, et où l'enveloppe
+ajouterait une dépendance inutile vers GLib et GTK+.
 
 @item glib-or-gtk-compile-schemas
-The phase @code{glib-or-gtk-compile-schemas} makes sure that all
+La phase  @code{glib-or-gtk-compile-schemas} s'assure que tous les
 @uref{https://developer.gnome.org/gio/stable/glib-compile-schemas.html,
-GSettings schemas} of GLib are compiled.  Compilation is performed by the
-@command{glib-compile-schemas} program.  It is provided by the package
-@code{glib:bin} which is automatically imported by the build system.  The
-@code{glib} package providing @command{glib-compile-schemas} can be
-specified with the @code{#:glib} parameter.
+schémas GSettings} de GLib sont compilés.  La compilation est effectuée par
+le programme @command{glib-compile-schemas}.  Il est fournit par le paquet
+@code{glib:bin} qui est automatiquement importé par le système de
+construction.  Le paquet @code{glib} qui fournit
+@command{glib-compile-schemas} peut être spécifié avec le paramètre
+@code{#:glib}.
 @end table
 
-Both phases are executed after the @code{install} phase.
+Ces deux phases sont exécutées après la phase @code{install}.
 @end defvr
 
-@defvr {Scheme Variable} minify-build-system
-This variable is exported by @code{(guix build-system minify)}.  It
-implements a minification procedure for simple JavaScript packages.
+@defvr {Variable Scheme} minify-build-system
+Cette variable est exportée par @code{(guix build-system minify)}.  Elle
+implémente une procédure de minification pour des paquets JavaScript
+simples.
 
-It adds @code{uglify-js} to the set of inputs and uses it to compress all
-JavaScript files in the @file{src} directory.  A different minifier package
-can be specified with the @code{#:uglify-js} parameter, but it is expected
-that the package writes the minified code to the standard output.
+Elle ajoute @code{uglify-js} à l'ensemble des entrées et l'utilise pour
+compresser tous les fichiers JavaScript du répertoire @file{src}.  Un
+minifieur différent peut être spécifié avec le paramètre @code{#:uglify-js}
+mais il est attendu que ce paquet écrive le code minifié sur la sortie
+standard.
 
-When the input JavaScript files are not all located in the @file{src}
-directory, the parameter @code{#:javascript-files} can be used to specify a
-list of file names to feed to the minifier.
+Lorsque les fichiers JavaScript d'entrée ne sont pas situés dans le
+répertoire @file{src}, le paramètre @code{#:javascript-files} peut être
+utilisé pour spécifier une liste de noms de fichiers à donner au minifieur.
 @end defvr
 
-@defvr {Scheme Variable} ocaml-build-system
-This variable is exported by @code{(guix build-system ocaml)}.  It
-implements a build procedure for @uref{https://ocaml.org, OCaml} packages,
-which consists of choosing the correct set of commands to run for each
-package.  OCaml packages can expect many different commands to be run.  This
-build system will try some of them.
+@defvr {Variable Scheme} ocaml-build-system
+Cette variable est exportée par @code{(guix build-system ocaml)}.  Elle
+implémente une procédure de construction pour les paquets
+@uref{https://ocaml.org, OCaml} qui consiste à choisir le bon ensemble de
+commande à lancer pour chaque paquet.  Les paquets OCaml peuvent demander
+des commandes diverses pour être construit.  Ce système de construction en
+essaye certaines.
 
-When the package has a @file{setup.ml} file present at the top-level, it
-will run @code{ocaml setup.ml -configure}, @code{ocaml setup.ml -build} and
-@code{ocaml setup.ml -install}.  The build system will assume that this file
-was generated by @uref{http://oasis.forge.ocamlcore.org/, OASIS} and will
-take care of setting the prefix and enabling tests if they are not
-disabled.  You can pass configure and build flags with the
-@code{#:configure-flags} and @code{#:build-flags}.  The @code{#:test-flags}
-key can be passed to change the set of flags used to enable tests.  The
-@code{#:use-make?} key can be used to bypass this system in the build and
-install phases.
+Lorsqu'un fichier @file{setup.ml} est présent dans le répertoire de plus
+haut niveau, elle lancera @code{ocaml setup.ml -configure}, @code{ocaml
+setup.ml -build} et @code{ocaml setup.ml -install}.  Le système de
+construction supposera que ces fichiers ont été générés par
+@uref{http://oasis.forge.ocamlcore.org/, OASIS} et prendra soin
+d'initialiser le préfixe et d'activer les tests s'ils ne sont pas
+désactivés.  Vous pouvez passer des drapeaux de configuration et de
+consturction avec @code{#:configure-flags} et @code{#:build-flags}.  La clef
+@code{#:test-flags} peut être passée pour changer l'ensemble des drapeaux
+utilisés pour activer les tests.  La clef @code{#:use-make?} peut être
+utilisée pour outrepasser ce système dans les phases de construction et
+d'installation.
 
-When the package has a @file{configure} file, it is assumed that it is a
-hand-made configure script that requires a different argument format than in
-the @code{gnu-build-system}.  You can add more flags with the
-@code{#:configure-flags} key.
+Lorsque le paquet a un fichier @file{configure}, il est supposé qu'il s'agit
+d'un script configure écrit à la main qui demande un format différent de
+celui de @code{gnu-build-system}.  Vous pouvez ajouter plus de drapeaux avec
+la clef @code{#:configure-flags}.
 
-When the package has a @file{Makefile} file (or @code{#:use-make?} is
-@code{#t}), it will be used and more flags can be passed to the build and
-install phases with the @code{#:make-flags} key.
+Lorsque le paquet a un fichier @file{Makefile} (ou @code{#:use-make?} vaut
+@code{#t}), il sera utilisé et plus de drapeaux peuvent être passés à la
+construction et l'installation avec la clef @code{#:make-flags}.
 
-Finally, some packages do not have these files and use a somewhat standard
-location for its build system.  In that case, the build system will run
-@code{ocaml pkg/pkg.ml} or @code{ocaml pkg/build.ml} and take care of
-providing the path to the required findlib module.  Additional flags can be
-passed via the @code{#:build-flags} key.  Install is taken care of by
-@command{opam-installer}.  In this case, the @code{opam} package must be
-added to the @code{native-inputs} field of the package definition.
+Enfin, certains paquets n'ont pas ces fichiers mais utilisent un emplacement
+plus ou moins standard pour leur système de construction.  Dans ce cas, le
+système de construction lancera @code{ocaml pkg/pkg.ml} ou
+@code{pkg/build.ml} et prendra soin de fournir le chemin du module findlib
+requis.  Des drapeaux supplémentaires peuvent être passés via la clef
+@code{#:bulid-flags}.  L'installation se fait avec
+@command{opam-installer}.  Dans ce cas, le paquet @code{opam} doit être
+ajouté au champ @code{native-inputs} de la définition du paquet.
 
-Note that most OCaml packages assume they will be installed in the same
-directory as OCaml, which is not what we want in guix.  In particular, they
-will install @file{.so} files in their module's directory, which is usually
-fine because it is in the OCaml compiler directory.  In guix though, these
-libraries cannot be found and we use @code{CAML_LD_LIBRARY_PATH}.  This
-variable points to @file{lib/ocaml/site-lib/stubslibs} and this is where
-@file{.so} libraries should be installed.
+Remarquez que la plupart des paquets OCaml supposent qu'ils seront installés
+dans le même répertoire qu'OCaml, ce qui n'est pas ce que nous voulons faire
+dans Guix.  En particulier, ils installeront leurs fichiers @file{.so} dans
+leur propre répertoire de module, ce qui est normalement correct puisqu'il
+s'agit du répertoire du compilateur OCaml.  Dans Guix en revanche, le
+bibliothèques ne peuvent pas y être trouvées et on utilise
+@code{CAML_LD_LIBRARY_PATH} à la place.  Cette variable pointe vers
+@file{lib/ocaml/site-lib/stubslibs} et c'est là où les bibliothèques
+@file{.so} devraient être installées.
 @end defvr
 
-@defvr {Scheme Variable} python-build-system
-This variable is exported by @code{(guix build-system python)}.  It
-implements the more or less standard build procedure used by Python
-packages, which consists in running @code{python setup.py build} and then
-@code{python setup.py install --prefix=/gnu/store/@dots{}}.
+@defvr {Variable Scheme} python-build-system
+Cette variable est exportée par @code{(guix build-system python)}.  Elle
+implémente la procédure de construction plus ou moins standarde utilisée
+pour les paquets Python, qui consiste à lancer @code{python setup.py build}
+puis @code{python setup.py install --prefix=/gnu/store/@dots{}}.
 
-For packages that install stand-alone Python programs under @code{bin/}, it
-takes care of wrapping these programs so that their @code{PYTHONPATH}
-environment variable points to all the Python libraries they depend on.
+Pour les paquets qui installent des programmes autonomes dans @code{bin/},
+elle prend soin d'envelopper ces binaires pour que leur variable
+d'environnement @code{PYTHONPATH} pointe vers toutes les bibliothèques
+Python dont ils dépendent.
 
-Which Python package is used to perform the build can be specified with the
-@code{#:python} parameter.  This is a useful way to force a package to be
-built for a specific version of the Python interpreter, which might be
-necessary if the package is only compatible with a single interpreter
-version.
+Le paquet Python utilisé pour effectuer la construction peut être spécifié
+avec le paramètre @code{#:python}.  C'est une manière utile de forcer un
+paquet à être construit avec une version particulière de l'interpréteur
+python, ce qui peut être nécessaire si le paquet n'est compatible qu'avec
+une version de l'interpréteur.
 
-By default guix calls @code{setup.py} under control of @code{setuptools},
-much like @command{pip} does.  Some packages are not compatible with
-setuptools (and pip), thus you can disable this by setting the
-@code{#:use-setuptools} parameter to @code{#f}.
+Par défaut Guix appelle @code{setup.py} sous le contrôle de
+@code{setuptools}, comme le fait @command{pip}.  Certains paquets ne sont
+pas compatibles avec setuptools (et pip), ainsi vous pouvez désactiver cela
+en mettant le paramètre @code{#:use-setuptools} à @code{#f}.
 @end defvr
 
-@defvr {Scheme Variable} perl-build-system
-This variable is exported by @code{(guix build-system perl)}.  It implements
-the standard build procedure for Perl packages, which either consists in
-running @code{perl Build.PL --prefix=/gnu/store/@dots{}}, followed by
-@code{Build} and @code{Build install}; or in running @code{perl Makefile.PL
-PREFIX=/gnu/store/@dots{}}, followed by @code{make} and @code{make install},
-depending on which of @code{Build.PL} or @code{Makefile.PL} is present in
-the package distribution.  Preference is given to the former if both
-@code{Build.PL} and @code{Makefile.PL} exist in the package distribution.
-This preference can be reversed by specifying @code{#t} for the
-@code{#:make-maker?} parameter.
+@defvr {Variable Scheme} perl-build-system
+Cette variable est exportée par @code{(guix build-system perl)}.  Elle
+implémente la procédure de construction standarde des paquets Perl, qui
+consiste soit à lancer @code{perl Build.PL --prefix=/gnu/store/@dots{}},
+suivi de @code{Build} et @code{Build install} ; ou à lancer @code{perl
+Makefile.PL PREFIX=/gnu/store/@dots{}}, suivi de @code{make} et @code{make
+install}, en fonction de la présence de @code{Build.PL} ou
+@code{Makefile.PL} dans la distribution du paquet.  Le premier a la
+préférence si @code{Build.PL} et @code{Makefile.PL} existent tous deux dans
+la distribution du paquet.  Cette préférence peut être inversée en
+spécifiant @code{#t} pour le paramètre @code{#:make-maker?}.
 
-The initial @code{perl Makefile.PL} or @code{perl Build.PL} invocation
-passes flags specified by the @code{#:make-maker-flags} or
-@code{#:module-build-flags} parameter, respectively.
+L'invocation initiale de @code{perl Makefile.PL} ou @code{perl Build.PL}
+passe les drapeaux spécifiés par le paramètre @code{#:make-maker-flags} ou
+@code{#:module-build-flags}, respectivement.
 
-Which Perl package is used can be specified with @code{#:perl}.
+Le paquet Perl utilisé peut être spécifié avec @code{#:perl}.
 @end defvr
 
-@defvr {Scheme Variable} r-build-system
-This variable is exported by @code{(guix build-system r)}.  It implements
-the build procedure used by @uref{http://r-project.org, R} packages, which
-essentially is little more than running @code{R CMD INSTALL
---library=/gnu/store/@dots{}} in an environment where @code{R_LIBS_SITE}
-contains the paths to all R package inputs.  Tests are run after
-installation using the R function @code{tools::testInstalledPackage}.
+@defvr {Variable Scheme} r-build-system
+Cette variable est exportée par @code{(guix build-system r)}.  Elle
+implémente la procédure de construction utilisée par les paquets
+@uref{http://r-project.org, R} qui consiste à lancer à peine plus que
+@code{R CMD INSTALL --library=/gnu/store/@dots{}} dans un environnement où
+@code{R_LIBS_SITE} contient les chemins de toutes les entrées R.  Les tests
+sont lancés après l'installation avec la fonction R
+@code{tools::testInstalledPackage}.
 @end defvr
 
-@defvr {Scheme Variable} texlive-build-system
-This variable is exported by @code{(guix build-system texlive)}.  It is used
-to build TeX packages in batch mode with a specified engine.  The build
-system sets the @code{TEXINPUTS} variable to find all TeX source files in
-the inputs.
+@defvr {Variable Scheme} texlive-build-system
+Cette variable est exportée par @code{(guix build-system texlive)}.  Elle
+est utilisée pour construire des paquets TeX en mode batch avec le moteur
+spécifié.  Le système de construction initialise la variable
+@code{TEXINPUTS} pour trouver tous les fichiers source TeX dans ses entrées.
 
-By default it runs @code{luatex} on all files ending on @code{ins}.  A
-different engine and format can be specified with the @code{#:tex-format}
-argument.  Different build targets can be specified with the
-@code{#:build-targets} argument, which expects a list of file names.  The
-build system adds only @code{texlive-bin} and @code{texlive-latex-base}
-(both from @code{(gnu packages tex}) to the inputs.  Both can be overridden
-with the arguments @code{#:texlive-bin} and @code{#:texlive-latex-base},
-respectively.
+Par défaut, elle lance @code{luatex} sur tous les fichiers qui se terminent
+par @code{ins}.  Un moteur et un format différent peuvent être spécifiés
+avec l'argument @code{#:tex-format}.  Plusieurs cibles de constructions
+peuvent être indiquées avec l'argument @code{#:build-targets} qui attend une
+liste de noms de fichiers.  Le système de construction ajoute uniquement
+@code{texlive-bin} et @code{texlive-latex-base} (de @code{(gnu packages
+tex)} à la liste des entrées.  Les deux peuvent être remplacés avec les
+arguments @code{#:texlive-bin} et @code{#:texlive-latex-base},
+respectivement.
 
-The @code{#:tex-directory} parameter tells the build system where to install
-the built files under the texmf tree.
+Le paramètre @code{#:tex-directory} dit au système de construction où
+installer les fichiers construit dans l'arbre texmf.
 @end defvr
 
-@defvr {Scheme Variable} ruby-build-system
-This variable is exported by @code{(guix build-system ruby)}.  It implements
-the RubyGems build procedure used by Ruby packages, which involves running
-@code{gem build} followed by @code{gem install}.
+@defvr {Variable Scheme} ruby-build-system
+Cette variable est exportée par @code{(guix build-system ruby)}.  Elle
+implémenter la procédure de construction RubyGems utilisée par les paquets
+Ruby qui consiste à lancer @code{gem build} suivi de @code{gem install}.
 
-The @code{source} field of a package that uses this build system typically
-references a gem archive, since this is the format that Ruby developers use
-when releasing their software.  The build system unpacks the gem archive,
-potentially patches the source, runs the test suite, repackages the gem, and
-installs it.  Additionally, directories and tarballs may be referenced to
-allow building unreleased gems from Git or a traditional source release
-tarball.
+Le champ @code{source} d'un paquet qui utilise ce système de construction
+référence le plus souvent une archive gem, puisque c'est le format utilisé
+par les développeurs Ruby quand ils publient leur logiciel.  Le système de
+construction décompresse l'archive gem, éventuellement en corrigeant les
+sources, lance la suite de tests, recompresse la gemme et l'installe.  En
+plus, des répertoires et des archives peuvent être référencés pour permettre
+de construire des gemmes qui n'ont pas été publiées depuis Git ou une
+archive de sources traditionnelle.
 
-Which Ruby package is used can be specified with the @code{#:ruby}
-parameter.  A list of additional flags to be passed to the @command{gem}
-command can be specified with the @code{#:gem-flags} parameter.
+Le paquet Ruby utilisé peut être spécifié avec le paramètre @code{#:ruby}.
+Une liste de drapeaux supplémentaires à passer à la commande @command{gem}
+peut être spécifiée avec le paramètre @code{#:gem-flags}.
 @end defvr
 
-@defvr {Scheme Variable} waf-build-system
-This variable is exported by @code{(guix build-system waf)}.  It implements
-a build procedure around the @code{waf} script.  The common
-phases---@code{configure}, @code{build}, and @code{install}---are
-implemented by passing their names as arguments to the @code{waf} script.
+@defvr {Variable Scheme} waf-build-system
+Cette variable est exportée par @code{(guix build-system waf)}.  Elle
+implémente une procédure de construction autour du script @code{waf}.  Les
+phases usuelles — @code{configure}, @code{build} et @code{install} — sont
+implémentée en passant leur nom en argument au script @code{waf}.
 
-The @code{waf} script is executed by the Python interpreter.  Which Python
-package is used to run the script can be specified with the @code{#:python}
-parameter.
+Le script @code{waf} est exécuté par l'interpréteur Python.  Le paquet
+Python utilisé pour lancer le script peut être spécifié avec le paramètre
+@code{#:python}.
 @end defvr
 
-@defvr {Scheme Variable} scons-build-system
-This variable is exported by @code{(guix build-system scons)}.  It
-implements the build procedure used by the SCons software construction
-tool.  This build system runs @code{scons} to build the package, @code{scons
-test} to run tests, and then @code{scons install} to install the package.
+@defvr {Variable Scheme} scons-build-system
+Cette variable est exportée par @code{(guix build-system scons)}.  Elle
+implémente la procédure de construction utilisée par l'outil de construction
+SCons.  Ce système de construction lance @code{scons} pour construire le
+paquet, @code{scons test} pour lancer les tests puis @code{scons install}
+pour installer le paquet.
 
-Additional flags to be passed to @code{scons} can be specified with the
-@code{#:scons-flags} parameter.  The version of Python used to run SCons can
-be specified by selecting the appropriate SCons package with the
-@code{#:scons} parameter.
+On peut passer des drapeaux supplémentaires à @code{scons} en les spécifiant
+avec le paramètre @code{#:scons-flags}.  La version de python utilisée pour
+lancer SCons peut être spécifiée en sélectionnant le paquet SCons approprié
+avec le paramètre @code{#:scons}.
 @end defvr
 
-@defvr {Scheme Variable} haskell-build-system
-This variable is exported by @code{(guix build-system haskell)}.  It
-implements the Cabal build procedure used by Haskell packages, which
-involves running @code{runhaskell Setup.hs configure
---prefix=/gnu/store/@dots{}} and @code{runhaskell Setup.hs build}.  Instead
-of installing the package by running @code{runhaskell Setup.hs install}, to
-avoid trying to register libraries in the read-only compiler store
-directory, the build system uses @code{runhaskell Setup.hs copy}, followed
-by @code{runhaskell Setup.hs register}.  In addition, the build system
-generates the package documentation by running @code{runhaskell Setup.hs
-haddock}, unless @code{#:haddock? #f} is passed.  Optional Haddock
-parameters can be passed with the help of the @code{#:haddock-flags}
-parameter.  If the file @code{Setup.hs} is not found, the build system looks
-for @code{Setup.lhs} instead.
+@defvr {Variable Scheme} haskell-build-system
+Cette variable est exportée par @code{(guix build-system haskell)}.  Elle
+implémente la procédure de construction Cabal utilisée par les paquets
+Haskell, qui consiste à lancer @code{runhaskell Setup.hs configure
+--prefix=/gnu/store/@dots{}} et @code{runhaskell Setup.hs build}.  Plutôt
+que d'installer le paquets en lançant @code{runhaskell Setup.hs install},
+pour éviter d'essayer d'enregistrer les bibliothèques dans le répertoire du
+dépôt en lecture-seule du compilateur, le système de construction utilise
+@code{runhaskell Setup.hs copy}, suivi de @code{runhaskell Setup.hs
+register}.  En plus, le système de construction génère la documentation du
+paquet en lançant @code{runhaskell Setup.hs haddock}, à moins que
+@code{#:haddock? #f} ne soit passé.  Des paramètres facultatifs pour Haddock
+peuvent être passés à l'aide du paramètre @code{#:haddock-flags}.  Si le
+fichier @code{Setup.hs} n'est pas trouvé, le système de construction
+cherchera @code{Setup.lhs} à la place.
 
-Which Haskell compiler is used can be specified with the @code{#:haskell}
-parameter which defaults to @code{ghc}.
+Le compilateur Haskell utilisé peut être spécifié avec le paramètre
+@code{#:haskell} qui a pour valeur par défaut @code{ghc}.
 @end defvr
 
-@defvr {Scheme Variable} dub-build-system
-This variable is exported by @code{(guix build-system dub)}.  It implements
-the Dub build procedure used by D packages, which involves running @code{dub
-build} and @code{dub run}.  Installation is done by copying the files
-manually.
+@defvr {Variable Scheme} dub-build-system
+Cette variable est exportée par @code{(guix build-system dub)}.  Elle
+implémente la procédure de construction Dub utilisée par les paquets D qui
+consiste à lancer @code{dub build} et @code{dub run}.  L'installation est
+effectuée en copiant les fichiers manuellement.
 
-Which D compiler is used can be specified with the @code{#:ldc} parameter
-which defaults to @code{ldc}.
+Le compilateur D utilisé peut être spécifié avec le paramètre @code{#:ldc}
+qui vaut par défaut @code{ldc}.
 @end defvr
 
-@defvr {Scheme Variable} emacs-build-system
-This variable is exported by @code{(guix build-system emacs)}.  It
-implements an installation procedure similar to the packaging system of
-Emacs itself (@pxref{Packages,,, emacs, The GNU Emacs Manual}).
+@defvr {Variable Scheme} emacs-build-system
+Cette variable est exportée par @code{(guix build-system emacs)}.  Elle
+implémente une procédure d'installation similaire au système de gestion de
+paquet d'Emacs lui-même (@pxref{Packages,,, emacs, The GNU Emacs Manual}).
 
-It first creates the @code{@var{package}-autoloads.el} file, then it byte
-compiles all Emacs Lisp files.  Differently from the Emacs packaging system,
-the Info documentation files are moved to the standard documentation
-directory and the @file{dir} file is deleted.  Each package is installed in
-its own directory under @file{share/emacs/site-lisp/guix.d}.
+Elle crée d'abord le fichier @code{@var{package}-autoloads.el}, puis compile
+tous les fichiers Emacs Lisp en bytecode.  Contrairement au système de
+gestion de paquets d'Emacs, les fichiers de documentation info sont déplacés
+dans le répertoire standard et le fichier @file{dir} est supprimé.  Chaque
+paquet est installé dans son propre répertoire dans
+@file{share/emacs/site-lisp/guix.d}.
 @end defvr
 
-@defvr {Scheme Variable} font-build-system
-This variable is exported by @code{(guix build-system font)}.  It implements
-an installation procedure for font packages where upstream provides
-pre-compiled TrueType, OpenType, etc. font files that merely need to be
-copied into place.  It copies font files to standard locations in the output
-directory.
+@defvr {Variable Scheme} font-build-system
+Cette variable est exportée par @code{(guix build-system font)}.  Elle
+implémente une procédure d'installation pour les paquets de polices où des
+fichiers de polices TrueType, OpenType, etc sont fournis en amont et n'ont
+qu'à être copiés à leur emplacement final.  Elle copie les fichiers de
+polices à l'emplacement standard dans le répertoire de sortie.
 @end defvr
 
-@defvr {Scheme Variable} meson-build-system
-This variable is exported by @code{(guix build-system meson)}.  It
-implements the build procedure for packages that use
-@url{http://mesonbuild.com, Meson} as their build system.
+@defvr {Variable Scheme} meson-build-system
+Cette variable est exportée par @code{(guix build-system meson)}.  Elle
+implémente la procédure de construction des paquets qui utilisent
+@url{http://mesonbuild.com, Meson} comme système de construction.
 
-It adds both Meson and @uref{https://ninja-build.org/, Ninja} to the set of
-inputs, and they can be changed with the parameters @code{#:meson} and
-@code{#:ninja} if needed.  The default Meson is @code{meson-for-build},
-which is special because it doesn't clear the @code{RUNPATH} of binaries and
-libraries when they are installed.
+Elle ajoute à la fois Meson et @uref{https://ninja-build.org/, Ninja} à
+l'ensemble des entrées, et ils peuvent être modifiés avec les paramètres
+@code{#:meson} et @code{#:ninja} si requis.  Le Meson par défaut est
+@code{meson-for-build}, qui est spécial parce qu'il ne nettoie pas le
+@code{RUNPATH} des binaires et les bibliothèques qu'il installe.
 
-This build system is an extension of @var{gnu-build-system}, but with the
-following phases changed to some specific for Meson:
+Ce système de construction est une extension de @var{gnu-build-system}, mais
+avec les phases suivantes modifiées pour Meson :
 
 @table @code
 
 @item configure
-The phase runs @code{meson} with the flags specified in
-@code{#:configure-flags}.  The flag @code{--build-type} is always set to
-@code{plain} unless something else is specified in @code{#:build-type}.
+La phase lance @code{meson} avec les drapeaux spécifiés dans
+@code{#:configure-flags}.  Le drapeau @code{--build-type} est toujours
+initialisé à @code{plain} à moins que quelque chose d'autre ne soit spécifié
+dans @code{#:build-type}.
 
 @item build
-The phase runs @code{ninja} to build the package in parallel by default, but
-this can be changed with @code{#:parallel-build?}.
+La phase lance @code{ninja} pour construire le paquet en parallèle par
+défaut, mais cela peut être changé avec @code{#:parallel-build?}.
 
 @item check
-The phase runs @code{ninja} with the target specified in
-@code{#:test-target}, which is @code{"test"} by default.
+La phase lance @code{ninja} avec la cible spécifiée dans
+@code{#:test-target}, qui est @code{"test"} par défaut.
 
 @item install
-The phase runs @code{ninja install} and can not be changed.
+La phase lance @code{ninja install} et ne peut pas être changée.
 @end table
 
-Apart from that, the build system also adds the following phases:
+En dehors de cela, le système de construction ajoute aussi la phase suivante
+:
 
 @table @code
 
 @item fix-runpath
-This phase ensures that all binaries can find the libraries they need.  It
-searches for required libraries in subdirectories of the package being
-built, and adds those to @code{RUNPATH} where needed.  It also removes
-references to libraries left over from the build phase by
-@code{meson-for-build}, such as test dependencies, that aren't actually
-required for the program to run.
+Cette phase s'assure que tous les binaire peuvent trouver les bibliothèques
+dont ils ont besoin.  Elle cherche les bibliothèques requises dans les
+sous-répertoires du paquet en construction et les ajoute au @code{RUNPATH}
+là où c'est nécessaire.  Elle supprime aussi les références aux
+bibliothèques laissées là par la phase de construction par
+@code{meson-for-build} comme les dépendances des tests, qui ne sont pas
+vraiment requises pour le programme.
 
 @item glib-or-gtk-wrap
-This phase is the phase provided by @code{glib-or-gtk-build-system}, and it
-is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
+Cette phase est la phase fournie par @code{glib-or-gtk-build-system} et
+n'est pas activée par défaut.  Elle peut l'être avec @code{#:glib-or-gtk?}.
 
 @item glib-or-gtk-compile-schemas
-This phase is the phase provided by @code{glib-or-gtk-build-system}, and it
-is not enabled by default.  It can be enabled with @code{#:glib-or-gtk?}.
+Cette phase est la phase fournie par @code{glib-or-gtk-build-system} et
+n'est pas activée par défaut.  Elle peut l'être avec @code{#:glib-or-gtk?}.
 @end table
 @end defvr
 
-Lastly, for packages that do not need anything as sophisticated, a
-``trivial'' build system is provided.  It is trivial in the sense that it
-provides basically no support: it does not pull any implicit inputs, and
-does not have a notion of build phases.
+Enfin, pour les paquets qui n'ont pas besoin de choses sophistiquées, un
+système de construction « trivial » est disponible.  Il est trivial dans le
+sens où il ne fournit en gros aucun support : il n'apporte pas de dépendance
+implicite, et n'a pas de notion de phase de construction.
 
-@defvr {Scheme Variable} trivial-build-system
-This variable is exported by @code{(guix build-system trivial)}.
+@defvr {Variable Scheme} trivial-build-system
+Cette variable est exportée par @code{(guix build-system trivial)}.
 
-This build system requires a @code{#:builder} argument.  This argument must
-be a Scheme expression that builds the package output(s)---as with
-@code{build-expression->derivation} (@pxref{Dérivations,
+Ce système de construction requiert un argument @code{#:builder}.  Cet
+argument doit être une expression Scheme qui construit la sortie du paquet —
+comme avec @code{build-expression->derivation} (@pxref{Dérivations,
 @code{build-expression->derivation}}).
 @end defvr
 
@@ -4411,233 +4507,249 @@ be a Scheme expression that builds the package output(s)---as with
 @section Le dépôt
 
 @cindex dépôt
-@cindex store items
-@cindex store paths
+@cindex éléments du dépôt
+@cindex chemins dans le dépôt
 
-Conceptually, the @dfn{store} is the place where derivations that have been
-built successfully are stored---by default, @file{/gnu/store}.
-Sub-directories in the store are referred to as @dfn{store items} or
-sometimes @dfn{store paths}.  The store has an associated database that
-contains information such as the store paths referred to by each store path,
-and the list of @emph{valid} store items---results of successful builds.
-This database resides in @file{@var{localstatedir}/guix/db}, where
-@var{localstatedir} is the state directory specified @i{via}
-@option{--localstatedir} at configure time, usually @file{/var}.
+Conceptuellement, le @dfn{dépôt} est l'endroit où les dérivations qui ont
+bien été construites sont stockées — par défaut, @file{/gnu/store}.  Les
+sous-répertoires dans le dépôt s'appellent des @dfn{éléments du dépôt} ou
+parfois des @dfn{chemins du dépôt}.  Le dépôt a une base de données associée
+qui contient des informations comme les chemins du dépôt auxquels se
+réfèrent chaque chemin du dépôt et la liste des éléments du dépôt
+@emph{valides} — les résultats d'une construction réussie.  Cette base de
+données se trouve dans @file{@var{localstatedir}/guix/db} où
+@var{localstatedir} est le répertoire d'états spécifié @i{via} @option
+{--localstatedir} à la configuration, typiquement @file{/var}.
 
-The store is @emph{always} accessed by the daemon on behalf of its clients
-(@pxref{Invoquer guix-daemon}).  To manipulate the store, clients connect to
-the daemon over a Unix-domain socket, send requests to it, and read the
-result---these are remote procedure calls, or RPCs.
+C'est @emph{toujours} le démon qui accède au dépôt pour le compte de ses
+clients (@pxref{Invoquer guix-daemon}).  Pour manipuler le dépôt, les
+clients se connectent au démon par un socket Unix-domain, envoient une
+requête dessus et lisent le résultat — ce sont des appels de procédures
+distantes, ou RPC.
 
 @quotation Remarque
-Users must @emph{never} modify files under @file{/gnu/store} directly.  This
-would lead to inconsistencies and break the immutability assumptions of
-Guix's functional model (@pxref{Introduction}).
+Les utilisateurs ne doivent @emph{jamais} modifier les fichiers dans
+@file{/gnu/store} directement.  Cela entraînerait des incohérences et
+casserait l'hypothèse d'immutabilité du modèle fonctionnel de Guix
+(@pxref{Introduction}).
 
-@xref{Invoquer guix gc, @command{guix gc --verify}}, for information on how
-to check the integrity of the store and attempt recovery from accidental
-modifications.
+@xref{Invoquer guix gc, @command{guix gc --verify}}, pour des informations
+sur la manière de vérifier l'intégrité du dépôt et d'essayer de réparer des
+modifications accidentelles.
 @end quotation
 
-The @code{(guix store)} module provides procedures to connect to the daemon,
-and to perform RPCs.  These are described below.  By default,
-@code{open-connection}, and thus all the @command{guix} commands, connect to
-the local daemon or to the URI specified by the @code{GUIX_DAEMON_SOCKET}
-environment variable.
+Le module @code{(guix store)} fournit des procédures pour se connecter au
+démon et pour effectuer des RPC.  Elles sont décrites plus bas.  Par défaut,
+@code{open-connection}, et donc toutes les commandes @command{guix} se
+connectent au démon local ou à l'URI spécifiée par la variable
+d'environnement @code{GUIX_DAEMON_SOCKET}.
 
-@defvr {Environment Variable} GUIX_DAEMON_SOCKET
-When set, the value of this variable should be a file name or a URI
-designating the daemon endpoint.  When it is a file name, it denotes a
-Unix-domain socket to connect to.  In addition to file names, the supported
-URI schemes are:
+@defvr {Variable d'environnement} GUIX_DAEMON_SOCKET
+Lorsqu'elle est initialisée, la valeur de cette variable devrait être un nom
+de fichier ou une URI qui désigne l'extrémité du démon.  Lorsque c'est un
+nom de fichier, il dénote un socket Unix-domain où se connecter.  En plus
+des noms de fichiers, les schémas d'URI supportés sont :
 
 @table @code
 @item file
 @itemx unix
-These are for Unix-domain sockets.
-@code{file:///var/guix/daemon-socket/socket} is equivalent to
-@file{/var/guix/daemon-socket/socket}.
+Pour les sockets Unix-domain.  @code{file:///var/guix/daemon-socket/socket}
+est équivalent à @file{/var/guix/daemon-socket/socket}.
 
 @item guix
 @cindex démon, accès distant
 @cindex accès distant au démon
 @cindex démon, paramètres de grappes
 @cindex grappes, paramètres du démon
-These URIs denote connections over TCP/IP, without encryption nor
-authentication of the remote host.  The URI must specify the host name and
-optionally a port number (by default port 44146 is used):
+Ces URI dénotent des connexions par TCP/IP, sans chiffrement ni
+authentification de l'hôte distant.  L'URI doit spécifier le nom d'hôte et
+éventuellement un numéro de port (par défaut 44146) :
 
 @example
 guix://master.guix.example.org:1234
 @end example
 
-This setup is suitable on local networks, such as clusters, where only
-trusted nodes may connect to the build daemon at
-@code{master.guix.example.org}.
+Ce paramétrage est adapté aux réseaux locaux, comme dans le cas de grappes
+de serveurs, où seuls des noms de confiance peuvent se connecter au démon de
+construction sur @code{master.guix.example.org}.
 
-The @code{--listen} option of @command{guix-daemon} can be used to instruct
-it to listen for TCP connections (@pxref{Invoquer guix-daemon,
+L'option @code{--listen} de @command{guix-daemon} peut être utilisé pour lui
+dire d'écouter des connexions TCP (@pxref{Invoquer guix-daemon,
 @code{--listen}}).
 
 @item ssh
-@cindex SSH access to build daemons
-These URIs allow you to connect to a remote daemon over SSH@footnote{This
-feature requires Guile-SSH (@pxref{Prérequis}).}.  A typical URL might
-look like this:
+@cindex accès SSH au démon de construction
+Ces URI vous permettent de vous connecter au démon à distance à travers
+SSH@footnote{Cette fonctionnalité requiert Guile-SSH
+(@pxref{Prérequis}).}.
 
 @example
 ssh://charlie@@guix.example.org:22
 @end example
 
-As for @command{guix copy}, the usual OpenSSH client configuration files are
-honored (@pxref{Invoquer guix copy}).
+Comme pour @command{guix copy}, les fichiers de configuration du client
+OpenSSH sont respectés (@pxref{Invoquer guix copy}).
 @end table
 
-Additional URI schemes may be supported in the future.
+Des schémas d'URI supplémentaires pourraient être supportés dans le futur.
 
 @c XXX: Remove this note when the protocol incurs fewer round trips
 @c and when (guix derivations) no longer relies on file system access.
 @quotation Remarque
-The ability to connect to remote build daemons is considered experimental as
-of @value{VERSION}.  Please get in touch with us to share any problems or
-suggestions you may have (@pxref{Contribuer}).
+La capacité de se connecter à un démon de construction distant est considéré
+comme expérimental à la version @value{VERSION}.  Contactez-nous pour
+partager vos problèmes ou des suggestions que vous pourriez avoir
+(@pxref{Contribuer}).
 @end quotation
 @end defvr
 
-@deffn {Scheme Procedure} open-connection [@var{uri}] [#:reserve-space? #t]
-Connect to the daemon over the Unix-domain socket at @var{uri} (a string).
-When @var{reserve-space?} is true, instruct it to reserve a little bit of
-extra space on the file system so that the garbage collector can still
-operate should the disk become full.  Return a server object.
+@deffn {Procédure Scheme} open-connection [@var{uri}] [#:reserve-space? #t]
+Se connecte au démon à travers le socket Unix-domain à @var{uri} (une chaîne
+de caractères).  Lorsque @var{reserve-space?} est vrai, cela demande de
+réserver un peu de place supplémentaire sur le système de fichiers pour que
+le ramasse-miette puisse opérer au cas où le disque serait plein.  Renvoie
+un objet serveur.
 
-@var{file} defaults to @var{%default-socket-path}, which is the normal
-location given the options that were passed to @command{configure}.
+@var{file} a pour valeur par défaut @var{%default-socket-path}, qui est
+l'emplacement normal en fonction des options données à @command{configure}.
 @end deffn
 
-@deffn {Scheme Procedure} close-connection @var{server}
-Close the connection to @var{server}.
+@deffn {Procédure Scheme} close-connection @var{serveur}
+Ferme la connexion au @var{serveur}.
 @end deffn
 
-@defvr {Scheme Variable} current-build-output-port
-This variable is bound to a SRFI-39 parameter, which refers to the port
-where build and error logs sent by the daemon should be written.
+@defvr {Variable Scheme} current-build-output-port
+Cette variable est liée à un paramètre SRFI-39, qui se réfère au port où les
+journaux de construction et d'erreur envoyés par le démon devraient être
+écrits.
 @end defvr
 
-Procedures that make RPCs all take a server object as their first argument.
+Les procédures qui font des RPC prennent toutes un objet serveur comme
+premier argument.
 
 @deffn {Scheme Procedure} valid-path? @var{server} @var{path}
-@cindex invalid store items
-Return @code{#t} when @var{path} designates a valid store item and @code{#f}
-otherwise (an invalid item may exist on disk but still be invalid, for
-instance because it is the result of an aborted or failed build.)
+@cindex éléments du dépôt invalides
+Renvoie @code{#t} lorsque @var{path} désigne un élément du dépôt valide et
+@code{#f} sinon (un élément invalide peut exister sur le disque mais rester
+invalide, par exemple parce que c'est le résultat d'une construction annulée
+ou échouée).
 
-A @code{&nix-protocol-error} condition is raised if @var{path} is not
-prefixed by the store directory (@file{/gnu/store}).
+Une condition @code{&nix-protocol-error} est levée si @var{path} n'est pas
+préfixée par le répertoire du dépôt (@file{/gnu/store}).
 @end deffn
 
-@deffn {Scheme Procedure} add-text-to-store @var{server} @var{name} @var{text} [@var{references}]
-Add @var{text} under file @var{name} in the store, and return its store
-path.  @var{references} is the list of store paths referred to by the
-resulting store path.
+@deffn {Procédure Scheme} add-text-to-store @var{server} @var{name} @var{text} [@var{references}]
+Ajoute @var{text} dans le fichier @var{name} dans le dépôt et renvoie son
+chemin.  @var{references} est la liste des chemins du dépôt référencés par
+le chemin du dépôt qui en résulte.
 @end deffn
 
-@deffn {Scheme Procedure} build-derivations @var{server} @var{derivations}
-Build @var{derivations} (a list of @code{<derivation>} objects or derivation
-paths), and return when the worker is done building them.  Return @code{#t}
-on success.
+@deffn {Procédure Scheme} build-derivations @var{server} @var{derivations}
+Construit @var{derivaton} (ne liste d'objets @code{<derivation>} ou de
+chemins de dérivations) et retourne quand le travailleur a fini de les
+construire.  Renvoie @code{#t} en cas de réussite.
 @end deffn
 
-Note that the @code{(guix monads)} module provides a monad as well as
-monadic versions of the above procedures, with the goal of making it more
-convenient to work with code that accesses the store (@pxref{La monad du dépôt}).
+Remarque que le module @code{(guix monads)} fournit une monad ainsi que des
+version monadiques des procédures précédentes, avec le but de rendre plus
+facile de travailler avec le code qui accède au dépôt (@pxref{La monad du dépôt}).
 
 @c FIXME
-@i{This section is currently incomplete.}
+@i{Cette section est actuellement incomplète.}
 
 @node Dérivations
 @section Dérivations
 
-@cindex derivations
-Low-level build actions and the environment in which they are performed are
-represented by @dfn{derivations}.  A derivation contains the following
-pieces of information:
+@cindex dérivations
+Les actions de construction à bas-niveau et l'environnement dans lequel
+elles sont effectuées sont représentés par des @dfn{dérivations}.  Une
+dérivation contient cet ensemble d'informations :
 
 @itemize
 @item
-The outputs of the derivation---derivations produce at least one file or
-directory in the store, but may produce more.
+Les sorties de la dérivation — les dérivations produisent au moins un
+fichier ou répertoire dans le dépôt, mais peuvent en produire plus.
 
 @item
-The inputs of the derivations, which may be other derivations or plain files
-in the store (patches, build scripts, etc.)
+Les entrées de la dérivation, qui peuvent être d'autres dérivations ou des
+fichiers dans le dépôt (correctifs, scripts de construction, etc).
 
 @item
-The system type targeted by the derivation---e.g., @code{x86_64-linux}.
+Le type de système ciblé par la dérivation — p.ex.@: @code{x86_64-linux}.
 
 @item
-The file name of a build script in the store, along with the arguments to be
-passed.
+Le nom de fichier d'un script de construction dans le dépôt avec les
+arguments à lui passer.
 
 @item
-A list of environment variables to be defined.
+Une liste de variables d'environnement à définir.
 
 @end itemize
 
-@cindex derivation path
-Derivations allow clients of the daemon to communicate build actions to the
-store.  They exist in two forms: as an in-memory representation, both on the
-client- and daemon-side, and as files in the store whose name end in
-@code{.drv}---these files are referred to as @dfn{derivation paths}.
-Derivations paths can be passed to the @code{build-derivations} procedure to
-perform the build actions they prescribe (@pxref{Le dépôt}).
+@cindex chemin de dérivation
+Les dérivations permettent aux client du démon de communiquer des actions de
+construction dans le dépôt.  Elles existent sous deux formes : en tant que
+représentation en mémoire, à la fois côté client et démon, et en tant que
+fichiers dans le dépôt dont le nom fini par @code{.drv} — on dit que ce sont
+des @dfn{chemins de dérivations}.  Les chemins de dérivations peuvent être
+passés à la procédure @code{build-derivations} pour effectuer les actions de
+construction qu'ils prescrivent (@pxref{Le dépôt}).
 
-@cindex fixed-output derivations
-Operations such as file downloads and version-control checkouts for which
-the expected content hash is known in advance are modeled as
-@dfn{fixed-output derivations}.  Unlike regular derivations, the outputs of
-a fixed-output derivation are independent of its inputs---e.g., a source
-code download produces the same result regardless of the download method and
-tools being used.
+@cindex dérivations à sortie fixe
+Des opérations comme le téléchargement de fichiers et la récupération de
+sources gérés par un logiciel de contrôle de version pour lesquels le hash
+du contenu est connu à l'avance sont modélisés par des @dfn{dérivations à
+sortie fixe}.  Contrairement aux dérivation habituelles, les sorties d'une
+dérivation à sortie fixe sont indépendantes de ses entrées — p.ex.@: un code
+source téléchargé produit le même résultat quelque soit la méthode de
+téléchargement utilisée.
 
-The @code{(guix derivations)} module provides a representation of
-derivations as Scheme objects, along with procedures to create and otherwise
-manipulate derivations.  The lowest-level primitive to create a derivation
-is the @code{derivation} procedure:
+Le module @code{(guix derivations)} fournit une représentation des
+dérivations comme des objets Scheme, avec des procédures pour créer et
+manipuler des dérivations.  La primitive de plus bas-niveau pour créer une
+dérivation est la procédure @code{derivation} :
 
-@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @
-  @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @ [#:recursive?
-#f] [#:inputs '()] [#:env-vars '()] @ [#:system (%current-system)]
-[#:references-graphs #f] @ [#:allowed-references #f]
-[#:disallowed-references #f] @ [#:leaked-env-vars #f] [#:local-build? #f] @
-[#:substitutable? #t] Construit une dérivation avec les arguments donnés et
-renvie l'objet @code{<derivation>} obtenu.
+@deffn {Procédure Scheme} derivation @var{store} @var{name} @var{builder} @
+  @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
+[#:recursive? #f] [#:inputs '()] [#:env-vars '()] @ [#:system
+(%current-system)] [#:references-graphs #f] @
+[#:allowed-references #f] [#:disallowed-references #f] @
+[#:leaked-env-vars #f] [#:local-build? #f] @
+[#:substitutable? #t]
 
-When @var{hash} and @var{hash-algo} are given, a @dfn{fixed-output
-derivation} is created---i.e., one whose result is known in advance, such as
-a file download.  If, in addition, @var{recursive?} is true, then that fixed
-output may be an executable file or a directory and @var{hash} must be the
-hash of an archive containing this output.
+Construit une dérivation avec les arguments donnés et renvie l'objet
+@code{<derivation>} obtenu.
 
-When @var{references-graphs} is true, it must be a list of file name/store
-path pairs.  In that case, the reference graph of each store path is
-exported in the build environment in the corresponding file, in a simple
-text format.
+Lorsque @var{hash} et @var{hash-algo} sont donnés, une @dfn{dérivation à
+sortie fixe} est créée — c.-à-d.@: une dérivation dont le résultat est connu
+à l'avance, comme dans le cas du téléchargement d'un fichier.  Si, en plus,
+@var{recursive?} est vrai, alors la sortie fixe peut être un fichier
+exécutable ou un répertoire et @var{hash} doit être le hash d'une archive
+contenant la sortie.
 
-When @var{allowed-references} is true, it must be a list of store items or
-outputs that the derivation's output may refer to.  Likewise,
-@var{disallowed-references}, if true, must be a list of things the outputs
-may @emph{not} refer to.
+Lorsque @var{references-graphs} est vrai, il doit s'agir d'une liste de
+paires de noms de fichiers et de chemins du dépôt.  Dans ce cas, le graphe
+des références de chaque chemin du dépôt est exporté dans l'environnement de
+construction dans le fichier correspondant, dans un simple format texte.
 
-When @var{leaked-env-vars} is true, it must be a list of strings denoting
-environment variables that are allowed to ``leak'' from the daemon's
-environment to the build environment.  This is only applicable to
-fixed-output derivations---i.e., when @var{hash} is true.  The main use is
-to allow variables such as @code{http_proxy} to be passed to derivations
-that download files.
+Lorsque @var{allowed-references} est vrai, il doit s'agir d'une liste
+d'éléments du dépôt ou de sorties auxquelles la sortie de la dérivations
+peut faire référence.  De même, @var{disallowed-references}, si vrai, doit
+être une liste de choses que la sortie ne doit @emph{pas} référencer.
 
-When @var{local-build?} is true, declare that the derivation is not a good
-candidate for offloading and should rather be built locally (@pxref{Réglages du délestage du démon}).  This is the case for small derivations where the costs of
-data transfers would outweigh the benefits.
+Lorsque @var{leaked-env-vars} est vrai, il doit s'agir d'une liste de
+chaînes de caractères qui désignent les variables d'environnements qui
+peuvent « fuiter » de l'environnement du démon dans l'environnement de
+construction.  Ce n'est possible que pour les dérivations à sortie fixe —
+c.-à-d.@: lorsque @var{hash} est vrai.  L'utilisation principale est de
+permettre à des variables comme @code{http_proxy} d'être passées aux
+dérivations qui téléchargent des fichiers.
+
+Lorsque @var{local-build?} est vrai, déclare que la dérivation n'est pas un
+bon candidat pour le déchargement et devrait plutôt être construit
+localement (@pxref{Réglages du délestage du démon}).  C'est le cas des petites
+dérivations où le coût du transfert de données est plus important que les
+bénéfices.
 
 Lorsque que @var{substitutable?} est faux, déclare que les substituts de la
 sortie de la dérivation ne devraient pas être utilisés
@@ -4646,16 +4758,16 @@ qui utilisent des détails du jeu d'instruction du CPU hôte.
 @end deffn
 
 @noindent
-Here's an example with a shell script as its builder, assuming @var{store}
-is an open connection to the daemon, and @var{bash} points to a Bash
-executable in the store:
+Voici un exemple avec un script shell comme constructeur, en supposant que
+@var{store} est une connexion ouverte au démon et @var{bash} pointe vers un
+exécutable Bash dans le dépôt :
 
 @lisp
 (use-modules (guix utils)
              (guix store)
              (guix derivations))
 
-(let ((builder   ; add the Bash script to the store
+(let ((builder   ; ajoute le script Bash au dépôt
         (add-text-to-store store "my-builder.sh"
                            "echo hello world > $out\n" '())))
   (derivation store "foo"
@@ -4665,11 +4777,11 @@ executable in the store:
 @result{} #<derivation /gnu/store/@dots{}-foo.drv => /gnu/store/@dots{}-foo>
 @end lisp
 
-As can be guessed, this primitive is cumbersome to use directly.  A better
-approach is to write build scripts in Scheme, of course! The best course of
-action for that is to write the build code as a ``G-expression'', and to
-pass it to @code{gexp->derivation}.  For more information,
-@pxref{G-Expressions}.
+Comme on pourrait s'en douter, cette primitive est difficile à utiliser
+directement.  Une meilleure approche est d'écrire les scripts de
+construction en Scheme, bien sur !  Le mieux à faire pour cela est d'écrire
+le code de construction comme une « G-expression » et de la passer à
+@code{gexp->derivation}.  Pour plus d'informations, @pxref{G-Expressions}.
 
 Once upon a time, @code{gexp->derivation} did not exist and constructing
 derivations with build code written in Scheme was achieved with
@@ -7092,10 +7204,11 @@ on grafts.}, @command{guix size} queries the daemon to determine its
 dependencies, and measures its size in the store, similar to @command{du -ms
 --apparent-size} (@pxref{du invocation,,, coreutils, GNU Coreutils}).
 
-When the given packages are @emph{not} in the store, @command{guix size}
-reports information based on the available substitutes
-(@pxref{Substituts}).  This makes it possible it to profile disk usage of
-store items that are not even on disk, only available remotely.
+Lorsque les paquets donnés ne sont @emph{pas} dans le dépôt, @command{guix
+size} rapporte les informations en se basant sur les substituts disponibles
+(@pxref{Substituts}). Cela permet de profiler l'utilisation du disque des
+éléments du dépôt même s'ils ne sont pas sur le disque, mais disponibles à
+distance.
 
 You can also specify several package names:
 
@@ -8865,6 +8978,22 @@ Have a look at @file{gnu/system/install.scm} in the source tree, and see
 also @ref{Invoquer guix system} for more information about the installation
 image.
 
+@subsection Construire l'image d'installation pour les cartes ARM
+
+Many ARM boards require a specific variant of the
+@uref{http://www.denx.de/wiki/U-Boot/, U-Boot} bootloader.
+
+If you build a disk image and the bootloader is not available otherwise (on
+another boot drive etc), it's advisable to build an image that includes the
+bootloader, specifically:
+
+@example
+guix system disk-image --system=armhf-linux -e '((@@ (gnu system install) os-with-u-boot) (@@ (gnu system install) installation-os) "A20-OLinuXino-Lime2")'
+@end example
+
+@code{A20-OLinuXino-Lime2} is the name of the board.  If you specify an
+invalid board, a list of possible boards will be printed.
+
 @node Configuration système
 @section Configuration système
 
@@ -9865,7 +9994,7 @@ core services, that may be used in an @code{operating-system} declaration.
 * Services d'impression::    Support pour les imprimantes locales et 
                                distantes.
 * Services de bureaux::      D-Bus et les services de bureaux.
-* Sound Services::           ALSA and Pulseaudio services.
+* Services de son::          Services ALSA et Pulseaudio.
 * Services de bases de données::  Bases SQL, clefs-valeurs, etc.
 * Services de courriels::    IMAP, POP3, SMTP, et tout ça.
 * Services de messagerie::   Services de messagerie.
@@ -10537,7 +10666,7 @@ See @code{man loadkeys} for details.
 
 @cindex mouse
 @cindex gpm
-@defvr {Scheme Variable} gpm-service-type
+@defvr {Variable Scheme} gpm-service-type
 This is the type of the service that runs GPM, the @dfn{general-purpose
 mouse daemon}, which provides mouse support to the Linux console.  GPM
 allows users to use the mouse in the console, notably to select, copy, and
@@ -10547,17 +10676,17 @@ The value for services of this type must be a @code{gpm-configuration} (see
 below).  This service is not part of @var{%base-services}.
 @end defvr
 
-@deftp {Data Type} gpm-configuration
-Data type representing the configuration of GPM.
+@deftp {Type de donnée} gpm-configuration
+Type de données représentant la configuration de GPM.
 
 @table @asis
-@item @code{options} (default: @code{%default-gpm-options})
+@item @code{options} (par défaut : @code{%default-gpm-options})
 Command-line options passed to @command{gpm}.  The default set of options
 instruct @command{gpm} to listen to mouse events on @file{/dev/input/mice}.
 @xref{Command Line,,, gpm, gpm manual}, for more information.
 
-@item @code{gpm} (default: @code{gpm})
-The GPM package to use.
+@item @code{gpm} (par défaut : @code{gpm})
+Le paquet GPM à utiliser.
 
 @end table
 @end deftp
@@ -10935,7 +11064,7 @@ several commands to interact with the daemon and configure networking:
 
 @cindex ModemManager
 
-@defvr {Scheme Variable} modem-manager-service-type
+@defvr {Variable Scheme} modem-manager-service-type
 This is the service type for the
 @uref{https://wiki.gnome.org/Projects/ModemManager, ModemManager}
 service. The value for this service type is a
@@ -10944,12 +11073,12 @@ service. The value for this service type is a
 This service is part of @code{%desktop-services} (@pxref{Services de bureaux}).
 @end defvr
 
-@deftp {Data Type} modem-manager-configuration
-Data type representing the configuration of ModemManager.
+@deftp {Type de donnée} modem-manager-configuration
+Type de donnée représentant la configuration de ModemManager.
 
 @table @asis
-@item @code{modem-manager} (default: @code{modem-manager})
-The ModemManager package to use.
+@item @code{modem-manager} (par défaut : @code{modem-manager})
+Le paquet ModemManager à utiliser.
 
 @end table
 @end deftp
@@ -11755,7 +11884,7 @@ Script to run after starting xorg-server.
 @item @code{xdisplay-stop} (default @code{#~(string-append #$sddm "/share/sddm/scripts/Xstop")})
 Script to run before stopping xorg-server.
 
-@item @code{xsession-command} (default: @code{xinitrc})
+@item @code{xsession-command} (par défaut : @code{xinitrc})
 Script to run before starting a X session.
 
 @item @code{xsessions-directory} (default: "/run/current-system/profile/share/xsessions")
@@ -12784,15 +12913,15 @@ Return a service that adds the @code{mate} package to the system profile,
 and extends polkit with the actions from @code{mate-settings-daemon}.
 @end deffn
 
-@deffn {Scheme Procedure} enlightenment-desktop-service-type
+@deffn {Procédure Scheme} enlightenment-desktop-service-type
 Return a service that adds the @code{enlightenment} package to the system
 profile, and extends dbus with actions from @code{efl}.
 @end deffn
 
 @deftp {Data Type} enlightenment-desktop-service-configuration
 @table @asis
-@item @code{enlightenment} (default @code{enlightenment})
-The enlightenment package to use.
+@item @code{enlightenment} (par défaut : @code{enlightenment})
+Le paquet enlightenment à utiliser.
 @end table
 @end deftp
 
@@ -12999,8 +13128,8 @@ keyboard or mouse.
 Users need to be in the @code{lp} group to access the D-Bus service.
 @end deffn
 
-@node Sound Services
-@subsubsection Sound Services
+@node Services de son
+@subsubsection Services de son
 
 @cindex sound support
 @cindex ALSA
@@ -13011,7 +13140,7 @@ service to generate an ALSA @file{/etc/asound.conf} configuration file.
 This configuration file is what allows applications that produce sound using
 ALSA to be correctly handled.
 
-@deffn {Scheme Variable} alsa-service-type
+@deffn {Variable Scheme} alsa-service-type
 This is the type for the @uref{https://alsa-project.org/, ALSA},
 @command{alsa-configuration} record as in this example:
 
@@ -13022,11 +13151,11 @@ This is the type for the @uref{https://alsa-project.org/, ALSA},
 See below for details about @code{alsa-configuration}.
 @end deffn
 
-@deftp {Data Type} alsa-configuration
+@deftp {Type de donnée} alsa-configuration
 Data type representing the configuration for @code{alsa-service}.
 
 @table @asis
-@item @code{pulseaudio?} (default: @var{#t})
+@item @code{pulseaudio?} (par défaut : @code{#t})
 Whether ALSA applications should transparently be made to use the
 @uref{http://www.pulseaudio.org/, PulseAudio} sound server.
 
@@ -13034,7 +13163,7 @@ Using PulseAudio allows you to run several sound-producing applications at
 the same time and to individual control them @i{via} @command{pavucontrol},
 among other things.
 
-@item @code{extra-options} (default: @var{""})
+@item @code{extra-options} (par défaut : @code{""})
 String to append to the @file{asound.conf} file.
 
 @end table
@@ -14971,7 +15100,7 @@ interface.
 @item @code{package} (default: @code{bitlbee})
 The BitlBee package to use.
 
-@item @code{plugins} (default: @code{'()})
+@item @code{plugins} (par défaut : @code{'()})
 List of plugin packages to use---e.g., @code{bitlbee-discord}.
 
 @item @code{extra-settings} (default: @code{""})
@@ -15735,6 +15864,10 @@ the size of the processors cache line.
 @item @code{server-names-hash-bucket-max-size} (default: @code{#f})
 Maximum bucket size for the server names hash tables.
 
+@item @code{extra-content} (par défaut : @code{""})
+Extra content for the @code{http} block.  Should be string or a string
+valued G-expression.
+
 @end table
 @end deffn
 
@@ -16061,11 +16194,11 @@ The @uref{hpcguix-web, https://github.com/UMCUGenetics/hpcguix-web/} program
 is a customizable web interface to browse Guix packages, initially designed
 for users of high-performance computing (HPC)  clusters.
 
-@defvr {Scheme Variable} hpcguix-web-service-type
+@defvr {Variable Scheme} hpcguix-web-service-type
 The service type for @code{hpcguix-web}.
 @end defvr
 
-@deftp {Data Type} hpcguix-web-configuration
+@deftp {Type de donnée} hpcguix-web-configuration
 Data type for the hpcguix-web service configuration.
 
 @table @asis
@@ -16074,19 +16207,19 @@ A gexp (@pxref{G-Expressions}) specifying the hpcguix-web service
 configuration.  The main items available in this spec are:
 
 @table @asis
-@item @code{title-prefix} (default: @code{"hpcguix | "})
-The page title prefix.
+@item @code{title-prefix} (par défaut : @code{"hpcguix | "})
+Le préfixe du titre des pages.
 
-@item @code{guix-command} (default: @code{"guix"})
-The @command{guix} command.
+@item @code{guix-command} (par défaut : @code{"guix"})
+La commande @command{guix}
 
-@item @code{package-filter-proc} (default: @code{(const #t)})
-A procedure specifying how to filter packages that are displayed.
+@item @code{package-filter-proc} (par défaut : @code{(const #t)})
+Une procédure qui spécifie comment filtrer les paquets qui seront affichés.
 
-@item @code{package-page-extension-proc} (default: @code{(const '())})
+@item @code{package-page-extension-procinputs} (par défaut : @code{(const '())})
 Extension package for @code{hpcguix-web}.
 
-@item @code{menu} (default: @code{'()})
+@item @code{menu} (par défaut : @code{'()})
 Additional entry in page @code{menu}.
 @end table
 
@@ -16094,8 +16227,8 @@ See the hpcguix-web repository for a
 @uref{https://github.com/UMCUGenetics/hpcguix-web/blob/master/hpcweb-configuration.scm,
 complete example}.
 
-@item @code{package} (default: @code{hpcguix-web})
-The hpcguix-web package to use.
+@item @code{packages} (par défaut : @code{hpcguix-web})
+Le paquet hpcguix-web à utiliser.
 @end table
 @end deftp
 
@@ -16261,7 +16394,7 @@ service uses @uref{https://www.knot-dns.cz/, Knot DNS}.  And also a caching
 and forwarding DNS server for the LAN, which uses
 @uref{http://www.thekelleys.org.uk/dnsmasq/doc.html, dnsmasq}.
 
-@subsubheading Knot Service
+@subsubheading Service Knot
 
 An example configuration of an authoritative server for two zones, one
 master and one slave, is:
@@ -16659,9 +16792,9 @@ The list of knot-zone-configuration used by this configuration.
 @end table
 @end deftp
 
-@subsubheading Dnsmasq Service
+@subsubheading Services Dnsmasq
 
-@deffn {Scheme Variable} dnsmasq-service-type
+@deffn {Variable Scheme} dnsmasq-service-type
 This is the type of the dnsmasq service, whose value should be an
 @code{dnsmasq-configuration} object as in this example:
 
@@ -16673,41 +16806,41 @@ This is the type of the dnsmasq service, whose value should be an
 @end example
 @end deffn
 
-@deftp {Data Type} dnsmasq-configuration
-Data type representing the configuration of dnsmasq.
+@deftp {Type de donnée} dnsmasq-configuration
+Type de données qui représente la configuration de dnsmasq.
 
 @table @asis
-@item @code{package} (default: @var{dnsmasq})
+@item @code{package} (par défaut : @code{dnsmasq})
 Package object of the dnsmasq server.
 
-@item @code{no-hosts?} (default: @code{#f})
+@item @code{no-hosts?} (par défaut : @code{#f})
 When true, don't read the hostnames in /etc/hosts.
 
-@item @code{port} (default: @code{53})
+@item @code{port} (par défaut : @code{53})
 The port to listen on.  Setting this to zero completely disables DNS
 funtion, leaving only DHCP and/or TFTP.
 
-@item @code{local-service?} (default: @code{#t})
+@item @code{local-service?} (par défaut : @code{#t})
 Accept DNS queries only from hosts whose address is on a local subnet, ie a
 subnet for which an interface exists on the server.
 
-@item @code{listen-addresses} (default: @code{'()})
+@item @code{listen-addresses} (par défaut : @code{'()})
 Listen on the given IP addresses.
 
-@item @code{resolv-file} (default: @code{"/etc/resolv.conf"})
+@item @code{resolv-file} (par défaut : @code{"/etc/resolv.conf"})
 The file to read the IP address of the upstream nameservers from.
 
-@item @code{no-resolv?} (default: @code{#f})
+@item @code{no-resolv?} (par défaut : @code{#f})
 When true, don't read @var{resolv-file}.
 
 @item @code{servers} (default: @code{'()})
 Specify IP address of upstream servers directly.
 
-@item @code{cache-size} (default: @code{150})
+@item @code{cache-size} (par défaut : @code{150})
 Set the size of dnsmasq's cache.  Setting the cache size to zero disables
 caching.
 
-@item @code{negative-cache?} (default: @code{#t})
+@item @code{negative-cache?} (par défaut : @code{#t})
 When false, disable negative caching.
 
 @end table
@@ -19752,6 +19885,21 @@ The port to bind the server to.
 
 @node Services divers
 @subsubsection Services divers
+
+@cindex fingerprint
+@subsubheading Fingerprint Service
+
+The @code{(gnu services fingerprint)} module provides a DBus service to read
+and identify fingerprints via a fingerprint sensor.
+
+@defvr {Scheme Variable} fprintd-service-type
+The service type for @command{fprintd}, which provides the fingerprint
+reading capability.
+
+@example
+(service fprintd-service-type)
+@end example
+@end defvr
 
 @cindex sysctl
 @subsubheading System Control Service
