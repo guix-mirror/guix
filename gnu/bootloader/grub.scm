@@ -387,12 +387,17 @@ submenu \"GNU system, old configurations...\" {~%")
       ;; Install GRUB onto the EFI partition mounted at EFI-DIR, for the
       ;; system whose root is mounted at MOUNT-POINT.
       (let ((grub-install (string-append bootloader "/sbin/grub-install"))
-            (install-dir (string-append mount-point "/boot")))
+            (install-dir (string-append mount-point "/boot"))
+            ;; When installing GuixSD, it's common to mount EFI-DIR below
+            ;; MOUNT-POINT rather than /boot/efi on the live image.
+            (target-esp (if (file-exists? (string-append mount-point efi-dir))
+                            (string-append mount-point efi-dir)
+                            efi-dir)))
         ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
         ;; root partition.
         (setenv "GRUB_ENABLE_CRYPTODISK" "y")
         (unless (zero? (system* grub-install "--boot-directory" install-dir
-                                "--efi-directory" efi-dir))
+                                "--efi-directory" target-esp))
           (error "failed to install GRUB (EFI)")))))
 
 
