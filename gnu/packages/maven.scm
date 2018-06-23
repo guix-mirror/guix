@@ -23,6 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages java)
   #:use-module (gnu packages web)
@@ -1502,6 +1503,9 @@ layer for plugins that need to keep Maven2 compatibility.")))
        ("java-slf4j-api" ,java-slf4j-api)
        ;; TODO: replace with maven-slf4j-provider
        ("java-slf4j-simple" ,java-slf4j-simple)))
+    (propagated-inputs
+     `(("coreutils" ,coreutils)
+       ("which" ,which)))
     (description "Apache Maven is a software project management and comprehension
 tool.  Based on the concept of a project object model: builds, dependency
 management, documentation creation, site publication, and distribution
