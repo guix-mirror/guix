@@ -4455,7 +4455,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        #:phases (modify-phases %standard-phases
                   (replace 'configure
                     (lambda _
-                      (zero? (system* "premake4" "gmake"))
+                      (invoke "premake4" "gmake")
                       #t))
                   (add-after 'set-paths 'set-sdl-paths
                     (lambda* (#:key inputs #:allow-other-keys)
