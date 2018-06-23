@@ -16,6 +16,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (guix build-system scons)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system waf)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
@@ -4016,3 +4018,70 @@ ISRCs and the MCN (=UPC/EAN) from disc.")
 mb_client, is a development library geared towards developers who wish to add
 MusicBrainz lookup capabilities to their applications.")
     (license license:lgpl2.1+)))
+
+(define-public clyrics
+  (package
+    (name "clyrics")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/trizen/clyrics/archive/"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1l0cg26afnjv8cgk0jbiavbyvq55q1djyigzmi526rpcjjwq9jwn"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system trivial-build-system)
+    (native-inputs `(("tar" ,tar)
+                     ("gzip" ,gzip)))
+    (inputs
+     `(("bash" ,bash)                             ;for the wrapped program
+       ("perl" ,perl)
+       ("perl-www-mechanize" ,perl-www-mechanize)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ;; Required or else LWP will fail with "GET https://www.google.com/ ==>
+       ;; 500 Can't verify SSL peers without knowing which Certificate
+       ;; Authorities to trust".
+       ("perl-mozilla-ca" ,perl-mozilla-ca)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (ice-9 match)
+                                (srfi srfi-26))
+                   (let* ((source (assoc-ref %build-inputs "source"))
+                          (tar (assoc-ref %build-inputs "tar"))
+                          (gzip (assoc-ref %build-inputs "gzip"))
+                          (output (assoc-ref %outputs "out")))
+                     (setenv "PATH"
+                             (string-append
+                              (assoc-ref %build-inputs "gzip") "/bin" ":"
+                              (assoc-ref %build-inputs "bash") "/bin" ":"
+                              (assoc-ref %build-inputs "perl") "/bin" ":"))
+                     (invoke (string-append tar "/bin/tar") "xvf"
+                             source)
+                     (chdir ,(string-append "clyrics-" version))
+                     (patch-shebang "clyrics")
+                     (substitute* "clyrics"
+                       (("/usr/share") output))
+                     (install-file "clyrics" (string-append output "/bin"))
+                     (wrap-program (string-append output "/bin/clyrics")
+                       `("PERL5LIB" ":" =
+                         ,(delete
+                           ""
+                           (map (match-lambda
+                                  (((?  (cut string-prefix? "perl-" <>) name) . dir)
+                                   (string-append dir "/lib/perl5/site_perl"))
+                                  (_ ""))
+                                %build-inputs))))
+                     (copy-recursively "plugins" (string-append output "/clyrics"))
+                     #t))))
+    (home-page "https://github.com/trizen/clyrics")
+    (synopsis "Extensible lyrics fetcher")
+    (description
+     "Clyrics is an extensible command-line tool to fetch the lyrics of songs.
+It can be used in daemon mode along with the Music-on-Console (MOC) and cmus
+console music players.")
+    (license license:gpl3+)))
