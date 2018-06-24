@@ -975,7 +975,7 @@ useful features.")
           (add-after 'unpack 'autogen
             (lambda _
               (setenv "NOCONFIGURE" "true")
-              (zero? (system* "sh" "autogen.sh")))))
+              (invoke "sh" "autogen.sh"))))
         #:configure-flags
         '("--disable-static" "--disable-db")))
     (home-page "http://www.etpan.org/libetpan.html")
