@@ -2249,7 +2249,7 @@ tempo and pitch of an audio recording independently of one another.")
        #:phases (modify-phases %standard-phases
                   (add-after
                    'unpack 'autoconf
-                   (lambda _ (zero? (system* "autoreconf" "-vfi"))))
+                   (lambda _ (invoke "autoreconf" "-vfi")))
                   (add-before
                    'build 'fix-makefile
                    (lambda _
