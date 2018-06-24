@@ -7002,6 +7002,14 @@ it manages project dependencies, gives diffs jars, and much more.")
      `(#:jar-name "java-aqute-libg.jar"
        #:source-dir "aQute.libg/src"
        #:tests? #f)); FIXME: tests are in "aQute.libg/test", not in a java directory
+       ;; The build fails when source/target more recent than 1.7. This
+       ;; is a known issue. See: https://github.com/bndtools/bnd/issues/1327
+       ;;
+       ;; It is closed as won't fix. There is no way to change the source
+       ;; so that it works on 1.8, and still works on 1.6, the upstream
+       ;; target. It work fine on 1.7, so we use 1.7.
+       #:make-flags (list "-Dant.build.javac.source=1.7"
+                          "-Dant.build.javac.target=1.7")
     (inputs
      `(("slf4j" ,java-slf4j-api)
        ("osgi-annot" ,java-osgi-annotation)
