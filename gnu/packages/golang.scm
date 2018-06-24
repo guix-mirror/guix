@@ -344,7 +344,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (setenv "GOROOT" (dirname (getcwd)))
                  (setenv "GOROOT_FINAL" output)
                  (setenv "CGO_ENABLED" "1")
-                 (zero? (system* "sh" "all.bash")))))
+                 (invoke "sh" "all.bash"))))
 
            (replace 'install
              ;; TODO: Most of this could be factorized with Go 1.4.
@@ -375,7 +375,8 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                   '("README.md" "CONTRIBUTORS" "AUTHORS" "PATENTS"
                     "LICENSE" "VERSION" "CONTRIBUTING.md" "robots.txt"))
 
-                 (copy-recursively "../" output))))))))
+                 (copy-recursively "../" output)
+                 #t)))))))
     (native-inputs
      `(("go" ,go-1.4)
        ,@(package-native-inputs go-1.4)))
