@@ -2791,9 +2791,8 @@ synthesizer written in C++.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
-             (zero?
-              (system* "./configure"
-                       (string-append "--prefix=" (assoc-ref outputs "out")))))))
+             (invoke "./configure"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))))))
        ;; No 'check' target.
        #:tests? #f))
     (home-page "http://themaister.net/rsound.html")
