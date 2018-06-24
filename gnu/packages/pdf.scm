@@ -276,7 +276,7 @@ Poppler PDF rendering library.")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'autogen
-          (lambda _ (zero? (system* "autoreconf" "-vif")))))))
+          (lambda _ (invoke "autoreconf" "-vif"))))))
    (inputs
     `(("zlib" ,zlib)
       ("libpng" ,libpng)))
