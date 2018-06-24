@@ -2723,7 +2723,7 @@ portions of LAME.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autoreconf
            (lambda _
-             (zero? (system* "autoreconf" "-vif")))))
+             (invoke "autoreconf" "-vif"))))
        #:tests? #f))                    ;no 'check' target
     (home-page "http://www.portaudio.com/")
     (synopsis "Audio I/O library")
