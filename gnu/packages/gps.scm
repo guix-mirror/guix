@@ -193,7 +193,7 @@ coordinates as well as partial support for adjustments in global coordinate syst
            ;; Use lrelease to convert TS translation files into QM files.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (for-each (lambda (file)
-                         (system* "lrelease" file))
+                         (invoke "lrelease" file))
                        (find-files "lang" "\\.ts"))
              (substitute* "src/config.h"
                (("/usr/share/gpxsee")
