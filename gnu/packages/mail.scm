@@ -1273,7 +1273,9 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rkk10b1bsjz979sc864vpgcdchy7yxwmyv4ik50lar1h6awdnrf"))))
+         "0rkk10b1bsjz979sc864vpgcdchy7yxwmyv4ik50lar1h6awdnrf"))
+       (patches
+        (search-patches "dovecot-trees-support-dovecot-2.3.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("automake" ,automake)
