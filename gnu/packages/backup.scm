@@ -420,7 +420,7 @@ rdiff-backup is easy to use and settings have sensible defaults.")
                             "t/backup_exec/conf/backup_exec.conf")
                (("/bin/true") (which "true"))
                (("/bin/false") (which "false")))
-             (zero? (system* "make" "test")))))))
+             (invoke "make" "test"))))))
     (inputs
      `(("perl" ,perl)
        ("rsync" ,rsync)))
