@@ -541,10 +541,9 @@ Extensions} (DNSSEC).")
              (let* ((out (assoc-ref outputs "out"))
                     (doc (string-append out "/share/doc/knot"))
                     (etc (string-append doc "/examples/etc")))
-               (zero?
-                (system* "make"
-                         (string-append "config_dir=" etc)
-                         "install")))))
+               (invoke "make"
+                       (string-append "config_dir=" etc)
+                       "install"))))
          (add-after 'install 'wrap-python-scripts
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
