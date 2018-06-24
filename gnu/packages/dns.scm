@@ -426,9 +426,9 @@ struct servent *getservbyport(int port, const char *proto) {
   }
   return s;
 }" port)))
-               (system* (string-append gcc "/bin/gcc")
-                        "-shared" "-fPIC" "-o" "/tmp/nss_preload.so"
-                        "/tmp/nss_preload.c")
+               (invoke (string-append gcc "/bin/gcc")
+                       "-shared" "-fPIC" "-o" "/tmp/nss_preload.so"
+                       "/tmp/nss_preload.c")
                ;; The preload library only affects the unittests.
                (substitute* "Makefile"
                  (("./unittest")
