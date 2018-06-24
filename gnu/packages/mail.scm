@@ -1955,14 +1955,15 @@ define(`confLIBS', `-lresolv')
 define(`confINSTALL', `~a/devtools/bin/install.sh')
 define(`confDEPEND_TYPE', `CC-M')
 define(`confINST_DEP', `')
-" (getcwd))))))
+" (getcwd))))
+             #t))
          (replace 'build
            (lambda _
-             (and (zero? (system* "sh" "Build"))
-                  (with-directory-excursion "cf/cf"
-                    (begin
-                      (copy-file "generic-linux.mc" "sendmail.mc")
-                      (zero? (system* "sh" "Build" "sendmail.cf")))))))
+             (invoke "sh" "Build")
+             (with-directory-excursion "cf/cf"
+               (copy-file "generic-linux.mc" "sendmail.mc")
+               (invoke "sh" "Build" "sendmail.cf"))
+             #t))
          (add-before 'install 'pre-install
            (lambda _
              (let ((out (assoc-ref %outputs "out")))
@@ -1971,7 +1972,8 @@ define(`confINST_DEP', `')
                (mkdir-p (string-append out "/etc/mail"))
                (setenv "DESTDIR" out)
                (with-directory-excursion "cf/cf"
-                 (zero? (system* "sh" "Build" "install-cf")))))))
+                 (invoke "sh" "Build" "install-cf"))
+               #t))))
        ;; There is no make check.  There are some post installation tests, but those
        ;; require root privileges
        #:tests? #f))
