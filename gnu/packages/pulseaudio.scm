@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages check)
@@ -169,6 +171,7 @@ rates.")
        ("speex" ,speex)
        ("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
+       ("jack" ,jack-1) ; For routing the output to jack.
        ("dbus" ,dbus)
        ("glib" ,glib)
        ("intltool" ,intltool)
