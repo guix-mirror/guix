@@ -51,7 +51,7 @@ endeavor to implement this idea using modern technologies.")
 (define-public perl-uri-escape
   (package
     (name "perl-uri-escape")
-    (version "1.73")
+    (version "1.74")
     (source
      (origin
        (method url-fetch)
@@ -59,7 +59,7 @@ endeavor to implement this idea using modern technologies.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "04z4xwiryrbxxi48bwbkgq9q9pwfgqry3wp0ramcrwv3dx5ap9yc"))))
+         "0gfmrpyy075pn2mbshs5599h8m096gjdz2dn8vcivjw9bzs59hm9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-needs" ,perl-test-needs)))
