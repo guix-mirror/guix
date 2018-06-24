@@ -523,25 +523,24 @@ detection, and lossless compression.")
              ;; The tests should be run in an empty directory.
              (mkdir-p "tests")
              (with-directory-excursion "tests"
-               (zero?
-                 (system* "py.test" "-v" "--pyargs" "borg.testsuite" "-k"
-                          (string-append
-                            ;; These tests need to write to '/var'.
-                            "not test_get_cache_dir "
-                            "and not test_get_config_dir "
-                            "and not test_get_keys_dir "
-                            "and not test_get_security_dir "
-                            ;; These tests assume there is a root user in
-                            ;; '/etc/passwd'.
-                            "and not test_access_acl "
-                            "and not test_default_acl "
-                            "and not test_non_ascii_acl "
-                            ;; This test needs the unpackaged pytest-benchmark.
-                            "and not benchmark "
-                            ;; These tests assume the kernel supports FUSE.
-                            "and not test_fuse "
-                            "and not test_fuse_allow_damaged_files "
-                            "and not test_mount_hardlinks"))))))
+               (invoke "py.test" "-v" "--pyargs" "borg.testsuite" "-k"
+                       (string-append
+                        ;; These tests need to write to '/var'.
+                        "not test_get_cache_dir "
+                        "and not test_get_config_dir "
+                        "and not test_get_keys_dir "
+                        "and not test_get_security_dir "
+                        ;; These tests assume there is a root user in
+                        ;; '/etc/passwd'.
+                        "and not test_access_acl "
+                        "and not test_default_acl "
+                        "and not test_non_ascii_acl "
+                        ;; This test needs the unpackaged pytest-benchmark.
+                        "and not benchmark "
+                        ;; These tests assume the kernel supports FUSE.
+                        "and not test_fuse "
+                        "and not test_fuse_allow_damaged_files "
+                        "and not test_mount_hardlinks")))))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -552,11 +551,9 @@ detection, and lossless compression.")
                            "docs/misc/internals-picture.txt"
                            "docs/misc/prune-example.txt"))
                (add-installed-pythonpath inputs outputs)
-               (and
-                 (zero? (system* "python3" "setup.py" "build_man"))
-                 (begin
-                   (copy-recursively "docs/man" man)
-                   #t))))))))
+               (invoke "python3" "setup.py" "build_man")
+               (copy-recursively "docs/man" man)
+               #t))))))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-setuptools-scm" ,python-setuptools-scm)
