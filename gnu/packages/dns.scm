@@ -190,7 +190,7 @@ high-volume and high-reliability applications. The name BIND stands for
              ;; Re-generate build files due to unbundling ltdl.
              ;; TODO: Prevent generating new libltdl and building it.
              ;; The system version is still favored and referenced.
-             (zero? (system* "autoreconf" "-vif")))))))
+             (invoke "autoreconf" "-vif"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("automake" ,automake)
