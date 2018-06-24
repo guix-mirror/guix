@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -1468,7 +1468,15 @@ information.")
                 (string-append (car (find-files (assoc-ref inputs "docbook-xsl")
                                                 "^catalog.xml$"))
                                " \"http://docbook.sourceforge.net/release/xsl/")))
-             #t)))
+             #t))
+         (add-after 'install 'wrap-executables
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (prog)
+                           (wrap-program prog
+                             `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))
+                         (find-files (string-append out "/bin")))
+               #t))))
        #:configure-flags
        (list (string-append "--with-xml-catalog="
                             (assoc-ref %build-inputs "docbook-xml")
