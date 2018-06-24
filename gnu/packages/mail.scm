@@ -795,12 +795,10 @@ invoking @command{notifymuch} from the post-new hook.")
                              (elisp
                               (string-append out "/share/emacs/site-lisp/guix.d/"
                                              ,name "-" ,version)))
-                        (zero?
-                         (system*
-                          "./configure"
-                          (string-append "--prefix=" out)
-                          (string-append "--emacslispdir=" elisp)
-                          (string-append "--emacsetcdir=" elisp))))))
+                        (invoke "./configure"
+                                (string-append "--prefix=" out)
+                                (string-append "--emacslispdir=" elisp)
+                                (string-append "--emacsetcdir=" elisp)))))
                   (add-before 'check 'prepare-test-environment
                     (lambda _
                       (setenv "TEST_CC" "gcc")
