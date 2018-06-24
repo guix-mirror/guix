@@ -517,7 +517,7 @@ and corrections.  It is based on a Bayesian filter.")
              (substitute* "docs/Makefile"
                ;; Prevent xmllint and xsltproc from downloading a DTD file.
                (("a2x -v") "a2x --no-xmllint --xsltproc-opts=--nonet -v"))
-             (zero? (system* "make" "-C" "docs" "man"))))
+             (invoke "make" "-C" "docs" "man")))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
