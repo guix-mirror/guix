@@ -235,7 +235,7 @@ servers is included, and an up-to-date version is available at
        (modify-phases %standard-phases
          (add-after 'unpack 'create-configure
            (lambda _
-             (zero? (system* "make" "configure")))))))
+             (invoke "make" "configure"))))))
     (native-inputs
      `(("autoconf" ,autoconf)))
     (inputs
