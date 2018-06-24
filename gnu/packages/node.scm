@@ -47,7 +47,7 @@
     (version "9.11.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://nodejs.org/dist/v" version
+              (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
@@ -177,6 +177,6 @@ for easily building fast, scalable network applications.  Node.js uses an
 event-driven, non-blocking I/O model that makes it lightweight and efficient,
 perfect for data-intensive real-time applications that run across distributed
 devices.")
-    (home-page "http://nodejs.org/")
+    (home-page "https://nodejs.org/")
     (license expat)
     (properties '((timeout . 3600))))) ; 1 h
