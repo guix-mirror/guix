@@ -1294,7 +1294,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (home-page "https://0xacab.org/riseuplabs/trees")
     (synopsis "NaCL-based Dovecot email storage encryption plugin")
     (description
