@@ -1348,7 +1348,7 @@ using lidsodium sealed boxes.
          (modify-phases %standard-phases
            (add-after 'unpack 'autogen
              (lambda _
-               (zero? (system* "sh" "autogen.sh")))))))
+               (invoke "sh" "autogen.sh"))))))
       (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
       (synopsis "Libsodium password hashing schemes plugin for Dovecot")
       (description
