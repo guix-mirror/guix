@@ -683,17 +683,17 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
          (replace 'check
                   (lambda _
                     (substitute* "obnamlib/vfs_local_tests.py"
-                      ;; Check for the nobody user instead of root
+                      ;; Check for the nobody user instead of root.
                       (("self.fs.get_username\\(0\\), 'root'")
                        "self.fs.get_username(65534), 'nobody'")
-                      ;; Disable tests checking for root group
+                      ;; Disable tests checking for root group.
                       (("self.fs.get_groupname\\(0\\)") "'root'"))
                     (substitute* "obnamlib/vfs_local.py"
-                      ;; Don't cover get_groupname function
+                      ;; Don't cover get_groupname function.
                       (("def get_groupname\\(self, gid\\):")
                        "def get_groupname(self, gid):  # pragma: no cover"))
-                    ;; Can't run network tests
-                    (zero? (system* "./check" "--unit-tests")))))))
+                    ;; Can't run network tests.
+                    (invoke "./check" "--unit-tests"))))))
     (inputs
      `(("python2-cliapp" ,python2-cliapp)
        ("python2-larch" ,python2-larch)
