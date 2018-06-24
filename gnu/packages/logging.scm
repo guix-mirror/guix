@@ -86,7 +86,7 @@ staying as close to their API as is reasonable.")
                       ;; mismatch, so run the whole thing.
                       (delete-file "test-driver")
                       (delete-file "configure")   ;it's read-only
-                      (zero? (system* "autoreconf" "-vfi"))))
+                      (invoke "autoreconf" "-vfi")))
                   (add-before 'check 'disable-signal-tests
                     (lambda _
                       ;; See e.g. https://github.com/google/glog/issues/219
