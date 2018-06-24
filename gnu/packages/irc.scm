@@ -133,12 +133,11 @@ irssi, but graphical.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         (string-append "--with-proxy")
-                         (string-append "--with-socks")
-                         (string-append "--with-bot")))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--with-proxy")
+                       (string-append "--with-socks")
+                       (string-append "--with-bot"))))))))
     (inputs
      `(("glib" ,glib)
        ("ncurses" ,ncurses)
