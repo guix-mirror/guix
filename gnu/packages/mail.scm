@@ -2225,12 +2225,10 @@ installation on systems where resources are limited.  Its features include:
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero?
-              (system*
-               "django-admin"
-               "test"
-               "--settings=django_mailman3.tests.settings_test"
-               "django_mailman3")))))
+             (invoke "django-admin"
+                     "test"
+                     "--settings=django_mailman3.tests.settings_test"
+                     "django_mailman3"))))
        #:python ,python-2))
     (inputs
      `(("python2-django" ,python2-django)))
