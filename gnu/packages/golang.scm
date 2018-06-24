@@ -78,7 +78,8 @@
          (delete 'configure)
          (add-after 'patch-generated-file-shebangs 'chdir
            (lambda _
-             (chdir "src")))
+             (chdir "src")
+             #t))
          (add-before 'build 'prebuild
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
@@ -160,7 +161,7 @@
                ;; Go 1.4's cgo will not work with binutils >= 2.27:
                ;; https://github.com/golang/go/issues/16906
                (setenv "CGO_ENABLED" "0")
-               (zero? (system* "sh" "all.bash")))))
+               (invoke "sh" "all.bash"))))
 
          (replace 'install
            (lambda* (#:key outputs inputs #:allow-other-keys)
