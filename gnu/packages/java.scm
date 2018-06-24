@@ -7038,10 +7038,14 @@ it manages project dependencies, gives diffs jars, and much more.")
   (package
     (inherit java-aqute-libg)
     (name "java-aqute-libg-bootstrap")
+    (arguments
+     ;; Disable tests, at this stage of bootstrap we have no test frameworks.
+     `(#:tests? #f))
     (inputs
      `(("slf4j-bootstrap" ,java-slf4j-api-bootstrap)
        ,@(delete `("slf4j" ,java-slf4j-api)
-                 (package-inputs java-aqute-libg))))))
+                 (package-inputs java-aqute-libg))))
+    (native-inputs '())))
 
 (define-public java-aqute-bndlib
   (package
