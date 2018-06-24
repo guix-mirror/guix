@@ -13152,6 +13152,9 @@ See below for details about @code{alsa-configuration}.
 Data type representing the configuration for @code{alsa-service}.
 
 @table @asis
+@item @code{alsa-plugins} (default: @var{alsa-plugins})
+@code{alsa-plugins} package to use.
+
 @item @code{pulseaudio?} (default: @var{#t})
 Whether ALSA applications should transparently be made to use the
 @uref{http://www.pulseaudio.org/, PulseAudio} sound server.
