@@ -988,7 +988,7 @@ Port number of SSH server on the machine.
 
 @item @code{private-key} (default: @file{~root/.ssh/id_rsa})
 The SSH private key file to use when connecting to the machine, in
-OpenSSH format.
+OpenSSH format.  This key must not be protected with a passphrase.
 
 Note that the default value is the private key @emph{of the root
 account}.  Make sure it exists if you use the default.
