@@ -1495,9 +1495,8 @@ information.")
        ("docbook-xml" ,docbook-xml-4.3)
        ("docbook-xsl" ,docbook-xsl)
        ("source-highlight" ,source-highlight)
-       ("glib" ,glib)))
-    (propagated-inputs
-     `(("python-six" ,python-six)))
+       ("glib" ,glib)
+       ("python-six" ,python-six)))
     (home-page "http://www.gtk.org/gtk-doc/")
     (synopsis "Documentation generator from C source code")
     (description
