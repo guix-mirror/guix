@@ -265,8 +265,20 @@ person's version identifier."
                           (loop (cdr spin))))
 
                       (match (command-line)
-                        ((_ source system version)
-                         (with-store store
+                        ((_ source system version protocol-version)
+                         ;; The current input port normally wraps a file
+                         ;; descriptor connected to the daemon, or it is
+                         ;; connected to /dev/null.  In the former case, reuse
+                         ;; the connection such that we inherit build options
+                         ;; such as substitute URLs and so on; in the latter
+                         ;; case, attempt to open a new connection.
+                         (let* ((proto (string->number protocol-version))
+                                (store (if (integer? proto)
+                                           (port->connection (duplicate-port
+                                                              (current-input-port)
+                                                              "w+0")
+                                                             #:version proto)
+                                           (open-connection))))
                            (call-with-new-thread
                             (lambda ()
                               (spin system)))
@@ -297,15 +309,28 @@ files."
   ;; SOURCE.
   (mlet %store-monad ((build  (build-program source version guile-version
                                              #:pull-version pull-version))
-                      (system (if system (return system) (current-system))))
+                      (system (if system (return system) (current-system)))
+                      (port   ((store-lift nix-server-socket)))
+                      (major  ((store-lift nix-server-major-version)))
+                      (minor  ((store-lift nix-server-minor-version))))
     (mbegin %store-monad
       (show-what-to-build* (list build))
       (built-derivations (list build))
-      (let* ((pipe   (begin
-                       (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
-                       (open-pipe* OPEN_READ
-                                   (derivation->output-path build)
-                                   source system version)))
+
+      ;; Use the port beneath the current store as the stdin of BUILD.  This
+      ;; way, we know 'open-pipe*' will not close it on 'exec'.  If PORT is
+      ;; not a file port (e.g., it's an SSH channel), then the subprocess's
+      ;; stdin will actually be /dev/null.
+      (let* ((pipe   (with-input-from-port port
+                       (lambda ()
+                         (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
+                         (open-pipe* OPEN_READ
+                                     (derivation->output-path build)
+                                     source system version
+                                     (if (file-port? port)
+                                         (number->string
+                                          (logior major minor))
+                                         "none")))))
              (str    (get-string-all pipe))
              (status (close-pipe pipe)))
         (match str
