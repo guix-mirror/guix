@@ -887,6 +887,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtheora-config-guess.patch		\
   %D%/packages/patches/libtiff-CVE-2017-9935.patch		\
   %D%/packages/patches/libtiff-CVE-2017-18013.patch		\
+  %D%/packages/patches/libtiff-CVE-2018-8905.patch		\
+  %D%/packages/patches/libtiff-CVE-2018-10963.patch		\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libusb-0.1-disable-tests.patch		\
   %D%/packages/patches/libusb-for-axoloti.patch			\
