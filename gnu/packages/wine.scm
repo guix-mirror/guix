@@ -279,7 +279,7 @@ integrate Windows applications into your desktop.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1df6g8g5nfb4ca218m78giqp3k1fmv0grv26387rbn3wkk3mql6p"))))
+                "0zlhkz6aybkr9jg8za9x56fp92q10df0abadn9bsa8ryparr5d15"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
               ("gtk+" ,gtk+)
               ("libva" ,libva)
