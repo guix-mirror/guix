@@ -50,6 +50,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
@@ -1060,7 +1061,7 @@ MIDI functionality to the Linux-based operating system.")
     ;; TODO: Remove OSS related plugins, they add support to run native
     ;; ALSA applications on OSS however we do not offer OSS and OSS is
     ;; obsolete.
-    (outputs '("out" "pulseaudio"))
+    (outputs '("out" "pulseaudio" "jack"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1068,9 +1069,17 @@ MIDI functionality to the Linux-based operating system.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Distribute the binaries to the various outputs.
              (let* ((out (assoc-ref outputs "out"))
+                    (jack (assoc-ref outputs "jack"))
+                    (jacklib (string-append jack "/lib/alsa-lib"))
                     (pua (assoc-ref outputs "pulseaudio"))
                     (pualib (string-append pua "/lib/alsa-lib"))
                     (puaconf (string-append pua "/share/alsa/alsa.conf.d")))
+               ;; For jack.
+               (mkdir-p jacklib)
+               (for-each (lambda (file)
+                           (rename-file file (string-append jacklib "/" (basename file))))
+                         (find-files out ".*jack\\.(la|so)"))
+               ;; For pluseaudio.
                (mkdir-p puaconf)
                (mkdir-p pualib)
                (chdir (string-append out "/share"))
@@ -1087,6 +1096,7 @@ MIDI functionality to the Linux-based operating system.")
                #t))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
        ("speex" ,speex) ; libspeexdsp resampling plugin
        ("libsamplerate" ,libsamplerate) ; libsamplerate resampling plugin
        ("ffmpeg" ,ffmpeg) ; libavcodec resampling plugin, a52 plugin
