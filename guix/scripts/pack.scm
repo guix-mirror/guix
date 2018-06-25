@@ -88,6 +88,19 @@ found."
             %compressors)
       (leave (G_ "~a: compressor not found~%") name)))
 
+(define not-config?
+  ;; Select (guix …) and (gnu …) modules, except (guix config).
+  (match-lambda
+    (('guix 'config) #f)
+    (('guix _ ...) #t)
+    (('gnu _ ...) #t)
+    (_ #f)))
+
+(define guile-sqlite3&co
+  ;; Guile-SQLite3 and its propagated inputs.
+  (cons guile-sqlite3
+        (package-transitive-propagated-inputs guile-sqlite3)))
+
 (define* (self-contained-tarball name profile
                                  #:key target
                                  deduplicate?
@@ -102,13 +115,6 @@ with a properly initialized store database.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
-  (define not-config?
-    (match-lambda
-      (('guix 'config) #f)
-      (('guix _ ...) #t)
-      (('gnu _ ...) #t)
-      (_ #f)))
-
   (define libgcrypt
     (module-ref (resolve-interface '(gnu packages gnupg))
                 'libgcrypt))
@@ -128,9 +134,7 @@ added to the pack."
                                   (guix build store-copy)
                                   (gnu build install))
                                 #:select? not-config?))
-      (with-extensions (cons guile-sqlite3
-                             (package-transitive-propagated-inputs
-                              guile-sqlite3))
+      (with-extensions guile-sqlite3&co
         #~(begin
             (use-modules (guix build utils)
                          ((guix build union) #:select (relative-file-name))
@@ -248,71 +252,83 @@ points for virtual file systems (like procfs), and optional symlinks.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
+  (define libgcrypt
+    ;; XXX: Not strictly needed, but pulled by (guix store database).
+    (module-ref (resolve-interface '(gnu packages gnupg))
+                'libgcrypt))
+
+
   (define build
-    (with-imported-modules '((guix build utils)
-                             (guix build store-copy)
-                             (gnu build install))
-      #~(begin
-          (use-modules (guix build utils)
-                       (gnu build install)
-                       (guix build store-copy)
-                       (srfi srfi-1)
-                       (srfi srfi-26)
-                       (ice-9 match))
+    (with-imported-modules `(((guix config)
+                              => ,(make-config.scm
+                                   #:libgcrypt libgcrypt))
+                             ,@(source-module-closure
+                                '((guix build utils)
+                                  (guix build store-copy)
+                                  (gnu build install))
+                                #:select? not-config?))
+      (with-extensions guile-sqlite3&co
+        #~(begin
+            (use-modules (guix build utils)
+                         (gnu build install)
+                         (guix build store-copy)
+                         (srfi srfi-1)
+                         (srfi srfi-26)
+                         (ice-9 match))
 
-          (setenv "PATH" (string-append #$archiver "/bin"))
+            (setenv "PATH" (string-append #$archiver "/bin"))
 
-          ;; We need an empty file in order to have a valid file argument when
-          ;; we reparent the root file system.  Read on for why that's
-          ;; necessary.
-          (with-output-to-file ".empty" (lambda () (display "")))
+            ;; We need an empty file in order to have a valid file argument when
+            ;; we reparent the root file system.  Read on for why that's
+            ;; necessary.
+            (with-output-to-file ".empty" (lambda () (display "")))
 
-          ;; Create the squashfs image in several steps.
-          ;; Add all store items.  Unfortunately mksquashfs throws away all
-          ;; ancestor directories and only keeps the basename.  We fix this
-          ;; in the following invocations of mksquashfs.
-          (apply invoke "mksquashfs"
-                 `(,@(map store-info-item
-                          (call-with-input-file "profile"
-                            read-reference-graph))
-                   ,#$output
+            ;; Create the squashfs image in several steps.
+            ;; Add all store items.  Unfortunately mksquashfs throws away all
+            ;; ancestor directories and only keeps the basename.  We fix this
+            ;; in the following invocations of mksquashfs.
+            (apply invoke "mksquashfs"
+                   `(,@(map store-info-item
+                            (call-with-input-file "profile"
+                              read-reference-graph))
+                     ,#$output
 
-                   ;; Do not perform duplicate checking because we
-                   ;; don't have any dupes.
-                   "-no-duplicates"
-                   "-comp"
-                   ,#+(compressor-name compressor)))
+                     ;; Do not perform duplicate checking because we
+                     ;; don't have any dupes.
+                     "-no-duplicates"
+                     "-comp"
+                     ,#+(compressor-name compressor)))
 
-          ;; Here we reparent the store items.  For each sub-directory of
-          ;; the store prefix we need one invocation of "mksquashfs".
-          (for-each (lambda (dir)
-                      (apply invoke "mksquashfs"
-                             `(".empty"
-                               ,#$output
-                               "-root-becomes" ,dir)))
-                    (reverse (string-tokenize (%store-directory)
-                                              (char-set-complement (char-set #\/)))))
+            ;; Here we reparent the store items.  For each sub-directory of
+            ;; the store prefix we need one invocation of "mksquashfs".
+            (for-each (lambda (dir)
+                        (apply invoke "mksquashfs"
+                               `(".empty"
+                                 ,#$output
+                                 "-root-becomes" ,dir)))
+                      (reverse (string-tokenize (%store-directory)
+                                                (char-set-complement (char-set #\/)))))
 
-          ;; Add symlinks and mount points.
-          (apply invoke "mksquashfs"
-                 `(".empty"
-                   ,#$output
-                   ;; Create SYMLINKS via pseudo file definitions.
-                   ,@(append-map
-                      (match-lambda
-                        ((source '-> target)
-                         (list "-p"
-                               (string-join
-                                ;; name s mode uid gid symlink
-                                (list source
-                                      "s" "777" "0" "0"
-                                      (string-append #$profile "/" target))))))
-                      '#$symlinks)
+            ;; Add symlinks and mount points.
+            (apply invoke "mksquashfs"
+                   `(".empty"
+                     ,#$output
+                     ;; Create SYMLINKS via pseudo file definitions.
+                     ,@(append-map
+                        (match-lambda
+                          ((source '-> target)
+                           (list "-p"
+                                 (string-join
+                                  ;; name s mode uid gid symlink
+                                  (list source
+                                        "s" "777" "0" "0"
+                                        (string-append #$profile "/" target))))))
+                        '#$symlinks)
 
-                   ;; Create empty mount points.
-                   "-p" "/proc d 555 0 0"
-                   "-p" "/sys d 555 0 0"
-                   "-p" "/dev d 555 0 0")))))
+                     ;; Create empty mount points.
+                     "-p" "/proc d 555 0 0"
+                     "-p" "/sys d 555 0 0"
+                     "-p" "/dev d 555 0 0"))))))
 
   (gexp->derivation (string-append name
                                    (compressor-extension compressor)
@@ -332,14 +348,6 @@ image is a tarball conforming to the Docker Image Specification, compressed
 with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
 must a be a GNU triplet and it is used to derive the architecture metadata in
 the image."
-  ;; FIXME: Honor LOCALSTATEDIR?.
-  (define not-config?
-    (match-lambda
-      (('guix 'config) #f)
-      (('guix rest ...) #t)
-      (('gnu rest ...) #t)
-      (rest #f)))
-
   (define defmod 'define-module)                  ;trick Geiser
 
   (define config
