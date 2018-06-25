@@ -937,7 +937,8 @@ provides an optional IDE-like error list.")
                    (vorbis  (assoc-ref inputs "vorbis-tools"))
                    (alsa    (assoc-ref inputs "alsa-utils"))
                    (mpg321  (assoc-ref inputs "mpg321"))
-                   (mp3info (assoc-ref inputs "mp3info")))
+                   (mp3info (assoc-ref inputs "mp3info"))
+                   (opus    (assoc-ref inputs "opus-tools")))
                ;; Specify the installation directory.
                (substitute* "Makefile"
                  (("PREFIX=.*$")
@@ -962,6 +963,9 @@ provides an optional IDE-like error list.")
                  (emacs-substitute-variables "emms-info-ogginfo.el"
                    ("emms-info-ogginfo-program-name"
                     (string-append vorbis "/bin/ogginfo")))
+                 (emacs-substitute-variables "emms-info-opusinfo.el"
+                   ("emms-info-opusinfo-program-name"
+                    (string-append opus "/bin/opusinfo")))
                  (emacs-substitute-variables "emms-info-libtag.el"
                    ("emms-info-libtag-program-name"
                     (string-append out "/bin/emms-print-metadata")))
@@ -1010,7 +1014,8 @@ provides an optional IDE-like error list.")
               ("vorbis-tools" ,vorbis-tools)
               ("mpg321" ,mpg321)
               ("taglib" ,taglib)
-              ("mp3info" ,mp3info)))
+              ("mp3info" ,mp3info)
+              ("opus-tools" ,opus-tools)))
     (properties '((upstream-name . "emms")))
     (synopsis "Emacs Multimedia System")
     (description
