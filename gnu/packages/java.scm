@@ -253,7 +253,10 @@ JNI.")
              ;; Without these JamVM options the build may freeze.
              (substitute* "bootstrap.sh"
                (("^\"\\$\\{JAVACMD\\}\" " m)
-                (string-append m "-Xnocompact -Xnoinlining ")))
+                ,@(if (string-prefix? "armhf" (or (%current-system)
+                                                  (%current-target-system)))
+                      `((string-append m "-Xnocompact "))
+                      `((string-append m "-Xnocompact -Xnoinlining ")))))
 
              ;; Disable tests because we are bootstrapping and thus don't have
              ;; any of the dependencies required to build and run the tests.
