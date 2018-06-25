@@ -13131,15 +13131,15 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 @cindex ALSA
 @cindex PulseAudio, sound support
 
-The @code{(gnu services sound)} module provides an
-@code{alsa-service-type} service to generate an ALSA
-@file{/etc/asound.conf} configuration file.  This configuration file is
-what allows applications that produce sound using ALSA to be correctly
-handled.
+The @code{(gnu services sound)} module provides a service to configure the
+Advanced Linux Sound Architecture (ALSA) system, which making PulseAudio the
+prefered ALSA output driver.
 
 @deffn {Scheme Variable} alsa-service-type
-This is the type for the @uref{https://alsa-project.org/, ALSA},
-@command{alsa-configuration} record as in this example:
+This is the type for the @uref{https://alsa-project.org/, Advanced Linux Sound
+Architecture} (ALSA) system, which generates the @file{/etc/asound.conf}
+configuration file.  The value for this type is a @command{alsa-configuration}
+record as in this example:
 
 @example
 (service alsa-service-type)
@@ -13164,10 +13164,46 @@ at the same time and to individual control them @i{via}
 @command{pavucontrol}, among other things.
 
 @item @code{extra-options} (default: @var{""})
-String to append to the @file{asound.conf} file.
+String to append to the @file{/etc/asound.conf} file.
 
 @end table
 @end deftp
+
+Individual users who want to override the system configuration of ALSA can do
+it with the @file{~/.asoundrc} file:
+
+@example
+# In guix, we have to specify the absolute path for plugins.
+pcm_type.jack @{
+  lib "/home/alice/.guix-profile/lib/alsa-lib/libasound_module_pcm_jack.so"
+@}
+
+# Routing ALSA to jack:
+# <http://jackaudio.org/faq/routing_alsa.html>.
+pcm.rawjack @{
+  type jack
+  playback_ports @{
+    0 system:playback_1
+    1 system:playback_2
+  @}
+
+  capture_ports @{
+    0 system:capture_1
+    1 system:capture_2
+  @}
+@}
+
+pcm.!default @{
+  type plug
+  slave @{
+    pcm "rawjack"
+  @}
+@}
+@end example
+
+See @uref{https://www.alsa-project.org/main/index.php/Asoundrc} for the
+details.
+
 
 @node Database Services
 @subsubsection Database Services
