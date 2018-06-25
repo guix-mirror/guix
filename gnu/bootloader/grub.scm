@@ -397,6 +397,7 @@ submenu \"GNU system, old configurations...\" {~%")
         ;; root partition.
         (setenv "GRUB_ENABLE_CRYPTODISK" "y")
         (unless (zero? (system* grub-install "--boot-directory" install-dir
+                                "--bootloader-id=GuixSD"
                                 "--efi-directory" target-esp))
           (error "failed to install GRUB (EFI)")))))
 
