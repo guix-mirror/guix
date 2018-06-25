@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -675,3 +676,68 @@ and Cython.")
 measuring and checking the width of strings, with support east asian text.")
     (home-page "https://github.com/jessevdk/go-flags")
     (license license:expat)))
+
+(define-public docx2txt
+  (package
+    (name "docx2txt")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/docx2txt/docx2txt/v"
+                    version "/docx2txt-" version ".tgz"))
+              (sha256
+               (base32
+                "06vdikjvpj6qdb41d8wzfnyj44jpnknmlgbhbr1w215420lpb5xj"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("unzip" ,unzip)
+       ("perl" ,perl)))
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:make-flags (list (string-append "BINDIR="
+                                         (assoc-ref %outputs "out") "/bin")
+                          (string-append "CONFIGDIR="
+                                         (assoc-ref %outputs "out") "/etc")
+                          ;; Makefile seems to be a bit dumb at guessing.
+                          (string-append "INSTALL=install")
+                          (string-append "PERL=perl"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'install 'fix-install
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (config (string-append out "/etc/docx2txt.config"))
+                    (unzip (assoc-ref inputs "unzip")))
+               ;; According to INSTALL, the .sh wrapper can be skipped.
+               (delete-file (string-append bin "/docx2txt.sh"))
+               (rename-file (string-append bin "/docx2txt.pl")
+                            (string-append bin "/docx2txt"))
+               (substitute* config
+                 (("config_unzip         => '/usr/bin/unzip',")
+                  (string-append "config_unzip         => '"
+                                 unzip
+                                 "/bin/unzip',")))
+               ;; Makefile is wrong.
+               (chmod config #o644)))))))
+    (synopsis "Recover text from @file{.docx} files, with good formatting")
+    (description
+     "@command{docx2txt} is a Perl based command line utility to convert
+Microsoft Office @file{.docx} documents to equivalent text documents.  Latest
+version supports following features during text extraction.
+
+@itemize
+@item Character conversions; currency characters are converted to respective
+names like Euro.
+@item Capitalisation of text blocks.
+@item Center and right justification of text fitting in a line of
+(configurable) 80 columns.
+@item Horizontal ruler, line breaks, paragraphs separation, tabs.
+@item Indicating hyperlinked text along with the hyperlink (configurable).
+@item Handling (bullet, decimal, letter, roman) lists along with (attempt at)
+indentation.
+@end itemize\n")
+    (home-page "http://docx2txt.sourceforge.net")
+    (license license:gpl3+)))
