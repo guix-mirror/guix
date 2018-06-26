@@ -61,6 +61,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system scons)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
@@ -93,6 +94,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
@@ -4923,7 +4925,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.46")
+  (version "5.47")
   (source
     (origin
       (method url-fetch)
@@ -4931,12 +4933,34 @@ tools like SSH (Secure Shell) to reach the outside world.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1iw4gap9ysag8iww2ik029scmdllk7jdzcpnnbj7hgbl526b9akn"))))
+        "02qx0b0dd38rfcl9vfd6zq1pcg5gv0z2mxw5z3p2pfbfk7dpbrn4"))))
   (build-system gnu-build-system)
+  (native-inputs
+   ;; For tests.
+   `(("iproute" ,iproute)
+     ("netcat" ,netcat)
+     ("procps" ,procps)))
   (inputs `(("openssl" ,openssl)))
   (arguments
    `(#:configure-flags
-     (list (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))))
+     (list (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))
+     #:phases
+     (modify-phases %standard-phases
+       (add-after 'unpack 'patch-output-directories
+         (lambda _
+           ;; Some (not all) Makefiles have a hard-coded incorrect docdir.
+           (substitute* (list "Makefile.in"
+                              "doc/Makefile.in"
+                              "tools/Makefile.in")
+             (("/doc/stunnel")
+              (string-append "/doc/" ,name "-" ,version)))
+           #t))
+       (add-before 'check 'patch-tests
+         (lambda _
+           (substitute* "tests/make_test"
+             (("/bin/sh ")
+              (string-append (which "sh") " ")))
+           #t)))))
   (home-page "https://www.stunnel.org")
   (synopsis "TLS proxy for clients or servers")
   (description "Stunnel is a proxy designed to add TLS encryption
