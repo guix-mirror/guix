@@ -60,7 +60,7 @@
          (delete 'configure)            ; no configure script
          (add-after 'build 'build-documentation
            (lambda _
-             (zero? (system* "make" "doc")))))
+             (invoke "make" "doc"))))
        #:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))
