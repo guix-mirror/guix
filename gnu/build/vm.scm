@@ -438,7 +438,8 @@ GRUB configuration and OS-DRV as the stuff in it."
                  ;; to modify it.
                  #:deduplicate? #f
                  #:reset-timestamps? #f))
-              closures))
+              closures)
+    (register-bootcfg-root "/tmp/root" config-file))
 
   (let ((pipe
          (apply open-pipe* OPEN_WRITE
