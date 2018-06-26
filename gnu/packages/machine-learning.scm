@@ -233,7 +233,7 @@ classification.")
                #t))
            (add-after 'disable-broken-tests 'autogen
              (lambda _
-               (zero? (system* "bash" "autogen.sh")))))))
+               (invoke "bash" "autogen.sh"))))))
       (inputs
        `(("python" ,python-2) ; only Python 2 is supported
          ("libxml2" ,libxml2)))
