@@ -660,7 +660,8 @@ threads.")
                                  "| mit-scheme")))
                  (with-directory-excursion "scmutils/scmutils"
                    (and (zero? (system "mit-scheme < compile.scm"))
-                        (zero? (system make-img)))))))
+                        (zero? (system make-img))))
+                 #t)))
            (add-before 'install 'fix-directory-names
              ;; Correct directory names in the startup script.
              (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -684,8 +685,8 @@ threads.")
              ;; code.
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (with-directory-excursion "scmutils/scmutils"
-                 (zero? (apply system* "etags"
-                               (find-files "." "\\.scm"))))))
+                 (apply invoke "etags" (find-files "." "\\.scm")))
+               #t))
            (replace 'install
              ;; Copy files to the store.
              (lambda* (#:key outputs #:allow-other-keys)
