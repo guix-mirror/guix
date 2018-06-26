@@ -1816,7 +1816,8 @@ and fast file reading.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (replace 'check (lambda _ (zero? (system* "nosetests" "-v")))))))
+         (replace 'check
+           (lambda _ (invoke "nosetests" "-v"))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)
