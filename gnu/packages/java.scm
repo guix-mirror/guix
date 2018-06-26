@@ -151,7 +151,7 @@ and binary format defined in The Java Virtual Machine Specification.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-data
-           (lambda _ (zero? (system* "make" "install-data")))))))
+           (lambda _ (invoke "make" "install-data"))))))
     (native-inputs
      `(("jikes" ,jikes)
        ("fastjar" ,fastjar)
