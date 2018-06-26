@@ -359,10 +359,10 @@ build process and its dependencies, whereas Make uses Makefile format.")
 Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n")))
 
              ;; Compile it all!
-             (and (zero? (apply system* "jikes"
-                                (find-files "." "\\.java$")))
-                  (zero? (system* "fastjar" "cvfm"
-                                  "ecj-bootstrap.jar" "manifest" ".")))))
+             (and (apply invoke "jikes"
+                         (find-files "." "\\.java$"))
+                  (invoke "fastjar" "cvfm"
+                          "ecj-bootstrap.jar" "manifest" "."))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((share (string-append (assoc-ref outputs "out")
