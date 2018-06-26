@@ -157,3 +157,45 @@ programming.")
 Drivers).  An OpenCL program can use several ICDs thanks to the use of an ICD
 Loader as provided by this package.")
     (license license:bsd-2)))
+
+(define-public clinfo
+  (package
+    (name "clinfo")
+    (version "2.2.18.04.06")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Oblomov/clinfo/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0v7cy01irwdgns6lzaprkmm0502pp5a24zhhffydxz1sgfjj2w7p"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("opencl-headers" ,opencl-headers)))
+    (inputs
+     `(("ocl-icd" ,ocl-icd)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (let ((cores (number->string (parallel-job-count))))
+               (setenv "CC" "gcc")
+               (invoke "make" "-j" cores))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "install" (string-append
+                                       "PREFIX="
+                                       (assoc-ref outputs "out"))))))
+       #:tests? #f))
+    (home-page "https://github.com/Oblomov/clinfo")
+    (synopsis "Print information about OpenCL platforms and devices")
+    ;; Only the implementation installed via Guix will be detected.
+    (description
+     "This package provides the @command{clinfo} command that enumerates all
+possible (known) properties of the OpenCL platform and devices available on
+the system.")
+    (license license:cc0)))
