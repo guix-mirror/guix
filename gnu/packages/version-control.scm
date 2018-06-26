@@ -579,9 +579,8 @@ collaboration using typical untrusted file hosts or services.")
          (add-after 'unpack 'unpack-git
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Unpack the source of git into the 'git' directory.
-             (zero? (system*
-                     "tar" "--strip-components=1" "-C" "git" "-xf"
-                     (assoc-ref inputs "git:src")))))
+             (invoke "tar" "--strip-components=1" "-C" "git" "-xf"
+                     (assoc-ref inputs "git:src"))))
          (add-after 'unpack 'patch-absolute-file-names
            (lambda* (#:key inputs #:allow-other-keys)
              (define (quoted-file-name input path)
@@ -612,21 +611,20 @@ collaboration using typical untrusted file hosts or services.")
          (delete 'configure) ; no configure script
          (add-after 'build 'build-man
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* `("make" ,@make-flags "doc-man")))))
+             (apply invoke "make" "doc-man" make-flags)))
          (replace 'install
            (lambda* (#:key make-flags outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (and (zero? (apply system*
-                                  `("make" ,@make-flags
-                                    ,(string-append "prefix=" out)
-                                    ,(string-append
-                                      "CGIT_SCRIPT_PATH=" out "/share/cgit")
-                                    "install" "install-man")))
-                    ;; Move the platform-dependent 'cgit.cgi' into lib
-                    ;; to get it stripped.
-                    (rename-file (string-append out "/share/cgit/cgit.cgi")
-                                 (string-append out "/lib/cgit/cgit.cgi"))
-                    #t))))
+               (apply invoke
+                      "make" "install" "install-man"
+                      (string-append "prefix=" out)
+                      (string-append "CGIT_SCRIPT_PATH=" out "/share/cgit")
+                      make-flags)
+               ;; Move the platform-dependent 'cgit.cgi' into lib to get it
+               ;; stripped.
+               (rename-file (string-append out "/share/cgit/cgit.cgi")
+                            (string-append out "/lib/cgit/cgit.cgi"))
+               #t)))
          (add-after 'install 'wrap-python-scripts
            (lambda* (#:key outputs #:allow-other-keys)
              (for-each
