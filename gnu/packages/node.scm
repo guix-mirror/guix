@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,7 +47,7 @@
     (version "9.11.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://nodejs.org/dist/v" version
+              (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
@@ -64,7 +65,7 @@
                               "deps/uv"
                               "deps/zlib"))
                   (substitute* "Makefile"
-                    ;; Remove references to bundled software
+                    ;; Remove references to bundled software.
                     (("deps/http_parser/http_parser.gyp") "")
                     (("deps/uv/include/\\*.h") "")
                     (("deps/uv/uv.gyp") "")
@@ -138,10 +139,10 @@
                ;; Node's configure script expects the CC environment variable to
                ;; be set.
                (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
-               (zero? (apply system*
-                             (string-append (assoc-ref inputs "python")
-                                            "/bin/python")
-                             "configure" flags)))))
+               (apply invoke
+                      (string-append (assoc-ref inputs "python")
+                                     "/bin/python")
+                      "configure" flags))))
          (add-after 'patch-shebangs 'patch-npm-shebang
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((bindir (string-append (assoc-ref outputs "out")
@@ -176,6 +177,6 @@ for easily building fast, scalable network applications.  Node.js uses an
 event-driven, non-blocking I/O model that makes it lightweight and efficient,
 perfect for data-intensive real-time applications that run across distributed
 devices.")
-    (home-page "http://nodejs.org/")
+    (home-page "https://nodejs.org/")
     (license expat)
     (properties '((timeout . 3600))))) ; 1 h

@@ -23,6 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system ant)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages java)
   #:use-module (gnu packages web)
@@ -1079,6 +1080,18 @@ generally generated from plugin sources using maven-plugin-plugin.")))
              (mkdir-p "build/classes/")
              (copy-recursively "src/main/resources" "build/classes")
              #t))
+         (add-after 'copy-resources 'fill-properties
+           (lambda _
+             ;; This file controls the output of some mvn subcommands, such as
+             ;; mvn -version.
+             (substitute* "build/classes/org/apache/maven/messages/build.properties"
+               (("\\$\\{buildNumber\\}") "guix_build")
+               (("\\$\\{timestamp\\}") "0")
+               (("\\$\\{project.version\\}") ,(package-version maven-artifact))
+               (("\\$\\{distributionId\\}") "apache-maven")
+               (("\\$\\{distributionShortName\\}") "Maven")
+               (("\\$\\{distributionName\\}") "Apache Maven"))
+             #t))
          (add-before 'build 'generate-sisu-named
            (lambda _
              (mkdir-p "build/classes/META-INF/sisu")
@@ -1502,6 +1515,9 @@ layer for plugins that need to keep Maven2 compatibility.")))
        ("java-slf4j-api" ,java-slf4j-api)
        ;; TODO: replace with maven-slf4j-provider
        ("java-slf4j-simple" ,java-slf4j-simple)))
+    (propagated-inputs
+     `(("coreutils" ,coreutils)
+       ("which" ,which)))
     (description "Apache Maven is a software project management and comprehension
 tool.  Based on the concept of a project object model: builds, dependency
 management, documentation creation, site publication, and distribution

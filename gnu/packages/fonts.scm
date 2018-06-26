@@ -431,15 +431,19 @@ text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
     (license license:silofl1.1)))
 
 (define-public font-cns11643
+  ;; Since upstream doesn't provide any version numbers, the date of the last
+  ;; edit is used, taken from https://data.gov.tw/dataset/5961
+  ;; XXX: The source is also updated in-place, so it may be desirable to mirror
+  ;; it elsewhere to avoid suddenly losing the current source file.
   (package
     (name "font-cns11643")
-    (version "98.1.20170524")
+    (version "98.1.20180605")
     (source (origin
               (method url-fetch)
               (uri "http://www.cns11643.gov.tw/AIDB/Open_Data.zip")
               (sha256
                (base32
-                "1iad6rklxkx03ji1fav9faq7cmqkci3i6pcyg2ilvh984j5qzhq3"))))
+                "000a9whrjr1cd4pjc23pbl60zwkq3wcb5g61p9qi7fn3hwkp0kyw"))))
     (build-system font-build-system)
     (home-page "http://www.cns11643.gov.tw/AIDB/welcome.do")
     (synopsis "CJK TrueType fonts, TW-Kai and TW-Sung")

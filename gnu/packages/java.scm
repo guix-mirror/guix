@@ -4091,7 +4091,9 @@ are many features, including:
                                   "commons-collections-" version "-src.tar.gz"))
               (sha256
                (base32
-                "055r51a5lfc3z7rkxnxmnn1npvkvda7636hjpm4qk7cnfzz98387"))))
+                "055r51a5lfc3z7rkxnxmnn1npvkvda7636hjpm4qk7cnfzz98387"))
+              (patches
+               (search-patches "java-commons-collections-fix-java8.patch"))))
     (arguments
       (substitute-keyword-arguments (package-arguments java-commons-collections4)
         ((#:phases phases)
@@ -7059,22 +7061,52 @@ it manages project dependencies, gives diffs jars, and much more.")
     (name "java-aqute-libg")
     (arguments
      `(#:jar-name "java-aqute-libg.jar"
-       #:source-dir "aQute.libg/src"
-       #:tests? #f)); FIXME: tests are in "aQute.libg/test", not in a java directory
+       ;; The build fails when source/target more recent than 1.7. This
+       ;; is a known issue. See: https://github.com/bndtools/bnd/issues/1327
+       ;;
+       ;; It is closed as won't fix. There is no way to change the source
+       ;; so that it works on 1.8, and still works on 1.6, the upstream
+       ;; target. It work fine on 1.7, so we use 1.7.
+       #:make-flags (list "-Dant.build.javac.source=1.7"
+                          "-Dant.build.javac.target=1.7")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           ;; Change to aQute.libg directory, so that the relative
+           ;; paths in the tests aren't broken.
+           (lambda _
+             (chdir "aQute.libg")
+             #t))
+         (add-before 'check 'create-test-directory
+           ;; Copy the test directory to test/java, since that's where
+           ;; ant-build-system's default project in build.xml expects to find
+           ;; the test classes. Leave a copy in the original place to not
+           ;; break paths in tests.
+           (lambda _
+             (mkdir "src/test")
+             (copy-recursively "test" "src/test/java")
+             #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
        ("osgi-annot" ,java-osgi-annotation)
        ("java-osgi-cmpn" ,java-osgi-cmpn)
-       ("osgi" ,java-osgi-core)))))
+       ("osgi" ,java-osgi-core)))
+    (native-inputs
+     `(("hamcrest" ,java-hamcrest-core)
+       ("java-junit" ,java-junit)))))
 
 (define java-aqute-libg-bootstrap
   (package
     (inherit java-aqute-libg)
     (name "java-aqute-libg-bootstrap")
+    (arguments
+     ;; Disable tests, at this stage of bootstrap we have no test frameworks.
+     `(#:tests? #f))
     (inputs
      `(("slf4j-bootstrap" ,java-slf4j-api-bootstrap)
        ,@(delete `("slf4j" ,java-slf4j-api)
-                 (package-inputs java-aqute-libg))))))
+                 (package-inputs java-aqute-libg))))
+    (native-inputs '())))
 
 (define-public java-aqute-bndlib
   (package

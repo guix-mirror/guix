@@ -100,9 +100,8 @@ a custom raw video format with a simple container.")
         (replace 'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
-              (zero?
-               (system* "make" "install"
-                        (string-append "DESTDIR=" out) "PREFIX=")))))
+              (invoke "make" "install"
+                      (string-append "DESTDIR=" out) "PREFIX="))))
         (add-after 'build 'install-xsession
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Add a .desktop file to xsessions.

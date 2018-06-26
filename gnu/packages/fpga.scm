@@ -152,7 +152,7 @@ For synthesis, the compiler generates netlists in the desired format.")
              #t))
          (replace 'configure
            (lambda* (#:key inputs (make-flags '()) #:allow-other-keys)
-             (zero? (apply system* "make" "config-gcc" make-flags))))
+             (apply invoke "make" "config-gcc" make-flags)))
          (add-after 'configure 'prepare-abc
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((sourceabc (assoc-ref inputs "abc"))
@@ -163,7 +163,7 @@ For synthesis, the compiler generates netlists in the desired format.")
                      (lambda (port)
                        (format port ".PHONY: all\nall:\n\tcp -f abc abc-default\n")))
                    (copy-file source "abc/abc")
-                   (zero? (system* "chmod" "+w" "abc/abc")))))
+                   (invoke "chmod" "+w" "abc/abc"))))
           (add-before 'check 'fix-iverilog-references
              (lambda* (#:key inputs native-inputs #:allow-other-keys)
                (let* ((xinputs (or native-inputs inputs))

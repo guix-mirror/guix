@@ -1476,7 +1476,7 @@ synchronous execution of all clients, and low latency operation.")
     (version "1.6.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.drobilla.net/jalv-"
+              (uri (string-append "https://download.drobilla.net/jalv-"
                                   version ".tar.bz2"))
               (sha256
                (base32
@@ -1501,7 +1501,7 @@ synchronous execution of all clients, and low latency operation.")
        ("jack" ,jack-1)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://drobilla.net/software/jalv/")
+    (home-page "https://drobilla.net/software/jalv/")
     (synopsis "Simple LV2 host for JACK")
     (description
      "Jalv is a simple but fully featured LV2 host for JACK.  It runs LV2
@@ -1711,7 +1711,7 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
     (version "0.24.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://download.drobilla.net/lilv-"
+             (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.bz2"))
              (sha256
               (base32
@@ -1737,7 +1737,7 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
      `(("lv2" ,lv2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://drobilla.net/software/lilv/")
+    (home-page "https://drobilla.net/software/lilv/")
     (synopsis "Library to simplify use of LV2 plugins in applications")
     (description
      "Lilv is a C library to make the use of LV2 plugins as simple as possible
@@ -1966,7 +1966,7 @@ buffers, and audio capture.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.drobilla.net/patchage-"
+              (uri (string-append "https://download.drobilla.net/patchage-"
                                   version
                                   ".tar.bz2"))
               (sha256
@@ -1984,7 +1984,7 @@ buffers, and audio capture.")
        ("dbus-glib" ,dbus-glib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://drobilla.net/software/patchage/")
+    (home-page "https://drobilla.net/software/patchage/")
     (synopsis "Modular patch bay for audio and MIDI systems")
     (description
      "Patchage is a modular patch bay for audio and MIDI systems based on JACK
@@ -2163,7 +2163,7 @@ using GuixSD.")
     (version "0.8.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.drobilla.net/raul-"
+              (uri (string-append "https://download.drobilla.net/raul-"
                                   version ".tar.bz2"))
               (sha256
                (base32
@@ -2177,7 +2177,7 @@ using GuixSD.")
        ("boost" ,boost)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://drobilla.net/software/raul/")
+    (home-page "https://drobilla.net/software/raul/")
     (synopsis "Real-time audio utility library")
     (description
      "Raul (Real-time Audio Utility Library) is a C++ utility library primarily
@@ -2194,7 +2194,7 @@ aimed at audio/musical applications.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "http://git.drobilla.net/raul.git")
+                      (url "https://git.drobilla.net/raul.git")
                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
@@ -2249,7 +2249,7 @@ tempo and pitch of an audio recording independently of one another.")
        #:phases (modify-phases %standard-phases
                   (add-after
                    'unpack 'autoconf
-                   (lambda _ (zero? (system* "autoreconf" "-vfi"))))
+                   (lambda _ (invoke "autoreconf" "-vfi")))
                   (add-before
                    'build 'fix-makefile
                    (lambda _
@@ -2287,7 +2287,7 @@ input/output.")
     (version "0.6.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://download.drobilla.net/sratom-"
+             (uri (string-append "https://download.drobilla.net/sratom-"
                                  version ".tar.bz2"))
              (sha256
               (base32
@@ -2300,7 +2300,7 @@ input/output.")
        ("sord" ,sord)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://drobilla.net/software/sratom/")
+    (home-page "https://drobilla.net/software/sratom/")
     (synopsis "Library for serialising LV2 atoms to/from RDF")
     (description
      "Sratom is a library for serialising LV2 atoms to/from RDF, particularly
@@ -2313,7 +2313,7 @@ the Turtle syntax.")
     (version "0.10.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://download.drobilla.net/suil-"
+             (uri (string-append "https://download.drobilla.net/suil-"
                                  version ".tar.bz2"))
              (sha256
               (base32
@@ -2330,7 +2330,7 @@ the Turtle syntax.")
        ("qt" ,qtbase)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://drobilla.net/software/suil/")
+    (home-page "https://drobilla.net/software/suil/")
     (synopsis "Library for loading and wrapping LV2 plugin UIs")
     (description
      "Suil is a lightweight C library for loading and wrapping LV2 plugin UIs.
@@ -2723,7 +2723,7 @@ portions of LAME.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autoreconf
            (lambda _
-             (zero? (system* "autoreconf" "-vif")))))
+             (invoke "autoreconf" "-vif"))))
        #:tests? #f))                    ;no 'check' target
     (home-page "http://www.portaudio.com/")
     (synopsis "Audio I/O library")
@@ -2791,9 +2791,8 @@ synthesizer written in C++.")
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
-             (zero?
-              (system* "./configure"
-                       (string-append "--prefix=" (assoc-ref outputs "out")))))))
+             (invoke "./configure"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))))))
        ;; No 'check' target.
        #:tests? #f))
     (home-page "http://themaister.net/rsound.html")

@@ -143,7 +143,7 @@ solve the shortest vector problem.")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
+                  "https://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
                   version ".tar.gz"))
             (sha256
               (base32
@@ -174,7 +174,7 @@ polynomials, power series, algebraic numbers, etc., and a lot of
 transcendental functions.
 PARI is also available as a C library to allow for faster computations.")
    (license license:gpl2+)
-   (home-page "http://pari.math.u-bordeaux.fr/")))
+   (home-page "https://pari.math.u-bordeaux.fr/")))
 
 (define-public gp2c
   (package
@@ -183,7 +183,7 @@ PARI is also available as a C library to allow for faster computations.")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://pari.math.u-bordeaux.fr/pub/pari/GP2C/gp2c-"
+                  "https://pari.math.u-bordeaux.fr/pub/pari/GP2C/gp2c-"
                   version ".tar.gz"))
             (sha256
               (base32
@@ -208,7 +208,7 @@ PARI is also available as a C library to allow for faster computations.
 
 GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
    (license license:gpl2)
-   (home-page "http://pari.math.u-bordeaux.fr/")))
+   (home-page "https://pari.math.u-bordeaux.fr/")))
 
 (define-public giac-xcas
   (package
@@ -746,7 +746,7 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
                              ;; Then run 'CTest' with -V so we get more
                              ;; details upon failure.
                              (zero? (system* "ctest" "-V" dash-j)))))))))
-    (home-page "http://eigen.tuxfamily.org")
+    (home-page "https://eigen.tuxfamily.org")
     (synopsis "C++ template library for linear algebra")
     (description
      "Eigen is a C++ template library for linear algebra: matrices, vectors,

@@ -126,24 +126,24 @@ rich set of boolean query operators.")
     (inputs `(("unqlite" ,unqlite)))
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'chdir-source
-                   (lambda _ (chdir "libtocc/src")))
-                  (replace
-                   'check
-                   (lambda _
-                     (with-directory-excursion "../tests"
-                       (and (zero? (system* "./configure"
-                                            (string-append "CONFIG_SHELL="
-                                                           (which "sh"))
-                                            (string-append "SHELL="
-                                                           (which "sh"))
-                                            "CPPFLAGS=-I../src"
-                                            (string-append
-                                             "LDFLAGS=-L../src/.libs "
-                                             "-Wl,-rpath=../src/.libs")))
-                            (zero? (system* "make"))
-                            (zero? (system* "./libtocctests")))))))))
+                  (add-before 'configure 'chdir-source
+                    (lambda _
+                      (chdir "libtocc/src")
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (with-directory-excursion "../tests"
+                        (invoke "./configure"
+                                (string-append "CONFIG_SHELL="
+                                               (which "sh"))
+                                (string-append "SHELL="
+                                               (which "sh"))
+                                "CPPFLAGS=-I../src"
+                                (string-append
+                                 "LDFLAGS=-L../src/.libs "
+                                 "-Wl,-rpath=../src/.libs"))
+                        (invoke "make")
+                        (invoke "./libtocctests")))))))
     (home-page "https://t-o-c-c.com/")
     (synopsis "Tool for Obsessive Compulsive Classifiers")
     (description

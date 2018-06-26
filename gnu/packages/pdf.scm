@@ -277,7 +277,7 @@ Poppler PDF rendering library.")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'autogen
-          (lambda _ (zero? (system* "autoreconf" "-vif")))))))
+          (lambda _ (invoke "autoreconf" "-vif"))))))
    (inputs
     `(("zlib" ,zlib)
       ("libpng" ,libpng)))
@@ -937,7 +937,7 @@ converter using the Poppler and Cairo libraries.")
             #t))
          (replace 'check
            (lambda _
-             (zero? (system* "python" "-m" "unittest" "Tests.tests")))))))
+             (invoke "python" "-m" "unittest" "Tests.tests"))))))
     (home-page "http://mstamy2.github.com/PyPDF2")
     (synopsis "Pure Python PDF toolkit")
     (description "PyPDF2 is a pure Python PDF library capable of:

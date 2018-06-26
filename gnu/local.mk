@@ -322,6 +322,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ocaml.scm			\
   %D%/packages/ocr.scm				\
   %D%/packages/onc-rpc.scm			\
+  %D%/packages/opencl.scm			\
   %D%/packages/openbox.scm			\
   %D%/packages/openldap.scm			\
   %D%/packages/openstack.scm			\
@@ -471,6 +472,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/desktop.scm			\
   %D%/services/dict.scm				\
   %D%/services/dns.scm				\
+  %D%/services/authentication.scm		\
   %D%/services/games.scm			\
   %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
@@ -637,6 +639,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
+  %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-gcc-ice.patch			\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
@@ -803,6 +806,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/jamvm-arm.patch				\
   %D%/packages/patches/java-apache-ivy-port-to-latest-bouncycastle.patch	\
+  %D%/packages/patches/java-commons-collections-fix-java8.patch \
   %D%/packages/patches/java-jeromq-fix-tests.patch		\
   %D%/packages/patches/java-powermock-fix-java-files.patch		\
   %D%/packages/patches/java-simple-xml-fix-tests.patch		\
@@ -960,6 +964,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nvi-assume-preserve-path.patch		\
   %D%/packages/patches/nvi-dbpagesize-binpower.patch		\
   %D%/packages/patches/nvi-db4.patch				\
+  %D%/packages/patches/nyx-show-header-stats-with-python3.patch	\
   %D%/packages/patches/ocaml-bisect-fix-camlp4-in-another-directory.patch	\
   %D%/packages/patches/ocaml-bitstring-fix-configure.patch \
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\

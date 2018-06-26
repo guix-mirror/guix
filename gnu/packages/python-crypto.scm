@@ -607,18 +607,18 @@ PKCS#8, PKCS#12, PKCS#5, X.509 and TSP.")
 (define-public python-pynacl
   (package
     (name "python-pynacl")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyNaCl" version))
        (modules '((guix build utils)))
-       ;; Remove bundled libsodium
+       ;; Remove bundled libsodium.
        (snippet '(begin (delete-file-recursively "src/libsodium")
                         #t))
        (sha256
         (base32
-         "01vjq0pxyw1mxaqy013hzs8nknmvg3kpzlzmh69jxznyipgvria5"))))
+         "1ada3qr83cliap6dk897vnvjkynij1kjqbwizdbgarazlyh8zlz0"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

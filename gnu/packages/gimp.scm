@@ -48,7 +48,7 @@
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.46")
+    (version "0.1.50")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
@@ -62,7 +62,7 @@
                                         "/babl-" version ".tar.bz2")))
               (sha256
                (base32
-                "0nwyhvfca6m35wjcccvwca7fcihzgdfyc012qi703y5d3cxl1hmv"))))
+                "0bavr2y4v88pip7vlca4kwmnksk2qxcvkkdp9jyfi6pzh701sb5m"))))
     (build-system gnu-build-system)
     (home-page "http://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
@@ -79,7 +79,7 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.0")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
@@ -87,7 +87,7 @@ provided, as well as a framework to add new color models and data types.")
                                         "/" name "-" version ".tar.bz2")))
               (sha256
                (base32
-                "1ighk4z8nlqrzyj8w97s140hzj59564l3xv6fpzbr97m1zx2nkfh"))))
+                "13bzl0k5l12pk8bkcq4ar7wscbnw7jswhp34mwfsrf10kp0qndba"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("LDFLAGS=-lm")))
@@ -117,7 +117,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.0")
+    (version "2.10.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.gimp.org/pub/gimp/v"
@@ -125,10 +125,10 @@ buffers.")
                                   "/gimp-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qkxaigbfkx26xym5nzrgfrmn97cbnhn63v1saaha2nbi3xrdk3z"))))
+                "1srkqd9cx1xmny7cyk3b6f14dknb3fd77whm38vlvr7grnpbmc0w"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "doc"))                            ;9 MiB of gtk-doc HTML
+               "doc"))                            ; 9 MiB of gtk-doc HTML
     (arguments
      '(#:configure-flags (list (string-append "--with-html-dir="
                                               (assoc-ref %outputs "doc")

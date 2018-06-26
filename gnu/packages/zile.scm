@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,10 +123,10 @@ default Emacs configuration, but it carries a much lighter feature set.")
                              (chmod file #o755))
                            (find-files "."))
                  (patch-shebang "gnulib/gnulib-tool")
-                 (zero? (system* "sh" "./bootstrap"
-                                 "--gnulib-srcdir=gnulib"
-                                 "--skip-git" "--skip-po"
-                                 "--verbose"))))
+                 (invoke "sh" "./bootstrap"
+                         "--gnulib-srcdir=gnulib"
+                         "--skip-git" "--skip-po"
+                         "--verbose")))
              (add-after 'install 'wrap-command
                (lambda* (#:key outputs #:allow-other-keys)
                  ;; Add zile.scm to the search path.

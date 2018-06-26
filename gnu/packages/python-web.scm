@@ -783,14 +783,14 @@ that have uses outside of the Zope framework.")
 (define-public python-zope-testing
   (package
     (name "python-zope-testing")
-    (version "4.6.1")
+    (version "4.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.testing" version))
        (sha256
         (base32
-         "1vvxhjmzl7vw2i1akfj1xbggwn36270ym7f2ic9xwbaswfw1ap56"))
+         "0iiq54hjhkk2gpvzfjac70vyn4r0kw0ngvicshxbdwrkgf2gjq3g"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -798,10 +798,6 @@ that have uses outside of the Zope framework.")
            (for-each delete-file (find-files "." "(\\.pyc|~)$"))
            #t))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-zope-exceptions" ,python-zope-exceptions)))
-    (propagated-inputs
-     `(("python-zope-interface" ,python-zope-interface)))
     (home-page "https://pypi.python.org/pypi/zope.testing")
     (synopsis "Zope testing helpers")
     (description "Zope.testing provides a number of testing utilities for HTML

@@ -123,6 +123,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages vulkan)
@@ -1039,8 +1040,7 @@ treaming protocols.")
                 (("#! /bin/sh") (string-append "#!" (which "sh"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
-              (zero? (system*
-                      "./configure"
+              (invoke "./configure"
                       (string-append "--extra-cflags=-I"
                                      libx11 "/include") ; to detect libx11
                       "--disable-ffmpeg_a" ; disables bundled ffmpeg
@@ -1062,7 +1062,7 @@ treaming protocols.")
                                     (or (%current-target-system)
                                         (nix-system->gnu-triplet
                                          (%current-system)))))))
-                      "--disable-iwmmxt"))))))))
+                      "--disable-iwmmxt")))))))
     (home-page "https://www.mplayerhq.hu/design7/news.html")
     (synopsis "Audio and video player")
     (description "MPlayer is a movie player.  It plays most MPEG/VOB, AVI,
@@ -1765,10 +1765,9 @@ capabilities.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'autogen
-          (lambda _
-            (zero? (system* "sh" "autogen.sh")))))))
+         (add-after 'unpack 'autogen
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
     (home-page "http://www.vapoursynth.com/")
     (synopsis "Video processing framework")
     (description "VapourSynth is a C++ library and Python module for video
@@ -1815,34 +1814,41 @@ and custom quantization matrices.")
     (license license:gpl2+)))
 
 (define-public streamlink
-  (package
-    (name "streamlink")
-    (version "0.11.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "streamlink" version))
-       (sha256
-        (base32
-         "02h8b3k8l5zz4vjm0nhxvl1pm924jms8y7sjl40fbybrzvsa4mg2"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/streamlink/streamlink")
-    (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-mock" ,python-mock)
-       ("python-requests-mock" ,python-requests-mock)))
-    (propagated-inputs
-     `(("python-pysocks" ,python-pysocks)
-       ("python-websocket-client" ,python-websocket-client)
-       ("python-iso3166" ,python-iso3166)
-       ("python-iso639" ,python-iso639)
-       ("python-pycryptodome" ,python-pycryptodome)
-       ("python-requests" ,python-requests)
-       ("python-urllib3" ,python-urllib3)))
-    (synopsis "Extract streams from various services")
-    (description "Streamlink is command-line utility that extracts streams
+  ;; Release tarball doesn't contain ‘tests/resources/dash/’ directory.
+  (let ((commit "2dca7930a938f60b48d8e23260963ea7c49d979f"))
+    (package
+      (name "streamlink")
+      (version (git-version "0.13.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/streamlink/streamlink.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0vq19aspshim63aj8yl2p64ykrbk2mwwlawdx427b3j2djlc5qhw"))))
+      (build-system python-build-system)
+      (home-page "https://github.com/streamlink/streamlink")
+      (native-inputs
+       `(("python-freezegun" ,python-freezegun)
+         ("python-pytest" ,python-pytest)
+         ("python-mock" ,python-mock)
+         ("python-requests-mock" ,python-requests-mock)))
+      (propagated-inputs
+       `(("python-pysocks" ,python-pysocks)
+         ("python-websocket-client" ,python-websocket-client)
+         ("python-iso3166" ,python-iso3166)
+         ("python-iso639" ,python-iso639)
+         ("python-isodate", python-isodate)
+         ("python-pycryptodome" ,python-pycryptodome)
+         ("python-requests" ,python-requests)
+         ("python-urllib3" ,python-urllib3)))
+      (synopsis "Extract streams from various services")
+      (description "Streamlink is command-line utility that extracts streams
 from sites like Twitch.tv and pipes them into a video player of choice.")
-    (license license:bsd-2)))
+      (license license:bsd-2))))
 
 (define-public livestreamer
   (deprecated-package "livestreamer" streamlink))
@@ -2196,10 +2202,11 @@ Other features include a live preview and live streaming.")
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autogen.sh
-                    (lambda _
-                      (zero? (system* "sh" "autogen.sh")))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen.sh
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -2363,7 +2370,7 @@ supported players in addition to this package.")
              ;; Patch the Makefile so that it doesn't bootstrap again.
              (substitute* "gtk/module.rules"
                ((".*autogen\\.sh.*") ""))
-             (zero? (system* "sh" "./gtk/autogen.sh"))))
+             (invoke "sh" "./gtk/autogen.sh")))
          (add-before 'configure 'disable-contrib
            (lambda _
              (substitute* "make/include/main.defs"
@@ -2385,9 +2392,9 @@ supported players in addition to this package.")
              ;; errors on unrecognized arguments,
              ;; e.g. --enable-fast-install
              (let ((out (assoc-ref outputs "out")))
-               (zero? (apply system* "./configure"
-                             (string-append "--prefix=" out)
-                             (or configure-flags '()))))))
+               (apply invoke "./configure"
+                      (string-append "--prefix=" out)
+                      (or configure-flags '())))))
          (add-after 'configure 'chdir-build
            (lambda _ (chdir "./build") #t)))))
     (home-page "https://handbrake.fr")
@@ -2520,7 +2527,7 @@ practically any type of media.")
              #t))
          (add-after 'change-to-build-dir 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Library for retrieving media metadata")
     (description "MediaInfo is a library used for retrieving technical
@@ -2579,7 +2586,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
              #t))
          (add-after 'change-to-build-dir 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Utility for reading media metadata")
     (description "MediaInfo is a utility used for retrieving technical
@@ -2621,8 +2628,8 @@ many codecs and formats supported by libmediainfo.")
                       #t))
                   (replace 'configure
                     (lambda _
-                      (zero? (system* "./genMakefiles"
-                                      "linux-with-shared-libraries")))))))
+                      (invoke "./genMakefiles"
+                              "linux-with-shared-libraries"))))))
     (home-page "http://www.live555.com/liveMedia/")
     (synopsis "Set of C++ libraries for multimedia streaming")
     (description "This code forms a set of C++ libraries for multimedia
@@ -2819,8 +2826,8 @@ alpha blending etc).")
        (modify-phases %standard-phases
          (add-after 'unpack 'autotools
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
-    ;; TODO: opencv for additional face detection filters
+             (invoke "sh" "autogen.sh"))))))
+    ;; TODO: opencv for additional face detection filters.
     (inputs
      `(("gavl" ,gavl)
        ("cairo" ,cairo)))

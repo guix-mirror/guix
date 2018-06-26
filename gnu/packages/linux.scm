@@ -50,6 +50,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
@@ -410,8 +411,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.50")
-(define %linux-libre-4.14-hash "19k7s33dyykm2vh1zpxxh3qrbjcx2p2md2r8s8z5mbv8yaldgvmj")
+(define %linux-libre-4.14-version "4.14.51")
+(define %linux-libre-4.14-hash "1ifczslgp3ng0948l5p0khcnfkv9i44mq0bzk1y8mwdhy4mik0b9")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -1060,7 +1061,7 @@ MIDI functionality to the Linux-based operating system.")
     ;; TODO: Remove OSS related plugins, they add support to run native
     ;; ALSA applications on OSS however we do not offer OSS and OSS is
     ;; obsolete.
-    (outputs '("out" "pulseaudio"))
+    (outputs '("out" "pulseaudio" "jack"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1068,9 +1069,17 @@ MIDI functionality to the Linux-based operating system.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Distribute the binaries to the various outputs.
              (let* ((out (assoc-ref outputs "out"))
+                    (jack (assoc-ref outputs "jack"))
+                    (jacklib (string-append jack "/lib/alsa-lib"))
                     (pua (assoc-ref outputs "pulseaudio"))
                     (pualib (string-append pua "/lib/alsa-lib"))
                     (puaconf (string-append pua "/share/alsa/alsa.conf.d")))
+               ;; For jack.
+               (mkdir-p jacklib)
+               (for-each (lambda (file)
+                           (rename-file file (string-append jacklib "/" (basename file))))
+                         (find-files out ".*jack\\.(la|so)"))
+               ;; For pluseaudio.
                (mkdir-p puaconf)
                (mkdir-p pualib)
                (chdir (string-append out "/share"))
@@ -1087,6 +1096,7 @@ MIDI functionality to the Linux-based operating system.")
                #t))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
        ("speex" ,speex) ; libspeexdsp resampling plugin
        ("libsamplerate" ,libsamplerate) ; libsamplerate resampling plugin
        ("ffmpeg" ,ffmpeg) ; libavcodec resampling plugin, a52 plugin
@@ -3929,7 +3939,7 @@ under OpenGL graphics workloads.")
 (define-public efivar
   (package
     (name "efivar")
-    (version "36")
+    (version "35")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rhinstaller/" name
@@ -3937,7 +3947,7 @@ under OpenGL graphics workloads.")
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0cqdikspdmj7imc646q0k7hhw10r8spxa22zm1w0ji49131crgwl"))))
+                "153k2ifyl4giz5fkryxhz8z621diqjy7v25hfga4z94rs32ks0qy"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Tests require a UEFI system and is not detected in the chroot.

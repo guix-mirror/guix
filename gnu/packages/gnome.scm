@@ -4191,7 +4191,7 @@ a secret password store, an adblocker, and a modern UI.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.28.2.1")
+    (version "3.28.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4199,7 +4199,7 @@ a secret password store, an adblocker, and a modern UI.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ba0qqsbg3cv1k1pcj971y7l8kqib5l7kbr743x9a7hbmkqfk95s"))))
+                "1xz6xl6b0iihvczyr0cs1z5ifvpai6anb4m0ng1caiph06klc1b9"))))
 
     (build-system meson-build-system)
     (arguments
@@ -6312,7 +6312,7 @@ fit the GNOME desktop.")
 (define-public gnome-dictionary
   (package
     (name "gnome-dictionary")
-    (version "3.24.0")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6320,8 +6320,9 @@ fit the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1wnrpg8yndacq0xnzc84d519yp7f28brzklm3a48xcgs1i50drs1"))))
-    (build-system glib-or-gtk-build-system)
+                "007k2bq8iplg4psdpz074r5d4zxvn4s95qym4rw9hs6giljbrf0n"))))
+    (build-system meson-build-system)
+    (arguments '(#:glib-or-gtk? #t))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
@@ -7301,9 +7302,10 @@ mp3, Ogg Vorbis and FLAC")
                        ("gobject-introspection" ,gobject-introspection)
                        ("python2" ,python-2)))
       (synopsis "Tool to help prevent repetitive strain injury (RSI)")
-      (description "Workrave is a program that assists in the recovery and
-prevention of repetitive strain injury (RSI).  The program frequently alerts
-you to take micro-pauses, rest breaks and restricts you to your daily limit")
+      (description
+       "Workrave is a program that assists in the recovery and prevention of
+repetitive strain injury (@dfn{RSI}).  The program frequently alerts you to take
+micro-pauses and rest breaks, and restricts you to your daily limit.")
       (home-page "http://www.workrave.org")
       (license license:gpl3+))))
 

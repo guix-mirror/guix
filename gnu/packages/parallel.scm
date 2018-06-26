@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +48,7 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20180522")
+    (version "20180622")
     (source
      (origin
       (method url-fetch)
@@ -55,7 +56,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1khcz9pm7rjnq4gw8pn30k1d40x337a204dxj4y4qijpx8m7w0gb"))))
+        "1n91dnnl8d8pman20hr03l9qrpc9wm5hw32ph45xjs0bgp1nmk7j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -68,13 +69,20 @@
                   ;; Patch hard coded '/bin/sh' in the lin ending in:
                   ;; $Global::shell = $ENV{'PARALLEL_SHELL'} ||
                   ;;  parent_shell($$) || $ENV{'SHELL'} || "/bin/sh";
-                  (("/bin/sh\\\";\n$") (string-append (which "sh") "\";\n"))
-                  ;; Patch call to 'ps' and 'perl' commands.
-                  ((" ps ") (string-append " " (which "ps") " "))
-                  ((" perl -") (string-append " " (which "perl") " -"))))
+                  (("/bin/sh\\\";\n$") (string-append (which "sh") "\";\n"))))
               (list "src/parallel" "src/sem"))
              #t))
-         (add-after 'install 'post-install-test
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/parallel")
+                 `("PATH" ":" prefix
+                   ,(map (lambda (input)
+                           (string-append (assoc-ref inputs input) "/bin"))
+                         '("perl"
+                           "procps"))))
+               #t)))
+         (add-after 'wrap-program 'post-install-test
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke (string-append
                       (assoc-ref outputs "out") "/bin/parallel")

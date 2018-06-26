@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Andy Wingo <wingo@pobox.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1024,7 +1025,9 @@ extensions that it uses."
                        (append (opaque-cups-configuration-extensions config)
                                extensions)))))))
 
-                (default-value (cups-configuration))))
+                (default-value (cups-configuration))
+                (description
+                 "Run the CUPS print server.")))
 
 ;; A little helper to make it easier to document all those fields.
 (define (generate-cups-documentation)

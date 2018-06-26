@@ -517,7 +517,7 @@ and corrections.  It is based on a Bayesian filter.")
              (substitute* "docs/Makefile"
                ;; Prevent xmllint and xsltproc from downloading a DTD file.
                (("a2x -v") "a2x --no-xmllint --xsltproc-opts=--nonet -v"))
-             (zero? (system* "make" "-C" "docs" "man"))))
+             (invoke "make" "-C" "docs" "man")))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -795,12 +795,10 @@ invoking @command{notifymuch} from the post-new hook.")
                              (elisp
                               (string-append out "/share/emacs/site-lisp/guix.d/"
                                              ,name "-" ,version)))
-                        (zero?
-                         (system*
-                          "./configure"
-                          (string-append "--prefix=" out)
-                          (string-append "--emacslispdir=" elisp)
-                          (string-append "--emacsetcdir=" elisp))))))
+                        (invoke "./configure"
+                                (string-append "--prefix=" out)
+                                (string-append "--emacslispdir=" elisp)
+                                (string-append "--emacsetcdir=" elisp)))))
                   (add-before 'check 'prepare-test-environment
                     (lambda _
                       (setenv "TEST_CC" "gcc")
@@ -977,7 +975,7 @@ useful features.")
           (add-after 'unpack 'autogen
             (lambda _
               (setenv "NOCONFIGURE" "true")
-              (zero? (system* "sh" "autogen.sh")))))
+              (invoke "sh" "autogen.sh"))))
         #:configure-flags
         '("--disable-static" "--disable-db")))
     (home-page "http://www.etpan.org/libetpan.html")
@@ -1273,7 +1271,9 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rkk10b1bsjz979sc864vpgcdchy7yxwmyv4ik50lar1h6awdnrf"))))
+         "0rkk10b1bsjz979sc864vpgcdchy7yxwmyv4ik50lar1h6awdnrf"))
+       (patches
+        (search-patches "dovecot-trees-support-dovecot-2.3.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("automake" ,automake)
@@ -1292,7 +1292,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (home-page "https://0xacab.org/riseuplabs/trees")
     (synopsis "NaCL-based Dovecot email storage encryption plugin")
     (description
@@ -1348,7 +1348,7 @@ using lidsodium sealed boxes.
          (modify-phases %standard-phases
            (add-after 'unpack 'autogen
              (lambda _
-               (zero? (system* "sh" "autogen.sh")))))))
+               (invoke "sh" "autogen.sh"))))))
       (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
       (synopsis "Libsodium password hashing schemes plugin for Dovecot")
       (description
@@ -1955,14 +1955,15 @@ define(`confLIBS', `-lresolv')
 define(`confINSTALL', `~a/devtools/bin/install.sh')
 define(`confDEPEND_TYPE', `CC-M')
 define(`confINST_DEP', `')
-" (getcwd))))))
+" (getcwd))))
+             #t))
          (replace 'build
            (lambda _
-             (and (zero? (system* "sh" "Build"))
-                  (with-directory-excursion "cf/cf"
-                    (begin
-                      (copy-file "generic-linux.mc" "sendmail.mc")
-                      (zero? (system* "sh" "Build" "sendmail.cf")))))))
+             (invoke "sh" "Build")
+             (with-directory-excursion "cf/cf"
+               (copy-file "generic-linux.mc" "sendmail.mc")
+               (invoke "sh" "Build" "sendmail.cf"))
+             #t))
          (add-before 'install 'pre-install
            (lambda _
              (let ((out (assoc-ref %outputs "out")))
@@ -1971,7 +1972,8 @@ define(`confINST_DEP', `')
                (mkdir-p (string-append out "/etc/mail"))
                (setenv "DESTDIR" out)
                (with-directory-excursion "cf/cf"
-                 (zero? (system* "sh" "Build" "install-cf")))))))
+                 (invoke "sh" "Build" "install-cf"))
+               #t))))
        ;; There is no make check.  There are some post installation tests, but those
        ;; require root privileges
        #:tests? #f))
@@ -2223,12 +2225,10 @@ installation on systems where resources are limited.  Its features include:
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero?
-              (system*
-               "django-admin"
-               "test"
-               "--settings=django_mailman3.tests.settings_test"
-               "django_mailman3")))))
+             (invoke "django-admin"
+                     "test"
+                     "--settings=django_mailman3.tests.settings_test"
+                     "django_mailman3"))))
        #:python ,python-2))
     (inputs
      `(("python2-django" ,python2-django)))

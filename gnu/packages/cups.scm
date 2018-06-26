@@ -23,29 +23,30 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages cups)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages groff)
-  #:use-module (gnu packages libusb)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages pretty-print)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages scanner)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages fonts) ;font-dejavu
+  #:use-module (gnu packages fonts)     ; font-dejavu
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages groff)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages scanner)
+  #:use-module (gnu packages tls)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages))
 
 (define-public cups-filters
   (package
@@ -379,14 +380,14 @@ device-specific programs to convert and print many types of files.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.18.3")
+    (version "3.18.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "0x5xs86v18w46rxz5whc15bl4fb7p4km6xqjpwzclp83nl7rl01y"))
+                "0zbv6cp9n3xypf2fg4j6fpz8zkvl0z08lyc1vq1gd04ln1l3xkqf"))
               (modules '((guix build utils)))
               (snippet
                ;; Fix type mismatch.
@@ -396,8 +397,10 @@ device-specific programs to convert and print many types of files.")
                   #t))))
     (build-system gnu-build-system)
     (home-page "http://hplipopensource.com/")
-    (synopsis "HP Printer Drivers")
-    (description "Hewlett-Packard Printer Drivers and PPDs.")
+    (synopsis "HP printer drivers")
+    (description
+     "Hewlett-Packard printer drivers and PostScript Printer Descriptions
+(@dfn{PPD}s).")
 
     ;; The 'COPYING' file lists directories where each of these 3 licenses
     ;; applies.
@@ -424,7 +427,8 @@ device-specific programs to convert and print many types of files.")
          ,(string-append "--with-icondir="
                          (assoc-ref %outputs "out") "/share/applications")
          ,(string-append "--with-systraydir="
-                         (assoc-ref %outputs "out") "/etc/xdg"))
+                         (assoc-ref %outputs "out") "/etc/xdg")
+         "--enable-qt5" "--disable-qt4")
 
        #:imported-modules ((guix build python-build-system)
                            ,@%gnu-build-system-modules)
@@ -463,7 +467,7 @@ device-specific programs to convert and print many types of files.")
                            (string-append "hplip_confdir = " out
                                           "/etc/hp"))
                           (("halpredir = /usr/share/hal/fdi/preprobe/10osvendor")
-                           ;; Note: We don't use hal.
+                           ;; We don't use hal.
                            (string-append "halpredir = " out
                                           "/share/hal/fdi/preprobe/10osvendor"))
                           (("rulesdir = /etc/udev/rules.d")
@@ -477,23 +481,30 @@ device-specific programs to convert and print many types of files.")
                           (("/etc/sane.d")
                            (string-append out "/etc/sane.d"))))))
 
-                  ;; Wrap bin/* so that the Python libs are found.
+                  ;; Wrap bin/* so that the Python libraries are found.
                   (add-after 'install 'wrap-binaries
                     (assoc-ref python:%standard-phases 'wrap)))))
 
-    ;; Python3 support is available starting from hplip@3.15.2.
-    (inputs `(("libjpeg" ,libjpeg)
-              ("cups-minimal" ,cups-minimal)
-              ("libusb" ,libusb)
-              ("sane-backends" ,sane-backends-minimal)
-              ("zlib" ,zlib)
-              ("dbus" ,dbus)
-              ("python-wrapper" ,python-wrapper)
-              ("python" ,python)
-              ;; TODO: Make hp-setup find python-dbus.
-              ("python-dbus" ,python-dbus)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("perl" ,perl)))))
+    ;; Note that the error messages printed by the tools in the case of
+    ;; missing dependencies are often downright misleading.
+    ;; TODO: hp-toolbox still fails to start with:
+    ;;   from dbus.mainloop.pyqt5 import DBusQtMainLoop
+    ;;   ModuleNotFoundError: No module named 'dbus.mainloop.pyqt5'
+    (inputs
+     `(("cups-minimal" ,cups-minimal)
+       ("dbus" ,dbus)
+       ("libjpeg" ,libjpeg)
+       ("libusb" ,libusb)
+       ("python" ,python)
+       ("python-dbus" ,python-dbus)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyqt" ,python-pyqt)
+       ("python-wrapper" ,python-wrapper)
+       ("sane-backends" ,sane-backends-minimal)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))))
 
 (define-public foomatic-filters
   (package

@@ -4485,13 +4485,13 @@ them as the version argument or in a SCM managed file.")
 (define-public python-pathpy
   (package
     (name "python-pathpy")
-    (version "11.0")
+    (version "11.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "path.py" version))
        (sha256
-        (base32 "12s84maimiz61980q065rjgi8ang6xw2wwm64m0lmfks51dlw4qn"))))
+        (base32 "07x15v8c7ry9bvycw294c9yq6ky9v2b0dalvgi6rn38ilh69vsz7"))))
     ;; (outputs '("out" "doc"))
     (build-system python-build-system)
     (propagated-inputs
@@ -12885,6 +12885,48 @@ and works only with Python 2 and NumPy < 1.9.")
 
 (define-public python2-phonenumbers
   (package-with-python2 python-phonenumbers))
+
+(define-public python-send2trash
+  (package
+    (name "python-send2trash")
+    (version "1.4.2")
+    (source
+     (origin (method url-fetch)
+             ;; Source tarball on PyPI doesn't include tests.
+             (uri (string-append "https://github.com/hsoft/send2trash/archive/"
+                                 version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0ffyhwjyx61slkdy38iwjc4gmj7fj9gs2q58f075gwvq630pzm9z"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             (mkdir-p "/tmp/foo")
+             (setenv "HOME" "/tmp/foo")
+             #t)))))
+    (home-page "https://github.com/hsoft/send2trash")
+    (synopsis "Send files to the user's @file{~/Trash} directory")
+    (description "This package provides a Python library to send files to the
+user's @file{~/Trash} directory.")
+    (license license:bsd-3)))
+
+(define-public python2-send2trash
+  (package
+    (inherit (package-with-python2 python-send2trash))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-send2trash)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'setenv
+             (lambda _
+               (setenv "PYTHONPATH"
+                       (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+               #t))))))
+    (properties `((python2-variant . ,(delay python-send2trash))))))
 
 (define-public python-yapf
   (package

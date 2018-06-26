@@ -1,0 +1,60 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Mon, 25 Jun 2018 00:34:52 +0200
+Subject: dovecot-trees: Fix build with dovecot 2.3.
+
+The following patch was taken verbatim from the upstream repository[0]
+and will be included in the next release.
+
+[0]: https://0xacab.org/riseuplabs/trees/commit/e136c32a044701d68b0235b8405357c5fca62a11
+---
+From e136c32a044701d68b0235b8405357c5fca62a11 Mon Sep 17 00:00:00 2001
+From: David Goulet <dgoulet@ev0ke.net>
+Date: Tue, 10 Apr 2018 13:48:01 -0400
+Subject: [PATCH] Support dovecot 2.3
+
+Untested but it builds now properly. Thanks to "smorks" for the report!
+
+Fixes #16
+
+Signed-off-by: David Goulet <dgoulet@ev0ke.net>
+---
+ src/trees-istream.c | 4 ++++
+ src/trees-ostream.c | 7 +++++++
+ 2 files changed, 11 insertions(+)
+
+diff --git a/src/trees-istream.c b/src/trees-istream.c
+index b08ff16..e94be7d 100644
+--- a/src/trees-istream.c
++++ b/src/trees-istream.c
+@@ -431,5 +431,9 @@ trees_istream_create(struct istream *input,
+   sstream->out_byte_count = 0;
+ #endif
+ 
++#if DOVECOT_PREREQ(2, 3)
++	return i_stream_create(&sstream->istream, input, i_stream_get_fd(input), 0);
++#else
+   return i_stream_create(&sstream->istream, input, i_stream_get_fd(input));
++#endif /* DOVECOT_PREREQ */
+ }
+diff --git a/src/trees-ostream.c b/src/trees-ostream.c
+index 1b25a91..0cb7867 100644
+--- a/src/trees-ostream.c
++++ b/src/trees-ostream.c
+@@ -174,7 +174,14 @@ trees_ostream_sendv(struct ostream_private *stream,
+ static int
+ trees_ostream_flush(struct ostream_private *stream)
+ {
++  /* This is pretty ugly but unfortunately between 2.2 and 2.3, Dovecot changed
++   * the expected value to be non zero in 2.3+ . */
++#if DOVECOT_PREREQ(2, 3)
++  ssize_t result = 1;
++#else
+   ssize_t result = 0;
++#endif /* DOVECOT_PREREQ */
++
+   struct trees_ostream *sstream = (struct trees_ostream *) stream;
+ 
+   if (sstream->flushed) {
+-- 
+2.17.1
+

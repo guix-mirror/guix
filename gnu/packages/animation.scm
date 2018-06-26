@@ -52,7 +52,7 @@
                (base32
                 "0ii73nsd3xzkhz6w1rnxwphl637j9w82xiy6apa9vin2isdynnmc"))))
     (build-system gnu-build-system)
-    (home-page "http://www.synfig.org")
+    (home-page "https://www.synfig.org")
     (synopsis "Extended C++ template library")
     (description
      "ETL is a class and template library designed to add new datatypes and
@@ -130,7 +130,7 @@ C++ @dfn{Standard Template Library} (STL).")
        ("pango" ,pango)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.synfig.org")
+    (home-page "https://www.synfig.org")
     (synopsis "Vector-based 2D animation renderer")
     (description
      "Synfig is a vector-based 2D animation package.  It is designed to be
@@ -180,7 +180,7 @@ for tweening, preventing the need to hand-draw each frame.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
-    (home-page "http://www.synfig.org")
+    (home-page "https://www.synfig.org")
     (synopsis "Vector-based 2D animation package (GUI)")
     (description
      "Synfig is a vector-based 2D animation package.  It is designed to
@@ -248,7 +248,7 @@ contains the graphical user interface for synfig.")
          ("libsndfile" ,libsndfile)))
       (native-inputs
        `(("qttools" ,qttools)))
-      (home-page "http://www.lostmarble.com/papagayo/")
+      (home-page "https://www.lostmarble.com/papagayo/")
       (synopsis "Lip-syncing for animations")
       (description
        "Papagayo is a lip-syncing program designed to help you line up

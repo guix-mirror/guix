@@ -11449,7 +11449,7 @@ applications for tackling some common problems in a user-friendly way.")
        ("python2-numpy" ,python2-numpy)
        ("python2-matplotlib" ,python2-matplotlib)
        ("python2-pysam" ,python2-pysam)))
-    (home-page "http://3dgenomes.github.io/TADbit/")
+    (home-page "https://3dgenomes.github.io/TADbit/")
     (synopsis "Analyze, model, and explore 3C-based data")
     (description
      "TADbit is a complete Python library to deal with all steps to analyze,
@@ -12725,7 +12725,7 @@ contains
        #:phases
        (modify-phases %standard-phases
          ;; FIXME: fails with "java.io.FileNotFoundException:
-         ;; /gnu/store/q76y0ximcziplgfpbn26kbw4h3s14f33-dropseq-tools-1.13/share/java/lib/biojava-alignment.jar"
+         ;; /gnu/store/…-dropseq-tools-1.13/share/java/lib/biojava-alignment.jar"
          (delete 'generate-jar-indices)
          ;; All dependencies must be linked to "lib", because that's where
          ;; they will be searched for when the Class-Path property of the
@@ -12906,7 +12906,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.16")
+    (version "0.0.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12914,20 +12914,10 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0s53840z53pih0jkllmcfb2la7c36zxmf229fshhyq8n6a2hgr8f"))))
+                "1c0x5lswvc8v9fw4iynl5rcfs7h7clzp4hqdnl65ia7rk35n4zg9"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ; parts of the tests rely on access to the network
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           ;; Make sure the executable finds all R modules.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/pigx-chipseq")
-                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
-                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
-             #t)))))
+    ;; parts of the tests rely on access to the network
+    (arguments '(#:tests? #f))
     (inputs
      `(("grep" ,grep)
        ("coreutils" ,coreutils)

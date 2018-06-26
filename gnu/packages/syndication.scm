@@ -32,7 +32,7 @@
 (define-public newsboat
   (package
     (name "newsboat")
-    (version "2.11.1")
+    (version "2.12")
     (source
      (origin
        (method url-fetch)
@@ -40,7 +40,7 @@
                            "/newsboat-" version ".tar.xz"))
        (sha256
         (base32
-         "1krpxl854h5dwmpr81m1s84cwk8zivdzvw0s5s0i4dba736pvdma"))))
+         "1x23zlgljaqf46v7sp8wnkyf6wighvirvn48ankpa34yr8mvrgcv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -60,7 +60,7 @@
          (delete 'configure)            ; no configure script
          (add-after 'build 'build-documentation
            (lambda _
-             (zero? (system* "make" "doc")))))
+             (invoke "make" "doc"))))
        #:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"))

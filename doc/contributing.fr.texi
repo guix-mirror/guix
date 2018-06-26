@@ -159,16 +159,10 @@ Le script @command{pre-inst-env} paramètre toutes les variables
 d'environnement nécessaires, dont @env{PATH} et @env{GUILE_LOAD_PATH}.
 
 Remarquez que @command{./pre-inst-env guix pull} ne met @emph{pas} à jour
-l'arborescence des sources locale ; il met seulement à jour le lien
-symbolique @file{~/.config/guix/latest} (@pxref{Invoquer guix pull}).
+l'arborescence des sources locale ; cela met seulement à jour le lien
+symbolique de @file{~/.config/guix/current} (@pxref{Invoquer guix pull}).
 Lancez @command{git pull} à la place si vous voulez mettre à jour votre
-arborescence des sources locale@footnote{Si vous voulez paramétrer
-@command{guix} pour qu'il utilise votre dépôt Git, vous pouvez faire pointer
-le lien symbolique @file{~/.config/guix/latest} vers le répertoire contenant
-ce dépôt.  Si vous le seul utilisateur du système, vous pouvez aussi
-considérer faire pointer le lien symbolique @file{/root/.config/guix/latest}
-vers @file{~/.config/guix/latest} ; comme ça root aura toujours la même
-commande @command{guix} que votre utilisateur}.
+arborescence des source locale.
 
 
 @node La configuration parfaite
@@ -432,11 +426,18 @@ potentiellement disruptifs).  Cette branche devrait être fusionnée dans
 @code{master} tous les 2,5 mois environ.
 @end table
 
-Toutes ces branches sont gérées par notre ferme de construction et
-fusionnées dans @code{master} une fois que tout a été construit
-correctement.  Cela nous permet de corriger des problèmes avant qu'ils
-n'atteignent les utilisateurs et réduit la fenêtre pendant laquelle les
-binaires pré-construits ne sont pas disponibles.
+Toutes ces branches sont @uref{https://hydra.gnu.org/project/gnu, gérées par
+notre ferme de construction} et fusionnées dans @code{master} une fois que
+tout a été construit correctement.  Cela nous permet de corriger des
+problèmes avant qu'ils n'atteignent les utilisateurs et réduit la fenêtre
+pendant laquelle les binaires pré-construits ne sont pas disponibles.
+
+@c TODO: It would be good with badges on the website that tracks these
+@c branches.  Or maybe even a status page.
+Généralement les autres branches que @code{master} sont considérées comme
+@emph{gelées} s'il y a eu une évaluation récente ou qu'il y a une branche
+@code{-next} correspondante.  Demandez sur la liste de diffusion ou sur IRC
+si vous n'êtes pas sûr de savoir où pousser votre correctif.
 
 @item
 @cindex déterminisme, du processus de construction

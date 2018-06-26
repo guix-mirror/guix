@@ -2117,8 +2117,8 @@ It has a nice, simple s-expression based syntax.")
     (license license:gpl3+)))
 
 (define-public guile-simple-zmq
-  (let ((commit "d76657aeb1cd10ef8136edc06bb90999914c7c3c")
-        (revision "0"))
+  (let ((commit "1f3b7c0b9b249c6fde8e8a632b252d8a1b794424")
+        (revision "1"))
     (package
       (name "guile-simple-zmq")
       (version (git-version "0.0.0" revision commit))
@@ -2130,7 +2130,7 @@ It has a nice, simple s-expression based syntax.")
                (commit commit)))
          (sha256
           (base32
-           "1w73dy5gpyv33jn34dqlkqpwh9w4y8wm6hgvbpb3wbp6xsa2mk4z"))
+           "0nj2pd5bsmmgd3c54wh4sixfhmsv1arsq7yam2d7487h3n9q57r7"))
          (file-name (git-file-name name version))))
       (build-system trivial-build-system)
       (arguments
@@ -2195,9 +2195,10 @@ It has a nice, simple s-expression based syntax.")
                                             file go-file)))))
                        (list scm-file))
              #t))))
+      (inputs
+       `(("guile" ,guile-2.2)))
       (propagated-inputs
-       `(("guile" ,guile-2.2)
-         ("zeromq" ,zeromq)))
+       `(("zeromq" ,zeromq)))
       (home-page "https://github.com/jerry40/guile-simple-zmq")
       (synopsis "Guile wrapper over ZeroMQ library")
       (description

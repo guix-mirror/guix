@@ -108,6 +108,7 @@
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
+  #:use-module (gnu packages gnupg)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -936,7 +937,8 @@ provides an optional IDE-like error list.")
                    (vorbis  (assoc-ref inputs "vorbis-tools"))
                    (alsa    (assoc-ref inputs "alsa-utils"))
                    (mpg321  (assoc-ref inputs "mpg321"))
-                   (mp3info (assoc-ref inputs "mp3info")))
+                   (mp3info (assoc-ref inputs "mp3info"))
+                   (opus    (assoc-ref inputs "opus-tools")))
                ;; Specify the installation directory.
                (substitute* "Makefile"
                  (("PREFIX=.*$")
@@ -961,6 +963,9 @@ provides an optional IDE-like error list.")
                  (emacs-substitute-variables "emms-info-ogginfo.el"
                    ("emms-info-ogginfo-program-name"
                     (string-append vorbis "/bin/ogginfo")))
+                 (emacs-substitute-variables "emms-info-opusinfo.el"
+                   ("emms-info-opusinfo-program-name"
+                    (string-append opus "/bin/opusinfo")))
                  (emacs-substitute-variables "emms-info-libtag.el"
                    ("emms-info-libtag-program-name"
                     (string-append out "/bin/emms-print-metadata")))
@@ -1009,7 +1014,8 @@ provides an optional IDE-like error list.")
               ("vorbis-tools" ,vorbis-tools)
               ("mpg321" ,mpg321)
               ("taglib" ,taglib)
-              ("mp3info" ,mp3info)))
+              ("mp3info" ,mp3info)
+              ("opus-tools" ,opus-tools)))
     (properties '((upstream-name . "emms")))
     (synopsis "Emacs Multimedia System")
     (description
@@ -1022,27 +1028,8 @@ light user interface.")
     (license license:gpl3+)))
 
 (define-public emacs-emms-player-mpv
-  (package
-    (name "emacs-emms-player-mpv")
-    (version "0.1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dochang/emms-player-mpv/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "05qwbagc4i7yn7i94r1hdgj6wc5xijy1pxqv08pwsmli9rqj51n9"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emms" ,emms)))
-    (home-page "https://github.com/dochang/emms-player-mpv/")
-    (synopsis "Mpv support for EMMS")
-    (description
-     "This package provides an EMMS player that uses mpv.  It supports pause
-and seeking.")
-    (license license:gpl3+)))
+  ;; A new mpv backend is included in Emms from 5.0.
+  (deprecated-package "emacs-emms-player-mpv" emms))
 
 (define-public emacs-emms-mode-line-cycle
   (package
@@ -4494,7 +4481,7 @@ the file buffer.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "2.9.0")
+    (version "2.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4503,7 +4490,7 @@ the file buffer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1798gn0za11cxdbi436javfczv4abniccxcl0jppl463r8lzb8is"))))
+                "1f7m09i8gr0gk5nw5dn7rpdz20dg3hl4p77dpygkhl82yhk9q2ql"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -5467,8 +5454,8 @@ Yasnippet.")
       (license license:gpl2+))))
 
 (define-public emacs-helm-system-packages
-  (let ((commit "986b7bd360a705053500c4ce2c9bea03dd7b24a6")
-        (revision "1"))
+  (let ((commit "b41f8f251695cf236e9d1627070049a5b41aa38a")
+        (revision "2"))
     (package
       (name "emacs-helm-system-packages")
       (version (git-version "1.9.0" revision commit))
@@ -5480,7 +5467,7 @@ Yasnippet.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "19iklhpxgh5xx6h4dysf58nd46lmyb46xj601lf7kbwl6yq0y61f"))))
+                  "1wrsx1j86c9a74nsdndjv21slzl46idd3p6wqy5wnasawj0kfn8r"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)))
@@ -9656,31 +9643,8 @@ time is being spent during Emacs startup in order to optimize startup time.")
     (license license:gpl3+)))
 
 (define-public emacs-emms-player-simple-mpv
-  (let ((commit "101d120ccdee1c2c213fd2f0423c858b21649c00")
-        (revision "1"))
-    (package
-      (name "emacs-emms-player-simple-mpv")
-      (version (string-append "0.4.0" "-" revision "."
-                              (string-take commit 7)))
-
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/momomo5717/emms-player-simple-mpv.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1i6rxkm0ra0jbkkwgkwxg3vk5xfl794h1gkgnlpscynz0v94b6ll"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-emms" ,emms)))
-      (home-page "https://github.com/momomo5717/emms-player-simple-mpv")
-      (synopsis "Extension of @file{emms-player-simple.el} for mpv JSON IPC")
-      (description "@code{emms-player-simple-mpv} provides macros and
-functions for defining emms simple players of mpv.")
-      (license license:gpl3+))))
+  ;; A new mpv backend is included in Emms from 5.0.
+  (deprecated-package "emacs-emms-player-simple-mpv" emms))
 
 (define-public emacs-magit-org-todos-el
   (let ((commit "df206287737b9671f2e36ae7b1474ebbe9940d2a"))
@@ -11282,4 +11246,34 @@ shows all e-mails of a thread in a single view, where each correspondant has
 their own face.  Threads can be displayed linearly (in which case e-mails are
 displayed in chronological order) or as an Org document where the node tree
 maps the thread tree.")
+      (license license:gpl3+))))
+
+(define-public emacs-pinentry
+  (let ((commit "dcc9ba03252ee5d39e03bba31b420e0708c3ba0c")
+        (revision "1"))
+    (package
+      (name "emacs-pinentry")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "http://git.savannah.gnu.org/cgit/emacs/elpa.git/plain"
+               "/packages/pinentry/pinentry.el?id=" commit))
+         (file-name (string-append "pinentry.el"))
+         (sha256
+          (base32
+           "1lf30q6r8nz5cjzclbb9bbymsk2y75nskvb55hnjdv93gr3j0sik"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("gnupg" ,gnupg)))
+      (home-page "https://elpa.gnu.org/packages/pinentry.html")
+      (synopsis "GnuPG Pinentry server implementation")
+      (description
+       "This package allows GnuPG passphrase to be prompted through the
+minibuffer instead of graphical dialog.
+
+To use, add @code{allow-emacs-pinentry} to @code{~/.gnupg/gpg-agent.conf},
+reload the configuration with @code{gpgconf --reload gpg-agent}, and start the
+server with @code{M-x pinentry-start}.")
       (license license:gpl3+))))

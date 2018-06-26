@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -352,8 +353,8 @@ bring the system down."
                            #:optional (profile %system-profile))
   "Make a new generation of PROFILE pointing to the directory of OS, switch to
 it atomically, and then run OS's activation script."
-  (mlet* %store-monad ((drv    (operating-system-derivation os))
-                       (script (operating-system-activation-script os)))
+  (mlet* %store-monad ((drv (operating-system-derivation os))
+                       (script (lower-object (operating-system-activation-script os))))
     (let* ((system     (derivation->output-path drv))
            (number     (+ 1 (generation-number profile)))
            (generation (generation-file-name profile number)))

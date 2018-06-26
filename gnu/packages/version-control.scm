@@ -53,6 +53,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -144,14 +145,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
    ;; to be updated as well.
-   (version "2.17.1")
+   (version "2.18.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0pm6bdnrrm165k3krnazxcxadifk2gqi30awlbcf9fism1x6w4vr"))))
+              "14hfwfkrci829a9316hnvkglnqqw1p03cw9k56p4fcb078wbwh4b"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -164,7 +165,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0m7grrwsqaihdgcgaicxiy4rlqjpa75n5wl6hi2qhi33xa34gmc3"))))))
+            "15k04s9pcc5wkmlfa8x99nbgczjbx0c91767ciqmjy9kwsavxqws"))))))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
@@ -172,6 +173,10 @@ as well as the classic centralized workflow.")
       ("perl" ,perl)
       ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL
       ("zlib" ,zlib)
+
+      ;; Note: we keep this in inputs rather than native-inputs to work around
+      ;; a problem in 'patch-shebangs'; see <https://bugs.gnu.org/31952>.
+      ("bash-for-tests" ,bash)
 
       ;; For 'gitweb.cgi'
       ("perl-cgi" ,perl-cgi)
@@ -191,14 +196,28 @@ as well as the classic centralized workflow.")
    (outputs '("out"                               ; the core
               "send-email"                        ; for git-send-email
               "svn"                               ; git-svn
+              "credential-netrc"                  ; git-credential-netrc
               "gui"))                             ; gitk, git gui
    (arguments
     `(#:make-flags `("V=1"                        ;more verbose compilation
+
+                     ,(string-append "SHELL_PATH="
+                                     (assoc-ref %build-inputs "bash")
+                                     "/bin/sh")
+
+                     ;; Tests require a bash with completion support.
+                     ,(string-append "TEST_SHELL_PATH="
+                                     (assoc-ref %build-inputs "bash-for-tests")
+                                     "/bin/bash")
 
                      ;; By default 'make install' creates hard links for
                      ;; things in 'libexec/git-core', which leads to huge
                      ;; nars; see <https://bugs.gnu.org/21949>.
                      "NO_INSTALL_HARDLINKS=indeed")
+
+      ;; Make sure the full bash does not end up in the final closure.
+      #:disallowed-references (,bash)
+
       #:test-target "test"
 
       ;; Tests fail randomly when parallel: <https://bugs.gnu.org/29512>.
@@ -211,13 +230,23 @@ as well as the classic centralized workflow.")
                                              "/bin/wish8.6")) ; XXX
 
       #:modules ((srfi srfi-1)
+                 (srfi srfi-26)
                  ,@%gnu-build-system-modules)
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'modify-PATH
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((path (string-split (getenv "PATH") #\:))
+                  (bash-full (assoc-ref inputs "bash-for-tests")))
+              ;; Drop the test bash from PATH so that (which "sh") and
+              ;; similar does the right thing.
+              (setenv "PATH" (string-join
+                              (remove (cut string-prefix? bash-full <>) path)
+                              ":"))
+              #t)))
         (add-after 'configure 'patch-makefiles
           (lambda _
             (substitute* "Makefile"
-              (("/bin/sh") (which "sh"))
               (("/usr/bin/perl") (which "perl"))
               (("/usr/bin/python") (which "python")))
             #t))
@@ -273,6 +302,12 @@ as well as the classic centralized workflow.")
               (mkdir-p completions)
               (copy-file "contrib/completion/git-completion.bash"
                          (string-append completions "/git"))
+              #t)))
+        (add-after 'install 'install-credential-netrc
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((netrc (assoc-ref outputs "credential-netrc")))
+              (install-file "contrib/credential/netrc/git-credential-netrc"
+                            (string-append netrc "/bin"))
               #t)))
         (add-after 'install 'split
           (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -416,7 +451,7 @@ everything from small to very large projects with speed and efficiency.")
              #t))
          ;; Run checks more verbosely.
          (replace 'check
-           (lambda _ (zero? (system* "./libgit2_clar" "-v" "-Q")))))))
+           (lambda _ (invoke "./libgit2_clar" "-v" "-Q"))))))
     (inputs
      `(("libssh2" ,libssh2)
        ("http-parser" ,http-parser)
@@ -459,12 +494,12 @@ write native speed custom Git applications in any language with bindings.")
          (delete 'configure)
          (replace 'build
            (lambda _
-             (zero? (system* "make"))))
+             (invoke "make")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero? (system* "make" "install"
-                               (string-append "PREFIX=" out)))))))))
+               (invoke "make" "install"
+                       (string-append "PREFIX=" out))))))))
     (home-page "https://www.agwa.name/projects/git-crypt")
     (synopsis "Transparent encryption of files in a git repository")
     (description "git-crypt enables transparent encryption and decryption of

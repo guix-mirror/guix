@@ -19,6 +19,7 @@
 
 (define-module (test-system)
   #:use-module (gnu)
+  #:use-module ((gnu services) #:select (service-value))
   #:use-module (guix store)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
@@ -116,5 +117,27 @@
                            (mount-point "/")
                            (type "ext4"))
                          %base-file-systems)))))
+
+(test-equal "non-boot-file-system-service"
+  '()
+
+  ;; Make sure that mapped devices with at least one needed-for-boot user are
+  ;; handled exclusively from the initrd.  See <https://bugs.gnu.org/31889>.
+  (append-map file-system-dependencies
+              (service-value
+               ((@@ (gnu system) non-boot-file-system-service)
+                (operating-system
+                  (inherit %os-with-mapped-device)
+                  (file-systems
+                   (list (file-system
+                           (mount-point "/foo/bar")
+                           (device "qux:baz")
+                           (type "none")
+                           (dependencies (list %luks-device)))
+                         (file-system
+                           (device (file-system-label "my-root"))
+                           (mount-point "/")
+                           (type "ext4")
+                           (dependencies (list %luks-device))))))))))
 
 (test-end)

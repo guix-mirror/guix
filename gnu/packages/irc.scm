@@ -133,12 +133,11 @@ irssi, but graphical.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (setenv "CONFIG_SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         (string-append "--with-proxy")
-                         (string-append "--with-socks")
-                         (string-append "--with-bot")))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--with-proxy")
+                       (string-append "--with-socks")
+                       (string-append "--with-bot"))))))))
     (inputs
      `(("glib" ,glib)
        ("ncurses" ,ncurses)
@@ -405,21 +404,20 @@ other enhancements and bug fixes.")
                      '())
                (setenv "CONFIG_SHELL" (which "bash"))
                (setenv "SHELL" (which "bash"))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         "--with-ipv6" "--with-libarchive"
-                         ;; We use libressl because openssl does not come
-                         ;; with the lib/libssl.a which is needed for epic5.
-                         ;; XXX: No matter which implementation is chosen,
-                         ;; epic5 fails to connect to tls ports of roundrobin
-                         ;; irc networks. This however is believed to be an
-                         ;; protocol issue at epic5 related to ircd.
-                         (string-append "--with-ssl="
-                                        (assoc-ref %build-inputs "libressl"))
-                         (string-append "--with-tcl="
-                                        (assoc-ref %build-inputs "tcl")
-                                        "/lib/tclConfig.sh")))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       "--with-ipv6" "--with-libarchive"
+                       ;; We use libressl because openssl does not come
+                       ;; with the lib/libssl.a which is needed for epic5.
+                       ;; XXX: No matter which implementation is chosen,
+                       ;; epic5 fails to connect to tls ports of roundrobin
+                       ;; irc networks. This however is believed to be an
+                       ;; protocol issue at epic5 related to ircd.
+                       (string-append "--with-ssl="
+                                      (assoc-ref %build-inputs "libressl"))
+                       (string-append "--with-tcl="
+                                      (assoc-ref %build-inputs "tcl")
+                                      "/lib/tclConfig.sh"))))))))
     (inputs
      `(("libressl" ,libressl)
        ("ncurses" ,ncurses)

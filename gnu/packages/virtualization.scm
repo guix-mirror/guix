@@ -52,6 +52,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
@@ -65,6 +66,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
@@ -128,28 +130,27 @@
 
                ;; The binaries need to be linked against -lrt.
                (setenv "LDFLAGS" "-lrt")
-               (zero?
-                (apply system*
-                       `("./configure"
-                         ,(string-append "--cc=" (which "gcc"))
-                         ;; Some architectures insist on using HOST_CC
-                         ,(string-append "--host-cc=" (which "gcc"))
-                         "--disable-debug-info" ; save build space
-                         "--enable-virtfs"      ; just to be sure
-                         ,(string-append "--prefix=" out)
-                         ,(string-append "--sysconfdir=/etc")
-                         ,@configure-flags))))))
+               (apply invoke
+                      `("./configure"
+                        ,(string-append "--cc=" (which "gcc"))
+                        ;; Some architectures insist on using HOST_CC
+                        ,(string-append "--host-cc=" (which "gcc"))
+                        "--disable-debug-info" ; save build space
+                        "--enable-virtfs"      ; just to be sure
+                        ,(string-append "--prefix=" out)
+                        ,(string-append "--sysconfdir=/etc")
+                        ,@configure-flags)))))
          (add-after 'install 'install-info
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Install the Info manual, unless Texinfo is missing.
-             (or (not (assoc-ref inputs "texinfo"))
-                 (let ((out (assoc-ref outputs "out")))
-                   (and (zero? (system* "make" "info"))
-                        (let ((infodir (string-append out "/share/info")))
-                          (for-each (lambda (info)
-                                      (install-file info infodir))
-                                    (find-files "." "\\.info"))
-                          #t))))))
+             (when (assoc-ref inputs "texinfo")
+               (let* ((out  (assoc-ref outputs "out"))
+                      (dir (string-append out "/share/info")))
+                 (invoke "make" "info")
+                 (for-each (lambda (info)
+                             (install-file info dir))
+                           (find-files "." "\\.info"))))
+             #t))
          ;; Create a wrapper for Samba. This allows QEMU to use Samba without
          ;; pulling it in as an input. Note that you need to explicitly install
          ;; Samba in your Guix profile for Samba support.
@@ -368,14 +369,13 @@ all common programming languages.  Vala bindings are also provided.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out         (assoc-ref outputs "out"))
                     (bashcompdir (string-append out "/etc/bash_completion.d")))
-               (zero? (system*
-                       "make" "install"
+               (invoke "make" "install"
                        (string-append "bashcompdir=" bashcompdir)
                        ;; Don't install files into /var and /etc.
                        "LXCPATH=/tmp/var/lib/lxc"
                        "localstatedir=/tmp/var"
                        "sysconfdir=/tmp/etc"
-                       "sysconfigdir=/tmp/etc/default"))))))))
+                       "sysconfigdir=/tmp/etc/default")))))))
     (synopsis "Linux container tools")
     (home-page "https://linuxcontainers.org/")
     (description
@@ -770,7 +770,7 @@ Machine Protocol.")
 (define-public lookingglass
   (package
    (name "lookingglass")
-   (version "a10")
+   (version "a11")
    (source
     (origin
      (method url-fetch)
@@ -779,7 +779,7 @@ Machine Protocol.")
      (file-name (string-append name "-" version))
      (sha256
       (base32
-       "0zlxg9ibzr0a598wr5nl1pb4l7mzsqn8ip72v4frph0vwsm5il6c"))))
+       "11qwyp332l66sqksqa0z9439yi4accmbq7wjc6kikc5fimdh9wk5"))))
    (build-system gnu-build-system)
    (inputs `(("fontconfig" ,fontconfig)
              ("glu" ,glu)
@@ -788,9 +788,12 @@ Machine Protocol.")
              ("sdl2" ,sdl2)
              ("sdl2-ttf" ,sdl2-ttf)
              ("spice-protocol" ,spice-protocol)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (native-inputs `(("libconfig" ,libconfig)
+                    ("nettle" ,nettle)
+                    ("pkg-config" ,pkg-config)))
    (arguments
     `(#:tests? #f ;; No tests are available.
+      #:make-flags '("CC=gcc")
       #:phases (modify-phases %standard-phases
                  (replace 'configure
                    (lambda* (#:key outputs #:allow-other-keys)

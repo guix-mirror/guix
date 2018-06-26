@@ -61,6 +61,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system scons)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
@@ -93,6 +94,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
@@ -1845,31 +1847,27 @@ MIME type directly to the browser, without being processed through Catalyst.")
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
-    (version "5.90115")
+    (version "5.90118")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Catalyst-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "0kh3ng6pjpxmndq9vrn515f70x7h44ish5bsgjwj4pjvchcyivzm"))))
+         "0cws3szx3vvh0372qdx8fypgv6qphcc3v81rbq30sl1ghby7ksd3"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     `(("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-cgi-simple" ,perl-cgi-simple)
        ("perl-cgi-struct" ,perl-cgi-struct)
        ("perl-class-c3-adopt-next" ,perl-class-c3-adopt-next)
-       ("perl-class-data-inheritable" ,perl-class-data-inheritable)
        ("perl-class-date" ,perl-class-date)
        ("perl-class-load" ,perl-class-load)
        ("perl-data-dump" ,perl-data-dump)
        ("perl-http-body" ,perl-http-body)
        ("perl-http-message" ,perl-http-message)
-       ("perl-http-request-ascgi" ,perl-http-request-ascgi)
-       ("perl-io-stringy" ,perl-io-stringy)
        ("perl-json-maybexs" ,perl-json-maybexs)
        ("perl-libwww" ,perl-libwww)
        ("perl-module-pluggable" ,perl-module-pluggable)
@@ -1878,8 +1876,6 @@ MIME type directly to the browser, without being processed through Catalyst.")
         ,perl-moosex-emulate-class-accessor-fast)
        ("perl-moosex-getopt" ,perl-moosex-getopt)
        ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)
-       ("perl-moosex-role-withoverloading" ,perl-moosex-role-withoverloading)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-path-class" ,perl-path-class)
        ("perl-plack" ,perl-plack)
@@ -2079,7 +2075,7 @@ application classes.")
 (define-public perl-catalystx-script-server-starman
   (package
     (name "perl-catalystx-script-server-starman")
-    (version "0.02")
+    (version "0.03")
     (source
      (origin
        (method url-fetch)
@@ -2088,7 +2084,7 @@ application classes.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0h02mpkc4cmi3jpvcd7iw7xyzx55bqvvl1qkf967gqkvpklm0qx5"))))
+         "08jvibq4v8xjj0c3cr93h0w8w0c88ajwjn37xjy7ygxl9krlffp6"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
@@ -2186,19 +2182,21 @@ HTTP requests.")
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
-    (version "1.115")
+    (version "1.15")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/"
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
                            "CGI-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "1nkyb1m1g5r47xykflf68dplanih5p15njv82frbgbsms34kp1sg"))))
+         "013dcy9k4sj9alkksk5aqz65ryxw0rxgg71c7w666y941gd8n46q"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-io-stringy" ,perl-io-stringy))) ;for IO::Scalar
+     `(("perl-io-stringy" ,perl-io-stringy) ; for IO::Scalar
+       ("perl-module-build" ,perl-module-build)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)))
     (home-page "http://search.cpan.org/dist/CGI-Simple")
     (synopsis "CGI interface that is CGI.pm compliant")
     (description "CGI::Simple provides a relatively lightweight drop in
@@ -4927,7 +4925,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.46")
+  (version "5.47")
   (source
     (origin
       (method url-fetch)
@@ -4935,12 +4933,34 @@ tools like SSH (Secure Shell) to reach the outside world.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1iw4gap9ysag8iww2ik029scmdllk7jdzcpnnbj7hgbl526b9akn"))))
+        "02qx0b0dd38rfcl9vfd6zq1pcg5gv0z2mxw5z3p2pfbfk7dpbrn4"))))
   (build-system gnu-build-system)
+  (native-inputs
+   ;; For tests.
+   `(("iproute" ,iproute)
+     ("netcat" ,netcat)
+     ("procps" ,procps)))
   (inputs `(("openssl" ,openssl)))
   (arguments
    `(#:configure-flags
-     (list (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))))
+     (list (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))
+     #:phases
+     (modify-phases %standard-phases
+       (add-after 'unpack 'patch-output-directories
+         (lambda _
+           ;; Some (not all) Makefiles have a hard-coded incorrect docdir.
+           (substitute* (list "Makefile.in"
+                              "doc/Makefile.in"
+                              "tools/Makefile.in")
+             (("/doc/stunnel")
+              (string-append "/doc/" ,name "-" ,version)))
+           #t))
+       (add-before 'check 'patch-tests
+         (lambda _
+           (substitute* "tests/make_test"
+             (("/bin/sh ")
+              (string-append (which "sh") " ")))
+           #t)))))
   (home-page "https://www.stunnel.org")
   (synopsis "TLS proxy for clients or servers")
   (description "Stunnel is a proxy designed to add TLS encryption

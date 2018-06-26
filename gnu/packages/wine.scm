@@ -223,7 +223,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
    (name "wine-staging-patchset-data")
-   (version "3.10")
+   (version "3.11")
    (source
     (origin
      (method url-fetch)
@@ -232,7 +232,7 @@ integrate Windows applications into your desktop.")
      (file-name (string-append name "-" version ".zip"))
      (sha256
       (base32
-       "14rf3g9szxygbd6ypg6zbqw1h84rn8gqgrzwi607xwgh8wm59sli"))))
+       "1sd9chv919y0wfqcshasl82899isvq9rik4h8d44g2cf4m9zzhvi"))))
    (build-system trivial-build-system)
    (native-inputs
     `(("bash" ,bash)
@@ -279,7 +279,7 @@ integrate Windows applications into your desktop.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1df6g8g5nfb4ca218m78giqp3k1fmv0grv26387rbn3wkk3mql6p"))))
+                "0zlhkz6aybkr9jg8za9x56fp92q10df0abadn9bsa8ryparr5d15"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
               ("gtk+" ,gtk+)
               ("libva" ,libva)

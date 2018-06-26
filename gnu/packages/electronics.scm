@@ -146,7 +146,7 @@ as simple logic analyzer and/or oscilloscope hardware.")
                #t)))
          (add-after 'build 'build-doc
            (lambda _
-             (zero? (system* "doxygen"))))
+             (invoke "doxygen")))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (copy-recursively "doxy/html-api"
@@ -158,7 +158,8 @@ as simple logic analyzer and/or oscilloscope hardware.")
              (install-file "contrib/60-libsigrok.rules"
                            (string-append
                             (assoc-ref outputs "out")
-                            "/lib/udev/rules.d/"))))
+                            "/lib/udev/rules.d/"))
+             #t))
          (add-after 'install-udev-rules 'install-fw
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((fx2lafw (assoc-ref inputs "sigrok-firmware-fx2lafw"))
