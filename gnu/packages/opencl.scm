@@ -21,11 +21,21 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages libedit)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages ruby))
+  #:use-module (gnu packages ruby)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg))
 
 ;; This file adds OpenCL implementation related packages. Due to the fact that
 ;; OpenCL devices are not available during build (store environment), tests are
@@ -199,3 +209,82 @@ Loader as provided by this package.")
 possible (known) properties of the OpenCL platform and devices available on
 the system.")
     (license license:cc0)))
+
+(define-public beignet
+  (package
+    (name "beignet")
+    (version "1.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/intel/beignet/archive/Release_v"
+                    version
+                    ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "18r0lq3dkd4yn6bxa45s2lrr9cjbg70nr2nn6xablvgqwzw0jb0r"))
+              (patches (search-patches "beignet-correct-file-names.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; There's a suspicious .isa binary file under kernels/.
+               ;; Remove it.
+               '(for-each delete-file (find-files "." "\\.isa$")))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("python" ,python)))
+    (inputs `(("clang@3.7" ,clang-3.7)
+              ("clang-runtime@3.7" ,clang-runtime-3.7)
+              ("glu" ,glu)
+              ("llvm@3.7" ,llvm-3.7)
+              ("libdrm" ,libdrm)
+              ("libedit" ,libedit)
+              ("libpthread-stubs", libpthread-stubs)
+              ("libsm" ,libsm)
+              ("libva" ,libva)
+              ("libxfixes" ,libxfixes)
+              ("libxext" ,libxext)
+              ("mesa-utils" ,mesa-utils)
+              ("ncurses" ,ncurses)
+              ("ocl-icd" ,ocl-icd)
+              ("opencl-headers" ,opencl-headers)
+              ("xextproto" ,xextproto)
+              ("zlib" ,zlib)))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCLANG_LIBRARY_DIR="
+                            (assoc-ref %build-inputs "clang@3.7") "/lib")
+             "-DENABLE_GL_SHARING=ON"
+             "-DEXPERIMENTAL_DOUBLE=ON")
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file-recursively
+                (string-append out "/include"))
+               #t)))
+         (add-after 'remove-headers 'install-kernels
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (builddir (getcwd))
+                    (source-dir (string-append
+                                 builddir
+                                 "/../beignet-Release_v1.3.2/kernels")))
+               (copy-recursively source-dir
+                                 (string-append out "/lib/beignet/kernels"))
+               #t))))
+       ;; Beignet tries to find GPU when running tests, which is not available
+       ;; during build.
+       #:tests? #f))
+    (home-page "https://wiki.freedesktop.org/www/Software/Beignet/")
+    (synopsis "OpenCL framework for Intel GPUs")
+    (description
+     "Beignet is an implementation of the OpenCL specification.  This code
+base contains the code to run OpenCL programs on Intel GPUs---IvyBridge,
+Haswell, Skylake, Apollolake, etc.  It defines and implements the OpenCL host
+functions required to initialize the device, create the command queues, the
+kernels and the programs, and run them on the GPU.  The code also contains a
+back-end for the LLVM compiler framework.")
+    (license license:lgpl2.1+)))
