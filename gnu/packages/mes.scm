@@ -120,7 +120,7 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
 (define-public mescc-tools
   (package
     (name "mescc-tools")
-    (version "0.5")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -130,13 +130,12 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "11wr4pl68rd2xmp06b03c6i43g2r8gm61vbv3s86ax1h6j2bn26j"))))
+                "0rsxbjc3bg0jl3h7ai4hndxx2iyyk8bvwj9nd3xv2vgz3bmypnah"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:test-target "test"
-       #:tests? #f                      ; test/results/test9-binary: FAILED
        #:phases (modify-phases %standard-phases
                   (delete 'configure)
                   (add-after 'install 'install-2
