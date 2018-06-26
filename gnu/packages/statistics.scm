@@ -213,9 +213,9 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
                                     "/share/zoneinfo"))
              #t))
          (add-after 'build 'make-info
-          (lambda _ (zero? (system* "make" "info"))))
+          (lambda _ (invoke "make" "info")))
          (add-after 'build 'install-info
-          (lambda _ (zero? (system* "make" "install-info")))))
+          (lambda _ (invoke "make" "install-info"))))
        #:configure-flags
        `(;; We build the recommended packages here, because they are needed in
          ;; order to run the test suite.  We disable them in the r-minimal
