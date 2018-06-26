@@ -1465,7 +1465,8 @@ accessed and migrated on modern systems.")
                                      "libaegis/getpw_cache.cc")
                                    (find-files "test" "\\.sh"))
                            (("/bin/sh") (which "sh")))
-              (setenv "SH" (which "sh"))))
+              (setenv "SH" (which "sh"))
+              #t))
          (replace 'check
            (lambda _
              (let ((home (string-append (getcwd) "/my-new-home")))
@@ -1473,7 +1474,7 @@ accessed and migrated on modern systems.")
                (mkdir home)
                (setenv "HOME" home)
 
-               ;; This test assumes that  flex has been symlinked to "lex".
+               ;; This test assumes that flex has been symlinked to "lex".
                (substitute* "test/00/t0011a.sh"
                  (("type lex")  "type flex"))
 
@@ -1486,7 +1487,7 @@ accessed and migrated on modern systems.")
                       "01/t0196a"))
 
                ;; The author decided to call the check rule "sure".
-               (zero? (system* "make" "sure"))))))))
+               (invoke "make" "sure")))))))
     (home-page "http://aegis.sourceforge.net")
     (synopsis "Project change supervisor")
     (description "Aegis is a project change supervisor, and performs some of
