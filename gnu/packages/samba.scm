@@ -178,8 +178,7 @@ anywhere.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib")))
-               (zero? (system*
-                       "./configure"
+               (invoke "./configure"
                        "--enable-fhs"
                        ;; XXX: heimdal not packaged.
                        "--bundled-libraries=com_err"
@@ -188,7 +187,7 @@ anywhere.")
                        ;; Install public and private libraries into
                        ;; a single directory to avoid RPATH issues.
                        (string-append "--libdir=" libdir)
-                       (string-append "--with-privatelibdir=" libdir))))))
+                       (string-append "--with-privatelibdir=" libdir)))))
          (add-before 'install 'disable-etc-samba-directory-creation
            (lambda _
              (substitute* "dynconfig/wscript"
