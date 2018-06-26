@@ -262,9 +262,9 @@ JNI.")
              ;; any of the dependencies required to build and run the tests.
              (substitute* "build.xml"
                (("depends=\"jars,test-jar\"") "depends=\"jars\""))
-             (zero? (system* "bash" "bootstrap.sh"
-                             (string-append "-Ddist.dir="
-                                            (assoc-ref %outputs "out"))))))
+             (invoke "bash" "bootstrap.sh"
+                     (string-append "-Ddist.dir="
+                                    (assoc-ref %outputs "out")))))
          (add-after 'build 'strip-jar-timestamps ;based on ant-build-system
            (lambda* (#:key outputs #:allow-other-keys)
              (define (repack-archive jar)
