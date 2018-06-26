@@ -76,7 +76,7 @@
          ;; The 6.7 tarball is missing ‘install.sh’. Create it.
          (add-after 'unpack 'autoreconf
            (lambda _
-             (zero? (system* "autoreconf" "-i"))))
+             (invoke "autoreconf" "-i")))
          (add-before 'configure 'set-root-sbin
            (lambda _ ; Don't try to install in "/sbin".
              (setenv "ROOTSBINDIR"
