@@ -912,7 +912,7 @@ lot easier.")
              ;; two tests will fail -> disable them. TODO: fix the failing tests
              (delete-file "t/t3300-edit.sh")
              (delete-file "t/t7504-commit-msg-hook.sh")
-             (zero? (system* "make" "test")))))))
+             (invoke "make" "test"))))))
     (home-page "http://procode.org/stgit/")
     (synopsis "Stacked Git")
     (description
