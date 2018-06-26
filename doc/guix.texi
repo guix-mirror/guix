@@ -249,7 +249,7 @@ Services
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
-* Power management Services::   The TLP tool.
+* Power Management Services::   Extending battery life.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
@@ -9938,7 +9938,7 @@ declaration.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
-* Power management Services::   The TLP tool.
+* Power Management Services::   Extending battery life.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
@@ -17583,10 +17583,13 @@ The Cuirass package to use.
 @end table
 @end deftp
 
-@node Power management Services
-@subsubsection Power management Services
+@node Power Management Services
+@subsubsection Power Management Services
 
+@cindex tlp
 @cindex power management with TLP
+@subsubheading TLP daemon
+
 The @code{(gnu services pm)} module provides a Guix service definition
 for the Linux power management tool TLP.
 
@@ -18087,6 +18090,9 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
+@cindex thermald
+@cindex CPU frequency scaling with thermald
+@subsubheading Thermald daemon
 
 The @code{(gnu services pm)} module provides an interface to
 thermald, a CPU frequency scaling service which helps prevent overheating.
