@@ -420,8 +420,10 @@ GRUB configuration and OS-DRV as the stuff in it."
                   (register-closure
                    "/tmp/root"
                    (string-append "/xchg/" closure)
-                   ;; XXX: Using deduplication causes cross device link errors.
-                   #:deduplicate? #f))
+                   ;; TARGET-STORE is a read-only bind-mount so we shouldn't try
+                   ;; to modify it.
+                   #:deduplicate? #f
+                   #:reset-timestamps? #f))
                 closures))
 
     (apply invoke
