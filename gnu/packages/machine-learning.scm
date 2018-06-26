@@ -668,8 +668,9 @@ and a QP solver.")
              ;; No test target, so we build and run the unit tests here.
              (let ((test-dir (string-append "../dlib-" ,version "/dlib/test")))
                (with-directory-excursion test-dir
-                 (and (zero? (system* "make" "-j" (number->string (parallel-job-count))))
-                      (zero? (system* "./dtest" "--runall")))))))
+                 (invoke "make" "-j" (number->string (parallel-job-count)))
+                 (invoke "./dtest" "--runall"))
+               #t)))
          (add-after 'install 'delete-static-library
            (lambda* (#:key outputs #:allow-other-keys)
              (delete-file (string-append (assoc-ref outputs "out")
