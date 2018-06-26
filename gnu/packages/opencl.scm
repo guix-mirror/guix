@@ -23,7 +23,9 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages ruby))
 
 ;; This file adds OpenCL implementation related packages. Due to the fact that
 ;; OpenCL devices are not available during build (store environment), tests are
@@ -118,3 +120,40 @@ programming.")
     (description
      "This package provides the @dfn{host API} C++ headers for OpenCL.")
     (license license:expat)))
+
+(define-public ocl-icd
+  (package
+    (name "ocl-icd")
+    (version "2.2.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://forge.imag.fr/frs/download.php/836/ocl-icd-"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1x2dr8p4dkfds56r38av360i3nv1y3326jmshxvjngaf6mlg6rbn"))
+              (modules '((guix build utils)))
+              (snippet
+               '(delete-file-recursively "khronos-headers"))))
+    (native-inputs
+     `(("opencl-headers" ,opencl-headers)
+       ("ruby" ,ruby)))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("DEBUG_OCL_ICD=1")))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "OPENCL_VENDOR_PATH")
+            (files '("etc/OpenCL/vendors")))))
+    (search-paths native-search-paths)
+    (home-page "https://forge.imag.fr/projects/ocl-icd/")
+    (synopsis "OpenCL loader for Installable Client Drivers (ICDs)")
+    (description
+     "OpenCL implementations are provided as ICDs (Installable Client
+Drivers).  An OpenCL program can use several ICDs thanks to the use of an ICD
+Loader as provided by this package.")
+    (license license:bsd-2)))
