@@ -1904,9 +1904,10 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
          (add-after 'build 'add-properties
            (lambda* (#:key jar-name #:allow-other-keys)
              (with-directory-excursion "src"
-               (zero? (apply system* "jar" "-uf"
-                             (string-append "../build/jar/" jar-name)
-                             (find-files "." "\\.properties$")))))))))
+               (apply invoke "jar" "-uf"
+                      (string-append "../build/jar/" jar-name)
+                      (find-files "." "\\.properties$")))
+             #t)))))
     (inputs
      `(("java-classpathx-servletapi" ,java-classpathx-servletapi)
        ("java-javaewah" ,java-javaewah)
