@@ -531,12 +531,20 @@ the standard javac executable.")))
            (for-each (lambda (tool)
                        (with-output-to-file (string-append bin tool)
                          (lambda _
-                           (format #t "#!~a/bin/sh
+                           ,@(if (string-prefix? "armhf" (or (%current-system)
+                                                             (%current-target-system)))
+                                 `((format #t "#!~a/bin/sh
+~a/bin/jamvm -Xnocompact -classpath ~a/share/classpath/tools.zip \
+gnu.classpath.tools.~a.~a $@"
+                                   bash jamvm classpath tool
+                                   (if (string=? "native2ascii" tool)
+                                       "Native2ASCII" "Main")))
+                                 `((format #t "#!~a/bin/sh
 ~a/bin/jamvm -Xnocompact -Xnoinlining -classpath ~a/share/classpath/tools.zip \
 gnu.classpath.tools.~a.~a $@"
                                    bash jamvm classpath tool
                                    (if (string=? "native2ascii" tool)
-                                       "Native2ASCII" "Main"))))
+                                       "Native2ASCII" "Main"))))))
                        (chmod (string-append bin tool) #o755))
                      (list "javah"
                            "rmic"
