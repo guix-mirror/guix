@@ -500,7 +500,7 @@ the standard javac executable.")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-data
-           (lambda _ (zero? (system* "make" "install-data")))))))
+           (lambda _ (invoke "make" "install-data"))))))
     (native-inputs
      `(("ecj-bootstrap" ,ecj-bootstrap)
        ("ecj-javac-wrapper" ,ecj-javac-wrapper)
