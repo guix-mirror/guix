@@ -563,7 +563,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegis-test-fixup-1.patch            	\
   %D%/packages/patches/aegis-test-fixup-2.patch            	\
   %D%/packages/patches/agg-am_c_prototype.patch			\
-  %D%/packages/patches/alsa-lib-add-environment-variable.patch \
   %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/ansible-wrap-program-hack.patch		\
   %D%/packages/patches/antiword-CVE-2014-8123.patch			\
