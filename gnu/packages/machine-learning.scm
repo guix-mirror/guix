@@ -730,7 +730,7 @@ computing environments.")
              (setenv "HOME" "/tmp")
              ;; Step out of the source directory just to be sure.
              (chdir "..")
-             (zero? (system* "nosetests" "-v" "sklearn")))))))
+             (invoke "nosetests" "-v" "sklearn"))))))
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
