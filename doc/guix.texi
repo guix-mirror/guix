@@ -8641,21 +8641,21 @@ create a file system on the relevant partition(s)@footnote{Currently
 GuixSD only supports ext4 and btrfs file systems.  In particular, code
 that reads file system UUIDs and labels only works for these file system
 types.}.  For the ESP, if you have one and assuming it is
-@file{/dev/sda2}, run:
+@file{/dev/sda1}, run:
 
 @example
-mkfs.fat -F32 /dev/sda2
+mkfs.fat -F32 /dev/sda1
 @end example
 
 Preferably, assign file systems a label so that you can easily and
 reliably refer to them in @code{file-system} declarations (@pxref{File
 Systems}).  This is typically done using the @code{-L} option of
 @command{mkfs.ext4} and related commands.  So, assuming the target root
-partition lives at @file{/dev/sda1}, a file system with the label
+partition lives at @file{/dev/sda2}, a file system with the label
 @code{my-root} can be created with:
 
 @example
-mkfs.ext4 -L my-root /dev/sda1
+mkfs.ext4 -L my-root /dev/sda2
 @end example
 
 @cindex encrypted disk
@@ -8663,12 +8663,12 @@ If you are instead planning to encrypt the root partition, you can use
 the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
 @uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
 @code{man cryptsetup}} for more information.)  Assuming you want to
-store the root partition on @file{/dev/sda1}, the command sequence would
+store the root partition on @file{/dev/sda2}, the command sequence would
 be along these lines:
 
 @example
-cryptsetup luksFormat /dev/sda1
-cryptsetup open --type luks /dev/sda1 my-partition
+cryptsetup luksFormat /dev/sda2
+cryptsetup open --type luks /dev/sda2 my-partition
 mkfs.ext4 -L my-root /dev/mapper/my-partition
 @end example
 
@@ -8688,11 +8688,11 @@ by @code{guix system init} afterwards.
 Finally, if you plan to use one or more swap partitions (@pxref{Memory
 Concepts, swap space,, libc, The GNU C Library Reference Manual}), make
 sure to initialize them with @command{mkswap}.  Assuming you have one
-swap partition on @file{/dev/sda2}, you would run:
+swap partition on @file{/dev/sda3}, you would run:
 
 @example
-mkswap /dev/sda2
-swapon /dev/sda2
+mkswap /dev/sda3
+swapon /dev/sda3
 @end example
 
 Alternatively, you may use a swap file.  For example, assuming that in
