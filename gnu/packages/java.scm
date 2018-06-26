@@ -437,7 +437,11 @@ requirement for all GNU Classpath releases after version 0.93.")
                                                args defaults))
                             (apply system* ,java
                                    (append
-                                    (list "-Xnocompact" "-Xnoinlining")
+                                    (list "-Xnocompact")
+                                    ,,@(if (string-prefix? "armhf" (or (%current-system)
+                                                                       (%current-target-system)))
+                                           '()
+                                           `((list "-Xnoinlining")))
                                     ;; Remove "-J" prefix
                                     (map (cut string-drop <> 2) vm-args)
                                     '("org.eclipse.jdt.internal.compiler.batch.Main")
