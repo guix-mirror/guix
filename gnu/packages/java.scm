@@ -617,7 +617,7 @@ machine.")))
                  (("@Override") ""))
                #t))
            (add-after 'install 'install-data
-             (lambda _ (zero? (system* "make" "install-data")))))))
+             (lambda _ (invoke "make" "install-data"))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
