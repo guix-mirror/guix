@@ -314,15 +314,14 @@ Scheme and C programs and between Scheme and Java programs.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         (string-append "--blflags="
-                                        ;; user flags completely override useful
-                                        ;; default flags, so repeat them here.
-                                        "-copt \\$(CPICFLAGS) "
-                                        "-L \\$(BUILDLIBDIR) "
-                                        "-ldopt -Wl,-rpath," out "/lib")))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--blflags="
+                                      ;; user flags completely override useful
+                                      ;; default flags, so repeat them here.
+                                      "-copt \\$(CPICFLAGS) "
+                                      "-L \\$(BUILDLIBDIR) "
+                                      "-ldopt -Wl,-rpath," out "/lib"))))))))
     (inputs `(("avahi" ,avahi)
               ("bigloo" ,bigloo)
               ("libgc" ,libgc)
