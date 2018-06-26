@@ -882,12 +882,13 @@ regular-expression notation.")
          (add-after 'install 'remove-bin-share
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (delete-file-recursively
-                       (string-append (assoc-ref outputs "out") "/bin"))))
+                       (string-append (assoc-ref outputs "out") "/bin"))
+                      #t))
          (replace 'configure
                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (zero? (system* "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out")))))))))
+                    (invoke "./configure"
+                            (string-append "--prefix="
+                                           (assoc-ref outputs "out"))))))))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))
     (home-page "http://people.csail.mit.edu/jaffer/SLIB.html")
