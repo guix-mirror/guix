@@ -34,6 +34,7 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 popen)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -408,44 +409,66 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
                              register-closures? (closures '()))
   "Given a GRUB package, creates an iso image as TARGET, using CONFIG-FILE as
 GRUB configuration and OS-DRV as the stuff in it."
-  (let ((grub-mkrescue (string-append grub "/bin/grub-mkrescue"))
-        (target-store  (string-append "/tmp/root" (%store-directory))))
-    (populate-root-file-system os-drv "/tmp/root")
+  (define grub-mkrescue
+    (string-append grub "/bin/grub-mkrescue"))
 
-    (mount (%store-directory) target-store "" MS_BIND)
+  (define target-store
+    (string-append "/tmp/root" (%store-directory)))
 
-    (when register-closures?
-      (display "registering closures...\n")
-      (for-each (lambda (closure)
-                  (register-closure
-                   "/tmp/root"
-                   (string-append "/xchg/" closure)
-                   ;; TARGET-STORE is a read-only bind-mount so we shouldn't try
-                   ;; to modify it.
-                   #:deduplicate? #f
-                   #:reset-timestamps? #f))
-                closures))
+  (define items
+    ;; The store items to add to the image.
+    (delete-duplicates
+     (append-map (lambda (closure)
+                   (map store-info-item
+                        (call-with-input-file (string-append "/xchg/" closure)
+                          read-reference-graph)))
+                 closures)))
 
-    (apply invoke
-           `(,grub-mkrescue "-o" ,target
-                            ,(string-append "boot/grub/grub.cfg=" config-file)
-                            ,(string-append "gnu/store=" os-drv "/..")
-                            "etc=/tmp/root/etc"
-                            "var=/tmp/root/var"
-                            "run=/tmp/root/run"
-                            ;; /mnt is used as part of the installation
-                            ;; process, as the mount point for the target
-                            ;; file system, so create it.
-                            "mnt=/tmp/root/mnt"
-                            "--"
-                            "-volid" ,(string-upcase volume-id)
-                            ,@(if volume-uuid
-                                  `("-volume_date" "uuid"
-                                    ,(string-filter (lambda (value)
-                                                      (not (char=? #\- value)))
-                                                    (iso9660-uuid->string
-                                                     volume-uuid)))
-                                  `())))))
+  (populate-root-file-system os-drv "/tmp/root")
+  (mount (%store-directory) target-store "" MS_BIND)
+
+  (when register-closures?
+    (display "registering closures...\n")
+    (for-each (lambda (closure)
+                (register-closure
+                 "/tmp/root"
+                 (string-append "/xchg/" closure)
+
+                 ;; TARGET-STORE is a read-only bind-mount so we shouldn't try
+                 ;; to modify it.
+                 #:deduplicate? #f
+                 #:reset-timestamps? #f))
+              closures))
+
+  (let ((pipe
+         (apply open-pipe* OPEN_WRITE
+                grub-mkrescue "-o" target
+                (string-append "boot/grub/grub.cfg=" config-file)
+                "etc=/tmp/root/etc"
+                "var=/tmp/root/var"
+                "run=/tmp/root/run"
+                ;; /mnt is used as part of the installation
+                ;; process, as the mount point for the target
+                ;; file system, so create it.
+                "mnt=/tmp/root/mnt"
+                "-path-list" "-"
+                "--"
+                "-volid" (string-upcase volume-id)
+                (if volume-uuid
+                    `("-volume_date" "uuid"
+                      ,(string-filter (lambda (value)
+                                        (not (char=? #\- value)))
+                                      (iso9660-uuid->string
+                                       volume-uuid)))
+                    `()))))
+    ;; Pass lines like 'gnu/store/…-x=/gnu/store/…-x' corresponding to the
+    ;; '-path-list -' option.
+    (for-each (lambda (item)
+                (format pipe "~a=~a~%"
+                        (string-drop item 1) item))
+              items)
+    (unless (zero? (close-pipe pipe))
+      (error "oh, my! grub-mkrescue failed" grub-mkrescue))))
 
 (define* (initialize-hard-disk device
                                #:key
