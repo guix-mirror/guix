@@ -4032,7 +4032,9 @@ are many features, including:
                                   "commons-collections-" version "-src.tar.gz"))
               (sha256
                (base32
-                "055r51a5lfc3z7rkxnxmnn1npvkvda7636hjpm4qk7cnfzz98387"))))
+                "055r51a5lfc3z7rkxnxmnn1npvkvda7636hjpm4qk7cnfzz98387"))
+              (patches
+               (search-patches "java-commons-collections-fix-java8.patch"))))
     (arguments
       (substitute-keyword-arguments (package-arguments java-commons-collections4)
         ((#:phases phases)
