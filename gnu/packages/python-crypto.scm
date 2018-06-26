@@ -884,14 +884,29 @@ through the Engine interface.")
          "1b3rgzl6dbzs08vhv41b6y4n5189wv7lr27acxn104hs45745abs"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;FIXME: unable to find libraries
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'hard-code-path-to-libscrypt
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libscrypt (assoc-ref inputs "libscrypt")))
+               (substitute* "pylibscrypt/pylibscrypt.py"
+                 (("find_library\\('scrypt'\\)")
+                  (string-append "'" libscrypt "/lib/libscrypt.so'")))
+               #t))))
+       ;; The library can use various scrypt implementations and tests all of
+       ;; them.  Since we only provide a single implementation, most tests
+       ;; fail.  Simply skip them.
+       #:tests? #f))
+    ;; FIXME: Using "libscrypt" is the second best choice.  The best one
+    ;; requires "hashlib.scrypt", provided by Python 3.6+ built with OpenSSL
+    ;; 1.1+.  Use that as soon as Guix provides it.
     (inputs
-     `(("openssl" ,openssl)))
+     `(("libscrypt" ,libscrypt)))
     (home-page "https://github.com/jvarho/pylibscrypt")
     (synopsis "Scrypt for Python")
     (description "There are a lot of different scrypt modules for Python, but
 none of them have everything that I'd like, so here's one more.  It uses
-hashlib.scrypt on Python 3.6 and OpenSSL 1.1.")
+@code{libscrypt}.")
     (license license:isc)))
 
 (define-public python-libnacl
