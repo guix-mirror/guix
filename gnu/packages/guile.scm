@@ -1207,58 +1207,31 @@ Guile's foreign function interface.")
   (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
 
 (define-public guile-sqlite3
-  (let ((commit "10c13a7e02ab1655c8a758e560cafc9d6eff26f4")
-        (revision "4"))
-    (package
-      (name "guile-sqlite3")
-      (version (git-version "0.0" revision commit))
-
-      ;; XXX: This used to be available read-only at
-      ;; <https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/> but it
-      ;; eventually disappeared, so we have our own copy here.
-      (home-page "https://notabug.org/civodul/guile-sqlite3.git")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0nhhswpd7nb2f0gfr55fzcc2xm3l2xx4rbljsd1clrm8fj2d7q9d"))
-                (file-name (string-append name "-" version "-checkout"))
-                (modules '((guix build utils)))
-                (snippet
-                 ;; Upgrade 'Makefile.am' to the current way of doing things.
-                 '(begin
-                    (substitute* "Makefile.am"
-                      (("TESTS_ENVIRONMENT")
-                       "TEST_LOG_COMPILER"))
-                    #t))))
-
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("sqlite" ,sqlite)))
-      (arguments
-       '(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'autoreconf
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi"))))
-                    (add-before 'build 'set-sqlite3-file-name
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (substitute* "sqlite3.scm"
-                          (("\"libsqlite3\"")
-                           (string-append "\"" (assoc-ref inputs "sqlite")
-                                          "/lib/libsqlite3\"")))
-                        #t)))))
-      (synopsis "Access SQLite databases from Guile")
-      (description
-       "This package provides Guile bindings to the SQLite database system.")
-      (license license:gpl3+))))
+  (package
+    (name "guile-sqlite3")
+    (version "0.1.0")
+    (home-page "https://notabug.org/civodul/guile-sqlite3.git")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1nv8j7wk6b5n4p22szyi8lv8fs31rrzxhzz16gyj8r38c1fyp9qp"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("sqlite" ,sqlite)))
+    (synopsis "Access SQLite databases from Guile")
+    (description
+     "This package provides Guile bindings to the SQLite database system.")
+    (license license:gpl3+)))
 
 (define-public haunt
   (package
