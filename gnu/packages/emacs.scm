@@ -4436,7 +4436,7 @@ indentation command behavior very similar to that of python-mode.")
 (define-public emacs-web-mode
   (package
     (name "emacs-web-mode")
-    (version "14")
+    (version "16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com/fxbois"
@@ -4444,7 +4444,7 @@ indentation command behavior very similar to that of python-mode.")
               (file-name (string-append "web-mode-" version ".el"))
               (sha256
                (base32
-                "086hik5fmxg3kx74qmransx9cz961qd22d4m6ah2dw6cwaj1s3s5"))))
+                "1hs5w7kdvcyn4ihyw1kfjg48djn5p7lz4rlbhzzdqv1g56xqx3gw"))))
     (build-system emacs-build-system)
     (synopsis "Major mode for editing web templates")
     (description "Web-mode is an Emacs major mode for editing web templates
