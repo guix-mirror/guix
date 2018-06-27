@@ -421,8 +421,21 @@ report them in a user-friendly way."
     (lambda _
       (setlocale LC_ALL ""))
     (lambda args
-      (warning (G_ "failed to install locale: ~a~%")
-               (strerror (system-error-errno args))))))
+      (cond-expand
+        ;; Guile 2.2 already emits a warning, so let's not add a second one.
+        (guile-2.2 #t)
+        (else (warning (G_ "failed to install locale: ~a~%")
+                       (strerror (system-error-errno args)))))
+      (display-hint (G_ "Consider installing the @code{glibc-utf8-locales} or
+@code{glibc-locales} package and defining @code{GUIX_LOCPATH}, along these
+lines:
+
+@example
+guix package -i glibc-utf8-locales
+export GUIX_LOCPATH=\"$HOME/.guix-profile/lib/locale\"
+@end example
+
+See the \"Application Setup\" section in the manual, for more info.\n")))))
 
 (define (initialize-guix)
   "Perform the usual initialization for stand-alone Guix commands."
