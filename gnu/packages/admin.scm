@@ -1651,7 +1651,7 @@ limits.")
 (define-public autojump
   (package
     (name "autojump")
-    (version "22.3.4")
+    (version "22.5.1")
     (source
      (origin
        (method url-fetch)
@@ -1660,7 +1660,7 @@ limits.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "113rcpr37ngf2xs8da41qdarq5qmj0dwx8ggqy3lhlb0kvqq7g9z"))))
+         "17z9j9936x0nizwrzf664bngh60x5qbvrrf1s5qdzd0f2gdanpvn"))))
     (build-system gnu-build-system)
     (native-inputs                      ;for tests
      `(("python-mock" ,python-mock)
@@ -1668,36 +1668,19 @@ limits.")
     (inputs
      `(("python" ,python-wrapper)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (delete 'build)
-                  (replace 'check
-                    (lambda _
-                      (zero?
-                       (system* "python" "tests/unit/autojump_utils_test.py"))))
-                  (replace 'install
-                    ;; The install.py script doesn't allow system installation
-                    ;; into an arbitrary prefix, so do our own install.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin"))
-                             (share (string-append out "/share/autojump"))
-                             (py (string-append out "/lib/python"
-                                                ,(version-major+minor
-                                                  (package-version python-wrapper))
-                                                "/site-packages"))
-                             (man (string-append out "/share/man/man1")))
-                        (install-file "bin/autojump" bin)
-                        (for-each (λ (f) (install-file f py))
-                                  (find-files "bin" "\\.py$"))
-                        (for-each (λ (f) (install-file f share))
-                                  (find-files "bin" "autojump\\..*$"))
-                        (substitute* (string-append share "/autojump.sh")
-                          (("/usr/local") out))
-                        (install-file "docs/autojump.1" man)
-                        (wrap-program (string-append bin "/autojump")
-                          `("PYTHONPATH" ":" prefix (,py)))
-                        #t))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'check
+           (lambda _
+             (invoke "python" "tests/unit/autojump_utils_test.py")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "SHELL" (which "bash"))
+             (invoke "python" "install.py"
+                     (string-append "--destdir="
+                                    (assoc-ref outputs "out"))))))))
     (home-page "https://github.com/wting/autojump")
     (synopsis "Shell extension for file system navigation")
     (description
