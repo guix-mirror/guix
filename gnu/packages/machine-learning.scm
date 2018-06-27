@@ -49,6 +49,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -675,7 +676,9 @@ and a QP solver.")
                                          "/lib/libdlib.a"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ;; For tests.
+       ("libnsl" ,libnsl)))
     (inputs
      `(("giflib" ,giflib)
        ("lapack" ,lapack)
