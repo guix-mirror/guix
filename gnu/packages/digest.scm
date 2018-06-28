@@ -25,7 +25,7 @@
 (define-public xxhash
   (package
     (name "xxhash")
-    (version "0.6.4")
+    (version "0.6.5")
     (source
      (origin
        (method git-fetch)
@@ -33,7 +33,7 @@
              (url "https://github.com/Cyan4973/xxHash")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1az5vm14rdc3pa3l0wj180wpii14if16diril3gz8q9ip1215gwj"))))
+        (base32 "137hifc3f3cb4ib64rd6y83arc9hmbyncgrij2v8m94mx66g2aks"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -41,6 +41,8 @@
              "XXH_FORCE_MEMORY_ACCESS=1" ; improved performance with GCC
              (string-append "prefix=" (assoc-ref %outputs "out")))
        #:test-target "test"
+       ;; Parallel testing tries to run ‘xxhsum’ before it's been built.
+       #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
