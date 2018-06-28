@@ -33,6 +33,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system python)
@@ -60,7 +61,11 @@
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages swig))
+  #:use-module (gnu packages swig)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages bash))
 
 (define-public parted
   (package
@@ -592,4 +597,59 @@ automatically finding out which program to use for what file type.")
      "This package provides a library for manipulating storage volume
 encryption keys and storing them separately from volumes to handle forgotten
 passphrases.")
+    (license license:gpl2)))
+
+(define-public ndctl
+  (package
+    (name "ndctl")
+    (version "61.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pmem/ndctl")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0vid78jzhmzh505bpwn8mvlamfhcvl6rlfjc29y4yn7zslpydxl7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libtool" ,libtool)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)
+       ("xmlto" ,xmlto)
+       ;; Required for offline docbook generation:
+       ("which" ,which)))
+    (inputs
+     `(("eudev" ,eudev)
+       ("json-c" ,json-c)
+       ("kmod" ,kmod)
+       ("util-linux" ,util-linux)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (substitute* "autogen.sh"
+               (("/bin/sh") (which "sh")))
+             (substitute* "git-version-gen"
+               (("/bin/sh") (which "sh")))
+             (substitute* "git-version"
+               (("/bin/bash") (which "bash"))))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "BASH_COMPLETION_DIR=" out
+                              "/share/bash-completion/completions")))))
+    (home-page "https://github.com/pmem/ndctl")
+    (synopsis "Manage the non-volatile memory device sub-system in the Linux kernel")
+    (description
+     "This package provides a utility library for managing the
+libnvdimm (non-volatile memory device) sub-system in the Linux kernel.")
+    ;; COPYING says LGPL2.1, but many source files are GPL2 so that's
+    ;; the effective license.  Note that some files under ccan/ are
+    ;; covered by BSD-3 or public domain, see the individual folders.
     (license license:gpl2)))
