@@ -715,7 +715,8 @@ language and software synthesizer.")
            (lambda _
              (symlink "libclalsadrv.so"
                       (string-append (assoc-ref %outputs "out")
-                                     "/lib/libclalsadrv.so.2"))))
+                                     "/lib/libclalsadrv.so.2"))
+             #t))
          ;; no configure script
          (delete 'configure))))
     (inputs
@@ -1484,7 +1485,8 @@ synchronous execution of all clients, and low latency operation.")
               ((".*CFLAGS.*-Wall.*" m)
                (string-append m
                               "    conf.env.append_unique('LINKFLAGS',"
-                              "'-Wl,-rpath=" %output "/lib')\n")))))
+                              "'-Wl,-rpath=" %output "/lib')\n")))
+            #t))
          (add-after 'install 'wrap-python-scripts
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
@@ -1567,19 +1569,20 @@ plugin function as a JACK application.")
     (arguments
      `(#:tests? #f  ; the "test" target is a listening test only
        #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
-          (chdir "src")
-          (let ((out (assoc-ref outputs "out")))
-            (substitute* "makefile"
-              (("/usr/lib/ladspa/") (string-append out "/lib/ladspa/"))
-              (("/usr/include/")    (string-append out "/include/"))
-              (("/usr/bin/")        (string-append out "/bin/"))
-              (("-mkdirhier")       "mkdir -p")
-              (("^CC.*")            "CC = gcc\n")
-              (("^CPP.*")           "CPP = g++\n"))))
-        (alist-delete 'build %standard-phases))))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             (chdir "src")
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "makefile"
+                 (("/usr/lib/ladspa/") (string-append out "/lib/ladspa/"))
+                 (("/usr/include/")    (string-append out "/include/"))
+                 (("/usr/bin/")        (string-append out "/bin/"))
+                 (("-mkdirhier")       "mkdir -p")
+                 (("^CC.*")            "CC = gcc\n")
+                 (("^CPP.*")           "CPP = g++\n")))
+             #t))
+         (delete 'build))))
     ;; Since the home page is gone, we provide a link to the archived version.
     (home-page
      "https://web.archive.org/web/20140729190945/http://www.ladspa.org/")
@@ -2503,7 +2506,8 @@ analysis plugins or audio feature extraction plugins.")
             (symlink
              (string-append (assoc-ref inputs "automake") "/share/automake-"
                             ,(package-version automake) "/ar-lib")
-             "ar-lib"))))))
+             "ar-lib")
+            #t)))))
     (home-page "http://sbsms.sourceforge.net/")
     (synopsis "Library for time stretching and pitch scaling of audio")
     (description
@@ -2899,12 +2903,14 @@ result.")
              (substitute* "libs/Makefile"
                (("ldconfig") "true")
                (("^LIBDIR =.*") "LIBDIR = lib\n"))
-             (chdir "libs") #t))
+             (chdir "libs")
+             #t))
          (add-after 'install 'install-symlink
            (lambda _
              (symlink "libzita-convolver.so"
                       (string-append (assoc-ref %outputs "out")
-                                     "/lib/libzita-convolver.so.3"))))
+                                     "/lib/libzita-convolver.so.3"))
+             #t))
          ;; no configure script
          (delete 'configure))))
     (inputs `(("fftwf" ,fftwf)))
@@ -2954,7 +2960,8 @@ engine.")
           (lambda _
             (symlink "libzita-resampler.so"
                      (string-append (assoc-ref %outputs "out")
-                                    "/lib/libzita-resampler.so.1"))))
+                                    "/lib/libzita-resampler.so.1"))
+            #t))
          ;; no configure script
          (delete 'configure))))
     (home-page "https://kokkinizita.linuxaudio.org/linuxaudio/zita-resampler/resampler.html")
@@ -2995,7 +3002,8 @@ provide high-quality sample rate conversion.")
            (lambda _
              (symlink "libzita-alsa-pcmi.so"
                       (string-append (assoc-ref %outputs "out")
-                                     "/lib/libzita-alsa-pcmi.so.0"))))
+                                     "/lib/libzita-alsa-pcmi.so.0"))
+             #t))
           ;; no configure script
           (delete 'configure))))
     (inputs
@@ -3180,7 +3188,8 @@ code, used in @code{libtoxcore}.")
                (mkdir-p (string-append out "/man/man1"))
                (mkdir-p (string-append out "/man/man3"))
                (mkdir-p (string-append out "/bin"))
-               (mkdir-p (string-append out "/lib")))))
+               (mkdir-p (string-append out "/lib")))
+             #t))
          (add-after 'install 'post-install
            (lambda _
              (let ((out (assoc-ref %outputs "out")))
@@ -3188,7 +3197,8 @@ code, used in @code{libtoxcore}.")
                             (string-append out "/include"))
                (mkdir-p (string-append out "/include/gsm"))
                (copy-recursively "inc"
-                                 (string-append out "/include/gsm")))))
+                                 (string-append out "/include/gsm")))
+             #t))
          (delete 'configure))))         ; no configure script
     (synopsis "GSM 06.10 lossy speech compression library")
     (description "This C library provides an encoder and a decoder for the GSM
@@ -3464,14 +3474,16 @@ representations.")
              (invoke "sh" "autogen.sh")))
          (add-before 'build 'make-cava-ldflags
            (lambda* (#:key outputs #:allow-other-keys)
-             (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))))
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
+             #t))
          (add-after 'install 'data
            (lambda* (#:key outputs #:allow-other-keys)
              (for-each (lambda (file)
                          (install-file file
                                        (string-append (assoc-ref outputs "out")
                                                       "/share/doc/examples")))
-                       (find-files "example_files")))))))
+                       (find-files "example_files"))
+             #t)))))
     (home-page "https://karlstav.github.io/cava/")
     (synopsis "Console audio visualizer for ALSA, MPD, and PulseAudio")
     (description "C.A.V.A. is a bar audio spectrum visualizer for the terminal
