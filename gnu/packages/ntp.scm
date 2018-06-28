@@ -164,7 +164,7 @@ minimalist than ntpd.")
                       ;; date that is recorded in binaries.  It must be a
                       ;; "recent date" since it is used to detect bogus dates
                       ;; received from servers.
-                      (setenv "COMPILE_DATE" (number->string 1450563040))
+                      (setenv "COMPILE_DATE" (number->string 1530144000))
                       (invoke "sh" "autogen.sh"))))))
     (inputs `(("openssl" ,openssl)
               ("libevent" ,libevent)))
