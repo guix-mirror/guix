@@ -1251,7 +1251,8 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     (lambda _
                       ;; Don't attempt to create /var/lib/arpd.
                       (substitute* "Makefile"
-                        (("^.*ARPDDIR.*$") "")))))))
+                        (("^.*ARPDDIR.*$") ""))
+                      #t)))))
     (inputs
      `(("iptables" ,iptables)
        ("db4" ,bdb)))
@@ -3539,7 +3540,8 @@ from userspace.")
              (let* ((out (assoc-ref outputs "out"))
                     (sbin (string-append out "/sbin")))
                (symlink "mount.ntfs-3g"
-                        (string-append sbin "/mount.ntfs"))))))))
+                        (string-append sbin "/mount.ntfs")))
+             #t)))))
     (home-page "https://www.tuxera.com/community/open-source-ntfs-3g/")
     (synopsis "Read-write access to NTFS file systems")
     (description
@@ -3696,7 +3698,8 @@ from that to the system kernel's @file{/dev/random} machinery.")
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'enter-subdirectory
                     (lambda _
-                      (chdir "tools/power/cpupower")))
+                      (chdir "tools/power/cpupower")
+                      #t))
                   (delete 'configure)
                   (add-before 'build 'fix-makefiles
                     (lambda _
@@ -3704,7 +3707,8 @@ from that to the system kernel's @file{/dev/random} machinery.")
                         (("/usr/") "/")
                         (("/bin/(install|pwd)" _ command) command))
                       (substitute* "bench/Makefile"
-                        (("\\$\\(CC\\) -o") "$(CC) $(LDFLAGS) -o")))))
+                        (("\\$\\(CC\\) -o") "$(CC) $(LDFLAGS) -o"))
+                      #t)))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
@@ -4016,9 +4020,11 @@ developers.")
                   ;; getver.sh uses ‘git --describe’, isn't worth an extra git
                   ;; dependency, and doesn't even work on release(!) tarballs.
                   (add-after 'unpack 'report-correct-version
-                    (lambda _ (substitute* "getver.sh"
-                                (("ver=unknown")
-                                 (string-append "ver=" ,version)))))
+                    (lambda _
+                      (substitute* "getver.sh"
+                        (("ver=unknown")
+                         (string-append "ver=" ,version)))
+                      #t))
                   (delete 'configure))  ; no configure script
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
@@ -4245,8 +4251,7 @@ Light is the successor of lightscript.")
              #t))
          (replace 'install
            (lambda _
-             (invoke "make" "install-tlp" "install-man")
-             #t))
+             (invoke "make" "install-tlp" "install-man")))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
