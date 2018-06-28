@@ -430,14 +430,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "17.5.0")
+    (version "18.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "0wv78mwsdqbxqwdwllf4maqybhbj3vb8328ia04hnb558sxcy41c"))))
+         "1055rb456nvrjcij3sqj6c6l3kmh5cqqay0nsmx3pxq07d1g3234"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
