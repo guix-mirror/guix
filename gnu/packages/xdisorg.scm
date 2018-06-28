@@ -733,17 +733,16 @@ Guile will work for XBindKeys.")
 (define-public sxhkd
   (package
     (name "sxhkd")
-    (version "0.5.6")
+    (version "0.5.9")
     (source
      (origin
-       (file-name (string-append name "-" version ".tar.gz"))
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/baskerville/sxhkd/archive/"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/baskerville/sxhkd")
+             (commit version)))
        (sha256
         (base32
-         "15grmzpxz5fqlbfg2slj7gb7r6nzkvjmflmbkqx7mlby9pm6wdkj"))))
+         "0cw547x7vky55k3ksrmzmrra4zhslqcwq9xw0y4cmbvy4s1qf64v"))))
     (build-system gnu-build-system)
     (inputs
      `(("asciidoc" ,asciidoc)
@@ -752,10 +751,14 @@ Guile will work for XBindKeys.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-wm" ,xcb-util-wm)))
     (arguments
-     '(#:phases (modify-phases %standard-phases (delete 'configure))
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f  ; no check target
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))))
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" %output)
+             ;; Keep the documentation where the build system installs LICENSE.
+             (string-append "DOCPREFIX=" %output
+                            "/share/doc/" ,name "-" ,version))))
     (home-page "https://github.com/baskerville/sxhkd")
     (synopsis "Simple X hotkey daemon")
     (description "sxhkd is a simple X hotkey daemon with a powerful and
