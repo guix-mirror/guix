@@ -243,7 +243,8 @@ X11 (yet).")
                (mkdir-p (string-append out "/lib"))
                (setenv "PREFIX" out)
                (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
-               (setenv "CC" "gcc")))))))
+               (setenv "CC" "gcc")
+               #t))))))
     (native-inputs `(("perl" ,perl))) ; for pod2man
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
@@ -477,7 +478,7 @@ move windows, switch between desktops, etc.).")
                     (doc (string-append out "/share/doc/scrot")))
                (mkdir-p doc)
                (invoke "make" "install"
-                        (string-append "docsdir=" doc))))))))
+                       (string-append "docsdir=" doc))))))))
     (inputs
      `(("libx11" ,libx11)
        ("giblib" ,giblib)))
@@ -1004,7 +1005,8 @@ color temperature should be set to match the lamps in your room.")
            (lambda _
              (substitute* '("driver/Makefile.in" "po/Makefile.in.in")
                (("@GTK_DATADIR@") "@datadir@")
-               (("@PO_DATADIR@") "@datadir@")))))
+               (("@PO_DATADIR@") "@datadir@"))
+             #t)))
        #:configure-flags '("--with-pam" "--with-proc-interrupts"
                            "--without-readdisplay")
        #:make-flags (list (string-append "AD_DIR="
@@ -1164,7 +1166,8 @@ by name.")
          (add-after 'unpack 'fix-installation-prefix
            (lambda _
              (substitute* "CMakeLists.txt"
-               (("/etc") "${CMAKE_INSTALL_PREFIX}/etc")))))))
+               (("/etc") "${CMAKE_INSTALL_PREFIX}/etc"))
+             #t)))))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("imlib2" ,imlib2)

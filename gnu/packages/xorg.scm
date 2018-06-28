@@ -5939,7 +5939,7 @@ Conventions Manual) and some of the @dfn{EWMH}
                   (add-after 'unpack 'autogen
                               (lambda _
                                 (setenv "NOCONFIGURE" "t")
-                                (zero? (system* "sh" "autogen.sh")))))))
+                                (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
