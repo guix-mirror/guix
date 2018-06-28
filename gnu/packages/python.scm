@@ -1211,13 +1211,13 @@ human-friendly syntax.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.22.0")
+    (version "0.23.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "0v0fi2i10kwnmlpsl6f1fgajcpx3q6766qf6xqi5kw3ivn8l1aa4"))))
+        (base32 "142nvwb01r2wv42y2cz40bx33hd8ffh6s6gynapg859fmzr2mdah"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -1237,7 +1237,8 @@ human-friendly syntax.")
                           (for-each delete-file
                                     '("pandas/tests/io/conftest.py"
                                       "pandas/tests/io/json/test_compression.py"
-                                      "pandas/tests/io/test_excel.py"))
+                                      "pandas/tests/io/test_excel.py"
+                                      "pandas/tests/io/test_parquet.py"))
                           (invoke "pytest" "-v" "pandas" "-k"
                                   (string-append
                                    "not network and not disabled"
@@ -1249,7 +1250,9 @@ human-friendly syntax.")
        ("python-dateutil" ,python-dateutil)))
     (native-inputs
      `(("python-cython" ,python-cython)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-lxml" ,python-lxml)
+       ("python-html5lib" ,python-html5lib)
        ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)))
     (home-page "https://pandas.pydata.org")
