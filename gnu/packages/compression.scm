@@ -760,7 +760,8 @@ INCLUDE = ~a/include
 LIB = ~:*~a/lib
 OLD_ZLIB = False
 GZIP_OS_CODE = AUTO_DETECT"
-                                 (assoc-ref inputs "zlib")))))))))
+                                 (assoc-ref inputs "zlib"))))
+                     #t)))))
     (home-page "https://metacpan.org/release/Compress-Raw-Zlib")
     (synopsis "Low-level interface to zlib compression library")
     (description "This module provides a Perl interface to the zlib
@@ -1344,7 +1345,8 @@ install: libbitshuffle.so
          (add-after 'build-jni 'copy-jni
            (lambda _
              (copy-recursively "src/main/resources/org/xerial/snappy/native"
-                               "build/classes/org/xerial/snappy/native")))
+                               "build/classes/org/xerial/snappy/native")
+             #t))
          (add-before 'check 'fix-failing
            (lambda _
              (with-directory-excursion "src/test/java/org/xerial/snappy"
@@ -1462,7 +1464,8 @@ compressor/decompressor.")
                        class))
              (invoke "ant" "compile-tests")
              (test "org.iq80.snappy.SnappyFramedStreamTest")
-             (test "org.iq80.snappy.SnappyStreamTest")))
+             (test "org.iq80.snappy.SnappyStreamTest")
+             #t))
          (add-before 'build 'remove-hadoop-dependency
            (lambda _
              ;; We don't have hadoop
@@ -1817,7 +1820,7 @@ speed.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-subdirectory
-           (lambda _ (chdir "contrib/pzstd")))
+           (lambda _ (chdir "contrib/pzstd") #t))
          (delete 'configure)            ; no configure script
          (add-before 'check 'compile-tests
            (lambda* (#:key make-flags #:allow-other-keys)
@@ -2099,14 +2102,16 @@ type by using either Perl modules, or command-line tools on your system.")
            (lambda _
              ;; Our build system enters the first directory in the archive, but
              ;; the package is not contained in a subdirectory
-             (chdir "..")))
+             (chdir "..")
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Do we want to install *Demo.jar?
              (install-file "build/jar/xz.jar"
                            (string-append
                              (assoc-ref outputs "out")
-                             "/share/java/xz.jar")))))))
+                             "/share/java/xz.jar"))
+             #t)))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://tukaani.org")
