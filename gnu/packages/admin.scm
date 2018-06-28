@@ -140,13 +140,13 @@ usual file attributes can be checked for inconsistencies.")
 (define-public progress
   (package
     (name "progress")
-    (version "0.13.1")
+    (version "0.14")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://github.com/Xfennec/"
                           name "/archive/v" version ".tar.gz"))
       (sha256
-       (base32 "199rk6608q9m6l0fbjm0xl2w1c5krf8245dqnksdp4rqp7l9ak06"))
+       (base32 "1wcanixfsi5k4i9h5vrnncgjdncalsdfqllrxibxwpgfnf20sji1"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
