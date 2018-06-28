@@ -718,34 +718,32 @@ machine.")))
        (modify-phases %standard-phases
          (replace 'unpack
            (lambda* (#:key source inputs #:allow-other-keys)
-             (and (zero? (system* "tar" "xvf" source))
-                  (begin
-                    (chdir (string-append "icedtea6-" ,version))
-                    (mkdir "openjdk")
-                    (copy-recursively (assoc-ref inputs "openjdk-src") "openjdk")
-                    ;; The convenient OpenJDK source bundle is no longer
-                    ;; available for download, so we have to take the sources
-                    ;; from the Mercurial repositories and change the Makefile
-                    ;; to avoid tests for the OpenJDK zip archive.
-                    (with-directory-excursion "openjdk"
-                      (for-each (lambda (part)
-                                  (mkdir part)
-                                  (copy-recursively
-                                   (assoc-ref inputs
-                                              (string-append part "-src"))
-                                   part))
-                                '("jdk" "hotspot" "corba"
-                                  "langtools" "jaxp" "jaxws")))
-                    (substitute* "Makefile.in"
-                      (("echo \"ERROR: No up-to-date OpenJDK zip available\"; exit -1;")
-                       "echo \"trust me\";")
-                      ;; The contents of the bootstrap directory must be
-                      ;; writeable but when copying from the store they are
-                      ;; not.
-                      (("mkdir -p lib/rt" line)
-                       (string-append line "; chmod -R u+w $(BOOT_DIR)")))
-                    (zero? (system* "chmod" "-R" "u+w" "openjdk"))
-                    #t))))
+             (invoke "tar" "xvf" source)
+             (chdir (string-append "icedtea6-" ,version))
+             (mkdir "openjdk")
+             (copy-recursively (assoc-ref inputs "openjdk-src") "openjdk")
+             ;; The convenient OpenJDK source bundle is no longer
+             ;; available for download, so we have to take the sources
+             ;; from the Mercurial repositories and change the Makefile
+             ;; to avoid tests for the OpenJDK zip archive.
+             (with-directory-excursion "openjdk"
+               (for-each (lambda (part)
+                           (mkdir part)
+                           (copy-recursively
+                            (assoc-ref inputs
+                                       (string-append part "-src"))
+                            part))
+                         '("jdk" "hotspot" "corba"
+                           "langtools" "jaxp" "jaxws")))
+             (substitute* "Makefile.in"
+               (("echo \"ERROR: No up-to-date OpenJDK zip available\"; exit -1;")
+                "echo \"trust me\";")
+               ;; The contents of the bootstrap directory must be
+               ;; writeable but when copying from the store they are
+               ;; not.
+               (("mkdir -p lib/rt" line)
+                (string-append line "; chmod -R u+w $(BOOT_DIR)")))
+             (invoke "chmod" "-R" "u+w" "openjdk")))
          (add-after 'unpack 'use-classpath
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((jvmlib (assoc-ref inputs "classpath"))
@@ -1081,23 +1079,22 @@ bootstrapping purposes.")
                                (let ((dir (or dir
                                               (string-drop-right name 5))))
                                  (mkdir dir)
-                                 (zero? (system* "tar" "xvf"
-                                                 (assoc-ref inputs name)
-                                                 "-C" dir
-                                                 "--strip-components=1"))))))
+                                 (invoke "tar" "xvf"
+                                         (assoc-ref inputs name)
+                                         "-C" dir
+                                         "--strip-components=1")))))
                  (mkdir target)
-                 (and
-                  (zero? (system* "tar" "xvf" source
-                                  "-C" target "--strip-components=1"))
-                  (chdir target)
-                  (unpack "openjdk-src" "openjdk.src")
-                  (with-directory-excursion "openjdk.src"
-                    (for-each unpack
-                              (filter (cut string-suffix? "-drop" <>)
-                                      (map (match-lambda
-                                             ((name . _) name))
-                                           inputs))))
-                  #t))))
+                 (invoke "tar" "xvf" source
+                         "-C" target "--strip-components=1")
+                 (chdir target)
+                 (unpack "openjdk-src" "openjdk.src")
+                 (with-directory-excursion "openjdk.src"
+                   (for-each unpack
+                             (filter (cut string-suffix? "-drop" <>)
+                                     (map (match-lambda
+                                            ((name . _) name))
+                                          inputs))))
+                 #t)))
            (add-after 'unpack 'fix-x11-extension-include-path
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "openjdk.src/jdk/make/sun/awt/mawt.gmk"
@@ -1322,17 +1319,18 @@ bootstrapping purposes.")
                                    (let ((line (read-line port)))
                                      (cond
                                       ((eof-object? line) #t)
-                                      ((regexp-exec error-pattern line) #f)
+                                      ((regexp-exec error-pattern line)
+                                       (error "test failed"))
                                       (else (loop)))))))
                       (run-test (lambda (test)
-                                  (system* "make" test)
+                                  (invoke "make" test)
                                   (call-with-input-file
                                       (string-append "test/" test ".log")
                                     checker))))
-                 (or #t                 ; skip tests
-                     (and (run-test "check-hotspot")
-                          (run-test "check-langtools")
-                          (run-test "check-jdk"))))))
+                 (when #f                 ; skip tests
+                   (run-test "check-hotspot")
+                   (run-test "check-langtools")
+                   (run-test "check-jdk")))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((doc (string-append (assoc-ref outputs "doc")
@@ -1695,9 +1693,9 @@ new Date();"))
                ;; result in the tests to be run.
                (substitute* "build.xml"
                  (("depends=\"jars,test-jar\"") "depends=\"jars\""))
-               (zero? (system* "bash" "bootstrap.sh"
-                               (string-append "-Ddist.dir="
-                                              (assoc-ref outputs "out"))))))))))
+               (invoke "bash" "bootstrap.sh"
+                       (string-append "-Ddist.dir="
+                                      (assoc-ref outputs "out")))))))))
     (native-inputs
      `(("jdk" ,icedtea-8 "jdk")
        ("zip" ,zip)
@@ -1827,14 +1825,13 @@ new Date();"))
                 (lambda (name)
                   (mkdir-p name)
                   (with-directory-excursion name
-                    (or (zero? (system* "tar"
-                                        ;; Use xz for repacked tarball.
-                                        "--xz"
-                                        "--extract"
-                                        "--verbose"
-                                        "--file" (assoc-ref inputs name)
-                                        "--strip-components=1"))
-                        (error "failed to unpack tarball" name)))
+                    (invoke "tar"
+                            ;; Use xz for repacked tarball.
+                            "--xz"
+                            "--extract"
+                            "--verbose"
+                            "--file" (assoc-ref inputs name)
+                            "--strip-components=1"))
                   (copy-recursively (string-append name "/src/main/clojure/")
                                     "src/clj/"))
                 '("core-specs-alpha-src"
@@ -1847,7 +1844,7 @@ new Date();"))
            ;; The javadoc target is not built by default.
            (add-after 'build 'build-doc
              (lambda _
-               (zero? (system* "ant" "javadoc"))))
+               (invoke "ant" "javadoc")))
            ;; Needed since no install target is provided.
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
@@ -2009,7 +2006,8 @@ debugging, etc.")
                (lambda (in out)
                  (display "Manifest-Version: 1.0
 Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
-                          out)))))
+                          out)))
+             #t))
          (replace 'install (install-jars ".")))))
     (home-page "https://eclipse.org")
     (synopsis "Eclipse Java development tools core batch compiler")
@@ -2042,7 +2040,8 @@ Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
                (lambda (in out)
                  (dump-port in out)
                  (display "Main-Class: org.eclipse.jdt.internal.compiler.batch.Main\n"
-                          out)))))
+                          out)))
+             #t))
          (replace 'install (install-jars ".")))))
     (native-inputs
      `(("unzip" ,unzip)))))
@@ -2509,7 +2508,7 @@ HDF5 files, building on the libraries provided by the HDF Group.")
        (modify-phases %standard-phases
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
-             (zero? (apply system* `("ant" "dist" ,@make-flags))))))))
+             (apply invoke `("ant" "dist" ,@make-flags)))))))
     (home-page "https://www.gnu.org/software/classpathx/")
     (synopsis "Java servlet API implementation")
     (description "This is the GNU servlet API distribution, part of the
@@ -2551,11 +2550,11 @@ API and version 2.1 of the Java ServerPages API.")
        (modify-phases %standard-phases
          (replace 'unpack
            (lambda* (#:key source #:allow-other-keys)
-             (and (mkdir "swt")
-                  (zero? (system* "unzip" source "-d" "swt"))
-                  (chdir "swt")
-                  (mkdir "src")
-                  (zero? (system* "unzip" "src.zip" "-d" "src")))))
+             (mkdir "swt")
+             (invoke "unzip" source "-d" "swt")
+             (chdir "swt")
+             (mkdir "src")
+             (invoke "unzip" "src.zip" "-d" "src")))
          ;; The classpath contains invalid icecat jars.  Since we don't need
          ;; anything other than the JDK on the classpath, we can simply unset
          ;; it.
@@ -2570,7 +2569,7 @@ API and version 2.1 of the Java ServerPages API.")
                (mkdir-p lib)
                (setenv "OUTPUT_DIR" lib)
                (with-directory-excursion "src"
-                 (zero? (system* "bash" "build.sh"))))))
+                 (invoke "bash" "build.sh")))))
          (add-after 'install 'install-native
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
@@ -2656,7 +2655,7 @@ decompression and random access decompression have been fully implemented.")
            (lambda* (#:key source #:allow-other-keys)
              (mkdir "src")
              (with-directory-excursion "src"
-               (zero? (system* "jar" "-xf" source)))))
+               (invoke "jar" "-xf" source))))
          ;; At this point we don't have junit, so we must remove the API
          ;; tests.
          (add-after 'unpack 'delete-tests
@@ -2767,7 +2766,8 @@ private Method[] getSortedMethods() {
   return _allMethods;
 }
 
-private Method[] allMethods = getSortedMethods();")))))
+private Method[] allMethods = getSortedMethods();")))
+             #t))
          (add-before 'build 'do-not-use-bundled-qdox
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "build.xml"
@@ -3058,7 +3058,8 @@ reusing it in maven.")
            (lambda _
              ;; Requires an older version of plexus container
              (delete-file
-               "src/test/java/org/codehaus/plexus/archiver/DuplicateFilesTest.java")))
+              "src/test/java/org/codehaus/plexus/archiver/DuplicateFilesTest.java")
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
              (mkdir-p "build/classes/META-INF/plexus")
@@ -3251,15 +3252,15 @@ Compiler component.")))
          (add-before 'build 'generate-models
            (lambda* (#:key inputs #:allow-other-keys)
              (define (modello-single-mode file version mode)
-               (zero? (system* "java"
-                               "org.codehaus.modello.ModelloCli"
-                               file mode "src/main/java" version
-                               "false" "true")))
+               (invoke "java"
+                       "org.codehaus.modello.ModelloCli"
+                       file mode "src/main/java" version
+                       "false" "true"))
              (let ((file "src/main/mdo/settings-security.mdo"))
-               (and
                (modello-single-mode file "1.0.0" "java")
                (modello-single-mode file "1.0.0" "xpp3-reader")
-               (modello-single-mode file "1.0.0" "xpp3-writer")))))
+               (modello-single-mode file "1.0.0" "xpp3-writer"))
+             #t))
          (add-before 'build 'generate-components.xml
            (lambda _
              (mkdir-p "build/classes/META-INF/plexus")
@@ -3288,10 +3289,12 @@ Compiler component.")))
       </configuration>\n
     </component>\n
   </components>\n
-</component-set>\n")))))
+</component-set>\n")))
+             #t))
          (add-before 'check 'fix-paths
            (lambda _
-             (copy-recursively "src/test/resources" "target"))))))
+             (copy-recursively "src/test/resources" "target")
+             #t)))))
     (inputs
      `(("java-plexus-cipher" ,java-plexus-cipher)))
     (native-inputs
@@ -3514,7 +3517,8 @@ XSD and documentation.")
              (with-directory-excursion "modello-plugins/modello-plugin-xml/src/test"
                (substitute*
                  "java/org/codehaus/modello/plugins/xml/XmlModelloPluginTest.java"
-                 (("src/test") "modello-plugins/modello-plugin-xml/src/test"))))))))
+                 (("src/test") "modello-plugins/modello-plugin-xml/src/test")))
+             #t)))))
     (inputs
      `(("java-modello-core" ,java-modello-core)
        ("java-modello-plugins-java" ,java-modello-plugins-java)
@@ -3609,9 +3613,9 @@ on the XPP3 API (XML Pull Parser).")))
              ;; We cannot use the "jar" target because it depends on a couple
              ;; of unpackaged, complicated tools.
              (mkdir "dist")
-             (zero? (system* "jar"
-                             "-cf" (string-append "dist/asm-" ,version ".jar")
-                             "-C" "output/build/tmp" "."))))
+             (invoke "jar"
+                     "-cf" (string-append "dist/asm-" ,version ".jar")
+                     "-C" "output/build/tmp" ".")))
          (replace 'install
            (install-jars "dist")))))
     (native-inputs
@@ -4099,7 +4103,8 @@ are many features, including:
                 (mkdir-p "build/conf")
                 (call-with-output-file "build/conf/MANIFEST.MF"
                   (lambda (file)
-                    (format file "Manifest-Version: 1.0\n")))))
+                    (format file "Manifest-Version: 1.0\n")))
+                #t))
             (replace 'install
               (install-jars "build"))))))))
 
@@ -4345,7 +4350,8 @@ in the @code{java.lang} package.  The following classes are included:
                      (property (@ (name "tests.dir") (value "src/org/apache/bsf/test")))
                      (property (@ (name "build.tests") (value "build/test-classes")))
                      (property (@ (name "build.dest") (value "build/classes"))))
-                  port)))))
+                  port)))
+             #t))
          (replace 'install (install-jars "build")))))
     (native-inputs
      `(("java-junit" ,java-junit)))
@@ -5792,8 +5798,8 @@ more efficient storage-wise than an uncompressed bitmap (as implemented in the
              ;; pom.xml ignores these files in the jar creation process. If we don't,
              ;; we get the error "This code should have never made it into slf4j-api.jar"
              (delete-file-recursively "build/classes/org/slf4j/impl")
-             (zero? (system* "jar" "-cf" "build/jar/slf4j-api.jar" "-C"
-                             "build/classes" "."))))
+             (invoke "jar" "-cf" "build/jar/slf4j-api.jar" "-C"
+                     "build/classes" ".")))
          (add-before 'check 'dont-test-abstract-classes
            (lambda _
              ;; abstract classes are not meant to be run with junit
@@ -5801,7 +5807,8 @@ more efficient storage-wise than an uncompressed bitmap (as implemented in the
                (("<include name=\"\\*\\*/\\*Test.java\" />")
                 (string-append "<include name=\"**/*Test.java\" />"
                                "<exclude name=\"**/MultithreadedInitializationTest"
-                               ".java\" />"))))))))
+                               ".java\" />")))
+             #t)))))
     (inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
@@ -5842,10 +5849,9 @@ time.")
              (setenv "CLASSPATH"
                      (string-append (getcwd) ":" (getenv "CLASSPATH")))
              ;; ... and build test helper classes here:
-             (zero?
-              (apply system*
-                     `("javac" "-d" "."
-                       ,@(find-files "slf4j-api/src/test" ".*\\.java")))))))))
+             (apply invoke
+                    `("javac" "-d" "."
+                      ,@(find-files "slf4j-api/src/test" ".*\\.java"))))))))
     (inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)
@@ -5944,11 +5950,12 @@ tree walking, and translation.")
          (add-before 'build 'generate-grammar
            (lambda _
              (with-directory-excursion "src/org/antlr/stringtemplate/language/"
-               (every (lambda (file)
-                        (format #t "~a\n" file)
-                        (zero? (system* "antlr" file)))
-                      '("template.g" "angle.bracket.template.g" "action.g"
-                        "eval.g" "group.g" "interface.g"))))))))
+               (for-each (lambda (file)
+                           (format #t "~a\n" file)
+                           (invoke "antlr" file))
+                         '("template.g" "angle.bracket.template.g" "action.g"
+                           "eval.g" "group.g" "interface.g")))
+             #t)))))
     (native-inputs
      `(("antlr" ,antlr2)
        ("java-junit" ,java-junit)))
@@ -6006,10 +6013,11 @@ StringTemplate also powers ANTLR.")
          (add-before 'build 'generate-grammar
            (lambda _
              (with-directory-excursion "src/org/stringtemplate/v4/compiler/"
-               (every (lambda (file)
-                        (format #t "~a\n" file)
-                        (zero? (system* "antlr3" file)))
-                      '("STParser.g" "Group.g" "CodeGenerator.g"))))))))
+               (for-each (lambda (file)
+                           (format #t "~a\n" file)
+                           (invoke "antlr3" file))
+                         '("STParser.g" "Group.g" "CodeGenerator.g")))
+             #t)))))
     (inputs
      `(("antlr3" ,antlr3-bootstrap)
        ("antlr2" ,antlr2)
@@ -6076,14 +6084,15 @@ StringTemplate also powers ANTLR.")
                                                     "/lib")
                                                   ".*\\.jar"))
                                     " org.antlr.Tool $*"))))
-               (chmod (string-append bin "/antlr3") #o755))))
+               (chmod (string-append bin "/antlr3") #o755))
+             #t))
          (add-before 'build 'generate-grammar
            (lambda _
              (chdir "tool/src/main/antlr3/org/antlr/grammar/v3/")
              (for-each (lambda (file)
                          (display file)
                          (newline)
-                         (system* "antlr3" file))
+                         (invoke "antlr3" file))
                        '("ANTLR.g" "ANTLRTreePrinter.g" "ActionAnalysis.g"
                          "AssignTokenTypesWalker.g"
                          "ActionTranslator.g" "TreeToNFAConverter.g"
@@ -6094,14 +6103,15 @@ StringTemplate also powers ANTLR.")
              (substitute* "ANTLRv3Parser.java"
                (("public Object getTree") "public CommonTree getTree"))
              (chdir "../../../../../java")
-             (system* "antlr" "-o" "org/antlr/tool"
-                      "org/antlr/tool/serialize.g")
+             (invoke "antlr" "-o" "org/antlr/tool"
+                     "org/antlr/tool/serialize.g")
              (substitute* "org/antlr/tool/LeftRecursiveRuleAnalyzer.java"
                (("import org.antlr.grammar.v3.\\*;") "import org.antlr.grammar.v3.*;
 import org.antlr.grammar.v3.ANTLRTreePrinter;"))
              (substitute* "org/antlr/tool/ErrorManager.java"
                (("case NO_SUCH_ATTRIBUTE_PASS_THROUGH:") ""))
-             (chdir "../../../..")))
+             (chdir "../../../..")
+             #t))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
@@ -6112,7 +6122,8 @@ import org.antlr.grammar.v3.ANTLRTreePrinter;"))
 <include name=\"**/*.sti\"/>
 <include name=\"**/STLexer.tokens\"/>
 </fileset>
-</copy><exec")))))))
+</copy><exec"))
+             #t)))))
     (native-inputs
      `(("antlr" ,antlr2)
        ("antlr3" ,antlr3-bootstrap)))
@@ -6201,19 +6212,19 @@ tree walking, and translation.")
 import org.antlr.grammar.v2.TreeToNFAConverter;\n
 import org.antlr.grammar.v2.DefineGrammarItemsWalker;\n
 import org.antlr.grammar.v2.ANTLRTreePrinter;"))
-             (and
-              (with-directory-excursion "tool/src/main/antlr2/org/antlr/grammar/v2/"
-                (every (lambda (file)
-                         (format #t "~a\n" file)
-                         (zero? (system* "antlr" file)))
-                       '("antlr.g" "antlr.print.g" "assign.types.g"
-                         "buildnfa.g" "codegen.g" "define.g")))
-              (with-directory-excursion "tool/src/main/antlr3/org/antlr/grammar/v3/"
-                (every (lambda (file)
-                         (format #t "~a\n" file)
-                         (zero? (system* "antlr3" file)))
-                       '("ActionAnalysis.g" "ActionTranslator.g" "ANTLRv3.g"
-                         "ANTLRv3Tree.g"))))))
+             (with-directory-excursion "tool/src/main/antlr2/org/antlr/grammar/v2/"
+               (for-each (lambda (file)
+                           (format #t "~a\n" file)
+                           (invoke "antlr" file))
+                         '("antlr.g" "antlr.print.g" "assign.types.g"
+                           "buildnfa.g" "codegen.g" "define.g")))
+             (with-directory-excursion "tool/src/main/antlr3/org/antlr/grammar/v3/"
+               (for-each (lambda (file)
+                           (format #t "~a\n" file)
+                           (invoke "antlr3" file))
+                         '("ActionAnalysis.g" "ActionTranslator.g" "ANTLRv3.g"
+                           "ANTLRv3Tree.g")))
+             #t))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
@@ -6276,7 +6287,8 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
                                                     "/lib")
                                                   ".*\\.jar"))
                                     " org.antlr.Tool $*"))))
-               (chmod (string-append bin "/antlr3") #o755))))
+               (chmod (string-append bin "/antlr3") #o755))
+             #t))
          (add-before 'build 'generate-grammar
            (lambda _
              (let ((dir "src/org/antlr/tool/"))
@@ -6300,7 +6312,8 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
 <include name=\"**/*.sti\"/>
 <include name=\"**/STLexer.tokens\"/>
 </fileset>
-</copy><exec")))))))
+</copy><exec"))
+             #t)))))
     (native-inputs
      `(("antlr" ,antlr2)))
     (inputs
@@ -6925,7 +6938,8 @@ the packageadmin service.")
                    (string-append
                      "version=" ,version "\n"
                      "groupId=org.ops4j.base"
-                     "artifactId=ops4j-base-lang\n")))))))))
+                     "artifactId=ops4j-base-lang\n"))))
+             #t)))))
     (home-page "https://ops4j1.jira.com/wiki/spaces/base/overview")
     (synopsis "Utility classes and extensions to be used in OPS4J projects")
     (description "OPS4J stands for Open Participation Software for Java.  This
@@ -7163,7 +7177,8 @@ it manages project dependencies, gives diffs jars, and much more.")
              ;; it with our own version.
              (substitute* "src/test/java/org/ops4j/pax/tinybundles/bnd/BndTest.java"
                (("[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*")
-                ,(package-version java-aqute-bndlib))))))))
+                ,(package-version java-aqute-bndlib)))
+             #t)))))
     (inputs
      `(("lang" ,java-ops4j-base-lang)
        ("io" ,java-ops4j-base-io)
@@ -7238,7 +7253,8 @@ the system under test at the same time.")
          (add-before 'configure 'chdir
            (lambda _
              ;; Tests assume we are in this directory
-             (chdir "core/pax-exam-spi")))
+             (chdir "core/pax-exam-spi")
+             #t))
          (add-before 'check 'fix-tests
            (lambda _
              ;; One test checks that this file is present.
@@ -7257,7 +7273,8 @@ the system under test at the same time.")
                (("target") "build"))
              ;; One test is expected to fail, but it doesn't throw the expected exception
              (substitute* "src/test/java/org/ops4j/pax/exam/spi/reactors/BaseStagedReactorTest.java"
-               (("AssertionError") "IllegalArgumentException")))))))
+               (("AssertionError") "IllegalArgumentException"))
+             #t)))))
     (inputs
      `(("java-ops4j-pax-exam-core" ,java-ops4j-pax-exam-core)
        ("lang" ,java-ops4j-base-lang)
@@ -7357,15 +7374,18 @@ not included are ones that require dependency to the Databind package.")
                  (("@package@") "com.fasterxml.jackson.core.json")
                  (("@projectversion@") ,version)
                  (("@projectgroupid@") "com.fasterxml.jackson.core")
-                 (("@projectartifactid@") "jackson-core")))))
+                 (("@projectartifactid@") "jackson-core")))
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
              (copy-recursively "src/main/resources"
-                               "build/classes")))
+                               "build/classes")
+             #t))
          (add-before 'check 'copy-test-resources
            (lambda _
              (copy-recursively "src/test/resources"
-                               "build/test-classes"))))))
+                               "build/test-classes")
+             #t)))))
     (native-inputs
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)))
@@ -7402,10 +7422,12 @@ not included are ones that require dependency to the Databind package.")
                  (("@package@") "com.fasterxml.jackson.databind.cfg")
                  (("@projectversion@") ,version)
                  (("@projectgroupid@") "com.fasterxml.jackson.databind")
-                 (("@projectartifactid@") "jackson-databind")))))
+                 (("@projectartifactid@") "jackson-databind")))
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
-             (copy-recursively "src/main/resources" "build/classes"))))))
+             (copy-recursively "src/main/resources" "build/classes")
+             #t)))))
     (inputs
      `(("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
        ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)))
@@ -7449,10 +7471,12 @@ configuration.")
                  (("@package@") "com.fasterxml.jackson.module.jaxb")
                  (("@projectversion@") ,version)
                  (("@projectgroupid@") "com.fasterxml.jackson.module.jaxb")
-                 (("@projectartifactid@") "jackson-module-jaxb")))))
+                 (("@projectartifactid@") "jackson-module-jaxb")))
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
-             (copy-recursively "jaxb/src/main/resources" "build/classes"))))))
+             (copy-recursively "jaxb/src/main/resources" "build/classes")
+             #t)))))
     (inputs
      `(("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
        ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
@@ -7517,7 +7541,8 @@ configuration.")
                  (("@package@") "com.fasterxml.jackson.dataformat.yaml")
                  (("@projectversion@") ,version)
                  (("@projectgroupid@") "com.fasterxml.jackson.dataformat.yaml")
-                 (("@projectartifactid@") "jackson-dataformat-yaml"))))))))
+                 (("@projectartifactid@") "jackson-dataformat-yaml")))
+             #t)))))
     (inputs
      `(("java-fasterxml-jackson-annotations" ,java-fasterxml-jackson-annotations)
        ("java-fasterxml-jackson-core" ,java-fasterxml-jackson-core)
@@ -7584,10 +7609,12 @@ interface and high-performance Typed Access API.")
              ;; msv's latest release is from 2011 and we don't need it
              (delete-file-recursively "src/main/java/com/ctc/wstx/msv")
              (delete-file-recursively "src/test/java/wstxtest/osgi")
-             (delete-file-recursively "src/test/java/wstxtest/msv")))
+             (delete-file-recursively "src/test/java/wstxtest/msv")
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
-             (copy-recursively "src/main/resources" "build/classes"))))))
+             (copy-recursively "src/main/resources" "build/classes")
+             #t)))))
     (inputs
      `(("stax2" ,java-stax2-api)))
     (native-inputs
@@ -7627,10 +7654,12 @@ interface and high-performance Typed Access API.")
                  (("@package@") "com.fasterxml.jackson.dataformat.xml")
                  (("@projectversion@") ,version)
                  (("@projectgroupid@") "com.fasterxml.jackson.dataformat.xml")
-                 (("@projectartifactid@") "jackson-dataformat-xml")))))
+                 (("@projectartifactid@") "jackson-dataformat-xml")))
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
-             (copy-recursively "src/main/resources" "build/classes"))))))
+             (copy-recursively "src/main/resources" "build/classes")
+             #t)))))
     (inputs
      `(("jackson-annotations" ,java-fasterxml-jackson-annotations)
        ("jackson-core" ,java-fasterxml-jackson-core)
@@ -8105,15 +8134,15 @@ those in Perl and JavaScript.")
              #t))
          (replace 'check
            (lambda _
-             (system* "ant" "compile-tests")
+             (invoke "ant" "compile-tests")
              ;; we don't have groovy
              (substitute* "src/test/resources/testng.xml"
                (("<class name=\"test.groovy.GroovyTest\" />") ""))
-             (zero? (system* "java" "-cp" (string-append (getenv "CLASSPATH")
-                                                         ":build/classes"
-                                                         ":build/test-classes")
-                             "-Dtest.resources.dir=src/test/resources"
-                             "org.testng.TestNG" "src/test/resources/testng.xml")))))))
+             (invoke "java" "-cp" (string-append (getenv "CLASSPATH")
+                                                 ":build/classes"
+                                                 ":build/test-classes")
+                     "-Dtest.resources.dir=src/test/resources"
+                     "org.testng.TestNG" "src/test/resources/testng.xml"))))))
     (propagated-inputs
      `(("junit" ,java-junit)
        ("java-jsr305" ,java-jsr305)
@@ -8177,8 +8206,7 @@ to use.")
                                                    ":build/classes"
                                                    ":build/test-classes")
                        "org.testng.TestNG" "-testclass"
-                       "build/test-classes/com/neilalexander/jnacl/NaClTest.class")
-               #t)))))
+                       "build/test-classes/com/neilalexander/jnacl/NaClTest.class"))))))
       (native-inputs
        `(("java-testng" ,java-testng)
          ("java-fest-util" ,java-fest-util)
@@ -8361,8 +8389,7 @@ algorithms and xxHash hashing algorithm.")
          (replace 'build
            (lambda _
              (invoke "ant" "-f" "ant/jdk15+.xml" "build-provider")
-             (invoke "ant" "-f" "ant/jdk15+.xml" "build")
-             #t))
+             (invoke "ant" "-f" "ant/jdk15+.xml" "build")))
          ;; FIXME: the tests freeze.
          ;; (replace 'check
          ;;   (lambda _
@@ -8540,7 +8567,8 @@ done to the IDE or continuous integration servers which simplifies adoption.")
          (add-before 'build 'copy-resources
            (lambda _
              (copy-recursively "powermock-core/src/main/resources"
-                               "build/classes"))))))
+                               "build/classes")
+             #t)))))
     (inputs
      `(("reflect" ,java-powermock-reflect)
        ("javassist" ,java-jboss-javassist)))
@@ -8597,7 +8625,8 @@ done to the IDE or continuous integration servers which simplifies adoption.")
              ;; Our junit version is 4.12-SNAPSHOT
              (substitute* (find-files "powermock-modules/powermock-module-junit4"
                                       "PowerMockJUnit4MethodValidator.java")
-               (("4.12") "4.12-SNAPSHOT")))))))
+               (("4.12") "4.12-SNAPSHOT"))
+             #t)))))
     (inputs
      `(("core" ,java-powermock-core)
        ("reflect" ,java-powermock-reflect)
@@ -9062,8 +9091,7 @@ that is part of the SWT Tools project.")
                        (string-append "-I" (assoc-ref inputs "jdk")
                                       "/include/linux")
                        "-fPIC" "-O2")
-               (invoke "gcc" "-o" "libjansi.so" "-shared" "jansi_ttyname.o")
-               #t)))
+               (invoke "gcc" "-o" "libjansi.so" "-shared" "jansi_ttyname.o"))))
          (add-before 'build 'install-native
            (lambda _
              (let ((dir (string-append "build/classes/META-INF/native/"
@@ -9108,7 +9136,7 @@ console output.")
        (modify-phases %standard-phases
          (add-after 'check 'clear-term
            (lambda _
-             (zero? (system* "echo" "-e" "\\e[0m")))))))
+             (invoke "echo" "-e" "\\e[0m"))))))
     (inputs
      `(("java-jansi-native" ,java-jansi-native)))
     (native-inputs
@@ -9572,7 +9600,8 @@ graphs, and pie charts.")
                '("src/java/org/apache/commons/httpclient/HttpContentTooLargeException.java"
                  "src/examples/TrivialApp.java" "src/examples/ClientApp.java"
                  "src/test/org/apache/commons/httpclient/TestHttps.java"
-                 "src/test/org/apache/commons/httpclient/TestURIUtil2.java"))))
+                 "src/test/org/apache/commons/httpclient/TestURIUtil2.java"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke "ant" "dist"
@@ -9622,7 +9651,8 @@ authentication, HTTP state management, and HTTP connection management.")
            (lambda _
              (for-each delete-file-recursively
                '("commons-vfs2/src/main/java/org/apache/commons/vfs2/provider/webdav"
-                 "commons-vfs2/src/main/java/org/apache/commons/vfs2/provider/hdfs")))))))
+                 "commons-vfs2/src/main/java/org/apache/commons/vfs2/provider/hdfs"))
+             #t)))))
     (inputs
      `(("java-commons-collections4" ,java-commons-collections4)
        ("java-commons-compress" ,java-commons-compress)
@@ -9933,7 +9963,8 @@ jsch-agent-proxy with JSch.")))
                    (find-files "." ".*.properties")
                    (find-files "." ".*.xsd")
                    (find-files "." ".*.xsl")
-                   (find-files "." ".*.xml"))))))
+                   (find-files "." ".*.xml"))))
+             #t))
          (add-before 'build 'fix-vfs
            (lambda _
              (substitute*
@@ -9948,8 +9979,7 @@ jsch-agent-proxy with JSch.")))
          (add-before 'install 'repack
            (lambda _
              (invoke "jar" "-cmf" "build/classes/META-INF/MANIFEST.MF" "build/jar/ivy.jar"
-                     "-C" "build/classes" ".")
-             #t))
+                     "-C" "build/classes" ".")))
          (add-after 'install 'install-bin
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
@@ -10162,7 +10192,8 @@ and @code{ISimpleCompiler} interfaces.")
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
            (lambda _
-             (chdir "janino"))))))
+             (chdir "janino")
+             #t)))))
     (inputs
      `(("java-commons-compiler" ,java-commons-compiler)))
     (native-inputs
@@ -10187,7 +10218,9 @@ static code analysis or code manipulation.")))
                 "1x6ga74yfgm94cfx98gybakbrlilx8i2gn6dx13l40kasmys06mi"))
               (modules '((guix build utils)))
               (snippet
-               '(delete-file-recursively "logback-access/lib"))))
+               '(begin
+                  (delete-file-recursively "logback-access/lib")
+                  #t))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "logback.jar"

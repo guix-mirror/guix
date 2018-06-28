@@ -179,10 +179,11 @@ grafting works - and so that the garbage collector doesn't collect
 dependencies of this jar file."
   (define (generate-index jar)
     (invoke "jar" "-i" jar))
-  (every (match-lambda
-           ((output . directory)
-            (every generate-index (find-files directory "\\.jar$"))))
-         outputs))
+  (for-each (match-lambda
+              ((output . directory)
+               (for-each generate-index (find-files directory "\\.jar$"))))
+            outputs)
+  #t)
 
 (define* (strip-jar-timestamps #:key outputs
                                #:allow-other-keys)

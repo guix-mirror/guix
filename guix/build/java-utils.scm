@@ -31,7 +31,7 @@
 
 (define* (ant-build-javadoc #:key (target "javadoc") (make-flags '())
                             #:allow-other-keys)
-  (zero? (apply system* `("ant" ,target ,@make-flags))))
+  (apply invoke `("ant" ,target ,@make-flags)))
 
 (define* (install-jars jar-directory)
   "Install jar files from JAR-DIRECTORY to the default target directory.  This
