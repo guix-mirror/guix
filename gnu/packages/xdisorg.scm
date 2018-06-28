@@ -282,7 +282,7 @@ between desktops, and change the number of desktops.")
         ("libxt" ,libxt)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://xeyes.sourcearchive.com/")
+    (home-page "https://www.x.org/")    ; no dedicated Xeyes page exists
     (synopsis "Follow-the-mouse X demo")
     (description "Xeyes is a demo program for x.org.  It shows eyes
 following the mouse.")
