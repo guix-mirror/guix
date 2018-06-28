@@ -6,7 +6,6 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,7 +41,7 @@
 (define-public llvm
   (package
     (name "llvm")
-    (version "6.0.1")
+    (version "6.0.0")
     (source
      (origin
       (method url-fetch)
@@ -50,7 +49,7 @@
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
-        "1qpls3vk85lydi5b4axl0809fv932qgsqgdgrk098567z4jc7mmn"))))
+        "0224xvfg6h40y5lrbnb9qaq3grmdc5rg00xq03s1wxjfbf8krx8z"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
@@ -244,11 +243,11 @@ code analysis tools.")
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
-   "1fcr3jn24yr8lh36nc0c4ikli4744i2q9m1ik67p1jymwwaixkgl"))
+   "16m7rvh3w6vq10iwkjrr1nn293djld3xm62l5zasisaprx117k6h"))
 
 (define-public clang
   (clang-from-llvm llvm clang-runtime
-                   "0rxn4rh7rrnsqbdgp4gzc8ishbkryhpl1kd3mpnxzpxxhla3y93w"
+                   "0cnznvfyl3hgbg8gj58pmwf0pvd2sv5k3ccbivy6q6ggv7c6szg0"
                    #:patches '("clang-6.0-libc-search-path.patch")))
 
 (define-public llvm-3.9.1
