@@ -331,14 +331,14 @@ X11-system or any other graphical user interface.")
   (package
    (name "teckit")
    (version "2.5.7")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/silnrsi/teckit/releases/download/v"
-                  version "/teckit-" version ".tar.gz"))
-            (sha256
-              (base32
-                "1pbp97vcpj6x4yixx6ww0vsi1rrr99fksxdjafs6gdargzd24cj4"))))
+   (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/silnrsi/teckit")
+            (commit (string-append "v" version))))
+      (sha256
+       (base32 "1v8qadkbn311z9l8c22gw8nsij31lsikl114128w3drdz5npf83j"))))
    (build-system gnu-build-system)
    (inputs
     `(("zlib" ,zlib)
