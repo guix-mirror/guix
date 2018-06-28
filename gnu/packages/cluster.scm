@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
 (define-public keepalived
   (package
     (name "keepalived")
-    (version "2.0.1")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -38,18 +39,11 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "0hp8i56zkf0398bmpi32a85f05cv2fy9wizkdfbxk7gav4z6yx18"))))
+                "0qf46bfxv4w7qx7d73qq26pp72cvbyfjvna3hxn208vynvapalh0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'patch-configure
-           (lambda _
-             ;; XXX: The 'configure' script doesn't handle '-L' flags in the
-             ;; output of 'pkg-config'.
-             (substitute* "configure"
-               (("PKG_CONFIG --libs") "PKG_CONFIG --libs-only-l"))
-             #t))
          (add-after 'build 'build-info
            (lambda _
              (invoke "make" "-C" "doc" "texinfo")
