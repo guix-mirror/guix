@@ -26,6 +26,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6113,6 +6114,7 @@ artifact.")))
      `(#:jar-name "eclipse-jetty-security.jar"
        #:source-dir "src/main/java"
        #:jdk ,icedtea-8
+       #:test-exclude (list "**/ConstraintTest.*") ; This test fails
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
@@ -6139,11 +6141,6 @@ infrastructure")))
     (inherit java-eclipse-jetty-security)
     (version (package-version java-eclipse-jetty-util-9.2))
     (source (package-source java-eclipse-jetty-util-9.2))
-    (arguments
-     `(#:test-exclude
-       ;; This test fails.
-       (list "**/ConstraintTest.*")
-       ,@(package-arguments java-eclipse-jetty-security)))
     (inputs
      `(("util" ,java-eclipse-jetty-util-9.2)
        ("http" ,java-eclipse-jetty-http-9.2)
