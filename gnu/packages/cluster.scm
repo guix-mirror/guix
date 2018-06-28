@@ -71,11 +71,11 @@
        ("libnfnetlink" ,libnfnetlink)
        ("libnl" ,libnl)))
     (home-page "http://www.keepalived.org/")
-    (synopsis "Loadbalancing and high-availability frameworks")
+    (synopsis "Load balancing and high-availability frameworks")
     (description
      "Keepalived provides frameworks for both load balancing and high
 availability.  The load balancing framework relies on the Linux Virtual
-Server (IPVS) kernel module.  High availability is achieved by the Virtual
-Redundancy Routing Protocol (VRRP).  Each Keepalived framework can be used
+Server (@dfn{IPVS}) kernel module.  High availability is achieved by the Virtual
+Redundancy Routing Protocol (@dfn{VRRP}).  Each Keepalived framework can be used
 independently or together to provide resilient infrastructures.")
     (license license:gpl2+)))
