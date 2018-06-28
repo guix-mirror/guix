@@ -187,7 +187,8 @@ project (but it is usable outside of the Gnome platform).")
                  (format #f "ROOT = r'~a'" libxml2))
                 ;; For 'iconv.h'.
                 (("/opt/include")
-                 (string-append glibc "/include")))))))))
+                 (string-append glibc "/include"))))
+            #t)))))
     (inputs `(("libxml2" ,libxml2)))
     (synopsis "Python bindings for the libxml2 library")))
 
@@ -552,7 +553,8 @@ that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
                      (setenv "PERL5LIB"
                              (string-append (getenv "PERL5LIB") ":"
                                             (assoc-ref outputs "out")
-                                            "/lib/perl5/site_perl")))))))
+                                            "/lib/perl5/site_perl"))
+                     #t)))))
     (home-page "https://metacpan.org/release/XML-SAX")
     (synopsis "Perl API for XML")
     (description "XML::SAX consists of several framework classes for using and
@@ -1220,7 +1222,7 @@ elements to their parents
              (substitute* "test/run"
                ;; Run tests with `python' only
                (("^(PYTHON_VERSIONS = ).*" all m) (string-append m "['']")))
-             (zero? (system* "test/run")))))))
+             (invoke "test/run"))))))
     (home-page "https://github.com/dilshod/xlsx2csv")
     (synopsis "XLSX to CSV converter")
     (description
@@ -1269,7 +1271,7 @@ files.  It is designed to be fast and to handle large input files.")
          ;; Bootstrapping is required in order to fix the test driver script.
          (replace 'bootstrap
            (lambda _
-             (zero? (system* "bash" "bootstrap")))))))
+             (invoke "bash" "bootstrap"))))))
     (native-inputs
      `(("unzip" ,unzip)
        ("autoconf" ,autoconf)
@@ -1870,7 +1872,8 @@ low memory footprint.")
        (modify-phases %standard-phases
          (add-before 'build 'copy-resources
            (lambda _
-             (copy-recursively "src/main/resources" "build/classes"))))))
+             (copy-recursively "src/main/resources" "build/classes")
+             #t)))))
     (inputs
      `(("java-xpp3" ,java-xpp3)))
     (native-inputs
