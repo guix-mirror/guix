@@ -264,21 +264,19 @@ between desktops, and change the number of desktops.")
 (define-public xeyes
   (package
     (name "xeyes")
-    (version "1.0.1")
+    (version "1.1.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "http://xeyes.sourcearchive.com/downloads/1.0.1/xeyes_"
-               version
-               ".orig.tar.gz"))
-        (sha256
-          (base32
-            "04c3md570j67g55h3bix1qbngcslnq91skli51k3g1avki88zkm9"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.x.org/releases/individual/app/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0lq5j7fryx1wn998jq6h3icz1h6pqrsbs3adskjzjyhn5l6yrg2p"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
         ("libxmu" ,libxmu)
+        ("libxrender" ,libxrender)
         ("libxt" ,libxt)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
