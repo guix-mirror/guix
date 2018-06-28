@@ -1330,7 +1330,8 @@ bootstrapping purposes.")
                  (when #f                 ; skip tests
                    (run-test "check-hotspot")
                    (run-test "check-langtools")
-                   (run-test "check-jdk")))))
+                   (run-test "check-jdk"))
+                 #t)))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((doc (string-append (assoc-ref outputs "doc")
