@@ -5474,32 +5474,30 @@ Yasnippet.")
       (license license:gpl2+))))
 
 (define-public emacs-helm-system-packages
-  (let ((commit "b41f8f251695cf236e9d1627070049a5b41aa38a")
-        (revision "2"))
-    (package
-      (name "emacs-helm-system-packages")
-      (version (git-version "1.9.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-helm/helm-system-packages")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1wrsx1j86c9a74nsdndjv21slzl46idd3p6wqy5wnasawj0kfn8r"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)))
-      (home-page "https://github.com/emacs-helm/helm-system-packages")
-      (synopsis "Helm System Packages is an interface to your package manager")
-      (description "List all available packages in Helm (with installed
+  (package
+    (name "emacs-helm-system-packages")
+    (version "1.10.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-helm/helm-system-packages")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0y5wzvfycb1bvgdk782xyl744fih43vz14wmq6gcqjarw6xfniz5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/emacs-helm/helm-system-packages")
+    (synopsis "Helm System Packages is an interface to your package manager")
+    (description "List all available packages in Helm (with installed
 packages displayed in their own respective face).  Fuzzy-search, mark and
 execute the desired action over any selections of packages: Install,
 uninstall, display packages details (in Org Mode) or insert details at point,
 find files owned by packages...  And much more, including performing all the
 above over the network.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-memoize
   (package
