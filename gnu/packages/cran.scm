@@ -246,15 +246,17 @@ into a pipeline of data manipulation and visualisation.")
 (define-public r-haven
   (package
     (name "r-haven")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "haven" version))
        (sha256
         (base32
-         "1fkcvsrnw8waqwggv0aydbvbi99x5kp9g78xfxj4w6s3xvdzcysz"))))
+         "0pp8xjf5lzqg1wr8cwxj4njx99vxwlflwjrd7jvyzwlfpwh7n1qa"))))
     (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-forcats" ,r-forcats)
        ("r-hms" ,r-hms)
