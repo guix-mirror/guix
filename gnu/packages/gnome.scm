@@ -121,6 +121,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages tex)
@@ -2033,7 +2034,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.36.3")
+    (version "0.40.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2041,7 +2042,7 @@ passwords in the GNOME keyring.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0706izk9prxqclm7gv4f63diwnlc1llvfl5sc9ghqbgn076lx2mc"))))
+                "1v0ak68lrnbb5lyd48j6sxa35vfrii86zmhxdhkdb85k1bv65rmy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2049,20 +2050,25 @@ passwords in the GNOME keyring.")
          (add-before 'check 'pre-check
                      (lambda _
                        (setenv "CC" "gcc")
+                       (substitute* "valadoc/tests/testrunner.sh"
+                         (("export PKG_CONFIG_PATH=" m)
+                          (string-append m "$PKG_CONFIG_PATH:")))
                        ;; For missing '/etc/machine-id'.
                        (setenv "DBUS_FATAL_WARNINGS" "0")
-                       #t)))
-       ;; Build the Vala API generator
-       #:configure-flags '("--enable-vapigen")))
+                       #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("flex" ,flex)
        ("bison" ,bison)
        ("xsltproc" ,libxslt)
+       ("grep" ,grep)
+       ("sed" ,sed)
        ("dbus" ,dbus)                                     ; for dbus tests
        ("gobject-introspection" ,gobject-introspection))) ; for gir tests
+    (inputs
+     `(("graphviz" ,graphviz)))
     (propagated-inputs
-     `(("glib" ,glib))) ; required by libvala-0.26.pc
+     `(("glib" ,glib))) ; required by libvala-0.40.pc
     (home-page "https://live.gnome.org/Vala/")
     (synopsis "Compiler for the GObject type system")
     (description
