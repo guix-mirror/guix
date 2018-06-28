@@ -250,7 +250,7 @@ a multi-paradigm automated test framework for C++ and Objective-C.")
              ;; the build environment. Hence assuming-failure test fails.
              (delete-file "yarn.tests/assuming-failure.script")
              (delete-file "yarn.tests/assuming-failure.stdout")
-             (zero? (system* "python" "setup.py" "check")))))))
+             (invoke "python" "setup.py" "check"))))))
     (native-inputs
      `(("python2-coverage-test-runner" ,python2-coverage-test-runner)))
     (propagated-inputs
@@ -715,8 +715,8 @@ and many external plugins.")
             ;; options taken from tox.ini
             ;; TODO: make "--restructuredtext" tests pass. They currently fail
             ;; with "Duplicate implicit target name"
-            (zero? (system* "python" "./setup.py" "check"
-                            "--strict" "--metadata")))))))
+            (invoke "python" "./setup.py" "check"
+                    "--strict" "--metadata"))))))
     (propagated-inputs
      `(("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)))
@@ -1100,8 +1100,8 @@ python-fixtures package instead.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "python" "-m" "testtools.run"
-                             "fixtures.test_suite")))))))
+             (invoke "python" "-m" "testtools.run"
+                     "fixtures.test_suite"))))))
     (propagated-inputs
      ;; Fixtures uses pbr at runtime to check versions, etc.
      `(("python-pbr" ,python-pbr)
@@ -1353,8 +1353,8 @@ the last py.test invocation.")
       `(#:phases (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "py.test" "--genscript=runtests.py"))
-             (zero? (system* "py.test")))))))
+             (invoke "py.test" "--genscript=runtests.py")
+             (invoke "py.test"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-requests" ,python-requests)
@@ -1523,7 +1523,7 @@ failures.")
              ;; It's easier to run tests after install.
              ;; Make installed package available for running the tests
              (add-installed-pythonpath inputs outputs)
-             (zero? (system* "py.test" "-vv")))))))
+             (invoke "py.test" "-vv"))))))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)
@@ -1560,7 +1560,7 @@ failures.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero? (system* "./testrun")))))))
+             (invoke "./testrun"))))))
     (propagated-inputs
      `(("python2-coverage" ,python2-coverage)))
     (home-page "https://liw.fi/coverage-test-runner/")
@@ -1606,9 +1606,9 @@ statements in the module it tests.")
                               (string-append (getenv "PYTHONPATH") ":" work))
                       (copy-recursively "." work)
                       (with-directory-excursion "/tmp"
-                        (zero? (system* "python" "-m" "unittest" "discover"
-                                        "-s" (string-append work "/pylint/test")
-                                        "-p" "*test_*.py")))))))))
+                        (invoke "python" "-m" "unittest" "discover"
+                                "-s" (string-append work "/pylint/test")
+                                "-p" "*test_*.py"))))))))
     (home-page "https://github.com/PyCQA/pylint")
     (synopsis "Python source code analyzer which looks for coding standard
 errors")
@@ -1841,7 +1841,8 @@ tests written in a natural language style, backed up by Python code.")
            (lambda _
              (substitute* "setup.py"
                (("'wheel'") "")                ; We don't use it.
-               (("'ordereddict==1.1'") ""))))))) ; Python >= 2.7 has it built-in.
+               (("'ordereddict==1.1'") ""))    ; Python >= 2.7 has it built-in.
+             #t)))))
     (propagated-inputs
      `(("behave" ,behave)
        ("python-requests" ,python-requests)))
