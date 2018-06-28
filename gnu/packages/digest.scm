@@ -19,7 +19,7 @@
 (define-module (gnu packages digest)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public xxhash
@@ -28,12 +28,12 @@
     (version "0.6.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Cyan4973/xxHash/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Cyan4973/xxHash")
+             (commit (string-append "v" version))))
        (sha256
-        (base32 "08nv9h3jzg6y85ysy2dj3qvvfsdz0rwkk497a2366syz278wqw25"))))
+        (base32 "1az5vm14rdc3pa3l0wj180wpii14if16diril3gz8q9ip1215gwj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
