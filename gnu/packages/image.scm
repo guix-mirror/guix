@@ -136,15 +136,15 @@ library.  It supports almost all PNG features and is extensible.")
          (add-after 'unpack 'patch-apng
            (lambda* (#:key inputs #:allow-other-keys)
              (define (apply-patch file)
-               (zero? (system* "patch" "-p1" "--force"
-                               "--input" file)))
+               (invoke "patch" "-p1" "--force"
+                       "--input" file))
              (let ((apng.gz (assoc-ref inputs "apng")))
                (format #t "Applying APNG patch '~a'...~%"
                        apng.gz)
-               (and
-                 (zero?
-                   (system (string-append "gunzip < " apng.gz " > the-patch")))
-                 (apply-patch "the-patch")))))
+               (invoke "sh" "-c"
+                       (string-append "gunzip < " apng.gz " > the-patch"))
+               (apply-patch "the-patch")
+               #t)))
          (add-before 'configure 'no-checks
            (lambda _
              (substitute* "Makefile.in"
@@ -239,7 +239,8 @@ in-memory raw vectors.")
                (string-append vardef (assoc-ref inputs "zlib") "/"))
               ;; The Makefile is written by hand and not using $PREFIX
               (("\\$\\(DESTDIR\\)/usr/")
-               (string-append (assoc-ref outputs "out") "/"))))))))
+               (string-append (assoc-ref outputs "out") "/")))
+            #t)))))
    (inputs
     `(("libpng" ,libpng)
       ("zlib" , zlib)))
@@ -473,14 +474,15 @@ collection of tools for doing simple manipulations of TIFF images.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autobuild"))))
+             (invoke "sh" "autobuild")))
          (add-after 'unpack 'patch-reg-wrapper
            (lambda _
              (substitute* "prog/reg_wrapper.sh"
                ((" /bin/sh ")
                 (string-append " " (which "sh") " "))
                (("which gnuplot")
-                "true")))))))
+                "true"))
+             #t)))))
     (home-page "http://www.leptonica.com/")
     (synopsis "Library and tools for image processing and analysis")
     (description
@@ -1083,7 +1085,7 @@ ISO/IEC 15444-1).")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (synopsis "Scaling, colorspace conversion, and dithering library")
     (description "Zimg implements the commonly required image processing basics
 of scaling, colorspace conversion, and depth conversion.  A simple API enables
@@ -1116,7 +1118,8 @@ the programmer.")
                     ;; of the source tree, one level higher than expected
                     (lambda _
                       (substitute* "test/run_tests.bash"
-                        (("../build") "../../build")))))))
+                        (("../build") "../../build"))
+                      #t)))))
     (home-page "https://github.com/myint/perceptualdiff")
     (synopsis "Perceptual image comparison utility")
     (description "PerceptualDiff visually compares two images to determine
