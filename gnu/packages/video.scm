@@ -1371,7 +1371,8 @@ YouTube.com and many more sites.")
                (("os\\.path\\.join\\('/usr', 'share'")
                 (string-append "os.path.join('"
                                (assoc-ref %outputs "out")
-                               "', 'share'"))))))))
+                               "', 'share'")))
+             #t)))))
     (inputs
      `(("python2-wxpython" ,python2-wxpython)
        ("youtube-dl" ,youtube-dl)))
@@ -1709,67 +1710,68 @@ for use with HTML5 video.")
        (add-before 'patch-source-shebangs 'unpack-ffmpeg
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (system* "tar" "xf" "ffmpeg-2.7.6.tar.bz2")
-             (delete-file "ffmpeg-2.7.6.tar.bz2"))))
+             (invoke "tar" "xf" "ffmpeg-2.7.6.tar.bz2")
+             (delete-file "ffmpeg-2.7.6.tar.bz2"))
+           #t))
        (add-after 'patch-source-shebangs 'repack-ffmpeg
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
              (substitute* "ffmpeg-2.7.6/configure"
                (("#! /bin/sh") (string-append "#!" (which "sh"))))
-             (system* "tar" "cjf" "ffmpeg-2.7.6.tar.bz2" "ffmpeg-2.7.6"
-                      ;; avoid non-determinism in the archive
-                      "--sort=name" "--mtime=@0"
-                      "--owner=root:0" "--group=root:0")
-             (delete-file-recursively "ffmpeg-2.7.6"))))
+             (invoke "tar" "cjf" "ffmpeg-2.7.6.tar.bz2" "ffmpeg-2.7.6"
+                     ;; avoid non-determinism in the archive
+                     "--sort=name" "--mtime=@0"
+                     "--owner=root:0" "--group=root:0")
+             (delete-file-recursively "ffmpeg-2.7.6"))
+           #t))
        (replace 'configure
          (lambda _
            ;; Copy-paste settings from the cmake build system.
            (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-           (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))))
+           (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
+           #t))
        (replace 'build
          (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let*
-             ((out (assoc-ref outputs "out"))
-              (lib (string-append out "/lib"))
-              (top (getcwd))
-              (sdl (assoc-ref inputs "sdl"))
-              (build_component
-                (lambda* (component srcdir #:optional (args '()))
-                  (let ((builddir (string-append "build_" component)))
-                    (mkdir builddir)
-                    (with-directory-excursion builddir
-                      (zero?
-                        (and
-                          (apply system* "cmake"
-                                 "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
-                                 (string-append "-DCMAKE_INSTALL_PREFIX=" out)
-                                 (string-append "-DCMAKE_INSTALL_RPATH=" lib)
-                                 (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
-                                                "\"-Wl,-rpath=" lib "\"")
-                                 (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
-                                 (string-append "-DSDL_INCLUDE_DIR="
-                                                sdl "/include/SDL")
-                                 (string-append "../" srcdir)
-                                 "-DENABLE_QT5=True"
-                                 args)
-                         (system* "make" "-j"
+           (let* ((out (assoc-ref outputs "out"))
+                  (lib (string-append out "/lib"))
+                  (top (getcwd))
+                  (sdl (assoc-ref inputs "sdl"))
+                  (build_component
+                   (lambda* (component srcdir #:optional (args '()))
+                     (let ((builddir (string-append "build_" component)))
+                       (mkdir builddir)
+                       (with-directory-excursion builddir
+                         (apply invoke "cmake"
+                                "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
+                                (string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                                (string-append "-DCMAKE_INSTALL_RPATH=" lib)
+                                (string-append "-DCMAKE_SHARED_LINKER_FLAGS="
+                                               "\"-Wl,-rpath=" lib "\"")
+                                (string-append "-DAVIDEMUX_SOURCE_DIR=" top)
+                                (string-append "-DSDL_INCLUDE_DIR="
+                                               sdl "/include/SDL")
+                                (string-append "../" srcdir)
+                                "-DENABLE_QT5=True"
+                                args)
+                         (invoke "make" "-j"
                                  (number->string (parallel-job-count)))
-                         (system* "make" "install"))))))))
+                         (invoke "make" "install"))))))
              (mkdir out)
-             (and (build_component "core" "avidemux_core")
-                  (build_component "cli" "avidemux/cli")
-                  (build_component "qt4" "avidemux/qt4")
-                  (build_component "plugins_common" "avidemux_plugins"
-                                  '("-DPLUGIN_UI=COMMON"))
-                  (build_component "plugins_cli" "avidemux_plugins"
-                                  '("-DPLUGIN_UI=CLI"))
-                  (build_component "plugins_qt4" "avidemux_plugins"
-                                  '("-DPLUGIN_UI=QT4"))
-                  (build_component "plugins_settings" "avidemux_plugins"
-                                  '("-DPLUGIN_UI=SETTINGS")))
+             (build_component "core" "avidemux_core")
+             (build_component "cli" "avidemux/cli")
+             (build_component "qt4" "avidemux/qt4")
+             (build_component "plugins_common" "avidemux_plugins"
+                              '("-DPLUGIN_UI=COMMON"))
+             (build_component "plugins_cli" "avidemux_plugins"
+                              '("-DPLUGIN_UI=CLI"))
+             (build_component "plugins_qt4" "avidemux_plugins"
+                              '("-DPLUGIN_UI=QT4"))
+             (build_component "plugins_settings" "avidemux_plugins"
+                              '("-DPLUGIN_UI=SETTINGS"))
              ;; Remove .exe and .dll file.
              (delete-file-recursively
-               (string-append out "/share/ADM6_addons")))))
+              (string-append out "/share/ADM6_addons"))
+             #t)))
        (delete 'install))))
     (home-page "http://fixounet.free.fr/avidemux/")
     (synopsis "Video editor")
@@ -1849,7 +1851,8 @@ format changes.")
           (lambda _
             (chdir "build/generic")
             (substitute* "configure"
-              (("#! /bin/sh") (string-append "#!" (which "sh")))))))
+              (("#! /bin/sh") (string-append "#!" (which "sh"))))
+            #t)))
        ;; No 'check' target.
        #:tests? #f))
     (home-page "https://www.xvid.com/")
@@ -1922,7 +1925,8 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
              (lambda* (#:key outputs #:allow-other-keys)
                (install-file "plugins/rofi-twitchy"
                              (string-append (assoc-ref outputs "out")
-                                            "/bin")))))))
+                                            "/bin"))
+               #t)))))
       (inputs
        `(("python-requests" ,python-requests)
          ("streamlink" ,streamlink)))
