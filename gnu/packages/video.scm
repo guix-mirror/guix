@@ -1611,7 +1611,7 @@ device without having to bother about the decryption.")
     (synopsis "SubRip to WebVTT subtitle converter")
     (description "srt2vtt converts SubRip formatted subtitles to WebVTT format
 for use with HTML5 video.")
-    (home-page "http://dthompson.us/pages/software/srt2vtt")
+    (home-page "https://dthompson.us/projects/srt2vtt.html")
     (license license:gpl3+)))
 
 (define-public avidemux
