@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,9 +150,9 @@ online pastebin services.")
                       (find-files "."))
           (substitute* "./gnulib/gnulib-tool.py"
                        (("/usr/bin/python") (which "python3")))
-          (zero? (system* "sh" "./bootstrap"
+          (invoke "sh" "./bootstrap"
                           "--gnulib-srcdir=gnulib"
-                          "--no-git")))))))
+                          "--no-git"))))))
    (inputs `(("autoconf" ,autoconf)
              ("automake" ,automake)
              ("doxygen" ,doxygen)
