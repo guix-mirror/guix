@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,10 @@
             (sha256 (base32
                      "0kg8w6qyiizlyzh4a8lpzslipcbv96hcg3rqqpnxba8ffbm8g3fv"))))
    (build-system gnu-build-system)
+   (arguments
+    ;; The use of "freetype-config" is deprecated, but other packages still
+    ;; depend on it.
+    `(#:configure-flags (list "--enable-freetype-config")))
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (propagated-inputs
