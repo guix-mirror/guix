@@ -2683,14 +2683,14 @@ and several other projects.")
 (define-public python-rst.linker
   (package
     (name "python-rst.linker")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rst.linker" version))
        (sha256
         (base32
-         "16crgnai6020vdmnpwdimw1vm3jb74ysfyb3kmcidb0lgma5xq2d"))))
+         "0iqaacp7pj1s8avs4kc0qg0r7dscywaq37y6l9j14glqdikk0wdj"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
