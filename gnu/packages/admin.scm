@@ -21,6 +21,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -139,13 +140,13 @@ usual file attributes can be checked for inconsistencies.")
 (define-public progress
   (package
     (name "progress")
-    (version "0.13.1")
+    (version "0.14")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://github.com/Xfennec/"
                           name "/archive/v" version ".tar.gz"))
       (sha256
-       (base32 "199rk6608q9m6l0fbjm0xl2w1c5krf8245dqnksdp4rqp7l9ak06"))
+       (base32 "1wcanixfsi5k4i9h5vrnncgjdncalsdfqllrxibxwpgfnf20sji1"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -255,7 +256,7 @@ services.")
     (origin
      (method url-fetch)
       (uri (string-append
-            "http://projects.gw-computing.net/attachments/download/615/dfc-"
+            "https://projects.gw-computing.net/attachments/download/615/dfc-"
             version ".tar.gz"))
       (sha256
        (base32
@@ -263,7 +264,7 @@ services.")
    (build-system cmake-build-system)
    (arguments '(#:tests? #f)) ; There are no tests.
    (native-inputs `(("gettext" ,gettext-minimal)))
-   (home-page "http://projects.gw-computing.net/projects/dfc")
+   (home-page "https://projects.gw-computing.net/projects/dfc")
    (synopsis "Display file system space usage using graphs and colors")
    (description
     "dfc (df color) is a modern version of df.  It uses colors, draws pretty
@@ -507,7 +508,7 @@ allow automatic login and starting any app.")
      "This package provides the /etc/services, /etc/protocols, and /etc/rpc
 files, which contain information about the IANA-assigned port, protocol, and
 ONC RPC numbers.")
-    (home-page "http://packages.debian.org/sid/netbase")
+    (home-page "https://packages.debian.org/sid/netbase")
     (license license:gpl2)))
 
 (define-public netcat
@@ -752,7 +753,7 @@ tools: server, client, and relay agent.")
     (version "1.8.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.tcpdump.org/release/libpcap-"
+              (uri (string-append "https://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -761,7 +762,7 @@ tools: server, client, and relay agent.")
     (native-inputs `(("bison" ,bison) ("flex" ,flex)))
     (arguments '(#:configure-flags '("--with-pcap=linux")
                  #:tests? #f))                    ; no 'check' target
-    (home-page "http://www.tcpdump.org")
+    (home-page "https://www.tcpdump.org")
     (synopsis "Network packet capture library")
     (description
      "libpcap is an interface for user-level packet capture.  It provides a
@@ -777,7 +778,7 @@ network statistics collection, security monitoring, network debugging, etc.")
     (version "4.9.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
+              (uri (string-append "https://www.tcpdump.org/release/tcpdump-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -786,7 +787,7 @@ network statistics collection, security monitoring, network debugging, etc.")
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
     (native-inputs `(("perl" ,perl)))        ; for tests
-    (home-page "http://www.tcpdump.org/")
+    (home-page "https://www.tcpdump.org/")
     (synopsis "Network packet analyzer")
     (description
      "Tcpdump is a command-line tool to analyze network traffic passing
@@ -822,41 +823,36 @@ by bandwidth they use.")
 (define-public clusterssh
   (package
     (name "clusterssh")
-    (version "3.28")
+    (version "4.13.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/clusterssh/"
-                                  "1.%20ClusterSSH%20Series%203/" version
-                                  "/clusterssh-" version ".tar.gz"))
+                                  "2.%20ClusterSSH%20Series%204/"
+                                  "App-ClusterSSH-v" version ".tar.gz"))
               (sha256
                (base32
-                "1bwggpvaj2al5blg1ynapviv2kpydffpzq2zkhi81najnvzc1rr7"))))
-    (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))
-    (propagated-inputs `(("xterm" ,xterm)
-                         ("perl-tk" ,perl-tk)
-                         ("perl-x11-protocol" ,perl-x11-protocol)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'set-load-paths
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Put the perl-tk and perl-x11-protocol modules in the perl inc
-             ;; path for PROG
-             (let* ((out  (assoc-ref outputs "out"))
-                    (prog (string-append out "/bin/cssh"))
-                    (perl-ver ,(package-version perl))
-                    (x11-inc (string-append
-                              (assoc-ref inputs "perl-x11-protocol")
-                              "/lib/perl5/site_perl/" perl-ver))
-                    (tk-inc (string-append
-                             (assoc-ref inputs "perl-tk")
-                             "/lib/perl5/site_perl/" perl-ver
-                             "/x86_64-linux")))
-               (wrap-program
-                   prog
-                 `("PERL5LIB" ":" prefix (,x11-inc ,tk-inc))))
-             #t)))))
+                "0rmk2p3f2wz1h092anidjclh212rv3gxyk0c641qk3frlrjnw6mp"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-cpan-changes" ,perl-cpan-changes)
+       ("perl-file-slurp" ,perl-file-slurp)
+       ("perl-file-which" ,perl-file-which)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-readonly" ,perl-readonly)
+       ("perl-test-differences" ,perl-test-differences)
+       ("perl-test-distmanifest" ,perl-test-distmanifest)
+       ("perl-test-perltidy" ,perl-test-perltidy)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)
+       ("perl-test-trap" ,perl-test-trap)
+       ("perltidy" ,perltidy)))
+    (propagated-inputs
+     `(("xterm" ,xterm)
+       ("perl-exception-class" ,perl-exception-class)
+       ("perl-tk" ,perl-tk)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-x11-protocol" ,perl-x11-protocol)
+       ("perl-x11-protocol-other" ,perl-x11-protocol-other)))
     ;; The clusterssh.sourceforge.net address requires login to view
     (home-page "https://sourceforge.net/projects/clusterssh/")
     (synopsis "Secure concurrent multi-server terminal control")
@@ -869,7 +865,7 @@ over ssh connections.")
 (define-public rename
   (package
     (name "rename")
-    (version "0.20")
+    (version "0.35")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -877,7 +873,7 @@ over ssh connections.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1cf6xx2hiy1xalp35fh8g73j67r0w0g66jpcbc6971x9jbm7bvjy"))))
+                "052iqmn7ya3w1nadpiyavmr3rx566r0lbflx94y8b5wx9q5c16rq"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -1047,7 +1043,7 @@ commands and their arguments.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://w1.fi/releases/wpa_supplicant-"
+                    "https://w1.fi/releases/wpa_supplicant-"
                     version
                     ".tar.gz"))
               (patches (search-patches "wpa-supplicant-CVE-2017-13082.patch"
@@ -1108,7 +1104,7 @@ commands and their arguments.")
        ("libgcrypt" ,libgcrypt)))                 ;needed by crypto_gnutls.c
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://w1.fi/wpa_supplicant/")
+    (home-page "https://w1.fi/wpa_supplicant/")
     (synopsis "Connecting to WPA and WPA2-protected wireless networks")
     (description
      "wpa_supplicant is a WPA Supplicant with support for WPA and WPA2 (IEEE
@@ -1225,7 +1221,7 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
                          (string-append "--mandir=" out
                                         "/share/man")))))))
        #:tests? #f))
-    (home-page "http://kernel.org")               ; really, no home page
+    (home-page "https://www.kernel.org") ; really, no home page
     (synopsis "Send a wake-on-LAN packet")
     (description
      "WakeLan broadcasts a properly formatted UDP packet across the local area
@@ -1460,7 +1456,7 @@ track changes in important system configuration files.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://people.redhat.com/sgrubb/libcap-ng/libcap-ng-"
+                    "https://people.redhat.com/sgrubb/libcap-ng/libcap-ng-"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -1655,7 +1651,7 @@ limits.")
 (define-public autojump
   (package
     (name "autojump")
-    (version "22.3.4")
+    (version "22.5.1")
     (source
      (origin
        (method url-fetch)
@@ -1664,7 +1660,7 @@ limits.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "113rcpr37ngf2xs8da41qdarq5qmj0dwx8ggqy3lhlb0kvqq7g9z"))))
+         "17z9j9936x0nizwrzf664bngh60x5qbvrrf1s5qdzd0f2gdanpvn"))))
     (build-system gnu-build-system)
     (native-inputs                      ;for tests
      `(("python-mock" ,python-mock)
@@ -1672,36 +1668,19 @@ limits.")
     (inputs
      `(("python" ,python-wrapper)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (delete 'build)
-                  (replace 'check
-                    (lambda _
-                      (zero?
-                       (system* "python" "tests/unit/autojump_utils_test.py"))))
-                  (replace 'install
-                    ;; The install.py script doesn't allow system installation
-                    ;; into an arbitrary prefix, so do our own install.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin"))
-                             (share (string-append out "/share/autojump"))
-                             (py (string-append out "/lib/python"
-                                                ,(version-major+minor
-                                                  (package-version python-wrapper))
-                                                "/site-packages"))
-                             (man (string-append out "/share/man/man1")))
-                        (install-file "bin/autojump" bin)
-                        (for-each (λ (f) (install-file f py))
-                                  (find-files "bin" "\\.py$"))
-                        (for-each (λ (f) (install-file f share))
-                                  (find-files "bin" "autojump\\..*$"))
-                        (substitute* (string-append share "/autojump.sh")
-                          (("/usr/local") out))
-                        (install-file "docs/autojump.1" man)
-                        (wrap-program (string-append bin "/autojump")
-                          `("PYTHONPATH" ":" prefix (,py)))
-                        #t))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'check
+           (lambda _
+             (invoke "python" "tests/unit/autojump_utils_test.py")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "SHELL" (which "bash"))
+             (invoke "python" "install.py"
+                     (string-append "--destdir="
+                                    (assoc-ref outputs "out"))))))))
     (home-page "https://github.com/wting/autojump")
     (synopsis "Shell extension for file system navigation")
     (description
@@ -1796,13 +1775,13 @@ platform-specific methods.")
     (version "2.4.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://people.redhat.com/sgrubb/audit/"
+              (uri (string-append "https://people.redhat.com/sgrubb/audit/"
                                   "audit-" version ".tar.gz"))
               (sha256
                (base32
                 "1q1q51dvxscbi4kbakmd4bn0xrvwwaiwvaya79925cbrqwzxsg77"))))
     (build-system gnu-build-system)
-    (home-page "http://people.redhat.com/sgrubb/audit/")
+    (home-page "https://people.redhat.com/sgrubb/audit/")
     (arguments
      `(#:configure-flags (list "--with-python=no")
        #:phases
@@ -2131,7 +2110,7 @@ with @code{ChallengeResponseAuthentication} and @code{PrivilegeSeparation}
 enabled, and supports extensive configuration either by PAM options or in
 krb5.conf or both.  PKINIT is supported with recent versions of both MIT
 Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
-    (home-page "http://www.eyrie.org/~eagle/software/pam-krb5")
+    (home-page "https://www.eyrie.org/~eagle/software/pam-krb5")
     ;; Dual licenced under  a homebrew non-copyleft OR GPL (any version)
     ;; However, the tarball does not contain a copy of the GPL,  so unless
     ;; we put one in, we cannot distribute it under GPL without violating
@@ -2359,11 +2338,23 @@ Intel DRM Driver.")
          "13r0b0hllgf8j9rh6x1knmbgvingbdmx046aazv6vck2ll120mw1"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))             ; Python 2 only
+     `(#:python ,python-2               ; Python 2 only
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke
+              "nosetests" "-v" "tests/"
+              ;; This test hangs indefinitely when run on a single core VM
+              ;; (see GNU bug #26647 and Debian bug #850230).
+              "--exclude=test_nested_execution_with_explicit_ports"
+              ;; This test randomly fails in certain environments causing too
+              ;; much noise to be useful (see Debian bug #854686).
+              "--exclude=test_should_use_sentinel_for_tasks_that_errored"))))))
     (native-inputs
-     `(("python2-fudge" ,python2-fudge)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-nose" ,python2-nose)
+     `(("python2-fudge" ,python2-fudge) ; Requires < 1.0
+       ("python2-jinja2" ,python2-jinja2) ; Requires < 3.0
+       ("python2-nose" ,python2-nose) ; Requires < 2.0
        ("python2-pynacl" ,python2-pynacl)
        ("python2-bcrypt" ,python2-bcrypt)))
     (propagated-inputs
@@ -2383,15 +2374,15 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "3.4.0")
+    (version "5.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dylanaraps/neofetch/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dylanaraps/neofetch")
+                    (commit version)))
               (sha256
                (base32
-                "18rhamy910ig03rr55y9x5i6pf78yj9xc6jpm6nfh3gqja7340rb"))))
+                "0yzyi2p0d8xp576lxyv5m9h60dl1d5dmrn40aad307872835b9rr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -2399,31 +2390,11 @@ tool for remote execution and deployment.")
        (list (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-target-directories
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "Makefile"
-                 (("\\$\\(DESTDIR\\)/etc/")
-                  "$(PREFIX)/etc/"))
-               (substitute* "neofetch"
-                 (("\"/etc/neofetch")
-                  (string-append "\"" out "/etc/neofetch"))
-                 (("\"/usr/share/neofetch")
-                  (string-append "\"" out "/share/neofetch"))))
-             #t))
-         (delete 'configure)            ; no configure script
-         (replace 'install
-           (lambda* (#:key make-flags outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name "-" ,version))
-                    (etc (string-append doc "/examples/etc")))
-               (zero? (apply system* `("make" ,@make-flags
-                                       ,(string-append "SYSCONFDIR=" etc)
-                                       "install")))))))))
+         (delete 'configure))))         ; no configure script
     (home-page "https://github.com/dylanaraps/neofetch")
-    (synopsis "System info script")
-    (description "Neofetch is a CLI system information tool written in Bash.
-Neofetch displays information about your system next to an image, your OS
+    (synopsis "System information script")
+    (description "Neofetch is a command-line system information tool written in
+Bash.  Neofetch displays information about your system next to an image, your OS
 logo, or any ASCII file of your choice.  The main purpose of Neofetch is to be
 used in screenshots to show other users what operating system or distribution
 you are running, what theme or icon set you are using, etc.")
@@ -2661,7 +2632,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.11-1")
+      (version "3.0.13-1")
       (source
        (origin
          (method git-fetch)
@@ -2670,7 +2641,7 @@ Python loading in HPC environments.")
                (commit version)))
          (sha256
           (base32
-           "07wihl4gsamq98mhxvm6k4vpphym75467cxfa19b3g5ggpyq894g"))))
+           "0732ligzmzwpwaxin4g8rbfj91ghyvf69lx2jyrahi4df0bfamh5"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash)
@@ -2727,10 +2698,10 @@ Python loading in HPC environments.")
                            (string-append %output "/share/man/man1")))
            #t)))
       (home-page "https://smxi.org/docs/inxi.htm")
-      (synopsis "Full featured system information script")
+      (synopsis "Full-featured system information script")
       (description "Inxi is a system information script that can display
 various things about your hardware and software to users in an IRC chatroom or
-support forum.  It runs with the /exec command in most IRC clients.")
+support forum.  It runs with the @code{/exec} command in most IRC clients.")
       (license license:gpl3+))))
 
 (define-public inxi

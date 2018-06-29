@@ -57,13 +57,13 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.16.4")
+    (version "0.16.6")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri name version))
              (sha256
               (base32
-               "03wva48bgv1ad3df6plc9b8xxh6k8bcaxrhlzwh81c9mzn5bspzv"))))
+               "07iqq5c53cfrb5xnmam1rsl683hc3rykmdak896n2gm81r361c66"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
@@ -76,7 +76,6 @@ clients.")
              (zero? (system* "make" "test"))))
          (add-after 'install 'manpage
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
              (zero? (system* "make" "--directory=docs/" "man"))
              (install-file
                "docs/_build/man/vdirsyncer.1"

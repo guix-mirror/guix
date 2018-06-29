@@ -53,7 +53,7 @@
 
 (define %dependency-variables
   ;; (guix config) variables corresponding to dependencies.
-  '(%libgcrypt %libz %xz %gzip %bzip2 %nix-instantiate))
+  '(%libgcrypt %libz %xz %gzip %bzip2))
 
 (define %persona-variables
   ;; (guix config) variables that define Guix's persona.
@@ -63,17 +63,14 @@
     %guix-home-page-url))
 
 (define %config-variables
-  ;; (guix config) variables corresponding to Guix configuration (storedir,
-  ;; localstatedir, etc.)
-  (sort (filter pair?
-                (module-map (lambda (name var)
-                              (and (not (memq name %dependency-variables))
-                                   (not (memq name %persona-variables))
-                                   (cons name (variable-ref var))))
-                            (resolve-interface '(guix config))))
-        (lambda (name+value1 name+value2)
-          (string<? (symbol->string (car name+value1))
-                    (symbol->string (car name+value2))))))
+  ;; (guix config) variables corresponding to Guix configuration.
+  (letrec-syntax ((variables (syntax-rules ()
+                               ((_)
+                                '())
+                               ((_ variable rest ...)
+                                (cons `(variable . ,variable)
+                                      (variables rest ...))))))
+    (variables %localstatedir %storedir %sysconfdir %system)))
 
 (define* (make-config.scm #:key libgcrypt zlib gzip xz bzip2
                           (package-name "GNU Guix")
@@ -91,12 +88,15 @@
                                %guix-version
                                %guix-bug-report-address
                                %guix-home-page-url
+                               %store-directory
+                               %state-directory
+                               %store-database-directory
+                               %config-directory
                                %libgcrypt
                                %libz
                                %gzip
                                %bzip2
-                               %xz
-                               %nix-instantiate))
+                               %xz))
 
                    ;; XXX: Work around <http://bugs.gnu.org/15602>.
                    (eval-when (expand load eval)
@@ -104,6 +104,26 @@
                                ((name . value)
                                 #~(define-public #$name #$value)))
                              %config-variables)
+
+                     (define %store-directory
+                       (or (and=> (getenv "NIX_STORE_DIR") canonicalize-path)
+                           %storedir))
+
+                     (define %state-directory
+                       ;; This must match `NIX_STATE_DIR' as defined in
+                       ;; `nix/local.mk'.
+                       (or (getenv "NIX_STATE_DIR")
+                           (string-append %localstatedir "/guix")))
+
+                     (define %store-database-directory
+                       (or (getenv "NIX_DB_DIR")
+                           (string-append %state-directory "/db")))
+
+                     (define %config-directory
+                       ;; This must match `GUIX_CONFIGURATION_DIRECTORY' as
+                       ;; defined in `nix/local.mk'.
+                       (or (getenv "GUIX_CONFIGURATION_DIRECTORY")
+                           (string-append %sysconfdir "/guix")))
 
                      (define %guix-package-name #$package-name)
                      (define %guix-version #$package-version)
@@ -122,10 +142,7 @@
                               (file-append libgcrypt "/lib/libgcrypt")))
                      (define %libz
                        #+(and zlib
-                              (file-append zlib "/lib/libz")))
-
-                     (define %nix-instantiate     ;for (guix import snix)
-                       "nix-instantiate")))))
+                              (file-append zlib "/lib/libz")))))))
 
 
 ;;;
@@ -184,7 +201,8 @@ person's version identifier."
   (date->string (current-date 0) "~Y~m~d.~H"))
 
 (define* (build-program source version
-                        #:optional (guile-version (effective-version)))
+                        #:optional (guile-version (effective-version))
+                        #:key (pull-version 0))
   "Return a program that computes the derivation to build Guix from SOURCE."
   (define select?
     ;; Select every module but (guix config) and non-Guix modules.
@@ -214,11 +232,12 @@ person's version identifier."
 
                         ;; (gnu packages …) modules are going to be looked up
                         ;; under SOURCE.  (guix config) is looked up in FRONT.
-                        (match %load-path
-                          ((#$source _ ...)
-                           #t)                    ;already done
-                          ((front _ ...)
-                           (set! %load-path (list #$source front))))
+                        (match (command-line)
+                          ((_ source _ ...)
+                           (match %load-path
+                             ((front _ ...)
+                              (unless (string=? front source) ;already done?
+                                (set! %load-path (list source front)))))))
 
                         ;; Only load our own modules or those of Guile.
                         (match %load-compiled-path
@@ -246,18 +265,33 @@ person's version identifier."
                           (loop (cdr spin))))
 
                       (match (command-line)
-                        ((_ _ system)
-                         (with-store store
+                        ((_ source system version protocol-version)
+                         ;; The current input port normally wraps a file
+                         ;; descriptor connected to the daemon, or it is
+                         ;; connected to /dev/null.  In the former case, reuse
+                         ;; the connection such that we inherit build options
+                         ;; such as substitute URLs and so on; in the latter
+                         ;; case, attempt to open a new connection.
+                         (let* ((proto (string->number protocol-version))
+                                (store (if (integer? proto)
+                                           (port->connection (duplicate-port
+                                                              (current-input-port)
+                                                              "w+0")
+                                                             #:version proto)
+                                           (open-connection))))
                            (call-with-new-thread
                             (lambda ()
                               (spin system)))
 
                            (display
-                            (derivation-file-name
+                            (and=>
                              (run-with-store store
-                               (guix-derivation #$source #$version
-                                                #$guile-version)
-                               #:system system)))))))
+                               (guix-derivation source version
+                                                #$guile-version
+                                                #:pull-version
+                                                #$pull-version)
+                               #:system system)
+                             derivation-file-name))))))
                   #:module-path (list source))))
 
 ;; The procedure below is our return value.
@@ -266,22 +300,37 @@ person's version identifier."
                 (guile-version (match ((@ (guile) version))
                                  ("2.2.2" "2.2.2")
                                  (_       (effective-version))))
+                (pull-version 0)
                 #:allow-other-keys
                 #:rest rest)
   "Return a derivation that unpacks SOURCE into STORE and compiles Scheme
 files."
   ;; Build the build program and then use it as a trampoline to build from
   ;; SOURCE.
-  (mlet %store-monad ((build  (build-program source version guile-version))
-                      (system (if system (return system) (current-system))))
+  (mlet %store-monad ((build  (build-program source version guile-version
+                                             #:pull-version pull-version))
+                      (system (if system (return system) (current-system)))
+                      (port   ((store-lift nix-server-socket)))
+                      (major  ((store-lift nix-server-major-version)))
+                      (minor  ((store-lift nix-server-minor-version))))
     (mbegin %store-monad
       (show-what-to-build* (list build))
       (built-derivations (list build))
-      (let* ((pipe   (begin
-                       (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
-                       (open-pipe* OPEN_READ
-                                   (derivation->output-path build)
-                                   source system)))
+
+      ;; Use the port beneath the current store as the stdin of BUILD.  This
+      ;; way, we know 'open-pipe*' will not close it on 'exec'.  If PORT is
+      ;; not a file port (e.g., it's an SSH channel), then the subprocess's
+      ;; stdin will actually be /dev/null.
+      (let* ((pipe   (with-input-from-port port
+                       (lambda ()
+                         (setenv "GUILE_WARN_DEPRECATED" "no") ;be quiet and drive
+                         (open-pipe* OPEN_READ
+                                     (derivation->output-path build)
+                                     source system version
+                                     (if (file-port? port)
+                                         (number->string
+                                          (logior major minor))
+                                         "none")))))
              (str    (get-string-all pipe))
              (status (close-pipe pipe)))
         (match str
@@ -292,6 +341,9 @@ files."
              (return (newline (current-output-port)))
              ((store-lift add-temp-root) drv)
              (return (read-derivation-from-file drv))))
+          ("#f"
+           ;; Unsupported PULL-VERSION.
+           (return #f))
           ((? string? str)
            (error "invalid build result" (list build str))))))))
 

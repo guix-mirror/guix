@@ -613,10 +613,10 @@ if file doesn't exist, and the narinfo otherwise."
     (let ((done 0)
           (total (length paths)))
       (lambda ()
-        (display #\cr (current-error-port))
+        (display "\r\x1b[K" (current-error-port)) ;erase current line
         (force-output (current-error-port))
         (format (current-error-port)
-                (G_ "updating list of substitutes from '~a'... ~5,1f%")
+                (G_ "updating substitutes from '~a'... ~5,1f%")
                 url (* 100. (/ done total)))
         (set! done (+ 1 done)))))
 

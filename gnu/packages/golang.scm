@@ -78,7 +78,8 @@
          (delete 'configure)
          (add-after 'patch-generated-file-shebangs 'chdir
            (lambda _
-             (chdir "src")))
+             (chdir "src")
+             #t))
          (add-before 'build 'prebuild
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
@@ -160,7 +161,7 @@
                ;; Go 1.4's cgo will not work with binutils >= 2.27:
                ;; https://github.com/golang/go/issues/16906
                (setenv "CGO_ENABLED" "0")
-               (zero? (system* "sh" "all.bash")))))
+               (invoke "sh" "all.bash"))))
 
          (replace 'install
            (lambda* (#:key outputs inputs #:allow-other-keys)
@@ -215,7 +216,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.9.6")
+    (version "1.9.7")
     (source
      (origin
        (method url-fetch)
@@ -223,7 +224,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "0a2qkvzr0g5cbd66wi7b6r40qyp9p55y0zz2j5qg1xsqwsdhbx1n"))))
+         "08kpy874x0rx43zpyv5kwd8xj2ma91xm33i0ka2v1v788px18a2q"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -343,7 +344,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  (setenv "GOROOT" (dirname (getcwd)))
                  (setenv "GOROOT_FINAL" output)
                  (setenv "CGO_ENABLED" "1")
-                 (zero? (system* "sh" "all.bash")))))
+                 (invoke "sh" "all.bash"))))
 
            (replace 'install
              ;; TODO: Most of this could be factorized with Go 1.4.
@@ -374,7 +375,8 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                   '("README.md" "CONTRIBUTORS" "AUTHORS" "PATENTS"
                     "LICENSE" "VERSION" "CONTRIBUTING.md" "robots.txt"))
 
-                 (copy-recursively "../" output))))))))
+                 (copy-recursively "../" output)
+                 #t)))))))
     (native-inputs
      `(("go" ,go-1.4)
        ,@(package-native-inputs go-1.4)))
@@ -384,7 +386,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.9)
     (name "go")
-    (version "1.10.2")
+    (version "1.10.3")
     (source
      (origin
        (method url-fetch)
@@ -392,7 +394,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "1gcqbac3wbhbcr0ri9zgfj6qkqbwf9fn116a0a7fvn4wdff60r32"))))
+         "1wjmw65nfkkzz084695gdgn13sbjcaafy2y5370d214pdk31qysn"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.9)
        ((#:phases phases)
@@ -1621,3 +1623,173 @@ values for the purpose of fuzz testing.")
       (synopsis "Go registry for request variables")
       (description "This package provides @code{gorilla/context}, which is a general purpose registry for global request variables in the Go programming language.")
       (license license:bsd-3))))
+
+(define-public go-github-com-gorilla-mux
+  (let ((commit "599cba5e7b6137d46ddf58fb1765f5d928e69604")
+        (revision "0"))
+    (package
+      (name "go-github-com-gorilla-mux")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gorilla/mux.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0wd6jjii1kg5s0nk3ri6gqriz6hbd6bbcn6x4jf8n7ncrb8qsxyz"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gorilla/mux"))
+      (home-page "https://github.com/gorilla/mux")
+      (synopsis "URL router and dispatcher for Go")
+      (description
+       "Gorilla/Mux implements a request router and dispatcher for matching
+incoming requests with their respective handler.")
+      (license license:bsd-3))))
+
+(define-public go-github-com-jonboulle-clockwork
+  (let ((commit "e3653ace2d63753697e0e5b07b9393971c0bba9d")
+        (revision "0"))
+    (package
+      (name "go-github-com-jonboulle-clockwork")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/jonboulle/clockwork.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "1avzqhks12a8x2yzpvjsf3k0gv9cy7zx2z88hn0scacnxkphisvc"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/jonboulle/clockwork"))
+      (home-page "https://github.com/jonboulle/clockwork")
+      (synopsis "Fake clock library for Go")
+      (description
+       "Replace uses of the @code{time} package with the
+@code{clockwork.Clock} interface instead.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-spf13-pflag
+  (let ((commit "4f9190456aed1c2113ca51ea9b89219747458dc1")
+        (revision "0"))
+    (package
+      (name "go-github-com-spf13-pflag")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/spf13/pflag.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "12vrlcsbwjqlfc49rwky45mbcj74c0kb6z54354pzas6fwzyi1kc"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/spf13/pflag"))
+      (home-page "https://github.com/spf13/pflag")
+      (synopsis "Replacement for Go's @code{flag} package")
+      (description
+       "Pflag is library to replace Go's @code{flag} package.  It implements
+POSIX/GNU-style command-line options with double hyphens.  It is is compatible
+with the
+@uref{https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html,
+GNU extensions} to the POSIX recommendations for command-line options.")
+      (license license:bsd-3))))
+
+(define-public go-github-com-sirupsen-logrus
+  (package
+    (name "go-github-com-sirupsen-logrus")
+    (version "1.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sirupsen/logrus.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "0g5z7al7kky11ai2dhac6gkp3b5pxsvx72yj3xg4wg3265gbn7yz"))))
+    (build-system go-build-system)
+    (native-inputs
+     `(("go-golang-org-x-crypto-ssh-terminal"
+        ,go-golang-org-x-crypto-ssh-terminal)
+       ("go-github-com-stretchr-testify"
+        ,go-github-com-stretchr-testify)
+       ("go-golang-org-x-sys-unix"
+        ,go-golang-org-x-sys-unix)))
+    (arguments
+     '(#:tests? #f                    ;FIXME missing dependencies
+       #:import-path "github.com/sirupsen/logrus"))
+    (home-page "https://github.com/sirupsen/logrus")
+    (synopsis "Structured, pluggable logging for Go")
+    (description "Logrus is a structured logger for Go, completely API
+compatible with the standard library logger.")
+    (license license:expat)))
+
+(define-public go-github-com-kardianos-osext
+  (let ((commit "ae77be60afb1dcacde03767a8c37337fad28ac14")
+        (revision "1"))
+    (package
+      (name "go-github-com-kardianos-osext")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/kardianos/osext")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "056dkgxrqjj5r18bnc3knlpgdz5p3yvp12y4y978hnsfhwaqvbjz"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/kardianos/osext"
+         ;; The tests are flaky:
+         ;; <https://github.com/kardianos/osext/issues/21>
+         #:tests? #f))
+      (synopsis "Find the running executable")
+      (description "Osext provides a method for finding the current executable
+file that is running.  This can be used for upgrading the current executable or
+finding resources located relative to the executable file.")
+      (home-page "https://github.com/kardianos/osext")
+      (license license:bsd-3))))
+
+(define-public go-github-com-ayufan-golang-kardianos-service
+  (let ((commit "0c8eb6d8fff2e2fb884a7bfd23e183fb63c0eff3")
+        (revision "0"))
+    (package
+      (name "go-github-com-ayufan-golang-kardianos-service")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/ayufan/golang-kardianos-service.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0x0cn7l5gda2khsfypix7adxd5yqighzn04mxjw6hc4ayrh7his5"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("go-github-com-kardianos-osext"
+          ,go-github-com-kardianos-osext)))
+      (arguments
+       '(#:tests? #f                ;FIXME tests fail: Service is not running.
+         #:import-path "github.com/ayufan/golang-kardianos-service"))
+      (home-page "https://github.com/ayufan/golang-kardianos-service")
+      (synopsis "Go interface to a variety of service supervisors")
+      (description "This package provides @code{service}, a Go module that can
+run programs as a service using a variety of supervisors, including systemd,
+SysVinit, and more.")
+      (license license:zlib))))

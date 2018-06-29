@@ -622,8 +622,8 @@
                     (default '()))      ;list of string
   (cache-size       dnsmasq-configuration-cache-size
                     (default 150))      ;integer
-  (no-negcache?     dnsmasq-configuration-no-negcache?
-                    (default #f)))      ;boolean
+  (negative-cache?  dnsmasq-configuration-negative-cache?
+                    (default #t)))      ;boolean
 
 (define dnsmasq-shepherd-service
   (match-lambda
@@ -631,7 +631,7 @@
                                 no-hosts?
                                 port local-service? listen-addresses
                                 resolv-file no-resolv? servers
-                                cache-size no-negcache?)
+                                cache-size negative-cache?)
      (shepherd-service
       (provision '(dnsmasq))
       (requirement '(networking))
@@ -656,9 +656,9 @@
                   #$@(map (cut format #f "--server=~a" <>)
                           servers)
                   #$(format #f "--cache-size=~a" cache-size)
-                  #$@(if no-negcache?
-                         '("--no-negcache")
-                         '()))
+                  #$@(if negative-cache?
+                         '()
+                         '("--no-negcache")))
                 #:pid-file "/run/dnsmasq.pid"))
       (stop #~(make-kill-destructor))))))
 
@@ -667,4 +667,6 @@
    (name 'dnsmasq)
    (extensions
     (list (service-extension shepherd-root-service-type
-                             (compose list dnsmasq-shepherd-service))))))
+                             (compose list dnsmasq-shepherd-service))))
+   (default-value (dnsmasq-configuration))
+   (description "Run the dnsmasq DNS server.")))

@@ -287,14 +287,14 @@ value (in fractional seconds) of a clock which never goes backwards.")
 (define-public python-pyrfc3339
   (package
     (name "python-pyrfc3339")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyRFC3339" version))
        (sha256
         (base32
-         "0dgm4l9y8jiax5cp6yxjd2i27cq8h33sh81n1wfbmnmqb32cdywd"))))
+         "06jv7ar7lpvvk0dixzwdr3wgm0g1lipxs429s2z7knwwa7hwpf41"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pytz" ,python-pytz)))

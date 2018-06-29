@@ -37,7 +37,7 @@ Copyright @copyright{} 2017 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
-Copyright @copyright{} 2017 Marius Bakke@*
+Copyright @copyright{} 2017, 2018 Marius Bakke@*
 Copyright @copyright{} 2017 Hartmut Goebel@*
 Copyright @copyright{} 2017 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018 Tobias Geerinckx-Rice@*
@@ -249,7 +249,7 @@ Services
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
-* Power management Services::   The TLP tool.
+* Power Management Services::   Extending battery life.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
@@ -613,6 +613,9 @@ later, including 2.2.x;
 @uref{http://gnutls.org/, GnuTLS}, specifically its Guile bindings
 (@pxref{Guile Preparations, how to install the GnuTLS bindings for
 Guile,, gnutls-guile, GnuTLS-Guile});
+@item
+@uref{https://notabug.org/civodul/guile-sqlite3, Guile-SQLite3}, version 0.1.0
+or later;
 @item
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
@@ -985,7 +988,7 @@ Port number of SSH server on the machine.
 
 @item @code{private-key} (default: @file{~root/.ssh/id_rsa})
 The SSH private key file to use when connecting to the machine, in
-OpenSSH format.
+OpenSSH format.  This key must not be protected with a passphrase.
 
 Note that the default value is the private key @emph{of the root
 account}.  Make sure it exists if you use the default.
@@ -2743,11 +2746,54 @@ Any user can update their Guix copy using @command{guix pull}, and the
 effect is limited to the user who run @command{guix pull}.  For
 instance, when user @code{root} runs @command{guix pull}, this has no
 effect on the version of Guix that user @code{alice} sees, and vice
-versa@footnote{Under the hood, @command{guix pull} updates the
-@file{~/.config/guix/latest} symbolic link to point to the latest Guix,
-and the @command{guix} command loads code from there.  Currently, the
-only way to roll back an invocation of @command{guix pull} is to
-manually update this symlink to point to the previous Guix.}.
+versa.
+
+The result of running @command{guix pull} is a @dfn{profile} available
+under @file{~/.config/guix/current} containing the latest Guix.  Thus,
+make sure to add it to the beginning of your search path so that you use
+the latest version, and similarly for the Info manual
+(@pxref{Documentation}):
+
+@example
+export PATH="$HOME/.config/guix/current/bin:$PATH"
+export INFOPATH="$HOME/.config/guix/current/share/info:$INFOPATH"
+@end example
+
+The @code{--list-generations} or @code{-l} option lists past generations
+produced by @command{guix pull}, along with details about their provenance:
+
+@example
+$ guix pull -l
+Generation 1	Jun 10 2018 00:18:18
+  guix 65956ad
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: origin/master
+    commit: 65956ad3526ba09e1f7a40722c96c6ef7c0936fe
+
+Generation 2	Jun 11 2018 11:02:49
+  guix e0cc7f6
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: origin/master
+    commit: e0cc7f669bec22c37481dd03a7941c7d11a64f1d
+
+Generation 3	Jun 13 2018 23:31:07	(current)
+  guix 844cc1c
+    repository URL: https://git.savannah.gnu.org/git/guix.git
+    branch: origin/master
+    commit: 844cc1c8f394f03b404c5bb3aee086922373490c
+@end example
+
+This @code{~/.config/guix/current} profile works like any other profile
+created by @command{guix package} (@pxref{Invoking guix package}).  That
+is, you can list generations, roll back to the previous
+generation---i.e., the previous Guix---and so on:
+
+@example
+$ guix package -p ~/.config/guix/current --roll-back
+switched from generation 3 to 2
+$ guix package -p ~/.config/guix/current --delete-generations=1
+deleting /home/charlie/.config/guix/current-1-link
+@end example
 
 The @command{guix pull} command is usually invoked with no arguments,
 but it supports the following options:
@@ -2771,6 +2817,13 @@ string.
 @item --branch=@var{branch}
 Deploy the tip of @var{branch}, the name of a Git branch available on
 the repository at @var{url}.
+
+@item --list-generations[=@var{pattern}]
+@itemx -l [@var{pattern}]
+List all the generations of @file{~/.config/guix/current} or, if @var{pattern}
+is provided, the subset of generations that match @var{pattern}.
+The syntax of @var{pattern} is the same as with @code{guix package
+--list-generations} (@pxref{Invoking guix package}).
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
@@ -6586,6 +6639,12 @@ signatures,, emacs, The GNU Emacs Manual}).
 @uref{http://melpa.org/packages, MELPA}, selected by the @code{melpa}
 identifier.
 @end itemize
+
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
 @end table
 
 @item crate
@@ -8582,21 +8641,21 @@ create a file system on the relevant partition(s)@footnote{Currently
 GuixSD only supports ext4 and btrfs file systems.  In particular, code
 that reads file system UUIDs and labels only works for these file system
 types.}.  For the ESP, if you have one and assuming it is
-@file{/dev/sda2}, run:
+@file{/dev/sda1}, run:
 
 @example
-mkfs.fat -F32 /dev/sda2
+mkfs.fat -F32 /dev/sda1
 @end example
 
 Preferably, assign file systems a label so that you can easily and
 reliably refer to them in @code{file-system} declarations (@pxref{File
 Systems}).  This is typically done using the @code{-L} option of
 @command{mkfs.ext4} and related commands.  So, assuming the target root
-partition lives at @file{/dev/sda1}, a file system with the label
+partition lives at @file{/dev/sda2}, a file system with the label
 @code{my-root} can be created with:
 
 @example
-mkfs.ext4 -L my-root /dev/sda1
+mkfs.ext4 -L my-root /dev/sda2
 @end example
 
 @cindex encrypted disk
@@ -8604,12 +8663,12 @@ If you are instead planning to encrypt the root partition, you can use
 the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
 @uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
 @code{man cryptsetup}} for more information.)  Assuming you want to
-store the root partition on @file{/dev/sda1}, the command sequence would
+store the root partition on @file{/dev/sda2}, the command sequence would
 be along these lines:
 
 @example
-cryptsetup luksFormat /dev/sda1
-cryptsetup open --type luks /dev/sda1 my-partition
+cryptsetup luksFormat /dev/sda2
+cryptsetup open --type luks /dev/sda2 my-partition
 mkfs.ext4 -L my-root /dev/mapper/my-partition
 @end example
 
@@ -8629,11 +8688,11 @@ by @code{guix system init} afterwards.
 Finally, if you plan to use one or more swap partitions (@pxref{Memory
 Concepts, swap space,, libc, The GNU C Library Reference Manual}), make
 sure to initialize them with @command{mkswap}.  Assuming you have one
-swap partition on @file{/dev/sda2}, you would run:
+swap partition on @file{/dev/sda3}, you would run:
 
 @example
-mkswap /dev/sda2
-swapon /dev/sda2
+mkswap /dev/sda3
+swapon /dev/sda3
 @end example
 
 Alternatively, you may use a swap file.  For example, assuming that in
@@ -8821,6 +8880,22 @@ guix system disk-image gnu/system/install.scm
 Have a look at @file{gnu/system/install.scm} in the source tree,
 and see also @ref{Invoking guix system} for more information
 about the installation image.
+
+@subsection Building the Installation Image for ARM Boards
+
+Many ARM boards require a specific variant of the
+@uref{http://www.denx.de/wiki/U-Boot/, U-Boot} bootloader.
+
+If you build a disk image and the bootloader is not available otherwise
+(on another boot drive etc), it's advisable to build an image that
+includes the bootloader, specifically:
+
+@example
+guix system disk-image --system=armhf-linux -e '((@@ (gnu system install) os-with-u-boot) (@@ (gnu system install) installation-os) "A20-OLinuXino-Lime2")'
+@end example
+
+@code{A20-OLinuXino-Lime2} is the name of the board.  If you specify an invalid
+board, a list of possible boards will be printed.
 
 @node System Configuration
 @section System Configuration
@@ -9863,7 +9938,7 @@ declaration.
 * VPN Services::                VPN daemons.
 * Network File System::         NFS related services.
 * Continuous Integration::      The Cuirass service.
-* Power management Services::   The TLP tool.
+* Power Management Services::   Extending battery life.
 * Audio Services::              The MPD.
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
@@ -11851,6 +11926,44 @@ resolutions---e.g., @code{((1024 768) (640 480))}.
 Last, @var{extra-config} is a list of strings or objects appended to the
 configuration file.  It is used to pass extra text to be
 added verbatim to the configuration file.
+
+@cindex keymap
+@cindex keyboard layout
+This procedure is especially useful to configure a different keyboard layout
+than the default US keymap.  For instance, to use the ``bépo'' keymap by
+default on the display manager:
+
+@example
+(define bepo-evdev
+  "Section \"InputClass\"
+        Identifier \"evdev keyboard catchall\"
+        Driver \"evdev\"
+        MatchIsKeyboard \"on\"
+        Option \"xkb_layout\" \"fr\"
+        Option \"xkb_variant\" \"bepo\"
+EndSection")
+
+(operating-system
+  ...
+  (services
+    (modify-services %desktop-services
+      (slim-service-type config =>
+        (slim-configuration
+          (inherit config)
+          (startx (xorg-start-command
+                   #:configuration-file
+                   (xorg-configuration-file
+                     #:extra-config
+                     (list bepo-evdev)))))))))
+@end example
+
+The @code{MatchIsKeyboard} line specifies that we only apply the configuration
+to keyboards.  Without this line, other devices such as touchpad may not work
+correctly because they will be attached to the wrong driver.  In this example,
+the user typically used @code{setxkbmap fr bepo} to set their favorite keymap
+once logged in.  The first argument corresponds to the layout, while the second
+argument corresponds to the variant.  The @code{xkb_variant} line can be omitted
+to select the default variant.
 @end deffn
 
 @deffn {Scheme Procedure} screen-locker-service @var{package} [@var{program}]
@@ -13018,15 +13131,15 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 @cindex ALSA
 @cindex PulseAudio, sound support
 
-The @code{(gnu services sound)} module provides an
-@code{alsa-service-type} service to generate an ALSA
-@file{/etc/asound.conf} configuration file.  This configuration file is
-what allows applications that produce sound using ALSA to be correctly
-handled.
+The @code{(gnu services sound)} module provides a service to configure the
+Advanced Linux Sound Architecture (ALSA) system, which making PulseAudio the
+prefered ALSA output driver.
 
 @deffn {Scheme Variable} alsa-service-type
-This is the type for the @uref{https://alsa-project.org/, ALSA},
-@command{alsa-configuration} record as in this example:
+This is the type for the @uref{https://alsa-project.org/, Advanced Linux Sound
+Architecture} (ALSA) system, which generates the @file{/etc/asound.conf}
+configuration file.  The value for this type is a @command{alsa-configuration}
+record as in this example:
 
 @example
 (service alsa-service-type)
@@ -13039,6 +13152,9 @@ See below for details about @code{alsa-configuration}.
 Data type representing the configuration for @code{alsa-service}.
 
 @table @asis
+@item @code{alsa-plugins} (default: @var{alsa-plugins})
+@code{alsa-plugins} package to use.
+
 @item @code{pulseaudio?} (default: @var{#t})
 Whether ALSA applications should transparently be made to use the
 @uref{http://www.pulseaudio.org/, PulseAudio} sound server.
@@ -13048,10 +13164,46 @@ at the same time and to individual control them @i{via}
 @command{pavucontrol}, among other things.
 
 @item @code{extra-options} (default: @var{""})
-String to append to the @file{asound.conf} file.
+String to append to the @file{/etc/asound.conf} file.
 
 @end table
 @end deftp
+
+Individual users who want to override the system configuration of ALSA can do
+it with the @file{~/.asoundrc} file:
+
+@example
+# In guix, we have to specify the absolute path for plugins.
+pcm_type.jack @{
+  lib "/home/alice/.guix-profile/lib/alsa-lib/libasound_module_pcm_jack.so"
+@}
+
+# Routing ALSA to jack:
+# <http://jackaudio.org/faq/routing_alsa.html>.
+pcm.rawjack @{
+  type jack
+  playback_ports @{
+    0 system:playback_1
+    1 system:playback_2
+  @}
+
+  capture_ports @{
+    0 system:capture_1
+    1 system:capture_2
+  @}
+@}
+
+pcm.!default @{
+  type plug
+  slave @{
+    pcm "rawjack"
+  @}
+@}
+@end example
+
+See @uref{https://www.alsa-project.org/main/index.php/Asoundrc} for the
+details.
+
 
 @node Database Services
 @subsubsection Database Services
@@ -15866,6 +16018,10 @@ use the size of the processors cache line.
 @item @code{server-names-hash-bucket-max-size} (default: @code{#f})
 Maximum bucket size for the server names hash tables.
 
+@item @code{extra-content} (default: @code{""})
+Extra content for the @code{http} block.  Should be string or a string
+valued G-expression.
+
 @end table
 @end deffn
 
@@ -16852,8 +17008,8 @@ Specify IP address of upstream servers directly.
 Set the size of dnsmasq's cache.  Setting the cache size to zero
 disables caching.
 
-@item @code{no-negcache?} (default: @code{#f})
-When true, disable negative caching.
+@item @code{negative-cache?} (default: @code{#t})
+When false, disable negative caching.
 
 @end table
 @end deftp
@@ -17427,10 +17583,13 @@ The Cuirass package to use.
 @end table
 @end deftp
 
-@node Power management Services
-@subsubsection Power management Services
+@node Power Management Services
+@subsubsection Power Management Services
 
+@cindex tlp
 @cindex power management with TLP
+@subsubheading TLP daemon
+
 The @code{(gnu services pm)} module provides a Guix service definition
 for the Linux power management tool TLP.
 
@@ -17931,6 +18090,9 @@ Defaults to @samp{#f}.
 
 @end deftypevr
 
+@cindex thermald
+@cindex CPU frequency scaling with thermald
+@subsubheading Thermald daemon
 
 The @code{(gnu services pm)} module provides an interface to
 thermald, a CPU frequency scaling service which helps prevent overheating.
@@ -19925,6 +20087,21 @@ The port to bind the server to.
 
 @node Miscellaneous Services
 @subsubsection Miscellaneous Services
+
+@cindex fingerprint
+@subsubheading Fingerprint Service
+
+The @code{(gnu services fingerprint)} module provides a DBus service to
+read and identify fingerprints via a fingerprint sensor.
+
+@defvr {Scheme Variable} fprintd-service-type
+The service type for @command{fprintd}, which provides the fingerprint
+reading capability.
+
+@example
+(service fprintd-service-type)
+@end example
+@end defvr
 
 @cindex sysctl
 @subsubheading System Control Service

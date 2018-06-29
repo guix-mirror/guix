@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,13 +60,11 @@ PORT."
           (test-begin "rsync")
 
           ;; Wait for rsync to be up and running.
-          (test-eq "service running"
-            'running!
+          (test-assert "service running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'rsync)
-                'running!)
+                (start-service 'rsync))
              marionette))
 
           ;; Make sure the PID file is created.

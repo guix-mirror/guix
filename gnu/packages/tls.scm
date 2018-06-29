@@ -12,6 +12,7 @@
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,10 +39,14 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system haskell)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages dns)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
@@ -255,6 +260,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
+   (replacement openssl/fixed)
    (version "1.0.2o")
    (source (origin
              (method url-fetch)
@@ -391,6 +397,15 @@ required structures.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
 
+(define openssl/fixed
+  (package
+    (inherit openssl)
+    (source (origin
+              (inherit (package-source openssl))
+              (patches (append (origin-patches (package-source openssl))
+                               (search-patches "openssl-1.0.2-CVE-2018-0495.patch"
+                                               "openssl-1.0.2-CVE-2018-0732.patch")))))))
+
 (define-public openssl-next
   (package
     (inherit openssl)
@@ -405,7 +420,9 @@ required structures.")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
                                        "/" name "-" version ".tar.gz")))
-              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
+              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"
+                                       "openssl-1.1.0-CVE-2018-0495.patch"
+                                       "openssl-1.1.0-CVE-2018-0732.patch"))
               (sha256
                (base32
                 "05x509lccqjscgyi935z809pwfm708islypwhmjnb6cyvrn64daq"))))
@@ -459,14 +476,14 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.7.3")
+    (version "2.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1597kj9jy3jyw52ys19sd4blg2gkam5q0rqdxbnrnvnyw67hviqn"))))
+                "19kxa5i97q7p6rrps9qm0nd8zqhdjvzx02j72400c73cl2nryfhy"))))
     (build-system gnu-build-system)
     (arguments
      ;; Do as if 'getentropy' was missing since older Linux kernels lack it
@@ -503,13 +520,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.24.0")
+    (version "0.25.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1jq1nlly5146k08dw31fc1pw78plya5jswznnd512c08giif0mfn"))))
+                "0d177dhy8a7472pz9v4blrlk02d8fp6s52li7z8v3dv97pvz7da7"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -528,6 +545,7 @@ netcat implementation that supports TLS.")
     ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
        ;; For documentation
        ("python-sphinx" ,python-sphinx)
        ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)
@@ -537,6 +555,7 @@ netcat implementation that supports TLS.")
      `(("python-josepy" ,python-josepy)
        ("python-six" ,python-six)
        ("python-requests" ,python-requests)
+       ("python-requests-toolbelt" ,python-requests-toolbelt)
        ("python-pytz" ,python-pytz)
        ("python-pyrfc3339" ,python-pyrfc3339)
        ("python-pyasn1" ,python-pyasn1)
@@ -558,7 +577,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "0w3dbz74rpabjnc3l3ybnzjdypbr65lsjqf9yn243b5kid9d8wm0"))))
+                "0kp56gwn1bnlrag9qidhm1i5ifdp5z6y1ravh3yimfrkc4cfa8sw"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -805,7 +824,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.7.3")
+    (version "2.7.4")
     (source
      (origin
        (method url-fetch)
@@ -815,7 +834,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "0rfpcc4i01qsl66iy1z9vaw00s34h4qgx3r41i1v5vazv7vjla05"))))
+         "1x9qia3rd77brz6qiv46w3ham2q78shn2rsz1jbpgqq0jpa69q9l"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -873,3 +892,69 @@ implement the SSL3.0, TLS1.0, TLS1.1 and TLS1.2 protocol, and support RSA and
 Ephemeral (Elliptic curve and regular) Diffie Hellman key exchanges, and many
 extensions.")
     (license license:bsd-3)))
+
+(define-public dehydrated
+  (package
+    (name "dehydrated")
+    (version "0.6.2")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (uri (string-append
+                    "https://github.com/lukas2511/dehydrated/archive/v"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "03p80yj6bnzjc6dkp5hb9wpplmlrla8n5src71cnzw4rj53q8cqn"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin"))
+                (bash (in-vicinity (assoc-ref %build-inputs "bash") "bin")))
+           (mkdir-p bin)
+           (with-directory-excursion bin
+             (copy-file
+              (in-vicinity source (string-append "/dehydrated-" ,version
+                                                 "/dehydrated"))
+              (in-vicinity bin "dehydrated"))
+             (patch-shebang "dehydrated" (list bash))
+
+             ;; Do not try to write in the store.
+             (substitute* "dehydrated"
+               (("SCRIPTDIR=\"\\$.*\"") "SCRIPTDIR=~/.dehydrated"))
+
+             (setenv "PATH" bash)
+             (wrap-program "dehydrated"
+               `("PATH" ":" prefix
+                 ,(map (lambda (dir)
+                         (string-append dir "/bin"))
+                       (map (lambda (input)
+                              (assoc-ref %build-inputs input))
+                            '("coreutils"
+                              "curl"
+                              "diffutils"
+                              "gawk"
+                              "grep"
+                              "openssl"
+                              "sed"))))))
+           #t))))
+    (inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("curl" ,curl)
+       ("diffutils" ,diffutils)
+       ("gawk" ,gawk)
+       ("grep" ,grep)
+       ("openssl" ,openssl)
+       ("sed" ,sed)))
+    (home-page "https://dehydrated.io/")
+    (synopsis "Let's Encrypt/ACME client implemented as a shell script")
+    (description "Dehydrated is a client for signing certificates with an
+ACME-server (currently only provided by Let's Encrypt) implemented as a
+relatively simple Bash script.")
+    (license license:expat)))

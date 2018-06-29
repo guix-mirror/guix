@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -76,7 +76,7 @@
          ;; The 6.7 tarball is missing ‘install.sh’. Create it.
          (add-after 'unpack 'autoreconf
            (lambda _
-             (zero? (system* "autoreconf" "-i"))))
+             (invoke "autoreconf" "-i")))
          (add-before 'configure 'set-root-sbin
            (lambda _ ; Don't try to install in "/sbin".
              (setenv "ROOTSBINDIR"
@@ -150,14 +150,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.8.2")
+    (version "4.8.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "08mz29jmjxqvyyhm6pa388paagw1i2i21lc7pd2aprj9dllm5rb2"))))
+               "1vc21c0m7wky70hpyjhw6ph6zlzljsvivlgxy54znpaxc259lmp0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -178,8 +178,7 @@ anywhere.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib")))
-               (zero? (system*
-                       "./configure"
+               (invoke "./configure"
                        "--enable-fhs"
                        ;; XXX: heimdal not packaged.
                        "--bundled-libraries=com_err"
@@ -188,7 +187,7 @@ anywhere.")
                        ;; Install public and private libraries into
                        ;; a single directory to avoid RPATH issues.
                        (string-append "--libdir=" libdir)
-                       (string-append "--with-privatelibdir=" libdir))))))
+                       (string-append "--with-privatelibdir=" libdir)))))
          (add-before 'install 'disable-etc-samba-directory-creation
            (lambda _
              (substitute* "dynconfig/wscript"
@@ -342,17 +341,30 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.3.3")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14gsrm7dvyjpbpnc60z75j6fz2p187abm2h353lq95kx2bv70c1b"))))
+                "1d591ny4j4s409s2afjv4fn7inqlclr0zlyclw3619rkbaixlzm8"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each (lambda (file)
+                              ;; Delete everything except the build tools.
+                              (unless (or (string-prefix? "third_party/waf" file)
+                                          (string-suffix? "wscript" file))
+                                (delete-file file)))
+                            (find-files "third_party"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(;; LMDB is only supported on 64-bit systems, yet the test suite
+       ;; requires it.
+       #:tests? (assoc-ref %build-inputs "lmdb")
+       #:phases
        (modify-phases %standard-phases
          (replace 'configure
            ;; ldb use a custom configuration script that runs waf.
@@ -372,7 +384,10 @@ many event types, including timers, signals, and the classic file descriptor eve
      `(("talloc" ,talloc)
        ("tdb" ,tdb)))
     (inputs
-     `(("popt" ,popt)
+     `(,@(if (target-64bit?)
+             `(("lmdb" ,lmdb))
+             '())
+       ("popt" ,popt)
        ("tevent" ,tevent)))
     (synopsis "LDAP-like embedded database")
     (home-page "https://ldb.samba.org/")

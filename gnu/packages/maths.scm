@@ -294,14 +294,14 @@ semiconductors.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "2.4")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gsl/gsl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "16yfs5n444s03np1naj6yp1fsysd42kdscxzkg0k2yvfjixx0ijd"))
+                "1395y9hlhqadn5g9j8q22224fds5sd92jxi9czfavjj24myasq04"))
               (patches (search-patches "gsl-test-i686.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -524,19 +524,6 @@ large scale eigenvalue problems.")
 problems in numerical linear algebra.")
     (license (license:non-copyleft "file://LICENSE"
                                 "See LICENSE in the distribution."))))
-
-(define-public lapack-3.5
-  (package
-    (inherit lapack)
-    (version "3.5.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://www.netlib.org/lapack/lapack-"
-                           version ".tgz"))
-       (sha256
-        (base32
-         "0lk3f97i9imqascnlf6wr5mjpyxqcdj73pgj97dj2mgvyg9z1n4s"))))))
 
 (define-public scalapack
   (package
@@ -3385,7 +3372,8 @@ in finite element programs.")
             version "-src.zip"))
         (sha256
           (base32
-            "022w8hph7bli5zbpnk3z1qh1c2sl5hm8fw2ccim651ynn0hr7fyz"))))
+            "022w8hph7bli5zbpnk3z1qh1c2sl5hm8fw2ccim651ynn0hr7fyz"))
+        (patches (search-patches "flann-cmake-3.11.patch"))))
     (build-system cmake-build-system)
     (outputs '("out"
                "octave"))                  ;46 MiB .mex file that pulls Octave

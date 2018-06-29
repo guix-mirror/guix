@@ -37,10 +37,12 @@
    (lambda (store)
      (let ((data      (string->utf8 "Hello, world!"))
            (identical (map (lambda (n)
-                             (string-append store "/" (number->string n)))
+                             (string-append store "/" (number->string n)
+                                            "/a/b/c"))
                            (iota 5)))
            (unique    (string-append store "/unique")))
        (for-each (lambda (file)
+                   (mkdir-p (dirname file))
                    (call-with-output-file file
                      (lambda (port)
                        (put-bytevector port data))))
@@ -49,10 +51,7 @@
          (lambda (port)
            (put-bytevector port (string->utf8 "This is unique."))))
 
-       (for-each (lambda (file)
-                   (deduplicate file (sha256 data) #:store store))
-                 identical)
-       (deduplicate unique (nar-sha256 unique) #:store store)
+       (deduplicate store (nar-sha256 store) #:store store)
 
        ;; (system (string-append "ls -lRia " store))
        (cons* (apply = (map (compose stat:ino stat) identical))

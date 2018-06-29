@@ -22,15 +22,25 @@
   #:use-module (guix http-client)
   #:use-module (guix import utils)
   #:use-module (srfi srfi-34)
-  #:export (json-fetch))
+  #:export (json-fetch
+            json-fetch-alist))
 
 (define (json-fetch url)
-  "Return an alist representation of the JSON resource URL, or #f on failure."
+  "Return a representation of the JSON resource URL (a list or hash table), or
+#f if URL returns 403 or 404."
   (guard (c ((and (http-get-error? c)
-                  (= 404 (http-get-error-code c)))
-             #f))                       ;"expected" if package is unknown
-    (let* ((port (http-fetch url #:headers '((user-agent . "GNU Guile")
-                                             (Accept . "application/json"))))
-           (result (hash-table->alist (json->scm port))))
+                  (let ((error (http-get-error-code c)))
+                    (or (= 403 error)
+                        (= 404 error))))
+             #f))
+    ;; Note: many websites returns 403 if we omit a 'User-Agent' header.
+    (let* ((port   (http-fetch url #:headers '((user-agent . "GNU Guile")
+                                               (Accept . "application/json"))))
+           (result (json->scm port)))
       (close-port port)
       result)))
+
+(define (json-fetch-alist url)
+  "Return an alist representation of the JSON resource URL, or #f if URL
+returns 403 or 404."
+  (hash-table->alist (json-fetch url)))

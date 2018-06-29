@@ -119,7 +119,7 @@ selected in various ways.  For text, 35 fonts are available.")
                  (("/usr/local/lib/fig2dev") (string-append out "/lib")))
                ;; The -a argument is required in order to pick up the correct paths
                ;; to several X header files.
-               (zero? (system* "xmkmf" "-a"))
+               (invoke "xmkmf" "-a")
                (substitute* '("Makefile"
                               "fig2dev/Makefile"
                               "transfig/Makefile")
@@ -130,10 +130,11 @@ selected in various ways.  For text, 35 fonts are available.")
                  (("(MANPATH = )[[:graph:]]*" _ front)
                   (string-append front out "/share/man"))
                  (("(CONFDIR = )([[:graph:]]*)" _ front default)
-                  (string-append front out default))))))
+                  (string-append front out default)))
+               #t)))
          (add-after 'install 'install/doc
            (lambda _
-             (zero? (system* "make" "install.man")))))))
+             (invoke "make" "install.man"))))))
     (home-page "http://mcj.sourceforge.net/")
     (synopsis "Create portable LaTeX figures")
     (description

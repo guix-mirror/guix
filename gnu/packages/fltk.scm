@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -99,7 +99,7 @@ UI builder called FLUID that can be used to create applications in minutes.")
 (define-public ntk
   (package
     (name "ntk")
-    (version "1.3.0")
+    (version "1.3.1000")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -107,21 +107,20 @@ UI builder called FLUID that can be used to create applications in minutes.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "0ggrh6rihf676z1vfgpgcl6kpqwyh39ih0hskcgzklh7fphfik39"))
+                "0j38mhnfqy6swcrnc5zxcwlqi8b1pgklyghxk6qs1lf4japv2zc0"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
-       #:python ,python-2
        #:configure-flags '("--enable-gl")
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'set-ldflags
-          (lambda* (#:key outputs #:allow-other-keys)
-            (setenv "LDFLAGS"
-                    (string-append "-Wl,-rpath="
-                                   (assoc-ref outputs "out") "/lib")))))))
+         (add-before 'configure 'set-ldflags
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "LDFLAGS"
+                     (string-append "-Wl,-rpath="
+                                    (assoc-ref outputs "out") "/lib"))
+             #t)))))
     (inputs
      `(("libjpeg" ,libjpeg)
        ("glu" ,glu)))

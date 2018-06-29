@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Deck Pickard <deck.r.pickard@gmail.com>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
@@ -170,7 +170,7 @@ Show what and how will/would be built."
     (define age
       (match (false-if-not-found
               (lstat (string-append (config-directory #:ensure? #f)
-                                    "/latest")))
+                                    "/current")))
         (#f    #f)
         (stat  (- (time-second (current-time time-utc))
                   (stat:mtime stat)))))

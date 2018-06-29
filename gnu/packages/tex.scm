@@ -175,21 +175,24 @@
                            (string-prefix? "mips64" s))))
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'configure-ghostscript-executable
+          ;; ps2eps.pl uses the "gswin32c" ghostscript executable on Windows,
+          ;; and the "gs" ghostscript executable on Unix. It detects Unix by
+          ;; checking for the existence of the /usr/bin directory. Since
+          ;; GuixSD does not have /usr/bin, it is also detected as Windows.
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "utils/ps2eps/ps2eps-src/bin/ps2eps.pl"
+              (("gswin32c") "gs"))
+            (substitute* "texk/texlive/linked_scripts/epstopdf/epstopdf.pl"
+              (("\"gs\"")
+               (string-append "\"" (assoc-ref inputs "ghostscript") "/bin/gs\"")))
+            #t))
         (add-after 'unpack 'use-code-for-new-poppler
           (lambda _
             (copy-file "texk/web2c/pdftexdir/pdftoepdf-newpoppler.cc"
                        "texk/web2c/pdftexdir/pdftoepdf.cc")
             (copy-file "texk/web2c/pdftexdir/pdftosrc-newpoppler.cc"
                        "texk/web2c/pdftexdir/pdftosrc.cc")
-            #t))
-        (add-after 'unpack 'fix-unix-detection
-          ;; ps2eps.pl uses the "gswin32c" ghostscript executable on Windows,
-          ;; and the "gs" ghostscript executable on Unix. It detects Unix by
-          ;; checking for the existence of the /usr/bin directory. Since
-          ;; GuixSD does not have /usr/bin, it is also detected as Windows.
-          (lambda _
-            (substitute* "utils/ps2eps/ps2eps-src/bin/ps2eps.pl"
-              (("gswin32c") "gs"))
             #t))
         (add-after 'install 'postint
           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)

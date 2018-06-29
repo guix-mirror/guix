@@ -293,13 +293,13 @@ format.")
 (define-public cppcheck
   (package
     (name "cppcheck")
-    (version "1.83")
+    (version "1.84")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://github.com/danmar/cppcheck/archive/"
                           version ".tar.gz"))
       (sha256
-       (base32 "15ghxwmyy09cd9mi008k4jn09c441j86qyaa4dz0is7f5dv5cdkx"))
+       (base32 "1ibz07dgs1dpfb8bmjh3qsma37wl5p6s6b4qlv5ccpshj4yjk9ma"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (home-page "http://cppcheck.sourceforge.net")
@@ -1902,19 +1902,14 @@ create data based on random numbers and yet remain repeatable.")
 (define-public python-nose-timer
   (package
     (name "python-nose-timer")
-    (version "0.7.0")
+    (version "0.7.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "nose-timer" version))
-        (patches
-         (search-patches
-          ;; This patch will not be needed in the next version.
-          ;; It is taken from the master branch.
-          "python-nose-timer-drop-ordereddict.patch"))
         (sha256
           (base32
-            "1s32ymsnby8lz2qk55ifj9zi50dqcg6swnj5cz2rmwxg2jsslsxp"))))
+            "0ywg223p528014z5s0vzck74r4xyw3kvcp2casfnc85dkvir1zj7"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-nose" ,python-nose)
@@ -1930,14 +1925,14 @@ create data based on random numbers and yet remain repeatable.")
 (define-public python-freezegun
   (package
     (name "python-freezegun")
-    (version "0.3.9")
+    (version "0.3.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "freezegun" version))
        (sha256
         (base32
-         "1vhf3kgdy7gpy70n3bxa3y1n6aza316137md97z8p5k0gz6wqg3q"))))
+         "08m6b42yxb9hk5lv747v9n2qsxyadmkb0k6yg0gxdanwap0slg3h"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -1953,7 +1948,7 @@ create data based on random numbers and yet remain repeatable.")
          ;; package does not include the Makefile.
          (replace 'check
            (lambda _
-             (zero? (system* "nosetests" "./tests/")))))))
+             (invoke "nosetests" "./tests/"))))))
     (home-page "https://github.com/spulec/freezegun")
     (synopsis "Test utility for mocking the datetime module")
     (description

@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -132,14 +133,15 @@ such as ones for networking and GUI programming.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (with-directory-excursion "bld"
-                 (zero?
-                  (system* "../unix/cmake/configure"
+                 (invoke "../unix/cmake/configure"
                            (string-append "--prefix=" out)
-                           "--without-quartz"))))))
+                           "--without-quartz")
+                 #t))))
          (replace 'build
            (lambda _
              (with-directory-excursion "bld"
-               (zero? (system* "make"))))))))
+               (invoke "make"))
+             #t)))))
     (synopsis "Smalltalk programming language and environment")
     (description "Squeak is a full-featured implementation of the Smalltalk
 programming language and environment based on (and largely compatible with)

@@ -73,7 +73,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.14")
+      (version "0.16")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://gitlab.com/janneke/mes"
@@ -81,7 +81,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                                     "/mes-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1i23jk61iibjza2s3lka56ry4ma424g2fyk8pjd5bd1dyjd0yrzf"))))
+                  "0c4vz1qw767af5h615055hh8zjwwmwf5mwkb64l0l921zaa9hg2n"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
@@ -98,9 +98,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                '())
          ("perl" ,perl)))               ;build-aux/gitlog-to-changelog
       (arguments
-       `(#:make-flags (list
-                       (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:phases
+       `(#:phases
          (modify-phases %standard-phases
            (add-before 'install 'generate-changelog
              (lambda _
@@ -122,7 +120,7 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
 (define-public mescc-tools
   (package
     (name "mescc-tools")
-    (version "0.4")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -132,7 +130,7 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1iwc8xqwzdaqckb4jkkisljrgn8ii4bl7dzk1l2kpv98hsyq9vi1"))))
+                "0rsxbjc3bg0jl3h7ai4hndxx2iyyk8bvwj9nd3xv2vgz3bmypnah"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (arguments

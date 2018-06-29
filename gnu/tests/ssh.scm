@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -111,13 +111,11 @@ root with an empty password."
             (test-begin "ssh-daemon")
 
             ;; Wait for sshd to be up and running.
-            (test-eq "service running"
-              'running!
+            (test-assert "service running"
               (marionette-eval
                '(begin
                   (use-modules (gnu services herd))
-                  (start-service 'ssh-daemon)
-                  'running!)
+                  (start-service 'ssh-daemon))
                marionette))
 
             ;; Check sshd's PID file.

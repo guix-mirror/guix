@@ -15,6 +15,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2411,7 +2412,7 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-evdev
   (package
     (name "xf86-input-evdev")
-    (version "2.10.5")
+    (version "2.10.6")
     (source
       (origin
         (method url-fetch)
@@ -2421,7 +2422,7 @@ devices, thus making direct access unnecessary.")
                ".tar.bz2"))
         (sha256
           (base32
-           "03dphgwjaxxyys8axc1kyysp6xvy9bjxicsdrhi2jvdgbchadnly"))))
+           "1h1y0fwnawlp4yc5llr1l7hwfcxxpln2fxhy6arcf6w6h4z0f9l7"))))
     (build-system gnu-build-system)
     (inputs
       `(("udev" ,eudev)
@@ -2529,7 +2530,7 @@ It is used to cotrol the pointer with a joystick device.")
 (define-public xf86-input-mouse
   (package
     (name "xf86-input-mouse")
-    (version "1.9.2")
+    (version "1.9.3")
     (source
       (origin
         (method url-fetch)
@@ -2539,7 +2540,7 @@ It is used to cotrol the pointer with a joystick device.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0bsbgww9421792zan43j60mndqprhfxhc48agsi15d3abjqda9gl"))))
+            "1iawr1wyl2qch1mqszcs0s84i92mh4xxprflnycbw1adc18b7v4k"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2561,7 +2562,7 @@ as USB mice.")
 (define-public xf86-input-synaptics
   (package
     (name "xf86-input-synaptics")
-    (version "1.9.0")
+    (version "1.9.1")
     (source
       (origin
         (method url-fetch)
@@ -2571,7 +2572,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0niv0w1czbxh4y3qkqbpdp5gjwhp3379inwhknhif0m4sy4k5fmg"))))
+            "0xhm03qywwfgkpfl904d08lx00y28m1b6lqmks5nxizixwk3by3s"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxi" ,libxi)
@@ -2730,7 +2731,7 @@ X server.")
 (define-public xf86-video-fbdev
   (package
     (name "xf86-video-fbdev")
-    (version "0.4.4")
+    (version "0.5.0")
     (source
       (origin
         (method url-fetch)
@@ -2740,7 +2741,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "06ym7yy017lanj730hfkpfk4znx3dsj8jq3qvyzsn8w294kb7m4x"))))
+            "16a66zr0l1lmssa07i3rzy07djxnb45c17ks8c71h8l06xgxihyw"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -3440,7 +3441,7 @@ X server.")
 (define-public xf86-video-vmware
   (package
     (name "xf86-video-vmware")
-    (version "13.2.1")
+    (version "13.3.0")
     (source
       (origin
         (method url-fetch)
@@ -3450,7 +3451,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0azn3g0vcki47n5jddagk2rmbwdvp845k8p7d2r56zxs3w8ggxz2"))))
+           "0v06qhm059klq40m2yx4wypzb7h53aaassbjfmm6clcyclj1k5s7"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -5635,7 +5636,7 @@ user-friendly mechanism to start the X server.")
 (define-public libxaw3d
   (package
     (name "libxaw3d")
-    (version "1.6.2")
+    (version "1.6.3")
     (source
       (origin
         (method url-fetch)
@@ -5645,7 +5646,7 @@ user-friendly mechanism to start the X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0awplv1nf53ywv01yxphga3v6dcniwqnxgnb0cn4khb121l12kxp"))))
+            "0i653s8g25cc0mimkwid9366bqkbyhdyjhckx7bw77j20hzrkfid"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
@@ -5855,6 +5856,34 @@ perl programs to display windows and graphics on X11 servers.")
     ;; for details)."
     (license license:perl-license)))
 
+(define-public perl-x11-protocol-other
+  (package
+    (name "perl-x11-protocol-other")
+    (version "30")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/K/KR/KRYDE/X11-Protocol-Other-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1mambi57cdkj82wiw1l8y2f70a60qsamdas0165hlj10drryfgrj"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-encode-hanextra" ,perl-encode-hanextra)
+       ("perl-module-util" ,perl-module-util)))
+    (propagated-inputs
+     `(("perl-x11-protocol" ,perl-x11-protocol)))
+    (home-page "http://search.cpan.org/dist/X11-Protocol-Other/")
+    (synopsis "Miscellaneous helpers for @code{X11::Protocol} connections")
+    (description
+     "@code{X11::Protocol::Other} contains window manager related functions for
+use by client programs, as per the @dfn{ICCCM} (Inter-Client Communication
+Conventions Manual) and some of the @dfn{EWMH}
+(Extended Window Manager Hints).")
+    (license license:gpl3+)))
+
 (define-public xcompmgr
   (package
     (name "xcompmgr")
@@ -5899,7 +5928,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
      (origin
        (method url-fetch)
@@ -5907,7 +5936,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0wghjmrw77pkh6agc5rz7ynr6s8yyc68qvj9rnp0vlwa3x1fl3ry"))))
+         "02wpnlx43dwacaahpm8db5kbnjw2msm3ycq71gib0n2zamd71ni6"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)

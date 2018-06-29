@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -124,7 +124,15 @@ determined."
       (save-module-excursion
        (lambda ()
          (set-current-module %user-module)
-         (primitive-load file))))
+         (match (primitive-load file)
+           (((? build-machine? machines) ...)
+            machines)
+           (_
+            ;; Instead of crashing, assume the empty list.
+            (warning (G_ "'~a' did not return a list of build machines; \
+ignoring it~%")
+                     file)
+            '())))))
     (lambda args
       (match args
         (('system-error . rest)
@@ -494,6 +502,30 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
         (()
          (values #f #f))))))
 
+(define (call-with-timeout timeout drv thunk)
+  "Call THUNK and leave after TIMEOUT seconds.  If TIMEOUT is #f, simply call
+THUNK.  Use DRV as an indication of what we were building when the timeout
+expired."
+  (if (number? timeout)
+      (dynamic-wind
+        (lambda ()
+          (sigaction SIGALRM
+            (lambda _
+              ;; The exit code here will be 1, which guix-daemon will
+              ;; interpret as a transient failure.
+              (leave (G_ "timeout expired while offloading '~a'~%")
+                     (derivation-file-name drv))))
+          (alarm timeout))
+        thunk
+        (lambda ()
+          (alarm 0)))
+      (thunk)))
+
+(define-syntax-rule (with-timeout timeout drv exp ...)
+  "Evaluate EXP... and leave after TIMEOUT seconds if EXP hasn't completed.
+If TIMEOUT is #f, simply evaluate EXP..."
+  (call-with-timeout timeout drv (lambda () exp ...)))
+
 (define* (process-request wants-local? system drv features
                           #:key
                           print-build-trace? (max-silent-time 3600)
@@ -520,13 +552,18 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
                  (display "# accept\n")
                  (let ((inputs  (string-tokenize (read-line)))
                        (outputs (string-tokenize (read-line))))
-                   (transfer-and-offload drv machine
-                                         #:inputs inputs
-                                         #:outputs outputs
-                                         #:max-silent-time max-silent-time
-                                         #:build-timeout build-timeout
-                                         #:print-build-trace?
-                                         print-build-trace?)))
+                   ;; Even if BUILD-TIMEOUT is honored by MACHINE, there can
+                   ;; be issues with the connection or deadlocks that could
+                   ;; lead the 'guix offload' process to remain stuck forever.
+                   ;; To avoid that, install a timeout here as well.
+                   (with-timeout build-timeout drv
+                     (transfer-and-offload drv machine
+                                           #:inputs inputs
+                                           #:outputs outputs
+                                           #:max-silent-time max-silent-time
+                                           #:build-timeout build-timeout
+                                           #:print-build-trace?
+                                           print-build-trace?))))
                (lambda ()
                  (release-build-slot slot)))
 
@@ -576,8 +613,8 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
          (leave (G_ "failed to talk to guix-daemon on '~a' (test returned ~s)~%")
                 name x))))
     (lambda (key . args)
-      (leave (G_ "remove evaluation on '~a' failed:~{ ~s~}~%")
-             args))))
+      (leave (G_ "remote evaluation on '~a' failed:~{ ~s~}~%")
+             name args))))
 
 (define %random-state
   (delay
@@ -755,6 +792,7 @@ This tool is meant to be used internally by 'guix-daemon'.\n"))
 ;;; eval: (put 'with-machine-lock 'scheme-indent-function 2)
 ;;; eval: (put 'with-file-lock 'scheme-indent-function 1)
 ;;; eval: (put 'with-error-to-port 'scheme-indent-function 1)
+;;; eval: (put 'with-timeout 'scheme-indent-function 2)
 ;;; End:
 
 ;;; offload.scm ends here

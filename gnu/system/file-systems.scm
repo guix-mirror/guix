@@ -194,10 +194,15 @@
 ;; differs from user to user.
 (define (%store-prefix)
   "Return the store prefix."
-  (cond ((resolve-module '(guix store) #:ensure #f)
+  ;; Note: If we have (guix store database) in the search path and we do *not*
+  ;; have (guix store) proper, 'resolve-module' returns an empty (guix store)
+  ;; with one sub-module.
+  (cond ((and=> (resolve-module '(guix store) #:ensure #f)
+                (lambda (store)
+                  (module-variable store '%store-prefix)))
          =>
-         (lambda (store)
-           ((module-ref store '%store-prefix))))
+         (lambda (variable)
+           ((variable-ref variable))))
         ((getenv "NIX_STORE")
          => identity)
         (else

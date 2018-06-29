@@ -38,7 +38,7 @@
 (define (rubygems-fetch name)
   "Return an alist representation of the RubyGems metadata for the package NAME,
 or #f on failure."
-  (json-fetch
+  (json-fetch-alist
    (string-append "https://rubygems.org/api/v1/gems/" name ".json")))
 
 (define (ruby-package-name name)

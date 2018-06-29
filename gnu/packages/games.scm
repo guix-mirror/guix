@@ -177,82 +177,70 @@ settings to tweak as well.")
     (license license:gpl2+)))
 
 (define-public cataclysm-dda
-  (package
-    (name "cataclysm-dda")
-    (version "0.C")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/CleverRaven/Cataclysm-DDA/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1xlajmgl9cviqyjpp5g5q4rbljy9gqc49v54bi8gpzr68s14gsb9"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Import cmath header for the std::pow function.
-               '(begin
-                  (for-each (lambda (file)
-                              (substitute* file
-                                (("#include <math.h>")
-                                 "#include <cmath>")))
-                            (find-files "src"))
-                  #t))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                          "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _
-             (substitute* "Makefile"
-               (("ncursesw5-config") "ncursesw6-config")
-               (("RELEASE_FLAGS = -Werror") "RELEASE_FLAGS ="))
-             #t))
-         (add-after 'build 'build-tiles
-           (lambda* (#:key make-flags outputs #:allow-other-keys)
-             ;; Change prefix directory and enable tile graphics and sound.
-             (zero?
-              (apply system* "make" "TILES=1" "SOUND=1"
-                     (string-append "PREFIX="
-                                    (assoc-ref outputs "tiles"))
-                     (cdr make-flags)))))
-         (add-after 'install 'install-tiles
-           (lambda* (#:key make-flags outputs #:allow-other-keys)
-             (zero?
-              (apply system* "make" "install" "TILES=1" "SOUND=1"
-                     (string-append "PREFIX="
-                                    (assoc-ref outputs "tiles"))
-                     (cdr make-flags))))))
-       ;; TODO: Add libtap++ from https://github.com/cbab/libtappp as a native
-       ;;       input in order to support tests.
-       #:tests? #f))
-    (outputs '("out"
-               "tiles")) ; For tile graphics and sound support.
-    (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("freetype" ,freetype)
-       ("libogg" ,libogg)
-       ("libvorbis" ,libvorbis)
-       ("ncurses" ,ncurses)
-       ("sdl2" ,sdl2)
-       ("sdl2-image" ,sdl2-image)
-       ("sdl2-ttf" ,sdl2-ttf)
-       ("sdl2-mixer" ,sdl2-mixer)))
-    (home-page "http://en.cataclysmdda.com/")
-    (synopsis "Survival horror roguelike video game")
-    (description
-     "Cataclysm: Dark Days Ahead is a roguelike set in a post-apocalyptic world.
-Struggle to survive in a harsh, persistent, procedurally generated world.
-Scavenge the remnants of a dead civilization for food, equipment, or, if you are
-lucky, a vehicle with a full tank of gas to get you out of Dodge.  Fight to
-defeat or escape from a wide variety of powerful monstrosities, from zombies to
-giant insects to killer robots and things far stranger and deadlier, and against
-the others like yourself, that want what you have.")
-    (license license:cc-by-sa3.0)))
+  (let ((commit "ad3b0c3d521292d119f97a83390e7acfe9e9e7f7")
+        (revision "1"))
+    (package
+      (name "cataclysm-dda")
+      ;; This denotes the version released after the 0.C release.
+      ;; Revert to a normal version number if updating to stable version 0.D.
+      (version (git-version "0.C" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/CleverRaven/Cataclysm-DDA.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1kdgbl8zqd53f5yilm2c9nyq3w6585yxl5jvgxy65dlpzxcqqj7y"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                            "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'build 'build-tiles
+             (lambda* (#:key make-flags outputs #:allow-other-keys)
+               ;; Change prefix directory and enable tile graphics and sound.
+               (apply invoke "make" "TILES=1" "SOUND=1"
+                      (string-append "PREFIX="
+                                     (assoc-ref outputs "tiles"))
+                      (cdr make-flags))))
+           (add-after 'install 'install-tiles
+             (lambda* (#:key make-flags outputs #:allow-other-keys)
+               (apply invoke "make" "install" "TILES=1" "SOUND=1"
+                      (string-append "PREFIX="
+                                     (assoc-ref outputs "tiles"))
+                      (cdr make-flags)))))
+         ;; TODO: Add libtap++ from https://github.com/cbab/libtappp as a native
+         ;;       input in order to support tests.
+         #:tests? #f))
+      (outputs '("out"
+                 "tiles")) ; For tile graphics and sound support.
+      (native-inputs
+       `(("gettext" ,gettext-minimal)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("freetype" ,freetype)
+         ("libogg" ,libogg)
+         ("libvorbis" ,libvorbis)
+         ("ncurses" ,ncurses)
+         ("sdl2" ,sdl2)
+         ("sdl2-image" ,sdl2-image)
+         ("sdl2-ttf" ,sdl2-ttf)
+         ("sdl2-mixer" ,sdl2-mixer)))
+      (home-page "http://en.cataclysmdda.com/")
+      (synopsis "Survival horror roguelike video game")
+      (description
+       "Cataclysm: Dark Days Ahead is a roguelike set in a post-apocalyptic
+world.  Struggle to survive in a harsh, persistent, procedurally generated
+world.  Scavenge the remnants of a dead civilization for food, equipment, or,
+if you are lucky, a vehicle with a full tank of gas to get you out of Dodge.
+Fight to defeat or escape from a wide variety of powerful monstrosities, from
+zombies to giant insects to killer robots and things far stranger and deadlier,
+and against the others like yourself, that want what you have.")
+      (license license:cc-by-sa3.0))))
 
 (define-public cowsay
   (package
@@ -461,7 +449,7 @@ automata.  The following features are available:
 (define-public meandmyshadow
   (package
     (name "meandmyshadow")
-    (version "0.4")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/meandmyshadow/"
@@ -469,7 +457,7 @@ automata.  The following features are available:
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "1dpb7s32b2psj5w3nr5kqibib8nndi86mw8gxp4hmxwrfiisf86d"))))
+                "0wl5dc75qy001s6043cx0vr2l5y2qfv1cldqnwill9sfygqj9p95"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; there are no tests
@@ -485,7 +473,7 @@ automata.  The following features are available:
              ;; link with libX11, even though we're using the GL backend.
              (substitute* "CMakeLists.txt"
                (("\\$\\{X11_LIBRARIES\\}") "-lX11"))
-             )))))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1616,23 +1604,20 @@ reference interpreter, using the Glk API.")
 (define-public fizmo
   (package
     (name "fizmo")
-    (version "0.8.4")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://christoph-ender.de/fizmo/source/"
+              (uri (string-append "https://fizmo.spellbreaker.org/source/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1sd988db2302r7cbfcfghbmg8ck43c6hvnlnlpb0rqxb7pm9cwyy"))))
+                "1amyc4n41jf08kxmdgkk30bzzx54miaxa97w28f417qwn8lrl98w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
        (let ((libjpeg (assoc-ref %build-inputs "libjpeg"))
              (ncurses (assoc-ref %build-inputs "ncurses")))
-         (list (string-append "jpeg_CFLAGS=-I" libjpeg "/include")
-               (string-append "jpeg_LIBS=-ljpeg")
-               (string-append "ncursesw_CFLAGS=-I" ncurses "/include")
-               (string-append "ncursesw_LIBS=-lncursesw")))))
+         (list (string-append "--with-jpeg-includedir=" libjpeg "/include")))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1643,7 +1628,7 @@ reference interpreter, using the Glk API.")
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
        ("sdl2" ,sdl2)))
-    (home-page "https://christoph-ender.de/fizmo/")
+    (home-page "https://fizmo.spellbreaker.org/")
     (synopsis "Z-machine interpreter")
     (description
      "Fizmo is a console-based Z-machine interpreter.  It is used to play
@@ -1679,7 +1664,7 @@ Protocol).")
 (define-public extremetuxracer
   (package
     (name "extremetuxracer")
-    (version "0.7.4")
+    (version "0.7.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1687,15 +1672,15 @@ Protocol).")
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
-                "0d2j4ybdjmimg67v2fndgahgq4fvgz3fpfb3a4l1ar75n6hy776s"))))
+                "1ly63316c07i0gyqqmyzsyvygsvygn0fpk3bnbg25fi6li99rlsg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("glu" ,glu)
        ("sfml" ,sfml)))
-    (synopsis "High speed arctic racing game based on Tux Racer")
-    ;; Snarfed straight from Debian
+    (synopsis "High-speed arctic racing game based on Tux Racer")
+    ;; Snarfed straight from Debian.
     (description "Extreme Tux Racer, or etracer as it is called for short, is
 a simple OpenGL racing game featuring Tux, the Linux mascot.  The goal of the
 game is to slide down a snow- and ice-covered mountain as quickly as possible,
@@ -1822,7 +1807,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.1")
+    (version "1.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -1831,7 +1816,7 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1mzrnbv71b4s41c5x8clhb53l8lidiwzny1hl828228pvys5bxkb"))))
+                "06648041nr77sgzr7jpmcn37cma3hp41qynp50xzddx28l17zwg9"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
@@ -2001,6 +1986,16 @@ world}, @uref{http://evolonline.org, Evol Online} and
      (origin (method url-fetch)
              (uri (string-append "http://binaries.openttd.org/releases/"
                                  version "/openttd-" version "-source.tar.xz"))
+             (patches
+              (list
+               (origin (method url-fetch)
+                       (uri (string-append
+                             "https://github.com/OpenTTD/OpenTTD/commit/"
+                             "19076c24c1f3baf2a22d1fa832d5688216cf54a3.patch"))
+                       (file-name "openttd-fix-compilation-with-ICU-61.patch")
+                       (sha256
+                        (base32
+                         "02d1xmb75yv4x6rfnvxk3vvq4l3lvvwr2pfsdzn7lzalic51ziqh")))))
              (sha256
               (base32
                "0dhv5bbbg1dmmq7fi3xss0a9jq2rqgb5sf9fsqzlsjcdm590j6b1"))
@@ -2219,6 +2214,88 @@ Transport Tycoon Deluxe.")
        ("opensfx" ,openttd-opensfx)
        ,@(package-native-inputs openttd-engine)))))
 
+(define openrct2-title-sequences
+  (package
+   (name "openrct2-title-sequences")
+   (version "0.1.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/OpenRCT2/title-sequences/releases/download/v"
+                         version "/title-sequence-v" version ".zip"))
+     (file-name (string-append name "-" version ".zip"))
+     (sha256
+      (base32
+       "0qbyxrsw8hlgaq0r5d7lx7an3idy4qbfv7yiw9byhldk763n9cfw"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("bash" ,bash)
+      ("coreutils" ,coreutils)
+      ("unzip" ,unzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder
+      (begin
+        (use-modules (guix build utils))
+        (let* ((out (assoc-ref %outputs "out"))
+               (openrct2-title-sequences (string-append out
+                                         "/share/openrct2/title-sequences"))
+               (source (assoc-ref %build-inputs "source"))
+               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+          (copy-file source (string-append ,name "-" ,version ".zip"))
+          (invoke unzip (string-append ,name "-" ,version ".zip"))
+          (delete-file (string-append ,name "-" ,version ".zip"))
+          (mkdir-p openrct2-title-sequences)
+          (copy-recursively "."
+                            openrct2-title-sequences)
+          #t))))
+   (home-page "https://github.com/OpenRCT2/OpenRCT2")
+   (synopsis "Title sequences for OpenRCT2")
+   (description
+    "openrct2-title-sequences is a set of title sequences for OpenRCT2.")
+   (license license:gpl3+)))
+
+(define openrct2-objects
+  (package
+   (name "openrct2-objects")
+   (version "1.0.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://github.com/OpenRCT2/objects/releases/download/v"
+                         version "/objects.zip"))
+     (file-name (string-append name "-" version ".zip"))
+     (sha256
+      (base32
+       "1z92afhbv13j1ig6fz0x8w9vdmfchssv16vwwhb0vj40pn1g1rwy"))))
+   (build-system trivial-build-system)
+   (native-inputs
+    `(("bash" ,bash)
+      ("coreutils" ,coreutils)
+      ("unzip" ,unzip)))
+   (arguments
+    `(#:modules ((guix build utils))
+      #:builder
+      (begin
+        (use-modules (guix build utils))
+        (let* ((out (assoc-ref %outputs "out"))
+               (openrct2-objects (string-append out
+                                         "/share/openrct2/objects"))
+               (source (assoc-ref %build-inputs "source"))
+               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+          (copy-file source (string-append ,name "-" ,version ".zip"))
+          (invoke unzip (string-append ,name "-" ,version ".zip"))
+          (delete-file (string-append ,name "-" ,version ".zip"))
+          (mkdir-p openrct2-objects)
+          (copy-recursively "."
+                            openrct2-objects)
+          #t))))
+   (home-page "https://github.com/OpenRCT2/OpenRCT2")
+   (synopsis "Objects for OpenRCT2")
+   (description
+    "openrct2-objects is a set of objects for OpenRCT2.")
+   (license license:gpl3+)))
+
 (define-public openrct2
   (package
     (name "openrct2")
@@ -2234,35 +2311,39 @@ Transport Tycoon Deluxe.")
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;; no tests available
+     `(#:configure-flags '("-DDOWNLOAD_TITLE_SEQUENCES=OFF")
+       #:tests? #f ; Tests require network.
        #:phases
         (modify-phases %standard-phases
-          (add-after 'unpack 'fix-usr-share-paths
-            (lambda* (#:key make-flags outputs #:allow-other-keys)
+          (add-after 'unpack 'fix-usr-share-paths&add-data
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((titles (assoc-ref inputs "openrct2-title-sequences"))
+                    (objects (assoc-ref inputs "openrct2-objects")))
               ;; Fix some references to /usr/share.
+              ;; Change to Platform.Linux.cpp on 0.1.2+
               (substitute* "src/openrct2/platform/linux.c"
                 (("/usr/share")
-                (string-append (assoc-ref %outputs "out") "/share")))))
-          (add-after 'build 'fix-cmake-install-file
-            (lambda _
-              ;; The build system tries to download a file and compare hashes.
-              ;; Since we have no network, remove this so the install doesn't fail.
-              (substitute* "cmake_install.cmake"
-                (("EXPECTED_HASH SHA1=b587d83de508d0b104d14c599b76f8565900fce0")
-                "")))))))
+                 (string-append (assoc-ref %outputs "out") "/share")))
+              (copy-recursively (string-append titles
+                                "/share/openrct2/title-sequences") "data/title")
+              (copy-recursively (string-append objects
+                                "/share/openrct2/objects") "data/object")))))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
+              ("icu4c" ,icu4c)
               ("jansson" ,jansson)
               ("libpng" ,libpng)
               ("libzip" ,libzip)
               ("mesa" ,mesa)
+              ("openrct2-objects" ,openrct2-objects)
+              ("openrct2-title-sequences" ,openrct2-title-sequences)
               ("openssl" ,openssl)
               ("sdl2" ,sdl2)
               ("speexdsp" ,speexdsp)
               ("zlib" ,zlib)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/OpenRCT2/OpenRCT2")
     (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
     (description "OpenRCT2 is a free software re-implementation of
@@ -2315,19 +2396,21 @@ are only two levels to play with, but they are very addictive.")
 (define-public pioneers
   (package
     (name "pioneers")
-    (version "15.4")
+    (version "15.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/pio/"
                                   "pioneers-" version ".tar.gz"))
               (sha256
                (base32
-                "1p1d18hrfmqcnghip3shkzcs5qkz6j99jvkdkqfi7pqdvjc323cs"))))
+                "037gdiiw690jw3wd1s9lxmkqx0caxyk0b4drpm7i9p28gig43q9y"))))
     (build-system gnu-build-system)
-    (inputs `(("gtk+" ,gtk+)
-              ("librsvg" ,librsvg)
-              ("avahi" ,avahi)))
+    (inputs `(("avahi" ,avahi)
+              ("gtk+" ,gtk+)
+              ("librsvg" ,librsvg)))
     (native-inputs `(("intltool" ,intltool)
+                     ("itstool" ,itstool)
+                     ("libxml2" ,libxml2)
                      ("pkg-config" ,pkg-config)))
     (synopsis "Board game inspired by The Settlers of Catan")
     (description "Pioneers is an emulation of the board game The Settlers of
@@ -3171,25 +3254,46 @@ colors, pictures, and sounds.")
                 "0jwzbwkgp1l5ia6c7s760gmdirbsncp6nfqp7vqdqsfb63la9gl2"))))
     (build-system trivial-build-system)
     (arguments
-     '(#:modules ((guix build utils))
+     `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils))
-         (let* ((out     (assoc-ref %outputs "out"))
-                (bindir  (string-append out "/bin"))
-                (prog    (string-append bindir "/mrrescue"))
-                (source  (assoc-ref %build-inputs "source"))
-                (bash    (string-append (assoc-ref %build-inputs "bash")
-                                        "/bin/bash"))
-                (love    (string-append (assoc-ref %build-inputs "love")
-                                        "/bin/love")))
-           (mkdir-p bindir)
-           (with-output-to-file prog
+         (let* ((out    (assoc-ref %outputs "out"))
+                (script (string-append out "/bin/" ,name))
+                (data   (string-append out "/share/" ,name))
+                (source (assoc-ref %build-inputs "source"))
+                (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                       "/bin/unzip"))
+                (patch  (string-append (assoc-ref %build-inputs "patch")
+                                       "/bin/patch"))
+                (bash   (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/bash"))
+                (love   (string-append (assoc-ref %build-inputs "love")
+                                       "/bin/love")))
+
+           (mkdir-p (dirname script))
+           (with-output-to-file script
              (lambda ()
                (format #t "#!~a~%" bash)
-               (format #t "exec -a mrrescue \"~a\" \"~a\"~%" love source)))
-           (chmod prog #o755)
+               (format #t "exec -a ~a \"~a\" \"~a\"~%" ,name love data)))
+           (chmod script #o755)
+
+           ;; The better way to package this game would be to install *only* the
+           ;; script above, pointing to the unextracted .love file in the store.
+           ;; However, mrrescue 1.02e needs to be patched to work with Love 11.
+           ;; Instead of extracting the .love file, patching it, and re-zipping
+           ;; it to the store, simply point the script to the extracted patched
+           ;; data directory directly.
+           (mkdir-p data)
+           (with-directory-excursion data
+             (invoke unzip source)
+             (invoke patch "-p1" "-i"
+                     (assoc-ref %build-inputs "love-11.patch")))
            #t))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("patch" ,patch)
+       ("love-11.patch" ,(search-patch "mrrescue-support-love-11.patch"))))
     (inputs
      `(("bash" ,bash)
        ("love" ,love)))
@@ -3197,8 +3301,8 @@ colors, pictures, and sounds.")
     (synopsis "Arcade-style fire fighting game")
     (description
      "Mr. Rescue is an arcade styled 2d action game centered around evacuating
-civilians from burning buildings.  The game features fast paced fire
-extinguishing action, intense boss battles, a catchy soundtrack and lots of
+civilians from burning buildings.  The game features fast-paced fire
+extinguishing action, intense boss battles, a catchy soundtrack, and lots of
 throwing people around in pseudo-randomly generated buildings.")
     (license (list license:zlib             ; for source code
                    license:cc-by-sa3.0))))  ; for graphics and music assets
@@ -4306,7 +4410,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.5.5")
+    (version "1.5.10")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -4315,7 +4419,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                            version ".tar.bz2"))
        (sha256
         (base32
-         "0v2qgdfpvdzd1bcbp9v8pfahj1bgczsq2d4xfhh5wg11jgjcwz03"))
+         "0mc5dgh2x9nbili7gy6srjhb23ckalf08wqq2amyjr5rq392jvd7"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4337,9 +4441,10 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
     (arguments
      `(#:make-flags '("CC=gcc" "config=release")
        #:phases (modify-phases %standard-phases
+                  (delete 'bootstrap)
                   (replace 'configure
                     (lambda _
-                      (zero? (system* "premake4" "gmake"))
+                      (invoke "premake4" "gmake")
                       #t))
                   (add-after 'set-paths 'set-sdl-paths
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -4426,7 +4531,7 @@ Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
 (define-public quakespasm
   (package
     (name "quakespasm")
-    (version "0.93.0")
+    (version "0.93.1")
     (source
      (origin
        (method url-fetch)
@@ -4434,7 +4539,7 @@ Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
                            version ".tgz"))
        (sha256
         (base32
-         "0b2nz7w4za32pc34r62ql270z692qcjs2pm0i3svkxkvfammhdfq"))))
+         "1bimv18f6rzhyjz78yvw2vqr5n0kdqbcqmq7cb3m951xgsxfcgpd"))))
     (arguments
      `(#:tests? #f
        #:make-flags '("CC=gcc"
@@ -4471,7 +4576,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
   (package
     (inherit quakespasm)
     (name "vkquake")
-    (version "0.97.3")
+    (version "1.00.0")
     (source
      (origin
        (method url-fetch)
@@ -4480,7 +4585,7 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1p0nh2v2ilylw62fxc5qpfcmyhs0s64w8sgh036nc6kn21kbjc0d"))))
+         "0bviv18jvp41jvrabgl7l5kq4n1p6p3rywij481yswawdw6l5idh"))))
     (arguments
      `(#:make-flags
        (let ((vulkanlib (string-append (assoc-ref %build-inputs

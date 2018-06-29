@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -213,6 +214,49 @@ with usb4java.")
      "This package provides a USB library for Java based on libusb and
 implementing @code{javax.usb} (JSR-80).")
     (license expat)))
+
+(define-public python-libusb1
+  (package
+    (name "python-libusb1")
+    (version "1.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "libusb1" version))
+       (sha256
+        (base32
+         "03b7xrz8vqg8w0za5r503jhcmbd1ls5610jcja1rqz833nf0v4wc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install-license-files 'remove-incorrect-license
+           (lambda* (#:key out #:allow-other-keys)
+             ;; Was relicensed to LGPL 2.1+, but old COPYING file still left
+             ;; in source. Remove it so it does not get installed.
+             (delete-file "COPYING")
+             #t))
+         (add-after 'unpack 'fix-libusb-reference
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "usb1/libusb1.py"
+               (("libusb_path = ctypes.util.find_library\\(base_name\\)")
+                (string-append
+                 "libusb_path = \""
+                 (find (negate symbolic-link?)
+                       (find-files (assoc-ref inputs "libusb")
+                                   "^libusb.*\\.so\\..*"))
+                 "\"")))
+             #t)))))
+    (inputs `(("libusb" ,libusb)))
+    (home-page "https://github.com/vpelletier/python-libusb1")
+    (synopsis "Pure-python wrapper for libusb-1.0")
+    (description "Libusb is a library that gives applications easy access to
+USB devices on various operating systems.  This package provides a Python
+wrapper for accessing libusb-1.0.")
+    (license lgpl2.1+)))
 
 (define-public python-pyusb
   (package

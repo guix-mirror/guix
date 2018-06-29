@@ -52,6 +52,8 @@
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;; Copyright © 2016, 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -339,6 +341,15 @@ data types.")
 
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
+
+(define-public python2-called-python
+  ;; Both 2.x and 3.x used to be called "python".  In commit
+  ;; a7714d42de2c3082f3609d1e63c83d703fb39cf9 (March 2018), we renamed the
+  ;; Python 2.x package to "python2".
+  (package
+    (inherit python-2)
+    (name "python")
+    (properties `((superseded . ,python-2)))))
 
 (define-public python-3.6
   (package (inherit python-2)
@@ -1200,13 +1211,13 @@ human-friendly syntax.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.22.0")
+    (version "0.23.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "0v0fi2i10kwnmlpsl6f1fgajcpx3q6766qf6xqi5kw3ivn8l1aa4"))))
+        (base32 "142nvwb01r2wv42y2cz40bx33hd8ffh6s6gynapg859fmzr2mdah"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -1226,7 +1237,8 @@ human-friendly syntax.")
                           (for-each delete-file
                                     '("pandas/tests/io/conftest.py"
                                       "pandas/tests/io/json/test_compression.py"
-                                      "pandas/tests/io/test_excel.py"))
+                                      "pandas/tests/io/test_excel.py"
+                                      "pandas/tests/io/test_parquet.py"))
                           (invoke "pytest" "-v" "pandas" "-k"
                                   (string-append
                                    "not network and not disabled"
@@ -1238,7 +1250,9 @@ human-friendly syntax.")
        ("python-dateutil" ,python-dateutil)))
     (native-inputs
      `(("python-cython" ,python-cython)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-lxml" ,python-lxml)
+       ("python-html5lib" ,python-html5lib)
        ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)))
     (home-page "https://pandas.pydata.org")
@@ -2900,7 +2914,7 @@ between language specification and implementation aspects.")
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.14.3")
+    (version "1.14.5")
     (source
      (origin
        (method url-fetch)
@@ -2909,7 +2923,7 @@ between language specification and implementation aspects.")
              version "/numpy-" version ".tar.gz"))
        (sha256
         (base32
-         "1yim2bxlycn4dhxmfxid6slplpmcb4ynhp411b37ahmsm2lwgkyg"))))
+         "0admjpkih63lm19zbbilq8ck4f6ny5kqi03dk3m6b2mnixsh4jhv"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)
@@ -4474,13 +4488,13 @@ them as the version argument or in a SCM managed file.")
 (define-public python-pathpy
   (package
     (name "python-pathpy")
-    (version "11.0")
+    (version "11.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "path.py" version))
        (sha256
-        (base32 "12s84maimiz61980q065rjgi8ang6xw2wwm64m0lmfks51dlw4qn"))))
+        (base32 "07x15v8c7ry9bvycw294c9yq6ky9v2b0dalvgi6rn38ilh69vsz7"))))
     ;; (outputs '("out" "doc"))
     (build-system python-build-system)
     (propagated-inputs
@@ -4861,26 +4875,15 @@ computing.")
 (define-public python-urwid
   (package
     (name "python-urwid")
-    (version "1.3.1")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "urwid" version))
        (sha256
         (base32
-         "18cnd1wdjcas08x5qwa5ayw6jsfcn33w4d9f7q3s29fy6qzc1kng"))))
+         "1g6cpicybvbananpjikmjk8npmjk4xvak1wjzji62wc600wkwkb4"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Disable failing test. Bug filed upstream:
-         ;; https://github.com/wardi/urwid/issues/164
-         ;; TODO: check again for python-urwid > 1.3.1 or python > 3.4.3.
-         (add-after 'unpack 'disable-failing-test
-          (lambda _
-            (substitute* "urwid/tests/test_event_loops.py"
-              (("test_remove_watch_file")
-                "disable_remove_watch_file")))))))
     (home-page "http://urwid.org")
     (synopsis "Console user interface library for Python")
     (description
@@ -4889,22 +4892,7 @@ features useful for text console applications.")
     (license license:lgpl2.1+)))
 
 (define-public python2-urwid
-  (let ((python2-urwid (package-with-python2 python-urwid)))
-    (package
-      (inherit python2-urwid)
-      (arguments
-       (append
-        `(;; Explicitly using Python 2 is necessary due the argument list being
-          ;; built from only the 'delete-test_vterm.py' phase and python-urwid's
-          ;; package arguments, which by default assumes the use of Python 3.
-          #:python ,python-2
-          #:phases
-          (modify-phases %standard-phases
-            ;; Disable the vterm tests because of non-deterministic failures
-            ;; with Python 2. See https://github.com/urwid/urwid/issues/230.
-            (add-after 'unpack 'delete-test_vterm.py
-              (delete-file "urwid/tests/test_vterm.py"))))
-        (package-arguments python-urwid))))))
+  (package-with-python2 python-urwid))
 
 (define-public python-urwidtrees
   (package
@@ -6023,13 +6011,13 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.3.2")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "llfuse" version ".tar.bz2"))
               (sha256
                (base32
-                "0qxvnbz41bpvpc1vbi8qkhmpr9gj1qrrp5jdj085iqibd8l2l9cn"))))
+                "1rqww632y2zz71xmr6ch7yq80kvza9mhqr2z773k0d8l1lwzl575"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
@@ -7275,13 +7263,13 @@ applications.")
 (define-public python-click-log
   (package
     (name "python-click-log")
-    (version "0.2.1")
+    (version "0.3.2")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "click-log" version))
              (sha256
               (base32
-               "1r1x85023cslb2pwldd089jjk573mk3w78cnashs77wrx7yz8fj9"))))
+               "091i03bhxyzsdbc6kilxhivfda2f8ymz3b33xa6cj5kbzjiirz8n"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
@@ -12901,6 +12889,48 @@ and works only with Python 2 and NumPy < 1.9.")
 (define-public python2-phonenumbers
   (package-with-python2 python-phonenumbers))
 
+(define-public python-send2trash
+  (package
+    (name "python-send2trash")
+    (version "1.4.2")
+    (source
+     (origin (method url-fetch)
+             ;; Source tarball on PyPI doesn't include tests.
+             (uri (string-append "https://github.com/hsoft/send2trash/archive/"
+                                 version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0ffyhwjyx61slkdy38iwjc4gmj7fj9gs2q58f075gwvq630pzm9z"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             (mkdir-p "/tmp/foo")
+             (setenv "HOME" "/tmp/foo")
+             #t)))))
+    (home-page "https://github.com/hsoft/send2trash")
+    (synopsis "Send files to the user's @file{~/Trash} directory")
+    (description "This package provides a Python library to send files to the
+user's @file{~/Trash} directory.")
+    (license license:bsd-3)))
+
+(define-public python2-send2trash
+  (package
+    (inherit (package-with-python2 python-send2trash))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-send2trash)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'setenv
+             (lambda _
+               (setenv "PYTHONPATH"
+                       (string-append (getcwd) ":" (getenv "PYTHONPATH")))
+               #t))))))
+    (properties `((python2-variant . ,(delay python-send2trash))))))
+
 (define-public python-yapf
   (package
     (name "python-yapf")
@@ -13615,3 +13645,152 @@ Boost.Python library by David Abrahams: to minimize boilerplate code in
 traditional extension modules by inferring type information using compile-time
 introspection.")
     (license license:expat)))
+
+(define-public python-fasteners
+  (package
+    (name "python-fasteners")
+    (version "0.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fasteners" version))
+       (sha256
+        (base32
+         "063y20kx01ihbz2mziapmjxi2cd0dq48jzg587xdsdp07xvpcz22"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-monotonic" ,python-monotonic)
+       ("python-six" ,python-six)
+       ("python-testtools" ,python-testtools)))
+    (home-page "https://github.com/harlowja/fasteners")
+    (synopsis "Python package that provides useful locks")
+    (description
+     "This package provides a Python program that provides following locks:
+
+@itemize
+@item Locking decorator
+@item Reader-writer locks
+@item Inter-process locks
+@item Generic helpers
+@end itemize\n")
+    (license license:asl2.0)))
+
+(define-public python2-fasteners
+  (package-with-python2 python-fasteners))
+
+(define-public python-requests-file
+  (package
+    (name "python-requests-file")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "requests-file" version))
+       (sha256
+        (base32
+         "1yp2jaxg3v86pia0q512dg3hz6s9y5vzdivsgrba1kds05ial14g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page
+     "https://github.com/dashea/requests-file")
+    (synopsis "File transport adapter for Requests")
+    (description
+     "Requests-File is a transport adapter for use with the Requests Python
+library to allow local filesystem access via file:// URLs.")
+    (license license:asl2.0)))
+
+(define-public python2-requests-file
+  (package-with-python2 python-requests-file))
+
+(define-public python-tldextract
+  (package
+    (name "python-tldextract")
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tldextract" version))
+       (sha256
+        (base32
+         "1d5s8v6kpsgazyahflhji1cfdcf89rv7l7z55v774bhzvcjp2y99"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-responses" ,python-responses)))
+    (propagated-inputs
+     `(("python-idna" ,python-idna)
+       ("python-requests" ,python-requests)
+       ("python-requests-file" ,python-requests-file)))
+    (home-page
+     "https://github.com/john-kurkowski/tldextract")
+    (synopsis
+     "Separate the TLD from the registered domain and subdomains of a URL")
+    (description
+     "TLDExtract accurately separates the TLD from the registered domain and
+subdomains of a URL, using the Public Suffix List.  By default, this includes
+the public ICANN TLDs and their exceptions.  It can optionally support the
+Public Suffix List's private domains as well.")
+    (license license:bsd-3)))
+
+(define-public python2-tldextract
+  (package-with-python2 python-tldextract))
+
+(define-public python-pynamecheap
+  (package
+    (name "python-pynamecheap")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyNamecheap" version))
+       (sha256
+        (base32
+         "0wkbwz208j8nfrsmzmclvxg22ymknn0mlz76wbdza9k2bx2zja6l"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page
+     "https://github.com/Bemmu/PyNamecheap")
+    (synopsis
+     "Namecheap API client in Python")
+    (description
+     "PyNamecheap is a Namecheap API client in Python.")
+    (license license:expat)))
+
+(define-public python2-pynamecheap
+  (package-with-python2 python-pynamecheap))
+
+(define-public python-dns-lexicon
+  (package
+    (name "python-dns-lexicon")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dns-lexicon" version))
+       (sha256
+        (base32
+         "0jdn3ns71bsybr7njgsqr9xlxsqh7zh6phn4ld0liazqdn2l5f6m"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;requires internet access
+    (propagated-inputs
+     `(("python-future" ,python-future)
+       ("python-pynamecheap" ,python-pynamecheap)
+       ("python-requests" ,python-requests)
+       ("python-tldextract" ,python-tldextract)
+       ("python-urllib3" ,python-urllib3)))
+    (home-page "https://github.com/AnalogJ/lexicon")
+    (synopsis
+     "Manipulate DNS records on various DNS providers")
+    (description
+     "Lexicon provides a way to manipulate DNS records on multiple DNS
+providers in a standardized way.  It has a CLI but it can also be used as a
+Python library.  It was designed to be used in automation, specifically with
+Let's Encrypt.")
+    (license license:expat)))
+
+(define-public python2-dns-lexicon
+  (package-with-python2 python-dns-lexicon))

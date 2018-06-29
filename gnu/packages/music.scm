@@ -16,6 +16,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,10 +42,12 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system waf)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
@@ -554,14 +557,14 @@ MusePack, Monkey's Audio, and WavPack files.")
     (name "extempore")
     (version "0.7.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/digego/extempore/archive/"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/digego/extempore.git")
+                    (commit version)))
               (sha256
                (base32
-                "1wap1mvsicrhlazikf7l8zxg37fir8bmnh9rin28m1rix730vcch"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "12fsp7zkfxb9kykwq46l88kcbbici9arczrrsl4qn87m6vm5349l"))
+              (file-name (string-append name "-" version "-checkout"))))
     (build-system cmake-build-system)
     (arguments
      `(;; The default target also includes ahead-of-time compilation of the
@@ -918,8 +921,8 @@ Guile.")
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
   ;; system, so we take the last commit.
-  (let ((commit "10c31e57291b6e42be53371567a722b62b32d220")
-        (revision "3"))
+  (let ((commit "5ae43bb27c42387052a73e5ffc5d33efb9d946a9")
+        (revision "4"))
     (package
       (name "non-sequencer")
       (version (string-append "1.9.5-" revision "." (string-take commit 7)))
@@ -930,7 +933,7 @@ Guile.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "080rha4ffp7qycyg1mqcf4vj0s7z8qfvz6bxm0w29xgg2kkmb3fx"))
+                  "1cljkkyi9dxqpqhx8y6l2ja4zjmlya26m26kqxml8gx08vyvddhx"))
                 (file-name (string-append name "-" version "-checkout"))))
       (build-system waf-build-system)
       (arguments
@@ -2641,7 +2644,7 @@ of tools for manipulating and accessing your music.")
 (define-public milkytracker
   (package
     (name "milkytracker")
-    (version "1.01.00")
+    (version "1.02.00")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/milkytracker/"
@@ -2650,7 +2653,7 @@ of tools for manipulating and accessing your music.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1dvnddsnn9c83lz4dlm0cfjpc0m524amfkbalxbswdy0qc8cj1wv"))
+                "08v0l4ipvvwkwv4ywkc6c8a6xnpkyb02anj36w8q6gikxrs6xjvb"))
               (modules '((guix build utils)))
               ;; Remove non-FSDG compliant sample songs.
               (snippet
@@ -2683,7 +2686,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
 (define-public schismtracker
   (package
     (name "schismtracker")
-    (version "20170910")
+    (version "20180513")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2692,7 +2695,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01gfcjngbpv87y9w5jln8k313hycpkb1d617hdy2cdw2hxqzlclz"))
+                "1yjfd02arb51n0vyv11qgpn6imh7hcqnc3953cbvgwb4cnrswk9f"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
@@ -2706,7 +2709,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autoconf
-           (lambda _ (zero? (system* "autoreconf" "-vfi"))))
+           (lambda _ (invoke "autoreconf" "-vfi")))
          (add-before 'configure 'link-libm
            (lambda _ (setenv "LIBS" "-lm") #t)))))
     (native-inputs
@@ -3196,7 +3199,7 @@ plugins, a switch trigger, a toggle switch, and a peakmeter.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "http://git.drobilla.net/ingen.git")
+               (url "https://git.drobilla.net/ingen.git")
                (commit commit)))
          (file-name (string-append name "-" version "-checkout"))
          (sha256
@@ -3257,7 +3260,7 @@ plugins, a switch trigger, a toggle switch, and a peakmeter.")
       (native-inputs
        `(("pkg-config" ,pkg-config)
          ("python-pygments" ,python-pygments)))
-      (home-page "http://drobilla.net/software/ingen")
+      (home-page "https://drobilla.net/software/ingen")
       (synopsis "Modular audio processing system")
       (description "Ingen is a modular audio processing system for JACK and
 LV2 based systems.  Ingen is built around LV2 technology and a strict
@@ -3536,7 +3539,10 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
      `(#:make-flags
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "USE_SYSTEM_FREETYPE=ON"
-         "DOWNLOAD_SOUNDFONT=OFF")
+         "DOWNLOAD_SOUNDFONT=OFF"
+         ;; The following is not supported since Qt 5.11.  Can be
+         ;; removed in Musescore 2.2.2+.
+         "BUILD_WEBKIT=OFF")
        ;; There are tests, but no simple target to run.  The command
        ;; used to run them is:
        ;;
@@ -3548,6 +3554,14 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
+         ;; Fix Qt 5.11 upgrade.  Should be fixed in 2.2.2+, see:
+         ;; <https://github.com/musescore/MuseScore/commit/d10e70415c8e52e2ba9d45de564467e42f66c102>
+         (add-after 'unpack 'patch-sources
+           (lambda _
+             (substitute* "all.h"
+               (("#include <QRadioButton>") "#include <QRadioButton>
+#include <QButtonGroup>"))
+             #t))
          (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -3565,7 +3579,6 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        ("qtdeclarative" ,qtdeclarative)
        ("qtscript" ,qtscript)
        ("qtsvg" ,qtsvg)
-       ("qtwebkit" ,qtwebkit)
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (native-inputs
      `(("cmake" ,cmake)
@@ -3771,32 +3784,43 @@ notation and includes basic support for digital audio.")
     (license license:gpl2)))
 
 (define-public patchmatrix
-  (package
-    (name "patchmatrix")
-    (version "0.12.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/OpenMusicKontrollers/patchmatrix.git")
-                    (commit version)))
-              (file-name (string-append "patchmatrix-" version "-checkout"))
-              (sha256
-               (base32
-                "19ivp7h5vq6r1qhmycjxzvrgg7fc4a3v5vb3n4c7afs4z3pj53zi"))))
-    (build-system cmake-build-system)
-    (arguments '(#:tests? #f))          ; no test target
-    (inputs
-     `(("jack" ,jack-1)
-       ("lv2" ,lv2)
-       ("mesa" ,mesa)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "https://github.com/OpenMusicKontrollers/patchmatrix")
-    (synopsis "Simple JACK patch bay")
-    (description "PatchMatrix is a patch bay for the JACK audio connection
+  ;; There have been no releases for more than a year.
+  (let ((commit "a0b0b1e791f4574d5abd059cfe1819c71e8b18d5")
+        (revision "1"))
+    (package
+      (name "patchmatrix")
+      (version (git-version "0.12.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/OpenMusicKontrollers/patchmatrix.git")
+                      (commit commit)))
+                (file-name (string-append "patchmatrix-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0pph4ra7aci3rbpqvvr564pi16vxrk448bmvp8985cd9lbjlrp3m"))))
+      (build-system meson-build-system)
+      (arguments
+       '(#:tests? #f          ; no test target
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map make-file-writable
+                    (find-files (assoc-ref outputs "out") ".*\\.gz$"))
+               #t)))))
+      (inputs
+       `(("jack" ,jack-1)
+         ("lv2" ,lv2)
+         ("mesa" ,mesa)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/OpenMusicKontrollers/patchmatrix")
+      (synopsis "Simple JACK patch bay")
+      (description "PatchMatrix is a patch bay for the JACK audio connection
 kit.  It provides a patch bay in flow matrix style for audio, MIDI, CV, and
 OSC connections.")
-    (license license:artistic2.0)))
+      (license license:artistic2.0))))
 
 (define-public sorcer
   (package
@@ -3994,3 +4018,70 @@ ISRCs and the MCN (=UPC/EAN) from disc.")
 mb_client, is a development library geared towards developers who wish to add
 MusicBrainz lookup capabilities to their applications.")
     (license license:lgpl2.1+)))
+
+(define-public clyrics
+  (package
+    (name "clyrics")
+    (version "0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/trizen/clyrics/archive/"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1l0cg26afnjv8cgk0jbiavbyvq55q1djyigzmi526rpcjjwq9jwn"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system trivial-build-system)
+    (native-inputs `(("tar" ,tar)
+                     ("gzip" ,gzip)))
+    (inputs
+     `(("bash" ,bash)                             ;for the wrapped program
+       ("perl" ,perl)
+       ("perl-www-mechanize" ,perl-www-mechanize)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ;; Required or else LWP will fail with "GET https://www.google.com/ ==>
+       ;; 500 Can't verify SSL peers without knowing which Certificate
+       ;; Authorities to trust".
+       ("perl-mozilla-ca" ,perl-mozilla-ca)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (ice-9 match)
+                                (srfi srfi-26))
+                   (let* ((source (assoc-ref %build-inputs "source"))
+                          (tar (assoc-ref %build-inputs "tar"))
+                          (gzip (assoc-ref %build-inputs "gzip"))
+                          (output (assoc-ref %outputs "out")))
+                     (setenv "PATH"
+                             (string-append
+                              (assoc-ref %build-inputs "gzip") "/bin" ":"
+                              (assoc-ref %build-inputs "bash") "/bin" ":"
+                              (assoc-ref %build-inputs "perl") "/bin" ":"))
+                     (invoke (string-append tar "/bin/tar") "xvf"
+                             source)
+                     (chdir ,(string-append "clyrics-" version))
+                     (patch-shebang "clyrics")
+                     (substitute* "clyrics"
+                       (("/usr/share") output))
+                     (install-file "clyrics" (string-append output "/bin"))
+                     (wrap-program (string-append output "/bin/clyrics")
+                       `("PERL5LIB" ":" =
+                         ,(delete
+                           ""
+                           (map (match-lambda
+                                  (((?  (cut string-prefix? "perl-" <>) name) . dir)
+                                   (string-append dir "/lib/perl5/site_perl"))
+                                  (_ ""))
+                                %build-inputs))))
+                     (copy-recursively "plugins" (string-append output "/clyrics"))
+                     #t))))
+    (home-page "https://github.com/trizen/clyrics")
+    (synopsis "Extensible lyrics fetcher")
+    (description
+     "Clyrics is an extensible command-line tool to fetch the lyrics of songs.
+It can be used in daemon mode along with the Music-on-Console (MOC) and cmus
+console music players.")
+    (license license:gpl3+)))

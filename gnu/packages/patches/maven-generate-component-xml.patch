@@ -1,0 +1,171 @@
+From da9e282d834f0e2128501a8154128dc95b4c599d Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Sat, 9 Sep 2017 20:34:38 +0200
+Subject: [PATCH] Add a script to generate component.xml files.
+
+plexus-component-metadata is normally used for this task, but it
+depends on maven-core, which depends on maven-model-builder, which needs
+plexus-component-metadata. This script is meant to break this dependency
+cycle.
+---
+ components.sh | 132 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 132 insertions(+)
+ create mode 100755 components.sh
+
+diff --git a/components.sh b/components.sh
+new file mode 100755
+index 0000000..c6748bd
+--- /dev/null
++++ b/components.sh
+@@ -0,0 +1,148 @@
++## This script generates a rough plexus/components.xml file. It is meant to
++## replace plexus-component-metadata as it eventually has a recursive dependency
++## on itself.
++##
++## This script must be run in the source directory (usually src/main/java).
++
++# Finds the complete name from a class name.
++function find_role() {
++    role=$1
++    # Find role
++    case $role in
++      "SettingsWriter" | "SettingsReader")
++        role=org.apache.maven.settings.io.$role
++        ;;
++      "SecDispatcher")
++        role=org.sonatype.plexus.components.sec.dispatcher.$role
++        ;;
++      "SettingsDecrypter")
++        role=org.apache.maven.settings.crypto.$role
++        ;;
++      "SettingsBuilder")
++        role=org.apache.maven.settings.building.$role
++        ;;
++      "SettingsValidator")
++        role=org.apache.maven.settings.validation.$role
++        ;;
++      "LoggerFactory")
++        role=org.eclipse.aether.spi.log.$role
++        ;;
++      "RemoteRepositoryManager" | "VersionResolver" | "VersionRangeResolver" \
++      | "ArtifactResolver" | "RepositoryEventDispatcher" | "MetadataResolver" \
++      | "SyncContextFactory" | "MetadataGeneratorFactory" | "MetadatResolver" \
++      | "ArtifactDescriptorReader")
++        role=org.eclipse.aether.impl.$role
++        ;;
++      "ModelBuilder" | "ModelProcessor")
++        role=org.apache.maven.model.building.$role
++        ;;
++      "ModelValidator")
++        role=org.apache.maven.model.validation.$role
++        ;;
++      "ProfileInjector" | "ProfileSelector")
++        role=org.apache.maven.model.profile.$role
++        ;;
++      "ProfileActivator")
++        role=org.apache.maven.model.profile.activation.$role
++        ;;
++      "SuperPomProvider")
++        role=org.apache.maven.model.superpom.$role
++        ;;
++      "ReportConfigurationExpander" | "PluginConfigurationExpander" \
++      | "ReportingConverter" | "LifecycleBindingsInjector")
++        role=org.apache.maven.model.plugin.$role
++        ;;
++      "ModelLocator")
++        role=org.apache.maven.model.locator.$role
++        ;;
++      "ModelPathTranslator" | "PathTranslator" | "UrlNormalizer" | "ModelUrlNormalizer")
++        role=org.apache.maven.model.path.$role
++        ;;
++      "DependencyManagementInjector" | "PluginManagementInjector")
++        role=org.apache.maven.model.management.$role
++        ;;
++      "ModelWriter" | "ModelReader")
++        role=org.apache.maven.model.io.$role
++        ;;
++      "DependencyManagementImporter")
++        role=org.apache.maven.model.composition.$role
++        ;;
++      "ModelNormalizer")
++        role=org.apache.maven.model.normalization.$role
++        ;;
++      "ModelInterpolator")
++        role=org.apache.maven.model.interpolation.$role
++        ;;
++      "InheritanceAssembler")
++        role=org.apache.maven.model.inheritance.$role
++        ;;
++      *)
++        role=$role
++        ;;
++    esac
++    echo $role
++}
++
++function generate_xml() {
++echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
++echo "<component-set>"
++echo "<components>"
++
++for file in `find -name '*.java'`; do
++  annot=`grep "@Component" $file`
++  if [ "$?" == "0" ]; then
++    # We have a component!
++    role=$(echo $annot | sed 's|.*role = \(.*\).class.*|\1|')
++    role_hint=$(echo $annot | sed 's|.*hint = "\(.*\)" .*|\1|')
++    if [ "$role_hint" = "$annot" ]; then
++      role_hint=default
++    fi
++    implem=$(echo $file | sed -e 's|^\./||' -e 's|\.java||' -e 's|/|.|g')
++    role=$(find_role $role)
++
++    echo "<component>"
++    echo "  <role>$role</role>"
++    echo "  <role-hint>$role_hint</role-hint>"
++    echo "  <implementation>$implem</implementation>"
++    echo "  <description />"
++    echo "  <isolated-realm>false</isolated-realm>"
++    echo "  <requirements>"
++    reqn=1
++    cont=true
++    while [ "$cont" = "true" ]; do
++      requirement=$(grep "@Requirement" $file -A1 | head -n ${reqn} | tail -1)
++      ((reqn++))
++      property=$(grep "@Requirement" $file -A1 | head -n ${reqn} | tail -1)
++      if (echo $requirement | grep "@Requirement" >/dev/null); then
++        ((reqn++))
++        ((reqn++))
++        optional=$(echo $requirement | sed 's|.*optional = \(.*\) .*|\1|')
++        req_role=$(echo $requirement | sed 's|.*role = \(.*\).class .*|\1|')
++        if (echo $req_role | grep "@Requirement" >/dev/null); then
++          req_role=$(echo $property | sed 's|.*private \(.*\) .*|\1|')
++        fi
++        req_role=$(find_role $req_role)
++        req_name=$(echo $property | sed 's|[^ ]* [^ ]* \([^ ;]*\).*|\1|')
++        echo "    <requirement>"
++        echo "      <role>$req_role</role>"
++        echo "      <field-name>$req_name</field-name>"
++        if (echo $optional | grep "@Requirement" >/dev/null); then
++          :
++        else
++          echo "      <optional>$optional</optional>"
++        fi
++        echo "    </requirement>"
++      else
++        cont=false
++      fi
++    done
++    echo "  </requirements>"
++    echo "</component>"
++  fi
++done
++
++echo "</components>"
++echo "</component-set>"
++}
++
++(cd $1; generate_xml) > $2
+-- 
+2.14.1
+

@@ -5826,15 +5826,16 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.6.0a")
+    (version "2.6.0c")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alexdobin/STAR/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alexdobin/STAR.git")
+                    (commit version)))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0yci4ymy4407kjh0lqp021nzccp6r31wgrkixkmix5p130cxvc56"))
+                "04cj6jw8d9q6lk9c78wa4fky6jdlicf1d13plq7182h8vqiz8p59"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -6938,13 +6939,13 @@ Bioconductor, CRAN, and Github.")
 (define-public r-biocviews
   (package
     (name "r-biocviews")
-    (version "1.48.0")
+    (version "1.48.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biocViews" version))
               (sha256
                (base32
-                "1yx2lir67ny0j150wyfqca0wsxp84byri8nscbs9qlndkh2jppq9"))))
+                "01yiafayl1m5704xdd2cn3zjc78rs10dqyz66lr3qkf6d8w66938"))))
     (properties
      `((upstream-name . "biocViews")))
     (build-system r-build-system)
@@ -7082,14 +7083,14 @@ support for default values, positional argument support, etc.")
 (define-public r-optparse
   (package
     (name "r-optparse")
-    (version "1.4.4")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "optparse" version))
        (sha256
         (base32
-         "1ff4wmsszrb3spwfp7ynfs8w11qpy1sdzfxm1wk8dqqvdwris7qb"))))
+         "1d7v5gl45x4amsfmzn5zyyffyqlc7a82h01szlnda22viyxids0h"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-getopt" ,r-getopt)))
@@ -7127,13 +7128,13 @@ abnormal copy number.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.18.2")
+    (version "0.18.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "0qvj2j0zl4djjl7vrwc6xak6h8dxr53iwypfbcvfb3sh7jwhdiz5"))))
+                "02bps2rpjqx2npwxq3x62ncwi9ggr165cwi56h6hld28bw2gddy8"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -7586,13 +7587,13 @@ files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.6.0")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "0n3w57cwy911q812wc8658y0v3xgpmg379sj98kfqdxa80z1mxdf"))))
+                "0sjwszxdi0vkj2i2di5i46gh9chc660yr3gs5nk9qnqp77713zds"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
@@ -8528,43 +8529,51 @@ paired-end data.")
 (define-public r-rcas
   (package
     (name "r-rcas")
-    (version "1.3.4")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/BIMSBbioinfo/RCAS/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (bioconductor-uri "RCAS" version))
               (sha256
                (base32
-                "1qgc7vi6fpzl440yg7jhiycg5q336kd4pxqzx10yx2zcq3bq3msg"))))
+                "0vmn7a0rm2ban0kaxrf5danhss2r4hfhnwh5889fjcgqy300fdd5"))))
     (build-system r-build-system)
     (native-inputs
-     `(("r-knitr" ,r-knitr)
-       ("r-testthat" ,r-testthat)
+     `(("r-testthat" ,r-testthat)
        ;; During vignette building knitr checks that "pandoc-citeproc"
        ;; is in the PATH.
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc-with-pandoc-1)))
     (propagated-inputs
-     `(("r-data-table" ,r-data-table)
+     `(("r-biocgenerics" ,r-biocgenerics)
        ("r-biomart" ,r-biomart)
-       ("r-org-hs-eg-db" ,r-org-hs-eg-db)
-       ("r-org-ce-eg-db" ,r-org-ce-eg-db)
-       ("r-org-dm-eg-db" ,r-org-dm-eg-db)
-       ("r-org-mm-eg-db" ,r-org-mm-eg-db)
+       ("r-biostrings" ,r-biostrings)
        ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
        ("r-bsgenome-mmusculus-ucsc-mm9" ,r-bsgenome-mmusculus-ucsc-mm9)
        ("r-bsgenome-celegans-ucsc-ce10" ,r-bsgenome-celegans-ucsc-ce10)
        ("r-bsgenome-dmelanogaster-ucsc-dm3" ,r-bsgenome-dmelanogaster-ucsc-dm3)
-       ("r-topgo" ,r-topgo)
+       ("r-cowplot" ,r-cowplot)
+       ("r-data-table" ,r-data-table)
+       ("r-dbi" ,r-dbi)
        ("r-dt" ,r-dt)
-       ("r-pbapply" ,r-pbapply)
-       ("r-plotly" ,r-plotly)
-       ("r-plotrix" ,r-plotrix)
-       ("r-motifrg" ,r-motifrg)
        ("r-genomation" ,r-genomation)
        ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggseqlogo" ,r-ggseqlogo)
+       ("r-knitr" ,r-knitr)
+       ("r-motifrg" ,r-motifrg)
+       ("r-org-hs-eg-db" ,r-org-hs-eg-db)
+       ("r-org-ce-eg-db" ,r-org-ce-eg-db)
+       ("r-org-dm-eg-db" ,r-org-dm-eg-db)
+       ("r-org-mm-eg-db" ,r-org-mm-eg-db)
+       ("r-pbapply" ,r-pbapply)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-plotly" ,r-plotly)
+       ("r-plotrix" ,r-plotrix)
+       ("r-proxy" ,r-proxy)
+       ("r-rsqlite" ,r-rsqlite)
        ("r-rtracklayer" ,r-rtracklayer)
-       ("r-rmarkdown" ,r-rmarkdown)))
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-topgo" ,r-topgo)))
     (synopsis "RNA-centric annotation system")
     (description
      "RCAS aims to be a standalone RNA-centric annotation system that provides
@@ -8576,7 +8585,7 @@ library implementing most of the pipeline's features.")
 (define-public rcas-web
   (package
     (name "rcas-web")
-    (version "0.0.4")
+    (version "0.0.5")
     (source
      (origin
        (method url-fetch)
@@ -8585,7 +8594,7 @@ library implementing most of the pipeline's features.")
                            "/rcas-web-" version ".tar.gz"))
        (sha256
         (base32
-         "1p16frfys41a8yaa4gkm457nzkqhqs2pc3lkac0ds457w9w5j1gm"))))
+         "0igz7jpcf7cm9800zcag6p3gd1i649figrhbdba6cjkm8f4gfspr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -9696,13 +9705,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "2.3.1")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0hi59rgdrr2iqfvx5bq7yq02hbjxkjl1fzidqj14z0ypq0nzbjys"))
+                "1sjpy5rrpvlpm6hs7qy7qpglgbp7zrgfybcsalpmjb51rhxhgcg1"))
               ;; Delete pre-built jar.
               (snippet
                '(begin (delete-file "inst/java/ModularityOptimizer.jar")
@@ -9746,6 +9755,7 @@ Main-Class: ModularityOptimizer\n")))
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggridges" ,r-ggridges)
        ("r-gplots" ,r-gplots)
+       ("r-hdf5r" ,r-hdf5r)
        ("r-hmisc" ,r-hmisc)
        ("r-ica" ,r-ica)
        ("r-igraph" ,r-igraph)
@@ -10060,14 +10070,14 @@ provide added flexibility for data combination and manipulation.")
 (define-public r-complexheatmap
   (package
     (name "r-complexheatmap")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ComplexHeatmap" version))
        (sha256
         (base32
-         "0z57mrginzd40niy51dvnyqgbrij05ji0dbwqs3x2as80sq28i3q"))))
+         "0qjwz1hzpjnc90jiinjkikfnr0shi72q3zfdjjz7pxydy0mglq8n"))))
     (properties
      `((upstream-name . "ComplexHeatmap")))
     (build-system r-build-system)
@@ -11439,7 +11449,7 @@ applications for tackling some common problems in a user-friendly way.")
        ("python2-numpy" ,python2-numpy)
        ("python2-matplotlib" ,python2-matplotlib)
        ("python2-pysam" ,python2-pysam)))
-    (home-page "http://3dgenomes.github.io/TADbit/")
+    (home-page "https://3dgenomes.github.io/TADbit/")
     (synopsis "Analyze, model, and explore 3C-based data")
     (description
      "TADbit is a complete Python library to deal with all steps to analyze,
@@ -12715,7 +12725,7 @@ contains
        #:phases
        (modify-phases %standard-phases
          ;; FIXME: fails with "java.io.FileNotFoundException:
-         ;; /gnu/store/q76y0ximcziplgfpbn26kbw4h3s14f33-dropseq-tools-1.13/share/java/lib/biojava-alignment.jar"
+         ;; /gnu/store/…-dropseq-tools-1.13/share/java/lib/biojava-alignment.jar"
          (delete 'generate-jar-indices)
          ;; All dependencies must be linked to "lib", because that's where
          ;; they will be searched for when the Class-Path property of the
@@ -12896,7 +12906,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.15")
+    (version "0.0.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12904,20 +12914,10 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "11v9v3vyda0sv4cl45nki7mm4v4bjfcdq7a70kcvi9h465nq66wg"))))
+                "1c0x5lswvc8v9fw4iynl5rcfs7h7clzp4hqdnl65ia7rk35n4zg9"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ; parts of the tests rely on access to the network
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           ;; Make sure the executable finds all R modules.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/pigx-chipseq")
-                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
-                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
-             #t)))))
+    ;; parts of the tests rely on access to the network
+    (arguments '(#:tests? #f))
     (inputs
      `(("grep" ,grep)
        ("coreutils" ,coreutils)
@@ -12976,7 +12976,7 @@ in an easily configurable manner.")
 (define-public pigx-bsseq
   (package
     (name "pigx-bsseq")
-    (version "0.0.8")
+    (version "0.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
@@ -12984,7 +12984,7 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0irlnlhhw9fd4ha7hksrxn3y7j76mz5qq1wjswbs9p364laqg69y"))))
+                "0j1dfjk8m1p1h6d5yw63scjlbx56z8gixmbw626w1vcyblg0frmz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -13043,7 +13043,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.4")
+    (version "0.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -13051,7 +13051,7 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1pvjm6f3mascprs65vflggwwg5v925knvgal7k7a6nnlmw5qndrf"))))
+                "0a73rilv0vnw42d5rsdq205h4f0x8j3jqv998janh4s324c6w2kj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -13079,6 +13079,7 @@ methylation and segmentation.")
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)
        ("python-pandas" ,python-pandas)
+       ("python-magic" ,python-magic)
        ("python-numpy" ,python-numpy)
        ("python-loompy" ,python-loompy)
        ("ghc-pandoc" ,ghc-pandoc-1)
@@ -13236,3 +13237,62 @@ rate speciation and extinction.")
 junctions in RNA-seq data.  It is annotation-agnostic and offset-aware.  This
 version does count multisplits.")
       (license license:gpl3+))))
+
+(define-public minimap2
+  (package
+    (name "minimap2")
+    (version "2.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lh3/minimap2/"
+                           "releases/download/v" version "/"
+                           "minimap2-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "080w9066irkbhbyr4nmf19pzkdd2s4v31hpzlajgq2y0drr6zcsj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are none
+       #:make-flags
+       (list "CC=gcc"
+             (let ((system ,(or (%current-target-system)
+                                (%current-system))))
+               (cond
+                ((string-prefix? "x86_64" system)
+                 "all")
+                ((or (string-prefix? "armhf" system)
+                     (string-prefix? "aarch64" system))
+                 "arm_neon=1")
+                (_ "sse2only=1"))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "minimap2" bin)
+               (mkdir-p man)
+               (install-file "minimap2.1" man))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://lh3.github.io/minimap2/")
+    (synopsis "Pairwise aligner for genomic and spliced nucleotide sequences")
+    (description "Minimap2 is a versatile sequence alignment program that
+aligns DNA or mRNA sequences against a large reference database.  Typical use
+cases include:
+
+@enumerate
+@item mapping PacBio or Oxford Nanopore genomic reads to the human genome;
+@item finding overlaps between long reads with error rate up to ~15%;
+@item splice-aware alignment of PacBio Iso-Seq or Nanopore cDNA or Direct RNA
+  reads against a reference genome;
+@item aligning Illumina single- or paired-end reads;
+@item assembly-to-assembly alignment;
+@item full-genome alignment between two closely related species with
+  divergence below ~15%.
+@end enumerate\n")
+    (license license:expat)))

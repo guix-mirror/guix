@@ -2629,7 +2629,16 @@ documentation tools.")
                     "code.google.com/jarjar/jarjar-src-" version ".zip"))
               (sha256
                (base32
-                "1v8irhni9cndcw1l1wxqgry013s2kpj0qqn57lj2ji28xjq8ndjl"))))
+                "1v8irhni9cndcw1l1wxqgry013s2kpj0qqn57lj2ji28xjq8ndjl"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled thirds-party jar archives.
+                  ;; TODO: unbundle maven-plugin-api.
+                  (delete-file "lib/asm-4.0.jar")
+                  (delete-file "lib/asm-commons-4.0.jar")
+                  (delete-file "lib/junit-4.8.1.jar")
+                  #t))))
     (build-system ant-build-system)
     (arguments
      `(;; Tests require junit, which ultimately depends on this package.
@@ -2637,6 +2646,26 @@ documentation tools.")
        #:build-target "jar"
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'do-not-use-bundled-asm
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("<path id=\"path.build\">")
+                (string-append "<path id=\"path.build\"><fileset dir=\""
+                               (assoc-ref inputs "java-asm-bootstrap")
+                               "/share/java\" includes=\"**/*.jar\"/>"))
+               (("<zipfileset src=\"lib/asm-4.0.jar\"/>") "")
+               (("lib/asm-commons-4.0.jar")
+                (string-append (assoc-ref inputs "java-asm-bootstrap")
+                               "/share/java/asm-6.0.jar"))
+               (("<include name=\"org/objectweb/asm/commons/Remap\\*\\.class\"/>")
+                (string-append "<include name=\"org/objectweb/asm/"
+                               "commons/Remap*.class\"/>"
+                               "<include name=\"org/objectweb/asm/*.class\"/>"
+                               "<include name=\"org/objectweb/asm/"
+                               "signature/*.class\"/>"
+                               "<include name=\"org/objectweb/asm/"
+                               "commons/SignatureRemapper.class\"/>")))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((target (string-append (assoc-ref outputs "out")
@@ -2644,6 +2673,8 @@ documentation tools.")
                (install-file (string-append "dist/jarjar-" ,version ".jar")
                              target))
              #t)))))
+    (inputs
+     `(("java-asm-bootstrap" ,java-asm-bootstrap)))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://code.google.com/archive/p/jarjar/")
@@ -3262,6 +3293,39 @@ Compiler component.")))
 This component decrypts a string passed to it.")
     (license license:asl2.0)))
 
+(define-public java-plexus-cli
+  (package
+    (name "java-plexus-cli")
+    (version "1.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sonatype/plexus-cli")
+                     (commit "a776afa6bca84e5107bedb69440329cdb24ed645")))
+              (file-name (string-append name "-" version))
+              (sha256
+               (base32
+                "0xjrlay605rypv3zd7y24vlwf0039bil3n2cqw54r1ddpysq46vx"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "plexus-cli.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-dir "src/test"))
+    (inputs
+     `(("java-commons-cli" ,java-commons-cli)
+       ("java-plexus-container-default" ,java-plexus-container-default)
+       ("java-plexus-classworlds" ,java-plexus-classworlds)))
+    (native-inputs
+     `(("java-plexus-utils" ,java-plexus-utils)
+       ("java-junit" ,java-junit)
+       ("java-guava" ,java-guava)))
+    (home-page "https://codehaus-plexus.github.io/plexus-cli")
+    (synopsis "CLI building library for plexus")
+    (description "This package is a library to help creating CLI around
+Plexus components.")
+    (license license:asl2.0)))
+
 (define-public java-sisu-build-api
   (package
     (name "java-sisu-build-api")
@@ -3550,7 +3614,7 @@ complex transformations and code analysis tools.")
      `(("java-aqute-bndlib" ,java-aqute-bndlib-bootstrap)
        ("java-aqute-libg" ,java-aqute-libg-bootstrap)
        ,@(delete `("java-aqute-bndlib" ,java-aqute-bndlib)
-                 (delete `("java-aqute-libg", java-aqute-libg)
+                 (delete `("java-aqute-libg" ,java-aqute-libg)
                          (package-inputs java-asm)))))))
 
 (define-public java-cglib
@@ -3999,7 +4063,9 @@ are many features, including:
                                   "commons-collections-" version "-src.tar.gz"))
               (sha256
                (base32
-                "055r51a5lfc3z7rkxnxmnn1npvkvda7636hjpm4qk7cnfzz98387"))))
+                "055r51a5lfc3z7rkxnxmnn1npvkvda7636hjpm4qk7cnfzz98387"))
+              (patches
+               (search-patches "java-commons-collections-fix-java8.patch"))))
     (arguments
       (substitute-keyword-arguments (package-arguments java-commons-collections4)
         ((#:phases phases)
@@ -6967,22 +7033,53 @@ it manages project dependencies, gives diffs jars, and much more.")
     (name "java-aqute-libg")
     (arguments
      `(#:jar-name "java-aqute-libg.jar"
-       #:source-dir "aQute.libg/src"
-       #:tests? #f)); FIXME: tests are in "aQute.libg/test", not in a java directory
+       ;; The build fails when source/target more recent than 1.7. This
+       ;; is a known issue. See: https://github.com/bndtools/bnd/issues/1327
+       ;;
+       ;; It is closed as won't fix. There is no way to change the source
+       ;; so that it works on 1.8, and still works on 1.6, the upstream
+       ;; target. It work fine on 1.7, so we use 1.7.
+       #:make-flags (list "-Dant.build.javac.source=1.7"
+                          "-Dant.build.javac.target=1.7")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           ;; Change to aQute.libg directory, so that the relative
+           ;; paths in the tests aren't broken.
+           (lambda _
+             (chdir "aQute.libg")
+             #t))
+         (add-before 'check 'create-test-directory
+           ;; Copy the test directory to test/java, since that's where
+           ;; ant-build-system's default project in build.xml expects to find
+           ;; the test classes. Leave a copy in the original place to not
+           ;; break paths in tests.
+           (lambda _
+             (mkdir "src/test")
+             (copy-recursively "test" "src/test/java")
+             #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
        ("osgi-annot" ,java-osgi-annotation)
        ("java-osgi-cmpn" ,java-osgi-cmpn)
-       ("osgi" ,java-osgi-core)))))
+       ("osgi" ,java-osgi-core)))
+    (native-inputs
+     `(("hamcrest" ,java-hamcrest-core)
+       ("java-junit" ,java-junit)))))
 
 (define java-aqute-libg-bootstrap
   (package
     (inherit java-aqute-libg)
     (name "java-aqute-libg-bootstrap")
+    (arguments
+     ;; Disable tests, at this stage of bootstrap we have no test frameworks.
+     (substitute-keyword-arguments (package-arguments java-aqute-libg)
+       ((#:tests? _ #f) #f)))
     (inputs
      `(("slf4j-bootstrap" ,java-slf4j-api-bootstrap)
        ,@(delete `("slf4j" ,java-slf4j-api)
-                 (package-inputs java-aqute-libg))))))
+                 (package-inputs java-aqute-libg))))
+    (native-inputs '())))
 
 (define-public java-aqute-bndlib
   (package
@@ -10153,3 +10250,32 @@ This module can be assimilated to a significantly improved version of log4j.
 Moreover, @code{logback-classic} natively implements the slf4j API so that you
 can readily switch back and forth between logback and other logging frameworks
 such as log4j or @code{java.util.logging} (JUL).")))
+
+(define-public java-qdox
+  (package
+    (name "java-qdox")
+    ; Newer version exists, but this version is required by java-plexus-component-metadata
+    (version "2.0-M2")
+    (source (origin
+              (method url-fetch)
+              ;; 2.0-M4, -M5 at https://github.com/paul-hammant/qdox
+              ;; Older releases at https://github.com/codehaus/qdox/
+              ;; Note: The release at maven is pre-generated. The release at
+              ;; github requires jflex.
+              (uri (string-append "http://central.maven.org/maven2/"
+                                  "com/thoughtworks/qdox/qdox/" version
+                                  "/qdox-" version "-sources.jar"))
+              (sha256
+               (base32
+                "10xxrcaicq6axszcr2jpygisa4ch4sinyx5q7kqqxv4lknrmxp5x"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "qdox.jar"
+       #:tests? #f)); no tests
+    (home-page "http://qdox.codehaus.org/")
+    (synopsis "Parse definitions from Java source files")
+    (description "QDox is a high speed, small footprint parser for extracting
+class/interface/method definitions from source files complete with JavaDoc
+@code{@@tags}.  It is designed to be used by active code generators or
+documentation tools.")
+    (license license:asl2.0)))

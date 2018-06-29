@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,8 @@
   #:use-module (gnu services mcron)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services networking)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages package-management)
@@ -36,11 +39,13 @@
   #:use-module (gnu packages tmux)
   #:use-module (guix gexp)
   #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:export (run-basic-test
             %test-basic-os
             %test-halt
+            %test-cleanup
             %test-mcron
             %test-nss-mdns))
 
@@ -472,6 +477,72 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
 
 
 ;;;
+;;; Cleanup of /tmp, /var/run, etc.
+;;;
+
+(define %cleanup-os
+  (simple-operating-system
+   (simple-service 'dirty-things
+                   boot-service-type
+                   (let ((script (plain-file
+                                  "create-utf8-file.sh"
+                                  (string-append
+                                   "echo $0: dirtying /tmp...\n"
+                                   "set -e; set -x\n"
+                                   "touch /witness\n"
+                                   "exec touch /tmp/λαμβδα"))))
+                     (with-imported-modules '((guix build utils))
+                       #~(begin
+                           (setenv "PATH"
+                                   #$(file-append coreutils "/bin"))
+                           (invoke #$(file-append bash "/bin/sh")
+                                   #$script)))))))
+
+(define (run-cleanup-test name)
+  (define os
+    (marionette-operating-system %cleanup-os
+                                 #:imported-modules '((gnu services herd)
+                                                      (guix combinators))))
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (srfi srfi-64)
+                       (ice-9 match))
+
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "cleanup")
+
+          (test-assert "dirty service worked"
+            (marionette-eval '(file-exists? "/witness") marionette))
+
+          (test-equal "/tmp cleaned up"
+            '("." "..")
+            (marionette-eval '(begin
+                                (use-modules (ice-9 ftw))
+                                (scandir "/tmp"))
+                             marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "cleanup" test))
+
+(define %test-cleanup
+  ;; See <https://bugs.gnu.org/26353>.
+  (system-test
+   (name "cleanup")
+   (description "Make sure the 'cleanup' service can remove files with
+non-ASCII names from /tmp.")
+   (value (run-cleanup-test name))))
+
+
+;;;
 ;;; Mcron.
 ;;;
 
@@ -517,13 +588,11 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
 
           (test-begin "mcron")
 
-          (test-eq "service running"
-            'running!
+          (test-assert "service running"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
-                (start-service 'mcron)
-                'running!)
+                (start-service 'mcron))
              marionette))
 
           ;; Make sure root's mcron job runs, has its cwd set to "/root", and
@@ -619,32 +688,43 @@ in a loop.  See <http://bugs.gnu.org/26931>.")
 
           (test-begin "avahi")
 
-          (test-assert "wait for services"
+          (test-assert "nscd PID file is created"
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
+                (start-service 'nscd))
+             marionette))
 
-                (start-service 'nscd)
+          (test-assert "nscd is listening on its socket"
+            (marionette-eval
+             ;; XXX: Work around a race condition in nscd: nscd creates its
+             ;; PID file before it is listening on its socket.
+             '(let ((sock (socket PF_UNIX SOCK_STREAM 0)))
+                (let try ()
+                  (catch 'system-error
+                    (lambda ()
+                      (connect sock AF_UNIX "/var/run/nscd/socket")
+                      (close-port sock)
+                      (format #t "nscd is ready~%")
+                      #t)
+                    (lambda args
+                      (format #t "waiting for nscd...~%")
+                      (usleep 500000)
+                      (try)))))
+             marionette))
 
-                ;; XXX: Work around a race condition in nscd: nscd creates its
-                ;; PID file before it is listening on its socket.
-                (let ((sock (socket PF_UNIX SOCK_STREAM 0)))
-                  (let try ()
-                    (catch 'system-error
-                      (lambda ()
-                        (connect sock AF_UNIX "/var/run/nscd/socket")
-                        (close-port sock)
-                        (format #t "nscd is ready~%"))
-                      (lambda args
-                        (format #t "waiting for nscd...~%")
-                        (usleep 500000)
-                        (try)))))
+          (test-assert "avahi is running"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'avahi-daemon))
+             marionette))
 
-                ;; Wait for the other useful things.
-                (start-service 'avahi-daemon)
-                (start-service 'networking)
-
-                #t)
+          (test-assert "network is up"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'networking))
              marionette))
 
           (test-equal "avahi-resolve-host-name"

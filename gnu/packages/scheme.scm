@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -313,15 +314,14 @@ Scheme and C programs and between Scheme and Java programs.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         (string-append "--blflags="
-                                        ;; user flags completely override useful
-                                        ;; default flags, so repeat them here.
-                                        "-copt \\$(CPICFLAGS) "
-                                        "-L \\$(BUILDLIBDIR) "
-                                        "-ldopt -Wl,-rpath," out "/lib")))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--blflags="
+                                      ;; user flags completely override useful
+                                      ;; default flags, so repeat them here.
+                                      "-copt \\$(CPICFLAGS) "
+                                      "-L \\$(BUILDLIBDIR) "
+                                      "-ldopt -Wl,-rpath," out "/lib"))))))))
     (inputs `(("avahi" ,avahi)
               ("bigloo" ,bigloo)
               ("libgc" ,libgc)
@@ -356,7 +356,7 @@ mashups, office (web agendas, mail clients, ...), etc.")
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
-       
+
        ;; No `configure' script; run "make check" after "make install" as
        ;; prescribed by README.
        #:phases
@@ -660,7 +660,8 @@ threads.")
                                  "| mit-scheme")))
                  (with-directory-excursion "scmutils/scmutils"
                    (and (zero? (system "mit-scheme < compile.scm"))
-                        (zero? (system make-img)))))))
+                        (zero? (system make-img))))
+                 #t)))
            (add-before 'install 'fix-directory-names
              ;; Correct directory names in the startup script.
              (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -684,8 +685,8 @@ threads.")
              ;; code.
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (with-directory-excursion "scmutils/scmutils"
-                 (zero? (apply system* "etags"
-                               (find-files "." "\\.scm"))))))
+                 (apply invoke "etags" (find-files "." "\\.scm")))
+               #t))
            (replace 'install
              ;; Copy files to the store.
              (lambda* (#:key outputs #:allow-other-keys)
@@ -881,12 +882,13 @@ regular-expression notation.")
          (add-after 'install 'remove-bin-share
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (delete-file-recursively
-                       (string-append (assoc-ref outputs "out") "/bin"))))
+                       (string-append (assoc-ref outputs "out") "/bin"))
+                      #t))
          (replace 'configure
                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (zero? (system* "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out")))))))))
+                    (invoke "./configure"
+                            (string-append "--prefix="
+                                           (assoc-ref outputs "out"))))))))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))
     (home-page "http://people.csail.mit.edu/jaffer/SLIB.html")
@@ -915,39 +917,34 @@ utility functions for all standard Scheme implementations.")
        (modify-phases %standard-phases
          (replace 'configure
                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (zero? (system* "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out"))))))
+                    (invoke "./configure"
+                            (string-append "--prefix="
+                                           (assoc-ref outputs "out")))))
          (add-before 'build 'pre-build
                      (lambda* (#:key inputs #:allow-other-keys)
                        (substitute* "Makefile"
-                         (("ginstall-info") "install-info"))))
+                         (("ginstall-info") "install-info"))
+                       #t))
          (replace 'build
                   (lambda* (#:key inputs outputs #:allow-other-keys)
                     (setenv "SCHEME_LIBRARY_PATH"
                             (string-append (assoc-ref inputs "slib")
                                            "/lib/slib/"))
-                    (and
-                     (zero? (system* "make" "scmlit" "CC=gcc"))
-                     (zero? (system* "make" "all")))))
+                    (invoke "make" "scmlit" "CC=gcc")
+                    (invoke "make" "all")))
          (add-after 'install 'post-install
                     (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((req
-                             (string-append (assoc-ref outputs "out")
-                                            "/lib/scm/require.scm")))
-                        (and
-                         (delete-file req)
-                         (format (open req (logior O_WRONLY O_CREAT))
-                                 "(define (library-vicinity) ~s)\n"
-                                 (string-append (assoc-ref inputs "slib")
-                                                "/lib/slib/"))
+                      (let* ((out         (assoc-ref outputs "out"))
+                             (req (string-append out "/lib/scm/require.scm")))
+                        (delete-file req)
+                        (format (open req (logior O_WRONLY O_CREAT))
+                                "(define (library-vicinity) ~s)\n"
+                                (string-append (assoc-ref inputs "slib")
+                                               "/lib/slib/"))
 
-                         ;; We must generate the slibcat file
-                         (zero? (system*
-                                 (string-append
-                                  (assoc-ref outputs "out")
-                                  "/bin/scm")
-                                 "-br" "new-catalog")))))))))
+                        ;; We must generate the slibcat file.
+                        (invoke (string-append out "/bin/scm")
+                                "-br" "new-catalog")))))))
     (inputs `(("slib" ,slib)))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))
@@ -1025,3 +1022,80 @@ the same program, without any interference between them.  Foreign functions in C
 can be added and values can be defined in the Scheme environment.  Being quite a
 small program, it is easy to comprehend, get to grips with, and use.")
     (license bsd-3)))                   ; there are no licence headers
+
+(define-public stalin
+  (let ((commit "ed1c9e339c352b7a6fee40bb2a47607c3466f0be"))
+    ;; FIXME: The Stalin "source" contains C code generated by itself:
+    ;; 'stalin-AMD64.c', etc.
+    (package
+      (name "stalin")
+      (version "0.11")
+      (source (origin
+                ;; Use Pearlmutter's upstream branch with AMD64 patches
+                ;; applied. Saves us from including those 20M! patches
+                ;; in Guix. For more info, see:
+                ;; <ftp.ecn.purdue.edu/qobi/stalin-0.11-amd64-patches.tgz>
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/barak/stalin.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "15a5gxj9v7jqlgkg0543gdflw0rbrir7fj5zgifnb33m074wiyhn"))
+                (modules '((guix build utils)))
+                (snippet
+                 ;; remove gc libs from build, we have them as input
+                 '(begin
+                    (delete-file "gc6.8.tar.gz")
+                    (delete-file-recursively "benchmarks")
+                    (substitute* "build"
+                      ((".*gc6.8.*") "")
+                      (("  cd \\.\\.") "")
+                      ((".*B include/libgc.a") "")
+                      ((".*make.*") ""))
+                    #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list "ARCH_OPTS=-freg-struct-return")
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (include-out (string-append out "/include")))
+                 (invoke "./build")
+                 (for-each (lambda (fname)
+                             (install-file fname include-out))
+                           (find-files "include"))
+                 (substitute* "makefile"
+                   (("\\./include") include-out))
+                 (substitute* "post-make"
+                   (("`pwd`") out))
+                 #t)))
+           (delete 'check)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "stalin.1"
+                               (string-append out "/share/man/man1"))
+                 (install-file "stalin"
+                               (string-append out "/bin"))
+                 #t))))))
+      (inputs
+       `(("libx11" ,libx11)))
+      (propagated-inputs
+       `(("libgc" ,libgc)))
+      (supported-systems '("x86_64-linux"))
+      (home-page "https://engineering.purdue.edu/~qobi/papers/fdlcc.pdf")
+      (synopsis "Brutally efficient Scheme compiler")
+      (description
+       "Stalin is an aggressively optimizing whole-program compiler
+for Scheme that does polyvariant interprocedural flow analysis,
+flow-directed interprocedural escape analysis, flow-directed
+lightweight CPS conversion, flow-directed lightweight closure
+conversion, flow-directed interprocedural lifetime analysis, automatic
+in-lining, unboxing, and flow-directed program-specific and
+program-point-specific low-level representation selection and code
+generation.")
+      (license gpl2+))))

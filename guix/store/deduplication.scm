@@ -85,7 +85,7 @@ LINK-PREFIX."
       (lambda ()
         (link target tempname)
         tempname)
-      (lambda (args)
+      (lambda args
         (if (= (system-error-errno args) EEXIST)
             (try (tempname-in link-prefix))
             (throw 'system-error args))))))
@@ -120,12 +120,15 @@ under STORE."
          (link-file       (string-append links-directory "/"
                                          (bytevector->base16-string hash))))
     (mkdir-p links-directory)
-    (if (file-is-directory? path)
+    (if (eq? 'directory (stat:type (lstat path)))
         ;; Can't hardlink directories, so hardlink their atoms.
         (for-each (lambda (file)
-                    (unless (member file '("." ".."))
-                      (deduplicate file (nar-sha256 file)
-                                   #:store store)))
+                    (unless (or (member file '("." ".."))
+                                (and (string=? path store)
+                                     (string=? file ".links")))
+                      (let ((file (string-append path "/" file)))
+                        (deduplicate file (nar-sha256 file)
+                                     #:store store))))
                   (scandir path))
         (if (file-exists? link-file)
             (false-if-system-error (EMLINK)

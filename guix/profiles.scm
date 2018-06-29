@@ -25,6 +25,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix profiles)
+  #:use-module ((guix config) #:select (%state-directory))
   #:use-module ((guix utils) #:hide (package-name->name+version))
   #:use-module ((guix build utils)
                 #:select (package-name->name+version))
@@ -77,6 +78,7 @@
             manifest-entry-dependencies
             manifest-entry-search-paths
             manifest-entry-parent
+            manifest-entry-properties
 
             manifest-pattern
             manifest-pattern?
@@ -118,7 +120,13 @@
             generation-file-name
             switch-to-generation
             roll-back
-            delete-generation))
+            delete-generation
+
+            %user-profile-directory
+            %profile-directory
+            %current-profile
+            canonicalize-profile
+            user-friendly-profile))
 
 ;;; Commentary:
 ;;;
@@ -174,7 +182,9 @@
   (search-paths manifest-entry-search-paths       ; search-path-specification*
                 (default '()))
   (parent       manifest-entry-parent        ; promise (#f | <manifest-entry>)
-                (default (delay #f))))
+                (default (delay #f)))
+  (properties   manifest-entry-properties         ; list of symbol/value pairs
+                (default '())))
 
 (define-record-type* <manifest-pattern> manifest-pattern
   make-manifest-pattern
@@ -313,18 +323,20 @@ denoting a specific output of a package."
   (define (entry->gexp entry)
     (match entry
       (($ <manifest-entry> name version output (? string? path)
-                           (deps ...) (search-paths ...))
+                           (deps ...) (search-paths ...) _ (properties ...))
        #~(#$name #$version #$output #$path
                  (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
-                                      search-paths))))
+                                      search-paths))
+                 (properties . #$properties)))
       (($ <manifest-entry> name version output package
-                           (deps ...) (search-paths ...))
+                           (deps ...) (search-paths ...) _ (properties ...))
        #~(#$name #$version #$output
                  (ungexp package (or output "out"))
                  (propagated-inputs #$(map entry->gexp deps))
                  (search-paths #$(map search-path-specification->sexp
-                                      search-paths))))))
+                                      search-paths))
+                 (properties . #$properties)))))
 
   (match manifest
     (($ <manifest> (entries ...))
@@ -387,7 +399,9 @@ procedure is here for backward-compatibility and will eventually vanish."
                           (dependencies deps*)
                           (search-paths (map sexp->search-path-specification
                                              search-paths))
-                          (parent parent))))
+                          (parent parent)
+                          (properties (or (assoc-ref extra-stuff 'properties)
+                                          '())))))
          entry))))
 
   (match sexp
@@ -1514,5 +1528,45 @@ because the NUMBER is zero.)"
            (delete-and-return))
           (else
            (delete-and-return)))))
+
+(define %user-profile-directory
+  (and=> (getenv "HOME")
+         (cut string-append <> "/.guix-profile")))
+
+(define %profile-directory
+  (string-append %state-directory "/profiles/"
+                 (or (and=> (or (getenv "USER")
+                                (getenv "LOGNAME"))
+                            (cut string-append "per-user/" <>))
+                     "default")))
+
+(define %current-profile
+  ;; Call it `guix-profile', not `profile', to allow Guix profiles to
+  ;; coexist with Nix profiles.
+  (string-append %profile-directory "/guix-profile"))
+
+(define (canonicalize-profile profile)
+  "If PROFILE is %USER-PROFILE-DIRECTORY, return %CURRENT-PROFILE.  Otherwise
+return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
+'-p' was omitted."                           ; see <http://bugs.gnu.org/17939>
+
+  ;; Trim trailing slashes so that the basename comparison below works as
+  ;; intended.
+  (let ((profile (string-trim-right profile #\/)))
+    (if (and %user-profile-directory
+             (string=? (canonicalize-path (dirname profile))
+                       (dirname %user-profile-directory))
+             (string=? (basename profile) (basename %user-profile-directory)))
+        %current-profile
+        profile)))
+
+(define (user-friendly-profile profile)
+  "Return either ~/.guix-profile if that's what PROFILE refers to, directly or
+indirectly, or PROFILE."
+  (if (and %user-profile-directory
+           (false-if-exception
+            (string=? (readlink %user-profile-directory) profile)))
+      %user-profile-directory
+      profile))
 
 ;;; profiles.scm ends here

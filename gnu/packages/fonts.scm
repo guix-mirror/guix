@@ -431,15 +431,19 @@ text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
     (license license:silofl1.1)))
 
 (define-public font-cns11643
+  ;; Since upstream doesn't provide any version numbers, the date of the last
+  ;; edit is used, taken from https://data.gov.tw/dataset/5961
+  ;; XXX: The source is also updated in-place, so it may be desirable to mirror
+  ;; it elsewhere to avoid suddenly losing the current source file.
   (package
     (name "font-cns11643")
-    (version "98.1.20170524")
+    (version "98.1.20180605")
     (source (origin
               (method url-fetch)
               (uri "http://www.cns11643.gov.tw/AIDB/Open_Data.zip")
               (sha256
                (base32
-                "1iad6rklxkx03ji1fav9faq7cmqkci3i6pcyg2ilvh984j5qzhq3"))))
+                "000a9whrjr1cd4pjc23pbl60zwkq3wcb5g61p9qi7fn3hwkp0kyw"))))
     (build-system font-build-system)
     (home-page "http://www.cns11643.gov.tw/AIDB/welcome.do")
     (synopsis "CJK TrueType fonts, TW-Kai and TW-Sung")
@@ -617,7 +621,7 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "10.0.07")
+    (version "11.0.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -625,7 +629,7 @@ languages, plus Greek and Cyrillic.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1js8dn4v4pv8jqprsxa1fv4fs3hqhm9x4dj19fg9qgc8fx7k0v0k"))))
+                "1nkapra0ic4fp3lmnvfc6jly62yskhcdkwrnq29hvh3xs51ncc52"))))
     (build-system gnu-build-system)
     (outputs '("out" ; TrueType version
                "pcf" ; PCF (bitmap) version
@@ -650,12 +654,12 @@ languages, plus Greek and Cyrillic.")
                    (psf (string-append (assoc-ref outputs "psf")
                                        "/share/consolefonts"))
                    (bin (assoc-ref outputs "bin")))
-              (system* "make"
-                       (string-append "PREFIX=" bin)
-                       (string-append "TTFDEST=" ttf)
-                       (string-append "PCFDEST=" pcf)
-                       (string-append "CONSOLEDEST=" psf)
-                       "install")
+              (invoke "make"
+                      (string-append "PREFIX=" bin)
+                      (string-append "TTFDEST=" ttf)
+                      (string-append "PCFDEST=" pcf)
+                      (string-append "CONSOLEDEST=" psf)
+                      "install")
               ;; Move Texinfo file to the right place.
               (mkdir (string-append bin "/share/info"))
               (rename-file (string-append bin "/share/unifont/unifont.info.gz")

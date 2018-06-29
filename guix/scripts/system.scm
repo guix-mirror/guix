@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix config)
   #:use-module (guix ui)
   #:use-module (guix store)
+  #:autoload   (guix store database) (register-path)
   #:use-module (guix grafts)
   #:use-module (guix gexp)
   #:use-module (guix derivations)
@@ -197,7 +199,7 @@ TARGET, and register them."
                   bootcfg bootcfg-file)
   "Copy the closure of BOOTCFG, which includes the output of OS-DRV, to
 directory TARGET.  TARGET must be an absolute directory name since that's what
-'guix-register' expects.
+'register-path' expects.
 
 When INSTALL-BOOTLOADER? is true, install bootloader using BOOTCFG."
   (define (maybe-copy to-copy)
@@ -351,8 +353,8 @@ bring the system down."
                            #:optional (profile %system-profile))
   "Make a new generation of PROFILE pointing to the directory of OS, switch to
 it atomically, and then run OS's activation script."
-  (mlet* %store-monad ((drv    (operating-system-derivation os))
-                       (script (operating-system-activation-script os)))
+  (mlet* %store-monad ((drv (operating-system-derivation os))
+                       (script (lower-object (operating-system-activation-script os))))
     (let* ((system     (derivation->output-path drv))
            (number     (+ 1 (generation-number profile)))
            (generation (generation-file-name profile number)))
@@ -550,10 +552,26 @@ list of services."
       ;; TRANSLATORS: Please preserve the two-space indentation.
       (format #t (G_ "  label: ~a~%") label)
       (format #t (G_ "  bootloader: ~a~%") bootloader-name)
-      (format #t (G_ "  root device: ~a~%")
-              (if (uuid? root-device)
-                  (uuid->string root-device)
-                  root-device))
+
+      ;; TRANSLATORS: The '~[', '~;', and '~]' sequences in this string must
+      ;; be preserved.  They denote conditionals, such that the result will
+      ;; look like:
+      ;;   root device: UUID: 12345-678
+      ;; or:
+      ;;   root device: label: "my-root"
+      ;; or just:
+      ;;   root device: /dev/sda3
+      (format #t (G_ "  root device: ~[UUID: ~a~;label: ~s~;~a~]~%")
+              (cond ((uuid? root-device) 0)
+                    ((file-system-label? root-device) 1)
+                    (else 2))
+              (cond ((uuid? root-device)
+                     (uuid->string root-device))
+                    ((file-system-label? root-device)
+                     (file-system-label->string root-device))
+                    (else
+                     root-device)))
+
       (format #t (G_ "  kernel: ~a~%") kernel))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
@@ -740,7 +758,7 @@ checking this by themselves in their 'check' procedure."
   ;; <http://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html> for
   ;; a discussion.
   (define latest
-    (string-append (config-directory) "/latest"))
+    (string-append (config-directory) "/current"))
 
   (unless (file-exists? latest)
     (warning (G_ "~a not found: 'guix pull' was never run~%") latest)

@@ -394,6 +394,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
+   (replacement libtiff/fixed)
    (version "4.0.9")
    (source
      (origin
@@ -425,6 +426,17 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
+
+(define libtiff/fixed
+  (package
+    (inherit libtiff)
+    (source
+      (origin
+        (inherit (package-source libtiff))
+        (patches
+          (append (origin-patches (package-source libtiff))
+                  (search-patches "libtiff-CVE-2018-8905.patch"
+                                  "libtiff-CVE-2018-10963.patch")))))))
 
 (define-public leptonica
   (package
@@ -487,8 +499,9 @@ arithmetic ops.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://downloads.ghostscript.com/public/" name "/"
-                            name "-" version ".tar.gz"))
+        (uri
+         (string-append "https://github.com/ArtifexSoftware/ghostpdl-downloads/"
+                        "releases/download/gs922/" name "-" version ".tar.gz"))
         (sha256
           (base32 "0k01hp0q4275fj4rbr1gy64svfraw5w7wvwl08yjhvsnpb1rid11"))
         (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
@@ -504,7 +517,7 @@ This is a decoder only implementation, and currently is in the alpha
 stage, meaning it doesn't completely work yet.  However, it is
 maintaining parity with available encoders, so it is useful for real
 work.")
-    (home-page "http://www.ghostscript.com/jbig2dec.html")
+    (home-page "https://jbig2dec.com")
     (license license:gpl2+)))
 
 (define-public openjpeg

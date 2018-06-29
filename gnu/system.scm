@@ -359,6 +359,9 @@ marked as 'needed-for-boot'."
     (remove file-system-needed-for-boot?
             (operating-system-file-systems os)))
 
+  (define mapped-devices-for-boot
+    (operating-system-boot-mapped-devices os))
+
   (define (device-mappings fs)
     (let ((device (file-system-device fs)))
       (if (string? device)                        ;title is 'device
@@ -374,21 +377,23 @@ marked as 'needed-for-boot'."
     (file-system
       (inherit fs)
       (dependencies
-       (delete-duplicates (append (device-mappings fs)
-                                  (file-system-dependencies fs))
-                          eq?))))
+       (delete-duplicates
+        (remove (cut member <> mapped-devices-for-boot)
+                (append (device-mappings fs)
+                        (file-system-dependencies fs)))
+        eq?))))
 
   (service file-system-service-type
            (map add-dependencies file-systems)))
 
-(define (mapped-device-user device file-systems)
-  "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
+(define (mapped-device-users device file-systems)
+  "Return the subset of FILE-SYSTEMS that use DEVICE."
   (let ((target (string-append "/dev/mapper/" (mapped-device-target device))))
-    (find (lambda (fs)
-            (or (member device (file-system-dependencies fs))
-                (and (string? (file-system-device fs))
-                     (string=? (file-system-device fs) target))))
-          file-systems)))
+    (filter (lambda (fs)
+              (or (member device (file-system-dependencies fs))
+                  (and (string? (file-system-device fs))
+                       (string=? (file-system-device fs) target))))
+            file-systems)))
 
 (define (operating-system-user-mapped-devices os)
   "Return the subset of mapped devices that can be installed in
@@ -396,9 +401,8 @@ user-land--i.e., those not needed during boot."
   (let ((devices      (operating-system-mapped-devices os))
         (file-systems (operating-system-file-systems os)))
    (filter (lambda (md)
-             (let ((user (mapped-device-user md file-systems)))
-               (or (not user)
-                   (not (file-system-needed-for-boot? user)))))
+             (let ((users (mapped-device-users md file-systems)))
+               (not (any file-system-needed-for-boot? users))))
            devices)))
 
 (define (operating-system-boot-mapped-devices os)
@@ -407,8 +411,8 @@ from the initrd."
   (let ((devices      (operating-system-mapped-devices os))
         (file-systems (operating-system-file-systems os)))
    (filter (lambda (md)
-             (let ((user (mapped-device-user md file-systems)))
-               (and user (file-system-needed-for-boot? user))))
+             (let ((users (mapped-device-users md file-systems)))
+               (any file-system-needed-for-boot? users)))
            devices)))
 
 (define (device-mapping-services os)
@@ -470,13 +474,13 @@ a container or that of a \"bare metal\" system."
     (cons* (service system-service-type entries)
            %boot-service
 
-           ;; %SHEPHERD-ROOT-SERVICE must come first so that the gexp that
+           ;; %SHEPHERD-ROOT-SERVICE must come last so that the gexp that
            ;; execs shepherd comes last in the boot script (XXX).  Likewise,
-           ;; the cleanup service must come last so that its gexp runs before
+           ;; the cleanup service must come first so that its gexp runs before
            ;; activation code.
-           %shepherd-root-service
-           %activation-service
            (service cleanup-service-type #f)
+           %activation-service
+           %shepherd-root-service
 
            (pam-root-service (operating-system-pam-services os))
            (account-service (append (operating-system-accounts os)
@@ -616,9 +620,6 @@ unset PATH
 GUIX_PROFILE=/run/current-system/profile ; \\
 . /run/current-system/profile/etc/profile
 
-# Prepend setuid programs.
-export PATH=/run/setuid-programs:$PATH
-
 # Since 'lshd' does not use pam_env, /etc/environment must be explicitly
 # loaded when someone logs in via SSH.  See <http://bugs.gnu.org/22175>.
 # We need 'PATH' to be defined here, for 'cat' and 'cut'.  Do this before
@@ -630,16 +631,26 @@ then
   export `cat /etc/environment | cut -d= -f1`
 fi
 
-if [ -f \"$HOME/.guix-profile/etc/profile\" ]
-then
-  # Load the user profile's settings.
-  GUIX_PROFILE=\"$HOME/.guix-profile\" ; \\
-  . \"$HOME/.guix-profile/etc/profile\"
-else
-  # At least define this one so that basic things just work
-  # when the user installs their first package.
-  export PATH=\"$HOME/.guix-profile/bin:$PATH\"
-fi
+# Arrange so that ~/.config/guix/current comes first.
+for profile in \"$HOME/.guix-profile\" \"$HOME/.config/guix/current\"
+do
+  if [ -f \"$profile/etc/profile\" ]
+  then
+    # Load the user profile's settings.
+    GUIX_PROFILE=\"$profile\" ; \\
+    . \"$profile/etc/profile\"
+  else
+    # At least define this one so that basic things just work
+    # when the user installs their first package.
+    export PATH=\"$profile/bin:$PATH\"
+  fi
+done
+
+# Prepend setuid programs.
+export PATH=/run/setuid-programs:$PATH
+
+# Arrange so that ~/.config/guix/current/share/info comes first.
+export INFOPATH=\"$HOME/.config/guix/current/share/info:$INFOPATH\"
 
 # Set the umask, notably for users logging in via 'lsh'.
 # See <http://bugs.gnu.org/22650>.
@@ -812,7 +823,6 @@ we're running in the final root.  When CONTAINER? is true, skip all
 hardware-related operations as necessary when booting a Linux container."
   (let* ((services (operating-system-services os #:container? container?))
          (boot     (fold-services services #:target-type boot-service-type)))
-    ;; BOOT is the script as a monadic value.
     (service-value boot)))
 
 (define (operating-system-user-accounts os)

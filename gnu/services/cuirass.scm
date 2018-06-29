@@ -3,10 +3,11 @@
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
-;;; GNU Guix is free software: you can redistribute it and/or modify
+;;; GNU Guix is free software; you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation, either version 3 of the License, or
 ;;; (at your option) any later version.
@@ -172,5 +173,7 @@
      (service-extension rottlog-service-type cuirass-log-rotations)
      (service-extension activation-service-type cuirass-activation)
      (service-extension shepherd-root-service-type cuirass-shepherd-service)
-     (service-extension account-service-type cuirass-account)))))
+     (service-extension account-service-type cuirass-account)))
+   (description
+    "Run the Cuirass continuous integration service.")))
 

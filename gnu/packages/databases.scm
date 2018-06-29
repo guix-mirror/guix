@@ -398,7 +398,7 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.6")
+    (version "1.5.8")
     (source
      (origin
        (method url-fetch)
@@ -406,7 +406,7 @@ mapping from string keys to string values.")
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
         (base32
-         "00szy9d4szaixi260dcd4846zci04y0sd47ia2lzg0bxkn2ywxcn"))))
+         "1ppnhsqv9047vm0rrmqla56y972f8qqjdb780iz6v922jjcc723k"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -1107,7 +1107,7 @@ extremely small.")
 (define-public perl-dbi
   (package
     (name "perl-dbi")
-    (version "1.637")
+    (version "1.641")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1115,7 +1115,7 @@ extremely small.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1ikbsb6sb0bd2m1dqknl4vx7ikmnd41y0xq8np1l40g8jcjp2mr5"))))
+                "1hf2x29bnqf2x1v4bdhji802z7n2mbg7h1amv8gdkqyhrlrfa2am"))))
     (build-system perl-build-system)
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
@@ -1487,14 +1487,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "4.0.2")
+    (version "4.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "04s8cgvwjj1979s3hg8zkwc9pyn3jkjpz5zidp87kfcipifr385i"))))
+                "194cydhv3hf4v95ifvjvsqrs4jn3ffrkg5lvxj5d3y04lwsp9dhx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail

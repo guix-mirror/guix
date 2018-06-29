@@ -47,14 +47,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.3.3.6")
+    (version "0.3.3.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1drk2h8zd05xrfpx7xn77pcxz0hs4nrq6figw56qk5gkvgv5kg4r"))))
+               "036ybfvldj7yfci9ipjki8smpzyxdg8c5r12bghc9yxdqh9basza"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-gcc-hardening"
@@ -256,51 +256,46 @@ from you.")
                    license:bsd-3))))    ; onionshare/socks.py
 
 (define-public nyx
-  ;; The last ‘arm’ relase was 5 years ago.  Meanwhile, python3 support has
-  ;; been added and the software was renamed to ‘nyx’.
-  (let ((commit "fea209127484d9b304b908a4711c9528b1d065bc")
-        (revision "1"))                 ; Guix package revision
-    (package
-      (name "nyx")
-      (version (string-append "1.9-"
-                              revision "." (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (file-name (string-append name "-" version "-checkout"))
-         (uri (git-reference
-               (url "https://git.torproject.org/nyx.git")
-               (commit commit)))
-         (sha256
-          (base32
-           "1g0l4988076xg5gs0x0nxzlg58rfx5g5agmklvyh4yp03vxncdb9"))))
-      (build-system python-build-system)
-      (native-inputs
-       `(("python-mock" ,python-mock)
-         ("python-pep8" ,python-pep8)
-         ("python-pyflakes" ,python-pyflakes)))
-      (inputs
-       `(("python-stem" ,python-stem)))
-      (arguments
-       `(#:configure-flags
-         (list (string-append "--man-page="
-                              (assoc-ref %outputs "out")
-                              "/share/man/man1/nyx.1")
-               (string-append "--sample-path="
-                              (assoc-ref %outputs "out")
-                              "/share/doc/nyx/nyxrc.sample"))
-         #:use-setuptools? #f           ; setup.py still uses distutils
-         #:phases
-         (modify-phases %standard-phases
-           (replace 'check
-             (lambda _
-               (zero? (system* "./run_tests.py" "--unit")))))))
-      ;; A Nyx home page is ‘being worked on’.  Use Arm's for now, which at
-      ;; least mentions the new source repository:
-      (home-page "http://www.atagar.com/arm/")
-      (synopsis "Tor relay status monitor")
-      (description "Nyx (formerly Anonymizing Relay Monitor or \"arm\")
-monitors the performance of relays participating in the
+  (package
+    (name "nyx")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (patches
+        (search-patches "nyx-show-header-stats-with-python3.patch"))
+       (sha256
+        (base32
+         "0pm7vfcqr02pzqz4b2f6sw5prxxmgqwr1912am42xmy2i53n7nrq"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-stem" ,python-stem)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-man-page
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (install-file "nyx.1" (string-append man "/man1"))
+               #t)))
+         (add-after 'install 'install-sample-configuration
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "web/nyxrc.sample" doc)
+               #t))))
+       ;; XXX The tests seem to require more of a real terminal than the build
+       ;; environment provides:
+       ;;   _curses.error: setupterm: could not find terminal
+       ;; With TERM=linux, the tests try to move the cursor and still fail:
+       ;;   _curses.error: cbreak() returned ERR
+       #:tests? #f))
+    (home-page "https://nyx.torproject.org/")
+    (synopsis "Tor relay status monitor")
+    (description
+     "Nyx monitors the performance of relays participating in the
 @uref{https://www.torproject.org/, Tor anonymity network}.  It displays this
 information visually and in real time, using a curses-based terminal interface.
 This makes Nyx well-suited for remote shell connections and servers without a
@@ -316,4 +311,4 @@ statistics and status reports on:
 @end enumerate
 
 Potential client and exit connections are scrubbed of sensitive information.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))

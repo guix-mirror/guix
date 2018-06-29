@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +78,7 @@
             package-name->name+version
             target-mingw?
             target-arm32?
+            target-64bit?
             version-compare
             version>?
             version>=?
@@ -473,6 +475,10 @@ a character other than '@'."
 
 (define (target-arm32?)
   (string-prefix? "arm" (or (%current-target-system) (%current-system))))
+
+(define (target-64bit?)
+  (let ((system (or (%current-target-system) (%current-system))))
+    (any (cut string-prefix? <> system) '("x86_64" "aarch64" "mips64" "ppc64"))))
 
 (define version-compare
   (let ((strverscmp

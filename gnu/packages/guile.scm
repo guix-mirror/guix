@@ -767,14 +767,23 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.5.1")
+    (version "0.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19q420i3is3d4jmkdqs5y7ir7ipp4s795saflqgwf6617cx2zpj4"))))
+                "0n1lf5bsr5s9gqi07sdfkl1hpin6dzvkcj1xa63jd1w8aglwv8r1"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; 'pre-inst-env' sets an incorrect load path, missing the
+                  ;; "/src" bit.  Add it.
+                  (substitute* "pre-inst-env.in"
+                    (("abs_top_(builddir|srcdir)=([[:graph:]]+)" _ dir value)
+                     (string-append "abs_top_" dir "=" value "/src")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -835,7 +844,8 @@ for Guile\".")
                                     "AC_SUBST([GUILE_EFFECTIVE_VERSION])\n")))
                   (substitute* '("Makefile.am" "json/Makefile.am")
                     (("moddir[[:blank:]]*=.*/share/guile/site" all)
-                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
+                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
@@ -1206,58 +1216,31 @@ Guile's foreign function interface.")
   (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
 
 (define-public guile-sqlite3
-  (let ((commit "10c13a7e02ab1655c8a758e560cafc9d6eff26f4")
-        (revision "4"))
-    (package
-      (name "guile-sqlite3")
-      (version (git-version "0.0" revision commit))
-
-      ;; XXX: This used to be available read-only at
-      ;; <https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/> but it
-      ;; eventually disappeared, so we have our own copy here.
-      (home-page "https://notabug.org/civodul/guile-sqlite3.git")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0nhhswpd7nb2f0gfr55fzcc2xm3l2xx4rbljsd1clrm8fj2d7q9d"))
-                (file-name (string-append name "-" version "-checkout"))
-                (modules '((guix build utils)))
-                (snippet
-                 ;; Upgrade 'Makefile.am' to the current way of doing things.
-                 '(begin
-                    (substitute* "Makefile.am"
-                      (("TESTS_ENVIRONMENT")
-                       "TEST_LOG_COMPILER"))
-                    #t))))
-
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("sqlite" ,sqlite)))
-      (arguments
-       '(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'autoreconf
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi"))))
-                    (add-before 'build 'set-sqlite3-file-name
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (substitute* "sqlite3.scm"
-                          (("\"libsqlite3\"")
-                           (string-append "\"" (assoc-ref inputs "sqlite")
-                                          "/lib/libsqlite3\"")))
-                        #t)))))
-      (synopsis "Access SQLite databases from Guile")
-      (description
-       "This package provides Guile bindings to the SQLite database system.")
-      (license license:gpl3+))))
+  (package
+    (name "guile-sqlite3")
+    (version "0.1.0")
+    (home-page "https://notabug.org/civodul/guile-sqlite3.git")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1nv8j7wk6b5n4p22szyi8lv8fs31rrzxhzz16gyj8r38c1fyp9qp"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("sqlite" ,sqlite)))
+    (synopsis "Access SQLite databases from Guile")
+    (description
+     "This package provides Guile bindings to the SQLite database system.")
+    (license license:gpl3+)))
 
 (define-public haunt
   (package
@@ -1786,7 +1769,7 @@ is no support for parsing block and inline level HTML.")
 (define-public guile-bytestructures
   (package
     (name "guile-bytestructures")
-    (version "1.0.1")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/TaylanUB/scheme-bytestructures"
@@ -1794,7 +1777,7 @@ is no support for parsing block and inline level HTML.")
                                   "/bytestructures-" version ".tar.gz"))
               (sha256
                (base32
-                "1lnfcy65mqj823lamy2n2vaghdz0g7mj011bgnhmd6hwpnaidnh2"))))
+                "0xf6s8gd3656j8k2ar6y7i62r68azawyzxhsagsk8nvldnrs1r18"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2002,20 +1985,6 @@ is not available for Guile 2.0.")
                   "0z1dvn0scx59pbgjkpacam7p5n7630z4qm8fazim7ixq9xv3s8wx"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    ;; FIXME: On i686, bytestructures miscalculates the offset
-                    ;; of the 'old-file' and 'new-file' fields within the
-                    ;; '%diff-delta' structure.  See
-                    ;; <https://github.com/TaylanUB/scheme-bytestructures/issues/30>.
-                    ,@(if (string=? (%current-system) "x86_64-linux")
-                          '()
-                          '((add-before 'check 'skip-tests
-                              (lambda _
-                                (substitute* "Makefile"
-                                  (("tests/status\\.scm")
-                                   ""))
-                                #t)))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
@@ -2131,8 +2100,8 @@ It has a nice, simple s-expression based syntax.")
     (license license:gpl3+)))
 
 (define-public guile-simple-zmq
-  (let ((commit "d76657aeb1cd10ef8136edc06bb90999914c7c3c")
-        (revision "0"))
+  (let ((commit "1f3b7c0b9b249c6fde8e8a632b252d8a1b794424")
+        (revision "1"))
     (package
       (name "guile-simple-zmq")
       (version (git-version "0.0.0" revision commit))
@@ -2144,7 +2113,7 @@ It has a nice, simple s-expression based syntax.")
                (commit commit)))
          (sha256
           (base32
-           "1w73dy5gpyv33jn34dqlkqpwh9w4y8wm6hgvbpb3wbp6xsa2mk4z"))
+           "0nj2pd5bsmmgd3c54wh4sixfhmsv1arsq7yam2d7487h3n9q57r7"))
          (file-name (git-file-name name version))))
       (build-system trivial-build-system)
       (arguments
@@ -2209,9 +2178,10 @@ It has a nice, simple s-expression based syntax.")
                                             file go-file)))))
                        (list scm-file))
              #t))))
+      (inputs
+       `(("guile" ,guile-2.2)))
       (propagated-inputs
-       `(("guile" ,guile-2.2)
-         ("zeromq" ,zeromq)))
+       `(("zeromq" ,zeromq)))
       (home-page "https://github.com/jerry40/guile-simple-zmq")
       (synopsis "Guile wrapper over ZeroMQ library")
       (description

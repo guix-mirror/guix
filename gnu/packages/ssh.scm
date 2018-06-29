@@ -256,22 +256,22 @@ Additionally, various channel-specific options can be negotiated.")
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'autoreconf
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (zero? (system* "autoreconf" "-vfi"))))
+                      (invoke "autoreconf" "-vfi")))
                   (add-before 'build 'fix-libguile-ssh-file-name
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Build and install libguile-ssh.so so that we can use
                       ;; its absolute file name in .scm files, before we build
                       ;; the .go files.
-                      (and (zero? (system* "make" "install"
-                                           "-C" "libguile-ssh"
-                                           "-j" (number->string
-                                                 (parallel-job-count))))
-                           (let* ((out      (assoc-ref outputs "out"))
-                                  (libdir   (string-append out "/lib")))
-                             (substitute* (find-files "." "\\.scm$")
-                               (("\"libguile-ssh\"")
-                                (string-append "\"" libdir "/libguile-ssh\"")))
-                             #t))))
+                      (let* ((out (assoc-ref outputs "out"))
+                             (lib (string-append out "/lib")))
+                        (invoke "make" "install"
+                                "-C" "libguile-ssh"
+                                "-j" (number->string
+                                      (parallel-job-count)))
+                        (substitute* (find-files "." "\\.scm$")
+                          (("\"libguile-ssh\"")
+                           (string-append "\"" lib "/libguile-ssh\"")))
+                        #t)))
                   (add-after 'install 'remove-bin-directory
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
@@ -329,29 +329,25 @@ libssh library.")
                 "1gmhas4va6gd70i2x2mpxpwpgww6413mji29mg282jms3jscn3qd"))))
     (build-system gnu-build-system)
     (arguments
-     ;; Replace configure phase as the ./configure script does not link
-     ;; CONFIG_SHELL and SHELL passed as parameters
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs inputs system build target
-                           #:allow-other-keys #:rest args)
-             (let* ((configure (assoc-ref %standard-phases 'configure))
-                    (prefix (assoc-ref outputs "out"))
-                    (bash   (which "bash"))
+           ;; Replace configure phase as the ./configure script does not like
+           ;; CONFIG_SHELL and SHELL passed as parameters
+           (lambda* (#:key outputs build target #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bash  (which "bash"))
                     ;; Set --build and --host flags as the provided config.guess
                     ;; is not able to detect them
-                    (flags `(,(string-append "--prefix=" prefix)
+                    (flags `(,(string-append "--prefix=" out)
                              ,(string-append "--build=" build)
                              ,(string-append "--host=" (or target build)))))
                (setenv "CONFIG_SHELL" bash)
-               (zero? (apply system* bash
-                             (string-append "." "/configure")
-                             flags)))))
+               (apply invoke bash "./configure" flags))))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/corkscrew")))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
                (install-file "README" doc)
                #t))))))
     (home-page "http://www.agroman.net/corkscrew")

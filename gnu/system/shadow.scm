@@ -168,6 +168,9 @@ then
     return
 fi
 
+# Source the system-wide file.
+source /etc/bashrc
+
 # Adjust the prompt depending on whether we're in 'guix environment'.
 if [ -n \"$GUIX_ENVIRONMENT\" ]
 then

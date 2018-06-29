@@ -89,6 +89,7 @@
                   (guix build gnu-build-system))
        #:phases
        (modify-phases %standard-phases
+         (delete 'bootstrap)
          ;; The are several code fragments that embed timestamps into the
          ;; output. Here, we alter those fragments to use the value of
          ;; SOURCE_DATE_EPOCH instead.
@@ -127,6 +128,29 @@
                   (date->string source-date-epoch
                                 "{H,Mi,S} = {~H,~M,~S},")))
                #t)))
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (substitute* "erts/etc/unix/run_erl.c"
+               (("sh = \"/bin/sh\";")
+                (string-append "sh = \""
+                               (which "sh")
+                               "\";")))
+
+             (substitute* "erts/emulator/sys/unix/sys_drivers.c"
+               (("SHELL \"/bin/sh\"")
+                (string-append "SHELL \""
+                               (which "sh")
+                               "\"")))
+             (substitute* "erts/emulator/sys/unix/erl_child_setup.c"
+               (("SHELL \"/bin/sh\"")
+                (string-append "SHELL \""
+                               (which "sh")
+                               "\"")))
+
+             (substitute* "lib/kernel/src/os.erl"
+               (("/bin/sh") (which "sh")))
+
+             #t))
          (add-after 'patch-source-shebangs 'patch-source-env
            (lambda _
              (let ((escripts

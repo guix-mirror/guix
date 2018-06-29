@@ -32,7 +32,8 @@
   #:use-module (gnu system uuid)
   #:autoload   (gnu build file-systems) (find-partition-by-luks-uuid)
   #:autoload   (gnu build linux-modules)
-                 (device-module-aliases matching-modules known-module-aliases)
+                 (device-module-aliases matching-modules known-module-aliases
+                  normalize-module-name)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
   #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
@@ -127,10 +128,15 @@ DEVICE must be a \"/dev\" file name."
       (const #f)))
 
   (when aliases
-    (let ((modules (delete-duplicates
-                    (append-map (cut matching-modules <> aliases)
-                                (device-module-aliases device)))))
-      (unless (every (cute member <> linux-modules) modules)
+    (let ((modules  (delete-duplicates
+                     (append-map (cut matching-modules <> aliases)
+                                 (device-module-aliases device))))
+
+          ;; Module names (not file names) are supposed to use underscores
+          ;; instead of hyphens.  MODULES is a list of module names, whereas
+          ;; LINUX-MODULES is file names without '.ko', so normalize them.
+          (provided (map normalize-module-name linux-modules)))
+      (unless (every (cut member <> provided) modules)
         (raise (condition
                 (&message
                  (message (format #f (G_ "you may need these modules \

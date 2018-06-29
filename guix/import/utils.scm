@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,8 @@
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-41)
   #:export (factorize-uri
 
             hash-table->alist
@@ -61,7 +64,11 @@
             alist->package
 
             read-lines
-            chunk-lines))
+            chunk-lines
+
+            guix-name
+
+            recursive-import))
 
 (define (factorize-uri uri version)
   "Factorize URI, a package tarball URI as a string, such that any occurrences
@@ -357,3 +364,71 @@ separated by PRED."
         (if (null? after)
             (reverse res)
             (loop (cdr after) res))))))
+
+(define (guix-name prefix name)
+  "Return a Guix package name for a given package name."
+  (string-append prefix (string-map (match-lambda
+                                      (#\_ #\-)
+                                      (#\. #\-)
+                                      (chr (char-downcase chr)))
+                                    name)))
+
+(define* (recursive-import package-name repo
+                           #:key repo->guix-package guix-name
+                           #:allow-other-keys)
+  "Generate a stream of package expressions for PACKAGE-NAME and all its
+dependencies."
+  (receive (package . dependencies)
+      (repo->guix-package package-name repo)
+    (if (not package)
+        stream-null
+
+        ;; Generate a lazy stream of package expressions for all unknown
+        ;; dependencies in the graph.
+        (let* ((make-state (lambda (queue done)
+                             (cons queue done)))
+               (next       (match-lambda
+                             (((next . rest) . done) next)))
+               (imported   (match-lambda
+                             ((queue . done) done)))
+               (done?      (match-lambda
+                             ((queue . done)
+                              (zero? (length queue)))))
+               (unknown?   (lambda* (dependency #:optional (done '()))
+                             (and (not (member dependency
+                                               done))
+                                  (null? (find-packages-by-name
+                                          (guix-name dependency))))))
+               (update     (lambda (state new-queue)
+                             (match state
+                               (((head . tail) . done)
+                                (make-state (lset-difference
+                                             equal?
+                                             (lset-union equal? new-queue tail)
+                                             done)
+                                            (cons head done)))))))
+          (stream-cons
+           package
+           (stream-unfold
+            ;; map: produce a stream element
+            (lambda (state)
+              (repo->guix-package (next state) repo))
+
+            ;; predicate
+            (negate done?)
+
+            ;; generator: update the queue
+            (lambda (state)
+              (receive (package . dependencies)
+                  (repo->guix-package (next state) repo)
+                (if package
+                    (update state (filter (cut unknown? <>
+                                               (cons (next state)
+                                                     (imported state)))
+                                          (car dependencies)))
+                    ;; TODO: Try the other archives before giving up
+                    (update state (imported state)))))
+
+            ;; initial state
+            (make-state (filter unknown? (car dependencies))
+                        (list package-name))))))))

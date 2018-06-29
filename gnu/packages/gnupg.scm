@@ -107,6 +107,7 @@ Daemon and possibly more in the future.")
 
 (define-public libgcrypt
   (package
+    (replacement libgcrypt/fixed)
     (name "libgcrypt")
     (version "1.8.2")
     (source (origin
@@ -140,6 +141,19 @@ generation.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
+
+(define libgcrypt/fixed
+  (package
+    (inherit libgcrypt)
+    (name "libgcrypt")
+    (version "1.8.3")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "0z5gs1khzyknyfjr19k8gk4q148s6q987ya85cpn0iv70fz91v36"))))))
 
 (define-public libassuan
   (package
@@ -230,14 +244,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.7")
+    (version "2.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0vlpis0q7gvq9mhdc43hkyn3cdriz4mwgj20my3gyzpgwqg3cnyr"))))
+                "1k8dnnfs9888yp713l7kg2jg110lw47s4krx0njna6fjrsw4qyvp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -348,14 +362,14 @@ libskba (working with X.509 certificates and CMS data).")
 
 (define-public gnupg-1
   (package (inherit gnupg)
-    (version "1.4.22")
+    (version "1.4.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1d1hz4szh1kvwhsw7w2zxa6q5ndrk3qy6hj289l1b8k3xi5s554m"))))
+                "1fkq4sqldvf6a25mm2qz95swv1qjg464736091w51djiwqbjyin9"))))
     (native-inputs '())
     (inputs
      `(("zlib" ,zlib)
@@ -506,14 +520,14 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
 (define-public python-gnupg
   (package
     (name "python-gnupg")
-    (version "0.3.8")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-gnupg" version))
        (sha256
         (base32
-         "0nkbs9c8f30lra7ca39kg91x8cyxn0jb61vih4qky839gpbwwwiq"))))
+         "03dc8whhvk7ccspbk8vzfhkxli8cd9zfbss5p597g4jldgy8s59d"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -521,16 +535,14 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
          (replace 'check
            (lambda _
              (substitute* "test_gnupg.py"
-               ;; Exported keys don't have a version line!
-               (("del k1\\[1\\]") "#")
                ;; Unsure why this test fails.
                (("'test_search_keys'") "True")
                (("def test_search_keys") "def disabled__search_keys"))
              (setenv "USERNAME" "guixbuilder")
              ;; The doctests are extremely slow and sometimes time out,
              ;; so we disable them.
-             (zero? (system* "python"
-                             "test_gnupg.py" "--no-doctests")))))))
+             (invoke "python"
+                     "test_gnupg.py" "--no-doctests"))))))
     (native-inputs
      `(("gnupg" ,gnupg-1)))
     (home-page "https://packages.python.org/python-gnupg/index.html")

@@ -35,6 +35,7 @@
   #:use-module (guix search-paths)
   #:use-module (guix build-system gnu)
   #:use-module (guix scripts build)
+  #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
@@ -87,6 +88,19 @@ found."
             %compressors)
       (leave (G_ "~a: compressor not found~%") name)))
 
+(define not-config?
+  ;; Select (guix …) and (gnu …) modules, except (guix config).
+  (match-lambda
+    (('guix 'config) #f)
+    (('guix _ ...) #t)
+    (('gnu _ ...) #t)
+    (_ #f)))
+
+(define guile-sqlite3&co
+  ;; Guile-SQLite3 and its propagated inputs.
+  (cons guile-sqlite3
+        (package-transitive-propagated-inputs guile-sqlite3)))
+
 (define* (self-contained-tarball name profile
                                  #:key target
                                  deduplicate?
@@ -101,113 +115,124 @@ with a properly initialized store database.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
+  (define libgcrypt
+    (module-ref (resolve-interface '(gnu packages gnupg))
+                'libgcrypt))
+
+  (define schema
+    (and localstatedir?
+         (local-file (search-path %load-path
+                                  "guix/store/schema.sql"))))
+
   (define build
-    (with-imported-modules (source-module-closure
-                            '((guix build utils)
-                              (guix build union)
-                              (guix build store-copy)
-                              (gnu build install)))
-      #~(begin
-          (use-modules (guix build utils)
-                       ((guix build union) #:select (relative-file-name))
-                       (gnu build install)
-                       (srfi srfi-1)
-                       (srfi srfi-26)
-                       (ice-9 match))
+    (with-imported-modules `(((guix config)
+                              => ,(make-config.scm
+                                   #:libgcrypt libgcrypt))
+                             ,@(source-module-closure
+                                `((guix build utils)
+                                  (guix build union)
+                                  (guix build store-copy)
+                                  (gnu build install))
+                                #:select? not-config?))
+      (with-extensions guile-sqlite3&co
+        #~(begin
+            (use-modules (guix build utils)
+                         ((guix build union) #:select (relative-file-name))
+                         (gnu build install)
+                         (srfi srfi-1)
+                         (srfi srfi-26)
+                         (ice-9 match))
 
-          (define %root "root")
+            (define %root "root")
 
-          (define symlink->directives
-            ;; Return "populate directives" to make the given symlink and its
-            ;; parent directories.
-            (match-lambda
-              ((source '-> target)
-               (let ((target (string-append #$profile "/" target))
-                     (parent (dirname source)))
-                 ;; Never add a 'directory' directive for "/" so as to
-                 ;; preserve its ownnership when extracting the archive (see
-                 ;; below), and also because this would lead to adding the
-                 ;; same entries twice in the tarball.
-                 `(,@(if (string=? parent "/")
-                         '()
-                         `((directory ,parent)))
-                   (,source
-                    -> ,(relative-file-name parent target)))))))
+            (define symlink->directives
+              ;; Return "populate directives" to make the given symlink and its
+              ;; parent directories.
+              (match-lambda
+                ((source '-> target)
+                 (let ((target (string-append #$profile "/" target))
+                       (parent (dirname source)))
+                   ;; Never add a 'directory' directive for "/" so as to
+                   ;; preserve its ownnership when extracting the archive (see
+                   ;; below), and also because this would lead to adding the
+                   ;; same entries twice in the tarball.
+                   `(,@(if (string=? parent "/")
+                           '()
+                           `((directory ,parent)))
+                     (,source
+                      -> ,(relative-file-name parent target)))))))
 
-          (define directives
-            ;; Fully-qualified symlinks.
-            (append-map symlink->directives '#$symlinks))
+            (define directives
+              ;; Fully-qualified symlinks.
+              (append-map symlink->directives '#$symlinks))
 
-          ;; The --sort option was added to GNU tar in version 1.28, released
-          ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
-          ;; older and doesn't support it.
-          (define tar-supports-sort?
-            (zero? (system* (string-append #+archiver "/bin/tar")
-                            "cf" "/dev/null" "--files-from=/dev/null"
-                            "--sort=name")))
+            ;; The --sort option was added to GNU tar in version 1.28, released
+            ;; 2014-07-28.  For testing, we use the bootstrap tar, which is
+            ;; older and doesn't support it.
+            (define tar-supports-sort?
+              (zero? (system* (string-append #+archiver "/bin/tar")
+                              "cf" "/dev/null" "--files-from=/dev/null"
+                              "--sort=name")))
 
-          ;; We need Guix here for 'guix-register'.
-          (setenv "PATH"
-                  (string-append #$(if localstatedir?
-                                       (file-append guix "/sbin:")
-                                       "")
-                                 #$archiver "/bin"))
+            ;; Add 'tar' to the search path.
+            (setenv "PATH" #+(file-append archiver "/bin"))
 
-          ;; Note: there is not much to gain here with deduplication and there
-          ;; is the overhead of the '.links' directory, so turn it off.
-          ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
-          ;; with hard links:
-          ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
-          (populate-single-profile-directory %root
-                                             #:profile #$profile
-                                             #:closure "profile"
-                                             #:deduplicate? #f
-                                             #:register? #$localstatedir?)
+            ;; Note: there is not much to gain here with deduplication and there
+            ;; is the overhead of the '.links' directory, so turn it off.
+            ;; Furthermore GNU tar < 1.30 sometimes fails to extract tarballs
+            ;; with hard links:
+            ;; <http://lists.gnu.org/archive/html/bug-tar/2017-11/msg00009.html>.
+            (populate-single-profile-directory %root
+                                               #:profile #$profile
+                                               #:closure "profile"
+                                               #:deduplicate? #f
+                                               #:register? #$localstatedir?
+                                               #:schema #$schema)
 
-          ;; Create SYMLINKS.
-          (for-each (cut evaluate-populate-directive <> %root)
-                    directives)
+            ;; Create SYMLINKS.
+            (for-each (cut evaluate-populate-directive <> %root)
+                      directives)
 
-          ;; Create the tarball.  Use GNU format so there's no file name
-          ;; length limitation.
-          (with-directory-excursion %root
-            (exit
-             (zero? (apply system* "tar"
-                           "-I"
-                           (string-join '#+(compressor-command compressor))
-                           "--format=gnu"
+            ;; Create the tarball.  Use GNU format so there's no file name
+            ;; length limitation.
+            (with-directory-excursion %root
+              (exit
+               (zero? (apply system* "tar"
+                             "-I"
+                             (string-join '#+(compressor-command compressor))
+                             "--format=gnu"
 
-                           ;; Avoid non-determinism in the archive.  Use
-                           ;; mtime = 1, not zero, because that is what the
-                           ;; daemon does for files in the store (see the
-                           ;; 'mtimeStore' constant in local-store.cc.)
-                           (if tar-supports-sort? "--sort=name" "--mtime=@1")
-                           "--mtime=@1"           ;for files in /var/guix
-                           "--owner=root:0"
-                           "--group=root:0"
+                             ;; Avoid non-determinism in the archive.  Use
+                             ;; mtime = 1, not zero, because that is what the
+                             ;; daemon does for files in the store (see the
+                             ;; 'mtimeStore' constant in local-store.cc.)
+                             (if tar-supports-sort? "--sort=name" "--mtime=@1")
+                             "--mtime=@1"         ;for files in /var/guix
+                             "--owner=root:0"
+                             "--group=root:0"
 
-                           "--check-links"
-                           "-cvf" #$output
-                           ;; Avoid adding / and /var to the tarball, so
-                           ;; that the ownership and permissions of those
-                           ;; directories will not be overwritten when
-                           ;; extracting the archive.  Do not include /root
-                           ;; because the root account might have a
-                           ;; different home directory.
-                           #$@(if localstatedir?
-                                  '("./var/guix")
-                                  '())
+                             "--check-links"
+                             "-cvf" #$output
+                             ;; Avoid adding / and /var to the tarball, so
+                             ;; that the ownership and permissions of those
+                             ;; directories will not be overwritten when
+                             ;; extracting the archive.  Do not include /root
+                             ;; because the root account might have a
+                             ;; different home directory.
+                             #$@(if localstatedir?
+                                    '("./var/guix")
+                                    '())
 
-                           (string-append "." (%store-directory))
+                             (string-append "." (%store-directory))
 
-                           (delete-duplicates
-                            (filter-map (match-lambda
-                                          (('directory directory)
-                                           (string-append "." directory))
-                                          ((source '-> _)
-                                           (string-append "." source))
-                                          (_ #f))
-                                        directives)))))))))
+                             (delete-duplicates
+                              (filter-map (match-lambda
+                                            (('directory directory)
+                                             (string-append "." directory))
+                                            ((source '-> _)
+                                             (string-append "." source))
+                                            (_ #f))
+                                          directives))))))))))
 
   (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
@@ -227,70 +252,83 @@ points for virtual file systems (like procfs), and optional symlinks.
 
 SYMLINKS must be a list of (SOURCE -> TARGET) tuples denoting symlinks to be
 added to the pack."
+  (define libgcrypt
+    ;; XXX: Not strictly needed, but pulled by (guix store database).
+    (module-ref (resolve-interface '(gnu packages gnupg))
+                'libgcrypt))
+
+
   (define build
-    (with-imported-modules '((guix build utils)
-                             (guix build store-copy)
-                             (gnu build install))
-      #~(begin
-          (use-modules (guix build utils)
-                       (gnu build install)
-                       (guix build store-copy)
-                       (srfi srfi-1)
-                       (srfi srfi-26)
-                       (ice-9 match))
+    (with-imported-modules `(((guix config)
+                              => ,(make-config.scm
+                                   #:libgcrypt libgcrypt))
+                             ,@(source-module-closure
+                                '((guix build utils)
+                                  (guix build store-copy)
+                                  (gnu build install))
+                                #:select? not-config?))
+      (with-extensions guile-sqlite3&co
+        #~(begin
+            (use-modules (guix build utils)
+                         (gnu build install)
+                         (guix build store-copy)
+                         (srfi srfi-1)
+                         (srfi srfi-26)
+                         (ice-9 match))
 
-          (setenv "PATH" (string-append #$archiver "/bin"))
+            (setenv "PATH" (string-append #$archiver "/bin"))
 
-          ;; We need an empty file in order to have a valid file argument when
-          ;; we reparent the root file system.  Read on for why that's
-          ;; necessary.
-          (with-output-to-file ".empty" (lambda () (display "")))
+            ;; We need an empty file in order to have a valid file argument when
+            ;; we reparent the root file system.  Read on for why that's
+            ;; necessary.
+            (with-output-to-file ".empty" (lambda () (display "")))
 
-          ;; Create the squashfs image in several steps.
-          ;; Add all store items.  Unfortunately mksquashfs throws away all
-          ;; ancestor directories and only keeps the basename.  We fix this
-          ;; in the following invocations of mksquashfs.
-          (apply invoke "mksquashfs"
-                 `(,@(call-with-input-file "profile"
-                       read-reference-graph)
-                   ,#$output
+            ;; Create the squashfs image in several steps.
+            ;; Add all store items.  Unfortunately mksquashfs throws away all
+            ;; ancestor directories and only keeps the basename.  We fix this
+            ;; in the following invocations of mksquashfs.
+            (apply invoke "mksquashfs"
+                   `(,@(map store-info-item
+                            (call-with-input-file "profile"
+                              read-reference-graph))
+                     ,#$output
 
-                   ;; Do not perform duplicate checking because we
-                   ;; don't have any dupes.
-                   "-no-duplicates"
-                   "-comp"
-                   ,#+(compressor-name compressor)))
+                     ;; Do not perform duplicate checking because we
+                     ;; don't have any dupes.
+                     "-no-duplicates"
+                     "-comp"
+                     ,#+(compressor-name compressor)))
 
-          ;; Here we reparent the store items.  For each sub-directory of
-          ;; the store prefix we need one invocation of "mksquashfs".
-          (for-each (lambda (dir)
-                      (apply invoke "mksquashfs"
-                             `(".empty"
-                               ,#$output
-                               "-root-becomes" ,dir)))
-                    (reverse (string-tokenize (%store-directory)
-                                              (char-set-complement (char-set #\/)))))
+            ;; Here we reparent the store items.  For each sub-directory of
+            ;; the store prefix we need one invocation of "mksquashfs".
+            (for-each (lambda (dir)
+                        (apply invoke "mksquashfs"
+                               `(".empty"
+                                 ,#$output
+                                 "-root-becomes" ,dir)))
+                      (reverse (string-tokenize (%store-directory)
+                                                (char-set-complement (char-set #\/)))))
 
-          ;; Add symlinks and mount points.
-          (apply invoke "mksquashfs"
-                 `(".empty"
-                   ,#$output
-                   ;; Create SYMLINKS via pseudo file definitions.
-                   ,@(append-map
-                      (match-lambda
-                        ((source '-> target)
-                         (list "-p"
-                               (string-join
-                                ;; name s mode uid gid symlink
-                                (list source
-                                      "s" "777" "0" "0"
-                                      (string-append #$profile "/" target))))))
-                      '#$symlinks)
+            ;; Add symlinks and mount points.
+            (apply invoke "mksquashfs"
+                   `(".empty"
+                     ,#$output
+                     ;; Create SYMLINKS via pseudo file definitions.
+                     ,@(append-map
+                        (match-lambda
+                          ((source '-> target)
+                           (list "-p"
+                                 (string-join
+                                  ;; name s mode uid gid symlink
+                                  (list source
+                                        "s" "777" "0" "0"
+                                        (string-append #$profile "/" target))))))
+                        '#$symlinks)
 
-                   ;; Create empty mount points.
-                   "-p" "/proc d 555 0 0"
-                   "-p" "/sys d 555 0 0"
-                   "-p" "/dev d 555 0 0")))))
+                     ;; Create empty mount points.
+                     "-p" "/proc d 555 0 0"
+                     "-p" "/sys d 555 0 0"
+                     "-p" "/dev d 555 0 0"))))))
 
   (gexp->derivation (string-append name
                                    (compressor-extension compressor)
@@ -310,14 +348,6 @@ image is a tarball conforming to the Docker Image Specification, compressed
 with COMPRESSOR.  It can be passed to 'docker load'.  If TARGET is true, it
 must a be a GNU triplet and it is used to derive the architecture metadata in
 the image."
-  ;; FIXME: Honor LOCALSTATEDIR?.
-  (define not-config?
-    (match-lambda
-      (('guix 'config) #f)
-      (('guix rest ...) #t)
-      (('gnu rest ...) #t)
-      (rest #f)))
-
   (define defmod 'define-module)                  ;trick Geiser
 
   (define config
@@ -342,9 +372,9 @@ the image."
   (define build
     ;; Guile-JSON is required by (guix docker).
     (with-extensions (list json)
-      (with-imported-modules `(,@(source-module-closure '((guix docker))
+      (with-imported-modules `(,@(source-module-closure '((guix docker)
+                                                          (guix build store-copy))
                                                         #:select? not-config?)
-                               (guix build store-copy)
                                ((guix config) => ,config))
         #~(begin
             (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
@@ -352,8 +382,9 @@ the image."
             (setenv "PATH" (string-append #$archiver "/bin"))
 
             (build-docker-image #$output
-                                (call-with-input-file "profile"
-                                  read-reference-graph)
+                                (map store-info-item
+                                     (call-with-input-file "profile"
+                                       read-reference-graph))
                                 #$profile
                                 #:system (or #$target (utsname:machine (uname)))
                                 #:symlinks '#$symlinks

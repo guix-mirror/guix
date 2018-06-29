@@ -6,6 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -348,7 +349,7 @@ directory.")
 (define-public sdl2-image
   (package (inherit sdl-image)
     (name "sdl2-image")
-    (version "2.0.2")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -356,7 +357,7 @@ directory.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1s3ciydixrgv34vlf45ak5syq5nlfaqf19wf162lbz4ixxd0gpvj"))))
+                "0s13dmakn21q6yw8avl67d4zkxzl1wap6l5nwf6cvzrmlxfw441m"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-image))))
 
@@ -503,7 +504,16 @@ sound and device input (keyboards, joysticks, mice, etc.).")
              (string-append "--with-libsdl2-ttf-prefix="
                             (assoc-ref %build-inputs "sdl2-ttf"))
              (string-append "--with-libsdl2-mixer-prefix="
-                            (assoc-ref %build-inputs "sdl2-mixer")))))
+                            (assoc-ref %build-inputs "sdl2-mixer")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-makefile
+           (lambda _
+             ;; Install compiled Guile files in the expected place.
+             (substitute* '("Makefile")
+               (("^godir = .*$")
+                "godir = $(moddir)\n"))
+             #t)))))
     (native-inputs
      `(("guile" ,guile-2.2)
        ("pkg-config" ,pkg-config)))

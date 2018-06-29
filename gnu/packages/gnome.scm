@@ -3756,6 +3756,17 @@ which can read a large number of file formats.")
             (uri (string-append "mirror://gnome/sources/" name "/"
                                 (version-major+minor version) "/"
                                 name "-" version ".tar.xz"))
+            (patches
+             (list
+              ;; fmradio: Fix build with GStreamer master
+              (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://gitlab.gnome.org/GNOME/rhythmbox/commit/"
+                      "b182c6b9e1d09e601bac0b703cc5f8b159ebbc3a.patch"))
+                (sha256
+                 (base32
+                  "17j45vyyr071ka3nckj2gycgyyv1j08fyrxw89jfdq2442nzrsiy")))))
             (sha256
              (base32
               "0hzcns8gf5yb0rm4ss8jd8qzarcaplp5cylk6plwilsqfvxj4xn2"))))
@@ -4186,7 +4197,7 @@ a secret password store, an adblocker, and a modern UI.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.28.2.1")
+    (version "3.28.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4194,7 +4205,7 @@ a secret password store, an adblocker, and a modern UI.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ba0qqsbg3cv1k1pcj971y7l8kqib5l7kbr743x9a7hbmkqfk95s"))))
+                "1xz6xl6b0iihvczyr0cs1z5ifvpai6anb4m0ng1caiph06klc1b9"))))
 
     (build-system meson-build-system)
     (arguments
@@ -6307,7 +6318,7 @@ fit the GNOME desktop.")
 (define-public gnome-dictionary
   (package
     (name "gnome-dictionary")
-    (version "3.24.0")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6315,8 +6326,9 @@ fit the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1wnrpg8yndacq0xnzc84d519yp7f28brzklm3a48xcgs1i50drs1"))))
-    (build-system glib-or-gtk-build-system)
+                "007k2bq8iplg4psdpz074r5d4zxvn4s95qym4rw9hs6giljbrf0n"))))
+    (build-system meson-build-system)
+    (arguments '(#:glib-or-gtk? #t))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
@@ -6481,6 +6493,12 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
              (substitute* '("Makefile.am")
                (("\\$\\(DESTDIR\\)/usr/share")
                 "$(datadir)"))
+             #t))
+         (add-after 'unpack 'disable-configure-during-bootstrap
+           (lambda _
+             ;; Do not run configure as part of autogen.sh because references
+             ;; to /bin are not fixed yet.
+             (setenv "NOCONFIGURE" "y")
              #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -6530,6 +6548,14 @@ simple and consistent.")
                (base32
                 "1ya1cqvv8q847c0rpcg6apzky87q3h04y8jz5nmi52qk6kg8si0b"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-configure-during-bootstrap
+           (lambda _
+             (substitute* "autogen.sh"
+               (("^\"\\$srcdir/configure\".*") ""))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -7135,7 +7161,7 @@ photo-booth-like software, such as Cheese.")
 (define-public cheese
   (package
     (name "cheese")
-    (version "3.26.0")
+    (version "3.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -7143,7 +7169,7 @@ photo-booth-like software, such as Cheese.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "01f6lsp9jkhq5v2zxlghw15bca4xqavkxqkl8977r0g13p22zxcf"))))
+                "06da5qc5hdvwwd5vkbgbx8pjx1l3mvr07yrnnv3v1hfc3wp7l7jw"))))
     (arguments
      ;; Tests require GDK.
      `(#:tests? #f
@@ -7268,7 +7294,7 @@ mp3, Ogg Vorbis and FLAC")
                            ("libxtst" ,libxtst)
                            ("dconf" ,dconf)
                            ("libice" ,libice)))
-      (inputs `(("libsm", libsm)
+      (inputs `(("libsm" ,libsm)
                 ("python-cheetah" ,python2-cheetah)))
       (native-inputs `(("glib" ,glib "bin")
                        ("pkg-config" ,pkg-config)
@@ -7282,9 +7308,10 @@ mp3, Ogg Vorbis and FLAC")
                        ("gobject-introspection" ,gobject-introspection)
                        ("python2" ,python-2)))
       (synopsis "Tool to help prevent repetitive strain injury (RSI)")
-      (description "Workrave is a program that assists in the recovery and
-prevention of repetitive strain injury (RSI).  The program frequently alerts
-you to take micro-pauses, rest breaks and restricts you to your daily limit")
+      (description
+       "Workrave is a program that assists in the recovery and prevention of
+repetitive strain injury (@dfn{RSI}).  The program frequently alerts you to take
+micro-pauses and rest breaks, and restricts you to your daily limit.")
       (home-page "http://www.workrave.org")
       (license license:gpl3+))))
 

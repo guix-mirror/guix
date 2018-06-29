@@ -28,6 +28,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages autotools)
@@ -91,16 +92,15 @@ readers and is needed to communicate with such devices through the
 (define-public eid-mw
   (package
     (name "eid-mw")
-    (version "4.3.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/Fedict/eid-mw/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ay9znry9dkhhn783paqy8czvv3w5gdpmq8ag8znx9akza8c929z"))))
+    (version "4.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Fedict/eid-mw")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "1h90iz4l85drchpkmhlsvg7f9abhw6890fdr9x5n5ir3kxikwcdm"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -121,9 +121,14 @@ readers and is needed to communicate with such devices through the
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; The github tarball doesn't contain a configure script.
-         (add-before 'configure 'autoreconf
-           (lambda _ (zero? (system* "autoreconf" "-i")))))))
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             ;; configure.ac relies on ‘git --describe’ to get the version.
+             ;; Patch it to just return the real version number directly.
+             (substitute* "scripts/build-aux/genver.sh"
+               (("/bin/sh") (which "sh"))
+               (("\\$GITDESC") ,version))
+             (invoke "sh" "./bootstrap.sh"))))))
     (synopsis "Belgian eID Middleware")
     (description "The Belgian eID Middleware is required to authenticate with
 online services using the Belgian electronic identity card.")

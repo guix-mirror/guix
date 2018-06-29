@@ -276,7 +276,7 @@ information about tracks being played to a scrobbler, such as Libre.FM.")
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero? (system* "python" "mpd_test.py")))))))
+           (lambda _ (invoke "python" "mpd_test.py"))))))
     (native-inputs `(("python-mock" ,python-mock)))
     (home-page "https://github.com/Mic92/python-mpd2")
     (synopsis "Python MPD client library")

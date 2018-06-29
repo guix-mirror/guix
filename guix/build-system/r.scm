@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,7 +74,7 @@ release corresponding to NAME and VERSION."
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:inputs #:native-inputs))
+    '(#:source #:target #:r #:inputs #:native-inputs))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag

@@ -22,10 +22,12 @@
 (define-module (gnu packages monitoring)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages check)
@@ -295,3 +297,27 @@ WSGI and the node exporter textfile collector.")
 
 (define-public python2-prometheus-client
   (package-with-python2 python-prometheus-client))
+
+(define-public go-github-com-prometheus-node-exporter
+  (let ((commit "55c32fcf02492fe4946f7ab563547cc5df7fc61e")
+        (revision "0"))
+    (package
+      (name "go-github-com-prometheus-node-exporter")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/prometheus/node_exporter.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "041b87a0sid23c29swqmi5hw6cxbxvkfj3415jg73cm2pi8wh5s6"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/prometheus/node_exporter"))
+      (synopsis "Prometheus exporter for hardware and OS metrics")
+      (description "Prometheus exporter for metrics exposed by *NIX kernels,
+written in Go with pluggable metric collectors.")
+      (home-page "https://github.com/prometheus/node_exporter")
+      (license license:asl2.0))))

@@ -419,10 +419,11 @@ manager for the current system.")
              ;; AssertionError: 'x-apple-ios-png' != 'png'
              (substitute* "test/test-mime.py"
                (("self.check_mimetype\\(imgpng, 'image', 'png'\\)") "#"))
-             (zero? (system* "nosetests" "-v")))))))
+             (invoke "nosetests" "-v"))))))
     (native-inputs
-     `(("shared-mime-info" ,shared-mime-info) ;for tests
-       ("hicolor-icon-theme" ,hicolor-icon-theme) ;for tests
+     ;; For tests.
+     `(("shared-mime-info" ,shared-mime-info)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("python-nose" ,python-nose)))
     (home-page "https://www.freedesktop.org/wiki/Software/pyxdg")
     (synopsis "Implementations of freedesktop.org standards in Python")

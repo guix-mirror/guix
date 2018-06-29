@@ -42,11 +42,12 @@
   #:use-module ((guix build syscalls)
                 #:select (free-disk-space terminal-columns))
   #:use-module ((guix build utils)
-                #:select (invoke-error? invoke-error-program
-                                        invoke-error-arguments
-                                        invoke-error-exit-status
-                                        invoke-error-term-signal
-                                        invoke-error-stop-signal))
+                ;; XXX: All we need are the bindings related to
+                ;; '&invoke-error'.  However, to work around the bug described
+                ;; in 5d669883ecc104403c5d3ba7d172e9c02234577c, #:hide
+                ;; unwanted bindings instead of #:select'ing the needed
+                ;; bindings.
+                #:hide (package-name->name+version))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -420,8 +421,21 @@ report them in a user-friendly way."
     (lambda _
       (setlocale LC_ALL ""))
     (lambda args
-      (warning (G_ "failed to install locale: ~a~%")
-               (strerror (system-error-errno args))))))
+      (cond-expand
+        ;; Guile 2.2 already emits a warning, so let's not add a second one.
+        (guile-2.2 #t)
+        (else (warning (G_ "failed to install locale: ~a~%")
+                       (strerror (system-error-errno args)))))
+      (display-hint (G_ "Consider installing the @code{glibc-utf8-locales} or
+@code{glibc-locales} package and defining @code{GUIX_LOCPATH}, along these
+lines:
+
+@example
+guix package -i glibc-utf8-locales
+export GUIX_LOCPATH=\"$HOME/.guix-profile/lib/locale\"
+@end example
+
+See the \"Application Setup\" section in the manual, for more info.\n")))))
 
 (define (initialize-guix)
   "Perform the usual initialization for stand-alone Guix commands."
@@ -1390,7 +1404,12 @@ DURATION-RELATION with the current time."
                           (date->string
                            (time-utc->date
                             (generation-time profile number))
-                           "~b ~d ~Y ~T")))
+                           ;; TRANSLATORS: This is a format-string for date->string.
+                           ;; Please choose a format that corresponds to the
+                           ;; usual way of presenting dates in your locale.
+                           ;; See https://www.gnu.org/software/guile/manual/html_node/SRFI_002d19-Date-to-string.html
+                           ;; for details.
+                           (G_ "~b ~d ~Y ~T"))))
           (current (generation-number profile)))
       (if (= number current)
           ;; TRANSLATORS: The word "current" here is an adjective for

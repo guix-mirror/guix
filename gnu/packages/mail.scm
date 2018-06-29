@@ -26,6 +26,7 @@
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -489,7 +491,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.2.0")
+    (version "7.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -497,7 +499,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1i7pzm1vrj98jcyn1ygsg1yp0gqlsssnc25451icvivysvdwdj5n"))))
+                "1022xf2w1xax4vx4kzhlfbhaf0b72wkpvrcscvs4q8qk2ja68h8x"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -515,7 +517,7 @@ and corrections.  It is based on a Bayesian filter.")
              (substitute* "docs/Makefile"
                ;; Prevent xmllint and xsltproc from downloading a DTD file.
                (("a2x -v") "a2x --no-xmllint --xsltproc-opts=--nonet -v"))
-             (zero? (system* "make" "-C" "docs" "man"))))
+             (invoke "make" "-C" "docs" "man")))
          (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -761,14 +763,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.26.2")
+    (version "0.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0fqf6wwvqlccq9qdnd0mky7fx0kbkczd28blf045s0vsvdjii70h"))))
+                "0xh8vq2sa7r07xb3n13drc6gdiqhcgl0pj0za5xj43qkiwpikls0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -793,12 +795,10 @@ invoking @command{notifymuch} from the post-new hook.")
                              (elisp
                               (string-append out "/share/emacs/site-lisp/guix.d/"
                                              ,name "-" ,version)))
-                        (zero?
-                         (system*
-                          "./configure"
-                          (string-append "--prefix=" out)
-                          (string-append "--emacslispdir=" elisp)
-                          (string-append "--emacsetcdir=" elisp))))))
+                        (invoke "./configure"
+                                (string-append "--prefix=" out)
+                                (string-append "--emacslispdir=" elisp)
+                                (string-append "--emacsetcdir=" elisp)))))
                   (add-before 'check 'prepare-test-environment
                     (lambda _
                       (setenv "TEST_CC" "gcc")
@@ -975,7 +975,7 @@ useful features.")
           (add-after 'unpack 'autogen
             (lambda _
               (setenv "NOCONFIGURE" "true")
-              (zero? (system* "sh" "autogen.sh")))))
+              (invoke "sh" "autogen.sh"))))
         #:configure-flags
         '("--disable-static" "--disable-db")))
     (home-page "http://www.etpan.org/libetpan.html")
@@ -1136,6 +1136,7 @@ delivery.")
        ("bzip2" ,bzip2)
        ("xz" ,xz)
        ("perl" ,perl)
+       ("libnsl" ,libnsl)
        ("libxt" ,libxt)
        ("libxaw" ,libxaw)))
     (native-inputs
@@ -1270,7 +1271,9 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rkk10b1bsjz979sc864vpgcdchy7yxwmyv4ik50lar1h6awdnrf"))))
+         "0rkk10b1bsjz979sc864vpgcdchy7yxwmyv4ik50lar1h6awdnrf"))
+       (patches
+        (search-patches "dovecot-trees-support-dovecot-2.3.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("automake" ,automake)
@@ -1289,7 +1292,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (home-page "https://0xacab.org/riseuplabs/trees")
     (synopsis "NaCL-based Dovecot email storage encryption plugin")
     (description
@@ -1345,7 +1348,7 @@ using lidsodium sealed boxes.
          (modify-phases %standard-phases
            (add-after 'unpack 'autogen
              (lambda _
-               (zero? (system* "sh" "autogen.sh")))))))
+               (invoke "sh" "autogen.sh"))))))
       (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
       (synopsis "Libsodium password hashing schemes plugin for Dovecot")
       (description
@@ -1952,14 +1955,15 @@ define(`confLIBS', `-lresolv')
 define(`confINSTALL', `~a/devtools/bin/install.sh')
 define(`confDEPEND_TYPE', `CC-M')
 define(`confINST_DEP', `')
-" (getcwd))))))
+" (getcwd))))
+             #t))
          (replace 'build
            (lambda _
-             (and (zero? (system* "sh" "Build"))
-                  (with-directory-excursion "cf/cf"
-                    (begin
-                      (copy-file "generic-linux.mc" "sendmail.mc")
-                      (zero? (system* "sh" "Build" "sendmail.cf")))))))
+             (invoke "sh" "Build")
+             (with-directory-excursion "cf/cf"
+               (copy-file "generic-linux.mc" "sendmail.mc")
+               (invoke "sh" "Build" "sendmail.cf"))
+             #t))
          (add-before 'install 'pre-install
            (lambda _
              (let ((out (assoc-ref %outputs "out")))
@@ -1968,7 +1972,8 @@ define(`confINST_DEP', `')
                (mkdir-p (string-append out "/etc/mail"))
                (setenv "DESTDIR" out)
                (with-directory-excursion "cf/cf"
-                 (zero? (system* "sh" "Build" "install-cf")))))))
+                 (invoke "sh" "Build" "install-cf"))
+               #t))))
        ;; There is no make check.  There are some post installation tests, but those
        ;; require root privileges
        #:tests? #f))
@@ -1995,7 +2000,9 @@ transfer protocols.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "10bsfsnlg9d9i6l2izdnxp05s3ri8fvwzqxvx1jmarc852382619"))))
+                "10bsfsnlg9d9i6l2izdnxp05s3ri8fvwzqxvx1jmarc852382619"))
+              ;; Fixed upstream: <github.com/OpenSMTPD/OpenSMTPD/pull/835>.
+              (patches (search-patches "opensmtpd-fix-crash.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -2016,17 +2023,24 @@ transfer protocols.")
              "--with-path-CAfile=/etc/ssl/certs/ca-certificates.crt")
        #:phases
        (modify-phases %standard-phases
+         ;; Fix some incorrectly hard-coded external tool file names.
+         (add-after 'unpack 'patch-FHS-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "smtpd/smtpctl.c"
+               (("/bin/cat") (which "cat"))
+               (("/bin/sh") (which "sh")))
+             #t))
          ;; OpenSMTPD provides a single utility smtpctl to control the daemon and
          ;; the local submission subsystem.  To accomodate systems that require
          ;; historical interfaces such as sendmail, newaliases or makemap, the
          ;; smtpctl utility can operate in compatibility mode if called with the
          ;; historical name.
-         (add-after 'install 'install-compabilitymode
-           (lambda _
-             (let* ((out (assoc-ref %outputs "out"))
+         (add-after 'install 'install-compability-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
                     (sbin (string-append out "/sbin/")))
-               (for-each (lambda (cmd)
-                           (symlink "smtpctl" (string-append sbin cmd)))
+               (for-each (lambda (command)
+                           (symlink "smtpctl" (string-append sbin command)))
                          '("makemap" "sendmail" "send-mail"
                            "newaliases" "mailq")))
              #t)))))
@@ -2211,12 +2225,10 @@ installation on systems where resources are limited.  Its features include:
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (zero?
-              (system*
-               "django-admin"
-               "test"
-               "--settings=django_mailman3.tests.settings_test"
-               "django_mailman3")))))
+             (invoke "django-admin"
+                     "test"
+                     "--settings=django_mailman3.tests.settings_test"
+                     "django_mailman3"))))
        #:python ,python-2))
     (inputs
      `(("python2-django" ,python2-django)))

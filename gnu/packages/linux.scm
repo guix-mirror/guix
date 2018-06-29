@@ -50,6 +50,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
@@ -295,6 +296,12 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                  (or (%current-target-system) (%current-system)))
            ((or "x86_64" "i386")
             `(("gcc" ,gcc-7)))
+           ("arm64"
+            ;; Work around a binutils 2.30 bug where some kernel symbols would
+            ;; be incorrectly marked as relocatable:
+            ;; <https://sourceware.org/bugzilla/show_bug.cgi?id=22764>.
+            `(("ld-wrapper" ,(make-ld-wrapper "ld-wrapper"
+                                              #:binutils binutils/fixed))))
            (_
             '()))
        ,@(match (and configuration-file
@@ -395,8 +402,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17")
-(define %linux-libre-hash "0abbqrq96kn97jr02mf4ahqg7hl9vhq95c1l2z0s7jqrmhv1n8pb")
+(define %linux-libre-version "4.17.3")
+(define %linux-libre-hash "06mjbs3i0xq1h1cgr6xldr6a8rxsy30mf86wp3n2ff6l5v78iw2q")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -404,8 +411,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.48")
-(define %linux-libre-4.14-hash "011lkq30gpvbgvg2p1nw2kqkig9a3qridy678rkx3fpah0ya4rhd")
+(define %linux-libre-4.14-version "4.14.52")
+(define %linux-libre-4.14-hash "0lx916iw33n32h1fca59r7mh6l2smyml6igvzhimcah62hqx4rk8")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -414,14 +421,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.106"
-                    "0wgyv15x2czd4nyw4smzp9923cl1ix7pjcry4zn3y61ivqxbqini"
+  (make-linux-libre "4.9.110"
+                    "0nzfna9w9a45y521d3dcxkdv66gn38n4pq814rdqazk74qb5macn"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.135"
-                    "0jdf5yx8b6q4zw7q9k8vv0ky8wlvclr9qz70wgrrvmm5dh1662j9"
+  (make-linux-libre "4.4.138"
+                    "1030ra5gn24qmx8lsnhr6kfnfm60avzs23r81dl7mvzr5dci8vsl"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -914,16 +921,15 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.22")
+    (version "4.23")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
              (uri (string-append home-page "/files/" version
                                  "/strace-" version ".tar.xz"))
-             (patches (search-patches "strace-kernel-4.16.patch"))
              (sha256
               (base32
-               "17dkpnsjxmys1ydidm9wcvc3wscsz44fmlxw3dclspn9cj9d1306"))))
+               "1bcsq2gbpcb81ayryvn56a6kjx42fc21la6qgds35n0xbybacq3q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1055,7 +1061,7 @@ MIDI functionality to the Linux-based operating system.")
     ;; TODO: Remove OSS related plugins, they add support to run native
     ;; ALSA applications on OSS however we do not offer OSS and OSS is
     ;; obsolete.
-    (outputs '("out" "pulseaudio"))
+    (outputs '("out" "pulseaudio" "jack"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1063,9 +1069,17 @@ MIDI functionality to the Linux-based operating system.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Distribute the binaries to the various outputs.
              (let* ((out (assoc-ref outputs "out"))
+                    (jack (assoc-ref outputs "jack"))
+                    (jacklib (string-append jack "/lib/alsa-lib"))
                     (pua (assoc-ref outputs "pulseaudio"))
                     (pualib (string-append pua "/lib/alsa-lib"))
                     (puaconf (string-append pua "/share/alsa/alsa.conf.d")))
+               ;; For jack.
+               (mkdir-p jacklib)
+               (for-each (lambda (file)
+                           (rename-file file (string-append jacklib "/" (basename file))))
+                         (find-files out ".*jack\\.(la|so)"))
+               ;; For pluseaudio.
                (mkdir-p puaconf)
                (mkdir-p pualib)
                (chdir (string-append out "/share"))
@@ -1082,6 +1096,7 @@ MIDI functionality to the Linux-based operating system.")
                #t))))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
        ("speex" ,speex) ; libspeexdsp resampling plugin
        ("libsamplerate" ,libsamplerate) ; libsamplerate resampling plugin
        ("ffmpeg" ,ffmpeg) ; libavcodec resampling plugin, a52 plugin
@@ -1195,7 +1210,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.16.0")
+    (version "4.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1203,7 +1218,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "02pfalg319jpbjz273ph725br8dnkzpfvi98azi9yd6p1w128p0c"))))
+                "0vmynikcamfhakvwyk5dsffy0ymgi5mdqiwybdvqfn1ijaq93abg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -2995,7 +3010,10 @@ arrays when needed.")
              (let ((lvm2 (assoc-ref inputs "lvm2"))
                    (udev (assoc-ref inputs "udev")))
                (substitute* "Makefile.inc"
-                 (("\\$\\(prefix\\)/usr") "$(prefix)"))
+                 (("\\$\\(prefix\\)/usr") "$(prefix)")
+                 ;; Do not save timestamp to avoid gzip "timestamp
+                 ;; out-of-range" warnings.
+                 (("gzip -9") "gzip -9n"))
                (substitute* '("kpartx/Makefile" "libmultipath/Makefile")
                  (("/usr/include/libdevmapper.h")
                   (string-append lvm2 "/include/libdevmapper.h"))
@@ -3256,6 +3274,7 @@ and copy/paste text in the console and in xterm.")
                        (invoke "make"
                                (string-append "bindir=" staticbin)
                                "install-static")))))
+       #:tests? #f            ; XXX: require the 'btrfs' kernel module.
        #:test-target "test"
        #:parallel-tests? #f)) ; tests fail when run in parallel
     (inputs `(("e2fsprogs" ,e2fsprogs)
@@ -3363,7 +3382,7 @@ disks and SD cards.  This package provides the userland utilities.")
   (package
     (inherit f2fs-tools-1.7)
     (name "f2fs-tools")
-    (version "1.8.0")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3371,7 +3390,7 @@ disks and SD cards.  This package provides the userland utilities.")
                     "/f2fs-tools.git/snapshot/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1bir9ladb58ijlcvrjrq1fb1xv5ys50zdjaq0yzliib0apsyrnyl"))))
+                "05ikaim0qq3dx9x3sp43ralwz43r3b0viv62n99kabp0vf3b0hg8"))))
     (inputs
      `(("libuuid" ,util-linux)))))
 
@@ -4032,26 +4051,27 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.0")
+    (version "1.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/haikarainen/" name
-                                  "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/haikarainen/light")
+                    (commit version)))
               (sha256
                (base32
-                "0r5gn6c0jcxknzybl6059dplxv46dpahchqq4gymrs7z8bp0hilp"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1qra8yzsga29bxlvq63v1db071a1xdji7i60p4kzrciidm1206js"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-after 'unpack 'patch-makefile
            (lambda _
-             (substitute* "Makefile" (("chown") "#")))))))
+             (substitute* "Makefile" (("chown") "#"))
+             #t)))))
     (native-inputs
      `(("help2man" ,help2man)))
     (home-page "https://haikarainen.github.io/light")
@@ -4404,14 +4424,14 @@ available in the kernel Linux.")
 (define-public cpuid
   (package
     (name "cpuid")
-    (version "20180419")
+    (version "20180519")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.etallen.com/cpuid/cpuid-"
                                   version ".src.tar.gz"))
               (sha256
                (base32
-                "0cnxj72pjalsszhn862r6shw64zbrkw0k3mm36fn93bivswjnj12"))))
+                "16pzwyifc9glpk1hm6bqb5d1a7cw0qnqiamh5sbvqg7j6sz26y4n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("CC=gcc")
@@ -4826,3 +4846,26 @@ libpfm4 provides support for the @code{perf_events} interface, which was
 introduced in Linux 2.6.31.")
     (home-page "http://perfmon2.sourceforge.net/")
     (license license:expat)))
+
+(define-public libnfnetlink
+  (package
+    (name "libnfnetlink")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.netfilter.org/projects/libnfnetlink/files/"
+                    "libnfnetlink-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "06mm2x4b01k3m7wnrxblk9j0mybyr4pfz28ml7944xhjx6fy2w7j"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.netfilter.org/projects/libnfnetlink/")
+    (synopsis "Low-level netfilter netlink communication library")
+    (description
+     "@code{libnfnetlink} is the low-level library for netfilter related
+kernel/userspace communication.  It provides a generic messaging
+infrastructure for in-kernel netfilter subsystems (such as nfnetlink_log,
+nfnetlink_queue, nfnetlink_conntrack) and their respective users and/or
+management tools in userspace.")
+    (license license:gpl2)))

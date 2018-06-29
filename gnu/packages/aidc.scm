@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darringon <jmd@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +52,7 @@ formats.")
 (define-public qrencode
   (package
     (name "qrencode")
-    (version "4.0.0")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -59,7 +60,7 @@ formats.")
                     ".tar.bz2"))
               (sha256
                (base32
-                "02vx69fl52jbcrmnydsaxcmy6nxqm9jyxzd7hr07s491d7hka069"))))
+                "1d2q5d3v8g3hsi3h5jq4n177bjhf3kawms09immw7p187f6jgjy9"))))
     (build-system gnu-build-system)
     (inputs `(("libpng" ,libpng)))
     (native-inputs `(("pkg-config" ,pkg-config)))

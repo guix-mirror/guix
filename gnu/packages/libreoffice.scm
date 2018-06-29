@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,20 +79,21 @@
 (define-public ixion
   (package
     (name "ixion")
-    (version "0.12.2")
+    (version "0.13.0")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "http://kohei.us/files/ixion/src/libixion-"
-                          version ".tar.xz"))
-      (sha256 (base32
-               "1bnsqbxpbijwbg42rrqq6mz06wvcxjpl0gjdzwyilkmv6s400i4b"))))
+       (method url-fetch)
+       (uri (string-append "http://kohei.us/files/ixion/src/libixion-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "1rf76drzg593jzswwnh8kr2jangp8ylizqjspx57rld25g2n1qss"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-     (inputs
-      `(("mdds" ,mdds)
-        ("python" ,python)))
+    (inputs
+     `(("mdds" ,mdds)
+       ("python" ,python)))
     (home-page "https://gitlab.com/ixion/ixion")
     (synopsis "General purpose formula parser and interpreter")
     (description "Ixion is a library for calculating the results of formula
@@ -103,22 +105,23 @@ their dependencies automatically upon calculation.")
 (define-public orcus
   (package
     (name "orcus")
-    (version "0.12.1")
+    (version "0.13.4")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "http://kohei.us/files/" name "/src/lib"
-                          name "-" version ".tar.xz"))
-      (sha256 (base32
-               "171bmqa9hkk4xygz20qda5900rs4kq9fgl424ldkxlj4d733dffi"))))
+       (method url-fetch)
+       (uri (string-append "http://kohei.us/files/" name "/src/lib"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1r42waglxwmvvwl20fy49vzgfp1sis4j703f81iswzdyzqalq75p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-     (inputs
-      `(("ixion" ,ixion)
-        ("mdds" ,mdds)
-        ("python" ,python)
-        ("zlib" ,zlib)))
+    (inputs
+     `(("ixion" ,ixion)
+       ("mdds" ,mdds)
+       ("python" ,python)
+       ("zlib" ,zlib)))
     (home-page "https://gitlab.com/orcus/orcus")
     (synopsis "File import filter library for spreadsheet documents")
     (description "Orcus is a library that provides a collection of standalone
@@ -222,6 +225,34 @@ Broad Band eBook, eReader .pdb, FictionBook v. 2 (including zipped files),
 PalmDoc Ebook, Plucker .pdb, QiOO (mobile format, for java-enabled
 cellphones), TCR (simple compressed text format), TealDoc, zTXT,
 ZVR (simple compressed text format).")
+    (license mpl2.0)))
+
+(define-public libepubgen
+  (package
+    (name "libepubgen")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/libepubgen/libepubgen-"
+                           version "/libepubgen-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1b8mc9zzrqypj1v9zdy3ybc48pw0rfr06cyi7n6grvybjjwq9q03"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("boost" ,boost)))
+    (propagated-inputs         ; in Requires field of .pkg
+     `(("librevenge" ,librevenge)))
+    (home-page "https://sourceforge.net/projects/libepubgen/")
+    (synopsis "EPUB generator library for librevenge")
+    (description "libepubgen is an EPUB generator for librevenge.  It supports
+librevenge's text document interface and--currently in a very limited
+way--presentation and vector drawing interfaces.")
     (license mpl2.0)))
 
 (define-public libwpg
@@ -835,10 +866,37 @@ and to return information on pronunciations, meanings and synonyms.")
     (license (non-copyleft "file://COPYING"
                            "See COPYING in the distribution."))))
 
+(define-public libqxp
+  (package
+    (name "libqxp")
+    (version "0.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://dev-www.libreoffice.org/src/libqxp/"
+                                  "libqxp-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0wswz49y0lqwqw2nj9j7jaj5ag88hapcz8czgkxax57zhihpy9cc"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("icu4c" ,icu4c)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("librevenge" ,librevenge))) ; mentioned in Requires field
+    (home-page "https://www.libreoffice.org")
+    (synopsis "Library and tools for the QuarkXPress file format")
+    (description "libqxp is a library and a set of tools for reading and
+converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
+    (license mpl2.0)))
+
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.4.7.2")
+    (version "6.0.5.1")
     (source
      (origin
       (method url-fetch)
@@ -848,7 +906,8 @@ and to return information on pronunciations, meanings and synonyms.")
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256
        (base32
-        "0s9s4nhp2whwxis54jbxrf1dwpnpl95b9781d1pdj4xk5z9v90fv"))))
+        "0vnmb231hyhxm7klaqd8vp3rmvix145bq8iqzv19jgl1yaqkxl21"))
+      (patches (search-patches "libreoffice-icu.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -880,6 +939,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("libcmis" ,libcmis)
        ("libjpeg-turbo" ,libjpeg-turbo)
        ("libe-book" ,libe-book)
+       ("libepubgen" ,libepubgen)
        ("libetonyek" ,libetonyek)
        ("libexttextcat" ,libexttextcat)
        ("libfreehand" ,libfreehand)
@@ -890,6 +950,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("libmwaw" ,libmwaw)
        ("libodfgen" ,libodfgen)
        ("libpagemaker" ,libpagemaker)
+       ("libqxp" ,libqxp)
        ("libstaroffice" ,libstaroffice)
        ("libvisio" ,libvisio)
        ("libwpg" ,libwpg)
@@ -927,34 +988,23 @@ and to return information on pronunciations, meanings and synonyms.")
          (modify-phases %standard-phases
            (add-before 'configure 'prepare-src
              (lambda* (#:key inputs #:allow-other-keys)
-               (let ((gpgme (assoc-ref inputs "gpgme")))
-                 (substitute*
-                   "sdext/source/pdfimport/xpdfwrapper/pdfioutdev_gpl.cxx"
-                   ;; This header was renamed in Poppler 0.62.0.
-                   (("UTF8.h") "UnicodeMapFuncs.h")
-                   ;; And mapUCS2() was renamed to mapUTF16().
-                   (("UCS2") "UTF16"))
-                 (substitute*
+               (substitute*
                    (list "sysui/CustomTarget_share.mk"
                          "solenv/gbuild/gbuild.mk"
                          "solenv/gbuild/platform/unxgcc.mk")
-                   (("/bin/sh") (which "sh")))
+                 (("/bin/sh") (which "sh")))
 
-                 ;; GPGME++ headers are installed in a gpgme++ subdirectory,
-                 ;; but files in "xmlsecurity/source/gpg/" expect to find them
-                 ;; on the include path without a prefix.
-                 (substitute* "xmlsecurity/Library_xsec_xmlsec.mk"
-                   (("\\$\\$\\(INCLUDE\\)")
-                    (string-append "$$(INCLUDE) -I" gpgme "/include/gpgme++")))
+               ;; GPGME++ headers are installed in a gpgme++ subdirectory, but
+               ;; files in "xmlsecurity/source/gpg/" and elsewhere expect to
+               ;; find them on the include path without a prefix.
+               (substitute* '("xmlsecurity/Library_xsec_xmlsec.mk"
+                              "comphelper/Library_comphelper.mk")
+                 (("\\$\\$\\(INCLUDE\\)")
+                  (string-append "$$(INCLUDE) -I"
+                                 (assoc-ref inputs "gpgme")
+                                 "/include/gpgme++")))
 
-                 ;; XXX: When GTK2 is disabled, one header file is not included.
-                 ;; This is likely fixed in later versions.  See also
-                 ;; <https://bugs.gentoo.org/641812>.
-                 (substitute* "vcl/unx/gtk3/gtk3gtkframe.cxx"
-                   (("#include <unx/gtk/gtkgdi.hxx>")
-                    "#include <unx/gtk/gtkgdi.hxx>\n#include <unx/gtk/gtksalmenu.hxx>"))
-
-                 #t)))
+               #t))
            (add-after 'install 'bin-and-desktop-install
              ;; Create 'soffice' and 'libreoffice' symlinks to the executable
              ;; script.

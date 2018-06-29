@@ -604,39 +604,40 @@ with the sfArk algorithm.")
     (license license:gpl3+)))
 
 (define-public sfarkxtc
- (let ((commit "b5e0a2ba3921f019d74d4b92bd31c36dd19d2cf1"))
-  (package
-    (name "sfarkxtc")
-    (version (string-take commit 10))
-    (source (origin
-              ;; There are no release tarballs, so we just fetch the latest
-              ;; commit at this time.
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/raboof/sfarkxtc.git")
-                    (commit commit)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0f5x6i46qfl6ry21s7g2p4sd4b2r1g4fb03yqi2vv4kq3saryhvj"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (substitute* "Makefile"
-                      (("/usr/local") (assoc-ref outputs "out")))
-                    #t)))))
-    (inputs
-     `(("zlib" ,zlib)
-       ("sfarklib" ,sfarklib)))
-    (home-page "https://github.com/raboof/sfarkxtc")
-    (synopsis "Basic sfArk decompressor")
-    (description "SfArk extractor converts SoundFonts in the compressed legacy
+  (let ((commit "13cd6f93725a90d91ec5ea75babf1dbd694ac463")
+        (revision "1"))
+    (package
+      (name "sfarkxtc")
+      (version (git-version "0" revision commit))
+      (source (origin
+                ;; There are no release tarballs, so we just fetch the latest
+                ;; commit at this time.
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/raboof/sfarkxtc.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1mb1jyk1m11l1gppd9hmql9cyp55sdf7jk5rbc7acky1z4k4mv19"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ;no "check" target
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "Makefile"
+                 (("/usr/local") (assoc-ref outputs "out")))
+               #t)))))
+      (inputs
+       `(("zlib" ,zlib)
+         ("sfarklib" ,sfarklib)))
+      (home-page "https://github.com/raboof/sfarkxtc")
+      (synopsis "Basic sfArk decompressor")
+      (description "SfArk extractor converts SoundFonts in the compressed legacy
 sfArk file format to the uncompressed sf2 format.")
-    (license license:gpl3+))))
+      (license license:gpl3+))))
 
 (define-public libmspack
   (package
@@ -2111,7 +2112,7 @@ single-member files which can't be decompressed in parallel.")
 (define-public innoextract
   (package
    (name "innoextract")
-   (version "1.6")
+   (version "1.7")
    (source
     (origin
      (method url-fetch)
@@ -2119,7 +2120,7 @@ single-member files which can't be decompressed in parallel.")
                          version ".tar.gz"))
      (sha256
       (base32
-       "08sp5vbfjvq1irhhraqkn5m2x1z209r4axhx7laf1adcw30ccapi"))
+       "0khwi9f0q0h6xfbixrrc1rfpgj0b7ajwilq7yhmxnn5lpc807f6x"))
      (file-name (string-append name "-" version ".tar.gz"))))
    (build-system cmake-build-system)
    (arguments
@@ -2209,7 +2210,8 @@ decompression is a little bit slower.")
                                  version "/" name "-" version "-src.tar.xz"))
              (sha256
               (base32
-               "08anybdliqsbsl6x835iwzljahnm9i7v26icdjkcv33xmk6p5vw1"))))
+               "08anybdliqsbsl6x835iwzljahnm9i7v26icdjkcv33xmk6p5vw1"))
+             (patches (search-patches "upx-fix-CVE-2017-15056.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("ucl" ,ucl)))
@@ -2241,6 +2243,11 @@ decompression is a little bit slower.")
              #t))
          )))
     (home-page "https://upx.github.io/")
+    ;; CVE-2017-16869 is about Mach-O files which is not of a big concern for Guix.
+    ;; See https://github.com/upx/upx/issues/146 and
+    ;; https://nvd.nist.gov/vuln/detail?vulnId=CVE-2017-16869.
+    ;; The issue will be fixed after version 3.94.
+    (properties `((lint-hidden-cve . ("CVE-2017-16869"))))
     (synopsis "Compression tool for executables")
     (description
      "The Ultimate Packer for eXecutables (UPX) is an executable file

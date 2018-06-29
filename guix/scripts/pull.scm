@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,10 +25,15 @@
   #:use-module (guix config)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (guix profiles)
   #:use-module (guix gexp)
   #:use-module (guix grafts)
   #:use-module (guix monads)
   #:use-module (guix scripts build)
+  #:autoload   (guix self) (whole-package)
+  #:autoload   (gnu packages ssh) (guile-ssh)
+  #:autoload   (gnu packages tls) (gnutls)
+  #:use-module ((guix scripts package) #:select (build-and-use-profile))
   #:use-module ((guix build utils)
                 #:select (with-directory-excursion delete-file-recursively))
   #:use-module ((guix build download)
@@ -40,6 +45,7 @@
   #:use-module ((gnu packages certs) #:select (le-certs))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (guix-pull))
@@ -105,6 +111,9 @@ Download and deploy the latest version of Guix.\n"))
   (display (G_ "
       --branch=BRANCH    download the tip of the specified BRANCH"))
   (display (G_ "
+  -l, --list-generations[=PATTERN]
+                         list generations matching PATTERN"))
+  (display (G_ "
       --bootstrap        use the bootstrap Guile to build the new Guix"))
   (newline)
   (show-build-options-help)
@@ -120,6 +129,10 @@ Download and deploy the latest version of Guix.\n"))
   (cons* (option '("verbose") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'verbose? #t result)))
+         (option '(#\l "list-generations") #f #t
+                 (lambda (opt name arg result)
+                   (cons `(query list-generations ,(or arg ""))
+                         result)))
          (option '("url") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'repository-url arg
@@ -158,6 +171,12 @@ Download and deploy the latest version of Guix.\n"))
   ;; a makefile, and, similarly, is intended to always keep this name.
   "build-aux/build-self.scm")
 
+(define %pull-version
+  ;; This is the version of the 'guix pull' protocol.  It specifies what's
+  ;; expected from %SELF-BUILD-FILE.  The initial version ("0") was when we'd
+  ;; place a set of compiled Guile modules in ~/.config/guix/latest.
+  1)
+
 (define* (build-from-source source
                             #:key verbose? commit)
   "Return a derivation to build Guix from SOURCE, using the self-build script
@@ -170,35 +189,62 @@ contained therein.  Use COMMIT as the version string."
          (build  (primitive-load script)))
     ;; BUILD must be a monadic procedure of at least one argument: the source
     ;; tree.
-    (build source #:verbose? verbose? #:version commit)))
+    ;;
+    ;; Note: BUILD can return #f if it does not support %PULL-VERSION.  In the
+    ;; future we'll fall back to a previous version of the protocol when that
+    ;; happens.
+    (build source #:verbose? verbose? #:version commit
+           #:pull-version %pull-version)))
+
+(define (whole-package-for-legacy name modules)
+  "Return a full-blown Guix package for MODULES, a derivation that builds Guix
+modules in the old ~/.config/guix/latest style."
+  (whole-package name modules
+
+                 ;; In the "old style", %SELF-BUILD-FILE would simply return a
+                 ;; derivation that builds modules.  We have to infer what the
+                 ;; dependencies of these modules were.
+                 (list guile-json guile-git guile-bytestructures
+                       guile-ssh gnutls)))
+
+(define* (derivation->manifest-entry drv
+                                     #:key url branch commit)
+  "Return a manifest entry for DRV, which represents Guix at COMMIT.  Record
+URL, BRANCH, and COMMIT as a property in the manifest entry."
+  (mbegin %store-monad
+    (what-to-build (list drv))
+    (built-derivations (list drv))
+    (let ((out (derivation->output-path drv)))
+      (return (manifest-entry
+                (name "guix")
+                (version (string-take commit 7))
+                (item (if (file-exists? (string-append out "/bin/guix"))
+                          drv
+                          (whole-package-for-legacy (string-append name "-"
+                                                                   version)
+                                                    drv)))
+                (properties
+                 `((source (repository
+                            (version 0)
+                            (url ,url)
+                            (branch ,branch)
+                            (commit ,commit))))))))))
 
 (define* (build-and-install source config-dir
-                            #:key verbose? commit)
+                            #:key verbose? url branch commit)
   "Build the tool from SOURCE, and install it in CONFIG-DIR."
-  (mlet* %store-monad ((source        (build-from-source source
-                                                         #:commit commit
-                                                         #:verbose? verbose?))
-                       (source-dir -> (derivation->output-path source))
-                       (to-do?        (what-to-build (list source)))
-                       (built?        (built-derivations (list source))))
-    ;; Always update the 'latest' symlink, regardless of whether SOURCE was
-    ;; already built or not.
-    (if built?
-        (mlet* %store-monad
-            ((latest -> (string-append config-dir "/latest"))
-             (done      (indirect-root-added latest)))
-          (if (and (file-exists? latest)
-                   (string=? (readlink latest) source-dir))
-              (begin
-                (display (G_ "Guix already up to date\n"))
-                (return #t))
-              (begin
-                (switch-symlinks latest source-dir)
-                (format #t
-                        (G_ "updated ~a successfully deployed under `~a'~%")
-                        %guix-package-name latest)
-                (return #t))))
-        (leave (G_ "failed to update Guix, check the build log~%")))))
+  (define update-profile
+    (store-lift build-and-use-profile))
+
+  (mlet* %store-monad ((drv   (build-from-source source
+                                                 #:commit commit
+                                                 #:verbose? verbose?))
+                       (entry (derivation->manifest-entry drv
+                                                          #:url url
+                                                          #:branch branch
+                                                          #:commit commit)))
+    (update-profile (string-append config-dir "/current")
+                    (manifest (list entry)))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."
@@ -236,6 +282,66 @@ certificates~%"))
       (report-git-error err))))
 
 
+;;;
+;;; Queries.
+;;;
+
+(define (display-profile-content profile number)
+  "Display the packages in PROFILE, generation NUMBER, in a human-readable
+way and displaying details about the channel's source code."
+  (for-each (lambda (entry)
+              (format #t "  ~a ~a~%"
+                      (manifest-entry-name entry)
+                      (manifest-entry-version entry))
+              (match (assq 'source (manifest-entry-properties entry))
+                (('source ('repository ('version 0)
+                                       ('url url)
+                                       ('branch branch)
+                                       ('commit commit)
+                                       _ ...))
+                 (format #t (G_ "    repository URL: ~a~%") url)
+                 (when branch
+                   (format #t (G_ "    branch: ~a~%") branch))
+                 (format #t (G_ "    commit: ~a~%") commit))
+                (_ #f)))
+
+            ;; Show most recently installed packages last.
+            (reverse
+             (manifest-entries
+              (profile-manifest (generation-file-name profile number))))))
+
+(define (process-query opts)
+  "Process any query specified by OPTS."
+  (define profile
+    (string-append (config-directory) "/current"))
+
+  (match (assoc-ref opts 'query)
+    (('list-generations pattern)
+     (define (list-generation display-function number)
+       (unless (zero? number)
+         (display-generation profile number)
+         (display-function profile number)
+         (newline)))
+
+     (leave-on-EPIPE
+      (cond ((not (file-exists? profile))         ; XXX: race condition
+             (raise (condition (&profile-not-found-error
+                                (profile profile)))))
+            ((string-null? pattern)
+             (for-each (lambda (generation)
+                         (list-generation display-profile-content generation))
+                       (profile-generations profile)))
+            ((matching-generations pattern profile)
+             =>
+             (match-lambda
+               (()
+                (exit 1))
+               ((numbers ...)
+                (for-each (lambda (generation)
+                            (list-generation display-profile-content generation))
+                          numbers)))))))))
+
+
 (define (guix-pull . args)
   (define (use-le-certs? url)
     (string-prefix? "https://git.savannah.gnu.org/" url))
@@ -249,38 +355,48 @@ certificates~%"))
             (cache (string-append (cache-directory) "/pull")))
        (ensure-guile-git!)
 
-       (unless (assoc-ref opts 'dry-run?)         ;XXX: not very useful
-         (with-store store
-           (parameterize ((%graft? (assoc-ref opts 'graft?)))
-             (set-build-options-from-command-line store opts)
+       (cond ((assoc-ref opts 'query)
+              (process-query opts))
+             ((assoc-ref opts 'dry-run?)
+              #t)                                 ;XXX: not very useful
+             (else
+              (with-store store
+                (parameterize ((%graft? (assoc-ref opts 'graft?)))
+                  (set-build-options-from-command-line store opts)
 
-             ;; For reproducibility, always refer to the LE certificates when we
-             ;; know we're talking to Savannah.
-             (when (use-le-certs? url)
-               (honor-lets-encrypt-certificates! store))
+                  ;; For reproducibility, always refer to the LE certificates
+                  ;; when we know we're talking to Savannah.
+                  (when (use-le-certs? url)
+                    (honor-lets-encrypt-certificates! store))
 
-             (format (current-error-port)
-                     (G_ "Updating from Git repository at '~a'...~%")
-                     url)
+                  (format (current-error-port)
+                          (G_ "Updating from Git repository at '~a'...~%")
+                          url)
 
-             (let-values (((checkout commit)
-                           (latest-repository-commit store url
-                                                     #:ref ref
-                                                     #:cache-directory cache)))
+                  (let-values (((checkout commit)
+                                (latest-repository-commit store url
+                                                          #:ref ref
+                                                          #:cache-directory
+                                                          cache)))
 
-               (format (current-error-port)
-                       (G_ "Building from Git commit ~a...~%")
-                       commit)
-               (parameterize ((%guile-for-build
-                               (package-derivation
-                                store
-                                (if (assoc-ref opts 'bootstrap?)
-                                    %bootstrap-guile
-                                    (canonical-package guile-2.2)))))
-                 (run-with-store store
-                   (build-and-install checkout (config-directory)
-                                      #:commit commit
-                                      #:verbose?
-                                      (assoc-ref opts 'verbose?))))))))))))
+                    (format (current-error-port)
+                            (G_ "Building from Git commit ~a...~%")
+                            commit)
+                    (parameterize ((%guile-for-build
+                                    (package-derivation
+                                     store
+                                     (if (assoc-ref opts 'bootstrap?)
+                                         %bootstrap-guile
+                                         (canonical-package guile-2.2)))))
+                      (run-with-store store
+                        (build-and-install checkout (config-directory)
+                                           #:url url
+                                           #:branch (match ref
+                                                      (('branch . branch)
+                                                       branch)
+                                                      (_ #f))
+                                           #:commit commit
+                                           #:verbose?
+                                           (assoc-ref opts 'verbose?)))))))))))))
 
 ;;; pull.scm ends here

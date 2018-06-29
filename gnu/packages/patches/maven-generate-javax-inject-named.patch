@@ -1,0 +1,31 @@
+From 1d20c0e403f1a38d4aca830e0eb4db03ba43efd3 Mon Sep 17 00:00:00 2001
+From: Julien Lepiller <julien@lepiller.eu>
+Date: Tue, 19 Sep 2017 22:21:29 +0200
+Subject: [PATCH] Add sisu-maven-plugin replacement
+
+---
+ sisu.sh | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+ create mode 100755 sisu.sh
+
+diff --git a/sisu.sh b/sisu.sh
+new file mode 100755
+index 0000000..979f373
+--- /dev/null
++++ b/sisu.sh
+@@ -0,0 +1,12 @@
++## This script generates a rough javax.inject.Named file. It is meant to
++## replace sisu-maven-plugin as it eventually has a recursive dependency
++## on maven.
++##
++## This script must be run in the source directory (usually src/main/java).
++
++for file in `(cd $1; find -name '*.java')`; do
++  annot=`grep "^@Named" $1/$file`
++  if [ "$annot" != "" ]; then
++    echo $file | sed -e 's|^\./||' -e 's|\.java||' -e 's|/|.|g'
++  fi
++done > $2
+-- 
+2.14.1
+

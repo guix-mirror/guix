@@ -284,7 +284,7 @@ functions which were removed.")
     (version "1.4.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.drobilla.net/ganv-"
+              (uri (string-append "https://download.drobilla.net/ganv-"
                                   version ".tar.bz2"))
               (sha256
                (base32
@@ -309,7 +309,7 @@ functions which were removed.")
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
-    (home-page "http://drobilla.net/software/ganv/")
+    (home-page "https://drobilla.net/software/ganv/")
     (synopsis "GTK+ widget for interactive graph-like environments")
     (description
      "Ganv is an interactive GTK+ widget for interactive “boxes and lines” or
@@ -328,7 +328,7 @@ diagrams.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "http://git.drobilla.net/ganv.git")
+                      (url "https://git.drobilla.net/ganv.git")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
@@ -1416,7 +1416,7 @@ information.")
 (define-public gtk-doc
   (package
     (name "gtk-doc")
-    (version "1.25")
+    (version "1.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1424,12 +1424,30 @@ information.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hpxcij9xx9ny3gs9p0iz4r8zslw8wqymbyababiyl7603a6x90y"))))
+                "0vwsdl61nvnmqswlz5j9m4hg7qirhazwcikcnqf9nx0c13vx6sz2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-gtk-doc-scan
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gtk-doc.xsl"
+              (("http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl")
+               (string-append (assoc-ref inputs "docbook-xsl")
+                              "/xml/xsl/docbook-xsl-"
+                              ,(package-version docbook-xsl)
+                              "/html/chunk.xsl")))
+             #t))
+         (add-after 'patch-gtk-doc-scan 'patch-test-out
+           (lambda _
+             ;; sanity.sh counts the number of status lines.  Since our
+             ;; texlive regenerates the fonts every time and the font
+             ;; generator metafont outputs a lot of extra lines, this
+             ;; test would always fail.  Disable it for now.
+             (substitute* "tests/Makefile.in"
+              (("empty.sh sanity.sh") "empty.sh"))
+             #t))
          (add-before 'build 'set-HOME
            (lambda _
              ;; FIXME: dblatex with texlive-union does not find the built
@@ -1450,7 +1468,15 @@ information.")
                 (string-append (car (find-files (assoc-ref inputs "docbook-xsl")
                                                 "^catalog.xml$"))
                                " \"http://docbook.sourceforge.net/release/xsl/")))
-             #t)))
+             #t))
+         (add-after 'install 'wrap-executables
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (prog)
+                           (wrap-program prog
+                             `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))
+                         (find-files (string-append out "/bin")))
+               #t))))
        #:configure-flags
        (list (string-append "--with-xml-catalog="
                             (assoc-ref %build-inputs "docbook-xml")
@@ -1469,7 +1495,8 @@ information.")
        ("docbook-xml" ,docbook-xml-4.3)
        ("docbook-xsl" ,docbook-xsl)
        ("source-highlight" ,source-highlight)
-       ("glib" ,glib)))
+       ("glib" ,glib)
+       ("python-six" ,python-six)))
     (home-page "http://www.gtk.org/gtk-doc/")
     (synopsis "Documentation generator from C source code")
     (description

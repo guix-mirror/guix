@@ -81,14 +81,14 @@ fundamental object types for C.")
 (define-public sssd
   (package
     (name "sssd")
-    (version "1.16.1")
+    (version "1.16.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://releases.pagure.org/SSSD/sssd/"
                                   "sssd-" version ".tar.gz"))
               (sha256
                (base32
-                "0vjh1c5960wh86zjsamdjhljls7bb5fz5jpcazgzrpmga5w6ggrd"))))
+                "032ppk57qs1lnvz7pb7lw9ldwm9i1yagh9fzgqgn6na3bg61ynzy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -165,6 +165,7 @@ fundamental object types for C.")
      `(("check" ,check)
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml)
+       ("libxml2" ,libxml2)             ; for xmllint
        ("libxslt" ,libxslt)
        ("pkg-config" ,pkg-config)
        ("util-linux" ,util-linux)))     ; for uuid.h, reqired for KCM

@@ -6,6 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -514,6 +515,20 @@ Go.  It also includes runtime support libraries for these languages.")
      "GCC is the GNU Compiler Collection.  It provides compiler front-ends
 for several languages, including C, C++, Objective-C, Fortran, Ada, and Go.
 It also includes runtime support libraries for these languages.")))
+
+(define-public gcc-8
+  (package
+    (inherit gcc-7)
+    (version "8.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0lxil8x0jjx7zbf90cy1rli650akaa6hpk8wk8s62vk2jbwnc60x"))
+              (patches (search-patches "gcc-8-strmov-store-file-names.patch"
+                                       "gcc-5.0-libvtv-runpath.patch"))))))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions and the gfortran definition

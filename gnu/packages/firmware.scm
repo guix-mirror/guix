@@ -209,7 +209,8 @@ by the b43-open driver of Linux-libre.")
              (let* ((out (assoc-ref outputs "out"))
                     (fmw (string-append out "/share/firmware")))
                (mkdir-p fmw)
-               (copy-file "out/bios.bin" (string-append fmw "/bios.bin"))))))))
+               (copy-file "out/bios.bin" (string-append fmw "/bios.bin"))
+               #t))))))
     (home-page "https://www.seabios.org/SeaBIOS")
     (synopsis "x86 BIOS implementation")
     (description "SeaBIOS is an implementation of a 16bit x86 BIOS.  SeaBIOS
@@ -262,36 +263,26 @@ coreboot.")
                (setenv "PATH" (string-append (getenv "PATH") ":" bin))
                ; FIXME: The below script errors out. When using 'invoke' instead
                ; of 'system*' this causes the build to fail.
-               (system* "bash" "edksetup.sh" "BaseTools")
+               (system* "bash" "edksetup.sh")
                (substitute* "Conf/target.txt"
                  (("^TARGET[ ]*=.*$") "TARGET = RELEASE\n")
-                 (("^TOOL_CHAIN_TAG[ ]*=.*$") "TOOL_CHAIN_TAG = GCC49\n")
                  (("^MAX_CONCURRENT_THREAD_NUMBER[ ]*=.*$")
                   (format #f "MAX_CONCURRENT_THREAD_NUMBER = ~a~%"
                           (number->string (parallel-job-count)))))
                ;; Build build support.
                (setenv "BUILD_CC" "gcc")
-               (invoke "make" "-C" (string-append tools "/Source/C"))
+               (invoke "make" "-C" tools)
                #t)))
-         (add-after 'build 'build-ia32
+         (replace 'build
            (lambda _
-             (substitute* "Conf/target.txt"
-               (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = IA32\n")
-               (("^ACTIVE_PLATFORM[ ]*=.*$")
-                "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgIa32.dsc\n"))
-             (invoke "build")
-             #t))
+             (invoke "build" "-a" "IA32" "-t" "GCC49"
+                     "-p" "OvmfPkg/OvmfPkgIa32.dsc")))
          ,@(if (string=? "x86_64-linux" (%current-system))
              '((add-after 'build 'build-x64
                 (lambda _
-                  (substitute* "Conf/target.txt"
-                    (("^TARGET_ARCH[ ]*=.*$") "TARGET_ARCH = X64\n")
-                    (("^ACTIVE_PLATFORM[ ]*=.*$")
-                     "ACTIVE_PLATFORM = OvmfPkg/OvmfPkgX64.dsc\n"))
-                  (invoke "build")
-                  #t)))
+                  (invoke "build" "-a" "X64" "-t" "GCC49"
+                          "-p" "OvmfPkg/OvmfPkgX64.dsc"))))
              '())
-         (delete 'build)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -311,6 +302,76 @@ coreboot.")
 Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
     (license (list license:expat
                    license:bsd-2 license:bsd-3 license:bsd-4))))
+
+(define-public ovmf-aarch64
+  (package
+    (inherit ovmf)
+    (name "ovmf-aarch64")
+    (native-inputs
+     `(,@(package-native-inputs ovmf)
+       ,@(if (not (string-prefix? "aarch64" (%current-system)))
+           `(("cross-gcc" ,(cross-gcc "aarch64-linux-gnu"))
+             ("cross-binutils" ,(cross-binutils "aarch64-linux-gnu")))
+           '())))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ovmf)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'set-env
+             (lambda _
+               ,@(if (not (string-prefix? "aarch64" (%current-system)))
+                     `((setenv "GCC49_AARCH64_PREFIX" "aarch64-linux-gnu-"))
+                     '())
+               #t))
+           (replace 'build
+             (lambda _
+               (invoke "build" "-a" "AARCH64" "-t" "GCC49"
+                       "-p" "ArmVirtPkg/ArmVirtQemu.dsc")))
+           (delete 'build-x64)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (fmw (string-append out "/share/firmware")))
+                 (mkdir-p fmw)
+                 (copy-file "Build/ArmVirtQemu-AARCH64/RELEASE_GCC49/FV/QEMU_EFI.fd"
+                            (string-append fmw "/ovmf_aarch64.bin"))
+                 #t)))))))
+    (supported-systems %supported-systems)))
+
+(define-public ovmf-arm
+  (package
+    (inherit ovmf)
+    (name "ovmf-arm")
+    (native-inputs
+     `(,@(package-native-inputs ovmf)
+       ,@(if (not (string-prefix? "armhf" (%current-system)))
+           `(("cross-gcc" ,(cross-gcc "arm-linux-gnueabihf"))
+             ("cross-binutils" ,(cross-binutils "arm-linux-gnueabihf")))
+           '())))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ovmf)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'configure 'set-env
+             (lambda _
+               ,@(if (not (string-prefix? "armhf" (%current-system)))
+                     `((setenv "GCC49_ARM_PREFIX" "arm-linux-gnueabihf-"))
+                     '())
+               #t))
+           (replace 'build
+             (lambda _
+               (invoke "build" "-a" "ARM" "-t" "GCC49"
+                       "-p" "ArmVirtPkg/ArmVirtQemu.dsc")))
+           (delete 'build-x64)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (fmw (string-append out "/share/firmware")))
+                 (mkdir-p fmw)
+                 (copy-file "Build/ArmVirtQemu-ARM/RELEASE_GCC49/FV/QEMU_EFI.fd"
+                            (string-append fmw "/ovmf_arm.bin"))
+                 #t)))))))
+    (supported-systems %supported-systems)))
 
 (define* (make-arm-trusted-firmware platform #:optional (arch "aarch64"))
   (package

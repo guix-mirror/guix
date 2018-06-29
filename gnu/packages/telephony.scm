@@ -218,7 +218,7 @@ internet.")
 (define-public libsrtp
   (package
     (name "libsrtp")
-    (version "1.6.0")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/cisco/libsrtp/archive/v"
@@ -226,31 +226,13 @@ internet.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ppdqsrx5ni54vmd4kdzzmvgmf5ixb04w0jw7idy8mad6l27jghs"))))
+                "02x5l5h2nq6f9gq1bmgz5v9jmnqaab51p8aldglng1z7pjbp9za4"))))
     (native-inputs
      `(("psmisc" ,psmisc)               ;some tests require 'killall'
        ("procps" ,procps)))
     (build-system gnu-build-system)
     (arguments
-     '(#:test-target "runtest"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-mips-variable-in-testsuite
-           ;; This comes from https://github.com/cisco/libsrtp/pull/151
-           (lambda _
-             (substitute* "test/srtp_driver.c"
-               (("mips ") "mips_est ")
-               (("mips\\)") "mips_est)"))
-             #t))
-         (add-after 'unpack 'patch-dictionary-location
-           ;; With the above changes, the rtpw_test.sh test finally runs, and fails.
-           (lambda _
-             (substitute* "test/rtpw.c"
-               (("/usr/share/dict/words")
-                (string-append (assoc-ref %build-inputs "procps")
-                               "/share/doc/procps-ng/FAQ"))
-               (("words.txt") "FAQ"))
-             #t)))))
+     '(#:test-target "runtest"))
     (synopsis "Secure RTP (SRTP) Reference Implementation")
     (description
      "This package provides an implementation of the Secure Real-time Transport
@@ -387,6 +369,7 @@ address of one of the participants.")
               (sha256
                (base32
                 "1s60vaici3v034jzzi20x23hsj6mkjlc0glipjq4hffrg9qgnizh"))
+              (patches (search-patches "mumble-1.2.19-abs.patch"))
               (modules '((guix build utils)))
               (snippet
                `(begin

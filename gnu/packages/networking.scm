@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018 Adam Van Ymeren <adam@vany.ca>
@@ -56,6 +56,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
@@ -354,14 +355,14 @@ containing both Producer and Consumer support.")
 (define-public libndp
   (package
     (name "libndp")
-    (version "1.6")
+    (version "1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://libndp.org/files/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03mczwrxqbp54msafxzzyhaazkvjdwm2kipjkrb5xg8kw22glz8c"))))
+                "1dlinhl39va00v55qygjc9ap77yqf7xvn4rwmvdr49xhzzxhlj1c"))))
     (build-system gnu-build-system)
     (home-page "http://libndp.org/")
     (synopsis "Library for Neighbor Discovery Protocol")
@@ -1223,7 +1224,7 @@ gone wild and are suddenly taking up your bandwidth.")
 (define-public nzbget
   (package
     (name "nzbget")
-    (version "19.1")
+    (version "20.0")
     (source
      (origin
        (method url-fetch)
@@ -1232,7 +1233,7 @@ gone wild and are suddenly taking up your bandwidth.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0y713g7gd4n5chbhr8lv7k50rxkmzysrg13sscxam3s386mmlb1r"))
+         "0q93aqqyzccn5r9sny38499rmg846qdh9pi2v5kvf9m23v54yk60"))
        (modules '((guix build utils)))
        (snippet
         ;; Reported upstream as <https://github.com/nzbget/nzbget/pull/414>.
@@ -1349,16 +1350,17 @@ networks.")
 (define-public speedtest-cli
   (package
     (name "speedtest-cli")
-    (version "2.0.0")
+    (version "2.0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/sivel/speedtest-cli/archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sivel/speedtest-cli")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "16kcpba7nmszz2h0fq7qvv6src20syck2wlknaacg69kk88aybbk"))))
+         "0vv2z37g2kgm2dzkfa4bhri92hs0d1acxi8z66gznsl5148q7sdi"))))
     (build-system python-build-system)
     (home-page "https://github.com/sivel/speedtest-cli")
     (synopsis "Internet bandwidth tester")
@@ -1774,7 +1776,7 @@ file for more details.")
      `(("zlib" ,zlib)
        ("crypto++" ,crypto++)
        ("libpng" ,libpng)
-       ("wxwidgets-gtk2", wxwidgets-gtk2)))
+       ("wxwidgets-gtk2" ,wxwidgets-gtk2)))
     (home-page "http://amule.org/")
     (synopsis "Peer-to-peer client for the eD2K and Kademlia networks")
     (description
@@ -1857,3 +1859,79 @@ eight bytes) tools
 @end itemize")
     ;; Either BSD-3 or GPL-2 can be used.
     (license (list license:bsd-3 license:gpl2))))
+
+(define-public asio
+  (package
+    (name "asio")
+    (version "1.12.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chriskohlhoff/asio.git")
+             (commit (string-join (cons name (string-split version #\.))
+                                  "-"))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "04dg8kpgriay7q62mqcq2gl439k5y4mf761zghsd6wfl0farh3mx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("boost" ,boost)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "--with-boost=" (assoc-ref %build-inputs "boost"))
+        (string-append "--with-openssl=" (assoc-ref %build-inputs "openssl")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-to-asio
+           (lambda _
+             (chdir "asio")))
+         (add-before 'configure 'bootstrap
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
+    (home-page "https://think-async.com/Asio")
+    (synopsis "C++ library for ASynchronous network I/O")
+    (description "Asio is a cross-platform C++ library for network and
+low-level I/O programming that provides developers with a consistent
+asynchronous model using a modern C++ approach.")
+    (license license:boost1.0)))
+
+(define-public shadowsocks
+  ;; There are some security fixes after the last release.
+  (let* ((commit "e332ec93e9c90f1cbee676b022bf2c5d5b7b1239")
+         (revision "0")
+         (version (git-version "2.8.2" revision commit)))
+    (package
+      (name "shadowsocks")
+      (version version)
+      (home-page "https://github.com/shadowsocks/shadowsocks")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1idd9b4f2pnhcpk1bh030hqg5zq25gkwxd53xi3c0cj242w7sp2j"))
+                (file-name (git-file-name name version))))
+      (build-system python-build-system)
+      (synopsis "Fast tunnel proxy that helps you bypass firewalls")
+      (description
+       "This package is a fast tunnel proxy that helps you bypass firewalls.
+
+Features:
+@itemize
+@item TCP & UDP support
+@item User management API
+@item TCP Fast Open
+@item Workers and graceful restart
+@item Destination IP blacklist
+@end itemize")
+      (license license:asl2.0))))

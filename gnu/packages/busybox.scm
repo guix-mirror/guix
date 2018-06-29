@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,7 +45,7 @@
      '(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _ (zero? (system* "make" "defconfig"))))
+           (lambda _ (invoke "make" "defconfig")))
          (replace 'check
            (lambda _
              (substitute* '("testsuite/du/du-s-works"
@@ -71,18 +72,17 @@
              (delete-file "testsuite/which/which-uses-default-path")
              (rmdir "testsuite/which")
 
-             (zero? (system* "make"
-                             ;; "V=1"
-                             "SKIP_KNOWN_BUGS=1"
-                             "SKIP_INTERNET_TESTS=1"
-                             "check"))))
+             (invoke "make"
+                     ;; "V=1"
+                     "SKIP_KNOWN_BUGS=1"
+                     "SKIP_INTERNET_TESTS=1"
+                     "check")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero?
-                (system* "make"
-                         (string-append "CONFIG_PREFIX=" out)
-                         "install"))))))))
+               (invoke "make"
+                       (string-append "CONFIG_PREFIX=" out)
+                       "install")))))))
     (native-inputs `(("perl" ,perl) ; needed to generate the man pages (pod2man)
                      ;; The following are needed by the tests.
                      ("inetutils" ,inetutils)

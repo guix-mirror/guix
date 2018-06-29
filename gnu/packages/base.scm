@@ -480,6 +480,17 @@ included.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/binutils/")))
 
+(define-public binutils/fixed
+  ;; TODO: Incorporate this in binutils during the next rebuild cycle.
+  (hidden-package
+   (package
+     (inherit binutils)
+     (source (origin
+               (inherit (package-source binutils))
+               (patches (append (origin-patches (package-source binutils))
+                                (search-patches
+                                 "binutils-aarch64-symbol-relocation.patch"))))))))
+
 (define* (make-ld-wrapper name #:key
                           (target (const #f))
                           binutils

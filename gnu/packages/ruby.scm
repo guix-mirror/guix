@@ -697,7 +697,7 @@ line of code.")
   (synopsis "Converter from AsciiDoc content to other formats")
   (description
     "Asciidoctor is a text processor and publishing toolchain for converting
-AsciiDoc content to HTML5, DocBook 5 (or 4.5) and other formats.")
+AsciiDoc content to HTML5, DocBook 5 (or 4.5), PDF, and other formats.")
   (home-page "https://asciidoctor.org")
   (license license:expat)))
 
@@ -3330,7 +3330,7 @@ differences (added or removed nodes) between two XML/HTML documents.")
 (define-public ruby-rack
   (package
     (name "ruby-rack")
-    (version "2.0.3")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
@@ -3342,7 +3342,7 @@ differences (added or removed nodes) between two XML/HTML documents.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "12bnqrcg43x9hsswjqg31qqwk8cwj2fh0d2m179y20bjghhn54kx"))
+         "1k1k4wk10l6bxx46pw58j2p3nmyzjqnr65hbjjqydd6517fmxgib"))
        ;; Ignore test which fails inside the build environment but works
        ;; outside.
        (patches (search-patches "ruby-rack-ignore-failing-test.patch"))))
@@ -3417,17 +3417,17 @@ testing libraries to build on.")
 (define-public ruby-rack-protection
   (package
     (name "ruby-rack-protection")
-    (version "2.0.1")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "rack-protection" version))
        (sha256
         (base32
-         "0ywmgh7x8ljf7jfnq5hmfzki3f803waji3fcvi107w7mlyflbng7"))))
+         "1z5598qipilmnf45428jnxi63ykrgvnyywa5ckpr52zv2vpd8jdp"))))
     (build-system ruby-build-system)
     (arguments
-     '(;; Tests missing from the gem
+     '(;; Tests missing from the gem.
        #:tests? #f))
     (propagated-inputs
      `(("ruby-rack" ,ruby-rack)))

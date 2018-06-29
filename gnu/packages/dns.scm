@@ -50,6 +50,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -104,6 +105,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
               (uri (string-append
                     "ftp://ftp.isc.org/isc/bind9/" version "/" name "-"
                     version ".tar.gz"))
+              (patches (search-patches "bind-CVE-2018-5738.patch"))
               (sha256
                (base32
                 "0a9dvyg1dk7vpqn9gz7p5jas3bz7z22bjd66b98g1qk16i2w7rqd"))))
@@ -188,7 +190,7 @@ high-volume and high-reliability applications. The name BIND stands for
              ;; Re-generate build files due to unbundling ltdl.
              ;; TODO: Prevent generating new libltdl and building it.
              ;; The system version is still favored and referenced.
-             (zero? (system* "autoreconf" "-vif")))))))
+             (invoke "autoreconf" "-vif"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("automake" ,automake)
@@ -233,7 +235,7 @@ servers is included, and an up-to-date version is available at
        (modify-phases %standard-phases
          (add-after 'unpack 'create-configure
            (lambda _
-             (zero? (system* "make" "configure")))))))
+             (invoke "make" "configure"))))))
     (native-inputs
      `(("autoconf" ,autoconf)))
     (inputs
@@ -424,9 +426,9 @@ struct servent *getservbyport(int port, const char *proto) {
   }
   return s;
 }" port)))
-               (system* (string-append gcc "/bin/gcc")
-                        "-shared" "-fPIC" "-o" "/tmp/nss_preload.so"
-                        "/tmp/nss_preload.c")
+               (invoke (string-append gcc "/bin/gcc")
+                       "-shared" "-fPIC" "-o" "/tmp/nss_preload.so"
+                       "/tmp/nss_preload.c")
                ;; The preload library only affects the unittests.
                (substitute* "Makefile"
                  (("./unittest")
@@ -539,10 +541,9 @@ Extensions} (DNSSEC).")
              (let* ((out (assoc-ref outputs "out"))
                     (doc (string-append out "/share/doc/knot"))
                     (etc (string-append doc "/examples/etc")))
-               (zero?
-                (system* "make"
-                         (string-append "config_dir=" etc)
-                         "install")))))
+               (invoke "make"
+                       (string-append "config_dir=" etc)
+                       "install"))))
          (add-after 'install 'wrap-python-scripts
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))

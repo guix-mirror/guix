@@ -1,0 +1,213 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Tue, 19 Jun 2018 04:37:46 +0200
+Subject: gnu: mrrescue: Support Love 11.
+
+The patch below was copied verbatim from an as-yet-unmerged PR[0] to
+make Mr. Rescue run on a newer version of the Löve engine.
+
+[0]: https://github.com/SimonLarsen/mrrescue/pull/17
+---
+From ab23031e0c2faecb77fde1be8a41d6f8ea4e6eda Mon Sep 17 00:00:00 2001
+From: Mystro256 <alexjnewt@hotmail.com>
+Date: Sun, 10 Jun 2018 21:19:23 -0400
+Subject: [PATCH] Love 11 support
+
+---
+ conf.lua            | 2 +-
+ config.lua          | 6 +++---
+ highscore_entry.lua | 4 ++--
+ highscore_list.lua  | 4 ++--
+ ingame.lua          | 6 +++---
+ ingame_menu.lua     | 4 ++--
+ joystick.lua        | 4 ++--
+ main.lua            | 2 +-
+ resources.lua       | 4 ++--
+ util.lua            | 4 ++--
+ 10 files changed, 20 insertions(+), 20 deletions(-)
+
+diff --git a/conf.lua b/conf.lua
+index 8776da4..f00b216 100644
+--- a/conf.lua
++++ b/conf.lua
+@@ -1,6 +1,6 @@
+ function love.conf(t)
+     t.identity = "mrrescue"
+-    t.version = "0.10.0"
++    t.version = "11.0"
+     t.console = false
+     t.accelerometerjoystick = true
+     t.gammacorrect = false
+diff --git a/config.lua b/config.lua
+index 63eeb04..71c2b66 100644
+--- a/config.lua
++++ b/config.lua
+@@ -38,7 +38,7 @@ function loadConfig()
+ 			config[i] = v
+ 		end
+ 	end
+-	if love.filesystem.exists("settings") then
++	if love.filesystem.getInfo("settings")~= nil then
+ 		local data = love.filesystem.read("settings")
+ 		local file = TSerial.unpack(data)
+ 		for i,v in pairs(file) do
+@@ -52,7 +52,7 @@ function loadConfig()
+ end
+ 
+ function loadHighscores()
+-	if love.filesystem.exists("highscores") then
++	if love.filesystem.getInfo("highscores")~= nil then
+ 		local data = love.filesystem.read("highscores")
+ 		local file = TSerial.unpack(data)
+ 		for i=1,3 do
+@@ -64,7 +64,7 @@ function loadHighscores()
+ end
+ 
+ function loadStats()
+-	if love.filesystem.exists("stats") then
++	if love.filesystem.getInfo("stats")~= nil then
+ 		local data = love.filesystem.read("stats")
+ 		stats = TSerial.unpack(data)
+ 	end
+diff --git a/highscore_entry.lua b/highscore_entry.lua
+index 2f763af..3b3bb73 100644
+--- a/highscore_entry.lua
++++ b/highscore_entry.lua
+@@ -45,9 +45,9 @@ function highscore_entry.draw()
+ 		for ix = 1,10 do
+ 			if highscore_entry.selection == char then
+ 				lg.rectangle("fill", 33+ix*16, 66+iy*16, 14, 14)
+-				lg.setColor(0,0,0,255)
++				lg.setColor(0,0,0,1)
+ 				lg.print(KEYBOARD:sub(char,char), 37+ix*16, 70+iy*16)
+-				lg.setColor(255,255,255,255)
++				lg.setColor(1,1,1,1)
+ 			else
+ 				lg.print(KEYBOARD:sub(char,char), 37+ix*16, 70+iy*16)
+ 			end
+diff --git a/highscore_list.lua b/highscore_list.lua
+index 6a17973..b66d0e2 100644
+--- a/highscore_list.lua
++++ b/highscore_list.lua
+@@ -31,10 +31,10 @@ function highscore_list.draw()
+ 		if scores[i] then
+ 			if highscore_list.level == highscore_list.hllevel
+ 			and highscore_list.hlpos == i then
+-				lg.setColor(25,118,115,255)
++				lg.setColor(25/255,118/255,115/255,1)
+ 				lg.print(scores[i].name,   48, 14+i*16)
+ 				lg.print(scores[i].score, 105, 14+i*16)
+-				lg.setColor(255,255,255,255)
++				lg.setColor(1,1,1,1)
+ 			else
+ 				lg.print(scores[i].name,   48, 14+i*16)
+ 				lg.print(scores[i].score, 105, 14+i*16)
+diff --git a/ingame.lua b/ingame.lua
+index 52004f1..f5c6f7c 100644
+--- a/ingame.lua
++++ b/ingame.lua
+@@ -189,16 +189,16 @@ function ingame.draw()
+ 		lg.pop()
+ 
+ 		if map.type == MT_NORMAL then
+-			lg.setBlendMode("multiply")
++			lg.setBlendMode("multiply", "premultiplied")
+ 			lg.draw(canvas, 0,0)
+ 			lg.setBlendMode("alpha")
+ 		end
+ 
+ 		-- Draw red screen if hit
+ 		if player.heat > 0 then
+-			lg.setColor(255,255,255,cap(player.heat*255, 16, 255))
++			lg.setColor(1,1,1,cap(player.heat*255, 16, 255)/255)
+ 			lg.draw(img.red_screen, quad.red_screen, 0,0)
+-			lg.setColor(255,255,255,255)
++			lg.setColor(1,1,1,1)
+ 		end
+ 
+ 		-- Draw hud
+diff --git a/ingame_menu.lua b/ingame_menu.lua
+index 9fcf768..82a8459 100644
+--- a/ingame_menu.lua
++++ b/ingame_menu.lua
+@@ -18,10 +18,10 @@ function ingame_menu.draw()
+ 	lg.pop()
+ 
+ 	lg.scale(config.scale)
+-	lg.setColor(0,0,0,238)
++	lg.setColor(0,0,0,238/255)
+ 	lg.rectangle("fill", 0, 0, WIDTH, HEIGHT)
+ 
+-	lg.setColor(255,255,255,255)
++	lg.setColor(1,1,1,1)
+ 	lg.printf("PAUSED", 0, 46, WIDTH, "center")
+ 	lg.print("RESUME", 103, 92)
+ 	lg.print("QUIT", 103, 106)
+diff --git a/joystick.lua b/joystick.lua
+index 50ccadb..72d545e 100644
+--- a/joystick.lua
++++ b/joystick.lua
+@@ -22,11 +22,11 @@ function joystick.draw()
+ 	lg.printf("SET JOYSTICK", 0, 39, WIDTH, "center")
+ 	for i=1,4 do
+ 		if joystick.waiting == true and joystick.selection == i then
+-			lg.setColor(195,52,41)
++			lg.setColor(195/255,52/255,41/255)
+ 		end
+ 		lg.print(string.upper(joykeynames[i]), 65, 53+i*13)
+ 		lg.print(config.joykeys[joykeynames[i]], 165, 53+i*13)
+-		lg.setColor(255,255,255)
++		lg.setColor(1,1,1)
+ 	end
+ 	lg.print("DEFAULT", 65, 118)
+ 	lg.print("BACK", 65, 131)
+diff --git a/main.lua b/main.lua
+index 9433e42..56096fa 100644
+--- a/main.lua
++++ b/main.lua
+@@ -273,7 +273,7 @@ function love.releaseerrhand(msg)
+     local font = love.graphics.newFont(14)
+     love.graphics.setFont(font)
+ 
+-    love.graphics.setColor(255, 255, 255, 255)
++    love.graphics.setColor(1, 1, 1, 1)
+ 
+     love.graphics.clear()
+ 
+diff --git a/resources.lua b/resources.lua
+index e5aa70d..1bab520 100644
+--- a/resources.lua
++++ b/resources.lua
+@@ -7,7 +7,7 @@ local snd = {}	-- sound Sources
+ 
+ local IMAGE_FILES = {
+ 	"splash", "tangram", "lovesplashpixel", "howto",
+-	"tiles", "door", "boldfont", "captain_dialog", "captain_dialog_sad",
++	"tiles", "door", "captain_dialog", "captain_dialog_sad",
+ 	"boss_health", "highscore_panes", "exclamation", "stats_screen",
+ 	"awards", "hud", "hud2", "hud_people", "item_slots", "water_bar",
+ 	"reserve_bar", "overloaded_bar", "temperature_bar", "temperature_bar_blink",
+@@ -147,7 +147,7 @@ function loadResources()
+ 	img.stream:setWrap("repeat", "clamp")
+ 
+ 	-- Create fonts
+-	font.bold = lg.newImageFont(img.boldfont, " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!'-:*@<>+/_$&?", 2)
++	font.bold = lg.newImageFont("data/boldfont.png", " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!'-:*@<>+/_$&?", 2)
+ 	lg.setFont(font.bold)
+ 
+ 	-- Create quads
+diff --git a/util.lua b/util.lua
+index b9976da..656600a 100644
+--- a/util.lua
++++ b/util.lua
+@@ -105,9 +105,9 @@ end
+ 
+ 
+ function drawBox(x,y,w,h)
+-	lg.setColor(30,23,18)
++	lg.setColor(30/255,23/255,18/255)
+ 	lg.rectangle("fill",x+1,y+1,w-2,h-2)
+-	lg.setColor(255,255,255)
++	lg.setColor(1,1,1)
+ 	-- Draw sides
+ 	lg.draw(img.menu_box, quad.box_left, x, y+1, 0, 1, (h-2))
+ 	lg.draw(img.menu_box, quad.box_left, x+w, y+1, 0, -1, (h-2))

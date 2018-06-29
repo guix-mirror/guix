@@ -1592,8 +1592,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
                            (call-with-output-file #$output
                              (lambda (port)
-                               (write (call-with-input-file "graph"
-                                        read-reference-graph)
+                               (write (map store-info-item
+                                           (call-with-input-file "graph"
+                                             read-reference-graph))
                                       port)))))
                      #:options `(#:local-build? #f
                                  #:references-graphs (("graph" ,item))))

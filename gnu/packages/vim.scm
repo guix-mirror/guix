@@ -450,59 +450,57 @@ trouble using them, because you do not have to remember each snippet name.")
       (home-page "https://github.com/Shougo/context_filetype.vim")
       (license license:expat)))) ; ??? check again
 
-;; The 2.2 release was in 2015, no new releases planned.
 (define-public vim-fugitive
-  (let ((commit "de6c05720cdf74c0218218d7207f700232a5b6dc")
-        (revision "1"))
-    (package
-      (name "vim-fugitive")
-      (version (string-append "2.2-" revision "." (string-take commit 7)))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/tpope/vim-fugitive.git")
-                 (commit commit)))
-          (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "0zg9vv7hirnx45vc2mwgg0xijmwwz55bssyd6cpdz71wbhrcpxxb"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (delete 'build)
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (vimfiles (string-append out "/share/vim/vimfiles"))
-                      (doc (string-append vimfiles "/doc"))
-                      (plugin (string-append vimfiles "/plugin")))
-                 (copy-recursively "doc" doc)
-                 (copy-recursively "plugin" plugin)
-                 #t))))))
-      (home-page "https://github.com/tpope/vim-fugitive")
-      (synopsis "Vim plugin to work with Git")
-      (description "Vim-fugitive is a wrapper for Vim that complements the
+  (package
+    (name "vim-fugitive")
+    (version "2.3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/tpope/vim-fugitive.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "17s94a8g5z0lrs7yy4nyqyvp9ykys5ws2ar3m3c0bjsn0iazd7m3"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (vimfiles (string-append out "/share/vim/vimfiles"))
+                    (doc (string-append vimfiles "/doc"))
+                    (plugin (string-append vimfiles "/plugin")))
+               (copy-recursively "doc" doc)
+               (copy-recursively "plugin" plugin)
+               #t))))))
+    (home-page "https://github.com/tpope/vim-fugitive")
+    (synopsis "Vim plugin to work with Git")
+    (description "Vim-fugitive is a wrapper for Vim that complements the
 command window, where you can stage and review your changes before the next
 commit or run any Git arbitrary command.")
-      (license license:vim)))) ; distributed under the same license as vim
+    (license license:vim))) ; distributed under the same license as vim
 
 (define-public vim-airline
   (package
     (name "vim-airline")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/vim-airline/vim-airline/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/vim-airline/vim-airline")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "053sfq3jmgdc5y7zbg6jrk7r2hp0raj3y3mxa2h1c1bnkb6wvcaz"))))
+         "0hq3304rhakx7x1v7wll7gxinmfz6561bq97qpj8jrk19rhcab75"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -575,16 +573,17 @@ and powerline symbols, etc.")
 (define-public vim-syntastic
   (package
     (name "vim-syntastic")
-    (version "3.8.0")
+    (version "3.9.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/vim-syntastic/syntastic/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vim-syntastic/syntastic")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wsnd9bsp5x6yiw96h1bnd1vyxdkh130hb82kyyxydgsplx92ima"))))
+         "121a1mxgfng2y5zmivyyk02mca8pyw72crivf4f1q9nhn0barf57"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f

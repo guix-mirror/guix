@@ -26,6 +26,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system scons)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages check)
@@ -93,6 +95,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
@@ -1025,17 +1028,16 @@ hash/signatures.")
 (define-public libyaml
   (package
     (name "libyaml")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://pyyaml.org/download/libyaml/yaml-"
              version ".tar.gz"))
-       (patches (search-patches "libyaml-CVE-2014-9130.patch"))
        (sha256
         (base32
-         "0j9731s5zjb8mjx7wzf6vh7bsqi38ay564x6s9nri2nh9cdrg9kx"))))
+         "0a87931cx5m14a1x8rbjix3nz7agrcgndf4h392vm62a4rby9240"))))
     (build-system gnu-build-system)
     (home-page "http://pyyaml.org/wiki/LibYAML")
     (synopsis "YAML 1.1 parser and emitter written in C")
@@ -1846,31 +1848,27 @@ MIME type directly to the browser, without being processed through Catalyst.")
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
-    (version "5.90115")
+    (version "5.90118")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Catalyst-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "0kh3ng6pjpxmndq9vrn515f70x7h44ish5bsgjwj4pjvchcyivzm"))))
+         "0cws3szx3vvh0372qdx8fypgv6qphcc3v81rbq30sl1ghby7ksd3"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-install" ,perl-module-install)
-       ("perl-test-fatal" ,perl-test-fatal)))
+     `(("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-cgi-simple" ,perl-cgi-simple)
        ("perl-cgi-struct" ,perl-cgi-struct)
        ("perl-class-c3-adopt-next" ,perl-class-c3-adopt-next)
-       ("perl-class-data-inheritable" ,perl-class-data-inheritable)
        ("perl-class-date" ,perl-class-date)
        ("perl-class-load" ,perl-class-load)
        ("perl-data-dump" ,perl-data-dump)
        ("perl-http-body" ,perl-http-body)
        ("perl-http-message" ,perl-http-message)
-       ("perl-http-request-ascgi" ,perl-http-request-ascgi)
-       ("perl-io-stringy" ,perl-io-stringy)
        ("perl-json-maybexs" ,perl-json-maybexs)
        ("perl-libwww" ,perl-libwww)
        ("perl-module-pluggable" ,perl-module-pluggable)
@@ -1879,8 +1877,6 @@ MIME type directly to the browser, without being processed through Catalyst.")
         ,perl-moosex-emulate-class-accessor-fast)
        ("perl-moosex-getopt" ,perl-moosex-getopt)
        ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)
-       ("perl-moosex-role-withoverloading" ,perl-moosex-role-withoverloading)
-       ("perl-namespace-autoclean" ,perl-namespace-autoclean)
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-path-class" ,perl-path-class)
        ("perl-plack" ,perl-plack)
@@ -2080,7 +2076,7 @@ application classes.")
 (define-public perl-catalystx-script-server-starman
   (package
     (name "perl-catalystx-script-server-starman")
-    (version "0.02")
+    (version "0.03")
     (source
      (origin
        (method url-fetch)
@@ -2089,7 +2085,7 @@ application classes.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0h02mpkc4cmi3jpvcd7iw7xyzx55bqvvl1qkf967gqkvpklm0qx5"))))
+         "08jvibq4v8xjj0c3cr93h0w8w0c88ajwjn37xjy7ygxl9krlffp6"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
@@ -2108,7 +2104,7 @@ development server with Starman.")
 (define-public perl-cgi
   (package
     (name "perl-cgi")
-    (version "4.35")
+    (version "4.38")
     (source
      (origin
        (method url-fetch)
@@ -2116,7 +2112,7 @@ development server with Starman.")
                            "CGI-" version ".tar.gz"))
        (sha256
         (base32
-         "07gwnlc7vq58fjwmfsrv0hfyirqqdrpjhf89caq34rjrkz2wsd0b"))))
+         "1m779315rzj4mpgscw209a2wk18iwg2n8zibn8aak4mv56jz8n4c"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -2131,6 +2127,30 @@ processing and preparing HTTP requests and responses.  Major features include
 processing form submissions, file uploads, reading and writing cookies, query
 string generation and manipulation, and processing and preparing HTTP
 headers.")
+    (license l:perl-license)))
+
+(define-public perl-cgi-formbuilder
+  (package
+    (name "perl-cgi-formbuilder")
+    (version "3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://cpan.metacpan.org/authors/id/B/BI/BIGPRESH/"
+             "CGI-FormBuilder-" version ".tar.gz"))
+       (sha256
+        (base32
+         "163ixq9kninqq094z2rnkg9pv3bcmvjphlww4vksfrzhq3h9pjdf"))))
+    (build-system perl-build-system)
+    (inputs `(("perl-cgi" ,perl-cgi)))
+    (home-page
+     "https://metacpan.org/release/CGI-FormBuilder")
+    (synopsis
+     "Generate and process stateful forms")
+    (description
+     "@code{CGI::FormBuilder} provides an easy way to generate and process CGI
+form-based applications.")
     (license l:perl-license)))
 
 (define-public perl-cgi-session
@@ -2163,19 +2183,21 @@ HTTP requests.")
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
-    (version "1.115")
+    (version "1.15")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/S/SZ/SZABGAB/"
+       (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
                            "CGI-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "1nkyb1m1g5r47xykflf68dplanih5p15njv82frbgbsms34kp1sg"))))
+         "013dcy9k4sj9alkksk5aqz65ryxw0rxgg71c7w666y941gd8n46q"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-build" ,perl-module-build)
-       ("perl-io-stringy" ,perl-io-stringy))) ;for IO::Scalar
+     `(("perl-io-stringy" ,perl-io-stringy) ; for IO::Scalar
+       ("perl-module-build" ,perl-module-build)
+       ("perl-test-exception" ,perl-test-exception)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)))
     (home-page "http://search.cpan.org/dist/CGI-Simple")
     (synopsis "CGI interface that is CGI.pm compliant")
     (description "CGI::Simple provides a relatively lightweight drop in
@@ -3066,16 +3088,19 @@ exists it is used instead.")
 (define-public perl-lwp-protocol-https
   (package
     (name "perl-lwp-protocol-https")
-    (version "6.06")
+    (version "6.07")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MS/MSCHILLI/"
+       (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                            "LWP-Protocol-https-" version ".tar.gz"))
        (sha256
         (base32
-         "1vxdjqj4bwq56m9h1bqqwkk3c6jr76f2zqzvwa26yjng3p686v5q"))))
+         "1rxrpwylfw1afah0nk96kgkwjbl2p1a7lwx50iipg8c4rx3cjb2j"))))
     (build-system perl-build-system)
+    (native-inputs
+     ;; For tests.
+     `(("perl-test-requiresinternet" ,perl-test-requiresinternet)))
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
        ("perl-libwww" ,perl-libwww)
@@ -3157,15 +3182,15 @@ and retry a few times.")
 (define-public perl-net-http
   (package
     (name "perl-net-http")
-    (version "6.07")
+    (version "6.18")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/M/MS/MSCHILLI/Net-HTTP-"
-                   version ".tar.gz"))
+                   "mirror://cpan/authors/id/O/OA/OALDERS/"
+                   "Net-HTTP-" version ".tar.gz"))
              (sha256
               (base32
-               "0r034hhci0yqbrkrh1gv6vi5g3i0kpd1k84z62nk02asb8rf0ccz"))))
+               "074mp9s37q1j290xa3qj1wwgalzla328i2zpnh73xkmdnwnxyhky"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)
@@ -3776,13 +3801,13 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.4.3")
+    (version "1.4.4.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "15ghxcyg9h0za3qy077fnn3izbpihskvaqwsppm2s43a771imsf6"))))
+                "12kwq10xa8glrip7rai9xb4hnpysng00g2l0rw7swfzq5lk4z966"))))
     (build-system r-build-system)
     (native-inputs `(("r-rcpp" ,r-rcpp)))
     (propagated-inputs
@@ -4000,14 +4025,14 @@ objects in HTML format.")
 (define-public r-rjson
   (package
     (name "r-rjson")
-    (version "0.2.19")
+    (version "0.2.20")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rjson" version))
        (sha256
         (base32
-         "1g29vp3gfbh73a5br68jydsrigia4vnr5avc84avgwl6353749jw"))))
+         "0v1zvdd3svnavklh7y5xbwrrkbvx6053r4c5hgnk7hz7bqg7qa1s"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/rjson")
     (synopsis "JSON library for R")
@@ -4378,16 +4403,17 @@ NetSurf project.")
        ("mercurial" ,mercurial)))
     (inputs
      `(("python" ,python-wrapper)
+       ("perl-cgi-formbuilder" ,perl-cgi-formbuilder)
        ("perl-cgi-session" ,perl-cgi-session)
        ("perl-cgi-simple" ,perl-cgi-simple)
-       ("perl-json" ,perl-json)
-       ("perl-image-magick" ,perl-image-magick)
-       ("perl-uri" ,perl-uri)
+       ("perl-db-file" ,perl-db-file)
        ("perl-html-parser" ,perl-html-parser)
-       ("perl-uri" ,perl-uri)
-       ("perl-text-markdown-discount" ,perl-text-markdown-discount)
        ("perl-html-scrubber" ,perl-html-scrubber)
        ("perl-html-template" ,perl-html-template)
+       ("perl-image-magick" ,perl-image-magick)
+       ("perl-json" ,perl-json)
+       ("perl-text-markdown-discount" ,perl-text-markdown-discount)
+       ("perl-uri" ,perl-uri)
        ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
     (home-page "https://ikiwiki.info/")
     (synopsis "Wiki compiler, capable of generating HTML")
@@ -4900,7 +4926,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.46")
+  (version "5.47")
   (source
     (origin
       (method url-fetch)
@@ -4908,12 +4934,34 @@ tools like SSH (Secure Shell) to reach the outside world.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1iw4gap9ysag8iww2ik029scmdllk7jdzcpnnbj7hgbl526b9akn"))))
+        "02qx0b0dd38rfcl9vfd6zq1pcg5gv0z2mxw5z3p2pfbfk7dpbrn4"))))
   (build-system gnu-build-system)
+  (native-inputs
+   ;; For tests.
+   `(("iproute" ,iproute)
+     ("netcat" ,netcat)
+     ("procps" ,procps)))
   (inputs `(("openssl" ,openssl)))
   (arguments
    `(#:configure-flags
-     (list (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))))
+     (list (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))
+     #:phases
+     (modify-phases %standard-phases
+       (add-after 'unpack 'patch-output-directories
+         (lambda _
+           ;; Some (not all) Makefiles have a hard-coded incorrect docdir.
+           (substitute* (list "Makefile.in"
+                              "doc/Makefile.in"
+                              "tools/Makefile.in")
+             (("/doc/stunnel")
+              (string-append "/doc/" ,name "-" ,version)))
+           #t))
+       (add-before 'check 'patch-tests
+         (lambda _
+           (substitute* "tests/make_test"
+             (("/bin/sh ")
+              (string-append (which "sh") " ")))
+           #t)))))
   (home-page "https://www.stunnel.org")
   (synopsis "TLS proxy for clients or servers")
   (description "Stunnel is a proxy designed to add TLS encryption
@@ -6066,6 +6114,7 @@ artifact.")))
      `(#:jar-name "eclipse-jetty-security.jar"
        #:source-dir "src/main/java"
        #:jdk ,icedtea-8
+       #:test-exclude (list "**/ConstraintTest.*") ; This test fails
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
@@ -6156,6 +6205,107 @@ container.")))
        ("http-test" ,java-eclipse-jetty-http-test-classes-9.2)
        ("server" ,java-eclipse-jetty-server-9.2)
        ,@(package-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public java-eclipse-jetty-xml
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-xml")
+    (arguments
+     `(#:jar-name "eclipse-jetty-xml.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; most tests require network
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-xml")
+             #t)))))
+    (inputs
+     `(("java-eclipse-jetty-util" ,java-eclipse-jetty-util)))
+    (native-inputs
+     `(("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
+       ,@(package-native-inputs java-eclipse-jetty-util)))))
+
+(define-public java-eclipse-jetty-xml-9.2
+  (package
+    (inherit java-eclipse-jetty-xml)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (arguments
+     `(#:jar-name "eclipse-jetty-xml.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:tests? #f; most tests require network
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-xml")
+             #t)))))
+    (inputs
+     `(("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("java-eclipse-jetty-io-9.2" ,java-eclipse-jetty-io-9.2)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
+
+(define-public java-eclipse-jetty-webapp
+  (package
+    (inherit java-eclipse-jetty-util)
+    (name "java-eclipse-jetty-webapp")
+    (arguments
+     `(#:jar-name "eclipse-jetty-webapp.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       ;; One test fails
+       #:test-exclude (list "**/WebAppContextTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-webapp")
+             #t)))))
+    (inputs
+     `(("java-eclipse-jetty-util" ,java-eclipse-jetty-util)
+       ("java-eclipse-jetty-http" ,java-eclipse-jetty-http)
+       ("java-eclipse-jetty-server" ,java-eclipse-jetty-server)
+       ("java-eclipse-jetty-servlet" ,java-eclipse-jetty-servlet)
+       ("java-eclipse-jetty-security" ,java-eclipse-jetty-security)
+       ("java-eclipse-jetty-xml" ,java-eclipse-jetty-xml)
+       ("java-tomcat" ,java-tomcat)))
+    (native-inputs
+     `(("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
+       ,@(package-native-inputs java-eclipse-jetty-util)))))
+
+(define-public java-eclipse-jetty-webapp-9.2
+  (package
+    (inherit java-eclipse-jetty-webapp)
+    (version (package-version java-eclipse-jetty-util-9.2))
+    (source (package-source java-eclipse-jetty-util-9.2))
+    (arguments
+     `(#:jar-name "eclipse-jetty-webapp.jar"
+       #:source-dir "src/main/java"
+       #:jdk ,icedtea-8
+       #:test-exclude (list "**/WebAppContextTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "jetty-webapp")
+             #t)))))
+    (inputs
+     `(("java-eclipse-jetty-util-9.2" ,java-eclipse-jetty-util-9.2)
+       ("java-eclipse-jetty-http-9.2" ,java-eclipse-jetty-http-9.2)
+       ("java-eclipse-jetty-server-9.2" ,java-eclipse-jetty-server-9.2)
+       ("java-eclipse-jetty-servlet-9.2" ,java-eclipse-jetty-servlet-9.2)
+       ("java-eclipse-jetty-security-9.2" ,java-eclipse-jetty-security-9.2)
+       ("java-eclipse-jetty-xml-9.2" ,java-eclipse-jetty-xml-9.2)
+       ("java-tomcat" ,java-tomcat)
+       ,@(package-inputs java-eclipse-jetty-util-9.2)))
+    (native-inputs
+     `(("java-eclipse-jetty-io-9.2" ,java-eclipse-jetty-io-9.2)
+       ,@(package-native-inputs java-eclipse-jetty-util-9.2)))))
 
 (define-public java-jsoup
   (package
@@ -6420,10 +6570,10 @@ compressed JSON header blocks.
     (license l:expat)))
 
 (define-public hpcguix-web
-  (let ((commit "3e3b9a3a406ee2dcd10c96cbedcc16ea378e8e8f"))
+  (let ((commit "87cb51611c0f1fd3863b830614ab1364599cf1ca"))
     (package
       (name "hpcguix-web")
-      (version (git-version "0.0.1" "0" commit))
+      (version (git-version "0.0.1" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -6432,7 +6582,7 @@ compressed JSON header blocks.
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "01888byi9mh7d3adcmwhmg44kg98g92r44ilc4wd7an66mjnxpry"))))
+                  "0p66fl8r3v73v13fqg9rbqbzbdzvyznchxbq2s1jwq6qfsn2w3gr"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)

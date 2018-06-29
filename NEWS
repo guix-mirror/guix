@@ -2,7 +2,7 @@
 #+TITLE: Guix NEWS – history of user-visible changes
 #+STARTUP: content hidestars
 
-Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -14,19 +14,39 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 ** Package management
 
+*** ‘guix pull’ has been overhauled; it now populates ~/.config/guix/current
 *** ‘guix pack’ now supports building SquashFS images
-*** ‘guix pack’ can now build relocatable tarballs
+*** ‘guix pack’ can now build tarballs with relocatable executables
+*** ‘guix system’ gives more hints for common configuration errors
+*** ‘guix package’ no longer warns about harmless file collisions
+*** ‘guix weather’ now reports continuous integration statistics
+*** ‘guix import elpa’ has a new ‘--recursive’ option
 
 ** Distribution
 
+*** New ‘initrd-modules’ field of ‘operating-system’
+*** New ‘file-system-label’ construct supersedes ‘title’ field of ‘file-system’
+*** Package for Python 2.x has been renamed from “python” to “python2”
+*** RHEL6 systems based on kernel Linux 2.6 are supported again
 *** New services
 
-enlightenment
+enlightenment, qemu-binfmt
 
 ** Programming interfaces
 
+*** ‘gnu-build-system’ now includes a ‘bootstrap’ phase to run ‘autoreconf’
+*** ‘gnu-build-system’ dumps contents of ‘test-suite.log’ upon test failures
+*** New build systems: ‘android-ndk’
+*** New (guix store database) and (guix store deduplication) modules
+*** The ‘guix-register’ C++ program no longer is
 *** package-full-name (guix packages) now uses "@" as its delimiter.
     (<https://bugs.gnu.org/31088>)
+
+** Noteworthy bug fixes
+
+** Native language support
+*** the manual can now be translated and is partially translated into French
+
 * Changes in 0.14.0 (since 0.13.0)
 
 ** Package management

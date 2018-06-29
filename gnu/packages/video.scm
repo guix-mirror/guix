@@ -25,6 +25,7 @@
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -122,6 +124,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages vulkan)
@@ -393,6 +396,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
         (sha256
          (base32
           "0qx8mavwdzdpkkby7n29i9av7zsnklavacwfz537mf62q2pzjnbf"))
+        (patches (search-patches "x265-fix-ppc64le-build.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -401,7 +405,9 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
        ;; Currently the source code doesn't check for aarch64.
-       ,@(if (string-prefix? "aarch64" (or (%current-target-system) (%current-system)))
+       ,@(if (any (cute string-prefix? <> (or (%current-system)
+                                              (%current-target-system)))
+                  '("armhf" "aarch64"))
            '(#:configure-flags '("-DENABLE_PIC=TRUE"))
            '())
        #:phases
@@ -606,14 +612,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.0")
+    (version "4.0.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0gx4ngnhi5glmxh38603qy5n6vq8bl1cr4sqd1xff95i82pmv57d"))))
+               "1vn04n0n46zdxq14cma3w8ml2ckh5jxwlybsc4xmvcqdqq0mqpv0"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -1035,8 +1041,7 @@ treaming protocols.")
                 (("#! /bin/sh") (string-append "#!" (which "sh"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
-              (zero? (system*
-                      "./configure"
+              (invoke "./configure"
                       (string-append "--extra-cflags=-I"
                                      libx11 "/include") ; to detect libx11
                       "--disable-ffmpeg_a" ; disables bundled ffmpeg
@@ -1058,7 +1063,7 @@ treaming protocols.")
                                     (or (%current-target-system)
                                         (nix-system->gnu-triplet
                                          (%current-system)))))))
-                      "--disable-iwmmxt"))))))))
+                      "--disable-iwmmxt")))))))
     (home-page "https://www.mplayerhq.hu/design7/news.html")
     (synopsis "Audio and video player")
     (description "MPlayer is a movie player.  It plays most MPEG/VOB, AVI,
@@ -1218,7 +1223,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.05.09")
+    (version "2018.06.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1226,7 +1231,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0sl4bi2jls3417rd62awbqdq1b6wskkjbfwpnyw4a61qarfxid1d"))))
+                "0ys2mc84r7mjpn7rykb57sn3ii1kp3divjdn2ivwqknj8jrzg3z6"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1606,7 +1611,7 @@ device without having to bother about the decryption.")
     (synopsis "SubRip to WebVTT subtitle converter")
     (description "srt2vtt converts SubRip formatted subtitles to WebVTT format
 for use with HTML5 video.")
-    (home-page "http://dthompson.us/pages/software/srt2vtt")
+    (home-page "https://dthompson.us/projects/srt2vtt.html")
     (license license:gpl3+)))
 
 (define-public avidemux
@@ -1761,10 +1766,9 @@ capabilities.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'autogen
-          (lambda _
-            (zero? (system* "sh" "autogen.sh")))))))
+         (add-after 'unpack 'autogen
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
     (home-page "http://www.vapoursynth.com/")
     (synopsis "Video processing framework")
     (description "VapourSynth is a C++ library and Python module for video
@@ -1811,34 +1815,41 @@ and custom quantization matrices.")
     (license license:gpl2+)))
 
 (define-public streamlink
-  (package
-    (name "streamlink")
-    (version "0.11.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "streamlink" version))
-       (sha256
-        (base32
-         "02h8b3k8l5zz4vjm0nhxvl1pm924jms8y7sjl40fbybrzvsa4mg2"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/streamlink/streamlink")
-    (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-mock" ,python-mock)
-       ("python-requests-mock" ,python-requests-mock)))
-    (propagated-inputs
-     `(("python-pysocks" ,python-pysocks)
-       ("python-websocket-client" ,python-websocket-client)
-       ("python-iso3166" ,python-iso3166)
-       ("python-iso639" ,python-iso639)
-       ("python-pycryptodome" ,python-pycryptodome)
-       ("python-requests" ,python-requests)
-       ("python-urllib3" ,python-urllib3)))
-    (synopsis "Extract streams from various services")
-    (description "Streamlink is command-line utility that extracts streams
+  ;; Release tarball doesn't contain ‘tests/resources/dash/’ directory.
+  (let ((commit "2dca7930a938f60b48d8e23260963ea7c49d979f"))
+    (package
+      (name "streamlink")
+      (version (git-version "0.13.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/streamlink/streamlink.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0vq19aspshim63aj8yl2p64ykrbk2mwwlawdx427b3j2djlc5qhw"))))
+      (build-system python-build-system)
+      (home-page "https://github.com/streamlink/streamlink")
+      (native-inputs
+       `(("python-freezegun" ,python-freezegun)
+         ("python-pytest" ,python-pytest)
+         ("python-mock" ,python-mock)
+         ("python-requests-mock" ,python-requests-mock)))
+      (propagated-inputs
+       `(("python-pysocks" ,python-pysocks)
+         ("python-websocket-client" ,python-websocket-client)
+         ("python-iso3166" ,python-iso3166)
+         ("python-iso639" ,python-iso639)
+         ("python-isodate", python-isodate)
+         ("python-pycryptodome" ,python-pycryptodome)
+         ("python-requests" ,python-requests)
+         ("python-urllib3" ,python-urllib3)))
+      (synopsis "Extract streams from various services")
+      (description "Streamlink is command-line utility that extracts streams
 from sites like Twitch.tv and pipes them into a video player of choice.")
-    (license license:bsd-2)))
+      (license license:bsd-2))))
 
 (define-public livestreamer
   (deprecated-package "livestreamer" streamlink))
@@ -1865,7 +1876,12 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
            (add-before 'check 'check-setup
              (lambda _
                (setenv "HOME" (getcwd)) ;Needs to write to ‘$HOME’.
-               #t)))))
+               #t))
+           (add-after 'install 'install-rofi-plugin
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "plugins/rofi-twitchy"
+                             (string-append (assoc-ref outputs "out")
+                                            "/bin")))))))
       (inputs
        `(("python-requests" ,python-requests)
          ("streamlink" ,streamlink)))
@@ -2187,10 +2203,11 @@ Other features include a live preview and live streaming.")
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autogen.sh
-                    (lambda _
-                      (zero? (system* "sh" "autogen.sh")))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen.sh
+           (lambda _
+             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -2354,7 +2371,7 @@ supported players in addition to this package.")
              ;; Patch the Makefile so that it doesn't bootstrap again.
              (substitute* "gtk/module.rules"
                ((".*autogen\\.sh.*") ""))
-             (zero? (system* "sh" "./gtk/autogen.sh"))))
+             (invoke "sh" "./gtk/autogen.sh")))
          (add-before 'configure 'disable-contrib
            (lambda _
              (substitute* "make/include/main.defs"
@@ -2376,9 +2393,9 @@ supported players in addition to this package.")
              ;; errors on unrecognized arguments,
              ;; e.g. --enable-fast-install
              (let ((out (assoc-ref outputs "out")))
-               (zero? (apply system* "./configure"
-                             (string-append "--prefix=" out)
-                             (or configure-flags '()))))))
+               (apply invoke "./configure"
+                      (string-append "--prefix=" out)
+                      (or configure-flags '())))))
          (add-after 'configure 'chdir-build
            (lambda _ (chdir "./build") #t)))))
     (home-page "https://handbrake.fr")
@@ -2511,7 +2528,7 @@ practically any type of media.")
              #t))
          (add-after 'change-to-build-dir 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Library for retrieving media metadata")
     (description "MediaInfo is a library used for retrieving technical
@@ -2570,7 +2587,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
              #t))
          (add-after 'change-to-build-dir 'autogen
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Utility for reading media metadata")
     (description "MediaInfo is a utility used for retrieving technical
@@ -2612,8 +2629,8 @@ many codecs and formats supported by libmediainfo.")
                       #t))
                   (replace 'configure
                     (lambda _
-                      (zero? (system* "./genMakefiles"
-                                      "linux-with-shared-libraries")))))))
+                      (invoke "./genMakefiles"
+                              "linux-with-shared-libraries"))))))
     (home-page "http://www.live555.com/liveMedia/")
     (synopsis "Set of C++ libraries for multimedia streaming")
     (description "This code forms a set of C++ libraries for multimedia
@@ -2810,8 +2827,8 @@ alpha blending etc).")
        (modify-phases %standard-phases
          (add-after 'unpack 'autotools
            (lambda _
-             (zero? (system* "sh" "autogen.sh")))))))
-    ;; TODO: opencv for additional face detection filters
+             (invoke "sh" "autogen.sh"))))))
+    ;; TODO: opencv for additional face detection filters.
     (inputs
      `(("gavl" ,gavl)
        ("cairo" ,cairo)))
@@ -2958,3 +2975,27 @@ format and some of its derived file formats, including MP4.  It operates as a
 multiplexer and demultiplexer, and can mux video and audio in several formats
 using standalone executable files.")
     (license license:isc)))
+
+(define-public qtfaststart
+  (package
+    (name "qtfaststart")
+    (version "1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "qtfaststart" version))
+              (sha256
+               (base32
+                "0hcjfik8hhb1syqvyh5c6aillpvzal26nkjflcq1270z64aj6i5h"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test suite
+    (synopsis "Move QuickTime and MP4 metadata to the beginning of the file")
+    (description "qtfaststart enables streaming and pseudo-streaming of
+QuickTime and MP4 files by moving metadata and offset information to the
+beginning of the file.  It can also print some useful information about the
+structure of the file.  This program is based on qt-faststart.c from the FFmpeg
+project, which is released into the public domain, as well as ISO 14496-12:2005
+(the official spec for MP4), which can be obtained from the ISO or found
+online.")
+    (home-page "https://github.com/danielgtaylor/qtfaststart")
+    (license license:expat)))

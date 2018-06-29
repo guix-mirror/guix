@@ -264,25 +264,23 @@ between desktops, and change the number of desktops.")
 (define-public xeyes
   (package
     (name "xeyes")
-    (version "1.0.1")
+    (version "1.1.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "http://xeyes.sourcearchive.com/downloads/1.0.1/xeyes_"
-               version
-               ".orig.tar.gz"))
-        (sha256
-          (base32
-            "04c3md570j67g55h3bix1qbngcslnq91skli51k3g1avki88zkm9"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.x.org/releases/individual/app/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0lq5j7fryx1wn998jq6h3icz1h6pqrsbs3adskjzjyhn5l6yrg2p"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
         ("libxmu" ,libxmu)
+        ("libxrender" ,libxrender)
         ("libxt" ,libxt)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://xeyes.sourcearchive.com/")
+    (home-page "https://www.x.org/")    ; no dedicated Xeyes page exists
     (synopsis "Follow-the-mouse X demo")
     (description "Xeyes is a demo program for x.org.  It shows eyes
 following the mouse.")
@@ -530,7 +528,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.5.1")
+    (version "5.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -539,7 +537,7 @@ selection's dimensions to stdout.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1dvw0axnr9hhjg6zdcq9lwvaq0x7vrzlz00p8n3hj25qzsi4z5as"))))
+                "14zdhsx1cndg5m8wbv1rqmza7wgknwfj5h0knzxg3p2jkjw66i95"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
@@ -735,17 +733,16 @@ Guile will work for XBindKeys.")
 (define-public sxhkd
   (package
     (name "sxhkd")
-    (version "0.5.6")
+    (version "0.5.9")
     (source
      (origin
-       (file-name (string-append name "-" version ".tar.gz"))
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/baskerville/sxhkd/archive/"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/baskerville/sxhkd")
+             (commit version)))
        (sha256
         (base32
-         "15grmzpxz5fqlbfg2slj7gb7r6nzkvjmflmbkqx7mlby9pm6wdkj"))))
+         "0cw547x7vky55k3ksrmzmrra4zhslqcwq9xw0y4cmbvy4s1qf64v"))))
     (build-system gnu-build-system)
     (inputs
      `(("asciidoc" ,asciidoc)
@@ -754,10 +751,14 @@ Guile will work for XBindKeys.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-wm" ,xcb-util-wm)))
     (arguments
-     '(#:phases (modify-phases %standard-phases (delete 'configure))
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f  ; no check target
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))))
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" %output)
+             ;; Keep the documentation where the build system installs LICENSE.
+             (string-append "DOCPREFIX=" %output
+                            "/share/doc/" ,name "-" ,version))))
     (home-page "https://github.com/baskerville/sxhkd")
     (synopsis "Simple X hotkey daemon")
     (description "sxhkd is a simple X hotkey daemon with a powerful and
@@ -1286,41 +1287,41 @@ XCB util-xrm module provides the following libraries:
 (define-public xcalib
   (package
     (name "xcalib")
-    (version "0.8")
+    (version "0.10")
+    (home-page "https://github.com/OpenICC/xcalib")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/xcalib/xcalib/" version
-                                  "/xcalib-source-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
               (sha256
                (base32
-                "1rh6xb51c5xz926dnn82a2fn643g0sr4a8z66rn6yi7523kjw4ca"))))
-    (build-system gnu-build-system)
+                "05fzdjmhiafgi2jf0k41i3nm0837a78sb6yv59cwc23nla8g0bhr"))
+              (patches
+               (list
+                ;; Add missing documentation for the new --output option.
+                ;; This upstream patch can be removed on the next update.
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                        home-page "/commit/"
+                        "ae03889b91fe984b18e925ad2b5e6f2f7354e058.patch"))
+                  (file-name "xcalib-update-man-page.patch")
+                  (sha256
+                   (base32
+                    "0f7b4d5484x4b9n1bwhqmar0kcaa029ffff7bp3xpr734n1qgqb6")))))))
+    (build-system cmake-build-system)
     (arguments
-     '(#:make-flags '("CC=gcc")
-       #:tests? #f   ; No test suite
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin")))
-                        (install-file "xcalib" bin))))
-                  (add-after 'install 'install-doc
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((doc (string-append(assoc-ref outputs "out")
-                                               "/share/doc/xcalib")))
-                        (install-file "README" doc)
-                        ;; Avoid unspecified return value.
-                        #t))))))
+     '(#:tests? #f))                    ; no test suite
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
+              ("libxrandr" ,libxrandr)
               ("libxxf86vm" ,libxxf86vm)))
     (synopsis "Tiny monitor calibration loader for XFree86 (or X.org)")
     (description "xcalib is a tiny tool to load the content of vcgt-Tags in ICC
 profiles to the video card's gamma ramp.  It does work with most video card
 drivers except the generic VESA driver.  Alter brightness, contrast, RGB, and
 invert colors on a specific display/screen.")
-    (home-page "http://xcalib.sourceforge.net/")
     (license license:gpl2)))
 
 (define-public nxbelld
