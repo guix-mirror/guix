@@ -1222,11 +1222,14 @@ field in the final score.
 A score of zero means that OBJ does not match any of REGEXPS.  The higher the
 score, the more relevant OBJ is to REGEXPS."
   (define (score str)
-    (let ((counts (filter-map (lambda (regexp)
-                                (match (regexp-exec regexp str)
-                                  (#f #f)
-                                  (m  (match:count m))))
-                              regexps)))
+    (let ((counts (map (lambda (regexp)
+                         (match (fold-matches regexp str '() cons)
+                           (()  0)
+                           ((m) (if (string=? (match:substring m) str)
+                                    5              ;exact match
+                                    1))
+                           (lst (length lst))))
+                       regexps)))
       ;; Compute a score that's proportional to the number of regexps matched
       ;; and to the number of matches for each regexp.
       (* (length counts) (reduce + 0 counts))))
