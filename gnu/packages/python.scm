@@ -10426,14 +10426,14 @@ network.")
 (define-public python-xopen
   (package
     (name "python-xopen")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xopen" version))
         (sha256
           (base32
-           "0bzjmn3rl1cd3d2q39cjwnkhaspk2b0hfj3rl64pclm44ihg5fb6"))
+           "1a0wbil552wsmklwd89ssmgz3pjd86qa9i7jh8wqb9wslc8a2qjr"))
         (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (home-page "https://github.com/marcelm/xopen/")
