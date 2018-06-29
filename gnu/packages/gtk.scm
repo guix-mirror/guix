@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Coypright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Coypright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -229,13 +229,13 @@ affine transformation (scale, rotation, shear, etc.).")
    (propagated-inputs
     ;; These are all in Requires or Requires.private of the '.pc' files.
     `(("cairo" ,cairo)
+      ("fribidi" ,fribidi)
       ("fontconfig" ,fontconfig)
       ("freetype" ,freetype)
       ("glib" ,glib)
       ("harfbuzz" ,harfbuzz)))
    (inputs
-    `(("fribidi" ,fribidi)
-      ("zlib" ,zlib)
+    `(("zlib" ,zlib)
 
       ;; Some packages, such as Openbox, expect Pango to be built with the
       ;; optional libxft support.
