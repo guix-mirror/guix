@@ -10446,7 +10446,12 @@ possible on all supported Python versions.")
     (license license:expat)))
 
 (define-public python2-xopen
-  (package-with-python2 python-xopen))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-xopen))))
+    (package
+      (inherit base)
+      (propagated-inputs `(("python2-bz2file" ,python2-bz2file)
+                           ,@(package-propagated-inputs base))))))
 
 (define-public python2-cheetah
   (package
