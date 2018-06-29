@@ -129,7 +129,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.17.0")
+    (version "0.18.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/Stellarium/" name
@@ -138,7 +138,7 @@ programs for the manipulation and analysis of astronomical data.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0d6b3fs5aify7i1lwgkcickppnj73cbh24g8qschnfs3ypdf48fc"))))
+               "06lid4b9x6551swjxsbiqrd2pxh77fhzfxznhh1vwlvvqgxrimjs"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -166,7 +166,7 @@ programs for the manipulation and analysis of astronomical data.")
                       (setenv "QT_QPA_PLATFORM" "offscreen")
                       (setenv "HOME" "/tmp")
                       #t)))))
-    (home-page "http://www.stellarium.org/")
+    (home-page "http://stellarium.org/")
     (synopsis "3D sky viewer")
     (description "Stellarium is a planetarium.  It shows a realistic sky in
 3D, just like what you see with the naked eye, binoculars, or a telescope.  It
