@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
-;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
@@ -41,6 +41,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -433,20 +434,27 @@ sub-directory.")
 
 (define-public emacs-nix-mode
   (package
-    (inherit nix)
     (name "emacs-nix-mode")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/NixOS/nix-mode/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06aqz0czznsj8835jqnk794sy2p6pa8kxfqwh0nl5d5vxivria6z"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'chdir-elisp
-           ;; Elisp directory is not in root of the source.
-           (lambda _
-             (chdir "misc/emacs"))))))
+    (inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-mmm-mode" ,emacs-mmm-mode)))
+    (home-page "https://github.com/NixOS/nix-mode")
     (synopsis "Emacs major mode for editing Nix expressions")
     (description "@code{nixos-mode} provides an Emacs major mode for editing
 Nix expressions.  It supports syntax highlighting, indenting and refilling of
-comments.")))
+comments.")
+    (license license:lgpl2.1+)))
 
 (define-public stow
   (package
