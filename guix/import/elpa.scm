@@ -187,7 +187,9 @@ include VERSION."
              (url (package-source-url kind name ver repo)))
          (make-elpa-package name ver
                             (ensure-list reqs) synopsis kind
-                            (package-home-page (first rest))
+                            (package-home-page (match rest
+                                                 (() #f)
+                                                 ((one) one)))
                             (fetch-package-description kind name repo)
                             url)))
       (_ #f))))
