@@ -337,6 +337,7 @@ X11-system or any other graphical user interface.")
       (uri (git-reference
             (url "https://github.com/silnrsi/teckit")
             (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
       (sha256
        (base32 "1jmsdmfz7bgq1n5qsqgpq1b1n77f1hll0czfw5wkxz4knzb14ndn"))))
    (build-system gnu-build-system)
