@@ -7027,39 +7027,35 @@ Idris.")
     (license license:gpl3+)))
 
 (define-public emacs-browse-at-remote
-  (let ((commit "31dcf77d7c89a12f230e2b2332585db2c44530ef")
-        (revision "1"))
-    (package
-      (name "emacs-browse-at-remote")
-      (version (string-append "0.9.0-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/rmuslimov/browse-at-remote.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (patches
-                 (search-patches "emacs-browse-at-remote-cgit-gnu.patch"))
-                (sha256
-                 (base32
-                  "017cb8lf7zbg0jmr7zxzd7d5kz2jy35cvw5vcpdmq1fdr3wqwkgj"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-f" ,emacs-f)
-         ("emacs-s" ,emacs-s)))
-      (native-inputs
-       `(("ert-runner" ,ert-runner)))
-      (arguments
-       `(#:tests? #t
-         #:test-command '("ert-runner")))
-      (home-page "https://github.com/rmuslimov/browse-at-remote")
-      (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
-      (description
-       "This Emacs package allows you to open a target page on
+  (package
+    (name "emacs-browse-at-remote")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/rmuslimov/browse-at-remote/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ymslsp6i1naw25zckv25bf4aaq6qwkbkn95qyzlwg869l802686"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)))
+    (native-inputs
+     `(("ert-runner" ,ert-runner)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
+    (home-page "https://github.com/rmuslimov/browse-at-remote")
+    (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
+    (description
+     "This Emacs package allows you to open a target page on
 github/gitlab (or bitbucket) by calling @code{browse-at-remote} command.
 It supports dired buffers and opens them in tree mode at destination.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-tiny
   (package
