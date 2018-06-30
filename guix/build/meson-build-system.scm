@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,15 +59,17 @@
 
     (mkdir build-dir)
     (chdir build-dir)
-    (zero? (apply system* "meson" args))))
+    (apply invoke "meson" args)
+    #t))
 
 (define* (build #:key parallel-build?
                 #:allow-other-keys)
   "Build a given meson package."
-  (zero? (apply system* "ninja"
-                (if parallel-build?
-                    `("-j" ,(number->string (parallel-job-count)))
-                    '("-j" "1")))))
+  (apply invoke "ninja"
+         (if parallel-build?
+             `("-j" ,(number->string (parallel-job-count)))
+             '("-j" "1")))
+  #t)
 
 (define* (check #:key test-target parallel-tests? tests?
                 #:allow-other-keys)
@@ -75,13 +78,13 @@
               (number->string (parallel-job-count))
               "1"))
   (if tests?
-      (zero? (system* "ninja" test-target))
-      (begin
-        (format #t "test suite not run~%")
-        #t)))
+      (invoke "ninja" test-target)
+      (format #t "test suite not run~%"))
+  #t)
 
 (define* (install #:rest args)
-  (zero? (system* "ninja" "install")))
+  (invoke "ninja" "install")
+  #t)
 
 (define* (fix-runpath #:key (elf-directories '("lib" "lib64" "libexec"
                                                "bin" "sbin"))
