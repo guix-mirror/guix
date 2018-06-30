@@ -1755,7 +1755,8 @@ savings are consistently > 5x.")
           ;; documentation is difficult.
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out")))
-              (for-each delete-file (find-files out "\\.html$")))))
+              (for-each delete-file (find-files out "\\.html$"))
+              #t)))
          (add-after 'install 'clean-install
           ;; Clean up unnecessary build logs from installation.
           (lambda* (#:key outputs #:allow-other-keys)
@@ -1766,7 +1767,8 @@ savings are consistently > 5x.")
                               (delete-file f))))
                         '("configure.log" "make.log" "gmake.log"
                           "test.log" "error.log" "RDict.db"
-                          "uninstall.py"))))))))
+                          "uninstall.py"))
+              #t))))))
     (home-page "http://slepc.upv.es")
     (synopsis "Scalable library for eigenproblems")
     (description "SLEPc is a software library for the solution of large sparse
