@@ -2231,11 +2231,11 @@ CDEFS       = -DAdd_"
              ;; isn't used anyway.)
              (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
              (with-directory-excursion "EXAMPLE"
-               (and
-                (zero? (system* "mpirun" "-n" "2"
-                                "./pddrive" "-r" "1" "-c" "2" "g20.rua"))
-                (zero? (system* "mpirun" "-n" "2"
-                                "./pzdrive" "-r" "1" "-c" "2" "cg20.cua"))))))
+               (invoke "mpirun" "-n" "2"
+                       "./pddrive" "-r" "1" "-c" "2" "g20.rua")
+               (invoke "mpirun" "-n" "2"
+                       "./pzdrive" "-r" "1" "-c" "2" "cg20.cua"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Library is placed in lib during the build phase.  Copy over
