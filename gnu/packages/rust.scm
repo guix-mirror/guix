@@ -564,7 +564,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("codegen-tests = false") ""))))
              (delete 'ignore-glibc-2.27-incompatible-test))))))))
 
-(define-public rust
+(define-public rust-1.26
   (let ((base-rust
          (rust-bootstrapped-package rust-1.25 "1.26.2"
                                     "0047ais0fvmqvngqkdsxgrzhb0kljg8wy85b01kbbjc88hqcz7pv"
@@ -610,4 +610,25 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (substitute* "src/tools/cargo/tests/testsuite/generate_lockfile.rs"
                    ;; This test wants to update the crate index.
                    (("fn no_index_update") "#[ignore]\nfn no_index_update"))
+                 #t)))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.26 "1.27.0"
+                                    "089d7rhw55zpvnw71dj8vil6qrylvl4xjr4m8bywjj83d4zq1f9c"
+                                    #:patches
+                                    '("rust-coresimd-doctest.patch"
+                                      "rust-bootstrap-stage0-test.patch"))))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'install 'mkdir-prefix-paths
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; As result of https://github.com/rust-lang/rust/issues/36989
+                 ;; `prefix' directory should exist before `install' call
+                 (mkdir-p (assoc-ref outputs "out"))
+                 (mkdir-p (assoc-ref outputs "cargo"))
                  #t)))))))))
