@@ -195,6 +195,12 @@ _guix_complete ()
 	    elif _guix_is_command "hash" || _guix_is_command "gc"
 	    then
 		_guix_complete_file
+            elif _guix_is_command "weather"
+            then
+                if _guix_is_dash_m
+                then
+                    _guix_complete_file
+                fi
 	    else
 		_guix_complete_available_package "$word_at_point"
 	    fi
