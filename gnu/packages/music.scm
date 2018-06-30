@@ -17,6 +17,7 @@
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system glib-or-gtk)
@@ -4018,6 +4020,30 @@ ISRCs and the MCN (=UPC/EAN) from disc.")
 mb_client, is a development library geared towards developers who wish to add
 MusicBrainz lookup capabilities to their applications.")
     (license license:lgpl2.1+)))
+
+(define-public perl-musicbrainz-discid
+  (package
+    (name "perl-musicbrainz-discid")
+    (version "0.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/N/NJ/NJH/MusicBrainz-DiscID-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1i4qk1qfcmxdibqkyfjrrjdq2zk42vjcz590qgiyc47fi9p6xx1j"))))
+    (build-system perl-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("which" ,which)))
+    (inputs `(("libdiscid" ,libdiscid)))
+    (home-page "https://metacpan.org/release/MusicBrainz-DiscID")
+    (synopsis "Perl interface to the MusicBrainz libdiscid library")
+    (description
+     "The @code{MusicBrainz::DiscID} module is a Perl interface to the
+MusicBrainz libdiscid library, allowing you to manipulate digital audio
+compact disc (CDDA) identifiers.")
+    (license license:gpl2)))
 
 (define-public clyrics
   (package
