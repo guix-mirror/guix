@@ -1303,30 +1303,24 @@ interface for reading articles in any format.")
 (define-public guile-config
   (package
     (name "guile-config")
-    (version "0.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/a-sassmannshausen/guile-config")
-                    (commit "guile-config-0.2")))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "07q86vqdwmm81wwxz1d1ah27hbhs6qbn8kiizrfpj0s4bf95w3r9"))))
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/a-sassmannshausen/guile-config")
+             (commit "ce12de3f438c6b2b59c43ee21bcd58251835fdf3")))
+       (file-name "guile-config-0.3-checkout")
+       (sha256 (base32 "02zbpin0r9m2vxmr7mv68v3xdn247dcck56kbzjn0gj4c2rhih85"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoreconf
-                    (lambda _
-                      (zero? (system* "autoreconf" "-fi")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
-    (inputs
-     `(("guile" ,guile-2.2)))
-    (synopsis "Guile application configuration parsing library")
+    (inputs `(("guile" ,guile-2.2)))
+    (synopsis
+     "Guile application configuration parsing library.")
     (description
      "Guile Config is a library providing a declarative approach to
 application configuration specification.  The library provides clean
@@ -1335,7 +1329,8 @@ configuration file creation; configuration file parsing; command-line
 parameter parsing using getopt-long; basic GNU command-line parameter
 generation (--help, --usage, --version); automatic output generation for the
 above command-line parameters.")
-    (home-page "https://github.com/a-sassmannshausen/guile-config")
+    (home-page
+     "https://gitlab.com/a-sassmannshausen/guile-config")
     (license license:gpl3+)))
 
 (define-public guile-redis
