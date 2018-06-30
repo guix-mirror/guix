@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -46,9 +46,10 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages man)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages wxwidgets)
@@ -57,6 +58,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-web)
   #:use-module (gnu packages python)
   #:use-module (gnu packages image)
   #:use-module (gnu packages photo)
@@ -513,6 +515,9 @@ from an audio CD.")
                    (parano (assoc-ref inputs "cdparanoia"))
                    (which  (assoc-ref inputs "which"))
                    (discid (assoc-ref inputs "cd-discid"))
+                   (perl-discid (assoc-ref inputs "perl-musicbrainz-discid"))
+                   (perl-ws (assoc-ref inputs "perl-webservice-musicbrainz"))
+                   (perl-mojo (assoc-ref inputs "perl-mojolicious"))
                    (flac   (assoc-ref inputs "flac"))
                    (out    (assoc-ref outputs "out")))
                (define (wrap file)
@@ -524,7 +529,14 @@ from an audio CD.")
                                                   which "/bin:"
                                                   vorbis "/bin:"
                                                   discid "/bin:"
-                                                  parano "/bin")))))
+                                                  parano "/bin")))
+                               `("PERL5LIB" ":" prefix
+                                 (,(string-append perl-discid
+                                                  "/lib/perl5/site_perl:"
+                                                  perl-ws
+                                                  "/lib/perl5/site_perl:"
+                                                  perl-mojo
+                                                  "/lib/perl5/site_perl")))))
 
                (for-each wrap
                          (find-files (string-append out "/bin")
@@ -537,6 +549,10 @@ from an audio CD.")
               ("cd-discid" ,cd-discid)
               ("vorbis-tools" ,vorbis-tools)
               ("flac" ,flac)
+
+              ("perl-musicbrainz-discid" ,perl-musicbrainz-discid)
+              ("perl-webservice-musicbrainz" ,perl-webservice-musicbrainz)
+              ("perl-mojolicious" ,perl-mojolicious) ;indirect dependency
 
               ;; A couple of Python and Perl scripts are included.
               ("python" ,python)
