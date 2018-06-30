@@ -106,6 +106,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio) ;libsndfile
@@ -4044,6 +4045,33 @@ MusicBrainz lookup capabilities to their applications.")
 MusicBrainz libdiscid library, allowing you to manipulate digital audio
 compact disc (CDDA) identifiers.")
     (license license:gpl2)))
+
+(define-public perl-webservice-musicbrainz
+  (package
+    (name "perl-webservice-musicbrainz")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/B/BF/BFAIST/WebService-MusicBrainz-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "182z3xjajk6s7k5xm3kssjy3hqx2qbnq4f8864hma098ryy2ph3a"))))
+    (build-system perl-build-system)
+    (arguments
+     ;; Tests try to connect to http://musicbrainz.org.
+     '(#:tests? #f))
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-mojolicious" ,perl-mojolicious)))
+    (home-page "https://metacpan.org/release/WebService-MusicBrainz")
+    (synopsis "Web service API to the MusicBrainz database")
+    (description
+     "This module searches the MusicBrainz database through their web service
+at @code{musicbrainz.org}.")
+    (license license:perl-license)))
 
 (define-public clyrics
   (package
