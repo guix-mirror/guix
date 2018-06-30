@@ -1911,8 +1911,8 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
           ;; By default only the d-precision library is built.  Make with "all"
           ;; target so that all precision libraries and examples are built.
           (lambda _
-            (zero? (system* "make" "all"
-                            (format #f "-j~a" (parallel-job-count))))))
+            (invoke "make" "all"
+                    (format #f "-j~a" (parallel-job-count)))))
          (replace 'check
           ;; Run the simple test drivers, which read test input from stdin:
           ;; from the "real" input for the single- and double-precision
