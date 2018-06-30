@@ -2283,7 +2283,7 @@ implemented in ANSI C, and MPI for communications.")
        (modify-phases %standard-phases
          (add-after
           'unpack 'chdir-to-src
-          (lambda _ (chdir "src")))
+          (lambda _ (chdir "src") #t))
          (replace
           'configure
           (lambda _
@@ -2320,7 +2320,8 @@ YACC = bison -pscotchyy -y -b y
                           ;; XXX: Causes invalid frees in superlu-dist tests
                           ;; "SCOTCH_PTHREAD"
                           ;; "SCOTCH_PTHREAD_NUMBER=2"
-                          "restrict=__restrict"))))))
+                          "restrict=__restrict"))))
+            #t))
          (add-after
           'build 'build-esmumps
           (lambda _
@@ -2330,24 +2331,25 @@ YACC = bison -pscotchyy -y -b y
             ;; isn't used anyway.)
             (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
 
-            (zero? (system* "make"
-                            (format #f "-j~a" (parallel-job-count))
-                            "esmumps"))))
+            (invoke "make"
+                    (format #f "-j~a" (parallel-job-count))
+                    "esmumps")))
          (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (mkdir out)
-              (zero? (system* "make"
-                              (string-append "prefix=" out)
-                              "install"))
+              (invoke "make"
+                      (string-append "prefix=" out)
+                      "install")
               ;; esmumps files are not installed with the above
               (for-each (lambda (f)
                           (copy-file f (string-append out "/include/" f)))
                         (find-files "../include" ".*esmumps.h$"))
               (for-each (lambda (f)
                           (copy-file f (string-append out "/lib/" f)))
-                        (find-files "../lib" "^lib.*esmumps.*"))))))))
+                        (find-files "../lib" "^lib.*esmumps.*"))
+              #t))))))
     (home-page "http://www.labri.fr/perso/pelegrin/scotch/")
     (synopsis "Programs and libraries for graph algorithms")
     (description "SCOTCH is a set of programs and libraries which implement
