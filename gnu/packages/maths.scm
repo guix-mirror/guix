@@ -1598,7 +1598,7 @@ September 2004}")
                             ,@configure-flags)))
               (format #t "build directory: ~s~%" (getcwd))
               (format #t "configure flags: ~s~%" flags)
-              (zero? (apply system* "./configure" flags)))))
+              (apply invoke "./configure" flags))))
         (add-after 'configure 'clean-local-references
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
