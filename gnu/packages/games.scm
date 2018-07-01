@@ -3199,7 +3199,7 @@ programmers may also add their own favorite language.")
 (define-public bambam
   (package
     (name "bambam")
-    (version "0.5")
+    (version "0.6")
     (source
       (origin
         (method url-fetch)
@@ -3208,7 +3208,7 @@ programmers may also add their own favorite language.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "10w110mjdwbvddzihh9rganvvjr5jfiz8cs9n7w12zndwwcc3ria"))))
+          "05jwhk30pi1iwkfwy707w73c8jgbizqjpgi7y0jhsrx56pxl6mds"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
