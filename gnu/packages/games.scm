@@ -3202,13 +3202,14 @@ programmers may also add their own favorite language.")
     (version "0.6")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/porridge/bambam/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/porridge/bambam")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "05jwhk30pi1iwkfwy707w73c8jgbizqjpgi7y0jhsrx56pxl6mds"))))
+          "08hcd0gzia3pz7fzk4pqc5kbq1074j4q0jcmbpgvr7n623nj2xa5"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
