@@ -3513,16 +3513,16 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "2.2.1")
+    (version "2.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/musescore/MuseScore/archive/"
-                    "v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/musescore/MuseScore.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ml99ayzpdyd18cypcp0lbsbasfg3abw57i5fl7ph5739vikj6i6"))
+                "1y5x0a40x7ji4g4181adm95qxk2dfjiy5xb5wksps90ji9q2qlcs"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3543,8 +3543,8 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "USE_SYSTEM_FREETYPE=ON"
          "DOWNLOAD_SOUNDFONT=OFF"
-         ;; The following is not supported since Qt 5.11.  Can be
-         ;; removed in Musescore 2.2.2+.
+         ;; The following is not supported since Qt 5.11.  May be removed in
+         ;; a future release.
          "BUILD_WEBKIT=OFF")
        ;; There are tests, but no simple target to run.  The command
        ;; used to run them is:
@@ -3557,14 +3557,6 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         ;; Fix Qt 5.11 upgrade.  Should be fixed in 2.2.2+, see:
-         ;; <https://github.com/musescore/MuseScore/commit/d10e70415c8e52e2ba9d45de564467e42f66c102>
-         (add-after 'unpack 'patch-sources
-           (lambda _
-             (substitute* "all.h"
-               (("#include <QRadioButton>") "#include <QRadioButton>
-#include <QButtonGroup>"))
-             #t))
          (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
