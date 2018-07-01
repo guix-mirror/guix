@@ -1400,12 +1400,18 @@ script files.")
 (define-public qtoctave
   (package (inherit octave)
     (name "qtoctave")
+    (source (origin
+              (inherit (package-source octave))
+              (patches (append (origin-patches (package-source octave))
+                               (search-patches
+                                "qtoctave-qt-5.11-fix.patch")))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("qt" ,qtbase)
        ,@(package-inputs octave)))
     (native-inputs
      `(("qttools" , qttools) ;for lrelease
+       ("texlive" ,texlive) ;for texi2dvi
        ,@(package-native-inputs octave)))
     (arguments
      (substitute-keyword-arguments (package-arguments octave)
