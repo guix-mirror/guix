@@ -1064,14 +1064,14 @@ games.")
     (name "godot")
     (version "3.0.4")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/godotengine/godot/archive/"
-                              version "-stable.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/godotengine/godot")
+                    (commit (string-append version "-stable"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0khnj9rf24g56imwl78a89f2agxi6arbh804zrv54k79rm71dlpb"))
+                "0i4ssfb6igga9zwvsmahrnasx9cyqrsd6mlmssjgc482fy9q2kz4"))
               (modules '((guix build utils)))
               (snippet
                '(begin
