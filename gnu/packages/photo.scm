@@ -78,6 +78,12 @@
                (base32
                 "0nfj7s7qmgfy1cl8s3ck7dxjvprfq5glfi6iidmvmy8r7gl52gz8"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libjpeg" ,libjpeg-8)))         ;for lossy DNGs and old Kodak cameras
+    (propagated-inputs
+     `(("lcms" ,lcms)))                 ;for color profiles
     (home-page "https://www.libraw.org")
     (synopsis "Raw image decoder")
     (description
