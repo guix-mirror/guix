@@ -30,7 +30,7 @@
 (define-public gnu-pw-mgr
   (package
     (name "gnu-pw-mgr")
-    (version "2.3.1")
+    (version "2.3.2")
     (source
      (origin
       (method url-fetch)
@@ -38,7 +38,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "05vv6n5sqdswhzm21cqn8m2p6avblxl3cv7b39nqx8yxf58gi2xv"))))
+        "0x60g0syqpd107l8w4bl213imy2lspm4kz1j18yr1sh10rdxlgxd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
