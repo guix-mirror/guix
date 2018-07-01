@@ -724,6 +724,74 @@ format is also supported.")
   ;; This was mthl's mcron development branch, and it became mcron 1.1.
   (deprecated-package "mcron2" mcron))
 
+(define-public guile-hall
+  (package
+    (name "guile-hall")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/a-sassmannshausen/guile-hall")
+             (commit "7d1094a12fe917209ce5b76c681cc8c862d4c65b")))
+       (file-name "guile-hall-0.1.1-checkout")
+       (sha256
+        (base32
+         "03kb09cjca98hlbx9mj12mqinzsnnvp6ci6i975n88pjhaxigyp1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules
+       ((ice-9 match)
+        (ice-9 ftw)
+        ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases
+           %standard-phases
+         (add-after
+             'install
+             'hall-wrap-binaries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (site (string-append out "/share/guile/site")))
+               (match (scandir site)
+                 (("." ".." version)
+                  (let ((modules (string-append site "/" version))
+                        (compiled-modules
+                         (string-append
+                          out
+                          "/lib/guile/"
+                          version
+                          "/site-ccache")))
+                    (for-each
+                     (lambda (file)
+                       (wrap-program
+                           (string-append bin file)
+                         `("GUILE_LOAD_PATH" ":" prefix (,modules))
+                         `("GUILE_LOAD_COMPILED_PATH"
+                           ":"
+                           prefix
+                           (,compiled-modules))))
+                     ,(list 'list "hall"))
+                    #t)))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs `(("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guile-config" ,guile-config)))
+    (synopsis "Guile project tooling")
+    (description
+     "Hall is a command-line application and a set of Guile libraries that
+allow you to quickly create and publish Guile projects.  It allows you to
+transparently support the GNU build system, manage a project hierarchy &
+provides tight coupling to Guix.")
+    (home-page
+     "https://gitlab.com/a-sassmannshausen/guile-hall")
+    (license license:gpl3+)))
+
 (define-public guile-ics
   (package
     (name "guile-ics")
