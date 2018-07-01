@@ -83,7 +83,11 @@
     (description
      "LibRaw is a library for reading RAW files obtained from digital photo
 cameras (CRW/CR2, NEF, RAF, DNG, and others).")
-    (license license:lgpl2.1+)))
+    ;; LibRaw is distributed under both LGPL2.1 and CDDL 1.0.  From the README:
+    ;; "You may use one of these licensing modes and switch between them.  If
+    ;; you modify LibRaw source and made your changes public, you should accept
+    ;; both two licensing modes for your changes/additions."
+    (license (list license:lgpl2.1 license:cddl1.0))))
 
 (define-public libexif
   (package
