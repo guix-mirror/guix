@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -147,7 +147,7 @@ between two other data points.")
 (define-public gama
   (package
     (name "gama")
-    (version "1.22")
+    (version "2.00")
     (source
       (origin
         (method url-fetch)
@@ -155,7 +155,7 @@ between two other data points.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "01q3g2zi5d5r2l10hc8jwwz6w61dwkv7nyj9xd67vvq0gajw0a7r"))))
+          "1p51jlzr6qqqvzx0sq8j7fxqfij62c3pjcsb53vgx0jx0qdqyjba"))))
     (build-system gnu-build-system)
     (arguments '(#:parallel-tests? #f)) ; race condition
     (native-inputs
