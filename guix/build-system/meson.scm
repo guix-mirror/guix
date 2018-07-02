@@ -148,8 +148,7 @@ has a 'meson.build' file."
                     #:search-paths ',(map search-path-specification->sexp
                                           search-paths)
                     #:phases
-                    (if (string-prefix? "arm" ,(or (%current-target-system)
-                                                   (%current-system)))
+                    (if (string-prefix? "arm" ,system)
                         (modify-phases build-phases (delete 'fix-runpath))
                         build-phases)
                     #:configure-flags ,configure-flags
