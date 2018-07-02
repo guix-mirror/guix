@@ -684,8 +684,11 @@ machine.")))
                                    (assoc-ref inputs
                                               (string-append part "-src"))
                                    part))
-                                '("jdk" "hotspot" "corba"
+                                '("jdk" "corba"
                                   "langtools" "jaxp" "jaxws")))
+                    (with-directory-excursion "openjdk"
+                      (invoke "tar" "xvf" (assoc-ref inputs "hotspot-src"))
+                      (rename-file "hg-checkout" "hotspot"))
                     (substitute* "Makefile.in"
                       (("echo \"ERROR: No up-to-date OpenJDK zip available\"; exit -1;")
                        "echo \"trust me\";")
@@ -905,7 +908,9 @@ machine.")))
                  (changeset "jdk6-b41")))
            (sha256
             (base32
-             "07lc1z4k5dj9nrc1wvwmpvxr3xgxrdkdh53xb95skk5ij49yagfd"))))
+             "07lc1z4k5dj9nrc1wvwmpvxr3xgxrdkdh53xb95skk5ij49yagfd"))
+           (patches
+            (search-patches "icedtea-6-hotspot-gcc-segfault-workaround.patch"))))
        ("corba-src"
         ,(origin
            (method hg-fetch)
