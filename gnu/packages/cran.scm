@@ -4482,6 +4482,28 @@ functionality is added so that HDF5 objects behave very similar to their
 corresponding R counterparts.")
     (license license:asl2.0)))
 
+(define-public r-itertools
+  (package
+    (name "r-itertools")
+    (version "0.1-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "itertools" version))
+       (sha256
+        (base32
+         "1ls5biiva10pb1dj3ph4griykb9vam02hkrdmlr5a5wf660hg6xn"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-iterators" ,r-iterators)))
+    (home-page "https://cran.r-project.org/web/packages/itertools/")
+    (synopsis "Iterator tools")
+    (description
+     "This package provides various tools for creating iterators, many
+patterned after functions in the Python @code{itertools} module, and others
+patterned after functions in the snow package.")
+    (license license:gpl2)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
