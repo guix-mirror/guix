@@ -4106,14 +4106,14 @@ Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
 (define-public r-learnr
   (package
     (name "r-learnr")
-    (version "0.9.2")
+    (version "0.9.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "learnr" version))
        (sha256
         (base32
-         "1z04c1djg7ghsl7p9ypc6k5m7snahnmjy10xmrzqfayx1wkfkn9n"))))
+         "0jbk0g6fkw7zs8ykzhsvh9vvz8xmc4v03bqzjsa5mmpxpqan5vx5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-evaluate" ,r-evaluate)
