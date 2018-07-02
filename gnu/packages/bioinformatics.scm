@@ -13280,3 +13280,32 @@ cases include:
   divergence below ~15%.
 @end enumerate\n")
     (license license:expat)))
+
+(define-public r-loomr
+  (let ((commit "df0144bd2bbceca6fadef9edc1bbc5ca672d4739")
+        (revision "1"))
+    (package
+      (name "r-loomr")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mojaveazure/loomR.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1b1g4dlmfdyhn56bz1mkh9ymirri43wiz7rjhs7py3y7bdw1s3yr"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-r6" ,r-r6)
+         ("r-hdf5r" ,r-hdf5r)
+         ("r-iterators" ,r-iterators)
+         ("r-itertools" ,r-itertools)
+         ("r-matrix" ,r-matrix)))
+      (home-page "https://github.com/mojaveazure/loomR")
+      (synopsis "R interface for loom files")
+      (description "This package provides an R interface to access, create,
+and modify loom files.  loomR aims to be completely compatible with loompy.")
+      (license license:gpl3))))
