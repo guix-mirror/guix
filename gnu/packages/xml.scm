@@ -368,6 +368,86 @@ It uses libxml2 to access the XML files.")
 based on libxml for XML parsing, tree manipulation and XPath support.")
     (license license:x11)))
 
+(define-public openjade
+  (package
+    (name "openjade")
+    (version "1.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/openjade/openjade/"
+                                  version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1l92sfvx1f0wmkbvzv1385y1gb3hh010xksi1iyviyclrjb7jb8x"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--enable-spincludedir="
+                            (assoc-ref %build-inputs "opensp")
+                            "/include/OpenSP")
+             (string-append "--enable-splibdir="
+                            (assoc-ref %build-inputs "opensp") "/lib")
+             ;; Workaround segfaults in OpenJade (see:
+             ;; https://bugs.launchpad.net/ubuntu/+source/openjade/+bug/1869734).
+             "CXXFLAGS=-O0")
+       #:parallel-build? #f             ;build fails otherwise
+       ;; The test suite fails with diff errors between the actual and
+       ;; expected results, like: (char<? #\a #\A) returning #t rather than
+       ;; #f (see: https://sourceforge.net/p/openjade/bugs/150/).
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-deprecated-getopt
+           ;; See: https://sourceforge.net/p/openjade/bugs/140/.
+           (lambda _
+             (substitute* "msggen.pl"
+               (("use POSIX;") "use POSIX;\nuse Getopt::Std;")
+               (("do 'getopts.pl';") "")
+               (("&Getopts") "getopts"))
+             #t))
+         (add-after 'replace-deprecated-getopt 'fix-locale-lookup
+           ;; See: https://sourceforge.net/p/openjade/bugs/149/.
+           (lambda _
+             (substitute* "testsuite/expr-lang.dsl"
+               (("\\(language \"EN\" \"US\"\\)")
+                "(language \"EN\" \"US.UTF-8\")"))
+             #t))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; TODO: Generate the manpage from source, with
+             ;; openjade-bootstrap and jadetex.  See the file docsrc/Makefile.
+             (let* ((out (assoc-ref outputs "out"))
+                    (man1 (string-append out "/share/man/man1")))
+               (install-file "docsrc/openjade.1" man1)
+               #t)))
+         (add-after 'install-doc 'install-dtds
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (dtd (string-append out "/sgml/dtd")))
+              (mkdir-p dtd)
+              (copy-recursively "dsssl" dtd)
+              #t)))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key tests? out #:allow-other-keys)
+             (if tests?
+                 (with-directory-excursion "testsuite"
+                   (invoke "make"))
+                 (format #t "test suite not run~%"))
+             #t)))))
+    (inputs
+     `(("opensp" ,opensp)))
+    (native-inputs
+     `(("perl" ,perl)))
+    (home-page "http://openjade.sourceforge.net/")
+    (synopsis "ISO/IEC 10179:1996 standard DSSSL language implementation")
+    (description "OpenJade is an implementation of Document Style Semantics
+and Specification Language (DSSSL), a style language to format SGML or XML
+documents.  It contains backends for various formats such as RTF, HTML, TeX,
+MIF, SGML2SGML, and FOT.")
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))))
+
 (define-public perl-graph-readwrite
   (package
     (name "perl-graph-readwrite")
