@@ -32,6 +32,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3880,7 +3881,8 @@ settings.link.libs:Add(\"wavpack\")\n"))
        ("zlib" ,zlib)))
     (native-inputs
      `(("bam" ,bam)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.teeworlds.com")
     (synopsis "2D retro multiplayer shooter game")
     (description "Teeworlds is an online multiplayer game.  Battle with up to
