@@ -773,11 +773,10 @@ be determined."
   (line          location-line)                   ; 1-indexed line
   (column        location-column))                ; 0-indexed column
 
-(define location
-  (mlambda (file line column)
-    "Return the <location> object for the given FILE, LINE, and COLUMN."
-    (and line column file
-         (make-location file line column))))
+(define (location file line column)
+  "Return the <location> object for the given FILE, LINE, and COLUMN."
+  (and line column file
+       (make-location file line column)))
 
 (define (source-properties->location loc)
   "Return a location object based on the info in LOC, an alist as returned
