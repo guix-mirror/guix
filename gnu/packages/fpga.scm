@@ -328,7 +328,7 @@ Includes the actual FTDI connector.")
 
     (synopsis "Waveform viewer for FPGA simulator trace files")
     (description "This package is a waveform viewer for FPGA
-simulator trace files (FST).")
+simulator trace files (@dfn{FST}).")
     (home-page "http://gtkwave.sourceforge.net/")
-    ;; Exception against free government use in tcl_np.c and tcl_np.h
+    ;; Exception against free government use in tcl_np.c and tcl_np.h.
     (license (list license:gpl2+ license:expat license:tcl/tk))))
