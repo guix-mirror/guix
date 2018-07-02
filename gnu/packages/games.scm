@@ -1172,7 +1172,28 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
      "This package contains the game data of GNU Freedink.")
     (license license:gpl3+)))
 
-;; TODO: Add freedink-dfarc when there's a wxWidgets package.
+(define-public freedink-dfarc
+  (package
+    (name "freedink-dfarc")
+    (version "3.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/freedink/dfarc-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1yp8n3w426xnlp10xk06vfi2y3k9xrcfyck7s7qs1v0ys7n284d5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("wxwidgets" ,wxwidgets)))
+    (home-page "https://www.gnu.org/software/freedink/")
+    (synopsis "Front-end for managing and playing Dink Modules")
+    (description "DFArc makes it easy to play and manage the GNU FreeDink game
+and its numerous D-Mods.")
+    (license license:gpl3+)))
 
 (define-public freedink
   ;; This is a wrapper that tells the engine where to find the data.
