@@ -782,12 +782,19 @@ be determined."
   "Return a location object based on the info in LOC, an alist as returned
 by Guile's `source-properties', `frame-source', `current-source-location',
 etc."
-  (let ((file (assq-ref loc 'filename))
-        (line (assq-ref loc 'line))
-        (col  (assq-ref loc 'column)))
-    ;; In accordance with the GCS, start line and column numbers at 1.  Note
-    ;; that unlike LINE and `port-column', COL is actually 1-indexed here...
-    (location file (and line (+ line 1)) col)))
+  ;; In accordance with the GCS, start line and column numbers at 1.  Note
+  ;; that unlike LINE and `port-column', COL is actually 1-indexed here...
+  (match loc
+    ((('line . line) ('column . col) ('filename . file)) ;common case
+     (and file line col
+          (make-location file (+ line 1) col)))
+    (#f
+     #f)
+    (_
+     (let ((file (assq-ref loc 'filename))
+           (line (assq-ref loc 'line))
+           (col  (assq-ref loc 'column)))
+       (location file (and line (+ line 1)) col)))))
 
 (define (location->source-properties loc)
   "Return the source property association list based on the info in LOC,
