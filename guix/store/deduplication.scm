@@ -88,7 +88,7 @@ LINK-PREFIX."
       (lambda args
         (if (= (system-error-errno args) EEXIST)
             (try (tempname-in link-prefix))
-            (throw 'system-error args))))))
+            (apply throw args))))))
 
 ;; There are 3 main kinds of errors we can get from hardlinking: "Too many
 ;; things link to this" (EMLINK), "this link already exists" (EEXIST), and
