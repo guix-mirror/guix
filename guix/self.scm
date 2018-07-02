@@ -907,8 +907,10 @@ running Guile."
      (module-ref (resolve-interface '(gnu packages guile))
                  'guile-2.2.2))
     ("2.2"
+     ;; Use the latest version, which has fixes for
+     ;; <https://bugs.gnu.org/30602> and VM stack-marking issues.
      (canonical-package (module-ref (resolve-interface '(gnu packages guile))
-                                    'guile-2.2/fixed)))
+                                    'guile-2.2.4)))
     ("2.0"
      (module-ref (resolve-interface '(gnu packages guile))
                  'guile-2.0))))
