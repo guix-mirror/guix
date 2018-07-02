@@ -593,7 +593,8 @@ multiplexer to the KMS/DRM Linux kernel devices.")
     (home-page "https://wiki.freedesktop.org/libopenraw/Exempi")
     (synopsis "XMP metadata handling library")
     (description "Exempi is an implementation of the Extensible Metadata
-Platform (XMP), which enables embedding metadata in PDF and image formats.")
+Platform (@dfn{XMP}), which enables embedding metadata in PDF and image
+formats.")
     (license license:bsd-3)))
 
 (define-public libatasmart
