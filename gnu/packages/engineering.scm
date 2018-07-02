@@ -717,11 +717,11 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
          (modify-phases %standard-phases
            (add-after 'install 'install-footprints ; from footprints tarball
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               (zero? (system* "tar" "xvf"
-                               (assoc-ref inputs "kicad-footprints")
-                               "-C" (string-append (assoc-ref outputs "out")
-                                                   "/share/kicad/modules")
-                               "--strip-components=1"))))
+               (invoke "tar" "xvf"
+                       (assoc-ref inputs "kicad-footprints")
+                       "-C" (string-append (assoc-ref outputs "out")
+                                           "/share/kicad/modules")
+                       "--strip-components=1")))
            ;; We change the default global footprint file, which is generated if
            ;; it doesn't exist in user's home directory, from the one using the
            ;; github plugin, to the one using the KISYSMOD environment path.
