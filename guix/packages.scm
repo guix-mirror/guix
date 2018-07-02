@@ -766,15 +766,16 @@ in INPUTS and their transitive propagated inputs."
   (mlambdaq (package)
     "Return the intersection of the systems supported by PACKAGE and those
 supported by its dependencies."
-    (fold (lambda (input systems)
-            (match input
-              ((label (? package? p) . _)
-               (lset-intersection
-                string=? systems (package-transitive-supported-systems p)))
-              (_
-               systems)))
-          (package-supported-systems package)
-          (bag-direct-inputs (package->bag package)))))
+    (set->list
+     (fold (lambda (input systems)
+             (match input
+               ((label (? package? p) . _)
+                (fold set-insert systems
+                      (package-transitive-supported-systems p)))
+               (_
+                systems)))
+           (list->set (package-supported-systems package))
+           (bag-direct-inputs (package->bag package))))))
 
 (define* (supported-package? package #:optional (system (%current-system)))
   "Return true if PACKAGE is supported on SYSTEM--i.e., if PACKAGE and all its
