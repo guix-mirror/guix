@@ -1400,12 +1400,18 @@ script files.")
 (define-public qtoctave
   (package (inherit octave)
     (name "qtoctave")
+    (source (origin
+              (inherit (package-source octave))
+              (patches (append (origin-patches (package-source octave))
+                               (search-patches
+                                "qtoctave-qt-5.11-fix.patch")))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("qt" ,qtbase)
        ,@(package-inputs octave)))
     (native-inputs
      `(("qttools" , qttools) ;for lrelease
+       ("texlive" ,texlive) ;for texi2dvi
        ,@(package-native-inputs octave)))
     (arguments
      (substitute-keyword-arguments (package-arguments octave)
@@ -1598,7 +1604,7 @@ September 2004}")
                             ,@configure-flags)))
               (format #t "build directory: ~s~%" (getcwd))
               (format #t "configure flags: ~s~%" flags)
-              (zero? (apply system* "./configure" flags)))))
+              (apply invoke "./configure" flags))))
         (add-after 'configure 'clean-local-references
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
@@ -1755,7 +1761,8 @@ savings are consistently > 5x.")
           ;; documentation is difficult.
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out")))
-              (for-each delete-file (find-files out "\\.html$")))))
+              (for-each delete-file (find-files out "\\.html$"))
+              #t)))
          (add-after 'install 'clean-install
           ;; Clean up unnecessary build logs from installation.
           (lambda* (#:key outputs #:allow-other-keys)
@@ -1766,7 +1773,8 @@ savings are consistently > 5x.")
                               (delete-file f))))
                         '("configure.log" "make.log" "gmake.log"
                           "test.log" "error.log" "RDict.db"
-                          "uninstall.py"))))))))
+                          "uninstall.py"))
+              #t))))))
     (home-page "http://slepc.upv.es")
     (synopsis "Scalable library for eigenproblems")
     (description "SLEPc is a software library for the solution of large sparse
@@ -1911,8 +1919,8 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
           ;; By default only the d-precision library is built.  Make with "all"
           ;; target so that all precision libraries and examples are built.
           (lambda _
-            (zero? (system* "make" "all"
-                            (format #f "-j~a" (parallel-job-count))))))
+            (invoke "make" "all"
+                    (format #f "-j~a" (parallel-job-count)))))
          (replace 'check
           ;; Run the simple test drivers, which read test input from stdin:
           ;; from the "real" input for the single- and double-precision
@@ -2231,11 +2239,11 @@ CDEFS       = -DAdd_"
              ;; isn't used anyway.)
              (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
              (with-directory-excursion "EXAMPLE"
-               (and
-                (zero? (system* "mpirun" "-n" "2"
-                                "./pddrive" "-r" "1" "-c" "2" "g20.rua"))
-                (zero? (system* "mpirun" "-n" "2"
-                                "./pzdrive" "-r" "1" "-c" "2" "cg20.cua"))))))
+               (invoke "mpirun" "-n" "2"
+                       "./pddrive" "-r" "1" "-c" "2" "g20.rua")
+               (invoke "mpirun" "-n" "2"
+                       "./pzdrive" "-r" "1" "-c" "2" "cg20.cua"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Library is placed in lib during the build phase.  Copy over
@@ -2283,7 +2291,7 @@ implemented in ANSI C, and MPI for communications.")
        (modify-phases %standard-phases
          (add-after
           'unpack 'chdir-to-src
-          (lambda _ (chdir "src")))
+          (lambda _ (chdir "src") #t))
          (replace
           'configure
           (lambda _
@@ -2320,7 +2328,8 @@ YACC = bison -pscotchyy -y -b y
                           ;; XXX: Causes invalid frees in superlu-dist tests
                           ;; "SCOTCH_PTHREAD"
                           ;; "SCOTCH_PTHREAD_NUMBER=2"
-                          "restrict=__restrict"))))))
+                          "restrict=__restrict"))))
+            #t))
          (add-after
           'build 'build-esmumps
           (lambda _
@@ -2330,24 +2339,25 @@ YACC = bison -pscotchyy -y -b y
             ;; isn't used anyway.)
             (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
 
-            (zero? (system* "make"
-                            (format #f "-j~a" (parallel-job-count))
-                            "esmumps"))))
+            (invoke "make"
+                    (format #f "-j~a" (parallel-job-count))
+                    "esmumps")))
          (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (mkdir out)
-              (zero? (system* "make"
-                              (string-append "prefix=" out)
-                              "install"))
+              (invoke "make"
+                      (string-append "prefix=" out)
+                      "install")
               ;; esmumps files are not installed with the above
               (for-each (lambda (f)
                           (copy-file f (string-append out "/include/" f)))
                         (find-files "../include" ".*esmumps.h$"))
               (for-each (lambda (f)
                           (copy-file f (string-append out "/lib/" f)))
-                        (find-files "../lib" "^lib.*esmumps.*"))))))))
+                        (find-files "../lib" "^lib.*esmumps.*"))
+              #t))))))
     (home-page "http://www.labri.fr/perso/pelegrin/scotch/")
     (synopsis "Programs and libraries for graph algorithms")
     (description "SCOTCH is a set of programs and libraries which implement

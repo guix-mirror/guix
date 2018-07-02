@@ -17,6 +17,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -172,6 +173,32 @@ John the Ripper).")
 
 (define-public python2-py-bcrypt
   (package-with-python2 python-py-bcrypt))
+
+(define-public python-pyblake2
+  (package
+    (name "python-pyblake2")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyblake2" version))
+       (sha256
+        (base32
+         "0gz9hgznv5zw4qjq43xa56y0yikimx30gffvibxzm0nv5sq7xk2w"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/dchest/pyblake2")
+    (synopsis "BLAKE2 hash function for Python")
+    (description "BLAKE2 is a cryptographic hash function, which offers
+stronger security while being as fast as MD5 or SHA-1, and comes in two
+flavors: @code{BLAKE2b}, optimized for 64-bit platforms and produces digests
+of any size between 1 and 64 bytes, and @code{BLAKE2s}, optimized for 8- to
+32-bit platforms and produces digests of any size between 1 and 32 bytes.
+
+This package provides a Python interface for BLAKE2.")
+    ;; The COPYING file declares it as public domain, with the option to
+    ;; alternatively use and redistribute it under a variety of permissive
+    ;; licenses. cc0 is explicitly mentioned in setup.py and pyblake2module.c.
+    (license (list license:public-domain license:cc0))))
 
 (define-public python-paramiko
   (package
@@ -403,14 +430,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "17.5.0")
+    (version "18.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "0wv78mwsdqbxqwdwllf4maqybhbj3vb8328ia04hnb558sxcy41c"))))
+         "1055rb456nvrjcij3sqj6c6l3kmh5cqqay0nsmx3pxq07d1g3234"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

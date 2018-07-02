@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,7 +144,7 @@ non-determinism in the build process.")
 (define-public glusterfs
   (package
     (name "glusterfs")
-    (version "3.10.7")
+    (version "3.10.12")
     (source
      (origin
        (method url-fetch)
@@ -153,7 +153,7 @@ non-determinism in the build process.")
                            "/glusterfs-" version ".tar.gz"))
        (sha256
         (base32
-         "02sn9s3jjva2i1l47y3in326n8jgp57rbykz5s8m87y4bzpw0ym1"))
+         "01ysvamvfv2l5pswa1rygpg8w0954h2wkh1ba97h3nx03m5n0prg"))
        (patches
         (search-patches "glusterfs-use-PATH-instead-of-hardcodes.patch"))))
     (build-system gnu-build-system)
@@ -170,11 +170,12 @@ non-determinism in the build process.")
              ;; must be replaced.
              (install-file (string-append (assoc-ref inputs "automake")
                                           "/share/automake-"
-                                          ,(package-version automake) "/config.sub")
+                                          ,(version-major+minor (package-version automake)) "/config.sub")
                            ".")
              #t))
          ;; Fix flex error.  This has already been fixed with upstream commit
-         ;; db3fe245a9e8812829eae7d143e49d0bfdfef9a7.
+         ;; db3fe245a9e8812829eae7d143e49d0bfdfef9a7, but is not available in
+         ;; current releases.
          (add-before 'configure 'fix-lex
            (lambda _
              (substitute* "libglusterfs/src/Makefile.in"

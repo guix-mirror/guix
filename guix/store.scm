@@ -65,6 +65,7 @@
             build-mode
 
             open-connection
+            port->connection
             close-connection
             with-store
             set-build-options
@@ -516,6 +517,23 @@ for this connection will be pinned.  Return a server object."
                         (let loop ((done? (process-stderr conn)))
                           (or done? (process-stderr conn)))
                         conn)))))))))
+
+(define* (port->connection port
+                           #:key (version %protocol-version))
+  "Assimilate PORT, an input/output port, and return a connection to the
+daemon, assuming the given protocol VERSION.
+
+Warning: this procedure assumes that the initial handshake with the daemon has
+already taken place on PORT and that we're just continuing on this established
+connection.  Use with care."
+  (let-values (((output flush)
+                (buffering-output-port port (make-bytevector 8192))))
+    (%make-nix-server port
+                      (protocol-major version)
+                      (protocol-minor version)
+                      output flush
+                      (make-hash-table 100)
+                      (make-hash-table 100))))
 
 (define (write-buffered-output server)
   "Flush SERVER's output port."

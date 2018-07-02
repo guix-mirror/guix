@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -226,10 +227,10 @@ contains the graphical user interface for synfig.")
                                    "\nLIBS +=" libsndfile
                                    "/lib/libsndfile.so\n"
                                    "win32 {"))))
-               (zero? (system* "qmake"
-                               (string-append "DESTDIR="
-                                              (assoc-ref outputs "out")
-                                              "/bin")))))
+               (invoke "qmake"
+                       (string-append "DESTDIR="
+                                      (assoc-ref outputs "out")
+                                      "/bin"))))
            ;; Ensure that all required Qt plugins are found at runtime.
            (add-after 'install 'wrap-executable
              (lambda* (#:key inputs outputs #:allow-other-keys)

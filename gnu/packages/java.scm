@@ -2683,7 +2683,16 @@ documentation tools.")
                     "code.google.com/jarjar/jarjar-src-" version ".zip"))
               (sha256
                (base32
-                "1v8irhni9cndcw1l1wxqgry013s2kpj0qqn57lj2ji28xjq8ndjl"))))
+                "1v8irhni9cndcw1l1wxqgry013s2kpj0qqn57lj2ji28xjq8ndjl"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled thirds-party jar archives.
+                  ;; TODO: unbundle maven-plugin-api.
+                  (delete-file "lib/asm-4.0.jar")
+                  (delete-file "lib/asm-commons-4.0.jar")
+                  (delete-file "lib/junit-4.8.1.jar")
+                  #t))))
     (build-system ant-build-system)
     (arguments
      `(;; Tests require junit, which ultimately depends on this package.
@@ -2691,6 +2700,26 @@ documentation tools.")
        #:build-target "jar"
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'do-not-use-bundled-asm
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("<path id=\"path.build\">")
+                (string-append "<path id=\"path.build\"><fileset dir=\""
+                               (assoc-ref inputs "java-asm-bootstrap")
+                               "/share/java\" includes=\"**/*.jar\"/>"))
+               (("<zipfileset src=\"lib/asm-4.0.jar\"/>") "")
+               (("lib/asm-commons-4.0.jar")
+                (string-append (assoc-ref inputs "java-asm-bootstrap")
+                               "/share/java/asm-6.0.jar"))
+               (("<include name=\"org/objectweb/asm/commons/Remap\\*\\.class\"/>")
+                (string-append "<include name=\"org/objectweb/asm/"
+                               "commons/Remap*.class\"/>"
+                               "<include name=\"org/objectweb/asm/*.class\"/>"
+                               "<include name=\"org/objectweb/asm/"
+                               "signature/*.class\"/>"
+                               "<include name=\"org/objectweb/asm/"
+                               "commons/SignatureRemapper.class\"/>")))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((target (string-append (assoc-ref outputs "out")
@@ -2698,6 +2727,8 @@ documentation tools.")
                (install-file (string-append "dist/jarjar-" ,version ".jar")
                              target))
              #t)))))
+    (inputs
+     `(("java-asm-bootstrap" ,java-asm-bootstrap)))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://code.google.com/archive/p/jarjar/")
@@ -7111,7 +7142,8 @@ it manages project dependencies, gives diffs jars, and much more.")
     (name "java-aqute-libg-bootstrap")
     (arguments
      ;; Disable tests, at this stage of bootstrap we have no test frameworks.
-     `(#:tests? #f))
+     (substitute-keyword-arguments (package-arguments java-aqute-libg)
+       ((#:tests? _ #f) #f)))
     (inputs
      `(("slf4j-bootstrap" ,java-slf4j-api-bootstrap)
        ,@(delete `("slf4j" ,java-slf4j-api)

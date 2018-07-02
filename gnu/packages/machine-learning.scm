@@ -49,6 +49,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -233,7 +234,7 @@ classification.")
                #t))
            (add-after 'disable-broken-tests 'autogen
              (lambda _
-               (zero? (system* "bash" "autogen.sh")))))))
+               (invoke "bash" "autogen.sh"))))))
       (inputs
        `(("python" ,python-2) ; only Python 2 is supported
          ("libxml2" ,libxml2)))
@@ -667,15 +668,18 @@ and a QP solver.")
              ;; No test target, so we build and run the unit tests here.
              (let ((test-dir (string-append "../dlib-" ,version "/dlib/test")))
                (with-directory-excursion test-dir
-                 (and (zero? (system* "make" "-j" (number->string (parallel-job-count))))
-                      (zero? (system* "./dtest" "--runall")))))))
+                 (invoke "make" "-j" (number->string (parallel-job-count)))
+                 (invoke "./dtest" "--runall"))
+               #t)))
          (add-after 'install 'delete-static-library
            (lambda* (#:key outputs #:allow-other-keys)
              (delete-file (string-append (assoc-ref outputs "out")
                                          "/lib/libdlib.a"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ;; For tests.
+       ("libnsl" ,libnsl)))
     (inputs
      `(("giflib" ,giflib)
        ("lapack" ,lapack)
@@ -726,7 +730,7 @@ computing environments.")
              (setenv "HOME" "/tmp")
              ;; Step out of the source directory just to be sure.
              (chdir "..")
-             (zero? (system* "nosetests" "-v" "sklearn")))))))
+             (invoke "nosetests" "-v" "sklearn"))))))
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs

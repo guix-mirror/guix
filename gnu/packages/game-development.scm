@@ -1062,16 +1062,16 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.0.2")
+    (version "3.0.4")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/godotengine/godot/archive/"
-                              version "-stable.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/godotengine/godot")
+                    (commit (string-append version "-stable"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ldnk3j4w2kh454mzclmq8nk7zqrn758yrqq85i4kzljpkf93g0m"))
+                "0i4ssfb6igga9zwvsmahrnasx9cyqrsd6mlmssjgc482fy9q2kz4"))
               (modules '((guix build utils)))
               (snippet
                '(begin

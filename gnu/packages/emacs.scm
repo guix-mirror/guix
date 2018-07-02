@@ -1641,15 +1641,14 @@ type, for example: packages, buffers, files, etc.")
 (define-public emacs-guix
   (package
     (name "emacs-guix")
-    (version "0.4")
+    (version "0.4.1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/alezost/guix.el"
-                                  "/releases/download/v" version
-                                  "/emacs-guix-" version ".tar.gz"))
+              (uri (string-append "https://emacs-guix.gitlab.io/website/"
+                                  "releases/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "1nn4b0gd895g0k4fynzrip7z8yb1r3qmvznq9v8a6q7sm84irmqq"))))
+                "0jbnrcazbks7h50rngpw5l40a6vn2794kb53cpva3yzdjmrc1955"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1700,7 +1699,7 @@ type, for example: packages, buffers, files, etc.")
        ("bui" ,emacs-bui)
        ("edit-indirect" ,emacs-edit-indirect)
        ("magit-popup" ,emacs-magit-popup)))
-    (home-page "https://alezost.github.io/guix.el/")
+    (home-page "https://emacs-guix.gitlab.io/website/")
     (synopsis "Emacs interface for GNU Guix")
     (description
      "Emacs-Guix provides a visual interface, tools and features for the GNU
@@ -4437,7 +4436,7 @@ indentation command behavior very similar to that of python-mode.")
 (define-public emacs-web-mode
   (package
     (name "emacs-web-mode")
-    (version "14")
+    (version "16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://raw.githubusercontent.com/fxbois"
@@ -4445,7 +4444,7 @@ indentation command behavior very similar to that of python-mode.")
               (file-name (string-append "web-mode-" version ".el"))
               (sha256
                (base32
-                "086hik5fmxg3kx74qmransx9cz961qd22d4m6ah2dw6cwaj1s3s5"))))
+                "1hs5w7kdvcyn4ihyw1kfjg48djn5p7lz4rlbhzzdqv1g56xqx3gw"))))
     (build-system emacs-build-system)
     (synopsis "Major mode for editing web templates")
     (description "Web-mode is an Emacs major mode for editing web templates
@@ -7028,39 +7027,35 @@ Idris.")
     (license license:gpl3+)))
 
 (define-public emacs-browse-at-remote
-  (let ((commit "31dcf77d7c89a12f230e2b2332585db2c44530ef")
-        (revision "1"))
-    (package
-      (name "emacs-browse-at-remote")
-      (version (string-append "0.9.0-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/rmuslimov/browse-at-remote.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (patches
-                 (search-patches "emacs-browse-at-remote-cgit-gnu.patch"))
-                (sha256
-                 (base32
-                  "017cb8lf7zbg0jmr7zxzd7d5kz2jy35cvw5vcpdmq1fdr3wqwkgj"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-f" ,emacs-f)
-         ("emacs-s" ,emacs-s)))
-      (native-inputs
-       `(("ert-runner" ,ert-runner)))
-      (arguments
-       `(#:tests? #t
-         #:test-command '("ert-runner")))
-      (home-page "https://github.com/rmuslimov/browse-at-remote")
-      (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
-      (description
-       "This Emacs package allows you to open a target page on
+  (package
+    (name "emacs-browse-at-remote")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/rmuslimov/browse-at-remote/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ymslsp6i1naw25zckv25bf4aaq6qwkbkn95qyzlwg869l802686"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)))
+    (native-inputs
+     `(("ert-runner" ,ert-runner)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
+    (home-page "https://github.com/rmuslimov/browse-at-remote")
+    (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
+    (description
+     "This Emacs package allows you to open a target page on
 github/gitlab (or bitbucket) by calling @code{browse-at-remote} command.
 It supports dired buffers and opens them in tree mode at destination.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-tiny
   (package

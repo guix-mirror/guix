@@ -724,6 +724,74 @@ format is also supported.")
   ;; This was mthl's mcron development branch, and it became mcron 1.1.
   (deprecated-package "mcron2" mcron))
 
+(define-public guile-hall
+  (package
+    (name "guile-hall")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/a-sassmannshausen/guile-hall")
+             (commit "7d1094a12fe917209ce5b76c681cc8c862d4c65b")))
+       (file-name "guile-hall-0.1.1-checkout")
+       (sha256
+        (base32
+         "03kb09cjca98hlbx9mj12mqinzsnnvp6ci6i975n88pjhaxigyp1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules
+       ((ice-9 match)
+        (ice-9 ftw)
+        ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases
+           %standard-phases
+         (add-after
+             'install
+             'hall-wrap-binaries
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/"))
+                    (site (string-append out "/share/guile/site")))
+               (match (scandir site)
+                 (("." ".." version)
+                  (let ((modules (string-append site "/" version))
+                        (compiled-modules
+                         (string-append
+                          out
+                          "/lib/guile/"
+                          version
+                          "/site-ccache")))
+                    (for-each
+                     (lambda (file)
+                       (wrap-program
+                           (string-append bin file)
+                         `("GUILE_LOAD_PATH" ":" prefix (,modules))
+                         `("GUILE_LOAD_COMPILED_PATH"
+                           ":"
+                           prefix
+                           (,compiled-modules))))
+                     ,(list 'list "hall"))
+                    #t)))))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (inputs `(("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guile-config" ,guile-config)))
+    (synopsis "Guile project tooling")
+    (description
+     "Hall is a command-line application and a set of Guile libraries that
+allow you to quickly create and publish Guile projects.  It allows you to
+transparently support the GNU build system, manage a project hierarchy &
+provides tight coupling to Guix.")
+    (home-page
+     "https://gitlab.com/a-sassmannshausen/guile-hall")
+    (license license:gpl3+)))
+
 (define-public guile-ics
   (package
     (name "guile-ics")
@@ -767,14 +835,23 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.5.1")
+    (version "0.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19q420i3is3d4jmkdqs5y7ir7ipp4s795saflqgwf6617cx2zpj4"))))
+                "0n1lf5bsr5s9gqi07sdfkl1hpin6dzvkcj1xa63jd1w8aglwv8r1"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; 'pre-inst-env' sets an incorrect load path, missing the
+                  ;; "/src" bit.  Add it.
+                  (substitute* "pre-inst-env.in"
+                    (("abs_top_(builddir|srcdir)=([[:graph:]]+)" _ dir value)
+                     (string-append "abs_top_" dir "=" value "/src")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -835,7 +912,8 @@ for Guile\".")
                                     "AC_SUBST([GUILE_EFFECTIVE_VERSION])\n")))
                   (substitute* '("Makefile.am" "json/Makefile.am")
                     (("moddir[[:blank:]]*=.*/share/guile/site" all)
-                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))))))
+                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
@@ -1206,58 +1284,31 @@ Guile's foreign function interface.")
   (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
 
 (define-public guile-sqlite3
-  (let ((commit "10c13a7e02ab1655c8a758e560cafc9d6eff26f4")
-        (revision "4"))
-    (package
-      (name "guile-sqlite3")
-      (version (git-version "0.0" revision commit))
-
-      ;; XXX: This used to be available read-only at
-      ;; <https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/> but it
-      ;; eventually disappeared, so we have our own copy here.
-      (home-page "https://notabug.org/civodul/guile-sqlite3.git")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0nhhswpd7nb2f0gfr55fzcc2xm3l2xx4rbljsd1clrm8fj2d7q9d"))
-                (file-name (string-append name "-" version "-checkout"))
-                (modules '((guix build utils)))
-                (snippet
-                 ;; Upgrade 'Makefile.am' to the current way of doing things.
-                 '(begin
-                    (substitute* "Makefile.am"
-                      (("TESTS_ENVIRONMENT")
-                       "TEST_LOG_COMPILER"))
-                    #t))))
-
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("sqlite" ,sqlite)))
-      (arguments
-       '(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'autoreconf
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi"))))
-                    (add-before 'build 'set-sqlite3-file-name
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (substitute* "sqlite3.scm"
-                          (("\"libsqlite3\"")
-                           (string-append "\"" (assoc-ref inputs "sqlite")
-                                          "/lib/libsqlite3\"")))
-                        #t)))))
-      (synopsis "Access SQLite databases from Guile")
-      (description
-       "This package provides Guile bindings to the SQLite database system.")
-      (license license:gpl3+))))
+  (package
+    (name "guile-sqlite3")
+    (version "0.1.0")
+    (home-page "https://notabug.org/civodul/guile-sqlite3.git")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1nv8j7wk6b5n4p22szyi8lv8fs31rrzxhzz16gyj8r38c1fyp9qp"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("sqlite" ,sqlite)))
+    (synopsis "Access SQLite databases from Guile")
+    (description
+     "This package provides Guile bindings to the SQLite database system.")
+    (license license:gpl3+)))
 
 (define-public haunt
   (package
@@ -1320,30 +1371,24 @@ interface for reading articles in any format.")
 (define-public guile-config
   (package
     (name "guile-config")
-    (version "0.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/a-sassmannshausen/guile-config")
-                    (commit "guile-config-0.2")))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "07q86vqdwmm81wwxz1d1ah27hbhs6qbn8kiizrfpj0s4bf95w3r9"))))
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/a-sassmannshausen/guile-config")
+             (commit "ce12de3f438c6b2b59c43ee21bcd58251835fdf3")))
+       (file-name "guile-config-0.3-checkout")
+       (sha256 (base32 "02zbpin0r9m2vxmr7mv68v3xdn247dcck56kbzjn0gj4c2rhih85"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'autoreconf
-                    (lambda _
-                      (zero? (system* "autoreconf" "-fi")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
-    (inputs
-     `(("guile" ,guile-2.2)))
-    (synopsis "Guile application configuration parsing library")
+    (inputs `(("guile" ,guile-2.2)))
+    (synopsis
+     "Guile application configuration parsing library.")
     (description
      "Guile Config is a library providing a declarative approach to
 application configuration specification.  The library provides clean
@@ -1352,7 +1397,8 @@ configuration file creation; configuration file parsing; command-line
 parameter parsing using getopt-long; basic GNU command-line parameter
 generation (--help, --usage, --version); automatic output generation for the
 above command-line parameters.")
-    (home-page "https://github.com/a-sassmannshausen/guile-config")
+    (home-page
+     "https://gitlab.com/a-sassmannshausen/guile-config")
     (license license:gpl3+)))
 
 (define-public guile-redis

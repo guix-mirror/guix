@@ -1211,13 +1211,13 @@ human-friendly syntax.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.22.0")
+    (version "0.23.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "0v0fi2i10kwnmlpsl6f1fgajcpx3q6766qf6xqi5kw3ivn8l1aa4"))))
+        (base32 "142nvwb01r2wv42y2cz40bx33hd8ffh6s6gynapg859fmzr2mdah"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -1237,7 +1237,8 @@ human-friendly syntax.")
                           (for-each delete-file
                                     '("pandas/tests/io/conftest.py"
                                       "pandas/tests/io/json/test_compression.py"
-                                      "pandas/tests/io/test_excel.py"))
+                                      "pandas/tests/io/test_excel.py"
+                                      "pandas/tests/io/test_parquet.py"))
                           (invoke "pytest" "-v" "pandas" "-k"
                                   (string-append
                                    "not network and not disabled"
@@ -1249,7 +1250,9 @@ human-friendly syntax.")
        ("python-dateutil" ,python-dateutil)))
     (native-inputs
      `(("python-cython" ,python-cython)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-lxml" ,python-lxml)
+       ("python-html5lib" ,python-html5lib)
        ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)))
     (home-page "https://pandas.pydata.org")
@@ -2680,14 +2683,14 @@ and several other projects.")
 (define-public python-rst.linker
   (package
     (name "python-rst.linker")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rst.linker" version))
        (sha256
         (base32
-         "16crgnai6020vdmnpwdimw1vm3jb74ysfyb3kmcidb0lgma5xq2d"))))
+         "0iqaacp7pj1s8avs4kc0qg0r7dscywaq37y6l9j14glqdikk0wdj"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -2911,7 +2914,7 @@ between language specification and implementation aspects.")
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.14.3")
+    (version "1.14.5")
     (source
      (origin
        (method url-fetch)
@@ -2920,7 +2923,7 @@ between language specification and implementation aspects.")
              version "/numpy-" version ".tar.gz"))
        (sha256
         (base32
-         "1yim2bxlycn4dhxmfxid6slplpmcb4ynhp411b37ahmsm2lwgkyg"))))
+         "0admjpkih63lm19zbbilq8ck4f6ny5kqi03dk3m6b2mnixsh4jhv"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)
@@ -10423,14 +10426,14 @@ network.")
 (define-public python-xopen
   (package
     (name "python-xopen")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xopen" version))
         (sha256
           (base32
-           "0bzjmn3rl1cd3d2q39cjwnkhaspk2b0hfj3rl64pclm44ihg5fb6"))
+           "1a0wbil552wsmklwd89ssmgz3pjd86qa9i7jh8wqb9wslc8a2qjr"))
         (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (home-page "https://github.com/marcelm/xopen/")
@@ -10443,7 +10446,12 @@ possible on all supported Python versions.")
     (license license:expat)))
 
 (define-public python2-xopen
-  (package-with-python2 python-xopen))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-xopen))))
+    (package
+      (inherit base)
+      (propagated-inputs `(("python2-bz2file" ,python2-bz2file)
+                           ,@(package-propagated-inputs base))))))
 
 (define-public python2-cheetah
   (package
@@ -13416,14 +13424,14 @@ time-based (TOTP) passwords.")
 (define-public python-parso
   (package
     (name "python-parso")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parso" version))
        (sha256
         (base32
-         "0lamywk6dm5xshlkdvxxf5j6fa2k2zpi7xagf0bwidaay3vnpgb2"))))
+         "0zvh4rdhv2wkglkgh0h9kn9ndpsw5p639wcwv47jn1kfp504lq7h"))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (build-system python-build-system)

@@ -140,13 +140,13 @@ usual file attributes can be checked for inconsistencies.")
 (define-public progress
   (package
     (name "progress")
-    (version "0.13.1")
+    (version "0.14")
     (source (origin
       (method url-fetch)
       (uri (string-append "https://github.com/Xfennec/"
                           name "/archive/v" version ".tar.gz"))
       (sha256
-       (base32 "199rk6608q9m6l0fbjm0xl2w1c5krf8245dqnksdp4rqp7l9ak06"))
+       (base32 "1wcanixfsi5k4i9h5vrnncgjdncalsdfqllrxibxwpgfnf20sji1"))
       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -865,7 +865,7 @@ over ssh connections.")
 (define-public rename
   (package
     (name "rename")
-    (version "0.20")
+    (version "0.35")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -873,7 +873,7 @@ over ssh connections.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1cf6xx2hiy1xalp35fh8g73j67r0w0g66jpcbc6971x9jbm7bvjy"))))
+                "052iqmn7ya3w1nadpiyavmr3rx566r0lbflx94y8b5wx9q5c16rq"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
@@ -1651,7 +1651,7 @@ limits.")
 (define-public autojump
   (package
     (name "autojump")
-    (version "22.3.4")
+    (version "22.5.1")
     (source
      (origin
        (method url-fetch)
@@ -1660,7 +1660,7 @@ limits.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "113rcpr37ngf2xs8da41qdarq5qmj0dwx8ggqy3lhlb0kvqq7g9z"))))
+         "17z9j9936x0nizwrzf664bngh60x5qbvrrf1s5qdzd0f2gdanpvn"))))
     (build-system gnu-build-system)
     (native-inputs                      ;for tests
      `(("python-mock" ,python-mock)
@@ -1668,36 +1668,19 @@ limits.")
     (inputs
      `(("python" ,python-wrapper)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (delete 'build)
-                  (replace 'check
-                    (lambda _
-                      (zero?
-                       (system* "python" "tests/unit/autojump_utils_test.py"))))
-                  (replace 'install
-                    ;; The install.py script doesn't allow system installation
-                    ;; into an arbitrary prefix, so do our own install.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out (assoc-ref outputs "out"))
-                             (bin (string-append out "/bin"))
-                             (share (string-append out "/share/autojump"))
-                             (py (string-append out "/lib/python"
-                                                ,(version-major+minor
-                                                  (package-version python-wrapper))
-                                                "/site-packages"))
-                             (man (string-append out "/share/man/man1")))
-                        (install-file "bin/autojump" bin)
-                        (for-each (λ (f) (install-file f py))
-                                  (find-files "bin" "\\.py$"))
-                        (for-each (λ (f) (install-file f share))
-                                  (find-files "bin" "autojump\\..*$"))
-                        (substitute* (string-append share "/autojump.sh")
-                          (("/usr/local") out))
-                        (install-file "docs/autojump.1" man)
-                        (wrap-program (string-append bin "/autojump")
-                          `("PYTHONPATH" ":" prefix (,py)))
-                        #t))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'check
+           (lambda _
+             (invoke "python" "tests/unit/autojump_utils_test.py")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "SHELL" (which "bash"))
+             (invoke "python" "install.py"
+                     (string-append "--destdir="
+                                    (assoc-ref outputs "out"))))))))
     (home-page "https://github.com/wting/autojump")
     (synopsis "Shell extension for file system navigation")
     (description
@@ -2649,7 +2632,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.12-1")
+      (version "3.0.13-1")
       (source
        (origin
          (method git-fetch)
@@ -2658,7 +2641,7 @@ Python loading in HPC environments.")
                (commit version)))
          (sha256
           (base32
-           "1a2sjz90gzzvhp63x89hs0a424rkd13qrff2njqmjxp322zyp527"))))
+           "0732ligzmzwpwaxin4g8rbfj91ghyvf69lx2jyrahi4df0bfamh5"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash)

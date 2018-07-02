@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,8 +164,8 @@ minimalist than ntpd.")
                       ;; date that is recorded in binaries.  It must be a
                       ;; "recent date" since it is used to detect bogus dates
                       ;; received from servers.
-                      (setenv "COMPILE_DATE" (number->string 1450563040))
-                      (zero? (system* "sh" "autogen.sh")))))))
+                      (setenv "COMPILE_DATE" (number->string 1530144000))
+                      (invoke "sh" "autogen.sh"))))))
     (inputs `(("openssl" ,openssl)
               ("libevent" ,libevent)))
     (native-inputs `(("pkg-config" ,pkg-config)

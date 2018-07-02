@@ -1,0 +1,32 @@
+Help CMake find Clang's libraries.
+Have it install the ICD file in the right place.
+
+diff --git a/CMake/FindLLVM.cmake b/CMake/FindLLVM.cmake
+index 5457f248..e8e8f94a 100644
+--- a/CMake/FindLLVM.cmake
++++ b/CMake/FindLLVM.cmake
+@@ -107,7 +107,7 @@ endif (LLVM_VERSION_NODOT VERSION_GREATER 34)
+ macro(add_one_lib name)
+   FIND_LIBRARY(CLANG_LIB
+     NAMES ${name}
+-    PATHS ${LLVM_LIBRARY_DIR} NO_DEFAULT_PATH)
++    PATHS ${CLANG_LIBRARY_DIR} NO_DEFAULT_PATH)
+   set(CLANG_LIBRARIES ${CLANG_LIBRARIES} ${CLANG_LIB})
+ 	unset(CLANG_LIB CACHE)
+ endmacro()
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c11acbb2..fb99e5c8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -217,7 +217,7 @@ IF(OCLIcd_FOUND)
+     "intel-beignet.icd.in"
+     "${ICD_FILE_NAME}"
+   )
+-  install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${ICD_FILE_NAME} DESTINATION /etc/OpenCL/vendors)
++  install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${ICD_FILE_NAME} DESTINATION etc/OpenCL/vendors COMPONENT config)
+ ELSE(OCLIcd_FOUND)
+   MESSAGE(STATUS "Looking for OCL ICD header file - not found")
+   MESSAGE(FATAL_ERROR "OCL ICD loader miss. If you really want to disable OCL ICD support, please run cmake with option -DOCLICD_COMPAT=0.")
+--
+2.14.3
+

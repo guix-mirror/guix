@@ -265,25 +265,23 @@ between desktops, and change the number of desktops.")
 (define-public xeyes
   (package
     (name "xeyes")
-    (version "1.0.1")
+    (version "1.1.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "http://xeyes.sourcearchive.com/downloads/1.0.1/xeyes_"
-               version
-               ".orig.tar.gz"))
-        (sha256
-          (base32
-            "04c3md570j67g55h3bix1qbngcslnq91skli51k3g1avki88zkm9"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.x.org/releases/individual/app/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0lq5j7fryx1wn998jq6h3icz1h6pqrsbs3adskjzjyhn5l6yrg2p"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
         ("libxmu" ,libxmu)
+        ("libxrender" ,libxrender)
         ("libxt" ,libxt)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://xeyes.sourcearchive.com/")
+    (home-page "https://www.x.org/")    ; no dedicated Xeyes page exists
     (synopsis "Follow-the-mouse X demo")
     (description "Xeyes is a demo program for x.org.  It shows eyes
 following the mouse.")
@@ -736,17 +734,16 @@ Guile will work for XBindKeys.")
 (define-public sxhkd
   (package
     (name "sxhkd")
-    (version "0.5.6")
+    (version "0.5.9")
     (source
      (origin
-       (file-name (string-append name "-" version ".tar.gz"))
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/baskerville/sxhkd/archive/"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/baskerville/sxhkd")
+             (commit version)))
        (sha256
         (base32
-         "15grmzpxz5fqlbfg2slj7gb7r6nzkvjmflmbkqx7mlby9pm6wdkj"))))
+         "0cw547x7vky55k3ksrmzmrra4zhslqcwq9xw0y4cmbvy4s1qf64v"))))
     (build-system gnu-build-system)
     (inputs
      `(("asciidoc" ,asciidoc)
@@ -755,10 +752,14 @@ Guile will work for XBindKeys.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-wm" ,xcb-util-wm)))
     (arguments
-     '(#:phases (modify-phases %standard-phases (delete 'configure))
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f  ; no check target
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))))
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" %output)
+             ;; Keep the documentation where the build system installs LICENSE.
+             (string-append "DOCPREFIX=" %output
+                            "/share/doc/" ,name "-" ,version))))
     (home-page "https://github.com/baskerville/sxhkd")
     (synopsis "Simple X hotkey daemon")
     (description "sxhkd is a simple X hotkey daemon with a powerful and

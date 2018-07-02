@@ -69,21 +69,31 @@
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.18.12")
+    (version "0.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1m2khr2cij8z6lawgbmdksjn14fpnjsy8ad4qahnpqapm1slsxap"))))
+                "0nfj7s7qmgfy1cl8s3ck7dxjvprfq5glfi6iidmvmy8r7gl52gz8"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libjpeg" ,libjpeg-8)))         ;for lossy DNGs and old Kodak cameras
+    (propagated-inputs
+     `(("lcms" ,lcms)))                 ;for color profiles
     (home-page "https://www.libraw.org")
     (synopsis "Raw image decoder")
     (description
      "LibRaw is a library for reading RAW files obtained from digital photo
 cameras (CRW/CR2, NEF, RAF, DNG, and others).")
-    (license license:lgpl2.1+)))
+    ;; LibRaw is distributed under both LGPL2.1 and CDDL 1.0.  From the README:
+    ;; "You may use one of these licensing modes and switch between them.  If
+    ;; you modify LibRaw source and made your changes public, you should accept
+    ;; both two licensing modes for your changes/additions."
+    (license (list license:lgpl2.1 license:cddl1.0))))
 
 (define-public libexif
   (package
@@ -109,14 +119,14 @@ data as produced by digital cameras.")
 (define-public libgphoto2
   (package
     (name "libgphoto2")
-    (version "2.5.17")
+    (version "2.5.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gphoto/libgphoto/"
                                   version "/libgphoto2-" version ".tar.bz2"))
               (sha256
                (base32
-                "0mdmjb8a07g37bb5q69h11sixw0w6y5g3kbii9z97yhklgq68x21"))))
+                "1v57ayp17j88bj79nl7rf4iyajbxx00kgb4l5k3kbv50gjfvh5sv"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
@@ -184,7 +194,7 @@ MTP, and much more.")
 (define-public perl-image-exiftool
   (package
     (name "perl-image-exiftool")
-    (version "10.80")
+    (version "11.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -192,7 +202,7 @@ MTP, and much more.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "14rwr5wk2snqv4yva6fax1gfsdv88941n237m0wyzn3n0xh9dy5w"))))
+                "175w34n73mypdpbaqj2vgqsfp59yvfrn8k7zmx4cawnp895bypvh"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases

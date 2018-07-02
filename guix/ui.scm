@@ -421,8 +421,21 @@ report them in a user-friendly way."
     (lambda _
       (setlocale LC_ALL ""))
     (lambda args
-      (warning (G_ "failed to install locale: ~a~%")
-               (strerror (system-error-errno args))))))
+      (cond-expand
+        ;; Guile 2.2 already emits a warning, so let's not add a second one.
+        (guile-2.2 #t)
+        (else (warning (G_ "failed to install locale: ~a~%")
+                       (strerror (system-error-errno args)))))
+      (display-hint (G_ "Consider installing the @code{glibc-utf8-locales} or
+@code{glibc-locales} package and defining @code{GUIX_LOCPATH}, along these
+lines:
+
+@example
+guix package -i glibc-utf8-locales
+export GUIX_LOCPATH=\"$HOME/.guix-profile/lib/locale\"
+@end example
+
+See the \"Application Setup\" section in the manual, for more info.\n")))))
 
 (define (initialize-guix)
   "Perform the usual initialization for stand-alone Guix commands."
@@ -1209,11 +1222,14 @@ field in the final score.
 A score of zero means that OBJ does not match any of REGEXPS.  The higher the
 score, the more relevant OBJ is to REGEXPS."
   (define (score str)
-    (let ((counts (filter-map (lambda (regexp)
-                                (match (regexp-exec regexp str)
-                                  (#f #f)
-                                  (m  (match:count m))))
-                              regexps)))
+    (let ((counts (map (lambda (regexp)
+                         (match (fold-matches regexp str '() cons)
+                           (()  0)
+                           ((m) (if (string=? (match:substring m) str)
+                                    5              ;exact match
+                                    1))
+                           (lst (length lst))))
+                       regexps)))
       ;; Compute a score that's proportional to the number of regexps matched
       ;; and to the number of matches for each regexp.
       (* (length counts) (reduce + 0 counts))))

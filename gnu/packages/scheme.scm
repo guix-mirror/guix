@@ -314,15 +314,14 @@ Scheme and C programs and between Scheme and Java programs.")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (zero?
-                (system* "./configure"
-                         (string-append "--prefix=" out)
-                         (string-append "--blflags="
-                                        ;; user flags completely override useful
-                                        ;; default flags, so repeat them here.
-                                        "-copt \\$(CPICFLAGS) "
-                                        "-L \\$(BUILDLIBDIR) "
-                                        "-ldopt -Wl,-rpath," out "/lib")))))))))
+               (invoke "./configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--blflags="
+                                      ;; user flags completely override useful
+                                      ;; default flags, so repeat them here.
+                                      "-copt \\$(CPICFLAGS) "
+                                      "-L \\$(BUILDLIBDIR) "
+                                      "-ldopt -Wl,-rpath," out "/lib"))))))))
     (inputs `(("avahi" ,avahi)
               ("bigloo" ,bigloo)
               ("libgc" ,libgc)
@@ -661,7 +660,8 @@ threads.")
                                  "| mit-scheme")))
                  (with-directory-excursion "scmutils/scmutils"
                    (and (zero? (system "mit-scheme < compile.scm"))
-                        (zero? (system make-img)))))))
+                        (zero? (system make-img))))
+                 #t)))
            (add-before 'install 'fix-directory-names
              ;; Correct directory names in the startup script.
              (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -685,8 +685,8 @@ threads.")
              ;; code.
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (with-directory-excursion "scmutils/scmutils"
-                 (zero? (apply system* "etags"
-                               (find-files "." "\\.scm"))))))
+                 (apply invoke "etags" (find-files "." "\\.scm")))
+               #t))
            (replace 'install
              ;; Copy files to the store.
              (lambda* (#:key outputs #:allow-other-keys)
@@ -882,12 +882,13 @@ regular-expression notation.")
          (add-after 'install 'remove-bin-share
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (delete-file-recursively
-                       (string-append (assoc-ref outputs "out") "/bin"))))
+                       (string-append (assoc-ref outputs "out") "/bin"))
+                      #t))
          (replace 'configure
                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (zero? (system* "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out")))))))))
+                    (invoke "./configure"
+                            (string-append "--prefix="
+                                           (assoc-ref outputs "out"))))))))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))
     (home-page "http://people.csail.mit.edu/jaffer/SLIB.html")
@@ -916,39 +917,34 @@ utility functions for all standard Scheme implementations.")
        (modify-phases %standard-phases
          (replace 'configure
                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (zero? (system* "./configure"
-                                    (string-append "--prefix="
-                                                   (assoc-ref outputs "out"))))))
+                    (invoke "./configure"
+                            (string-append "--prefix="
+                                           (assoc-ref outputs "out")))))
          (add-before 'build 'pre-build
                      (lambda* (#:key inputs #:allow-other-keys)
                        (substitute* "Makefile"
-                         (("ginstall-info") "install-info"))))
+                         (("ginstall-info") "install-info"))
+                       #t))
          (replace 'build
                   (lambda* (#:key inputs outputs #:allow-other-keys)
                     (setenv "SCHEME_LIBRARY_PATH"
                             (string-append (assoc-ref inputs "slib")
                                            "/lib/slib/"))
-                    (and
-                     (zero? (system* "make" "scmlit" "CC=gcc"))
-                     (zero? (system* "make" "all")))))
+                    (invoke "make" "scmlit" "CC=gcc")
+                    (invoke "make" "all")))
          (add-after 'install 'post-install
                     (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((req
-                             (string-append (assoc-ref outputs "out")
-                                            "/lib/scm/require.scm")))
-                        (and
-                         (delete-file req)
-                         (format (open req (logior O_WRONLY O_CREAT))
-                                 "(define (library-vicinity) ~s)\n"
-                                 (string-append (assoc-ref inputs "slib")
-                                                "/lib/slib/"))
+                      (let* ((out         (assoc-ref outputs "out"))
+                             (req (string-append out "/lib/scm/require.scm")))
+                        (delete-file req)
+                        (format (open req (logior O_WRONLY O_CREAT))
+                                "(define (library-vicinity) ~s)\n"
+                                (string-append (assoc-ref inputs "slib")
+                                               "/lib/slib/"))
 
-                         ;; We must generate the slibcat file
-                         (zero? (system*
-                                 (string-append
-                                  (assoc-ref outputs "out")
-                                  "/bin/scm")
-                                 "-br" "new-catalog")))))))))
+                        ;; We must generate the slibcat file.
+                        (invoke (string-append out "/bin/scm")
+                                "-br" "new-catalog")))))))
     (inputs `(("slib" ,slib)))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))

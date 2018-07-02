@@ -25,6 +25,7 @@
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1610,7 +1611,7 @@ device without having to bother about the decryption.")
     (synopsis "SubRip to WebVTT subtitle converter")
     (description "srt2vtt converts SubRip formatted subtitles to WebVTT format
 for use with HTML5 video.")
-    (home-page "http://dthompson.us/pages/software/srt2vtt")
+    (home-page "https://dthompson.us/projects/srt2vtt.html")
     (license license:gpl3+)))
 
 (define-public avidemux
@@ -2974,3 +2975,27 @@ format and some of its derived file formats, including MP4.  It operates as a
 multiplexer and demultiplexer, and can mux video and audio in several formats
 using standalone executable files.")
     (license license:isc)))
+
+(define-public qtfaststart
+  (package
+    (name "qtfaststart")
+    (version "1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "qtfaststart" version))
+              (sha256
+               (base32
+                "0hcjfik8hhb1syqvyh5c6aillpvzal26nkjflcq1270z64aj6i5h"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test suite
+    (synopsis "Move QuickTime and MP4 metadata to the beginning of the file")
+    (description "qtfaststart enables streaming and pseudo-streaming of
+QuickTime and MP4 files by moving metadata and offset information to the
+beginning of the file.  It can also print some useful information about the
+structure of the file.  This program is based on qt-faststart.c from the FFmpeg
+project, which is released into the public domain, as well as ISO 14496-12:2005
+(the official spec for MP4), which can be obtained from the ISO or found
+online.")
+    (home-page "https://github.com/danielgtaylor/qtfaststart")
+    (license license:expat)))

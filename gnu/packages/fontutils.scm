@@ -330,15 +330,16 @@ X11-system or any other graphical user interface.")
 (define-public teckit
   (package
    (name "teckit")
-   (version "2.5.7")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "https://github.com/silnrsi/teckit/releases/download/v"
-                  version "/teckit-" version ".tar.gz"))
-            (sha256
-              (base32
-                "1pbp97vcpj6x4yixx6ww0vsi1rrr99fksxdjafs6gdargzd24cj4"))))
+   (version "2.5.8")
+   (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/silnrsi/teckit")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32 "1jmsdmfz7bgq1n5qsqgpq1b1n77f1hll0czfw5wkxz4knzb14ndn"))))
    (build-system gnu-build-system)
    (inputs
     `(("zlib" ,zlib)

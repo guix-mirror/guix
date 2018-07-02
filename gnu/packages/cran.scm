@@ -246,15 +246,17 @@ into a pipeline of data manipulation and visualisation.")
 (define-public r-haven
   (package
     (name "r-haven")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "haven" version))
        (sha256
         (base32
-         "1fkcvsrnw8waqwggv0aydbvbi99x5kp9g78xfxj4w6s3xvdzcysz"))))
+         "0pp8xjf5lzqg1wr8cwxj4njx99vxwlflwjrd7jvyzwlfpwh7n1qa"))))
     (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
     (propagated-inputs
      `(("r-forcats" ,r-forcats)
        ("r-hms" ,r-hms)
@@ -1577,14 +1579,14 @@ Delaunay triangulation and convex hull computation.")
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ddalpha" version))
        (sha256
         (base32
-         "0g4iqhrz2gym05q40ih6srilyajw2l2mv46pchn65bc7hw4vkgrk"))))
+         "16cn0bhbaz9l9k4y79sv2d4f7pvs7dyka273y89igs5jvr99kfj1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -4287,14 +4289,14 @@ and adds the annotation to the plot.")
 (define-public r-ggpubr
   (package
     (name "r-ggpubr")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggpubr" version))
        (sha256
         (base32
-         "0mvw215bj887958p34f0dzlrb8mgyfcz9b5zvsschvbhamqinqna"))))
+         "110ny8p41kmbz0a5rl0mv9cqpjkx6yr3ybflp1r0fmcvhwv7cr3i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cowplot" ,r-cowplot)

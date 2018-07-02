@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -137,10 +137,9 @@ convert it to structurally valid XHTML (or HTML).")
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "CC" "gcc")
-             (zero? (system*
-                     "./configure.sh"
+             (invoke "./configure.sh"
                      (string-append "--prefix=" (assoc-ref outputs "out"))
-                     "--shared")))))))
+                     "--shared"))))))
     (synopsis "Markdown processing library, written in C")
     (description
      "Discount is a markdown implementation, written in C.  It provides a

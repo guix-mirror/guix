@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
@@ -581,7 +581,7 @@ Objective@tie{}C, D, Java, Pawn, and Vala).  Features:
 (define-public astyle
   (package
     (name "astyle")
-    (version "2.05")
+    (version "3.1")
     (source
      (origin
        (method url-fetch)
@@ -589,7 +589,7 @@ Objective@tie{}C, D, Java, Pawn, and Vala).  Features:
                            version "/astyle_"  version "_linux.tar.gz"))
        (sha256
         (base32
-         "0f9sh9kq5ajp1yz133h00fr9235p1m698x7n3h7zbrhjiwgynd6s"))))
+         "1ms54wcs7hg1bsywqwf2lhdfizgbk7qxc9ghasxk8i99jvwlrk6b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;no tests

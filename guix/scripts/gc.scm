@@ -199,10 +199,10 @@ Invoke the garbage collector.\n"))
     ;; Attempt to have at least SPACE bytes available in STORE.
     (let ((free (free-disk-space (%store-prefix))))
       (if (> free space)
-          (info (G_ "already ~h bytes available on ~a, nothing to do~%")
-                free (%store-prefix))
+          (info (G_ "already ~h MiBs available on ~a, nothing to do~%")
+                (/ free 1024. 1024.) (%store-prefix))
           (let ((to-free (- space free)))
-            (info (G_ "freeing ~h bytes~%") to-free)
+            (info (G_ "freeing ~h MiBs~%") (/ to-free 1024. 1024.))
             (collect-garbage store to-free)))))
 
   (with-error-handling
@@ -234,10 +234,10 @@ Invoke the garbage collector.\n"))
              (ensure-free-space store free-space))
             (min-freed
              (let-values (((paths freed) (collect-garbage store min-freed)))
-              (info (G_ "freed ~h bytes~%") freed)))
+              (info (G_ "freed ~h MiBs~%") (/ freed 1024. 1024.))))
             (else
              (let-values (((paths freed) (collect-garbage store)))
-              (info (G_ "freed ~h bytes~%") freed))))))
+              (info (G_ "freed ~h MiBs~%") (/ freed 1024. 1024.)))))))
         ((delete)
          (delete-paths store (map direct-store-path paths)))
         ((list-references)
