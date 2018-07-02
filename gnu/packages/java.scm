@@ -1405,8 +1405,16 @@ bootstrapping purposes.")
           ,(drop "langtools"
                  "0nq5236fzxn3p6x8cgncl56mzcmsj07q9gymysnws4c8byc6n0qj"))
          ("hotspot-drop"
-          ,(drop "hotspot"
-                 "17bdv39n4lh8l5737c96f3xgamx4y305m067p01cywgp7zaddqws"))
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://icedtea.classpath.org/downloads/drops"
+                   "/icedtea7/" version "/hotspot.tar.bz2"))
+             (sha256
+              (base32
+               "17bdv39n4lh8l5737c96f3xgamx4y305m067p01cywgp7zaddqws"))
+             (patches (search-patches
+                       "icedtea-7-hotspot-gcc-segfault-workaround.patch"))))
          ("ant" ,ant-bootstrap)
          ("attr" ,attr)
          ("coreutils" ,coreutils)

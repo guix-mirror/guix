@@ -802,6 +802,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-use-system-graphite2.patch	\
   %D%/packages/patches/icecat-use-system-harfbuzz.patch		\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
+  %D%/packages/patches/icedtea-7-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
