@@ -3871,11 +3871,20 @@ The jMock library
                               (find-files (assoc-ref inputs "java-junit") "\\.jar$")
                               (find-files (assoc-ref inputs "java-jmock") "\\.jar$")
                               (find-files (assoc-ref inputs "java-easymock") "\\.jar$")))
-                       ";")))
+                       ";"))
+                     (("build/hamcrest-core-\\$\\{version\\}\\.jar")
+                      (string-append (assoc-ref inputs "java-hamcrest-core")
+                                     "/share/java/hamcrest-core.jar")))
                    #t)))))))
     (inputs
      `(("java-junit" ,java-junit)
        ("java-jmock" ,java-jmock-1)
+       ;; This is necessary because of what seems to be a race condition.
+       ;; This package would sometimes fail to build because hamcrest-core.jar
+       ;; could not be found, even though it is built as part of this package.
+       ;; Adding java-hamcrest-core appears to fix this problem.  See
+       ;; https://debbugs.gnu.org/31390 for more information.
+       ("java-hamcrest-core" ,java-hamcrest-core)
        ("java-easymock" ,java-easymock)
        ,@(package-inputs java-hamcrest-core)))))
 
