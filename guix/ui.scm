@@ -87,6 +87,7 @@
             leave-on-EPIPE
             read/eval
             read/eval-package-expression
+            check-available-space
             location->string
             fill-paragraph
             %text-width
@@ -795,16 +796,17 @@ error."
                   (derivation->output-path derivation out-name)))
                (derivation-outputs derivation))))
 
-(define (check-available-space need)
-  "Make sure at least NEED bytes are available in the store.  Otherwise emit a
+(define* (check-available-space need
+                                #:optional (directory (%store-prefix)))
+  "Make sure at least NEED bytes are available in DIRECTORY.  Otherwise emit a
 warning."
   (let ((free (catch 'system-error
                 (lambda ()
-                  (free-disk-space (%store-prefix)))
+                  (free-disk-space directory))
                 (const #f))))
     (when (and free (>= need free))
       (warning (G_ "at least ~,1h MB needed but only ~,1h MB available in ~a~%")
-               (/ need 1e6) (/ free 1e6) (%store-prefix)))))
+               (/ need 1e6) (/ free 1e6) directory))))
 
 (define* (show-what-to-build store drv
                              #:key dry-run? (use-substitutes? #t)
