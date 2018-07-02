@@ -343,7 +343,7 @@ DOMAIN, a gettext domain."
 
 (define* (guix-command modules #:optional compiled-modules
                        #:key source (dependencies '())
-                       (guile-version (effective-version)))
+                       guile (guile-version (effective-version)))
   "Return the 'guix' command such that it adds MODULES and DEPENDENCIES in its
 load path."
   (program-file "guix-command"
@@ -383,15 +383,17 @@ load path."
 
                       ;; XXX: It would be more convenient to change it to:
                       ;;   (exit (apply guix-main (command-line)))
-                      (apply guix-main (command-line))))))
+                      (apply guix-main (command-line))))
+                #:guile guile))
 
 (define* (whole-package name modules dependencies
                         #:key
                         (guile-version (effective-version))
                         compiled-modules
-                        info daemon
+                        info daemon guile
                         (command (guix-command modules
                                                #:dependencies dependencies
+                                               #:guile guile
                                                #:guile-version guile-version)))
   "Return the whole Guix package NAME that uses MODULES, a derivation of all
 the modules, and DEPENDENCIES, a list of packages depended on.  COMMAND is the
@@ -630,10 +632,12 @@ assumed to be part of MODULES."
                 (command  (guix-command modules compiled
                                         #:source source
                                         #:dependencies dependencies
+                                        #:guile guile-for-build
                                         #:guile-version guile-version)))
            (whole-package name modules dependencies
                           #:compiled-modules compiled
                           #:command command
+                          #:guile guile-for-build
 
                           ;; Include 'guix-daemon'.  XXX: Here we inject an
                           ;; older snapshot of guix-daemon, but that's a good
