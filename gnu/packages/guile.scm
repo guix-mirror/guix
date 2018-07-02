@@ -301,6 +301,20 @@ without requiring the source code to be rewritten.")
                (base32
                 "1azm25zcmxif0skxfrp11d2wc89nrzpjaann9yxdw6pvjxhs948w"))))))
 
+(define-public guile-2.2.4
+  ;; This version contains important bug fixes, in particular wrt. to crashes
+  ;; of multi-threaded code as used by 'guix pull' and grafting.
+  (package
+    (inherit guile-2.2)
+    (version "2.2.4")
+    (source (origin
+              (inherit (package-source guile-2.2))
+              (uri (string-append "mirror://gnu/guile/guile-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))))))
+
 (define-public guile-next
   (deprecated-package "guile-next" guile-2.2))
 
