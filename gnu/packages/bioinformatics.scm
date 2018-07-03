@@ -12968,7 +12968,7 @@ in an easily configurable manner.")
 (define-public pigx-bsseq
   (package
     (name "pigx-bsseq")
-    (version "0.0.9")
+    (version "0.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
@@ -12976,7 +12976,7 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0j1dfjk8m1p1h6d5yw63scjlbx56z8gixmbw626w1vcyblg0frmz"))))
+                "0l97wvkq4diq8lcarraj33bby1zzf0w804jwi8mlc5qddp8idwhy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -12988,14 +12988,6 @@ in an easily configurable manner.")
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
-             #t))
-         (add-after 'install 'wrap-executable
-           ;; Make sure the executable finds all R modules.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/pigx-bsseq")
-                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
-                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
              #t)))))
     (native-inputs
      `(("tzdata" ,tzdata)))
