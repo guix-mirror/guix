@@ -209,9 +209,7 @@ it's a directory.  While at it, canonicalize file permissions."
                                 (type type))))))
                    (scandir* parent))))
       ((symlink)
-       ;; FIXME: Implement bindings for 'futime' to reset the timestamps on
-       ;; symlinks.
-       #f)
+       (utime file 0 0 0 0 AT_SYMLINK_NOFOLLOW))
       (else
        (chmod file (if (executable-file? file) #o555 #o444))
        (utime file 0 0 0 0)))))
