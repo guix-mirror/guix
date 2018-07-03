@@ -6380,6 +6380,14 @@ The command below imports metadata for the @code{rails} Ruby package:
 guix import gem rails
 @end example
 
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
+
 @item cpan
 @cindex CPAN
 Import metadata from @uref{https://www.metacpan.org/, MetaCPAN}@footnote{This
