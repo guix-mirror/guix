@@ -46,6 +46,14 @@
             MNT_DETACH
             MNT_EXPIRE
             UMOUNT_NOFOLLOW
+
+            AT_FDCWD
+            AT_SYMLINK_NOFOLLOW
+            AT_REMOVEDIR
+            AT_SYMLINK_FOLLOW
+            AT_NO_AUTOMOUNT
+            AT_EMPTY_PATH
+
             restart-on-EINTR
             mount-points
             swapon
@@ -666,6 +674,15 @@ mounted at FILE."
   (let ((fs (statfs file)))
     (* (file-system-block-size fs)
        (file-system-blocks-available fs))))
+
+;; Flags for the *at command, notably the 'utime' procedure of libguile.
+;; From <fcntl.h>.
+(define AT_FDCWD             -100)
+(define AT_SYMLINK_NOFOLLOW #x100)
+(define AT_REMOVEDIR        #x200)
+(define AT_SYMLINK_FOLLOW   #x400)
+(define AT_NO_AUTOMOUNT     #x800)
+(define AT_EMPTY_PATH       #x1000)
 
 
 ;;;

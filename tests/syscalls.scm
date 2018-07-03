@@ -60,6 +60,19 @@
   (any (cute member <> (mount-points))
        '("/" "/proc" "/sys" "/dev")))
 
+(false-if-exception (delete-file temp-file))
+(test-equal "utime with AT_SYMLINK_NOFOLLOW"
+  '(0 0)
+  (begin
+    ;; Test libguile's utime with AT_SYMLINK_NOFOLLOW, which libguile does not
+    ;; define as of Guile 2.2.4.
+    (symlink "/nowhere" temp-file)
+    (utime temp-file 0 0 0 0 AT_SYMLINK_NOFOLLOW)
+    (let ((st (lstat temp-file)))
+      (delete-file temp-file)
+      ;; Note: 'utimensat' does not change 'ctime'.
+      (list (stat:mtime st) (stat:atime st)))))
+
 (test-assert "swapon, ENOENT/EPERM"
   (catch 'system-error
     (lambda ()
