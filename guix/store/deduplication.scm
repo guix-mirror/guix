@@ -110,17 +110,6 @@ Note: TARGET, TO-REPLACE, and SWAP-DIRECTORY must be on the same file system."
         (unless (= EMLINK (system-error-errno args))
           (apply throw args))))))
 
-(define-syntax-rule (false-if-system-error (errors ...) exp ...)
-  "Given ERRORS, a list of system error codes to ignore, evaluates EXP... and
-return #f if any of the system error codes in the given list are thrown."
-  (catch 'system-error
-    (lambda ()
-      exp ...)
-    (lambda args
-      (if (member (system-error-errno args) (list errors ...))
-          #f
-          (apply throw args)))))
-
 (define* (deduplicate path hash #:key (store %store-directory))
   "Check if a store item with sha256 hash HASH already exists.  If so,
 replace PATH with a hardlink to the already-existing one.  If not, register
