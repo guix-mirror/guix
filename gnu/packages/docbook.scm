@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright © 2021 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -213,6 +214,35 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (description
      "This package provides XSL style sheets for DocBook.")
     (license (x11-style "" "See 'COPYING' file."))))
+
+;;; Private package referenced by docbook-sgml.
+(define iso-8879-entities
+  (package
+    (name "iso-8879-entities")
+    (version "0.0")                     ;no proper version
+    (source (origin
+              (method url-fetch)
+              (uri "http://www.oasis-open.org/cover/ISOEnts.zip")
+              (sha256
+               (base32
+                "1clrkaqnvc1ja4lj8blr0rdlphngkcda3snm7b9jzvcn76d3br6w"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                      "/bin/unzip"))
+               (out (string-append (assoc-ref %outputs "out"))))
+           (invoke unzip source "-d" out)))))
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://www.oasis-open.org/")
+    (synopsis "ISO 8879 character entities")
+    (description "ISO 8879 character entities that are typically used in
+the in DocBook SGML DTDs.")
+    (license (x11-style "" "See file headers."))))
 
 (define-public dblatex
   (package
