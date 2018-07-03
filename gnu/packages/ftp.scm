@@ -21,7 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ftp)
-  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ clarified-artistic))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3+ clarified-artistic))
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix packages)
@@ -243,3 +243,42 @@ and others features such as bookmarks, drag and drop, filename filters,
 directory comparison and more.")
     (license gpl2+)
     (properties '((upstream-name . "FileZilla")))))
+
+(define-public vsftpd
+  (package
+    (name "vsftpd")
+    (version "3.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://security.appspot.com/downloads/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xsyjn68k3fgm2incpb3lz2nikffl9by2safp994i272wvv2nkcx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("LDFLAGS=-lcrypt")
+       #:tests? #f                      ; No tests exist.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-installation-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr") (assoc-ref outputs "out")))
+             #t))
+         (add-before 'install 'mkdir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p out)
+               (mkdir (string-append out "/sbin"))
+               (mkdir (string-append out "/man"))
+               (mkdir (string-append out "/man/man5"))
+               (mkdir (string-append out "/man/man8"))
+               #t)))
+         (delete 'configure))))
+    (synopsis "vsftpd FTP daemon")
+    (description "@command{vsftpd} is a daemon that listens on a TCP socket
+for clients and gives them access to local files via File Transfer
+Protocol.")
+    (home-page "https://security.appspot.com/vsftpd.html")
+    (license gpl2)))
