@@ -520,6 +520,9 @@ FILE."
 (set! canonicalize-path
   (error-reporting-wrapper canonicalize-path (file) file))
 
+(set! delete-file
+  (error-reporting-wrapper delete-file (file) file))
+
 
 (define (make-regexp* regexp . flags)
   "Like 'make-regexp' but error out if REGEXP is invalid, reporting the error
