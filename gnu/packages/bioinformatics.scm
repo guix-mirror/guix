@@ -12831,7 +12831,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
 (define-public pigx-rnaseq
   (package
     (name "pigx-rnaseq")
-    (version "0.0.3")
+    (version "0.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_rnaseq/"
@@ -12839,7 +12839,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
                                   "/pigx_rnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0pz080k4ajlc4rlznkn3najy2a6874gb56rf9g4ag9wqz31q174j"))))
+                "16gla23rmziimqan7w494q0nr7vfbp42zzkrl9fracmr4k7b1kzr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f             ; not supported
@@ -12851,14 +12851,6 @@ once.  This package provides tools to perform Drop-seq analyses.")
              (substitute* "Makefile.in"
                (("(^  tests/test_trim_galore/test.sh).*" _ m) m)
                (("^  test.sh") ""))
-             #t))
-         (add-after 'install 'wrap-executable
-           ;; Make sure the executable finds all R modules.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/pigx-rnaseq")
-                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
-                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
              #t)))))
     (inputs
      `(("gzip" ,gzip)
