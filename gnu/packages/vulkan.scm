@@ -340,6 +340,7 @@ shader compilation.")
         ("libxcb" ,libxcb)
         ("spirv-headers" ,spirv-headers)
         ("spirv-tools" ,spirv-tools)
+        ("vulkan-headers" ,vulkan-headers)
         ("vulkan-loader" ,vulkan-loader)
         ("wine" ,wine) ; Needed for 'widl'.
         ("xcb-util" ,xcb-util)
