@@ -186,7 +186,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version "1.1.73.0")
+    (version "1.1.77.0")
     (source
      (origin
        (method url-fetch)
@@ -195,7 +195,7 @@ interpretation of the specifications for these languages.")
              "archive/sdk-" version ".tar.gz"))
        (sha256
         (base32
-         "0lvdpy6ybx5h7w15m9s2n9q3167q618clra2k7yi2cbm397ci4hn"))))
+         "1zg86b5wba9l14ry3ap7yzgd9hwzxxr0rjgwhnv14n75aqpwv02d"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -217,11 +217,12 @@ interpretation of the specifications for these languages.")
               ("libxrandr" ,libxrandr)
               ("mesa" ,mesa)
               ("spirv-tools" ,spirv-tools)
+              ("vulkan-headers" ,vulkan-headers)
               ("wayland" ,wayland)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("python" ,python)))
     (home-page
-     "https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers")
+     "https://github.com/KhronosGroup/Vulkan-Loader")
     (synopsis "Khronos official ICD loader and validation layers for Vulkan")
     (description
      "Vulkan allows multiple @dfn{Installable Client Drivers} (ICDs) each
