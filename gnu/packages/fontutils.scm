@@ -495,7 +495,12 @@ smooth contours with constant curvature at the spline joins.")
      "LibUniNamesList holds www.unicode.org Nameslist.txt data which can be
 useful for programs that need Unicode \"Names\", \"Annotations\", and block
 definitions.")
-    (license license:gpl2)
+    ;; COPYING specifies GPL2, but according to LICENSE it only covers the
+    ;; configure script.  The actual code is BSD-3, and the Unicode data
+    ;; is governed by an X11-style license only found on the web.
+    (license (list license:bsd-3
+                   (license:x11-style
+                    "https://www.unicode.org/copyright.html#License")))
     (home-page "https://github.com/fontforge/libuninameslist")))
 
 (define-public fontforge
