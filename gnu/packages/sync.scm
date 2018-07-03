@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
@@ -45,24 +45,22 @@
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.3.4")
+    (version "2.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/stable/"
                            "owncloudclient-" version ".tar.xz"))
        (sha256
-        (base32 "1fpi1mlp2b8sx2993b4mava5c6qw794dmlayih430299z1l9wh49"))
+        (base32 "08xayz0alvypwa1bjmw1rmh4m3sclld4yq7kcbf264983icawqj4"))
        (patches (search-patches "owncloud-disable-updatecheck.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           ;; only allows bundled libcrashreporter-qt
+           ;; libcrashreporter-qt has its own bundled dependencies
            (delete-file-recursively "src/3rdparty/libcrashreporter-qt")
-           ;; we already package qtkeychain and sqlite
-           (delete-file-recursively "src/3rdparty/qtkeychain")
            (delete-file-recursively "src/3rdparty/sqlite3")
-           ;; qjson is packaged, qprogessindicator, qlockedfile, qtokenizer and
+           ;; qprogessindicator, qlockedfile, qtokenizer and
            ;; qtsingleapplication have not yet been packaged, but all are
            ;; explicitly used from the 3rdparty folder during build.
            ;; We can also remove the macgoodies folder
@@ -72,20 +70,6 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'change-rpath-dirs
-          (lambda _
-            (substitute* '("src/libsync/CMakeLists.txt"
-                           "csync/src/CMakeLists.txt")
-              ;; We store the libs in out/lib and not /usr/lib/appname, so we
-              ;; need the executable to point to the libraries in /lib and not
-              ;; in /lib/appname.
-              (("\\/\\$\\{APPLICATION_EXECUTABLE\\}") ""))
-            (substitute* '("src/cmd/CMakeLists.txt"
-                           "src/crashreporter/CMakeLists.txt"
-                           "src/gui/CMakeLists.txt")
-              ;; This has the same issue as the substitution above.
-              (("\\/\\$\\{APPLICATION_EXECUTABLE\\}\\\"") "\""))
-            #t))
          (add-after 'unpack 'delete-failing-tests
            ;; "Could not create autostart folder"
            (lambda _
@@ -93,18 +77,18 @@
                           (("owncloud_add_test\\(Utility \"\"\\)" test)
                            (string-append "#" test)))
              #t)))
-       #:configure-flags '("-DUNIT_TESTING=ON")))
+       #:configure-flags '("-DUNIT_TESTING=ON"
+                           ;; build without qtwebkit, which causes the
+                           ;; package to FTBFS while looking for QWebView.
+                           "-DNO_SHIBBOLETH=1")))
     (native-inputs
      `(("cmocka" ,cmocka)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("qtlinguist" ,qttools)))
     (inputs
-     `(("inotify-tools" ,inotify-tools)
-       ("openssl" ,openssl)
-       ("qtbase" ,qtbase)
+     `(("qtbase" ,qtbase)
        ("qtkeychain" ,qtkeychain)
-       ("qtwebkit" ,qtwebkit)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (home-page "https://owncloud.org")
