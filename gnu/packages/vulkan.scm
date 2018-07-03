@@ -160,6 +160,29 @@ interpretation of the specifications for these languages.")
                      ;; include/SPIRV/{bitutils,hex_float}.h are Apache 2.0.
                      license:asl2.0)))))
 
+(define-public vulkan-headers
+  (package
+    (name "vulkan-headers")
+    (version "1.1.77.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/KhronosGroup/Vulkan-Headers/"
+             "archive/sdk-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05pgaqyj516lmzdr4clxll5gvr5zb29sfjhs2d7mkryqs6zk5xdj"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests.
+    (home-page
+     "https://github.com/KhronosGroup/Vulkan-Headers")
+    (synopsis "Vulkan Header files and API registry")
+    (description
+     "Vulkan-Headers contains header files and API registry for Vulkan.")
+    (license (list license:asl2.0)))) ;LICENSE.txt
+
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
