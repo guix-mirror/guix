@@ -217,6 +217,48 @@ by no means limited to these applications.)  This package provides XML DTDs.")
      "This package provides XSL style sheets for DocBook.")
     (license (x11-style "" "See 'COPYING' file."))))
 
+(define-public docbook-sgml
+  (package
+    (name "docbook-sgml")
+    (version "4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.oasis-open.org/docbook/sgml/"
+                                  version "/docbk41.zip"))
+              (sha256
+               (base32
+                "04b3gp4zkh9c5g9kvnywdkdfkcqx3kjc04j4mpkr4xk7lgqgrany"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (iso-entities-dir (string-append
+                                  (assoc-ref %build-inputs "iso-8879-entities")))
+               (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                      "/bin/unzip"))
+               (dtd    (string-append (assoc-ref %outputs "out")
+                                      "/sgml/dtd/docbook")))
+           ;; Extract the sources.
+           (mkdir-p dtd)
+           (chdir dtd)
+           (invoke unzip source)
+           ;; Reference the ISO 8879 character entities.
+           ;; e.g. "iso-lat1.gml" --> "<iso-entities-dir>/ISOlat1"
+           (substitute* "docbook.cat"
+             (("(.*ISO 8879.*)\"iso-(.*)\\.gml\"" _ head name)
+              (string-append head "\"" iso-entities-dir "/ISO" name "\"")))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("iso-8879-entities" ,iso-8879-entities)))
+    (home-page "https://docbook.org")
+    (synopsis "DocBook SGML style sheets for document authoring")
+    (description "This package provides SGML style sheets for DocBook.")
+    (license (x11-style "" "See file headers."))))
+
 ;;; Private package referenced by docbook-sgml.
 (define iso-8879-entities
   (package
