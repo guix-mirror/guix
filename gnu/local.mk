@@ -68,6 +68,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/attr.scm				\
   %D%/packages/audio.scm			\
   %D%/packages/augeas.scm			\
+  %D%/packages/authentication.scm		\
   %D%/packages/autogen.scm			\
   %D%/packages/autotools.scm			\
   %D%/packages/avahi.scm			\
