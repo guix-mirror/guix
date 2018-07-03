@@ -126,7 +126,11 @@ REFERENCES as its set of references."
     ;; Remove DEST if it exists to make sure that (1) we do not fail badly
     ;; while trying to overwrite it (see <http://bugs.gnu.org/20722>), and
     ;; (2) we end up with the right contents.
-    (when (file-exists? dest)
+    (when (false-if-exception (lstat dest))
+      (for-each make-file-writable
+                (find-files dest (lambda (file stat)
+                                   (eq? 'directory (stat:type stat)))
+                            #:directories? #t))
       (delete-file-recursively dest))
 
     (copy-recursively item dest
