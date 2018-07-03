@@ -476,20 +476,17 @@ smooth contours with constant curvature at the spline joins.")
 (define-public libuninameslist
   (package
     (name "libuninameslist")
-    (version "20170807")
+    (version "20180701")
+    (home-page "https://github.com/fontforge/libuninameslist")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/fontforge/libuninameslist/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append home-page "/releases/download/" version
+                           "/libuninameslist-dist-" version ".tar.gz"))
        (sha256
         (base32
-         "0axwxjgcrwms9682vmpsq1x4swdx6q6qk6997rkfr8xrgi124c6a"))))
+         "141wh2f5jsaw84mgw6vf2c9hd2wm957a2hpnicyqjbc7pk89gvca"))))
     (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)))
     (synopsis "Unicode names and annotation list")
     (description
      "LibUniNamesList holds www.unicode.org Nameslist.txt data which can be
@@ -500,8 +497,7 @@ definitions.")
     ;; is governed by an X11-style license only found on the web.
     (license (list license:bsd-3
                    (license:x11-style
-                    "https://www.unicode.org/copyright.html#License")))
-    (home-page "https://github.com/fontforge/libuninameslist")))
+                    "https://www.unicode.org/copyright.html#License")))))
 
 (define-public fontforge
   (package
