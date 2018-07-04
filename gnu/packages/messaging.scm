@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
@@ -1644,4 +1644,30 @@ c-toxcore and ncurses.  It provides audio calls, sound and desktop
 notifications, and Python scripting support.")
     (license license:gpl3+)))
 
+(define-public libqmatrixclient
+  (package
+    (name "libqmatrixclient")
+    (version "0.3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/QMatrixClient/libqmatrixclient/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yl7lw0s2z98xkxbklkb3i8xcd9af9qayl1zxl070d8ykl6ayqy3"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qt" ,qt)))
+    (arguments
+     `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")
+       #:tests? #f)) ; No tests
+    (home-page "https://matrix.org/docs/projects/sdk/libqmatrixclient.html")
+    (synopsis "Qt5 client library for the Matrix instant messaging protocol")
+    (description "libqmatrixclient is a Qt5 library to write clients for the
+Matrix instant messaging protocol.  Quaternion is the reference client
+implementation.  Quaternion and libqmatrixclient together form the
+QMatrixClient project.")
+    (license license:lgpl2.1+)))
 ;;; messaging.scm ends here
