@@ -4600,3 +4600,22 @@ use the packages @code{optparse} or @code{argparse} which add extra
 features like automatically generated help options and usage texts,
 support for default values, positional argument support, etc.")
     (license license:gpl2+)))
+
+(define-public r-findpython
+  (package
+    (name "r-findpython")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "findpython" version))
+       (sha256
+        (base32
+         "1y08jk2ffmkf9zpwiz2xymjhfwqvls9vzsnq62v278ghw9d571jl"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/trevorld/findpython")
+    (synopsis "Functions to find an acceptable Python binary")
+    (description
+     "This package was designed to find an acceptable Python binary that
+matches version and feature constraints.")
+    (license license:expat)))
