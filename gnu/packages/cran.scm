@@ -1737,7 +1737,7 @@ created using basic graphics.")
        ("r-reshape2" ,r-reshape2)
        ("r-stringr" ,r-stringr)
        ("r-tidyr" ,r-tidyr)))
-    (home-page "http://github.com/tidyverse/broom")
+    (home-page "https://github.com/tidyverse/broom")
     (synopsis "Convert statistical analysis objects into tidy data frames")
     (description
      "This package provides tools to convert statistical analysis objects from
