@@ -4523,3 +4523,26 @@ patterned after functions in the snow package.")
      "This package provides a data frame to xlsx exporter based on
 libxlsxwriter.")
     (license license:bsd-2)))
+
+(define-public r-biasedurn
+  (package
+    (name "r-biasedurn")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BiasedUrn" version))
+       (sha256
+        (base32
+         "13i2lgfnjhlbbm2yxfc2l5hswqw6x03pwba5csjmirv8kpjw4xr3"))))
+    (properties `((upstream-name . "BiasedUrn")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/BiasedUrn/")
+    (synopsis "Biased Urn model distributions")
+    (description
+     "This package provides statistical models of biased sampling in the form
+of univariate and multivariate noncentral hypergeometric distributions,
+including Wallenius' noncentral hypergeometric distribution and Fisher's
+noncentral hypergeometric distribution (also called extended hypergeometric
+distribution).")
+    (license license:gpl3)))
