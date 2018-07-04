@@ -778,3 +778,27 @@ HTML page.  The interactions are built on top of the popular static
 representations of analysis results in order to provide additional
 information.")
     (license license:lgpl3)))
+
+(define-public r-rots
+  (package
+    (name "r-rots")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ROTS" version))
+       (sha256
+        (base32
+         "12jvdqanyk86ihpcylp105zip22y0gkbksmyxy00q7iad0jhaqp3"))))
+    (properties `((upstream-name . "ROTS")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://bioconductor.org/packages/ROTS/")
+    (synopsis "Reproducibility-Optimized Test Statistic")
+    (description
+     "This package provides tools for calculating the
+@dfn{Reproducibility-Optimized Test Statistic} (ROTS) for differential testing
+in omics data.")
+    (license license:gpl2+)))
