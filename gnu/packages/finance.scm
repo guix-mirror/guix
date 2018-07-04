@@ -171,7 +171,7 @@ line client and a client based on Qt.")
                (install-file "test/input/demo.ledger" examples))
              #t))
          (add-after 'build 'build-doc
-           (lambda _ (zero? (system* "make" "doc"))))
+           (lambda _ (invoke "make" "doc")))
          (add-before 'check 'check-setup
            ;; One test fails if it can't set the timezone.
            (lambda* (#:key inputs #:allow-other-keys)
@@ -189,8 +189,7 @@ line client and a client based on Qt.")
                     (dest-dir (string-append guix-dir "/ledger-mode")))
                (mkdir-p guix-dir)
                (rename-file orig-dir dest-dir)
-               (emacs-generate-autoloads ,name dest-dir))
-             #t)))))
+               (emacs-generate-autoloads ,name dest-dir)))))))
     (inputs
      `(("boost" ,boost)
        ("gmp" ,gmp)
