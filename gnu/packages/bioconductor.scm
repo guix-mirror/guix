@@ -167,6 +167,35 @@ Repeats Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by
 default."  )
     (license license:artistic2.0)))
 
+(define-public r-genelendatabase
+  (package
+    (name "r-genelendatabase")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; We cannot use bioconductor-uri here because this tarball is
+       ;; located under "data/experiment/" instead of "bioc/".
+       (uri (string-append "https://bioconductor.org/packages/"
+                           "release/data/experiment/src/contrib"
+                           "/geneLenDataBase_" version ".tar.gz"))
+       (sha256
+        (base32
+         "07mmmn53kb7v14msc13dsbm8ghssbvwcrhifrk15hn37bw2p4ja5"))))
+    (properties
+     `((upstream-name . "geneLenDataBase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rtracklayer" ,r-rtracklayer)
+       ("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page "https://bioconductor.org/packages/geneLenDataBase/")
+    (synopsis "Lengths of mRNA transcripts for a number of genomes")
+    (description
+     "This package provides the lengths of mRNA transcripts for a number of
+genomes and gene ID formats, largely based on the UCSC table browser.")
+    (license license:lgpl2.0+)))
+
+
 (define-public r-hpar
   (package
     (name "r-hpar")
