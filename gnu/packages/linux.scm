@@ -432,12 +432,6 @@ It has been modified to remove all non-free binary blobs.")
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
-(define-public linux-libre-4.1
-  (make-linux-libre "4.1.52"
-                    "0a2flzf79kz9c1y9zpxdclsfivp38d2sgnwifg4gvyqixdy63sk9"
-                    %intel-compatible-systems
-                    #:configuration-file kernel-config))
-
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
