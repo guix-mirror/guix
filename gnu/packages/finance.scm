@@ -202,7 +202,7 @@ line client and a client based on Qt.")
      `(("emacs" ,emacs-minimal)
        ("groff" ,groff)
        ("texinfo" ,texinfo)))
-    (home-page "http://ledger-cli.org/")
+    (home-page "https://ledger-cli.org/")
     (synopsis "Command-line double-entry accounting program")
     (description
      "Ledger is a powerful, double-entry accounting system that is
