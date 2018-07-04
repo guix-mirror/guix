@@ -675,13 +675,13 @@ gets and puts artifacts through HTTP(S) using Apache HttpClient-4.x.")))
 (define-public maven-artifact
   (package
     (name "maven-artifact")
-    (version "3.5.3")
+    (version "3.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.apache.org/dist/maven/"
                                   "maven-3/" version "/source/"
                                   "apache-maven-" version "-src.tar.gz"))
-              (sha256 (base32 "06by23fz207lkvsndq883irfcf4p77jzkgf7n2q7hzyw1hs4h5s7"))
+              (sha256 (base32 "1xg20g87svzzscbn7m92c2njvrr61va1dija2x2w7m5v4hdizfpk"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1162,7 +1162,7 @@ process.")))
             (add-before 'build 'modify-metainf
               (lambda _
                 (substitute* "build.xml"
-                  (("message=\"\"") "message=\"Implementation-Version: 3.5.3\n\""))
+                  (("message=\"\"") "message=\"Implementation-Version: 3.5.4\n\""))
                 #t))
             (add-before 'build 'add-maven-files
               (lambda _
