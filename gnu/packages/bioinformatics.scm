@@ -13027,7 +13027,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.5")
+    (version "0.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -13035,24 +13035,14 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0a73rilv0vnw42d5rsdq205h4f0x8j3jqv998janh4s324c6w2kj"))))
+                "0fvdymnka598z2ka7zk6rwrf9dq89p5lyd2y9swvyg72hn1jwjai"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "PICARDJAR=" (assoc-ref %build-inputs "java-picard")
 			    "/share/java/picard.jar")
 	     (string-append "DROPSEQJAR=" (assoc-ref %build-inputs "dropseq-tools")
-			    "/share/java/dropseq.jar"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           ;; Make sure the executable finds all R modules.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/pigx-scrnaseq")
-                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
-                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
-             #t)))))
+			    "/share/java/dropseq.jar"))))
     (inputs
      `(("coreutils" ,coreutils)
        ("perl" ,perl)
