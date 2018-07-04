@@ -7058,28 +7058,6 @@ functionality.")
 checks on R packages that are to be submitted to the Bioconductor repository.")
     (license license:artistic2.0)))
 
-(define-public r-getopt
-  (package
-    (name "r-getopt")
-    (version "1.20.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "getopt" version))
-       (sha256
-        (base32
-         "13p35lbpy7i578752fa71sbfvcsqw5qfa9p6kf8b5m3c5p9i4v1x"))))
-    (build-system r-build-system)
-    (home-page "https://github.com/trevorld/getopt")
-    (synopsis "Command-line option processor for R")
-    (description
-     "This package is designed to be used with Rscript to write shebang
-scripts that accept short and long options.  Many users will prefer to
-use the packages @code{optparse} or @code{argparse} which add extra
-features like automatically generated help options and usage texts,
-support for default values, positional argument support, etc.")
-    (license license:gpl2+)))
-
 (define-public r-optparse
   (package
     (name "r-optparse")
