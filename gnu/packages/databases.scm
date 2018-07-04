@@ -84,6 +84,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
@@ -871,6 +872,34 @@ pictures, sounds, or video.")
               (sha256
                (base32
                 "0biy8j69dbvdmrag55pdszpc0702agzqhhcwdx21xp02mzim4ydr"))))))
+
+(define-public python-pymysql
+  (package
+    (name "python-pymysql")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyMySQL" version))
+       (sha256
+        (base32
+         "0gvi63f1zq1bbd30x28kqyx351hal1yc323ckp0mihainb5n1iwy"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-unittest2" ,python-unittest2)))
+    (inputs
+     `(("python-cryptography" ,python-cryptography)))
+    (arguments
+     `(#:tests? #f))                    ; tests expect a running MySQL
+    (home-page "https://github.com/PyMySQL/PyMySQL/")
+    (synopsis "Pure-Python MySQL driver")
+    (description
+     "PyMySQL is a pure-Python MySQL client library, based on PEP 249.
+Most public APIs are compatible with @command{mysqlclient} and MySQLdb.")
+    (license license:expat)))
+
+(define-public python2-pymysql
+  (package-with-python2 python-pymysql))
 
 (define-public qdbm
   (package
