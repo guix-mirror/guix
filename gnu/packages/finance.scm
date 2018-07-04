@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,6 +143,7 @@ line client and a client based on Qt.")
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
+                  ((guix build gnu-build-system) #:prefix gnu:)
                   (guix build utils)
                   (guix build emacs-utils))
        #:imported-modules (,@%cmake-build-system-modules
@@ -155,6 +157,10 @@ line client and a client based on Qt.")
          ,(string-append "-DUTFCPP_INCLUDE_DIR:PATH="
                          (assoc-ref %build-inputs "utfcpp")
                          "/include"))
+       ;; Skip failing test BaselineTest_cmd-org during the check phase.
+       ;; This is a known upstream issue. See
+       ;; https://github.com/ledger/ledger/issues/550
+       #:make-flags (list "ARGS=-E BaselineTest_cmd-org")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'install-examples
@@ -173,6 +179,7 @@ line client and a client based on Qt.")
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
              #t))
+         (replace 'check (assoc-ref gnu:%standard-phases 'check))
          (add-after 'install 'relocate-elisp
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((site-dir (string-append (assoc-ref outputs "out")
