@@ -1720,14 +1720,14 @@ created using basic graphics.")
 (define-public r-broom
   (package
     (name "r-broom")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "broom" version))
        (sha256
         (base32
-         "081x87sy6dmfvkgwfjrl5ax51k77ciyzg9x3xql25vdi92rmwj3m"))))
+         "1mrrqqw1bmjf2v88ziqwb5y86g29h0a3rsx2jpw0hrzrzb8i5kcb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
