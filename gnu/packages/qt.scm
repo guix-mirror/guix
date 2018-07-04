@@ -105,7 +105,7 @@ system, and the core design of Django is reused in Grantlee.")
 (define-public qt
   (package
     (name "qt")
-    (version "5.9.4")
+    (version "5.11.1")
     (outputs '("out" "examples"))
     (source (origin
              (method url-fetch)
@@ -114,11 +114,11 @@ system, and the core design of Django is reused in Grantlee.")
                  "http://download.qt.io/official_releases/qt/"
                  (version-major+minor version)
                  "/" version
-                 "/single/qt-everywhere-opensource-src-"
+                 "/single/qt-everywhere-src-"
                  version ".tar.xz"))
              (sha256
               (base32
-               "1mblh8k04l13nk9fhhrr43h5bcph1gbz94j5y7csx8zvxb5xkb73"))
+               "0azva1wx298jh0xskymz8jic83yhxs1xfxf321wqd5lwiyq2qq1r"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -135,7 +135,7 @@ system, and the core design of Django is reused in Grantlee.")
                   (lambda (dir)
                     (delete-file-recursively (string-append "qtbase/src/3rdparty/" dir)))
                   (list "double-conversion" "freetype" "harfbuzz-ng"
-                        "libpng" "libjpeg" "pcre2" "sqlite" "xcb"
+                        "libpng" "libjpeg" "pcre2" "xcb"
                         "xkbcommon" "zlib"))
                 (for-each
                   (lambda (dir)
@@ -143,10 +143,23 @@ system, and the core design of Django is reused in Grantlee.")
                   (list "qtimageformats/src/3rdparty"
                         "qtmultimedia/examples/multimedia/spectrum/3rdparty"
                         "qtwayland/examples"
+                        "qtscxml/tests/3rdparty"
                         "qtcanvas3d/examples/canvas3d/3rdparty"))
                 ;; Tests depend on this example, which depends on the 3rd party code.
                 (substitute* "qtmultimedia/examples/multimedia/multimedia.pro"
                   (("spectrum") "#"))
+                (substitute* "qtxmlpatterns/tests/auto/auto.pro"
+                  (("qxmlquery") "# qxmlquery")
+                  (("xmlpatterns ") "# xmlpatterns"))
+                (substitute* "qtwebglplugin/tests/plugins/platforms/platforms.pro"
+                  (("webgl") "# webgl"))
+                (substitute* "qtscxml/tests/auto/auto.pro"
+                  (("scion") "#"))
+                (substitute* "qtnetworkauth/tests/auto/auto.pro"
+                  (("oauth1 ") "# oauth1 "))
+                (substitute* "qtremoteobjects/tests/auto/qml/qml.pro"
+                  (("integration") "# integration")
+                  (("usertypes") "# usertypes"))
                 #t))))
     (build-system gnu-build-system)
     (propagated-inputs
@@ -193,7 +206,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("postgresql" ,postgresql)
        ("pulseaudio" ,pulseaudio)
        ("pcre2" ,pcre2)
-       ("sqlite" ,sqlite)
+       ;("sqlite" ,sqlite)
        ("udev" ,eudev)
        ("unixodbc" ,unixodbc)
        ("wayland" ,wayland)
@@ -244,7 +257,7 @@ system, and the core design of Django is reused in Grantlee.")
                        "-no-compile-examples"
                        ;; Most "-system-..." are automatic, but some use
                        ;; the bundled copy by default.
-                       "-system-sqlite"
+                       ;"-system-sqlite"
                        "-system-harfbuzz"
                        ;; explicitly link with openssl instead of dlopening it
                        "-openssl-linked"
