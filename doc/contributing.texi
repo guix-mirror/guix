@@ -108,7 +108,9 @@ actually installing them.  So that you can distinguish between your
 ``end-user'' hat and your ``motley'' costume.
 
 To that end, all the command-line tools can be used even if you have not
-run @code{make install}.  To do that, prefix each command with
+run @code{make install}.  To do that, you first need to have an environment
+with all the dependencies available (@pxref{Building from Git}), and then
+simply prefix each command with
 @command{./pre-inst-env} (the @file{pre-inst-env} script lives in the
 top build tree of Guix), as in@footnote{The @option{-E} flag to
 @command{sudo} guarantees that @code{GUILE_LOAD_PATH} is correctly set
