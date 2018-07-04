@@ -3179,14 +3179,14 @@ and decryption.")
 (define-public java-plexus-compiler-api
   (package
     (name "java-plexus-compiler-api")
-    (version "2.8.2")
+    (version "2.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/codehaus-plexus/plexus-compiler"
                                   "/archive/plexus-compiler-" version ".tar.gz"))
               (sha256
                (base32
-                "0g3x26pymcdnfnwv2a1i57pd5s26f5zqfi1rdy98z1bn01klx25k"))))
+                "09vmxs0807wsd26nbrwwj5l8ycmzazqycj52l7w6wjvkryywi69h"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-compiler-api.jar"
