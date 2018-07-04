@@ -1685,12 +1685,6 @@ module provides support functions to the automatically generated code.")
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-with-qt-5.11
-           ;; See: https://bugs.gentoo.org/654742
-           (lambda _
-             (substitute* "sip/QtTest/qtestmouse.sip"
-               (("void waitForEvents\\(\\) /ReleaseGIL/;") ""))
-             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
