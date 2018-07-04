@@ -1670,4 +1670,51 @@ Matrix instant messaging protocol.  Quaternion is the reference client
 implementation.  Quaternion and libqmatrixclient together form the
 QMatrixClient project.")
     (license license:lgpl2.1+)))
+
+(define-public quaternion
+  (package
+    (name "quaternion")
+    (version "0.0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/QMatrixClient/Quaternion/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0s2mpw11s2n21ds1spf94j1p2lj2px2bv5zxldlcx81ch0rb4ng8"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libqmatrixclient" ,libqmatrixclient)
+       ("qt" ,qt)))
+    (arguments
+     `(#:tests? #f ; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-libqmatrixclient-dynamic-linking
+           ;; Upstream recommends statically linking with
+           ;; libqmatrixclient. Patch the source so that we can dynamically
+           ;; link instead. In a future release, when upstream moves to
+           ;; dynamic linking, remove this phase.
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("^add_subdirectory\\(lib\\)" all)
+                (string-append "#" all)))
+             (for-each
+              (lambda (file)
+                (substitute* file
+                  (("#include \"lib/([^\"]*)\"" all header)
+                   (string-append "#include <" header ">"))))
+              (find-files "client" "\\.(cpp|h)$"))
+             #t)))))
+    (home-page "https://matrix.org/docs/projects/client/quaternion.html")
+    (synopsis "Graphical client for the Matrix instant messaging protocol")
+    (description "Quaternion is a Qt5 desktop client for the Matrix instant
+messaging protocol.  It uses libqmatrixclient and is its reference client
+implementation.  Quaternion and libqmatriclient together form the
+QMatrixClient project.")
+    (license (list license:gpl3+ ; all source code
+                   license:lgpl3+)))) ; icons/breeze
+
 ;;; messaging.scm ends here
