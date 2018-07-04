@@ -703,6 +703,8 @@ MANIFEST."
     (module-ref (resolve-interface '(gnu packages texinfo)) 'texinfo))
   (define gzip                                    ;lazy reference
     (module-ref (resolve-interface '(gnu packages compression)) 'gzip))
+  (define glibc-utf8-locales                      ;lazy reference
+    (module-ref (resolve-interface '(gnu packages base)) 'glibc-utf8-locales))
 
   (define build
     (with-imported-modules '((guix build utils))
@@ -720,11 +722,31 @@ MANIFEST."
               (map (cut string-append infodir "/" <>)
                    (or (scandir infodir info-file?) '()))))
 
+          (define (info-file-language file)
+            (let* ((base (if (string-suffix? ".gz" file)
+                             (basename file ".info.gz")
+                             (basename file ".info")))
+                   (dot  (string-rindex base #\.)))
+              (if dot
+                  (string-drop base (+ 1 dot))
+                  "en")))
+
           (define (install-info info)
-            (setenv "PATH" (string-append #+gzip "/bin")) ;for info.gz files
-            (zero?
-             (system* (string-append #+texinfo "/bin/install-info") "--silent"
-                      info (string-append #$output "/share/info/dir"))))
+            (let ((language (info-file-language info)))
+              ;; We need to choose a valid locale for $LANGUAGE to be honored.
+              (setenv "LC_ALL" "en_US.utf8")
+              (setenv "LANGUAGE" language)
+              (zero?
+               (system* #+(file-append texinfo "/bin/install-info")
+                        "--silent" info
+                        (apply string-append #$output "/share/info/dir"
+                               (if (string=? "en" language)
+                                   '("")
+                                   `("." ,language)))))))
+
+          (setenv "PATH" (string-append #+gzip "/bin")) ;for info.gz files
+          (setenv "GUIX_LOCPATH"
+                  #+(file-append glibc-utf8-locales "/lib/locale"))
 
           (mkdir-p (string-append #$output "/share/info"))
           (exit (every install-info
