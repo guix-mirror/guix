@@ -1597,7 +1597,7 @@ message.")))
 (define-public python-sip
   (package
     (name "python-sip")
-    (version "4.19.8")
+    (version "4.19.11")
     (source
       (origin
         (method url-fetch)
@@ -1606,7 +1606,7 @@ message.")))
                          "sip-" version "/sip-" version ".tar.gz"))
         (sha256
          (base32
-          "1g4pq9vj753r2s061jc4y9ydzgb48ibhc9bdvmb8mlyllwp7mbvy"))))
+          "1q2rirsh4616r20kw7csagzcnwahiqsr2r9q0ycnd58fa569pm36"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
@@ -1631,11 +1631,11 @@ message.")))
                     (lib (string-append out "/lib/python"
                                         python-major+minor
                                         "/site-packages")))
-               (zero?
-                 (system* "python" "configure.py"
-                          "--bindir" bin
-                          "--destdir" lib
-                          "--incdir" include))))))))
+               (invoke "python" "configure.py"
+                       "--sip-module" "PyQt5.sip" ; for python-pyqt
+                       "--bindir" bin
+                       "--destdir" lib
+                       "--incdir" include)))))))
     (home-page "https://www.riverbankcomputing.com/software/sip/intro")
     (synopsis "Python binding creator for C and C++ libraries")
     (description
