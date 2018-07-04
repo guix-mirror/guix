@@ -5464,7 +5464,7 @@ denoting the target file.  Here's an example:
             `(("hosts" ,(plain-file "hosts"
                                     "127.0.0.1 localhost"))
               ("bashrc" ,(plain-file "bashrc"
-                                     "alias ls='ls --color'"))))
+                                     "alias ls='ls --color=auto'"))))
 @end example
 
 This yields an @code{etc} directory containing these two files.
