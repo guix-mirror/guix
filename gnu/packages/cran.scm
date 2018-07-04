@@ -4619,3 +4619,30 @@ support for default values, positional argument support, etc.")
      "This package was designed to find an acceptable Python binary that
 matches version and feature constraints.")
     (license license:expat)))
+
+;; This in not the same as "r-argparser"
+(define-public r-argparse
+  (package
+    (name "r-argparse")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "argparse" version))
+       (sha256
+        (base32
+         "0fzrbj87b274vf96azdnsjxk2nf45d5wy58vzmlah4b4h7q4j524"))))
+    (build-system r-build-system)
+    (inputs `(("python" ,python)))
+    (propagated-inputs
+     `(("r-findpython" ,r-findpython)
+       ("r-getopt" ,r-getopt)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-proto" ,r-proto)))
+    (home-page "https://github.com/trevorld/argparse")
+    (synopsis "Command line optional and positional argument parser")
+    (description
+     "This package provides a command line parser to be used with Rscript to
+write shebang scripts that gracefully accept positional and optional arguments
+and automatically generate usage notices.")
+    (license license:gpl2+)))
