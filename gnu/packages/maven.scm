@@ -388,12 +388,12 @@ replacement with improvements.")
 (define-public maven-wagon-provider-api
   (package
     (name "maven-wagon-provider-api")
-    (version "3.0.0")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.apache.org/dist/maven/wagon/"
                                   "wagon-" version "-source-release.zip"))
-              (sha256 (base32 "1qb0q4m7vmf290xp3fnfdi3pwl3hkskia5g3z2v82q1ch3y2knqv"))))
+              (sha256 (base32 "0r07j6xdzdnrvqnv8ida7dx1m05pznh5qgmcfcfpyvg9nxbj3l1n"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-wagon-provider-api.jar"
