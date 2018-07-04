@@ -1113,7 +1113,14 @@ the tty to run, among other things."
 
        (start  #~(make-forkexec-constructor
                   (list #$(file-append mingetty "/sbin/mingetty")
-                        "--noclear" #$tty
+                        "--noclear"
+
+                        ;; Avoiding 'vhangup' allows us to avoid 'setfont'
+                        ;; errors down the path where various ioctls get
+                        ;; EIO--see 'hung_up_tty_ioctl' in driver/tty/tty_io.c
+                        ;; in Linux.
+                        "--nohangup" #$tty
+
                         #$@(if auto-login
                                #~("--autologin" #$auto-login)
                                #~())
