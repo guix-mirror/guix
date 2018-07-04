@@ -1660,7 +1660,7 @@ module provides support functions to the automatically generated code.")
 (define-public python-pyqt
   (package
     (name "python-pyqt")
-    (version "5.10.1")
+    (version "5.11.2")
     (source
       (origin
         (method url-fetch)
@@ -1670,7 +1670,7 @@ module provides support functions to the automatically generated code.")
                          version ".tar.gz"))
         (sha256
          (base32
-          "1vz9c4v0k8azk2b08swwybrshzw32x8djjpq13mf9v15x1qyjclr"))
+          "00wn9svgyp0fsrkc4ma15zcxg31pw4gsgaz6nwb3fhy3al8miakw"))
        (patches (search-patches "pyqt-configure.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -1717,18 +1717,18 @@ module provides support functions to the automatically generated code.")
                                         python-major+minor
                                         "/site-packages"))
                     (stubs (string-append lib "/PyQt5")))
-               (zero? (system* "python" "configure.py"
-                               "--confirm-license"
-                               "--bindir" bin
-                               "--destdir" lib
-                               "--designer-plugindir" designer
-                               "--qml-plugindir" qml
-                               ; Where to install the PEP 484 Type Hints stub
-                               ; files. Without this the stubs are tried to be
-                               ; installed into the python package's
-                               ; site-package directory, which is read-only.
-                               "--stubsdir" stubs
-                               "--sipdir" sip))))))))
+               (invoke "python" "configure.py"
+                       "--confirm-license"
+                       "--bindir" bin
+                       "--destdir" lib
+                       "--designer-plugindir" designer
+                       "--qml-plugindir" qml
+                       ; Where to install the PEP 484 Type Hints stub
+                       ; files. Without this the stubs are tried to be
+                       ; installed into the python package's
+                       ; site-package directory, which is read-only.
+                       "--stubsdir" stubs
+                       "--sipdir" sip)))))))
     (home-page "https://www.riverbankcomputing.com/software/pyqt/intro")
     (synopsis "Python bindings for Qt")
     (description
@@ -1745,6 +1745,7 @@ contain over 620 classes.")
        ("qtbase" ,qtbase)))
     (inputs
      `(("python" ,python-2)
+       ("python2-enum34" ,python2-enum34)
        ,@(alist-delete "python" (package-inputs python-pyqt))))))
 
 (define-public python-pyqt-4
