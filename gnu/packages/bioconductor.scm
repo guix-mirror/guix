@@ -28,7 +28,8 @@
   #:use-module (gnu packages cran)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages graph)
-  #:use-module (gnu packages statistics))
+  #:use-module (gnu packages statistics)
+  #:use-module (gnu packages web))
 
 (define-public r-bsgenome-dmelanogaster-ucsc-dm6
   (package
@@ -750,3 +751,30 @@ trees and clusters to other programs.")
      "This package provides tools to detect Gene Ontology and/or other user
 defined categories which are over/under represented in RNA-seq data.")
     (license license:lgpl2.0+)))
+
+(define-public r-glimma
+  (package
+    (name "r-glimma")
+    (version "1.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Glimma" version))
+       (sha256
+        (base32
+         "0kfia60vrlys6amdchdix01iwbkwyb7nfjqn5hczsxp8rhmbg25s"))))
+    (properties `((upstream-name . "Glimma")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-edger" ,r-edger)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://github.com/Shians/Glimma")
+    (synopsis "Interactive HTML graphics")
+    (description
+     "This package generates interactive visualisations for analysis of
+RNA-sequencing data using output from limma, edgeR or DESeq2 packages in an
+HTML page.  The interactions are built on top of the popular static
+representations of analysis results in order to provide additional
+information.")
+    (license license:lgpl3)))
