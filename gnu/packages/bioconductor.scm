@@ -704,3 +704,23 @@ experiments.")
 such as ChIA-PET/Hi-C, annotating genomic features with interaction
 information and producing various plots and statistics.")
     (license license:gpl3)))
+
+(define-public r-ctc
+  (package
+    (name "r-ctc")
+    (version "1.54.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ctc" version))
+       (sha256
+        (base32
+         "0sadplm4n9n3z6inmn6y3d6qbr4hllljqh700x5fygrnfacnckk9"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-amap" ,r-amap)))
+    (home-page "https://bioconductor.org/packages/ctc/")
+    (synopsis "Cluster and tree conversion")
+    (description
+     "This package provides tools for exporting and importing classification
+trees and clusters to other programs.")
+    (license license:gpl2)))
