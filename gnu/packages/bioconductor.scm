@@ -724,3 +724,29 @@ information and producing various plots and statistics.")
      "This package provides tools for exporting and importing classification
 trees and clusters to other programs.")
     (license license:gpl2)))
+
+(define-public r-goseq
+  (package
+    (name "r-goseq")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "goseq" version))
+       (sha256
+        (base32
+         "0xmbb8ma32lrfy810r82y34gkspq4fqiqxykic9j4rq9rg9n9x2l"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biasedurn" ,r-biasedurn)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genelendatabase" ,r-genelendatabase)
+       ("r-go-db" ,r-go-db)
+       ("r-mgcv" ,r-mgcv)))
+    (home-page "https://bioconductor.org/packages/goseq/")
+    (synopsis "Gene Ontology analyser for RNA-seq and other length biased data")
+    (description
+     "This package provides tools to detect Gene Ontology and/or other user
+defined categories which are over/under represented in RNA-seq data.")
+    (license license:lgpl2.0+)))
