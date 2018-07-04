@@ -4546,3 +4546,35 @@ including Wallenius' noncentral hypergeometric distribution and Fisher's
 noncentral hypergeometric distribution (also called extended hypergeometric
 distribution).")
     (license license:gpl3)))
+
+(define-public r-goplot
+  (package
+    (name "r-goplot")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "GOplot" version))
+       (sha256
+        (base32
+         "1y8dv0kbzpr9za91njw0x233vx5d13vqml9hmpddcyi9s6va5nix"))))
+    (properties `((upstream-name . "GOplot")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggdendro" ,r-ggdendro)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "https://github.com/wencke/wencke.github.io")
+    (synopsis "Visualization of functional analysis data")
+    (description
+     "This package provides an implementation of multilayered visualizations
+for enhanced graphical representation of functional analysis data.  It
+combines and integrates omics data derived from expression and functional
+annotation enrichment analyses.  Its plotting functions have been developed
+with an hierarchical structure in mind: starting from a general overview to
+identify the most enriched categories (modified bar plot, bubble plot) to a
+more detailed one displaying different types of relevant information for the
+molecules in a given set of categories (circle plot, chord plot, cluster plot,
+Venn diagram, heatmap).")
+    (license license:gpl2)))
