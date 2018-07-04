@@ -1333,6 +1333,96 @@ logging support.")))
            (lambda _
              (chdir "maven-compat")
              #t))
+         (add-before 'build 'recreate-removed-jar
+           (lambda _
+             (with-output-to-file "src/test/repository-system/maven-core-2.1.0.jar"
+               (const #t))
+             (with-directory-excursion "src/test/resources"
+               (with-output-to-file "artifact-install/artifact-1.0.jar"
+                 (lambda _
+                   (format #t "dummy~%")))
+               (for-each
+                 (lambda (file)
+                   (with-output-to-file file
+                     (lambda _
+                       (format #t "foo~%"))))
+                 '("local-repo/maven-test/jars/maven-test-a-1.0.jar"
+                   "local-repo/maven-test/jars/maven-test-c-1.0.jar"
+                   "local-repo/maven-test/jars/maven-test-d-1.0.jar"
+                   "inheritance-repo/t04/maven-test/jars/t04-a-1.0.jar"
+                   "inheritance-repo/t04/maven-test/jars/t04-b-1.0.jar"
+                   "inheritance-repo/t04/maven-test/jars/t04-b-2.0.jar"
+                   "inheritance-repo/t04/maven-test/jars/t04-c-1.0.jar"
+                   "inheritance-repo/t04/maven-test/jars/t04-c-2.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-a-1.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-a-2.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-b-1.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-b-1.1.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-b-2.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-c-1.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-d-1.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-d-1.1.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-d-1.2.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-a-1.0.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-b-1.0.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-b-1.1.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-c-1.0.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-d-1.0.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-d-1.1.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-d-1.2.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-a-1.0.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-b-1.0.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-b-1.1.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-c-1.0.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-d-1.0.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-d-1.1.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-d-1.2.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-a-1.0.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-b-1.0.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-b-1.1.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-c-1.0.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-d-1.0.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-d-1.1.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-d-1.2.jar"
+                   "inheritance-repo/t09/maven-test/jars/t09-a-1.0.jar"
+                   "inheritance-repo/t09/maven-test/jars/t09-b-1.0.jar"
+                   "inheritance-repo/t09/maven-test/jars/t09-c-1.0.jar"
+                   "inheritance-repo/t09/maven-test/jars/t09-d-1.0.jar"
+                   "inheritance-repo/t10/maven-test/jars/t10-a-1.0.jar"
+                   "inheritance-repo/t10/maven-test/jars/t10-b-1.0.jar"
+                   "inheritance-repo/t10/maven-test/jars/t10-c-1.0.jar"))
+               (with-directory-excursion "local-repo/snapshot-test/jars"
+                 (for-each
+                   (lambda (file)
+                     (with-output-to-file file
+                       (lambda _
+                         ;; No end-of-line
+                         (format #t "local"))))
+                   '("maven-snapshot-e-1.0-SNAPSHOT.jar"
+                     "maven-snapshot-b-1.0-SNAPSHOT.jar"
+                     "maven-snapshot-a-1.0-SNAPSHOT.jar"))))
+             (for-each
+               (lambda (letter)
+                 (with-directory-excursion
+                   (string-append "src/test/remote-repo/org/apache/maven/its/"
+                                  letter "/0.1")
+                   (let ((dir (string-append "META-INF/maven/org.apache.maven.its/"
+                                             letter)))
+                     (mkdir-p dir)
+                     (copy-file (string-append letter "-0.1.pom")
+                                (string-append dir "/pom.xml"))
+                     (with-output-to-file (string-append dir "/pom.properties")
+                       (lambda _
+                         (format #t "version=0.1~%")
+                         (format #t "groupId=org.apache.maven.its")
+                         (format #t (string-append "artifactId=" letter))))
+                     (with-output-to-file "META-INF/MANIFEST.MF"
+                       (lambda _
+                         (format #t "Manifest-Version: 1.0~%"))))
+                     (invoke "jar" "cmf" "META-INF/MANIFEST.MF"
+                             (string-append letter "-0.1.jar") "META-INF")))
+               '("a" "b"))
+             #t))
          (add-before 'build 'generate-models
            (lambda* (#:key inputs #:allow-other-keys)
              (define (modello-single-mode file version mode)
