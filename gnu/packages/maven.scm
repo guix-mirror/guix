@@ -1532,12 +1532,48 @@ layer for plugins that need to keep Maven2 compatibility.")))
      `(#:phases
        (modify-phases %standard-phases
          (replace 'build
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Recreate the configuration for the loader
+             (with-output-to-file "apache-maven/src/bin/m2.conf"
+               (lambda _
+                 (format #t "main is org.apache.maven.cli.MavenCli from plexus.core~%")
+                 (format #t "~%")
+                 (format #t "set maven.conf default ${maven.home}/conf~%")
+                 (format #t "~%")
+                 (format #t "[plexus.core]~%")
+                 (format #t "load       ${maven.conf}/logging~%")
+                 (format #t "optionally ${maven.home}/lib/ext/*.jar~%")
+                 ;; Reference every jar so plexus-classworlds can find them.
+                 (for-each
+                   (lambda (dependency)
+                     (format #t "load       ~a/share/java/*.jar~%"
+                             (assoc-ref inputs dependency)))
+                   '("maven-artifact" "maven-embedder" "maven-core" "maven-compat"
+                     "maven-builder-support" "maven-model" "maven-model-builder"
+                     "maven-settings" "maven-settings-builder" "maven-plugin-api"
+                     "maven-repository-metadata" "maven-shared-utils" "maven-resolver-api"
+                     "maven-resolver-spi" "maven-resolver-util" "maven-resolver-impl"
+                     "maven-resolver-connector-basic" "maven-resolver-provider"
+                     "maven-resolver-transport-wagon" "maven-wagon-provider-api"
+                     "maven-wagon-file" "maven-wagon-http" "java-commons-logging-minimal"
+                     "java-httpcomponents-httpclient" "java-httpcomponents-httpcore"
+                     "maven-wagon-http-shared" "maven-wagon-tck-http"
+                     "java-eclipse-sisu-plexus" "java-guice" "java-aopalliance"
+                     "java-cglib" "java-asm" "java-eclipse-sisu-inject"
+                     "java-javax-inject" "java-plexus-component-annotations"
+                     "java-plexus-utils" "java-plexus-interpolation"
+                     "java-plexus-sec-dispatcher" "java-plexus-cipher" "java-guava"
+                     "java-jansi" "java-jsr250" "java-cdi-api" "java-commons-cli"
+                     "java-commons-io" "java-commons-lang3" "java-slf4j-api"
+                     "java-slf4j-simple"))))
              (substitute* "apache-maven/src/bin/mvn"
                (("cygwin=false;")
                 (string-append
-                  "CLASSPATH=" (getenv "CLASSPATH") "\n"
-                  "cygwin=false;"))
+                  "CLASSPATH="
+                  (car (find-files
+                         (assoc-ref inputs "java-plexus-classworlds")
+                         ".*.jar"))
+                  "\ncygwin=false;"))
                (("-classpath.*") "-classpath ${CLASSPATH} \\\n"))
              #t))
          (delete 'check)
