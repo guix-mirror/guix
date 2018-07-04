@@ -1147,6 +1147,37 @@ for example from a shell script.")
     ;; others (like sparql-query.c) contain a GPLv2+ license header.
     (license (list license:gpl3+))))
 
+(define-public sqlcrush
+  ;; Unfortunately, there is no proper upstream release and may never be.
+  (let ((commit "b5f6868f189566a26eecc78d0f0659813c1aa98a")
+        (revision "1"))
+    (package
+      (name "sqlcrush")
+      (version (git-version "0.1.5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/coffeeandscripts/sqlcrush.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0x3wy40r93p0jv3nbwj9a77wa4ff697d13r0wffmm7q9h3mzsww8"))))
+      (build-system python-build-system)
+      (inputs
+       `(("python-cryptography" ,python-cryptography)
+         ("python-psycopg2" ,python-psycopg2)
+         ("python-pymysql" ,python-pymysql)
+         ("python-sqlalchemy" ,python-sqlalchemy)))
+      (home-page "https://github.com/coffeeandscripts/sqlcrush")
+      (synopsis "Text console-based database viewer and editor")
+      (description
+       "SQLcrush lets you view and edit a database directly from the text
+console through an ncurses interface.  You can explore each table's structure,
+browse and edit the contents, add and delete entries, all while tracking your
+changes.")
+      (license license:gpl3+)))) ; no headers, see README.md
+
 (define-public sqlite
   (package
    (name "sqlite")
