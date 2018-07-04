@@ -11291,3 +11291,29 @@ To use, add @code{allow-emacs-pinentry} to @code{~/.gnupg/gpg-agent.conf},
 reload the configuration with @code{gpgconf --reload gpg-agent}, and start the
 server with @code{M-x pinentry-start}.")
       (license license:gpl3+))))
+
+(define-public emacs-org-brain
+  (package
+    (name "emacs-org-brain")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Kungsgeten/org-brain.git")
+             (commit "3faf9303af3f2356e3444e69c22dc6c5774047d1")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ad681zk6kckw2zbk0r4iaj4bw8cfqrbd1s3gdwgdjlzq81q9mmj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Kungsgeten/org-brain")
+    (synopsis "Org-mode wiki and concept-mapping for Emacs")
+    (description "@code{emacs-org-brain} implements a variant of concept
+mapping in Emacs, using @code{org-mode}.  An org-brain is a network of
+org-mode entries, where each entry is a file or a headline, and you can get a
+visual overview of the relationships between the entries: parents, children,
+siblings and friends.  This visual overview can also be used to browse your
+entries.  You can think of entries as nodes in a mind map, or pages in a
+wiki.")
+    (license license:expat)))
