@@ -278,7 +278,7 @@ provide connectivity for client applications written in any language.")
     (propagated-inputs
      `(("python-pillow" ,python-pillow)
        ("python-ply" ,python-ply)))
-    (home-page "http://dev.openttdcoop.org/projects/nml")
+    (home-page "https://dev.openttdcoop.org/projects/nml")
     (synopsis "NML compiler")
     (description
      "@dfn{NewGRF Meta Language} (NML) is a python-based compiler, capable of
