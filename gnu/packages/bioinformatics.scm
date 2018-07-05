@@ -13075,7 +13075,7 @@ based methods.")
 (define-public pigx
   (package
     (name "pigx")
-    (version "0.0.2")
+    (version "0.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx/"
@@ -13083,7 +13083,7 @@ based methods.")
                                   "/pigx-" version ".tar.gz"))
               (sha256
                (base32
-                "0sb708sl42h3s5z872jb1w70bbqplwapnsc1wm27zcsvi7li4gw8"))))
+                "1i5njdy1clj5ncw45d16p7mwmqvb1ilikl9n797pxklc3f4s7mq7"))))
     (build-system gnu-build-system)
     (inputs
      `(("python" ,python)
