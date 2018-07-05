@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -1019,18 +1019,23 @@ of use.")
     (license license:expat)))
 
 (define-public openmw
+  ;; XXX The current version does not support qt 5.11, but the upcoming
+  ;; version (0.44) will do.
+  (let ((commit "5bc073603e8c7887e015a0ef41b4cefd6e688aaf")
+        (revision "1"))
   (package
     (name "openmw")
-    (version "0.43.0")
+    (version (git-version "0.43" revision commit))
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/OpenMW/openmw/archive/"
-                       name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/OpenMW/openmw.git")
+             (commit commit)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "11phjx7b3mv4n295xgq25lkcwq0mgr35i5k05hf1h77y6n6jbw64"))))
+         "1sp4n3f1syvv0iz7n72wh226fyc0jh98cg8bvs574jvvqx6qn851"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -1057,7 +1062,7 @@ the 2002 open-world RPG Morrowind.  The engine comes with its own editor,
 called OpenMW-CS which allows the user to edit or create their own original
 games.")
     (home-page "https://openmw.org")
-    (license license:gpl3)))
+    (license license:gpl3))))
 
 (define-public godot
   (package
