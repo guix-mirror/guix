@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
+;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
@@ -225,14 +225,14 @@ PCM data.")
 (define-public gzochi
   (package
     (name "gzochi")
-    (version "0.11.1")
+    (version "0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/gzochi/gzochi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13j1m92zhxwkaaja3lg5x0h0b28mrrawdzk9d3hd19031akfxwb3"))))
+                "0h8yvk7154kd8zdfa9nqy73blrjq2x19kv305jcnwlmm09vvss59"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
