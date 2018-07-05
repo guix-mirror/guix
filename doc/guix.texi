@@ -20739,8 +20739,12 @@ when you boot it on your system.
 @code{grub-bootloader} allows you to boot in particular Intel-based machines
 in ``legacy'' BIOS mode.
 
+@cindex ARM, bootloaders
+@cindex AArch64, bootloaders
 Available bootloaders are described in @code{(gnu bootloader @dots{})}
-modules.
+modules.  In particular, @code{(gnu bootloader u-boot)} contains definitions
+of bootloaders for a wide range of ARM and AArch64 systems, using the
+@uref{http://www.denx.de/wiki/U-Boot/, U-Boot bootloader}.
 
 @item @code{target}
 This is a string denoting the target onto which to install the
@@ -20776,7 +20780,7 @@ The output terminals used for the bootloader boot menu, as a list of
 symbols.  GRUB accepts the values: @code{console}, @code{serial},
 @code{serial_@{0-3@}}, @code{gfxterm}, @code{vga_text},
 @code{mda_text}, @code{morse}, and @code{pkmodem}.  This field
-corresponds to the GRUB variable GRUB_TERMINAL_OUTPUT (@pxref{Simple
+corresponds to the GRUB variable @code{GRUB_TERMINAL_OUTPUT} (@pxref{Simple
 configuration,,, grub,GNU GRUB manual}).
 
 @item @code{terminal-inputs} (default: @code{'()})
@@ -20785,7 +20789,7 @@ symbols.  For GRUB, the default is the native platform terminal as
 determined at run-time.  GRUB accepts the values: @code{console},
 @code{serial}, @code{serial_@{0-3@}}, @code{at_keyboard}, and
 @code{usb_keyboard}.  This field corresponds to the GRUB variable
-GRUB_TERMINAL_INPUT (@pxref{Simple configuration,,, grub,GNU GRUB
+@code{GRUB_TERMINAL_INPUT} (@pxref{Simple configuration,,, grub,GNU GRUB
 manual}).
 
 @item @code{serial-unit} (default: @code{#f})
