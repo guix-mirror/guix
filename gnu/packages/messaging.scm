@@ -961,14 +961,14 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.16.0")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/qTox/qTox/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1s445c0h836nf69cg4dkkrllpywbh1grgplw5h0q9milkblz2ws6"))
+                "11l4klw0g6j4qq95krgyd0npxmmpcgk4vp9jq429sbsqn1s039j4"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
