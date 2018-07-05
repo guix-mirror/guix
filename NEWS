@@ -15,37 +15,100 @@ Please send Guix bug reports to bug-guix@gnu.org.
 ** Package management
 
 *** ‘guix pull’ has been overhauled; it now populates ~/.config/guix/current
+*** ‘guix pull’ has a new ‘--list-generations’ option
 *** ‘guix pack’ now supports building SquashFS images
 *** ‘guix pack’ can now build tarballs with relocatable executables
-*** ‘guix system’ gives more hints for common configuration errors
+*** ‘guix environment’ and ‘guix pack’ have a new ‘--manifest’ option
+*** New ‘guix environment’ options: ‘--user’, ‘--link-profile’
+*** ‘guix package’ has a new ‘--allow-collisions’ option
 *** ‘guix package’ no longer warns about harmless file collisions
+*** The ‘--with-source’ option now accepts “PACKAGE=URI” specs
+*** Profiles now include a separate ‘dir.LANGUAGE’ Info file
+*** New profile hook generates a ‘gschemas.compiled’ file as needed
+*** ‘guix build’ provides hints for unbound variables
 *** ‘guix weather’ now reports continuous integration statistics
+*** ‘guix gc’ has a new ‘--derivers’ option
+*** ‘guix publish’ now publishes build logs at /log URLs
 *** ‘guix import elpa’ has a new ‘--recursive’ option
+*** ‘guix graph’ has a new “module” node type
+*** New ‘guix offload status’ command
+*** ‘guix-daemon’ now comes with an SELinux policy
+*** ‘guix-daemon’ now rejects garbage collection requests from remote clients
+*** ‘guix-daemon’ supports ARMv7 builds on AArch64
+*** ‘guix-daemon’ has relaxed tests to allow for binfmt_misc execution
+*** ‘guix-daemon’ has a new ‘--log-compression’ option, with gzip support
 
 ** Distribution
 
+*** New ‘guix system docker-image’ command
+*** ‘guix system’ reports kernel modules that should be added to the initrd
+*** ‘guix system’ reports invalid mapped device specifications
+*** ‘guix system init’ warns about insufficient disk space
+*** ‘guix system search’ displays Shepherd service names when available
+*** Required services missing from the config are automatically instantiated
 *** New ‘initrd-modules’ field of ‘operating-system’
 *** New ‘file-system-label’ construct supersedes ‘title’ field of ‘file-system’
+*** ‘guix system’ has a new ‘-e’ option
+*** The ‘ld’ wrappers now allows linking with non-store libraries by default
 *** Package for Python 2.x has been renamed from “python” to “python2”
 *** RHEL6 systems based on kernel Linux 2.6 are supported again
+*** The GNU Shepherd was upgraded to 0.4.0; it now logs to syslogd
 *** New services
 
-enlightenment, qemu-binfmt
+alsa, cat-avatar-generator, darkstat, dhcpd, dnsmasq, enlightenment, fprintd,
+hpcguix-web, httpd, mate, modem-manager, openntpd, php-fpm, qemu-binfmt,
+wesnothd
+
+*** bitlbee service now supports plugins
+*** nginx service configuration has been enhanced
+*** cgit service supports project lists and is more flexible
+*** ‘openssh-configuration’ has a new ‘accepted-environment’ field
+*** dovecot service copies ‘dovecot.conf’ to /etc
+*** prosody service configuration now accepts file-like objects
+*** certbot service has been overhauled
+*** XXX new packages
+*** XXX package updates
 
 ** Programming interfaces
 
 *** ‘gnu-build-system’ now includes a ‘bootstrap’ phase to run ‘autoreconf’
 *** ‘gnu-build-system’ dumps contents of ‘test-suite.log’ upon test failures
+*** ‘gnu-build-system’ now copies license files to the output
+*** ‘emacs-build-system’ has an improved ‘check’ phase
 *** New build systems: ‘android-ndk’
+*** New ‘with-extensions’ form for G-expressions
+*** New (guix self) module, used by ‘guix pull’
 *** New (guix store database) and (guix store deduplication) modules
 *** The ‘guix-register’ C++ program no longer is
 *** package-full-name (guix packages) now uses "@" as its delimiter.
     (<https://bugs.gnu.org/31088>)
+*** ‘invoke’ from (guix build utils) is now recommended over ‘system*’
+*** More of the (gnu services …) APIs are now non-monadic
 
 ** Noteworthy bug fixes
+*** ‘guix pull’ doesn’t keep rebuilding all of Guix
+    (<https://bugs.gnu.org/27284>)
+*** ‘guix pack’ now honors package transformation options
+*** ‘guix package --search’ no longer shows superseded packages
+    (<https://bugs.gnu.org/30566>)
+*** ‘guix offload test’ reports errors more nicely 
+    (<https://bugs.gnu.org/28057>)
+*** postgresql service is started through ‘pg_ctl’
+    (<https://bugs.gnu.org/29992>)
+*** ‘urandom-seed’ service is now a dependency of ‘user-processes’
+    (<https://bugs.gnu.org/29773>)
+*** ‘fuse’ kernel module is now automatically loaded on demand
+    (<https://bugs.gnu.org/22050>)
+*** ‘guix pack --localstatedir’ now produces a bit-reproducible database
+    (<https://bugs.gnu.org/21073>)
+*** Package lookups by name and version correctly honor version prefixes
+    (<https://bugs.gnu.org/28446>)
+*** ‘guix pull --commit’ now accepts show commit IDs
+    (<https://bugs.gnu.org/30716>)
+
 
 ** Native language support
-*** the manual can now be translated and is partially translated into French
+*** The manual can now be translated and is partially translated into French
 
 * Changes in 0.14.0 (since 0.13.0)
 
