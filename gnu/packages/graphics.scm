@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -408,17 +409,19 @@ visual effects work for film.")
 (define-public openscenegraph
   (package
     (name "openscenegraph")
-    (version "3.4.0")
+    (version "3.6.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://trac.openscenegraph.org/downloads/developer_releases/"
-                           "OpenSceneGraph-" version ".zip"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/openscenegraph/OpenSceneGraph")
+             (commit (string-append "OpenSceneGraph-" version))))
        (sha256
         (base32
-         "03h4wfqqk7rf3mpz0sa99gy715cwpala7964z2npd8jxfn27swjw"))
-       (patches (search-patches "openscenegraph-ffmpeg3.patch"))
-       (file-name (string-append name "-" version ".zip"))))
+         "03jk6lclyd4biniaw04w7j0z1spkm69f1c19i37b8v9x3zv1p1id"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (properties
+     `((upstream-name . "OpenSceneGraph")))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no test target available
@@ -430,11 +433,13 @@ visual effects work for film.")
                             (assoc-ref %outputs "out") "/lib:"
                             (assoc-ref %outputs "out") "/lib64"))))
     (native-inputs
-     `(("unzip" ,unzip)))
+     `(("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)))
     (inputs
      `(("giflib" ,giflib)
        ("jasper" ,jasper)
        ("librsvg" ,librsvg)
+       ("libxrandr" ,libxrandr)
        ("pth" ,pth)
        ("qtbase" ,qtbase)
        ("ffmpeg" ,ffmpeg)
