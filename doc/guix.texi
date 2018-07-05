@@ -96,6 +96,15 @@ Edition @value{EDITION} @*
 This document describes GNU Guix version @value{VERSION}, a functional
 package management tool written for the GNU system.
 
+@c TRANSLATORS: You can replace the following paragraph with information on
+@c how to join your own translation team and how to report issues with the
+@c translation.
+This manual is also available in French (@pxref{Top,,, guix.fr, Manuel de
+référence de GNU Guix}).  If you would like to translate it in your native
+language, consider joining the
+@uref{https://translationproject.org/domain/guix-manual.html, Translation
+Project}.
+
 @menu
 * Introduction::                What is Guix about?
 * Installation::                Installing Guix.
