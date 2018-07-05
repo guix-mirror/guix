@@ -315,7 +315,7 @@ fast arithmetic.")
 (define-public arb
   (package
    (name "arb")
-   (version "2.12.0")
+   (version "2.13.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -324,7 +324,7 @@ fast arithmetic.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
               (base32
-                "0j37xkxbqpra4sf0a96x4sqbl5fkal8d7c94bi9wdsqqj6kgcsil"))))
+                "123p3gwx0s3i88rcaj3g4jl37cr3pywhpqackipskzab15ni2xfh"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("flint" ,flint))) ; flint.h is included by arf.h
