@@ -219,7 +219,7 @@ emacs		node	${EMACS}/html_node/emacs/
 easejs		mono	${GS}/easejs/manual/easejs.html
 easejs		node	${GS}/easejs/manual/
 
-EMACS_GUIX = https://alezost.github.io/guix.el/manual/latest
+EMACS_GUIX = https://emacs-guix.gitlab.io/website/manual/latest
 emacs-guix	mono	${EMACS_GUIX}/emacs-guix.html
 emacs-guix	node	${EMACS_GUIX}/html_node/
 
