@@ -722,6 +722,7 @@ Create a bundle of PACKAGE.\n"))
                                         (if (assoc-ref opts 'bootstrap?)
                                             %bootstrap-guile
                                             (canonical-package guile-2.2))
+                                        (assoc-ref opts 'system)
                                         #:graft? (assoc-ref opts 'graft?))))
         (let* ((dry-run?    (assoc-ref opts 'dry-run?))
                (relocatable? (assoc-ref opts 'relocatable?))
