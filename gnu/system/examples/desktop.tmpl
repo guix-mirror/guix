@@ -11,11 +11,11 @@
   (timezone "Europe/Paris")
   (locale "en_US.utf8")
 
-  ;; Assuming /dev/sdX is the target hard disk, and "my-root"
-  ;; is the label of the target root file system.
+  ;; Use the UEFI variant of GRUB with the EFI System
+  ;; Partition mounted on /boot/efi.
   (bootloader (bootloader-configuration
-                (bootloader grub-bootloader)
-                (target "/dev/sdX")))
+                (bootloader grub-efi-bootloader)
+                (target "/boot/efi")))
 
   ;; Specify a mapped device for the encrypted root partition.
   ;; The UUID is that returned by 'cryptsetup luksUUID'.
