@@ -129,7 +129,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.18.0")
+    (version "0.18.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/Stellarium/" name
@@ -138,7 +138,7 @@ programs for the manipulation and analysis of astronomical data.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "06lid4b9x6551swjxsbiqrd2pxh77fhzfxznhh1vwlvvqgxrimjs"))))
+               "0vjkwrjy22b4wdjkafm63pmb0fck14ffnylpq8xr91ywycw4blrq"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
