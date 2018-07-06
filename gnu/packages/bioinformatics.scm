@@ -3760,13 +3760,13 @@ experiments.")
 (define-public macs
   (package
     (name "macs")
-    (version "2.1.0.20151222")
+    (version "2.1.1.20160309")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "MACS2" version))
               (sha256
                (base32
-                "1r2hcz6irhcq7lwbafjks98jbn34hv05avgbdjnp6w6mlfjkf8x5"))))
+                "09ixspd1vcqmz1c81ih70xs4m7qml2iy5vyx1y74zww3iy1vl210"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; only compatible with Python 2.7
