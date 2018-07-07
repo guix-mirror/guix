@@ -1917,14 +1917,15 @@ display and behaviour is easily customisable.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/pidu/git-timemachine/"
-                           "archive/" version ".tar.gz"))
+       (uri (string-append "https://gitlab.com/pidu/git-timemachine"
+                           "/-/archive/" version
+                           "/git-timemachine-" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1l4g0r69wfrnjsywv03v4bpdd53byg6zdx6mzabfxyymss3kvisa"))))
     (build-system emacs-build-system)
-    (home-page "https://github.com/pidu/git-timemachine")
+    (home-page "https://gitlab.com/pidu/git-timemachine")
     (synopsis "Step through historic versions of Git-controlled files")
     (description "This package enables you to step through historic versions
 of files under Git version control from within Emacs.")
