@@ -239,6 +239,41 @@ and the ICD.")
 (define-public vulkan-icd-loader
   (deprecated-package "vulkan-icd-loader" vulkan-loader))
 
+(define-public vulkan-tools
+  (package
+    (name "vulkan-tools")
+    (version (package-version vulkan-headers))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/KhronosGroup/Vulkan-Tools/"
+             "archive/sdk-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1imbiw8crrkxgsjkgmv5x6s9yx89g6v3r2s5qfm5h31pv6lyzshm"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("glslang" ,glslang)
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("vulkan-headers" ,vulkan-headers)
+       ("vulkan-loader" ,vulkan-loader)
+       ("wayland" ,wayland)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (arguments
+     `(#:tests? #f)) ; No tests.
+    (home-page
+     "https://github.com/KhronosGroup/Vulkan-Tools")
+    (synopsis "Tools and utilities for Vulkan")
+    (description
+     "Vulkan-Tools provides tools and utilities that can assist development by
+enabling developers to verify their applications correct use of the Vulkan
+API.")
+    (license (list license:asl2.0)))) ;LICENSE.txt
+
 (define-public shaderc
   (let ((commit "be8e0879750303a1de09385465d6b20ecb8b380d")
         (revision "2"))
