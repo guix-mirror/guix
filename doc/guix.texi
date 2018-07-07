@@ -8649,7 +8649,7 @@ parted /dev/sda set 1 esp on
 @vindex grub-bootloader
 @vindex grub-efi-bootloader
 Unsure whether to use EFI- or BIOS-based GRUB?  If the directory
-@file{/sys/firmware/efi} exists in the installation image, the you should
+@file{/sys/firmware/efi} exists in the installation image, then you should
 probably perform an EFI installation, using @code{grub-efi-bootloader}.
 Otherwise you should use the BIOS-based GRUB, known as
 @code{grub-bootloader}.  @xref{Bootloader Configuration}, for more info on
