@@ -2048,35 +2048,34 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "6")
-        (commit "36f93c174adc396c90ec3a6923487f0444fe5d69"))
-    (package
-      (name "guile-git")
-      (version (string-append "0.0-" revision "." (string-take commit 7)))
-      (home-page "https://gitlab.com/guile-git/guile-git.git")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference (url home-page) (commit commit)))
-                (sha256
-                 (base32
-                  "0z1dvn0scx59pbgjkpacam7p5n7630z4qm8fazim7ixq9xv3s8wx"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("libgit2" ,libgit2)))
-      (propagated-inputs
-       `(("guile-bytestructures" ,guile-bytestructures)))
-      (synopsis "Guile bindings for libgit2")
-      (description
-       "This package provides Guile bindings to libgit2, a library to
+  (package
+    (name "guile-git")
+    (version "0.1.0")
+    (home-page "https://gitlab.com/guile-git/guile-git.git")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1z3awa3i5il08dl2swbnli2j7cawdpray11zx4844j27bxqddcs2"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("texinfo" ,texinfo)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("libgit2" ,libgit2)))
+    (propagated-inputs
+     `(("guile-bytestructures" ,guile-bytestructures)))
+    (synopsis "Guile bindings for libgit2")
+    (description
+     "This package provides Guile bindings to libgit2, a library to
 manipulate repositories of the Git version control system.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public guile2.0-git
   (package-for-guile-2.0 guile-git))
