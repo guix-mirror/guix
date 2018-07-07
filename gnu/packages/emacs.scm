@@ -1913,7 +1913,7 @@ display and behaviour is easily customisable.")
 (define-public emacs-git-timemachine
   (package
     (name "emacs-git-timemachine")
-    (version "3.0")
+    (version "4.5")
     (source
      (origin
        (method url-fetch)
@@ -1923,7 +1923,7 @@ display and behaviour is easily customisable.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1l4g0r69wfrnjsywv03v4bpdd53byg6zdx6mzabfxyymss3kvisa"))))
+         "0ii40qcincasg7s1yrvqcxkqcqzb4sfs7gcxscn6m4x4ans165zy"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.com/pidu/git-timemachine")
     (synopsis "Step through historic versions of Git-controlled files")
