@@ -186,7 +186,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version "1.1.77.0")
+    (version (package-version vulkan-headers))
     (source
      (origin
        (method url-fetch)
