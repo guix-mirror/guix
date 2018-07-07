@@ -9,6 +9,7 @@
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
+;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1598,7 +1599,7 @@ and signal handling has already been set up."
      (show-guix-usage))
     ((or ("-h") ("--help"))
      (show-guix-help))
-    (("--version")
+    ((or ("-V") ("--version"))
      (show-version-and-exit "guix"))
     (((? option? o) args ...)
      (format (current-error-port)
