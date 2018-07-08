@@ -463,16 +463,17 @@ Monero command line client and daemon.")
 (define-public monero-core
   (package
     (name "monero-core")
-    (version "0.11.1.0")
+    (version "0.12.2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/monero-project/monero-core/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/monero-project/monero-core")
+             (commit (string-append "v" version))))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1q7a9kpcjgp74fbplzs2iszdld6gwbfrydyd9in9izhwp100p1rr"))))
+         "1cnrkwh7kp64lnzz1xfmkf1mhsgm5gls292gpqai3jr8jydpkahl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
