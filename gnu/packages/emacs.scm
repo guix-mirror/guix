@@ -4208,6 +4208,33 @@ features:
 @end itemize")
     (license license:gpl3+)))
 
+(define-public emacs-typescript-mode
+  (package
+    (name "emacs-typescript-mode")
+    (version "0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ananthakumaran/typescript.el"
+                    "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gqjirm8scf0wysm7x97zdfbs4qa5nqdl64jfbkd18iskv5mg3rj"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ananthakumaran/typescript.el")
+    (synopsis "Emacs major mode for editing Typescript code")
+    (description
+     "This is based on Karl Landstrom's barebones @code{typescript-mode}.
+This is much more robust and works with @code{cc-mode}'s comment
+filling (mostly).  The modifications to the original @code{javascript.el} mode
+mainly consisted in replacing \"javascript\" with \"typescript\"
+
+The main features of this Typescript mode are syntactic highlighting (enabled
+with @code{font-lock-mode} or @code{global-font-lock-mode}), automatic
+indentation and filling of comments and C preprocessor fontification.")
+    (license license:gpl3+)))
+
 (define-public emacs-markdown-mode
   (package
     (name "emacs-markdown-mode")
