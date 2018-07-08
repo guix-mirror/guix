@@ -3266,6 +3266,7 @@ Xorg X server.")
                "mirror://xorg/individual/driver/xf86-video-sis-"
                version
                ".tar.bz2"))
+        (patches (search-patches "xf86-video-sis-xorg-compat.patch"))
         (sha256
           (base32
            "03f1abjjf68y8y1iz768rn95va9d33wmbwfbsqrgl6k0gi0bf9jj"))))
