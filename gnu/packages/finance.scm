@@ -520,7 +520,7 @@ Monero command line client and daemon.")
              #t))
          (replace 'build
            (lambda _
-             (zero? (system* "./build.sh"))))
+             (invoke "./build.sh")))
          (add-after 'build 'fix-install-path
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "build/Makefile"
