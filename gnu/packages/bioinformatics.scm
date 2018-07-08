@@ -7058,28 +7058,6 @@ functionality.")
 checks on R packages that are to be submitted to the Bioconductor repository.")
     (license license:artistic2.0)))
 
-(define-public r-getopt
-  (package
-    (name "r-getopt")
-    (version "1.20.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "getopt" version))
-       (sha256
-        (base32
-         "13p35lbpy7i578752fa71sbfvcsqw5qfa9p6kf8b5m3c5p9i4v1x"))))
-    (build-system r-build-system)
-    (home-page "https://github.com/trevorld/getopt")
-    (synopsis "Command-line option processor for R")
-    (description
-     "This package is designed to be used with Rscript to write shebang
-scripts that accept short and long options.  Many users will prefer to
-use the packages @code{optparse} or @code{argparse} which add extra
-features like automatically generated help options and usage texts,
-support for default values, positional argument support, etc.")
-    (license license:gpl2+)))
-
 (define-public r-optparse
   (package
     (name "r-optparse")
@@ -12831,7 +12809,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
 (define-public pigx-rnaseq
   (package
     (name "pigx-rnaseq")
-    (version "0.0.3")
+    (version "0.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_rnaseq/"
@@ -12839,7 +12817,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
                                   "/pigx_rnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0pz080k4ajlc4rlznkn3najy2a6874gb56rf9g4ag9wqz31q174j"))))
+                "16gla23rmziimqan7w494q0nr7vfbp42zzkrl9fracmr4k7b1kzr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f             ; not supported
@@ -12851,14 +12829,6 @@ once.  This package provides tools to perform Drop-seq analyses.")
              (substitute* "Makefile.in"
                (("(^  tests/test_trim_galore/test.sh).*" _ m) m)
                (("^  test.sh") ""))
-             #t))
-         (add-after 'install 'wrap-executable
-           ;; Make sure the executable finds all R modules.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/pigx-rnaseq")
-                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
-                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
              #t)))))
     (inputs
      `(("gzip" ,gzip)
@@ -12906,7 +12876,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.17")
+    (version "0.0.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12914,7 +12884,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1c0x5lswvc8v9fw4iynl5rcfs7h7clzp4hqdnl65ia7rk35n4zg9"))))
+                "19a7dclqq0b4kqg3phiz4d4arlwfp34nm3z0rf1gkqdpsy7gghp3"))))
     (build-system gnu-build-system)
     ;; parts of the tests rely on access to the network
     (arguments '(#:tests? #f))
@@ -12976,7 +12946,7 @@ in an easily configurable manner.")
 (define-public pigx-bsseq
   (package
     (name "pigx-bsseq")
-    (version "0.0.9")
+    (version "0.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_bsseq/"
@@ -12984,7 +12954,7 @@ in an easily configurable manner.")
                                   "/pigx_bsseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0j1dfjk8m1p1h6d5yw63scjlbx56z8gixmbw626w1vcyblg0frmz"))))
+                "0l97wvkq4diq8lcarraj33bby1zzf0w804jwi8mlc5qddp8idwhy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -12996,14 +12966,6 @@ in an easily configurable manner.")
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
-             #t))
-         (add-after 'install 'wrap-executable
-           ;; Make sure the executable finds all R modules.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/pigx-bsseq")
-                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
-                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
              #t)))))
     (native-inputs
      `(("tzdata" ,tzdata)))
@@ -13043,7 +13005,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.5")
+    (version "0.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -13051,24 +13013,14 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0a73rilv0vnw42d5rsdq205h4f0x8j3jqv998janh4s324c6w2kj"))))
+                "0fvdymnka598z2ka7zk6rwrf9dq89p5lyd2y9swvyg72hn1jwjai"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "PICARDJAR=" (assoc-ref %build-inputs "java-picard")
 			    "/share/java/picard.jar")
 	     (string-append "DROPSEQJAR=" (assoc-ref %build-inputs "dropseq-tools")
-			    "/share/java/dropseq.jar"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           ;; Make sure the executable finds all R modules.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/pigx-scrnaseq")
-                 `("R_LIBS_SITE" ":" = (,(getenv "R_LIBS_SITE")))
-                 `("PYTHONPATH"  ":" = (,(getenv "PYTHONPATH")))))
-             #t)))))
+			    "/share/java/dropseq.jar"))))
     (inputs
      `(("coreutils" ,coreutils)
        ("perl" ,perl)
@@ -13123,7 +13075,7 @@ based methods.")
 (define-public pigx
   (package
     (name "pigx")
-    (version "0.0.2")
+    (version "0.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx/"
@@ -13131,7 +13083,7 @@ based methods.")
                                   "/pigx-" version ".tar.gz"))
               (sha256
                (base32
-                "0sb708sl42h3s5z872jb1w70bbqplwapnsc1wm27zcsvi7li4gw8"))))
+                "1i5njdy1clj5ncw45d16p7mwmqvb1ilikl9n797pxklc3f4s7mq7"))))
     (build-system gnu-build-system)
     (inputs
      `(("python" ,python)
@@ -13296,3 +13248,32 @@ cases include:
   divergence below ~15%.
 @end enumerate\n")
     (license license:expat)))
+
+(define-public r-loomr
+  (let ((commit "df0144bd2bbceca6fadef9edc1bbc5ca672d4739")
+        (revision "1"))
+    (package
+      (name "r-loomr")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mojaveazure/loomR.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1b1g4dlmfdyhn56bz1mkh9ymirri43wiz7rjhs7py3y7bdw1s3yr"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-r6" ,r-r6)
+         ("r-hdf5r" ,r-hdf5r)
+         ("r-iterators" ,r-iterators)
+         ("r-itertools" ,r-itertools)
+         ("r-matrix" ,r-matrix)))
+      (home-page "https://github.com/mojaveazure/loomR")
+      (synopsis "R interface for loom files")
+      (description "This package provides an R interface to access, create,
+and modify loom files.  loomR aims to be completely compatible with loompy.")
+      (license license:gpl3))))

@@ -47,6 +47,10 @@
                      (lambda (port)
                        (put-bytevector port data))))
                  identical)
+       ;; Make the parent of IDENTICAL read-only.  This should not prevent
+       ;; deduplication for inserting its hard link.
+       (chmod (dirname (second identical)) #o544)
+
        (call-with-output-file unique
          (lambda (port)
            (put-bytevector port (string->utf8 "This is unique."))))

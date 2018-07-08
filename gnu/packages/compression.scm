@@ -1649,7 +1649,7 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.4")
+    (version "1.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/zstd/archive/v"
@@ -1657,7 +1657,11 @@ or junctions, and always follows hard links.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1a85sqk4z5b2jfp7fqkr38ibql8mdzca32lf4i3bssyjimp1pr4j"))))
+                "1sifbq18p0hc978g0pq8fymrlpzz1fcxqkbxfqk44z6v9jg5bqfn"))
+              ;; Fix a regression that causes the tests to fail.  Both patches
+              ;; have been merged upstream and will be part of the next release.
+              (patches (search-patches "zstd-fix-stdin-list-without-tty.patch"
+                                       "zstd-fix-stdin-list-test.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

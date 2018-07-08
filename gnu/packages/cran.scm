@@ -1411,14 +1411,14 @@ available in a vignette.")
 (define-public r-lava
   (package
     (name "r-lava")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lava" version))
        (sha256
         (base32
-         "11k9npmzp3nk2qx0h1dwwfc37j4ddd9y54bppxby0ffnb8qlpw1k"))))
+         "1r47pps39cgvxhg1s0bqknf4jl91pbb0c76q5icxivhwb172fqcm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-numderiv" ,r-numderiv)
@@ -1720,14 +1720,14 @@ created using basic graphics.")
 (define-public r-broom
   (package
     (name "r-broom")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "broom" version))
        (sha256
         (base32
-         "081x87sy6dmfvkgwfjrl5ax51k77ciyzg9x3xql25vdi92rmwj3m"))))
+         "1mrrqqw1bmjf2v88ziqwb5y86g29h0a3rsx2jpw0hrzrzb8i5kcb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -1737,7 +1737,7 @@ created using basic graphics.")
        ("r-reshape2" ,r-reshape2)
        ("r-stringr" ,r-stringr)
        ("r-tidyr" ,r-tidyr)))
-    (home-page "http://github.com/tidyverse/broom")
+    (home-page "https://github.com/tidyverse/broom")
     (synopsis "Convert statistical analysis objects into tidy data frames")
     (description
      "This package provides tools to convert statistical analysis objects from
@@ -4106,14 +4106,14 @@ Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
 (define-public r-learnr
   (package
     (name "r-learnr")
-    (version "0.9.2")
+    (version "0.9.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "learnr" version))
        (sha256
         (base32
-         "1z04c1djg7ghsl7p9ypc6k5m7snahnmjy10xmrzqfayx1wkfkn9n"))))
+         "0jbk0g6fkw7zs8ykzhsvh9vvz8xmc4v03bqzjsa5mmpxpqan5vx5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-evaluate" ,r-evaluate)
@@ -4482,6 +4482,28 @@ functionality is added so that HDF5 objects behave very similar to their
 corresponding R counterparts.")
     (license license:asl2.0)))
 
+(define-public r-itertools
+  (package
+    (name "r-itertools")
+    (version "0.1-3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "itertools" version))
+       (sha256
+        (base32
+         "1ls5biiva10pb1dj3ph4griykb9vam02hkrdmlr5a5wf660hg6xn"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-iterators" ,r-iterators)))
+    (home-page "https://cran.r-project.org/web/packages/itertools/")
+    (synopsis "Iterator tools")
+    (description
+     "This package provides various tools for creating iterators, many
+patterned after functions in the Python @code{itertools} module, and others
+patterned after functions in the snow package.")
+    (license license:gpl2)))
+
 (define-public r-writexl
   (package
     (name "r-writexl")
@@ -4501,3 +4523,126 @@ corresponding R counterparts.")
      "This package provides a data frame to xlsx exporter based on
 libxlsxwriter.")
     (license license:bsd-2)))
+
+(define-public r-biasedurn
+  (package
+    (name "r-biasedurn")
+    (version "1.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BiasedUrn" version))
+       (sha256
+        (base32
+         "13i2lgfnjhlbbm2yxfc2l5hswqw6x03pwba5csjmirv8kpjw4xr3"))))
+    (properties `((upstream-name . "BiasedUrn")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/BiasedUrn/")
+    (synopsis "Biased Urn model distributions")
+    (description
+     "This package provides statistical models of biased sampling in the form
+of univariate and multivariate noncentral hypergeometric distributions,
+including Wallenius' noncentral hypergeometric distribution and Fisher's
+noncentral hypergeometric distribution (also called extended hypergeometric
+distribution).")
+    (license license:gpl3)))
+
+(define-public r-goplot
+  (package
+    (name "r-goplot")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "GOplot" version))
+       (sha256
+        (base32
+         "1y8dv0kbzpr9za91njw0x233vx5d13vqml9hmpddcyi9s6va5nix"))))
+    (properties `((upstream-name . "GOplot")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggdendro" ,r-ggdendro)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "https://github.com/wencke/wencke.github.io")
+    (synopsis "Visualization of functional analysis data")
+    (description
+     "This package provides an implementation of multilayered visualizations
+for enhanced graphical representation of functional analysis data.  It
+combines and integrates omics data derived from expression and functional
+annotation enrichment analyses.  Its plotting functions have been developed
+with an hierarchical structure in mind: starting from a general overview to
+identify the most enriched categories (modified bar plot, bubble plot) to a
+more detailed one displaying different types of relevant information for the
+molecules in a given set of categories (circle plot, chord plot, cluster plot,
+Venn diagram, heatmap).")
+    (license license:gpl2)))
+
+(define-public r-getopt
+  (package
+    (name "r-getopt")
+    (version "1.20.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "getopt" version))
+       (sha256
+        (base32
+         "13p35lbpy7i578752fa71sbfvcsqw5qfa9p6kf8b5m3c5p9i4v1x"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/trevorld/getopt")
+    (synopsis "Command-line option processor for R")
+    (description
+     "This package is designed to be used with Rscript to write shebang
+scripts that accept short and long options.  Many users will prefer to
+use the packages @code{optparse} or @code{argparse} which add extra
+features like automatically generated help options and usage texts,
+support for default values, positional argument support, etc.")
+    (license license:gpl2+)))
+
+(define-public r-findpython
+  (package
+    (name "r-findpython")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "findpython" version))
+       (sha256
+        (base32
+         "1y08jk2ffmkf9zpwiz2xymjhfwqvls9vzsnq62v278ghw9d571jl"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/trevorld/findpython")
+    (synopsis "Functions to find an acceptable Python binary")
+    (description
+     "This package was designed to find an acceptable Python binary that
+matches version and feature constraints.")
+    (license license:expat)))
+
+;; This in not the same as "r-argparser"
+(define-public r-argparse
+  (package
+    (name "r-argparse")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "argparse" version))
+       (sha256
+        (base32
+         "0fzrbj87b274vf96azdnsjxk2nf45d5wy58vzmlah4b4h7q4j524"))))
+    (build-system r-build-system)
+    (inputs `(("python" ,python)))
+    (propagated-inputs
+     `(("r-findpython" ,r-findpython)
+       ("r-getopt" ,r-getopt)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-proto" ,r-proto)))
+    (home-page "https://github.com/trevorld/argparse")
+    (synopsis "Command line optional and positional argument parser")
+    (description
+     "This package provides a command line parser to be used with Rscript to
+write shebang scripts that gracefully accept positional and optional arguments
+and automatically generate usage notices.")
+    (license license:gpl2+)))

@@ -788,14 +788,14 @@ audio/video codec library.")
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
-    (version "3.4.2")
+    (version "3.4.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0h6prjn1ijkzzhkyj8mazp0wpx7m0n9ycadjxagf9czqirbyk4ib"))))))
+               "0p45s3h7mg7v0jm77bymw2617i08f086dlcdmaylnk7795yind3b"))))))
 
 (define-public ffmpeg-2.8
   (package
@@ -1122,6 +1122,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("pulseaudio" ,pulseaudio)
        ("rsound" ,rsound)
        ("shaderc" ,shaderc)
+       ("vulkan-headers" ,vulkan-headers)
        ("vulkan-loader" ,vulkan-loader)
        ("waf" ,python-waf)
        ("wayland" ,wayland)

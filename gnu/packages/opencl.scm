@@ -24,11 +24,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -38,8 +40,8 @@
   #:use-module (gnu packages xorg))
 
 ;; This file adds OpenCL implementation related packages. Due to the fact that
-;; OpenCL devices are not available during build (store environment), tests are
-;; all disabled.
+;; OpenCL devices like GPU are not available during build (store environment),
+;; tests that require such devices are all disabled.
 ;; Check https://lists.gnu.org/archive/html/guix-devel/2018-04/msg00293.html
 
 (define (make-opencl-headers major-version subversion)
@@ -288,3 +290,59 @@ functions required to initialize the device, create the command queues, the
 kernels and the programs, and run them on the GPU.  The code also contains a
 back-end for the LLVM compiler framework.")
     (license license:lgpl2.1+)))
+
+(define-public pocl
+  (package
+    (name "pocl")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/pocl/pocl/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lrw3hlb0w53xzmrf2hvbda406l70ar4gyadflvlkj4879lx138y"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("libltdl" ,libltdl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("clang" ,clang)
+       ("hwloc" ,hwloc "lib")
+       ("llvm" ,llvm)
+       ("ocl-icd" ,ocl-icd)))
+    (arguments
+     `(#:configure-flags
+       (list "-DENABLE_ICD=ON"
+             "-DENABLE_TESTSUITES=ON"
+             ;; We are not developers, don't run conformance suite.
+             "-DENABLE_CONFORMANCE=OFF"
+             (string-append "-DEXTRA_HOST_LD_FLAGS=-L"
+                            (assoc-ref %build-inputs "libc") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-headers
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file-recursively
+                (string-append out "/include"))
+               #t)))
+         (add-before 'check 'set-HOME
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (home-page "http://portablecl.org/")
+    (synopsis "Portable Computing Language (pocl), an OpenCL implementation")
+    (description
+     "Pocl is a portable implementation of the OpenCL standard (1.2 with some
+2.0 features supported).  This project seeks to improve performance
+portability of OpenCL programs with the kernel compiler and the task run-time,
+reducing the need for target-dependent manual optimizations.
+
+pocl uses Clang as an OpenCL C frontend and LLVM for kernel compiler
+implementation, and as a portability layer.  Thus, if your desired target has
+an LLVM backend, it should be able to get OpenCL support easily by using
+pocl.")
+    (license license:expat)))

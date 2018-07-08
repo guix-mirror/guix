@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1466,7 +1467,7 @@ treat it as part of their software base when porting.")
 (define-public libxscrnsaver
   (package
     (name "libxscrnsaver")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -1476,7 +1477,7 @@ treat it as part of their software base when porting.")
                ".tar.bz2"))
         (sha256
           (base32
-            "07ff4r20nkkrj7h08f9fwamds9b3imj8jz5iz6y38zqw6jkyzwcg"))))
+            "1y4vx1vabg7j9hamp0vrfrax5b0lmgm3h0lbgbb3hnkv3dd0f5zr"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
@@ -6135,3 +6136,67 @@ and embedded platforms.")
         (append configure-flags (list "--with-qt4-immodule"
                                       "--with-qt4")))))
     (synopsis "Multilingual input method framework (Qt support)")))
+
+(define-public keynav
+  (package
+    (name "keynav")
+    (version "0.20110708.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://http.debian.net/debian/pool/main/k/keynav/keynav_"
+             version ".orig.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gizjhji3yspxxxvb90js3z1bv18rbf5phxg8rciixpj3cccff8z"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxinerama" ,libxinerama)
+       ("libxtst" ,libxtst)
+       ("xdotool" ,xdotool)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:tests? #f ;No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'setenv
+           (lambda _
+             (setenv "CC" (which "gcc"))
+             #t))
+         (add-after 'unpack 'patch-keynav
+           (lambda _
+             (substitute* "keynav.c"
+               (("xdo_symbol_map") "xdo_get_symbol_map")
+               (("xdo_window_setclass") "xdo_set_window_class")
+               (("xdo_window_get_active") "xdo_get_window_at_mouse")
+               (("xdo_click") "xdo_click_window")
+               (("xdo_mouseup") "xdo_mouse_up")
+               (("xdo_mousedown") "xdo_mouse_down")
+               (("xdo_mousemove") "xdo_move_mouse")
+               (("xdo_mousemove_relative") "xdo_move_mouse_relative")
+               (("xdo_mouselocation") "xdo_get_mouse_location")
+               (("xdo_mouse_wait_for_move_to") "xdo_wait_for_mouse_move_to")
+               (("xdo_keysequence_up") "xdo_send_keysequence_window_up")
+               (("xdo_keysequence_down") "xdo_send_keysequence_window_down"))
+             #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "keynav" (string-append out "/bin"))
+               (install-file "keynavrc" (string-append out "/etc")))
+             #t)))))
+    (home-page "https://www.semicomplete.com/projects/keynav/")
+    (synopsis "Keyboard-driven mouse cursor mover")
+    (description
+     "Keynav makes your keyboard a fast mouse cursor mover.  You can move the
+cursor to any point on the screen with a few key strokes.  It also simulates
+mouse click.  You can do everything mouse can do with a keyboard.")
+    (license license:bsd-3)))

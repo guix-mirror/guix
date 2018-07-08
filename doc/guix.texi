@@ -96,6 +96,15 @@ Edition @value{EDITION} @*
 This document describes GNU Guix version @value{VERSION}, a functional
 package management tool written for the GNU system.
 
+@c TRANSLATORS: You can replace the following paragraph with information on
+@c how to join your own translation team and how to report issues with the
+@c translation.
+This manual is also available in French (@pxref{Top,,, guix.fr, Manuel de
+référence de GNU Guix}).  If you would like to translate it in your native
+language, consider joining the
+@uref{https://translationproject.org/domain/guix-manual.html, Translation
+Project}.
+
 @menu
 * Introduction::                What is Guix about?
 * Installation::                Installing Guix.
@@ -5464,7 +5473,7 @@ denoting the target file.  Here's an example:
             `(("hosts" ,(plain-file "hosts"
                                     "127.0.0.1 localhost"))
               ("bashrc" ,(plain-file "bashrc"
-                                     "alias ls='ls --color'"))))
+                                     "alias ls='ls --color=auto'"))))
 @end example
 
 This yields an @code{etc} directory containing these two files.
@@ -8329,7 +8338,7 @@ More and more system services are provided (@pxref{Services}), but some
 may be missing.
 
 @item
-More than 6,500 packages are available, but you might
+More than 7,500 packages are available, but you might
 occasionally find that a useful package is missing.
 
 @item
@@ -8635,6 +8644,17 @@ must have the @code{esp} flag set.  E.g., for @command{parted}:
 @example
 parted /dev/sda set 1 esp on
 @end example
+
+@quotation Note
+@vindex grub-bootloader
+@vindex grub-efi-bootloader
+Unsure whether to use EFI- or BIOS-based GRUB?  If the directory
+@file{/sys/firmware/efi} exists in the installation image, then you should
+probably perform an EFI installation, using @code{grub-efi-bootloader}.
+Otherwise you should use the BIOS-based GRUB, known as
+@code{grub-bootloader}.  @xref{Bootloader Configuration}, for more info on
+bootloaders.
+@end quotation
 
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
@@ -8964,6 +8984,27 @@ Below we discuss the effect of some of the most important fields
 fields), and how to @dfn{instantiate} the operating system using
 @command{guix system}.
 
+@unnumberedsubsubsec Bootloader
+
+@cindex legacy boot, on Intel machines
+@cindex BIOS boot, on Intel machines
+@cindex UEFI boot
+@cindex EFI boot
+The @code{bootloader} field describes the method that will be used to boot
+your system.  Machines based on Intel processors can boot in ``legacy'' BIOS
+mode, as in the example above.  However, more recent machines rely instead on
+the @dfn{Unified Extensible Firmware Interface} (UEFI) to boot.  In that case,
+the @code{bootloader} field should contain something along these lines:
+
+@example
+(bootloader-configuration
+  (bootloader grub-efi-bootloader)
+  (target "/boot/efi"))
+@end example
+
+@xref{Bootloader Configuration}, for more information on the available
+configuration options.
+
 @unnumberedsubsubsec Globally-Visible Packages
 
 @vindex %base-packages
@@ -9074,8 +9115,7 @@ management, power management, and more, would look like this:
 @include os-config-desktop.texi
 @end lisp
 
-@cindex UEFI
-A graphical UEFI system with a choice of lightweight window managers
+A graphical system with a choice of lightweight window managers
 instead of full-blown desktop environments would look like this:
 
 @lisp
@@ -20697,21 +20737,34 @@ The type of a bootloader configuration declaration.
 The bootloader to use, as a @code{bootloader} object. For now
 @code{grub-bootloader}, @code{grub-efi-bootloader},
 @code{extlinux-bootloader} and @code{u-boot-bootloader} are supported.
-@code{grub-efi-bootloader} allows to boot on modern systems using the
-@dfn{Unified Extensible Firmware Interface} (UEFI).
 
+@vindex grub-efi-bootloader
+@code{grub-efi-bootloader} allows to boot on modern systems using the
+@dfn{Unified Extensible Firmware Interface} (UEFI).  This is what you should
+use if the installation image contains a @file{/sys/firmware/efi} directory
+when you boot it on your system.
+
+@vindex grub-bootloader
+@code{grub-bootloader} allows you to boot in particular Intel-based machines
+in ``legacy'' BIOS mode.
+
+@cindex ARM, bootloaders
+@cindex AArch64, bootloaders
 Available bootloaders are described in @code{(gnu bootloader @dots{})}
-modules.
+modules.  In particular, @code{(gnu bootloader u-boot)} contains definitions
+of bootloaders for a wide range of ARM and AArch64 systems, using the
+@uref{http://www.denx.de/wiki/U-Boot/, U-Boot bootloader}.
 
 @item @code{target}
 This is a string denoting the target onto which to install the
-bootloader.  The exact interpretation depends on the bootloader in
-question; for @code{grub-bootloader}, for example, it should be a device
-name understood by the bootloader @command{installer} command, such as
-@code{/dev/sda} or @code{(hd0)} (for GRUB, @pxref{Invoking
-grub-install,,, grub, GNU GRUB Manual}).  For
-@code{grub-efi-bootloader}, it should be the path to a mounted EFI file
-system.
+bootloader.
+
+The interpretation depends on the bootloader in question.  For
+@code{grub-bootloader}, for example, it should be a device name understood by
+the bootloader @command{installer} command, such as @code{/dev/sda} or
+@code{(hd0)} (@pxref{Invoking grub-install,,, grub, GNU GRUB Manual}).  For
+@code{grub-efi-bootloader}, it should be the mount point of the EFI file
+system, usually @file{/boot/efi}.
 
 @item @code{menu-entries} (default: @code{()})
 A possibly empty list of @code{menu-entry} objects (see below), denoting
@@ -20736,7 +20789,7 @@ The output terminals used for the bootloader boot menu, as a list of
 symbols.  GRUB accepts the values: @code{console}, @code{serial},
 @code{serial_@{0-3@}}, @code{gfxterm}, @code{vga_text},
 @code{mda_text}, @code{morse}, and @code{pkmodem}.  This field
-corresponds to the GRUB variable GRUB_TERMINAL_OUTPUT (@pxref{Simple
+corresponds to the GRUB variable @code{GRUB_TERMINAL_OUTPUT} (@pxref{Simple
 configuration,,, grub,GNU GRUB manual}).
 
 @item @code{terminal-inputs} (default: @code{'()})
@@ -20745,7 +20798,7 @@ symbols.  For GRUB, the default is the native platform terminal as
 determined at run-time.  GRUB accepts the values: @code{console},
 @code{serial}, @code{serial_@{0-3@}}, @code{at_keyboard}, and
 @code{usb_keyboard}.  This field corresponds to the GRUB variable
-GRUB_TERMINAL_INPUT (@pxref{Simple configuration,,, grub,GNU GRUB
+@code{GRUB_TERMINAL_INPUT} (@pxref{Simple configuration,,, grub,GNU GRUB
 manual}).
 
 @item @code{serial-unit} (default: @code{#f})

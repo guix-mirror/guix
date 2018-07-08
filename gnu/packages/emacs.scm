@@ -1167,14 +1167,14 @@ rather than the contents of files.")
 (define-public emacs-async
   (package
     (name "emacs-async")
-    (version "1.9.2")
+    (version "1.9.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/async-"
+              (uri (string-append "https://stable.melpa.org/packages/async-"
                                   version ".tar"))
               (sha256
                (base32
-                "17fnvrj7jww29sav6a6jpizclg4w2962m6h37akpii71gf0vrffw"))))
+                "0xvi50y96y2qh81qkhj8p6ar1xnfasg58qvlsvgvvmdf4g8srlij"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
@@ -1913,18 +1913,19 @@ display and behaviour is easily customisable.")
 (define-public emacs-git-timemachine
   (package
     (name "emacs-git-timemachine")
-    (version "3.0")
+    (version "4.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/pidu/git-timemachine/"
-                           "archive/" version ".tar.gz"))
+       (uri (string-append "https://gitlab.com/pidu/git-timemachine"
+                           "/-/archive/" version
+                           "/git-timemachine-" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1l4g0r69wfrnjsywv03v4bpdd53byg6zdx6mzabfxyymss3kvisa"))))
+         "0ii40qcincasg7s1yrvqcxkqcqzb4sfs7gcxscn6m4x4ans165zy"))))
     (build-system emacs-build-system)
-    (home-page "https://github.com/pidu/git-timemachine")
+    (home-page "https://gitlab.com/pidu/git-timemachine")
     (synopsis "Step through historic versions of Git-controlled files")
     (description "This package enables you to step through historic versions
 of files under Git version control from within Emacs.")
@@ -3198,6 +3199,27 @@ started with 20 minutes.  All values are customizable.")
 @code{org-mode} with Trello abilities.  Trello is an online project
 organizer.")
     (license license:gpl3+)))
+
+(define-public emacs-atom-one-dark-theme
+  (let ((commit "1f1185bf667a38d3d0d180ce85fd4c131818aae2")
+        (revision "0"))
+    (package
+     (name "emacs-atom-one-dark-theme")
+     (version (git-version "0.4.0" revision commit))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jonathanchu/atom-one-dark-theme.git")
+                    (commit commit)))
+              (sha256
+               (base32
+                "1alma16hg3mfjly8a9s3mrswkjjx4lrpdnf43869hn2ibkn7zx9z"))
+              (file-name (git-file-name name version))))
+     (build-system emacs-build-system)
+     (home-page "https://github.com/jonathanchu/atom-one-dark-theme")
+     (synopsis "Atom One Dark color theme for Emacs")
+     (description "An Emacs port of the Atom One Dark theme from Atom.io.")
+     (license license:gpl3+))))
 
 (define-public emacs-zenburn-theme
   (package
@@ -5453,32 +5475,30 @@ Yasnippet.")
       (license license:gpl2+))))
 
 (define-public emacs-helm-system-packages
-  (let ((commit "b41f8f251695cf236e9d1627070049a5b41aa38a")
-        (revision "2"))
-    (package
-      (name "emacs-helm-system-packages")
-      (version (git-version "1.9.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-helm/helm-system-packages")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1wrsx1j86c9a74nsdndjv21slzl46idd3p6wqy5wnasawj0kfn8r"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)))
-      (home-page "https://github.com/emacs-helm/helm-system-packages")
-      (synopsis "Helm System Packages is an interface to your package manager")
-      (description "List all available packages in Helm (with installed
+  (package
+    (name "emacs-helm-system-packages")
+    (version "1.10.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-helm/helm-system-packages")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0y5wzvfycb1bvgdk782xyl744fih43vz14wmq6gcqjarw6xfniz5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/emacs-helm/helm-system-packages")
+    (synopsis "Helm System Packages is an interface to your package manager")
+    (description "List all available packages in Helm (with installed
 packages displayed in their own respective face).  Fuzzy-search, mark and
 execute the desired action over any selections of packages: Install,
 uninstall, display packages details (in Org Mode) or insert details at point,
 find files owned by packages...  And much more, including performing all the
 above over the network.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-memoize
   (package
@@ -5771,35 +5791,34 @@ abbreviation of the mode line displays (lighters) of minor modes.")
     (license license:gpl2+)))
 
 (define-public emacs-use-package
-  (package
-    (name "emacs-use-package")
-    (version "2.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/jwiegley/use-package/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0x4h136jb3imyli6zsh7dyzjrra6pv0v6b0yk94jdng3rdfcmsf5"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-diminish" ,emacs-diminish)))
-    (arguments
-     ;; Tests fail in this release, but have been fixed in
-     ;; upstream commit 7956d40eed57d6c06bef36ebc174cf57d934e30d
-     `(#:tests? #f
-       #:test-command '("emacs" "--batch"
-                        "-l" "use-package-tests.el"
-                        "-f" "ert-run-tests-batch-and-exit")))
-    (home-page "https://github.com/jwiegley/use-package")
-    (synopsis "Declaration for simplifying your .emacs")
-    (description "The use-package macro allows you to isolate package
+  (let ((commit "da8c9e2840343906e732f9699e43d35a1f06481d")
+        (revision "1"))
+    (package
+     (name "emacs-use-package")
+     (version (git-version "2.3" revision commit))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jwiegley/use-package")
+                    (commit commit)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0jz38pbq1p9h85i6qcsh3sfzkd103y6mw3rg5zd14dxigp8ir3xz"))))
+     (build-system emacs-build-system)
+     (propagated-inputs
+      `(("emacs-diminish" ,emacs-diminish)))
+     (arguments
+      `(#:tests? #t
+        #:test-command '("emacs" "--batch"
+                         "-l" "use-package-tests.el"
+                         "-f" "ert-run-tests-batch-and-exit")))
+     (home-page "https://github.com/jwiegley/use-package")
+     (synopsis "Declaration for simplifying your .emacs")
+     (description "The use-package macro allows you to isolate package
 configuration in your @file{.emacs} file in a way that is both
 performance-oriented and tidy.")
-    (license license:gpl2+)))
+     (license license:gpl2+))))
 
 (define-public emacs-strace-mode
   (let* ((commit "6a69b4b06db6797af56f33eda5cb28af94e59f11")
@@ -11272,3 +11291,29 @@ To use, add @code{allow-emacs-pinentry} to @code{~/.gnupg/gpg-agent.conf},
 reload the configuration with @code{gpgconf --reload gpg-agent}, and start the
 server with @code{M-x pinentry-start}.")
       (license license:gpl3+))))
+
+(define-public emacs-org-brain
+  (package
+    (name "emacs-org-brain")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Kungsgeten/org-brain.git")
+             (commit "3faf9303af3f2356e3444e69c22dc6c5774047d1")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ad681zk6kckw2zbk0r4iaj4bw8cfqrbd1s3gdwgdjlzq81q9mmj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Kungsgeten/org-brain")
+    (synopsis "Org-mode wiki and concept-mapping for Emacs")
+    (description "@code{emacs-org-brain} implements a variant of concept
+mapping in Emacs, using @code{org-mode}.  An org-brain is a network of
+org-mode entries, where each entry is a file or a headline, and you can get a
+visual overview of the relationships between the entries: parents, children,
+siblings and friends.  This visual overview can also be used to browse your
+entries.  You can think of entries as nodes in a mind map, or pages in a
+wiki.")
+    (license license:expat)))

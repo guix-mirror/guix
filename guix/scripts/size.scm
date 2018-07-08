@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,15 +52,6 @@
 
 (define substitutable-path-info*
   (store-lift substitutable-path-info))
-
-(define (query-path-info* item)
-  "Monadic version of 'query-path-info' that returns #f when ITEM is not in
-the store."
-  (lambda (store)
-    (guard (c ((nix-protocol-error? c)
-               ;; ITEM is not in the store; return #f.
-               (values #f store)))
-      (values (query-path-info store item) store))))
 
 (define (file-size item)
   "Return the size in bytes of ITEM, resorting to information from substitutes

@@ -31,7 +31,7 @@
 (define-public keepalived
   (package
     (name "keepalived")
-    (version "2.0.4")
+    (version "2.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -39,7 +39,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "0qf46bfxv4w7qx7d73qq26pp72cvbyfjvna3hxn208vynvapalh0"))))
+                "021a7c1lq4aqx7dbwhlm5km6w039hapfzp5hf6wb5bfq79s25g38"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

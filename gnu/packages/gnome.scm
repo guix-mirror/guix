@@ -3336,7 +3336,7 @@ presentations, kiosk style applications and so on.")
 (define-public clutter-gtk
   (package
     (name "clutter-gtk")
-    (version "1.8.2")
+    (version "1.8.4")
     (source
      (origin
        (method url-fetch)
@@ -3345,7 +3345,7 @@ presentations, kiosk style applications and so on.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "153bl9256yjnfcplp7jmgf7lm2zb790zkayjclzsv42l6a3d89ys"))))
+         "01ibniy4ich0fgpam53q252idm7f4fn5xg5qvizcfww90gn9652j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -3639,7 +3639,7 @@ for application developers.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.26.0")
+    (version "3.26.1")
     (source
      (origin
        (method url-fetch)
@@ -3648,7 +3648,7 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "04zfx47mgyd0f4p3pjrxl6iaw0awgwbvilbsr1smw14ph2kbjbz3"))
+         "10n302fdp3lhkzbij5sbzmsnln738029xil6cnng2d4dxv4n1099"))
        (patches (search-patches "totem-meson-easy-codec.patch"))))
     (build-system meson-build-system)
     (native-inputs

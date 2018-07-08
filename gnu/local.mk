@@ -800,6 +800,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-CVE-2018-5157-and-CVE-2018-5158.patch	\
   %D%/packages/patches/icecat-use-system-graphite2.patch	\
   %D%/packages/patches/icecat-use-system-harfbuzz.patch		\
+  %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
+  %D%/packages/patches/icedtea-7-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
@@ -859,7 +861,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
-  %D%/packages/patches/libgit2-0.25.1-mtime-0.patch		\
+  %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgdata-fix-tests.patch			\
   %D%/packages/patches/libgdata-glib-duplicate-tests.patch	\
   %D%/packages/patches/libgnome-encoding.patch			\
@@ -1225,7 +1227,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
   %D%/packages/patches/zathura-pdf-mupdf-link-to-jpeg-libraries.patch \
-  %D%/packages/patches/zathura-plugindir-environment-variable.patch
+  %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
+  %D%/packages/patches/zstd-fix-stdin-list-without-tty.patch	\
+  %D%/packages/patches/zstd-fix-stdin-list-test.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in

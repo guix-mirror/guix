@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -269,7 +270,7 @@ Report the availability of substitutes.\n"))
                    (exit 0)))
          (option '(#\V "version") #f #f
                  (lambda args
-                   (show-version-and-exit "guix challenge")))
+                   (show-version-and-exit "guix weather")))
 
          (option '("substitute-urls") #t #f
                  (lambda (opt name arg result . rest)

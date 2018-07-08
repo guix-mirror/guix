@@ -107,6 +107,7 @@
             references
             references/substitutes
             references*
+            query-path-info*
             requisites
             referrers
             optimize-store
@@ -1397,6 +1398,15 @@ where FILE is the entry's absolute file name and STAT is the result of
 
 (define references*
   (store-lift references))
+
+(define (query-path-info* item)
+  "Monadic version of 'query-path-info' that returns #f when ITEM is not in
+the store."
+  (lambda (store)
+    (guard (c ((nix-protocol-error? c)
+               ;; ITEM is not in the store; return #f.
+               (values #f store)))
+      (values (query-path-info store item) store))))
 
 (define-inlinable (current-system)
   ;; Consult the %CURRENT-SYSTEM fluid at bind time.  This is equivalent to

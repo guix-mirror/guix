@@ -388,12 +388,12 @@ replacement with improvements.")
 (define-public maven-wagon-provider-api
   (package
     (name "maven-wagon-provider-api")
-    (version "3.0.0")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.apache.org/dist/maven/wagon/"
                                   "wagon-" version "-source-release.zip"))
-              (sha256 (base32 "1qb0q4m7vmf290xp3fnfdi3pwl3hkskia5g3z2v82q1ch3y2knqv"))))
+              (sha256 (base32 "0r07j6xdzdnrvqnv8ida7dx1m05pznh5qgmcfcfpyvg9nxbj3l1n"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "maven-wagon-provider-api.jar"
@@ -675,13 +675,13 @@ gets and puts artifacts through HTTP(S) using Apache HttpClient-4.x.")))
 (define-public maven-artifact
   (package
     (name "maven-artifact")
-    (version "3.5.3")
+    (version "3.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.apache.org/dist/maven/"
                                   "maven-3/" version "/source/"
                                   "apache-maven-" version "-src.tar.gz"))
-              (sha256 (base32 "06by23fz207lkvsndq883irfcf4p77jzkgf7n2q7hzyw1hs4h5s7"))
+              (sha256 (base32 "1xg20g87svzzscbn7m92c2njvrr61va1dija2x2w7m5v4hdizfpk"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1162,7 +1162,7 @@ process.")))
             (add-before 'build 'modify-metainf
               (lambda _
                 (substitute* "build.xml"
-                  (("message=\"\"") "message=\"Implementation-Version: 3.5.3\n\""))
+                  (("message=\"\"") "message=\"Implementation-Version: 3.5.4\n\""))
                 #t))
             (add-before 'build 'add-maven-files
               (lambda _
@@ -1333,6 +1333,96 @@ logging support.")))
            (lambda _
              (chdir "maven-compat")
              #t))
+         (add-before 'build 'recreate-removed-jar
+           (lambda _
+             (with-output-to-file "src/test/repository-system/maven-core-2.1.0.jar"
+               (const #t))
+             (with-directory-excursion "src/test/resources"
+               (with-output-to-file "artifact-install/artifact-1.0.jar"
+                 (lambda _
+                   (format #t "dummy~%")))
+               (for-each
+                 (lambda (file)
+                   (with-output-to-file file
+                     (lambda _
+                       (format #t "foo~%"))))
+                 '("local-repo/maven-test/jars/maven-test-a-1.0.jar"
+                   "local-repo/maven-test/jars/maven-test-c-1.0.jar"
+                   "local-repo/maven-test/jars/maven-test-d-1.0.jar"
+                   "inheritance-repo/t04/maven-test/jars/t04-a-1.0.jar"
+                   "inheritance-repo/t04/maven-test/jars/t04-b-1.0.jar"
+                   "inheritance-repo/t04/maven-test/jars/t04-b-2.0.jar"
+                   "inheritance-repo/t04/maven-test/jars/t04-c-1.0.jar"
+                   "inheritance-repo/t04/maven-test/jars/t04-c-2.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-a-1.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-a-2.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-b-1.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-b-1.1.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-b-2.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-c-1.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-d-1.0.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-d-1.1.jar"
+                   "inheritance-repo/t05/maven-test/jars/t05-d-1.2.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-a-1.0.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-b-1.0.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-b-1.1.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-c-1.0.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-d-1.0.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-d-1.1.jar"
+                   "inheritance-repo/t06/maven-test/jars/t06-d-1.2.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-a-1.0.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-b-1.0.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-b-1.1.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-c-1.0.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-d-1.0.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-d-1.1.jar"
+                   "inheritance-repo/t07/maven-test/jars/t07-d-1.2.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-a-1.0.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-b-1.0.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-b-1.1.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-c-1.0.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-d-1.0.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-d-1.1.jar"
+                   "inheritance-repo/t08/maven-test/jars/t08-d-1.2.jar"
+                   "inheritance-repo/t09/maven-test/jars/t09-a-1.0.jar"
+                   "inheritance-repo/t09/maven-test/jars/t09-b-1.0.jar"
+                   "inheritance-repo/t09/maven-test/jars/t09-c-1.0.jar"
+                   "inheritance-repo/t09/maven-test/jars/t09-d-1.0.jar"
+                   "inheritance-repo/t10/maven-test/jars/t10-a-1.0.jar"
+                   "inheritance-repo/t10/maven-test/jars/t10-b-1.0.jar"
+                   "inheritance-repo/t10/maven-test/jars/t10-c-1.0.jar"))
+               (with-directory-excursion "local-repo/snapshot-test/jars"
+                 (for-each
+                   (lambda (file)
+                     (with-output-to-file file
+                       (lambda _
+                         ;; No end-of-line
+                         (format #t "local"))))
+                   '("maven-snapshot-e-1.0-SNAPSHOT.jar"
+                     "maven-snapshot-b-1.0-SNAPSHOT.jar"
+                     "maven-snapshot-a-1.0-SNAPSHOT.jar"))))
+             (for-each
+               (lambda (letter)
+                 (with-directory-excursion
+                   (string-append "src/test/remote-repo/org/apache/maven/its/"
+                                  letter "/0.1")
+                   (let ((dir (string-append "META-INF/maven/org.apache.maven.its/"
+                                             letter)))
+                     (mkdir-p dir)
+                     (copy-file (string-append letter "-0.1.pom")
+                                (string-append dir "/pom.xml"))
+                     (with-output-to-file (string-append dir "/pom.properties")
+                       (lambda _
+                         (format #t "version=0.1~%")
+                         (format #t "groupId=org.apache.maven.its")
+                         (format #t (string-append "artifactId=" letter))))
+                     (with-output-to-file "META-INF/MANIFEST.MF"
+                       (lambda _
+                         (format #t "Manifest-Version: 1.0~%"))))
+                     (invoke "jar" "cmf" "META-INF/MANIFEST.MF"
+                             (string-append letter "-0.1.jar") "META-INF")))
+               '("a" "b"))
+             #t))
          (add-before 'build 'generate-models
            (lambda* (#:key inputs #:allow-other-keys)
              (define (modello-single-mode file version mode)
@@ -1442,12 +1532,48 @@ layer for plugins that need to keep Maven2 compatibility.")))
      `(#:phases
        (modify-phases %standard-phases
          (replace 'build
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Recreate the configuration for the loader
+             (with-output-to-file "apache-maven/src/bin/m2.conf"
+               (lambda _
+                 (format #t "main is org.apache.maven.cli.MavenCli from plexus.core~%")
+                 (format #t "~%")
+                 (format #t "set maven.conf default ${maven.home}/conf~%")
+                 (format #t "~%")
+                 (format #t "[plexus.core]~%")
+                 (format #t "load       ${maven.conf}/logging~%")
+                 (format #t "optionally ${maven.home}/lib/ext/*.jar~%")
+                 ;; Reference every jar so plexus-classworlds can find them.
+                 (for-each
+                   (lambda (dependency)
+                     (format #t "load       ~a/share/java/*.jar~%"
+                             (assoc-ref inputs dependency)))
+                   '("maven-artifact" "maven-embedder" "maven-core" "maven-compat"
+                     "maven-builder-support" "maven-model" "maven-model-builder"
+                     "maven-settings" "maven-settings-builder" "maven-plugin-api"
+                     "maven-repository-metadata" "maven-shared-utils" "maven-resolver-api"
+                     "maven-resolver-spi" "maven-resolver-util" "maven-resolver-impl"
+                     "maven-resolver-connector-basic" "maven-resolver-provider"
+                     "maven-resolver-transport-wagon" "maven-wagon-provider-api"
+                     "maven-wagon-file" "maven-wagon-http" "java-commons-logging-minimal"
+                     "java-httpcomponents-httpclient" "java-httpcomponents-httpcore"
+                     "maven-wagon-http-shared" "maven-wagon-tck-http"
+                     "java-eclipse-sisu-plexus" "java-guice" "java-aopalliance"
+                     "java-cglib" "java-asm" "java-eclipse-sisu-inject"
+                     "java-javax-inject" "java-plexus-component-annotations"
+                     "java-plexus-utils" "java-plexus-interpolation"
+                     "java-plexus-sec-dispatcher" "java-plexus-cipher" "java-guava"
+                     "java-jansi" "java-jsr250" "java-cdi-api" "java-commons-cli"
+                     "java-commons-io" "java-commons-lang3" "java-slf4j-api"
+                     "java-slf4j-simple"))))
              (substitute* "apache-maven/src/bin/mvn"
                (("cygwin=false;")
                 (string-append
-                  "CLASSPATH=" (getenv "CLASSPATH") "\n"
-                  "cygwin=false;"))
+                  "CLASSPATH="
+                  (car (find-files
+                         (assoc-ref inputs "java-plexus-classworlds")
+                         ".*.jar"))
+                  "\ncygwin=false;"))
                (("-classpath.*") "-classpath ${CLASSPATH} \\\n"))
              #t))
          (delete 'check)

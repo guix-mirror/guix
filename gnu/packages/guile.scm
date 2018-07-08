@@ -301,6 +301,20 @@ without requiring the source code to be rewritten.")
                (base32
                 "1azm25zcmxif0skxfrp11d2wc89nrzpjaann9yxdw6pvjxhs948w"))))))
 
+(define-public guile-2.2.4
+  ;; This version contains important bug fixes, in particular wrt. to crashes
+  ;; of multi-threaded code as used by 'guix pull' and grafting.
+  (package
+    (inherit guile-2.2)
+    (version "2.2.4")
+    (source (origin
+              (inherit (package-source guile-2.2))
+              (uri (string-append "mirror://gnu/guile/guile-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))))))
+
 (define-public guile-next
   (deprecated-package "guile-next" guile-2.2))
 
@@ -2034,35 +2048,34 @@ is not available for Guile 2.0.")
     (license license:lgpl3+)))
 
 (define-public guile-git
-  (let ((revision "6")
-        (commit "36f93c174adc396c90ec3a6923487f0444fe5d69"))
-    (package
-      (name "guile-git")
-      (version (string-append "0.0-" revision "." (string-take commit 7)))
-      (home-page "https://gitlab.com/guile-git/guile-git.git")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference (url home-page) (commit commit)))
-                (sha256
-                 (base32
-                  "0z1dvn0scx59pbgjkpacam7p5n7630z4qm8fazim7ixq9xv3s8wx"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("libgit2" ,libgit2)))
-      (propagated-inputs
-       `(("guile-bytestructures" ,guile-bytestructures)))
-      (synopsis "Guile bindings for libgit2")
-      (description
-       "This package provides Guile bindings to libgit2, a library to
+  (package
+    (name "guile-git")
+    (version "0.1.0")
+    (home-page "https://gitlab.com/guile-git/guile-git.git")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1z3awa3i5il08dl2swbnli2j7cawdpray11zx4844j27bxqddcs2"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("texinfo" ,texinfo)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("libgit2" ,libgit2)))
+    (propagated-inputs
+     `(("guile-bytestructures" ,guile-bytestructures)))
+    (synopsis "Guile bindings for libgit2")
+    (description
+     "This package provides Guile bindings to libgit2, a library to
 manipulate repositories of the Git version control system.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public guile2.0-git
   (package-for-guile-2.0 guile-git))

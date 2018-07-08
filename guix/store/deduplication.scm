@@ -88,28 +88,27 @@ LINK-PREFIX."
       (lambda args
         (if (= (system-error-errno args) EEXIST)
             (try (tempname-in link-prefix))
-            (throw 'system-error args))))))
+            (apply throw args))))))
 
 ;; There are 3 main kinds of errors we can get from hardlinking: "Too many
 ;; things link to this" (EMLINK), "this link already exists" (EEXIST), and
 ;; "can't fit more stuff in this directory" (ENOSPC).
 
-(define (replace-with-link target to-replace)
-  "Atomically replace the file TO-REPLACE with a link to TARGET.  Note: TARGET
-and TO-REPLACE must be on the same file system."
-  (let ((temp-link (get-temp-link target (dirname to-replace))))
-    (rename-file temp-link to-replace)))
+(define* (replace-with-link target to-replace
+                            #:key (swap-directory (dirname target)))
+  "Atomically replace the file TO-REPLACE with a link to TARGET.  Use
+SWAP-DIRECTORY as the directory to store temporary hard links.
 
-(define-syntax-rule (false-if-system-error (errors ...) exp ...)
-  "Given ERRORS, a list of system error codes to ignore, evaluates EXP... and
-return #f if any of the system error codes in the given list are thrown."
-  (catch 'system-error
-    (lambda ()
-      exp ...)
-    (lambda args
-      (if (member (system-error-errno args) (list errors ...))
-          #f
-          (apply throw args)))))
+Note: TARGET, TO-REPLACE, and SWAP-DIRECTORY must be on the same file system."
+  (let ((temp-link (get-temp-link target swap-directory)))
+    (make-file-writable (dirname to-replace))
+    (catch 'system-error
+      (lambda ()
+        (rename-file temp-link to-replace))
+      (lambda args
+        (delete-file temp-link)
+        (unless (= EMLINK (system-error-errno args))
+          (apply throw args))))))
 
 (define* (deduplicate path hash #:key (store %store-directory))
   "Check if a store item with sha256 hash HASH already exists.  If so,
@@ -131,8 +130,8 @@ under STORE."
                                      #:store store))))
                   (scandir path))
         (if (file-exists? link-file)
-            (false-if-system-error (EMLINK)
-                                   (replace-with-link link-file path))
+            (replace-with-link link-file path
+                               #:swap-directory links-directory)
             (catch 'system-error
               (lambda ()
                 (link path link-file))
@@ -141,8 +140,8 @@ under STORE."
                   (cond ((= errno EEXIST)
                          ;; Someone else put an entry for PATH in
                          ;; LINKS-DIRECTORY before we could.  Let's use it.
-                         (false-if-system-error (EMLINK)
-                                                (replace-with-link path link-file)))
+                         (replace-with-link path link-file
+                                            #:swap-directory links-directory))
                         ((= errno ENOSPC)
                          ;; There's not enough room in the directory index for
                          ;; more entries in .links, but that's fine: we can

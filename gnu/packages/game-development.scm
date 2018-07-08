@@ -265,7 +265,7 @@ provide connectivity for client applications written in any language.")
 (define-public nml
   (package
     (name "nml")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
@@ -273,12 +273,12 @@ provide connectivity for client applications written in any language.")
                            version "/nml-" version ".tar.gz"))
        (sha256
         (base32
-         "0wk9ls5qyjwkra54rkj1gg94xbwzi7b84a5fh1ma1q7pbimi8rmg"))))
+         "1pmvvm3sgnpngfa7884mqhq3fwdjh9sr0ca07ypnidcg0y341w53"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pillow" ,python-pillow)
        ("python-ply" ,python-ply)))
-    (home-page "http://dev.openttdcoop.org/projects/nml")
+    (home-page "https://dev.openttdcoop.org/projects/nml")
     (synopsis "NML compiler")
     (description
      "@dfn{NewGRF Meta Language} (NML) is a python-based compiler, capable of

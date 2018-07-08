@@ -4379,6 +4379,11 @@ NetSurf project.")
                  "        addenv(\"PERL5LIB\", \""
                  (getenv "PERL5LIB")
                  "\");")))))
+         (add-after 'patch-source-shebangs 'patch-Makefile
+           (lambda _
+             (substitute* "Makefile.PL"
+               (("SYSCONFDIR\\?=") "SYSCONFDIR?=$(PREFIX)"))
+             #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))

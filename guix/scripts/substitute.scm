@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1108,7 +1109,7 @@ default value."
           (process-substitution store-path destination
                                 #:cache-urls (substitute-urls)
                                 #:acl (current-acl))))
-       (("--version")
+       ((or ("-V") ("--version"))
         (show-version-and-exit "guix substitute"))
        (("--help")
         (show-help))

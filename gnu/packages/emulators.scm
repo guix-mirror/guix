@@ -117,8 +117,8 @@
 
 ;; Building from recent Git because the official 5.0 release no longer builds.
 (define-public dolphin-emu
-  (let ((commit "47fd8c6eff4cdea7660d0fa78040f98d1d4fa136")
-        (revision "1"))
+  (let ((commit "806c1ee8f0ed824008185212bfab2658d400b576")
+        (revision "2"))
     (package
       (name "dolphin-emu")
       (version (git-version "5.0" revision commit))
@@ -136,21 +136,18 @@
              (for-each (lambda (dir)
                          (delete-file-recursively
                            (string-append "Externals/" dir)))
-                       '("LZO" "OpenAL" "Qt" "SFML" "SOIL" "curl" "ffmpeg"
+                       '("LZO" "OpenAL" "Qt" "SFML" "curl" "ffmpeg"
                          "gettext" "hidapi" "libpng" "libusb" "mbedtls"
-                         "miniupnpc" "wxWidgets3" "zlib"))
+                         "miniupnpc" "zlib"))
              ;; Clean up source.
              (for-each delete-file (find-files "." ".*\\.(bin|dsy|exe|jar|rar)$"))
              #t))
          (sha256
           (base32
-           "1gp2sshnr0dswdawxd5ix96nksp435b52bqvpjx8pmn523k29zsw"))))
+           "1sdc7rh6z7gjx4kxg18jrv7srfpx1vgf936zg5y43radnlscrh1j"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f
-         ;; The FindGTK2 cmake script only checks hardcoded directories for
-         ;; glib/gtk headers.
-
          #:phases
          (modify-phases %standard-phases
            (add-before 'configure 'fixgcc7
@@ -177,14 +174,11 @@
                               (("libvulkan.so") libvulkan))
                  #t))))
 
+         ;; The FindGTK2 cmake script only checks hardcoded directories for
+         ;; glib/gtk headers.
+
          #:configure-flags
-         (list (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
-                              (assoc-ref %build-inputs "gtk+")
-                              "/lib/gtk-2.0/include")
-               (string-append "-DGTK2_GLIBCONFIG_INCLUDE_DIR="
-                              (assoc-ref %build-inputs "glib")
-                              "/lib/glib-2.0/include")
-               (string-append "-DX11_INCLUDE_DIR="
+         (list (string-append "-DX11_INCLUDE_DIR="
                               (assoc-ref %build-inputs "libx11")
                               "/include")
                (string-append "-DX11_LIBRARIES="
@@ -220,6 +214,7 @@
          ("mesa" ,mesa)
          ("miniupnpc" ,miniupnpc)
          ("openal" ,openal)
+         ("pugixml" ,pugixml)
          ("pulseaudio" ,pulseaudio)
          ("qtbase" ,qtbase)
          ("sdl2" ,sdl2)
@@ -227,7 +222,6 @@
          ("soil" ,soil)
          ("soundtouch" ,soundtouch)
          ("vulkan-loader" ,vulkan-loader)
-         ("wxwidgets" ,wxwidgets-gtk2-3.1)
          ("zlib" ,zlib)))
       (home-page "https://dolphin-emu.org/")
       (synopsis "Nintendo Wii and GameCube emulator")

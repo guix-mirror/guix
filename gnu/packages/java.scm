@@ -733,8 +733,11 @@ machine.")))
                             (assoc-ref inputs
                                        (string-append part "-src"))
                             part))
-                         '("jdk" "hotspot" "corba"
+                         '("jdk" "corba"
                            "langtools" "jaxp" "jaxws")))
+             (with-directory-excursion "openjdk"
+               (invoke "tar" "xvf" (assoc-ref inputs "hotspot-src"))
+               (rename-file "hg-checkout" "hotspot"))
              (substitute* "Makefile.in"
                (("echo \"ERROR: No up-to-date OpenJDK zip available\"; exit -1;")
                 "echo \"trust me\";")
@@ -953,7 +956,9 @@ machine.")))
                  (changeset "jdk6-b41")))
            (sha256
             (base32
-             "07lc1z4k5dj9nrc1wvwmpvxr3xgxrdkdh53xb95skk5ij49yagfd"))))
+             "07lc1z4k5dj9nrc1wvwmpvxr3xgxrdkdh53xb95skk5ij49yagfd"))
+           (patches
+            (search-patches "icedtea-6-hotspot-gcc-segfault-workaround.patch"))))
        ("corba-src"
         ,(origin
            (method hg-fetch)
@@ -1449,14 +1454,21 @@ bootstrapping purposes.")
           ,(drop "langtools"
                  "0nq5236fzxn3p6x8cgncl56mzcmsj07q9gymysnws4c8byc6n0qj"))
          ("hotspot-drop"
-          ,(drop "hotspot"
-                 "17bdv39n4lh8l5737c96f3xgamx4y305m067p01cywgp7zaddqws"))
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://icedtea.classpath.org/downloads/drops"
+                   "/icedtea7/" version "/hotspot.tar.bz2"))
+             (sha256
+              (base32
+               "17bdv39n4lh8l5737c96f3xgamx4y305m067p01cywgp7zaddqws"))
+             (patches (search-patches
+                       "icedtea-7-hotspot-gcc-segfault-workaround.patch"))))
          ("ant" ,ant-bootstrap)
          ("attr" ,attr)
          ("coreutils" ,coreutils)
          ("diffutils" ,diffutils)       ;for tests
          ("gawk" ,gawk)
-         ("gcc" ,gcc-4.9) ; there's a segmentation fault when compiling with gcc-5
          ("grep" ,grep)
          ("libtool" ,libtool)
          ("pkg-config" ,pkg-config)
@@ -1640,8 +1652,16 @@ new Date();"))
           ,(drop "langtools"
                  "15wizy123vhk40chl1b4p552jf2pw2hdww0myf11qab425axz4nw"))
          ("hotspot-drop"
-          ,(drop "hotspot"
-                 "1ciz1w9j0kz7s1dxdhyqq71nla9icyz6qvn0b9z2zgkklqa98qmm"))
+          ,(origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://icedtea.classpath.org/download/drops"
+                   "/icedtea8/" version "/hotspot.tar.xz"))
+             (sha256
+              (base32
+               "1ciz1w9j0kz7s1dxdhyqq71nla9icyz6qvn0b9z2zgkklqa98qmm"))
+             (patches (search-patches
+                       "icedtea-7-hotspot-gcc-segfault-workaround.patch"))))
          ("nashorn-drop"
           ,(drop "nashorn"
                  "19pzl3ppaw8j6r5cnyp8qiw3hxijh3hdc46l39g5yfhdl4pr4hpa"))
@@ -3215,14 +3235,14 @@ and decryption.")
 (define-public java-plexus-compiler-api
   (package
     (name "java-plexus-compiler-api")
-    (version "2.8.2")
+    (version "2.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/codehaus-plexus/plexus-compiler"
                                   "/archive/plexus-compiler-" version ".tar.gz"))
               (sha256
                (base32
-                "0g3x26pymcdnfnwv2a1i57pd5s26f5zqfi1rdy98z1bn01klx25k"))))
+                "09vmxs0807wsd26nbrwwj5l8ycmzazqycj52l7w6wjvkryywi69h"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-compiler-api.jar"
@@ -3926,11 +3946,20 @@ The jMock library
                               (find-files (assoc-ref inputs "java-junit") "\\.jar$")
                               (find-files (assoc-ref inputs "java-jmock") "\\.jar$")
                               (find-files (assoc-ref inputs "java-easymock") "\\.jar$")))
-                       ";")))
+                       ";"))
+                     (("build/hamcrest-core-\\$\\{version\\}\\.jar")
+                      (string-append (assoc-ref inputs "java-hamcrest-core")
+                                     "/share/java/hamcrest-core.jar")))
                    #t)))))))
     (inputs
      `(("java-junit" ,java-junit)
        ("java-jmock" ,java-jmock-1)
+       ;; This is necessary because of what seems to be a race condition.
+       ;; This package would sometimes fail to build because hamcrest-core.jar
+       ;; could not be found, even though it is built as part of this package.
+       ;; Adding java-hamcrest-core appears to fix this problem.  See
+       ;; https://debbugs.gnu.org/31390 for more information.
+       ("java-hamcrest-core" ,java-hamcrest-core)
        ("java-easymock" ,java-easymock)
        ,@(package-inputs java-hamcrest-core)))))
 

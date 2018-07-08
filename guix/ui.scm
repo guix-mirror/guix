@@ -9,6 +9,7 @@
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
+;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,6 +88,7 @@
             leave-on-EPIPE
             read/eval
             read/eval-package-expression
+            check-available-space
             location->string
             fill-paragraph
             %text-width
@@ -519,6 +521,9 @@ FILE."
 (set! canonicalize-path
   (error-reporting-wrapper canonicalize-path (file) file))
 
+(set! delete-file
+  (error-reporting-wrapper delete-file (file) file))
+
 
 (define (make-regexp* regexp . flags)
   "Like 'make-regexp' but error out if REGEXP is invalid, reporting the error
@@ -795,16 +800,17 @@ error."
                   (derivation->output-path derivation out-name)))
                (derivation-outputs derivation))))
 
-(define (check-available-space need)
-  "Make sure at least NEED bytes are available in the store.  Otherwise emit a
+(define* (check-available-space need
+                                #:optional (directory (%store-prefix)))
+  "Make sure at least NEED bytes are available in DIRECTORY.  Otherwise emit a
 warning."
   (let ((free (catch 'system-error
                 (lambda ()
-                  (free-disk-space (%store-prefix)))
+                  (free-disk-space directory))
                 (const #f))))
     (when (and free (>= need free))
       (warning (G_ "at least ~,1h MB needed but only ~,1h MB available in ~a~%")
-               (/ need 1e6) (/ free 1e6) (%store-prefix)))))
+               (/ need 1e6) (/ free 1e6) directory))))
 
 (define* (show-what-to-build store drv
                              #:key dry-run? (use-substitutes? #t)
@@ -1593,7 +1599,7 @@ and signal handling has already been set up."
      (show-guix-usage))
     ((or ("-h") ("--help"))
      (show-guix-help))
-    (("--version")
+    ((or ("-V") ("--version"))
      (show-version-and-exit "guix"))
     (((? option? o) args ...)
      (format (current-error-port)

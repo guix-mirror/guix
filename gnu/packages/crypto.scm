@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -477,6 +478,34 @@ utility as a demonstration of the @code{scrypt} key derivation function.
 @code{Scrypt} is designed to be far more resistant against hardware brute-force
 attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
     (license license:bsd-2)))
+
+(define-public libscrypt
+  (package
+    (name "libscrypt")
+    (version "1.21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/technion/libscrypt.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d76ys6cp7fi4ng1w3mz2l0p9dbr7ljbk33dcywyimzjz8bahdng"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://lolware.net/libscrypt.html")
+    (synopsis "Password hashing library")
+    (description "@code{libscrypt} implements @code{scrypt} key derivation
+function.  It is designed to be far more secure against hardware brute-force
+attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
+    (license license:bsd-3)))
 
 (define-public perl-math-random-isaac-xs
   (package

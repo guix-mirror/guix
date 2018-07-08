@@ -32,6 +32,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gimp)
@@ -1171,7 +1173,28 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
      "This package contains the game data of GNU Freedink.")
     (license license:gpl3+)))
 
-;; TODO: Add freedink-dfarc when there's a wxWidgets package.
+(define-public freedink-dfarc
+  (package
+    (name "freedink-dfarc")
+    (version "3.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/freedink/dfarc-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1yp8n3w426xnlp10xk06vfi2y3k9xrcfyck7s7qs1v0ys7n284d5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("wxwidgets" ,wxwidgets)))
+    (home-page "https://www.gnu.org/software/freedink/")
+    (synopsis "Front-end for managing and playing Dink Modules")
+    (description "DFArc makes it easy to play and manage the GNU FreeDink game
+and its numerous D-Mods.")
+    (license license:gpl3+)))
 
 (define-public freedink
   ;; This is a wrapper that tells the engine where to find the data.
@@ -2299,7 +2322,7 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.1.1")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -2307,11 +2330,12 @@ Transport Tycoon Deluxe.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1bahkzlf9k92cc4zs4nk4wy59323kiw8d3wm0vjps3kp7iznqyjx"))
+         "1yrbjra27n2xxb1x47v962lc3qi8gwm5ws4f97952nvn533zrwxz"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DDOWNLOAD_TITLE_SEQUENCES=OFF")
+     `(#:configure-flags (list "-DDOWNLOAD_OBJECTS=OFF"
+                               "-DDOWNLOAD_TITLE_SEQUENCES=OFF")
        #:tests? #f ; Tests require network.
        #:phases
         (modify-phases %standard-phases
@@ -2320,14 +2344,23 @@ Transport Tycoon Deluxe.")
               (let ((titles (assoc-ref inputs "openrct2-title-sequences"))
                     (objects (assoc-ref inputs "openrct2-objects")))
               ;; Fix some references to /usr/share.
-              ;; Change to Platform.Linux.cpp on 0.1.2+
-              (substitute* "src/openrct2/platform/linux.c"
+              (substitute* "src/openrct2/platform/Platform.Linux.cpp"
                 (("/usr/share")
                  (string-append (assoc-ref %outputs "out") "/share")))
               (copy-recursively (string-append titles
                                 "/share/openrct2/title-sequences") "data/title")
               (copy-recursively (string-append objects
-                                "/share/openrct2/objects") "data/object")))))))
+                                "/share/openrct2/objects") "data/object"))))
+          (add-before 'configure 'fixgcc7
+             (lambda _
+               (unsetenv "C_INCLUDE_PATH")
+               (unsetenv "CPLUS_INCLUDE_PATH")
+               #t))
+          (add-after 'fixgcc7 'get-rid-of-errors
+            (lambda _
+              ;; Don't treat warnings as errors.
+              (substitute* "CMakeLists.txt"
+                (("-Werror") "")))))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
@@ -2343,7 +2376,8 @@ Transport Tycoon Deluxe.")
               ("speexdsp" ,speexdsp)
               ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gcc" ,gcc-7)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/OpenRCT2/OpenRCT2")
     (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
     (description "OpenRCT2 is a free software re-implementation of
@@ -3198,16 +3232,17 @@ programmers may also add their own favorite language.")
 (define-public bambam
   (package
     (name "bambam")
-    (version "0.5")
+    (version "0.6")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/porridge/bambam/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/porridge/bambam")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "10w110mjdwbvddzihh9rganvvjr5jfiz8cs9n7w12zndwwcc3ria"))))
+          "08hcd0gzia3pz7fzk4pqc5kbq1074j4q0jcmbpgvr7n623nj2xa5"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -3880,7 +3915,8 @@ settings.link.libs:Add(\"wavpack\")\n"))
        ("zlib" ,zlib)))
     (native-inputs
      `(("bam" ,bam)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.teeworlds.com")
     (synopsis "2D retro multiplayer shooter game")
     (description "Teeworlds is an online multiplayer game.  Battle with up to
@@ -4610,7 +4646,8 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                         #t))))
        ,@(strip-keyword-arguments '(#:make-flags #:phases)
                                   (package-arguments quakespasm))))
-    (inputs `(("vulkan-loader" ,vulkan-loader)
+    (inputs `(("vulkan-headers" ,vulkan-headers)
+              ("vulkan-loader" ,vulkan-loader)
               ,@(package-inputs quakespasm)))
     (description "vkquake is a modern engine for id software's Quake 1.
 It includes support for 64 bit CPUs, custom music playback, a new sound driver,
