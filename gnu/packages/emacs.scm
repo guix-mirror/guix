@@ -4235,6 +4235,46 @@ with @code{font-lock-mode} or @code{global-font-lock-mode}), automatic
 indentation and filling of comments and C preprocessor fontification.")
     (license license:gpl3+)))
 
+(define-public emacs-tide
+  (package
+    (name "emacs-tide")
+    (version "2.8.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ananthakumaran/tide"
+                                  "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1k0kzqiv1hfs0kqm37947snzhrsmand3i9chvm6a2r5lb8v9q47y"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)
+       ("emacs-flycheck" ,flycheck)
+       ("emacs-typescript-mode" ,emacs-typescript-mode)))
+    (home-page "https://github.com/ananthakumaran/tide")
+    (synopsis "Typescript IDE for Emacs")
+    (description
+     "Tide is an Interactive Development Environment (IDE) for Emacs which
+provides the following features:
+
+@itemize
+@item ElDoc
+@item Auto complete
+@item Flycheck
+@item Jump to definition, Jump to type definition
+@item Find occurrences
+@item Rename symbol
+@item Imenu
+@item Compile On Save
+@item Highlight Identifiers
+@item Code Fixes
+@item Code Refactor
+@item Organize Imports
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public emacs-markdown-mode
   (package
     (name "emacs-markdown-mode")
