@@ -430,9 +430,8 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
              #t))
          (replace 'check
            (lambda _
-             (zero?
-              (system* "make" "ARGS=-E 'unit_tests|libwallet_api_tests'"
-                       "test"))))
+             (invoke "make" "ARGS=-E 'unit_tests|libwallet_api_tests'"
+                     "test")))
          ;; The excluded unit tests need network access
          (add-after 'check 'unit-tests
            (lambda _
@@ -445,10 +444,9 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
                        "DNSResolver.DNSSECFailure"
                        "DNSResolver.GetTXTRecord")
                      ":")))
-               (zero?
-                (system* "tests/unit_tests/unit_tests"
-                         (string-append "--gtest_filter=-"
-                                        excluded-unit-tests))))))
+               (invoke "tests/unit_tests/unit_tests"
+                       (string-append "--gtest_filter=-"
+                                      excluded-unit-tests)))))
          (add-after 'install 'install-blockchain-import-export
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
