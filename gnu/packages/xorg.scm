@@ -3214,6 +3214,7 @@ This driver is intended for ATI Rage 128 based cards.")
                "mirror://xorg/individual/driver/xf86-video-savage-"
                version
                ".tar.bz2"))
+        (patches (search-patches "xf86-video-savage-xorg-compat.patch"))
         (sha256
           (base32
            "11pcrsdpdrwk0mrgv83s5nsx8a9i4lhmivnal3fjbrvi3zdw94rc"))))

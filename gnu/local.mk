@@ -1214,6 +1214,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
   %D%/packages/patches/xf86-video-i128-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
+  %D%/packages/patches/xf86-video-savage-xorg-compat.patch 	\
   %D%/packages/patches/xf86-video-siliconmotion-fix-ftbfs.patch \
   %D%/packages/patches/xf86-video-sis-xorg-compat.patch 	\
   %D%/packages/patches/xf86-video-tga-remove-mibstore.patch	\
