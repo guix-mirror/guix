@@ -39,6 +39,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages dns)
@@ -51,6 +52,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
@@ -367,25 +369,18 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.11.1.0")
+    (version "0.12.3.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/monero-project/monero/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/monero-project/monero")
+             (commit (string-append "v" version))))
        (file-name (string-append name "-" version ".tar.gz"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Delete bundled dependencies.
-           (for-each
-            delete-file-recursively
-            '("external/miniupnpc" "external/rapidjson"
-              "external/unbound"))
-           #t))
+       (patches (search-patches "monero-use-system-miniupnpc.patch"))
        (sha256
         (base32
-         "16shd834025jyzy68h3gag1sz8vbk875hy4j97hrki8pacz8vd5m"))))
+         "14db9kgjm2ha93c2x5fjdw01xaqshn756qr3x2cnzyyjh7caz5qd"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -395,15 +390,19 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
     (inputs
      `(("bind" ,isc-bind)
        ("boost" ,boost)
+       ("zeromq" ,zeromq)
+       ("cppzmq" ,cppzmq)
        ("expat" ,expat)
+       ("libsodium" ,libsodium)
        ("libunwind" ,libunwind)
        ("lmdb" ,lmdb)
-       ("miniupnpc" ,miniupnpc)
+       ("miniupnpc" ,monero-miniupnpc)
        ("openssl" ,openssl)
        ("rapidjson" ,rapidjson)
        ("unbound" ,unbound)))
     (arguments
      `(#:out-of-source? #t
+       #:build-type "release"
        #:configure-flags '("-DBUILD_TESTS=ON"
                            ,@(if (string=? "aarch64-linux" (%current-system))
                                  '("-DARCH=armv8-a")
