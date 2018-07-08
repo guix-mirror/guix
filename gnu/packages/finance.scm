@@ -460,15 +460,15 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
 Monero command line client and daemon.")
     (license license:bsd-3)))
 
-(define-public monero-core
+(define-public monero-gui
   (package
-    (name "monero-core")
+    (name "monero-gui")
     (version "0.12.2.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/monero-project/monero-core")
+             (url "https://github.com/monero-project/monero-gui")
              (commit (string-append "v" version))))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
@@ -536,6 +536,9 @@ Monero command line client and daemon.")
      "Monero is a secure, private, untraceable currency.  This package provides the
 Monero GUI client.")
     (license license:bsd-3)))
+
+(define-public monero-core
+  (deprecated-package "monero-core" monero-gui))
 
 (define-public python-trezor-agent
   (package
