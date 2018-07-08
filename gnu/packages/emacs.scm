@@ -4182,6 +4182,32 @@ errors and strict-mode warnings, smart line-wrapping within comments and
 strings, and code folding.")
     (license license:gpl3+)))
 
+(define-public emacs-nodejs-repl
+  (package
+    (name "emacs-nodejs-repl")
+    (version "0.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/abicky/nodejs-repl.el"
+                                  "/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sphg1jxi3a5l0gqdp27d0qgyjaiq2p293av9zm8ksm0vwqp3fr9"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/abicky/nodejs-repl.el")
+    (synopsis "Node.js REPL inside Emacs")
+    (description
+     "This program is derived from comint-mode and provides the following
+features:
+
+@itemize
+@item TAB completion same as Node.js REPL
+@item file name completion in string
+@item incremental history search
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public emacs-markdown-mode
   (package
     (name "emacs-markdown-mode")
