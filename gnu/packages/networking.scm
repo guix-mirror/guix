@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -314,6 +315,35 @@ more.")
      "czmq provides bindings for the ØMQ core API that hides the differences
 between different versions of ØMQ.")
     (license license:mpl2.0)))
+
+(define-public cppzmq
+  (let ((revision "0")
+        (commit "d9f0f016c07046742738c65e1eb84722ae32d7d4"))
+    (package
+      (name "cppzmq")
+      (version (string-append "4.2.2-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/zeromq/cppzmq")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1gmqlm00y6xpa5m6d4ajq3ww63n2w7h4sy997wj81vcqmqx45b1f"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system cmake-build-system)
+      (arguments '(#:tests? #f)) ; No tests.
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("zeromq" ,zeromq)))
+      (home-page "http://zeromq.org")
+      (synopsis "C++ bindings for the ØMQ messaging library")
+      (description
+       "This package provides header-only C++ bindings for ØMQ.  The header
+files contain direct mappings of the abstractions provided by the ØMQ C API.")
+      (license license:expat))))
 
 (define-public librdkafka
   (package
