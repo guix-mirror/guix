@@ -21357,7 +21357,7 @@ example graph.
 @cindex virtual machine
 To run GuixSD in a virtual machine (VM), one can either use the
 pre-built GuixSD VM image distributed at
-@indicateurl{ftp://alpha.gnu.org/guix/guixsd-vm-image-@value{VERSION}.@var{system}.tar.xz}
+@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-vm-image-@value{VERSION}.@var{system}.xz}
 , or build their own virtual machine image using @command{guix system
 vm-image} (@pxref{Invoking guix system}).  The returned image is in
 qcow2 format, which the @uref{http://qemu.org/, QEMU emulator} can
