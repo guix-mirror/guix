@@ -15654,11 +15654,11 @@ Specify the path of the base URL.  This can be useful if
 
 @cindex prometheus-node-exporter
 The Prometheus ``node exporter'' makes hardware and operating system statistics
-provided by the Linux kernel available for the Prometheus monitoring system. 
+provided by the Linux kernel available for the Prometheus monitoring system.
 This service should be deployed on all physical nodes and virtual machines,
-where monitoring these statistics is desirable. 
+where monitoring these statistics is desirable.
 
-@defvr {Scheme variable} prometheus-node-exporter-service-type
+@defvar {Scheme variable} prometheus-node-exporter-service-type
 This is the service type for the
 @uref{https://github.com/prometheus/node_exporter/, prometheus-node-exporter}
 service, its value must be a @code{prometheus-node-exporter-configuration}
