@@ -91,6 +91,7 @@
             manifest-lookup
             manifest-installed?
             manifest-matching-entries
+            manifest-search-paths
 
             manifest-transaction
             manifest-transaction?
@@ -544,6 +545,14 @@ no match.."
          predicates))
 
   (filter matches? (manifest-entries manifest)))
+
+(define (manifest-search-paths manifest)
+  "Return the list of search path specifications that apply to MANIFEST,
+including the search path specification for $PATH."
+  (delete-duplicates
+   (cons $PATH
+         (append-map manifest-entry-search-paths
+                     (manifest-entries manifest)))))
 
 
 ;;;
@@ -1367,8 +1376,7 @@ are cross-built for TARGET."
               (map sexp->search-path-specification
                    (delete-duplicates
                     '#$(map search-path-specification->sexp
-                            (append-map manifest-entry-search-paths
-                                        (manifest-entries manifest))))))
+                            (manifest-search-paths manifest)))))
 
             (build-profile #$output '#$inputs
                            #:symlink #$(if relative-symlinks?
