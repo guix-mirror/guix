@@ -2132,7 +2132,7 @@ editors, IDEs, etc.")
                    (replace 'bootstrap
                     (lambda _
                       (setenv "NOCONFIGURE" "true")
-                      (zero? (system* "sh" "autogen.sh")))))))
+                      (invoke "sh" "autogen.sh"))))))
   (synopsis "Enhanced VTE terminal widget")
   (description
    "VTE is a library (libvte) implementing a terminal emulator widget for
