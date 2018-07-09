@@ -110,6 +110,7 @@
             ca-certificate-bundle
             %default-profile-hooks
             profile-derivation
+            profile-search-paths
 
             generation-number
             generation-numbers
@@ -1399,6 +1400,19 @@ are cross-built for TARGET."
                       ;; connection to the substitute server, which is likely
                       ;; to have no substitute to offer.
                       #:substitutable? #f)))
+
+(define* (profile-search-paths profile
+                               #:optional (manifest (profile-manifest profile))
+                               #:key (getenv (const #f)))
+  "Read the manifest of PROFILE and evaluate the values of search path
+environment variables required by PROFILE; return a list of
+specification/value pairs.  If MANIFEST is not #f, it is assumed to be the
+manifest of PROFILE, which avoids rereading it.
+
+Use GETENV to determine the current settings and report only settings not
+already effective."
+  (evaluate-search-paths (manifest-search-paths manifest)
+                         (list profile) getenv))
 
 (define (profile-regexp profile)
   "Return a regular expression that matches PROFILE's name and number."

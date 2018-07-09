@@ -49,11 +49,6 @@
   #:use-module (srfi srfi-98)
   #:export (guix-environment))
 
-(define (evaluate-profile-search-paths profile search-paths)
-  "Evaluate SEARCH-PATHS, a list of search-path specifications, for the
-directories in PROFILE, the store path of a profile."
-  (evaluate-search-paths search-paths (list profile)))
-
 ;; Protect some env vars from purification.  Borrowed from nix-shell.
 (define %precious-variables
   '("HOME" "USER" "LOGNAME" "DISPLAY" "TERM" "TZ" "PAGER"))
@@ -70,8 +65,8 @@ as 'HOME' and 'USER' are left untouched."
                       (((names . _) ...)
                        names)))))
 
-(define (create-environment profile paths pure?)
-  "Set the environment variables specified by PATHS for PROFILE.  When PURE?
+(define* (create-environment profile manifest #:key pure?)
+  "Set the environment variables specified by MANIFEST for PROFILE.  When PURE?
 is #t, unset the variables in the current environment.  Otherwise, augment
 existing environment variables with additional search paths."
   (when pure? (purify-environment))
@@ -84,23 +79,23 @@ existing environment variables with additional search paths."
                                  (string-append value separator current)
                                  value)
                              value)))))
-            (evaluate-profile-search-paths profile paths))
+            (profile-search-paths profile manifest))
 
   ;; Give users a way to know that they're in 'guix environment', so they can
   ;; adjust 'PS1' accordingly, for instance.  Set it to PROFILE so users can
   ;; conveniently access its contents.
   (setenv "GUIX_ENVIRONMENT" profile))
 
-(define (show-search-paths profile search-paths pure?)
-  "Display SEARCH-PATHS applied to PROFILE.  When PURE? is #t, do not augment
-existing environment variables with additional search paths."
+(define* (show-search-paths profile manifest #:key pure?)
+  "Display the search paths of MANIFEST applied to PROFILE.  When PURE? is #t,
+do not augment existing environment variables with additional search paths."
   (for-each (match-lambda
               ((search-path . value)
                (display
                 (search-path-definition search-path value
                                         #:kind (if pure? 'exact 'prefix)))
                (newline)))
-            (evaluate-profile-search-paths profile search-paths)))
+            (profile-search-paths profile manifest)))
 
 (define (input->manifest-entry input)
   "Return a manifest entry for INPUT, or #f if INPUT does not correspond to a
@@ -379,32 +374,34 @@ and suitable for 'exit'."
 (define exit/status (compose exit status->exit-code))
 (define primitive-exit/status (compose primitive-exit status->exit-code))
 
-(define (launch-environment command inputs paths pure?)
+(define* (launch-environment command profile manifest
+                             #:key pure?)
   "Run COMMAND in a new environment containing INPUTS, using the native search
 paths defined by the list PATHS.  When PURE?, pre-existing environment
 variables are cleared before setting the new ones."
   ;; Properly handle SIGINT, so pressing C-c in an interactive terminal
   ;; application works.
   (sigaction SIGINT SIG_DFL)
-  (create-environment inputs paths pure?)
+  (create-environment profile manifest #:pure? pure?)
   (match command
     ((program . args)
      (apply execlp program program args))))
 
-(define (launch-environment/fork command inputs paths pure?)
-  "Run COMMAND in a new process with an environment containing INPUTS, using
-the native search paths defined by the list PATHS.  When PURE?, pre-existing
-environment variables are cleared before setting the new ones."
+(define* (launch-environment/fork command profile manifest #:key pure?)
+  "Run COMMAND in a new process with an environment containing PROFILE, with
+the search paths specified by MANIFEST.  When PURE?, pre-existing environment
+variables are cleared before setting the new ones."
   (match (primitive-fork)
-    (0 (launch-environment command inputs paths pure?))
+    (0 (launch-environment command profile manifest
+                           #:pure? pure?))
     (pid (match (waitpid pid)
            ((_ . status) status)))))
 
 (define* (launch-environment/container #:key command bash user user-mappings
-                                       profile paths link-profile? network?)
+                                       profile manifest link-profile? network?)
   "Run COMMAND within a container that features the software in PROFILE.
-Environment variables are set according to PATHS, a list of native search
-paths.  The global shell is BASH, a file name for a GNU Bash binary in the
+Environment variables are set according to the search paths of MANIFEST.
+The global shell is BASH, a file name for a GNU Bash binary in the
 store.  When NETWORK?, access to the host system network is permitted.
 USER-MAPPINGS, a list of file system mappings, contains the user-specified
 host file systems to mount inside the container.  If USER is not #f, each
@@ -496,7 +493,7 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
             (primitive-exit/status
              ;; A container's environment is already purified, so no need to
              ;; request it be purified again.
-             (launch-environment command profile paths #f)))
+             (launch-environment command profile manifest #:pure? #f)))
           #:namespaces (if network?
                            (delq 'net %namespaces) ; share host network
                            %namespaces)))))))
@@ -654,8 +651,7 @@ message if any test fails."
                                '("/bin/sh")
                                (list %default-shell))))
            (manifest   (options/resolve-packages opts))
-           (mappings   (pick-all opts 'file-system-mapping))
-           (paths      (manifest-search-paths manifest)))
+           (mappings   (pick-all opts 'file-system-mapping)))
 
       (when container? (assert-container-features))
 
@@ -700,7 +696,7 @@ message if any test fails."
                  ((assoc-ref opts 'dry-run?)
                   (return #t))
                  ((assoc-ref opts 'search-paths)
-                  (show-search-paths profile paths pure?)
+                  (show-search-paths profile manifest #:pure? pure?)
                   (return #t))
                  (container?
                   (let ((bash-binary
@@ -713,11 +709,11 @@ message if any test fails."
                                                   #:user user
                                                   #:user-mappings mappings
                                                   #:profile profile
-                                                  #:paths paths
+                                                  #:manifest manifest
                                                   #:link-profile? link-prof?
                                                   #:network? network?)))
                  (else
                   (return
                    (exit/status
-                    (launch-environment/fork command profile
-                                             paths pure?)))))))))))))
+                    (launch-environment/fork command profile manifest
+                                             #:pure? pure?)))))))))))))
