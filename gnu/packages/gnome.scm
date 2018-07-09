@@ -2110,7 +2110,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.50.2.a")
+    (version "0.52.2.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -2125,11 +2125,10 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sv666ilid916ja6gw2d376nyyy66gvhsds8ans02x4b7gagj5sx"))))
+                "1fd65mk7c87k03vhnb2ixkjvv9nja04mfq813iyjji1b11f2sh7v"))))
     (arguments
-      `(#:configure-flags '("CXXFLAGS=-Wformat=0")
-        #:phases (modify-phases %standard-phases
-                   (replace 'bootstrap
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'bootstrap
                     (lambda _
                       (setenv "NOCONFIGURE" "true")
                       (invoke "sh" "autogen.sh"))))))
