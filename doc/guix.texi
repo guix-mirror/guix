@@ -430,7 +430,7 @@ Installing goes along these lines:
 @item
 @cindex downloading Guix binary
 Download the binary tarball from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz},
+@indicateurl{https://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz},
 where @var{system} is @code{x86_64-linux} for an @code{x86_64} machine
 already running the kernel Linux, and so on.
 
@@ -439,7 +439,7 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the tarball against it, along these lines:
 
 @example
-$ wget ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
+$ wget https://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
 $ gpg --verify guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
 @end example
 
@@ -8393,7 +8393,7 @@ about their support in GNU/Linux.
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz},
+@indicateurl{https://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz},
 where @var{system} is one of:
 
 @table @code
@@ -8409,7 +8409,7 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ wget https://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
 $ gpg --verify guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
 @end example
 
@@ -21357,7 +21357,7 @@ example graph.
 @cindex virtual machine
 To run GuixSD in a virtual machine (VM), one can either use the
 pre-built GuixSD VM image distributed at
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-vm-image-@value{VERSION}.@var{system}.xz}
+@indicateurl{https://alpha.gnu.org/gnu/guix/guixsd-vm-image-@value{VERSION}.@var{system}.xz}
 , or build their own virtual machine image using @command{guix system
 vm-image} (@pxref{Invoking guix system}).  The returned image is in
 qcow2 format, which the @uref{http://qemu.org/, QEMU emulator} can
