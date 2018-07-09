@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -102,35 +102,23 @@ existing environment variables with additional search paths."
                (newline)))
             (evaluate-profile-search-paths profile search-paths)))
 
-(define (strip-input-name input)
-  "Remove the name element from the tuple INPUT."
+(define (input->manifest-entry input)
+  "Return a manifest entry for INPUT, or #f if INPUT does not correspond to a
+package."
   (match input
-    ((_ package) package)
-    ((_ package output)
-     (list package output))))
-
-(define (package+propagated-inputs package output)
-  "Return the union of PACKAGE's OUTPUT and its transitive propagated inputs."
-  (cons (list package output)
-        (map strip-input-name
-             (package-transitive-propagated-inputs package))))
-
-(define (package-or-package+output? expr)
-  "Return #t if EXPR is a package or a 2 element list consisting of a package
-and an output string."
-  (match expr
-    ((or (? package?) ; bare package object
-         ((? package?) (? string?))) ; package+output tuple
-     #t)
-    (_ #f)))
+    ((_ (? package? package))
+     (package->manifest-entry package))
+    ((_ (? package? package) output)
+     (package->manifest-entry package output))
+    (_
+     #f)))
 
 (define (package-environment-inputs package)
-  "Return a list of the transitive input packages for PACKAGE."
+  "Return a list of manifest entries corresponding to the transitive input
+packages for PACKAGE."
   ;; Remove non-package inputs such as origin records.
-  (filter package-or-package+output?
-          (map strip-input-name
-               (bag-transitive-inputs
-                (package->bag package)))))
+  (filter-map input->manifest-entry
+              (bag-transitive-inputs (package->bag package))))
 
 (define (show-help)
   (display (G_ "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]
@@ -287,55 +275,50 @@ COMMAND or an interactive shell in that environment.\n"))
             (_ memo)))
         '() alist))
 
-(define (compact lst)
-  "Remove all #f elements from LST."
-  (filter identity lst))
-
 (define (options/resolve-packages opts)
-  "Return OPTS with package specification strings replaced by actual
-packages."
-  (define (package->output package mode)
-    (match package
-      ((? package?)
-       (list mode package "out"))
-      (((? package? package) (? string? output))
-       (list mode package output))))
+  "Return OPTS with package specification strings replaced by manifest entries
+for the corresponding packages."
+  (define (manifest-entry=? e1 e2)
+    (and (eq? (manifest-entry-item e1) (manifest-entry-item e2))
+         (string=? (manifest-entry-output e1)
+                   (manifest-entry-output e2))))
 
   (define (packages->outputs packages mode)
     (match packages
-      ((? package-or-package+output? package) ; single package
-       (list (package->output package mode)))
-      (((? package-or-package+output?) ...) ; many packages
-       (map (cut package->output <> mode) packages))))
+      ((? package? package)
+       (if (eq? mode 'ad-hoc-package)
+           (list (package->manifest-entry package))
+           (package-environment-inputs package)))
+      (((? package? package) (? string? output))
+       (if (eq? mode 'ad-hoc-package)
+           (list (package->manifest-entry package output))
+           (package-environment-inputs package)))
+      ((lst ...)
+       (append-map (cut packages->outputs <> mode) lst))))
 
-  (define (manifest->outputs manifest)
-    (map (lambda (entry)
-           (cons 'ad-hoc-package ; manifests are implicitly ad-hoc
-                 (if (package? (manifest-entry-item entry))
-                     (list (manifest-entry-item entry)
-                           (manifest-entry-output entry))
-                     ;; Direct store paths have no output.
-                     (list (manifest-entry-item entry)))))
-         (manifest-entries manifest)))
-
-  (compact
-   (append-map (match-lambda
-                 (('package mode (? string? spec))
-                  (let-values (((package output)
-                                (specification->package+output spec)))
-                    (list (list mode package output))))
-                 (('expression mode str)
-                  ;; Add all the outputs of the package STR evaluates to.
-                  (packages->outputs (read/eval str) mode))
-                 (('load mode file)
-                  ;; Add all the outputs of the package defined in FILE.
-                  (let ((module (make-user-module '())))
-                    (packages->outputs (load* file module) mode)))
-                 (('manifest . file)
-                  (let ((module (make-user-module '((guix profiles) (gnu)))))
-                    (manifest->outputs (load* file module))))
-                 (_ '(#f)))
-               opts)))
+  (manifest
+   (delete-duplicates
+    (append-map (match-lambda
+                  (('package 'ad-hoc-package (? string? spec))
+                   (let-values (((package output)
+                                 (specification->package+output spec)))
+                     (list (package->manifest-entry package output))))
+                  (('package 'package (? string? spec))
+                   (package-environment-inputs
+                    (specification->package+output spec)))
+                  (('expression mode str)
+                   ;; Add all the outputs of the package STR evaluates to.
+                   (packages->outputs (read/eval str) mode))
+                  (('load mode file)
+                   ;; Add all the outputs of the package defined in FILE.
+                   (let ((module (make-user-module '())))
+                     (packages->outputs (load* file module) mode)))
+                  (('manifest . file)
+                   (let ((module (make-user-module '((guix profiles) (gnu)))))
+                     (manifest-entries (load* file module))))
+                  (_ '()))
+                opts)
+    manifest-entry=?)))
 
 (define* (build-environment derivations opts)
   "Build the DERIVATIONS required by the environment using the build options
@@ -350,11 +333,10 @@ in OPTS."
           (return #f)
           (built-derivations derivations)))))
 
-(define (inputs->profile-derivation inputs system bootstrap?)
-  "Return the derivation for a profile consisting of INPUTS for SYSTEM.
-BOOTSTRAP?  specifies whether to use the bootstrap Guile to build the
-profile."
-  (profile-derivation (packages->manifest inputs)
+(define (manifest->derivation manifest system bootstrap?)
+  "Return the derivation for a profile of MANIFEST.
+BOOTSTRAP? specifies whether to use the bootstrap Guile to build the profile."
+  (profile-derivation manifest
                       #:system system
 
                       ;; Packages can have conflicting inputs, or explicit
@@ -671,25 +653,9 @@ message if any test fails."
                                ;; within the container.
                                '("/bin/sh")
                                (list %default-shell))))
-           (packages   (options/resolve-packages opts))
+           (manifest   (options/resolve-packages opts))
            (mappings   (pick-all opts 'file-system-mapping))
-           (inputs     (delete-duplicates
-                        (append-map (match-lambda
-                                      (('ad-hoc-package package output)
-                                       (package+propagated-inputs package
-                                                                  output))
-                                      (('package package _)
-                                       (package-environment-inputs package)))
-                                    packages)))
-           (paths      (delete-duplicates
-                        (cons $PATH
-                              (append-map (match-lambda
-                                            ((or ((? package? p) _ ...)
-                                                 (? package? p))
-                                             (package-native-search-paths p))
-                                            (_ '()))
-                                          inputs))
-                        eq?)))
+           (paths      (manifest-search-paths manifest)))
 
       (when container? (assert-container-features))
 
@@ -714,8 +680,8 @@ message if any test fails."
             (mlet* %store-monad ((bash       (environment-bash container?
                                                                bootstrap?
                                                                system))
-                                 (prof-drv   (inputs->profile-derivation
-                                              inputs system bootstrap?))
+                                 (prof-drv   (manifest->derivation
+                                              manifest system bootstrap?))
                                  (profile -> (derivation->output-path prof-drv))
                                  (gc-root -> (assoc-ref opts 'gc-root)))
 
