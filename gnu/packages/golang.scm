@@ -1840,3 +1840,30 @@ deliver content")
 store, and deliver content.  It's containe Docker Registry 2.0 and libraries
 to interacting with distribution components.")
       (license license:asl2.0))))
+
+(define-public go-github-com-docker-go-connections
+  (let ((commit "3ede32e2033de7505e6500d6c868c2b9ed9f169d")
+        (revision "0"))
+    (package
+      (name "go-github-com-docker-go-connections")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/docker/go-connections.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "0v1pkr8apwmhyzbjfriwdrs1ihlk6pw7izm57r24mf9jdmg3fyb0"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/docker/go-connections"))
+      (home-page "https://github.com/docker/go-connections")
+      (synopsis "Networking library for Go")
+      (description
+       "This packages provides a library to work with network connections in
+the Go language.  In particular it provides tools to deal with network address
+translation (NAT), proxies, sockets, and transport layer security (TLS).")
+      (license license:asl2.0))))
