@@ -166,6 +166,7 @@ Programming Interface
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
+* Invoking guix repl::          Fiddling with Guix interactively.
 
 Defining Packages
 
@@ -3267,6 +3268,7 @@ package definitions.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
+* Invoking guix repl::          Fiddling with Guix interactively.
 @end menu
 
 @node Defining Packages
@@ -5544,6 +5546,57 @@ corresponding to @var{obj} for @var{system}, cross-compiling for
 has an associated gexp compiler, such as a @code{<package>}.
 @end deffn
 
+@node Invoking guix repl
+@section Invoking @command{guix repl}
+
+@cindex REPL, read-eval-print loop
+The @command{guix repl} command spawns a Guile @dfn{read-eval-print loop}
+(REPL) for interactive programming (@pxref{Using Guile Interactively,,, guile,
+GNU Guile Reference Manual}).  Compared to just launching the @command{guile}
+command, @command{guix repl} guarantees that all the Guix modules and all its
+dependencies are available in the search path.  You can use it this way:
+
+@example
+$ guix repl
+scheme@@(guile-user)> ,use (gnu packages base)
+scheme@@(guile-user)> coreutils
+$1 = #<package coreutils@@8.29 gnu/packages/base.scm:327 3e28300>
+@end example
+
+@cindex inferiors
+In addition, @command{guix repl} implements a simple machine-readable REPL
+protocol for use by @code{(guix inferior)}, a facility to interact with
+@dfn{inferiors}, separate processes running a potentially different revision
+of Guix.
+
+The available options are as follows:
+
+@table @code
+@item --type=@var{type}
+@itemx -t @var{type}
+Start a REPL of the given @var{TYPE}, which can be one of the following:
+
+@table @code
+@item guile
+This is default, and it spawns a standard full-featured Guile REPL.
+@item machine
+Spawn a REPL that uses the machine-readable protocol.  This is the protocol
+that the @code{(guix inferior)} module speaks.
+@end table
+
+@item --listen=@var{endpoint}
+By default, @command{guix repl} reads from standard input and writes to
+standard output.  When this option is passed, it will instead listen for
+connections on @var{endpoint}.  Here are examples of valid options:
+
+@table @code
+@item --listen=tcp:37146
+Accept connections on localhost on port 37146.
+
+@item --listen=unix:/tmp/socket
+Accept connections on the Unix-domain socket @file{/tmp/socket}.
+@end table
+@end table
 
 @c *********************************************************************
 @node Utilities
