@@ -28,7 +28,9 @@
   #:use-module (guix profiles)
   #:use-module (guix gexp)
   #:use-module (guix grafts)
+  #:use-module (guix memoization)
   #:use-module (guix monads)
+  #:autoload   (guix inferior) (open-inferior)
   #:use-module (guix scripts build)
   #:autoload   (guix self) (whole-package)
   #:autoload   (gnu packages ssh) (guile-ssh)
@@ -45,9 +47,11 @@
   #:use-module ((gnu packages certs) #:select (le-certs))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:export (guix-pull))
 
 (module-autoload! (resolve-module '(guix scripts pull))
@@ -289,6 +293,7 @@ certificates~%"))
 (define (display-profile-content profile number)
   "Display the packages in PROFILE, generation NUMBER, in a human-readable
 way and displaying details about the channel's source code."
+  (display-generation profile number)
   (for-each (lambda (entry)
               (format #t "  ~a ~a~%"
                       (manifest-entry-name entry)
@@ -310,6 +315,85 @@ way and displaying details about the channel's source code."
              (manifest-entries
               (profile-manifest (generation-file-name profile number))))))
 
+(define (indented-string str indent)
+  "Return STR with each newline preceded by IDENT spaces."
+  (define indent-string
+    (make-list indent #\space))
+
+  (list->string
+   (string-fold-right (lambda (chr result)
+                        (if (eqv? chr #\newline)
+                            (cons chr (append indent-string result))
+                            (cons chr result)))
+                      '()
+                      str)))
+
+(define profile-package-alist
+  (mlambda (profile)
+    "Return a name/version alist representing the packages in PROFILE."
+    (fold (lambda (package lst)
+            (alist-cons (inferior-package-name package)
+                        (inferior-package-version package)
+                        lst))
+          '()
+          (let* ((inferior (open-inferior profile))
+                 (packages (inferior-packages inferior)))
+            (close-inferior inferior)
+            packages))))
+
+(define (display-new/upgraded-packages alist1 alist2)
+  "Given the two package name/version alists ALIST1 and ALIST2, display the
+list of new and upgraded packages going from ALIST1 to ALIST2."
+  (let* ((old      (fold (match-lambda*
+                           (((name . version) table)
+                            (vhash-cons name version table)))
+                         vlist-null
+                         alist1))
+         (new      (remove (match-lambda
+                             ((name . _)
+                              (vhash-assoc name old)))
+                           alist2))
+         (upgraded (filter-map (match-lambda
+                                 ((name . new-version)
+                                  (match (vhash-fold* cons '() name old)
+                                    (() #f)
+                                    ((= (cut sort <> version>?) old-versions)
+                                     (and (version>? new-version
+                                                     (first old-versions))
+                                          (string-append name "@"
+                                                         new-version))))))
+                               alist2)))
+    (match (length new)
+      (0 #t)
+      (count
+       (format #t (N_ "  ~h new package: ~a~%"
+                      "  ~h new packages: ~a~%" count)
+               count
+               (indented-string
+                (fill-paragraph (string-join (sort (map first new) string<?)
+                                             ", ")
+                                (- (%text-width) 4) 30)
+                4))))
+    (match (length upgraded)
+      (0 #t)
+      (count
+       (format #t (N_ "  ~h package upgraded: ~a~%"
+                      "  ~h packages upgraded: ~a~%" count)
+               count
+               (indented-string
+                (fill-paragraph (string-join (sort upgraded string<?) ", ")
+                                (- (%text-width) 4) 35)
+                4))))))
+
+(define (display-profile-content-diff profile gen1 gen2)
+  "Display the changes in PROFILE GEN2 compared to generation GEN1."
+  (define (package-alist generation)
+    (profile-package-alist (generation-file-name profile generation)))
+
+  (display-profile-content profile gen2)
+  (display-new/upgraded-packages (package-alist gen1)
+                                 (package-alist gen2)))
+
 (define (process-query opts)
   "Process any query specified by OPTS."
   (define profile
@@ -317,29 +401,32 @@ way and displaying details about the channel's source code."
 
   (match (assoc-ref opts 'query)
     (('list-generations pattern)
-     (define (list-generation display-function number)
-       (unless (zero? number)
-         (display-generation profile number)
-         (display-function profile number)
-         (newline)))
+     (define (list-generations profile numbers)
+       (match numbers
+         ((first rest ...)
+          (display-profile-content profile first)
+          (let loop ((numbers numbers))
+            (match numbers
+              ((first second rest ...)
+               (display-profile-content-diff profile
+                                             first second)
+               (loop (cons second rest)))
+              ((_) #t)
+              (()  #t))))))
 
      (leave-on-EPIPE
       (cond ((not (file-exists? profile))         ; XXX: race condition
              (raise (condition (&profile-not-found-error
                                 (profile profile)))))
             ((string-null? pattern)
-             (for-each (lambda (generation)
-                         (list-generation display-profile-content generation))
-                       (profile-generations profile)))
+             (list-generations profile (profile-generations profile)))
             ((matching-generations pattern profile)
              =>
              (match-lambda
                (()
                 (exit 1))
                ((numbers ...)
-                (for-each (lambda (generation)
-                            (list-generation display-profile-content generation))
-                          numbers)))))))))
+                (list-generations profile numbers)))))))))
 
 
 (define (guix-pull . args)

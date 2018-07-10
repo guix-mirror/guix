@@ -2786,12 +2786,18 @@ Generation 2	Jun 11 2018 11:02:49
     repository URL: https://git.savannah.gnu.org/git/guix.git
     branch: origin/master
     commit: e0cc7f669bec22c37481dd03a7941c7d11a64f1d
+  2 new packages: keepalived, libnfnetlink
+  6 packages upgraded: emacs-nix-mode@@2.0.4,
+    guile2.0-guix@@0.14.0-12.77a1aac, guix@@0.14.0-12.77a1aac,
+    heimdal@@7.5.0, milkytracker@@1.02.00, nix@@2.0.4
 
 Generation 3	Jun 13 2018 23:31:07	(current)
   guix 844cc1c
     repository URL: https://git.savannah.gnu.org/git/guix.git
     branch: origin/master
     commit: 844cc1c8f394f03b404c5bb3aee086922373490c
+  28 new packages: emacs-helm-ls-git, emacs-helm-mu, @dots{}
+  69 packages upgraded: borg@@1.1.6, cheese@@3.28.0, @dots{}
 @end example
 
 This @code{~/.config/guix/current} profile works like any other profile
