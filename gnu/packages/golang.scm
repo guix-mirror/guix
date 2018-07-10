@@ -1894,3 +1894,31 @@ translation (NAT), proxies, sockets, and transport layer security (TLS).")
 hosting providers, and inside your data center.  It creates servers, installs
 Docker on them, then configures the Docker client to talk to them.")
       (license license:asl2.0))))
+
+(define-public go-github-com-gorhill-cronexpr
+  (let ((commit "f0984319b44273e83de132089ae42b1810f4933b")
+        (revision "0"))
+    (package
+      (name "go-github-com-gorhill-cronexpr")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gorhill/cronexpr.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0dphhhqy3i7265znv3m8n57l80dmaq6z4hsj5kgd87qd19z8x0l2"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gorhill/cronexpr"))
+      (home-page "https://github.com/gorhill/cronexpr")
+      (synopsis "Cron expression parser in the Go language")
+      (description
+       "This package provides a cron expression parser in the Go language.
+Given a cron expression and a time stamp, you can get the next time stamp
+which satisfies the cron expression.")
+      (license (list license:gpl3+
+                     license:asl2.0)))))
