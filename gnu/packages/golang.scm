@@ -1947,3 +1947,31 @@ which satisfies the cron expression.")
       (description
        "This package provides a test library for the Go language.")
       (license license:asl2.0))))
+
+(define-public go-gopkg-in-yaml-v2
+  (let ((commit "14227de293ca979cf205cd88769fe71ed96a97e2")
+        (revision "0"))
+    (package
+      (name "go-gopkg-in-yaml-v2")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://gopkg.in/yaml.v2.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "038hnrjcnjygyi3qidfrkpkakis82qg381sr495d2s40g2dwlzah"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/yaml.v2"))
+      (native-inputs
+       `(("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
+      (home-page "https://gopkg.in/yaml.v2")
+      (synopsis "YAML reader and writer for the Go language")
+      (description
+       "This package provides a Go library for encode and decode YAML
+values.")
+      (license license:asl2.0))))
