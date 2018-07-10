@@ -6508,7 +6508,7 @@ Moka")
   (package
     (inherit faba-icon-theme)
     (name "moka-icon-theme")
-    (version "5.3.6")
+    (version "5.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/moka-project"
@@ -6517,7 +6517,7 @@ Moka")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04axinv79qnngsxkwqzi5j9lc3hn24rjqps5ai8d42pdnfaf0x37"))))
+                "1nbwdjj268hxv9lfagd9aylily9f0hhallp841v0i3imljp84bmk"))))
     (propagated-inputs
      ;; Moka is based on Faba by using it as a fallback icon set instead of
      ;; bundling it, so we need to add it as a propagated input.
