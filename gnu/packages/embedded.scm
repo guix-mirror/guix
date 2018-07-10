@@ -1008,7 +1008,12 @@ SPI, I2C, JTAG.")
                             "loadtools/defpath.c"
                             "loadtools/Makefile"
                             "miscutil/c139explore"
-                            "miscutil/pirexplore")
+                            "miscutil/pirexplore"
+                            "ffstools/tiffs-wrappers/installpath.c"
+                            "rvinterf/rvtat/launchrvif.c"
+                            "rvinterf/etmsync/launchrvif.c"
+                            "rvinterf/libasync/launchrvif.c"
+                            "uptools/atcmd/atinterf.c")
                (("/opt/freecalypso/loadtools")
                 (string-append (assoc-ref outputs "out") "/lib/freecalypso/loadtools"))
                (("/opt/freecalypso")
