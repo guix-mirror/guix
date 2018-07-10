@@ -30,6 +30,7 @@
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
+;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6467,7 +6468,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
 (define-public faba-icon-theme
   (package
     (name "faba-icon-theme")
-    (version "4.1.2")
+    (version "4.3")
     (source
      (origin
        (method url-fetch)
@@ -6476,7 +6477,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hi2dl627ayfnihn3v6x9xzid668m4hp098hb7hrkxvahh4h9by7"))))
+         "18ln06xl60qzvzz61zq9q72hdbfgjsza3flph8i2asyzx3dffz68"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
