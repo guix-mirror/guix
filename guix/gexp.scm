@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix derivations)
   #:use-module (guix grafts)
   #:use-module (guix utils)
+  #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
@@ -334,7 +336,7 @@ appears."
   (%plain-file name content references)
   plain-file?
   (name        plain-file-name)                   ;string
-  (content     plain-file-content)                ;string
+  (content     plain-file-content)                ;string or bytevector
   (references  plain-file-references))            ;list (currently unused)
 
 (define (plain-file name content)
@@ -349,8 +351,10 @@ This is the declarative counterpart of 'text-file'."
 (define-gexp-compiler (plain-file-compiler (file <plain-file>) system target)
   ;; "Compile" FILE by adding it to the store.
   (match file
-    (($ <plain-file> name content references)
-     (text-file name content references))))
+    (($ <plain-file> name (and (? string?) content) references)
+     (text-file name content references))
+    (($ <plain-file> name (and (? bytevector?) content) references)
+     (binary-file name content references))))
 
 (define-record-type <computed-file>
   (%computed-file name gexp guile options)

@@ -5355,7 +5355,7 @@ procedure (@pxref{The Store Monad, @code{interned-file}}).
 
 @deffn {Scheme Procedure} plain-file @var{name} @var{content}
 Return an object representing a text file called @var{name} with the given
-@var{content} (a string) to be added to the store.
+@var{content} (a string or a bytevector) to be added to the store.
 
 This is the declarative counterpart of @code{text-file}.
 @end deffn
