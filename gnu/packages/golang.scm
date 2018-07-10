@@ -1867,3 +1867,30 @@ to interacting with distribution components.")
 the Go language.  In particular it provides tools to deal with network address
 translation (NAT), proxies, sockets, and transport layer security (TLS).")
       (license license:asl2.0))))
+
+(define-public go-github-com-docker-machine
+  (let ((commit "7b7a141da84480342357c51838be142bf183b095")
+        (revision "0"))
+    (package
+      (name "go-github-com-docker-machine")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/docker/machine.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0bavk0lvs462yh0lnmnxi9psi5qv1x3nvzmd2b0drsahlp1gxi8s"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/docker/machine"))
+      (home-page "https://github.com/docker/machine")
+      (synopsis "Machine management for a container-centric world")
+      (description
+       "@dfn{Machine} lets you create Docker hosts on your computer, on
+hosting providers, and inside your data center.  It creates servers, installs
+Docker on them, then configures the Docker client to talk to them.")
+      (license license:asl2.0))))
