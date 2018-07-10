@@ -1922,3 +1922,28 @@ Given a cron expression and a time stamp, you can get the next time stamp
 which satisfies the cron expression.")
       (license (list license:gpl3+
                      license:asl2.0)))))
+
+(define-public go-gopkg-in-check-v1
+  (let ((commit "20d25e2804050c1cd24a7eea1e7a6447dd0e74ec")
+        (revision "0"))
+    (package
+      (name "go-gopkg-in-check-v1")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/go-check/check")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0k1m83ji9l1a7ng8a7v40psbymxasmssbrrhpdv2wl4rhs0nc3np"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/check.v1"))
+      (home-page "https://gopkg.in/check.v1")
+      (synopsis "Test framework for the Go language")
+      (description
+       "This package provides a test library for the Go language.")
+      (license license:asl2.0))))
