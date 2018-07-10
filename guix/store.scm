@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +78,7 @@
             add-data-to-store
             add-text-to-store
             add-to-store
+            binary-file
             build-things
             build
             query-failed-paths
@@ -1362,7 +1364,18 @@ taking the store as its first argument."
 ;; Store monad operators.
 ;;
 
-(define* (text-file name text
+(define* (binary-file name
+                      data ;bytevector
+                      #:optional (references '()))
+  "Return as a monadic value the absolute file name in the store of the file
+containing DATA, a bytevector.  REFERENCES is a list of store items that the
+resulting text file refers to; it defaults to the empty list."
+  (lambda (store)
+    (values (add-data-to-store store name data references)
+            store)))
+
+(define* (text-file name
+                    text ;string
                     #:optional (references '()))
   "Return as a monadic value the absolute file name in the store of the file
 containing TEXT, a string.  REFERENCES is a list of store items that the

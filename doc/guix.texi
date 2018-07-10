@@ -27,7 +27,7 @@ Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nils Gillmann@*
-Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
+Copyright @copyright{} 2016, 2017, 2018 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017, 2018 Clément Lassieur@*
@@ -4914,6 +4914,12 @@ open store connection.
 Return as a monadic value the absolute file name in the store of the file
 containing @var{text}, a string.  @var{references} is a list of store items that the
 resulting text file refers to; it defaults to the empty list.
+@end deffn
+
+@deffn {Monadic Procedure} binary-file @var{name} @var{data} [@var{references}]
+Return as a monadic value the absolute file name in the store of the file
+containing @var{data}, a bytevector.  @var{references} is a list of store
+items that the resulting binary file refers to; it defaults to the empty list.
 @end deffn
 
 @deffn {Monadic Procedure} interned-file @var{file} [@var{name}] @
