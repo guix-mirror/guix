@@ -1092,6 +1092,10 @@ feeding melodies to be played to it.
 that can be issued through the RVTMUX (debug trace) serial channel.
 This program is our test mode shell for sending Test Mode commands to targets
 and displaying decoded target responses.
+@item fcup-smsend Send a short message via SMS
+@item fcup-smsendmult Send multiple short messages via SMS in one go
+@item fcup-smsendpdu Send multiple short messages given in PDU format via SMS
+@item sms-pdu-decode Decode PDU format messages
 @end enumerate")
     (home-page "https://www.freecalypso.org/")
     (license license:public-domain)))
