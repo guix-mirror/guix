@@ -6478,22 +6478,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
        (sha256
         (base32
          "18ln06xl60qzvzz61zq9q72hdbfgjsza3flph8i2asyzx3dffz68"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-makefile.am
-           (lambda _
-             (substitute* '("Makefile.am")
-               (("\\$\\(DESTDIR\\)/usr/share")
-                "$(datadir)"))
-             #t))
-         (add-after 'unpack 'disable-configure-during-bootstrap
-           (lambda _
-             ;; Do not run configure as part of autogen.sh because references
-             ;; to /bin are not fixed yet.
-             (setenv "NOCONFIGURE" "y")
-             #t)))))
+    (build-system meson-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
