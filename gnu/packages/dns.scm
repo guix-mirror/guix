@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,9 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages flex)
@@ -55,7 +58,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial))
 
 (define-public dnsmasq
   (package
@@ -575,3 +579,89 @@ synthesis, and on-the-fly re-configuration.")
       license:lgpl2.0+              ; parts of scr/contrib/ucw
       license:public-domain         ; src/contrib/fnv and possibly murmurhash3
       license:gpl3+))))             ; everything else
+
+(define-public ddclient
+  (package
+    (name "ddclient")
+    (version "3.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ddclient/ddclient/ddclient-"
+                                  version "/ddclient-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1j8zdn7fy7i0bjk3jf0hxnbnshc2yf054vxq64imxdpfd7n5zgfy"))))
+    (build-system trivial-build-system) ; no Makefile.PL
+    (native-inputs
+     `(("bash" ,bash)
+       ("gzip" ,gzip)
+       ("perl" ,perl)
+       ("tar" ,tar)))
+    (inputs
+     `(("net-tools" ,net-tools)
+       ("inetutils" ,inetutils) ;logger
+       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
+       ("perl-digest-sha1" ,perl-digest-sha1)))
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match)
+                  (srfi srfi-26))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match)
+                      (srfi srfi-26))
+         ;; bootstrap
+         (setenv "PATH" (string-append
+                         (assoc-ref %build-inputs "bash") "/bin" ":"
+                         (assoc-ref %build-inputs "tar") "/bin" ":"
+                         (assoc-ref %build-inputs "gzip") "/bin" ":"
+                         (assoc-ref %build-inputs "perl") "/bin"))
+         ;; extract source
+         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
+         ;; package
+         (with-directory-excursion (string-append ,name "-" ,version)
+           (let* ((out (assoc-ref %outputs "out"))
+                  (bin (string-append out "/bin")))
+             (let ((file "ddclient"))
+               (substitute* file
+                 (("/usr/bin/perl") (which "perl"))
+                 ;; Strictly use ‘/etc/ddclient/ddclient.conf’.
+                 (("\\$\\{program\\}\\.conf") "/etc/ddclient/ddclient.conf")
+                 (("\\$etc\\$program.conf") "/etc/ddclient/ddclient.conf")
+                 ;; Strictly use ‘/var/cache/ddclient/ddclient.cache’
+                 (("\\$cachedir\\$program\\.cache")
+                  "/var/cache/ddclient/ddclient.cache"))
+               (install-file file bin)
+               (wrap-program (string-append bin "/" file)
+                 `("PATH" ":" =
+                   ("$PATH"
+                    ,@(map (lambda (input)
+                             (match input
+                               ((name . store)
+                                (string-append store "/bin"))))
+                           %build-inputs)))
+                 `("PERL5LIB" ":" =
+                   ,(delete
+                     ""
+                     (map (match-lambda
+                            (((? (cut string-prefix? "perl-" <>) name) . dir)
+                             (string-append dir "/lib/perl5/site_perl"))
+                            (_ ""))
+                          %build-inputs)))))
+             (for-each (cut install-file <> (string-append out
+                                                           "/share/ddclient"))
+                       (find-files "." "sample.*$")))))))
+    (home-page "https://sourceforge.net/projects/ddclient/")
+    (synopsis "Address updating utility for dynamic DNS services")
+    (description "This package provides a client to update dynamic IP
+addresses with several dynamic DNS service providers, such as
+@uref{https://www.dyndns.com/account/login.html,DynDNS.com}.
+
+This makes it possible to use a fixed hostname (such as myhost.dyndns.org) to
+access a machine with a dynamic IP address.
+
+The client supports both dynamic and (near) static services, as well as MX
+record and alternative name management.  It caches the address, and only
+attempts the update when it has changed.")
+    (license license:gpl2+)))
