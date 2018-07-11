@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,6 +88,7 @@
             patch-/usr/bin/file
             fold-port-matches
             remove-store-references
+            wrapper?
             wrap-program
 
             invoke
@@ -1002,6 +1004,13 @@ known as `nuke-refs' in Nixpkgs."
                            (lambda (char result)
                              (put-u8 out (char->integer char))
                              result))))))
+
+(define (wrapper? prog)
+  "Return #t if PROG is a wrapper as produced by 'wrap-program'."
+  (and (file-exists? prog)
+       (let ((base (basename prog)))
+         (and (string-prefix? "." base)
+              (string-suffix? "-real" base)))))
 
 (define* (wrap-program prog #:rest vars)
   "Make a wrapper for PROG.  VARS should look like this:

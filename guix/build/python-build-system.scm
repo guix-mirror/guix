@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,11 +187,9 @@ when running checks after installing the package."
 
 (define* (wrap #:key inputs outputs #:allow-other-keys)
   (define (list-of-files dir)
-    (map (cut string-append dir "/" <>)
-         (or (scandir dir (lambda (f)
-                            (let ((s (stat (string-append dir "/" f))))
-                              (eq? 'regular (stat:type s)))))
-             '())))
+    (find-files dir (lambda (file stat)
+                      (and (eq? 'regular (stat:type stat))
+                           (not (wrapper? file))))))
 
   (define bindirs
     (append-map (match-lambda
