@@ -1071,15 +1071,15 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.6.6")
+    (version "1.6.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/msmtp/msmtp/" version
+       (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
         (base32
-         "0ppvww0sb09bnsrpqnvlrn8vx231r24xn2iiwpy020mxc8gxn5fs"))))
+         "1ysrnshvwhzwmvb2walw5i9jdzlvmckj7inr0xnvb26q0jirbzsm"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
@@ -1089,7 +1089,7 @@ which can add many functionalities to the base client.")
        ("gsasl" ,gsasl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://msmtp.sourceforge.net/")
+    (home-page "https://marlam.de/msmtp/")
     (arguments
      `(#:configure-flags (list "--with-libgsasl"
                                "--with-libidn"
