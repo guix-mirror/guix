@@ -2487,6 +2487,31 @@ Haskell library @code{regex-base}.")
 @code{libtre} (fork by Roman Cheplyaka).")
     (license license:bsd-3)))
 
+(define-public ghc-regex-tdfa-text
+  (package
+    (name "ghc-regex-tdfa-text")
+    (version "1.0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/regex-tdfa-text/"
+             "regex-tdfa-text-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0090g6lgbdm9lywpqm2d3724nnnh24nx3vnlqr96qc2w486pmmrq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-regex-base" ,ghc-regex-base)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
+    (home-page
+     "http://hackage.haskell.org/package/regex-tdfa-text")
+    (synopsis "Text interface for regex-tdfa")
+    (description
+     "This provides an extra text interface for regex-tdfa.")
+    (license license:bsd-3)))
+
 (define-public ghc-parsers
   (package
     (name "ghc-parsers")
