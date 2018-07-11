@@ -21969,6 +21969,17 @@ Constructors,,, shepherd, The GNU Shepherd Manual}).  They are given as
 G-expressions that get expanded in the Shepherd configuration file
 (@pxref{G-Expressions}).
 
+@item @code{actions} (default: @code{'()})
+@cindex actions, of Shepherd services
+This is a list of @code{shepherd-action} objects (see below) defining
+@dfn{actions} supported by the service, in addition to the standard
+@code{start} and @code{stop} actions.  Actions listed here become available as
+@command{herd} sub-commands:
+
+@example
+herd @var{action} @var{service} [@var{arguments}@dots{}]
+@end example
+
 @item @code{documentation}
 A documentation string, as shown when running:
 
@@ -21984,6 +21995,54 @@ This is the list of modules that must be in scope when @code{start} and
 @code{stop} are evaluated.
 
 @end table
+@end deftp
+
+@deftp {Data Type} shepherd-action
+This is the data type that defines additional actions implemented by a
+Shepherd service (see above).
+
+@table @code
+@item name
+Symbol naming the action.
+
+@item documentation
+This is a documentation string for the action.  It can be viewed by running:
+
+@example
+herd doc @var{service} action @var{action}
+@end example
+
+@item procedure
+This should be a gexp that evaluates to a procedure of at least one argument,
+which is the ``running value'' of the service (@pxref{Slots of services,,,
+shepherd, The GNU Shepherd Manual}).
+@end table
+
+The following example defines an action called @code{say-hello} that kindly
+greets the user:
+
+@example
+(shepherd-action
+  (name 'say-hello)
+  (documentation "Say hi!")
+  (procedure #~(lambda (running . args)
+                 (format #t "Hello, friend! arguments: ~s\n"
+                         args)
+                 #t)))
+@end example
+
+Assuming this action is added to the @code{example} service, then you can do:
+
+@example
+# herd say-hello example
+Hello, friend! arguments: ()
+# herd say-hello example a b c
+Hello, friend! arguments: ("a" "b" "c")
+@end example
+
+This, as you can see, is a fairly sophisticated way to say hello.
+@xref{Service Convenience,,, shepherd, The GNU Shepherd Manual}, for more
+info on actions.
 @end deftp
 
 @defvr {Scheme Variable} shepherd-root-service-type
