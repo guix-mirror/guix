@@ -66,7 +66,7 @@
           (format #t "running \"runhaskell Setup.hs\" with command ~s \
 and parameters ~s~%"
                   command params)
-          (zero? (apply system* "runhaskell" setup-file command params)))
+          (apply invoke "runhaskell" setup-file command params))
         (error "no Setup.hs nor Setup.lhs found"))))
 
 (define* (configure #:key outputs inputs tests? (configure-flags '())
@@ -114,7 +114,8 @@ and parameters ~s~%"
       (setenv "CONFIG_SHELL" "sh"))
     (run-setuphs "configure" params)
 
-    (setenv "GHC_PACKAGE_PATH" ghc-path)))
+    (setenv "GHC_PACKAGE_PATH" ghc-path)
+    #t))
 
 (define* (build #:rest empty)
   "Build a given Haskell package."
