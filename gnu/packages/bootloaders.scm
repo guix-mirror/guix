@@ -519,7 +519,8 @@ board-independent tools.")))
                     (let ((target-file (string-append libexec "/" file)))
                       (mkdir-p (dirname target-file))
                       (copy-file file target-file)))
-                  uboot-files))))))))))
+                  uboot-files)
+                 #t)))))))))
 
 (define-public u-boot-vexpress
   (make-u-boot-package "vexpress_ca9x4" "arm-linux-gnueabihf"))
