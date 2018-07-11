@@ -10850,6 +10850,21 @@ gexps to introduce job definitions that are passed to mcron
 for more information on mcron job specifications.  Below is the
 reference of the mcron service.
 
+On a running system, you can use the @code{schedule} action of the service to
+visualize the mcron jobs that will be executed next:
+
+@example
+# herd schedule mcron
+@end example
+
+@noindent
+The example above lists the next five tasks that will be executed, but you can
+also specify the number of tasks to display:
+
+@example
+# herd schedule mcron 10
+@end example
+
 @deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron}]
 Return an mcron service running @var{mcron} that schedules @var{jobs}, a
 list of gexps denoting mcron job specifications.
