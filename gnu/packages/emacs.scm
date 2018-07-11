@@ -11410,3 +11410,27 @@ siblings and friends.  This visual overview can also be used to browse your
 entries.  You can think of entries as nodes in a mind map, or pages in a
 wiki.")
     (license license:expat)))
+
+(define-public emacs-recent-addresses
+  (let ((commit "d9da58db542089a1ceb5ef29e420dbfbc4a36373")
+        (revision "0"))
+    (package
+      (name "emacs-recent-addresses")
+      (home-page "http://nschum.de/src/emacs/recent-addresses/")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/nschum/recent-addresses.el")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "175rvcwmkb5z7ss7q2y5178mvdvp5bhn39irz80qinlvaz8fm4nk"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Record recently-used email addressed and auto-complete them")
+      (description
+       "@code{recent-addresses} is an Emacs allows you to quickly look up
+previously used email addresses.  It can be used alongside the Gnus email
+client.")
+      (license license:gpl2+))))
