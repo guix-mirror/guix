@@ -426,7 +426,8 @@ def test_ctrl_c"))
          (replace 'build
            (lambda* (#:key inputs make-flags #:allow-other-keys)
              (apply invoke "make" "tools-only" make-flags)
-             (apply invoke "make" "envtools" make-flags)))
+             (apply invoke "make" "envtools" make-flags)
+             (invoke "make" "-C" "tools" "sunxi-spl-image-builder")))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -443,7 +444,8 @@ def test_ctrl_c"))
                            "tools/mkimage"
                            "tools/proftool"
                            "tools/fdtgrep"
-                           "tools/env/fw_printenv"))
+                           "tools/env/fw_printenv"
+                           "tools/sunxi-spl-image-builder"))
                #t)))
            (delete 'check)
            (add-after 'install 'check
