@@ -139,7 +139,7 @@ to the stack."
   "Generate a parser for Cabal files."
   (lalr-parser
    ;; --- token definitions
-   (CCURLY VCCURLY OPAREN CPAREN TEST ID VERSION RELATION TRUE FALSE
+   (CCURLY VCCURLY OPAREN CPAREN TEST ID VERSION RELATION TRUE FALSE -ANY -NONE
            (right: IF FLAG EXEC TEST-SUITE CUSTOM-SETUP SOURCE-REPO BENCHMARK LIB OCURLY)
            (left: OR)
            (left: PROPERTY AND)
@@ -213,6 +213,10 @@ to the stack."
                 (FALSE)                        : 'false
                 (TEST OPAREN ID RELATION VERSION CPAREN)
                 : `(,$1 ,(string-append $3 " " $4 " " $5))
+                (TEST OPAREN ID -ANY CPAREN)
+                : `(,$1 ,(string-append $3 " -any"))
+                (TEST OPAREN ID -NONE CPAREN)
+                : `(,$1 ,(string-append $3 " -none"))
                 (TEST OPAREN ID RELATION VERSION AND RELATION VERSION CPAREN)
                 : `(and (,$1 ,(string-append $3 " " $4 " " $5))
                         (,$1 ,(string-append $3 " " $7 " " $8)))
@@ -367,6 +371,10 @@ matching a string against the created regexp."
 
 (define (is-false s) (string-ci=? s "false"))
 
+(define (is-any s) (string-ci=? s "-any"))
+
+(define (is-none s) (string-ci=? s "-none"))
+
 (define (is-and s) (string=? s "&&"))
 
 (define (is-or s) (string=? s "||"))
@@ -457,6 +465,10 @@ string with the read characters."
 
 (define (lex-false loc) (make-lexical-token 'FALSE loc #f))
 
+(define (lex-any loc) (make-lexical-token '-ANY loc #f))
+
+(define (lex-none loc) (make-lexical-token '-NONE loc #f))
+
 (define (lex-and loc) (make-lexical-token 'AND loc #f))
 
 (define (lex-or loc) (make-lexical-token 'OR loc #f))
@@ -524,6 +536,8 @@ LOC is the current port location."
           ((is-test w port) (lex-test w loc))
           ((is-true w) (lex-true loc))
           ((is-false w) (lex-false loc))
+          ((is-any w) (lex-any loc))
+          ((is-none w) (lex-none loc))
           ((is-and w) (lex-and loc))
           ((is-or w) (lex-or loc))
           ((is-id w port) (lex-id w loc))
@@ -711,13 +725,20 @@ the ordering operation and the version."
     (let* ((with-ver-matcher-fn (make-rx-matcher
                                  "([a-zA-Z0-9_-]+) *([<>=]+) *([0-9.]+) *"))
            (without-ver-matcher-fn (make-rx-matcher "([a-zA-Z0-9_-]+)"))
+           (without-ver-matcher-fn-2 (make-rx-matcher "([a-zA-Z0-9_-]+) (-any|-none)"))
            (name (or (and=> (with-ver-matcher-fn spec)
                             (cut match:substring <> 1))
+                     (and=> (without-ver-matcher-fn-2 spec)
+                            (cut match:substring <> 1))
                      (match:substring (without-ver-matcher-fn spec) 1)))
-           (operator (and=> (with-ver-matcher-fn spec)
-                            (cut match:substring <> 2)))
-           (version (and=> (with-ver-matcher-fn spec)
-                           (cut match:substring <> 3))))
+           (operator (or (and=> (with-ver-matcher-fn spec)
+                                (cut match:substring <> 2))
+                         (and=> (without-ver-matcher-fn-2 spec)
+                                (cut match:substring <> 2))))
+           (version (or (and=> (with-ver-matcher-fn spec)
+                               (cut match:substring <> 3))
+                        (and=> (without-ver-matcher-fn-2 spec)
+                               (cut match:substring <> 2)))))
       (values name operator version)))
   
   (define (impl haskell)
