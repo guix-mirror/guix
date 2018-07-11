@@ -9703,4 +9703,23 @@ serialization code.")
 disk space usage.")
     (license license:bsd-3)))
 
+(define-public ghc-xdg-basedir
+  (package
+    (name "ghc-xdg-basedir")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/xdg-basedir/"
+             "xdg-basedir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0azlzaxp2dn4l1nr7shsxah2magk1szf6fx0mv75az00qsjw6qg4"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/willdonnelly/xdg-basedir")
+    (synopsis "XDG Base Directory library for Haskell")
+    (description "This package provides a library implementing the XDG Base Directory spec.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
