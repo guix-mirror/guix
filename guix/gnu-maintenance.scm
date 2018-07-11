@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -82,13 +82,14 @@
 
 (define %package-list-url
   (string->uri
-   (string-append %gnumaint-base-url "gnupackages.txt")))
+   (string-append %gnumaint-base-url "rec/gnupackages.rec")))
 
 (define %package-description-url
   ;; This file contains package descriptions in recutils format.
-  ;; See <https://lists.gnu.org/archive/html/guix-devel/2013-10/msg00071.html>.
+  ;; See <https://lists.gnu.org/archive/html/guix-devel/2013-10/msg00071.html>
+  ;; and <https://lists.gnu.org/archive/html/guix-devel/2018-06/msg00362.html>.
   (string->uri
-   (string-append %gnumaint-base-url "pkgblurbs.txt")))
+   (string-append %gnumaint-base-url "rec/pkgblurbs.rec")))
 
 (define-record-type* <gnu-package-descriptor>
   gnu-package-descriptor
@@ -121,7 +122,12 @@ to fetch the list of GNU packages over HTTP."
       (if (null? alist)
           (reverse result)
           (loop (recutils->alist port)
-                (cons alist result)))))
+
+                ;; Ignore things like "%rec" (info "(recutils) Record
+                ;; Descriptors").
+                (if (assoc-ref alist "package")
+                    (cons alist result)
+                    result)))))
 
   (define official-description
     (let ((db (read-records (fetch %package-description-url #:text? #t))))
@@ -148,12 +154,12 @@ to fetch the list of GNU packages over HTTP."
            (alist->record `(("description" . ,(official-description name))
                             ,@alist)
                           make-gnu-package-descriptor
-                          (list "package" "mundane-name" "copyright-holder"
+                          (list "package" "mundane_name" "copyright_holder"
                                 "savannah" "fsd" "language" "logo"
-                                "doc-category" "doc-summary" "description"
-                                "doc-url"
-                                "download-url")
-                          '("doc-url" "language"))))
+                                "doc_category" "doc_summary" "description"
+                                "doc_url"
+                                "download_url")
+                          '("doc_url" "language"))))
        (let* ((port (fetch %package-list-url #:text? #t))
               (lst  (read-records port)))
          (close-port port)
