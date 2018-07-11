@@ -11434,3 +11434,26 @@ wiki.")
 previously used email addresses.  It can be used alongside the Gnus email
 client.")
       (license license:gpl2+))))
+
+(define-public emacs-fold-dwim
+  (let ((commit "c46f4bb2ce91b4e307136320e72c28dd50b6cd8b")
+        (revision "0"))
+    (package
+      (name "emacs-fold-dwim")
+      (version (git-version "1.2" revision commit))
+      (home-page "https://github.com/emacsattic/fold-dwim")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "1yz1wis31asw6xa5maliyd1ck2q02xnnh7dc6swgj9cb4wi7k6i1"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Unified user interface for Emacs folding modes")
+      (description
+       "DWIM stands for \"do what I mean\", as in the idea that one keystroke
+can do different things depending on the context.  In this package, it means
+that, if the cursor is in a currently hidden folded construction, we want to
+show it; if it's not, we want to hide whatever fold the cursor is in.")
+      (license license:gpl2+))))
