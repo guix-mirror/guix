@@ -425,9 +425,7 @@ def test_ctrl_c"))
              (apply invoke "make" "tools_defconfig" make-flags)))
          (replace 'build
            (lambda* (#:key inputs make-flags #:allow-other-keys)
-             (apply invoke "make" "tools-only" make-flags)
-             (apply invoke "make" "envtools" make-flags)
-             (invoke "make" "-C" "tools" "sunxi-spl-image-builder")))
+             (apply invoke "make" "tools-all" make-flags)))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
