@@ -3290,7 +3290,7 @@ and copy/paste text in the console and in xterm.")
                      ("which" ,which)
                      ;; The tests need 'grep' with perl regexp support.
                      ("grep" ,grep)))
-    (home-page "https://btrfs.wiki.kernel.org/")
+    (home-page "https://btrfs.wiki.kernel.org/index.php/Main_Page")
     (synopsis "Create and manage btrfs copy-on-write file systems")
     (description "Btrfs is a @dfn{copy-on-write} (CoW) file system for Linux
 aimed at implementing advanced features while focusing on fault tolerance,
