@@ -52,6 +52,7 @@
               (method url-fetch)
               (uri (string-append "https://oligarchy.co.uk/xapian/" version
                                   "/xapian-core-" version ".tar.xz"))
+              (patches (search-patches "xapian-revert-5489fb2f8.patch"))
               (sha256
                (base32 "166qpfq7pvyrj2w2x07v31ypvqg6c2xyvds5sms9h4g2sg0z23hy"))))
     (build-system gnu-build-system)
