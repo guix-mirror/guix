@@ -537,15 +537,15 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public psmisc
   (package
     (name "psmisc")
-    (version "22.21")
+    (version "23.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
-                          version ".tar.gz"))
+                          version ".tar.xz"))
       (sha256
        (base32
-        "0nhlm1vrrwn4a845p6y4nnnb4liq70n74zbdd5dq844jc6nkqclp"))))
+        "0c5s94hqpwfmyswx2f96gifa6wdbpxxpkyxcrlzbxpvmrxsd911f"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/psmisc/psmisc")
