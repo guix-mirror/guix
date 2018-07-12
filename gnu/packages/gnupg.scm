@@ -70,7 +70,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.29")
+    (version "1.31")
     (source
      (origin
       (method url-fetch)
@@ -78,7 +78,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1smihcrhkfy58kazjaigmfbagy52rw98fqfsv1x7ml8razx2dsgc"))))
+        "1vx4nw6rxh2biy3h8n96fyr86q29h8gjl6837437i51jr4isil20"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -90,20 +90,6 @@ Daemon and possibly more in the future.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgpg-error")))))
-
-;; Some packages (e.g. GPGME) require a newer libgpg-error to deal with
-;; error codes from recent GnuPG.  Remove this in the next rebuild cycle.
-(define-public libgpg-error-1.31
-  (package
-    (inherit libgpg-error)
-    (version "1.31")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/libgpg-error/libgpg-error-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "1vx4nw6rxh2biy3h8n96fyr86q29h8gjl6837437i51jr4isil20"))))))
 
 (define-public libgcrypt
   (package
@@ -389,7 +375,7 @@ libskba (working with X.509 certificates and CMS data).")
      `(("gnupg" ,gnupg)))
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
-     `(("libgpg-error" ,libgpg-error-1.31)))
+     `(("libgpg-error" ,libgpg-error)))
     (inputs
      `(("libassuan" ,libassuan)))
     (home-page "https://www.gnupg.org/related_software/gpgme/")
