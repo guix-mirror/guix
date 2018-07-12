@@ -754,6 +754,8 @@ the ordering operation and the version."
            ((string= spec-op ">") (version>? comp-ver spec-ver))
            ((string= spec-op "<=") (not (version>? comp-ver spec-ver)))
            ((string= spec-op "<") (not (version>=? comp-ver spec-ver)))
+           ((string= spec-op "-any") #t)
+           ((string= spec-op "-none") #f)
            (else
             (raise (condition
                     (&message (message "Failed to evaluate 'impl' test."))))))
