@@ -1138,6 +1138,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
+  %D%/packages/patches/syncthing-fix-crash.patch 		\
   %D%/packages/patches/synfigstudio-fix-ui-with-gtk3.patch 	\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
