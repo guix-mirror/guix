@@ -35,6 +35,7 @@
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8516,7 +8517,10 @@ outline-mode), so there is no such thing like an outshine mode, only
         (base32
          "109fvivsb4r0rbqljngqrmxqvbnbkqlivczx6brrvlr7ci625lhf"))))
     (build-system emacs-build-system)
-    (inputs `(("emacs-dash" ,emacs-dash)))
+    (propagated-inputs
+     `(("emacs-seq" ,emacs-seq)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-let-alist" ,emacs-let-alist)))
     (home-page "https://github.com/cpitclaudel/biblio.el")
     (synopsis "Browse and import bibliographic references")
     (description "This package provides an extensible Emacs package for
