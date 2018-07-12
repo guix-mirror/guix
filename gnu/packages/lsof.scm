@@ -73,14 +73,16 @@
         (add-after 'configure 'patch-timestamps
           (lambda _
             (substitute* "Makefile"
-              (("`date`") "`date --date=@1`"))))
+              (("`date`") "`date --date=@1`"))
+            #t))
         (add-before 'check 'disable-failing-tests
           (lambda _
             (substitute* "tests/Makefile"
               ;; Fails with ‘ERROR!!! client gethostbyaddr() failure’.
               (("(STDTST=.*) LTsock" _ prefix) prefix)
               ;; Fails without access to a remote NFS server.
-              (("(OPTTST=.*) LTnfs"  _ prefix) prefix))))
+              (("(OPTTST=.*) LTnfs"  _ prefix) prefix))
+            #t))
         (replace 'check
           (lambda _
             (with-directory-excursion "tests"
