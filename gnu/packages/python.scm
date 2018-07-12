@@ -2218,14 +2218,14 @@ environments and back.")
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
-    (version "3.12")
+    (version "3.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyYAML" version))
        (sha256
         (base32
-         "1aqjl8dk9amd4zr99n8v2qxzgmr2hdvqfma4zh7a41rj6336c9sr"))))
+         "1gx603g484z46cb74j9rzr6sjlh2vndxayicvlyhxdz98lhhkwry"))))
     (build-system python-build-system)
     (inputs
      `(("libyaml" ,libyaml)))
