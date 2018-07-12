@@ -341,14 +341,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.4.0")
+    (version "1.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1d591ny4j4s409s2afjv4fn7inqlclr0zlyclw3619rkbaixlzm8"))
+                "14gsrm7dvyjpbpnc60z75j6fz2p187abm2h353lq95kx2bv70c1b"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -361,10 +361,7 @@ many event types, including timers, signals, and the classic file descriptor eve
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(;; LMDB is only supported on 64-bit systems, yet the test suite
-       ;; requires it.
-       #:tests? (assoc-ref %build-inputs "lmdb")
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            ;; ldb use a custom configuration script that runs waf.
@@ -384,10 +381,7 @@ many event types, including timers, signals, and the classic file descriptor eve
      `(("talloc" ,talloc)
        ("tdb" ,tdb)))
     (inputs
-     `(,@(if (target-64bit?)
-             `(("lmdb" ,lmdb))
-             '())
-       ("popt" ,popt)
+     `(("popt" ,popt)
        ("tevent" ,tevent)))
     (synopsis "LDAP-like embedded database")
     (home-page "https://ldb.samba.org/")
