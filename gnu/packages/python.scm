@@ -7834,14 +7834,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "03dyxgjknp4ffsv7vwfd28l5bbpzi0ylp20543wpg3iahyyrwma8"))))
+         "1bi5gnr8r8dva06qpyx4kgjc6spm2k1y908183nbbaylggjzs0jf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))

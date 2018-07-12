@@ -975,15 +975,8 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "096pwrnhj36yndldvs2pj4r871zhcgisks0is78f1jkjn9sd4b2z"))
-             (patches (search-patches "alsa-lib-add-environment-variable.patch"))))
+               "096pwrnhj36yndldvs2pj4r871zhcgisks0is78f1jkjn9sd4b2z"))))
     (build-system gnu-build-system)
-    (native-search-paths
-     (list (search-path-specification
-             (variable "ALSA_PLUGIN_DIR")
-             (file-type 'regular)
-             (separator #f)                         ;single entry
-             (files '("lib/alsa-lib")))))
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
     (description
@@ -3049,15 +3042,15 @@ Linux Device Mapper multipathing driver:
 (define-public libaio
   (package
     (name "libaio")
-    (version "0.3.110")
+    (version "0.3.111")
     (source (origin
               (method url-fetch)
-             (uri (list
-                   (string-append "mirror://debian/pool/main/liba/libaio/"
-                                  name "_" version ".orig.tar.gz")))
-             (sha256
-              (base32
-               "0zjzfkwd1kdvq6zpawhzisv7qbq1ffs343i5fs9p498pcf7046g0"))))
+              (uri (list
+                    (string-append "https://releases.pagure.org/libaio/"
+                                   name "-" version ".tar.gz")))
+              (sha256
+               (base32
+                "0ajhzbqjwsmz51gwccfyw6w9k4j4gmxcl2ph30sfn2gxv0d8gkv2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -3065,7 +3058,7 @@ Linux Device Mapper multipathing driver:
        #:test-target "partcheck" ; need root for a full 'check'
        #:phases
        (modify-phases %standard-phases (delete 'configure)))) ; no configure script
-    (home-page "http://lse.sourceforge.net/io/aio.html")
+    (home-page "https://pagure.io/libaio")
     (synopsis "Linux-native asynchronous I/O access library")
     (description
      "This library enables userspace to use Linux kernel asynchronous I/O
@@ -3099,7 +3092,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.49")
+    (version "5.50")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3107,7 +3100,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "15ffsaz7l3fgdg03l7g1xx9jw7xgs6pc548zxqsxawsca5x1sc1k"))))
+                "048r91vx9gs5nwwbah2s0xig04nwk14c5s0vb7qmaqdvighsmz2z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

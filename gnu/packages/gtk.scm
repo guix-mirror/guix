@@ -42,6 +42,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
@@ -670,7 +671,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.22.29")
+   (version "3.22.30")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -678,7 +679,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1y5vzdbgww9l7xcrg13azff2rs94kggkywmpcsh39h7w76wn8zd0"))
+              "0rv5k8fyi2i19k4zncai6vf429s6zy3kncr8vb6f3m034z0sb951"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
@@ -1362,15 +1363,15 @@ and routines to assist in editing internationalized text.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.2.8")
+    (version "0.2.9")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/girara/download/girara-"
-                              version ".tar.gz"))
+                              version ".tar.xz"))
               (sha256
                (base32
-                "18wss3sak3djip090v2vdbvq1mvkwcspfswc87zbvv3magihan98"))))
+                "0lkxrfna818wkkr2f6mdzf15y5z8xl1b9592ylmzjbqsqya3w7x8"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)
@@ -1379,13 +1380,7 @@ and routines to assist in editing internationalized text.")
     ;; Listed in 'Requires.private' of 'girara.pc'.
     (propagated-inputs `(("gtk+" ,gtk+)))
     (arguments
-     `(#:make-flags
-       `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
-         "COLOR=0" "CC=gcc")
-       #:test-target "test"
-       #:disallowed-references (,xorg-server-1.19.3)
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
+     `(#:phases (modify-phases %standard-phases
                   (add-before 'check 'start-xserver
                     ;; Tests require a running X server.
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -1401,7 +1396,7 @@ and routines to assist in editing internationalized text.")
                         (setenv "DBUS_FATAL_WARNINGS" "0")
                         (zero? (system (string-append xorg-server "/bin/Xvfb "
                                                       display " &")))))))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (home-page "https://pwmt.org/projects/girara/")
     (synopsis "Library for minimalistic gtk+3 user interfaces")
     (description "Girara is a library that implements a user interface that

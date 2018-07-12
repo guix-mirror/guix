@@ -6322,7 +6322,16 @@ fit the GNOME desktop.")
                (base32
                 "007k2bq8iplg4psdpz074r5d4zxvn4s95qym4rw9hs6giljbrf0n"))))
     (build-system meson-build-system)
-    (arguments '(#:glib-or-gtk? #t))
+    (arguments '(#:glib-or-gtk? #t
+                 #:phases (modify-phases %standard-phases
+                            (add-after 'unpack 'patch-install-script
+                              (lambda _
+                                ;; This script attempts to compile glib schemas
+                                ;; and create an empty MIME database.  We do
+                                ;; that elsewhere, so prevent it from running.
+                                (substitute* "build-aux/post-install.sh"
+                                  (("\\[ -z \"\\$DESTDIR\" \\]") "false"))
+                                #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)

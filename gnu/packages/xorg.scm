@@ -1026,7 +1026,7 @@ of new capabilities and controls for text keyboards.")
 (define-public libdmx
   (package
     (name "libdmx")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -1036,7 +1036,7 @@ of new capabilities and controls for text keyboards.")
                ".tar.bz2"))
         (sha256
           (base32
-            "00djlxas38kbsrglcmwmxfbmxjdchlbj95pqwjvdg8jn5rns6zf9"))))
+            "0hvjfhrcym770cr0zpqajdy3cda30aiwbjzv16iafkqkbl090gr5"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)
@@ -2961,7 +2961,7 @@ It supports a variety of Intel graphics chipsets.")
 (define-public xf86-video-mach64
   (package
     (name "xf86-video-mach64")
-    (version "6.9.5")
+    (version "6.9.6")
     (source
       (origin
         (method url-fetch)
@@ -2971,7 +2971,7 @@ It supports a variety of Intel graphics chipsets.")
                ".tar.bz2"))
         (sha256
           (base32
-           "07xlf5nsjm0x18ij5gyy4lf8hwpl10i8chi3skpqjh84drdri61y"))
+           "171wg8r6py1l138s58rlapin3rlpwsg9spmvhc7l68mm3g3hf1vs"))
         (patches (search-patches "xf86-video-mach64-glibc-2.20.patch"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
@@ -3176,33 +3176,47 @@ This driver is intended for the spice qxl virtio device.")
     (home-page "http://www.spice-space.org")
     (license license:x11)))
 
-
 (define-public xf86-video-r128
-  (package
-    (name "xf86-video-r128")
-    (version "6.10.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/driver/xf86-video-r128-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-           "1pkpka5m4cd6iy0f8iqnmg6xci14nb6887ilvxzn3xrsgx8j3nl4"))))
-    (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)
-              ("xorgproto" ,xorgproto)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "https://www.x.org/wiki/")
-    (synopsis "ATI Rage 128 video driver for X server")
-    (description
-     "xf86-video-r128 is a video driver for the Xorg X server.
+  ;; We need a newer version than 6.10.2 to build against the latest xorg-server.
+  ;; Remove this binding and the bootstrap inputs when >6.10.2 is released.
+  (let ((commit "c4c878d2ccb75fa75afe46e0e50ee9975c5c57fc")
+        (revision "0"))
+    (package
+      (name "xf86-video-r128")
+      (version (git-version "6.10.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url (string-append "https://anongit.freedesktop.org/git/xorg"
+                                          "/driver/" name ".git"))
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "01pff30zz4zxjhw28h8bn9x2kq7c6iswgn19b72wnfgl0arxb63j"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-before 'bootstrap 'prevent-configure
+                      (lambda _
+                        ;; Prevent autogen from calling "./configure" as part of
+                        ;; the bootstrap step, which fails due to wrong shebang.
+                        (setenv "NOCONFIGURE" "1")
+                        #t)))))
+      (inputs `(("mesa" ,mesa)
+                ("xorgproto" ,xorgproto)
+                ("xorg-server" ,xorg-server)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (home-page "https://www.x.org/wiki/")
+      (synopsis "ATI Rage 128 video driver for X server")
+      (description
+       "xf86-video-r128 is a video driver for the Xorg X server.
 This driver is intended for ATI Rage 128 based cards.")
-    (license license:x11)))
-
+      (license license:x11))))
 
 (define-public xf86-video-savage
   (package
@@ -3215,6 +3229,7 @@ This driver is intended for ATI Rage 128 based cards.")
                "mirror://xorg/individual/driver/xf86-video-savage-"
                version
                ".tar.bz2"))
+        (patches (search-patches "xf86-video-savage-xorg-compat.patch"))
         (sha256
           (base32
            "11pcrsdpdrwk0mrgv83s5nsx8a9i4lhmivnal3fjbrvi3zdw94rc"))))
@@ -3267,6 +3282,7 @@ Xorg X server.")
                "mirror://xorg/individual/driver/xf86-video-sis-"
                version
                ".tar.bz2"))
+        (patches (search-patches "xf86-video-sis-xorg-compat.patch"))
         (sha256
           (base32
            "03f1abjjf68y8y1iz768rn95va9d33wmbwfbsqrgl6k0gi0bf9jj"))))
@@ -3723,7 +3739,7 @@ alternative implementations like XRandR or TwinView.")
 (define xkbcomp-intermediate ; used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
       (origin
         (method url-fetch)
@@ -3733,7 +3749,7 @@ alternative implementations like XRandR or TwinView.")
                ".tar.bz2"))
         (sha256
          (base32
-          "0djp7bb0ch2ddwmc1bkg4fddxdvamiiz375x0r0ni5dcb37w93bl"))))
+          "0944rrkkf0dxp07vhh9yr4prslxhqyw63qmbjirbv1bypswvrn3d"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)
@@ -5072,7 +5088,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.19.6")
+    (version "1.20.0")
     (source
       (origin
         (method url-fetch)
@@ -5081,7 +5097,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "15y13ihgkggmly5s07vzvpn35gzx1w0hrkbnlcvcy05h3lpm0cm7"))
+          "1rnka3sp8yg2bir0bjjhwn33jikj8qd8ckqcxrs94w05bwc7v5lx"))
         (patches
          (list
           ;; See:

@@ -2798,7 +2798,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.2.20")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
@@ -2807,7 +2807,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1bd03c5xni0bla0wg1wba841b36b0sg13sjja955kn5xzvy4i61a"))))
+         "14a9vyvp2k5zpd0axbnqk0d3khc1v3cck10nb5fj7d2sgn8490ky"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -2846,6 +2846,16 @@ parts of it.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         ;; Conditionally apply a patch on i686 to avoid rebuilding
+         ;; all architectures.  FIXME: This should be moved to the
+         ;; (source (patches ...)) field in the next rebuild cycle.
+         ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                          (%current-system)))
+               `((add-after 'unpack 'fix-tests
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (invoke "patch" "-p1"
+                             "--input" (assoc-ref inputs "i686-fix-tests.patch")))))
+               '())
          (add-before 'build 'set-extralib
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Get libgfortran found when building in utest.
@@ -2857,6 +2867,11 @@ parts of it.")
      `(("fortran-lib" ,gfortran "lib")))
     (native-inputs
      `(("cunit" ,cunit)
+       ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                        (%current-system)))
+             `(("i686-fix-tests.patch"
+                ,(search-patch "openblas-fix-tests-i686.patch")))
+             '())
        ("fortran" ,gfortran)
        ("perl" ,perl)))
     (home-page "http://www.openblas.net/")
