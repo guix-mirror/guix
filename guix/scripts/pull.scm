@@ -33,6 +33,7 @@
   #:autoload   (guix inferior) (open-inferior)
   #:use-module (guix scripts build)
   #:autoload   (guix self) (whole-package)
+  #:use-module (gnu packages)
   #:autoload   (gnu packages ssh) (guile-ssh)
   #:autoload   (gnu packages tls) (gnutls)
   #:use-module ((guix scripts package) #:select (build-and-use-profile))
@@ -234,11 +235,31 @@ URL, BRANCH, and COMMIT as a property in the manifest entry."
                             (branch ,branch)
                             (commit ,commit))))))))))
 
+(define (display-profile-news profile)
+  "Display what's up in PROFILE--new packages, and all that."
+  (match (memv (generation-number profile)
+               (reverse (profile-generations profile)))
+    ((current previous _ ...)
+     (newline)
+     (let ((old (fold-packages (lambda (package result)
+                                 (alist-cons (package-name package)
+                                             (package-version package)
+                                             result))
+                               '()))
+           (new (profile-package-alist
+                 (generation-file-name profile current))))
+       (display-new/upgraded-packages old new
+                                      #:heading (G_ "New in this revision:\n"))))
+    (_ #t)))
+
 (define* (build-and-install source config-dir
                             #:key verbose? url branch commit)
   "Build the tool from SOURCE, and install it in CONFIG-DIR."
   (define update-profile
     (store-lift build-and-use-profile))
+
+  (define profile
+    (string-append config-dir "/current"))
 
   (mlet* %store-monad ((drv   (build-from-source source
                                                  #:commit commit
@@ -247,8 +268,9 @@ URL, BRANCH, and COMMIT as a property in the manifest entry."
                                                           #:url url
                                                           #:branch branch
                                                           #:commit commit)))
-    (update-profile (string-append config-dir "/current")
-                    (manifest (list entry)))))
+    (mbegin %store-monad
+      (update-profile profile (manifest (list entry)))
+      (return (display-profile-news profile)))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."
@@ -341,9 +363,11 @@ way and displaying details about the channel's source code."
             (close-inferior inferior)
             packages))))
 
-(define (display-new/upgraded-packages alist1 alist2)
+(define* (display-new/upgraded-packages alist1 alist2
+                                        #:key (heading ""))
   "Given the two package name/version alists ALIST1 and ALIST2, display the
-list of new and upgraded packages going from ALIST1 to ALIST2."
+list of new and upgraded packages going from ALIST1 to ALIST2.  When ALIST1
+and ALIST2 differ, display HEADING upfront."
   (let* ((old      (fold (match-lambda*
                            (((name . version) table)
                             (vhash-cons name version table)))
@@ -363,6 +387,9 @@ list of new and upgraded packages going from ALIST1 to ALIST2."
                                           (string-append name "@"
                                                          new-version))))))
                                alist2)))
+    (unless (and (null? new) (null? upgraded))
+      (display heading))
+
     (match (length new)
       (0 #t)
       (count
