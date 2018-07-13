@@ -584,7 +584,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/bash-completion-directories.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
-  %D%/packages/patches/bind-CVE-2018-5738.patch			\
   %D%/packages/patches/binutils-aarch64-symbol-relocation.patch	\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\

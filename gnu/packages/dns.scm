@@ -99,16 +99,15 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.12.1-P2")
+    (version "9.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "ftp://ftp.isc.org/isc/bind9/" version "/" name "-"
                     version ".tar.gz"))
-              (patches (search-patches "bind-CVE-2018-5738.patch"))
               (sha256
                (base32
-                "0a9dvyg1dk7vpqn9gz7p5jas3bz7z22bjd66b98g1qk16i2w7rqd"))))
+                "0ll46igs9xfq2qclc5wzqsnj3zv7ssga0544gm24s1m7765lqslz"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
