@@ -122,7 +122,7 @@ rates.")
 (define-public pulseaudio
   (package
     (name "pulseaudio")
-    (version "11.1")
+    (version "12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -130,7 +130,7 @@ rates.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "17ndr6kc7hpv4ih4gygwlcpviqifbkvnk4fbwf4n25kpb991qlpj"))
+               "0i248rmwwlfx1r22aiy1wf5lmhixlznyasgqdb5w04gxr6yjshkf"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
@@ -141,7 +141,6 @@ rates.")
                     (string-append "#" all "\n")))
                  #t))
              (patches (search-patches
-                       "pulseaudio-glibc-2.27.patch"
                        "pulseaudio-fix-mult-test.patch"
                        "pulseaudio-longer-test-timeout.patch"))))
     (build-system gnu-build-system)
@@ -153,13 +152,6 @@ rates.")
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
        #:phases (modify-phases %standard-phases
-                 (replace 'bootstrap
-                   ;; TODO: Remove this custom bootstrap phase when
-                   ;; pulseaudio-glibc-2.27.patch is removed.
-                   (lambda _
-                     (patch-shebang "git-version-gen")
-                     (setenv "NOCONFIGURE" "1")
-                     (invoke "bash" "bootstrap.sh")))
                  (add-before 'check 'pre-check
                    (lambda _
                      ;; 'tests/lock-autospawn-test.c' wants to create a file
@@ -188,11 +180,7 @@ rates.")
        ("check" ,check)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ;; TODO: Remove "autoconf", "automake", and "libtool" from
-       ;; native-inputs when pulseaudio-glibc-2.27.patch is removed.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+       ("glib:bin" ,glib "bin")))
     (propagated-inputs
      ;; 'libpulse*.la' contain `-lgdbm' and `-lcap', so propagate them.
      `(("libcap" ,libcap)
