@@ -508,7 +508,18 @@ board-independent tools.")))
                (let* ((out (assoc-ref outputs "out"))
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
-                                    (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb|rksd)$")
+                                    (remove
+                                     ;; Those would not be reproducible
+                                     ;; because of the randomness used
+                                     ;; to produce them.
+                                     ;; It's expected that the user will
+                                     ;; use u-boot-tools to generate them
+                                     ;; instead.
+                                     (lambda (name)
+                                       (string-suffix?
+                                        "sunxi-spl-with-ecc.bin"
+                                        name))
+                                     (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb|rksd)$"))
                                     (find-files "." "^(MLO|SPL)$"))))
                  (mkdir-p libexec)
                  (install-file ".config" libexec)
