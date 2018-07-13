@@ -686,7 +686,7 @@ If #f use the function 'port-filename' to obtain it."
 (define-record-type <cabal-custom-setup>
   (make-cabal-custom-setup name dependencies)
   cabal-custom-setup?
-  (name cabal-custom-setuo-name)
+  (name cabal-custom-setup-name)
   (dependencies cabal-custom-setup-dependencies)) ; list of <cabal-dependency>
 
 (define (cabal-flags->alist flag-list)
