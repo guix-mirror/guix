@@ -21028,6 +21028,100 @@ could instantiate a cgit service like this:
           (cgitrc "")))
 @end example
 
+@subsubheading Gitolite Service
+
+@cindex Gitolite service
+@cindex Git, hosting
+@uref{http://gitolite.com/gitolite/, Gitolite} is a tool for hosting Git
+repositories on a central server.
+
+Gitolite can handle multiple repositories and users, and supports flexible
+configuration of the permissions for the users on the repositories.
+
+The following example will configure Gitolite using the default @code{git}
+user, and the provided SSH public key.
+
+@example
+(service gitolite-service-type
+         (gitolite-configuration
+           (admin-pubkey (plain-file
+                           "yourname.pub"
+                           "ssh-rsa AAAA... guix@@example.com"))))
+@end example
+
+Gitolite is configured through a special admin repository which you can clone,
+for example, if you setup Gitolite on @code{example.com}, you would run the
+following command to clone the admin repository.
+
+@example
+git clone git@@example.com:gitolite-admin
+@end example
+
+When the Gitolite service is activated, the provided @code{admin-pubkey} will
+be inserted in to the @file{keydir} directory in the gitolite-admin
+repository.  If this results in a change in the repository, it will be
+committed using the message ``gitolite setup by GNU Guix''.
+
+@deftp {Data Type} gitolite-configuration
+Data type representing the configuration for @code{gitolite-service-type}.
+
+@table @asis
+@item @code{package} (default: @var{gitolite})
+Gitolite package to use.
+
+@item @code{user} (default: @var{git})
+User to use for Gitolite.  This will be user that you use when accessing
+Gitolite over SSH.
+
+@item @code{group} (default: @var{git})
+Group to use for Gitolite.
+
+@item @code{home-directory} (default: @var{"/var/lib/gitolite"})
+Directory in which to store the Gitolite configuration and repositories.
+
+@item @code{rc-file} (default: @var{(gitolite-rc-file)})
+A ``file-like'' object (@pxref{G-Expressions, file-like objects}),
+representing the configuration for Gitolite.
+
+@item @code{admin-pubkey} (default: @var{#f})
+A ``file-like'' object (@pxref{G-Expressions, file-like objects}) used to
+setup Gitolite.  This will be inserted in to the @file{keydir} directory
+within the gitolite-admin repository.
+
+To specify the SSH key as a string, use the @code{plain-file} function.
+
+@example
+(plain-file "yourname.pub" "ssh-rsa AAAA... guix@@example.com")
+@end example
+
+@end table
+@end deftp
+
+@deftp {Data Type} gitolite-rc-file
+Data type representing the Gitolite RC file.
+
+@table @asis
+@item @code{umask} (default: @code{#o0077})
+This controls the permissions Gitolite sets on the repositories and their
+contents.
+
+A value like @code{#o0027} will give read access to the group used by Gitolite
+(by default: @code{git}). This is necessary when using Gitolite with software
+like cgit or gitweb.
+
+@item @code{git-config-keys} (default: @code{""})
+Gitolite allows you to set git config values using the "config" keyword. This
+setting allows control over the config keys to accept.
+
+@item @code{roles} (default: @code{'(("READERS" . 1) ("WRITERS" . ))})
+Set the role names allowed to be used by users running the perms command.
+
+@item @code{enable} (default: @code{'("help" "desc" "info" "perms" "writable" "ssh-authkeys" "git-config" "daemon" "gitweb")})
+This setting controls the commands and features to enable within Gitolite.
+
+@end table
+@end deftp
+
 
 @node Game Services
 @subsubsection Game Services
