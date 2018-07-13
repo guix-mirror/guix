@@ -329,6 +329,37 @@ generation from a seed.  Your secret keys are encrypted and are never sent to
 other machines/servers.  Electrum does not download the Bitcoin blockchain.")
     (license license:expat)))
 
+(define-public electron-cash
+  (package
+    (inherit electrum)
+    (name "electron-cash")
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://electroncash.org/downloads/"
+                           version
+                           "/win-linux/ElectronCash-"
+                           version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "1x487hyacdm1qhik1mhfimr4jwcwz7sgsbkh11awrb6j19sxdxym"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete the bundled dependencies.
+           (delete-file-recursively "packages")
+           #t))))
+    (home-page "https://electroncash.org/")
+    (synopsis "Bitcoin Cash wallet")
+    (description
+     "Electroncash is a lightweight Bitcoin Cash client, based on a client-server
+protocol.  It supports Simple Payment Verification (SPV) and deterministic key
+generation from a seed.  Your secret keys are encrypted and are never sent to
+other machines/servers.  Electroncash does not download the Bitcoin Cash blockchain.")
+    (license license:expat)))
+
 (define-public monero
   ;; This package bundles easylogging++ and lmdb.
   ;; The bundled easylogging++ is modified, and the changes will not be upstreamed.
