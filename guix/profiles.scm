@@ -1521,7 +1521,7 @@ the generation that was current before switching."
                               (profile profile)
                               (generation number)))))
           (else
-           (switch-symlinks profile generation)
+           (switch-symlinks profile (basename generation))
            current))))
 
 (define (switch-to-previous-generation profile)
