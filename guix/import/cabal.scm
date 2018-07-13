@@ -34,6 +34,8 @@
   #:export (read-cabal
             eval-cabal
             
+            cabal-custom-setup-dependencies
+
             cabal-package?
             cabal-package-name
             cabal-package-version
@@ -47,6 +49,7 @@
             cabal-package-test-suites
             cabal-package-flags
             cabal-package-eval-environment
+            cabal-package-custom-setup
 
             cabal-source-repository?
             cabal-source-repository-use-case
@@ -616,7 +619,7 @@ If #f use the function 'port-filename' to obtain it."
   (make-cabal-package name version license home-page source-repository
                       synopsis description
                       executables lib test-suites
-                      flags eval-environment)
+                      flags eval-environment custom-setup)
   cabal-package?
   (name   cabal-package-name)
   (version cabal-package-version)
@@ -629,7 +632,8 @@ If #f use the function 'port-filename' to obtain it."
   (lib cabal-package-library) ; 'library' is a Scheme keyword
   (test-suites cabal-package-test-suites)
   (flags cabal-package-flags)
-  (eval-environment cabal-package-eval-environment)) ; alist
+  (eval-environment cabal-package-eval-environment) ; alist
+  (custom-setup cabal-package-custom-setup))
 
 (set-record-type-printer! <cabal-package>
                           (lambda (package port)
@@ -826,10 +830,13 @@ See the manual for limitations.")))))))
            (lib (make-cabal-section evaluated-sexp 'library))
            (test-suites (make-cabal-section evaluated-sexp 'test-suite))
            (flags (make-cabal-section evaluated-sexp 'flag))
-           (eval-environment '()))
+           (eval-environment '())
+           (custom-setup (match
+                          (make-cabal-section evaluated-sexp 'custom-setup)
+                          ((x) x))))
       (make-cabal-package name version license home-page-or-hackage
                           source-repository synopsis description executables lib
-                          test-suites flags eval-environment)))
+                          test-suites flags eval-environment custom-setup)))
 
   ((compose cabal-evaluated-sexp->package eval) cabal-sexp))
 
