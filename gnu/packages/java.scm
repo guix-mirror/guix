@@ -6164,8 +6164,6 @@ StringTemplate also powers ANTLR.")
              (substitute* "ANTLRv3Parser.java"
                (("public Object getTree") "public CommonTree getTree"))
              (chdir "../../../../../java")
-             (invoke "antlr" "-o" "org/antlr/tool"
-                     "org/antlr/tool/serialize.g")
              (substitute* "org/antlr/tool/LeftRecursiveRuleAnalyzer.java"
                (("import org.antlr.grammar.v3.\\*;") "import org.antlr.grammar.v3.*;
 import org.antlr.grammar.v3.ANTLRTreePrinter;"))
