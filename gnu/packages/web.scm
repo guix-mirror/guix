@@ -719,7 +719,14 @@ current version of any major web browser.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "13nrpvw8f1wx0ga7svbzld7pgrv8l172nangpipnj7jaf0lysz5z"))))
+               "13nrpvw8f1wx0ga7svbzld7pgrv8l172nangpipnj7jaf0lysz5z"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Remove code using the problematic JSON license (see
+                 ;; <https://www.gnu.org/licenses/license-list.html#JSON>).
+                 (delete-file-recursively "bin/jsonchecker")
+                 #t))))
     (build-system cmake-build-system)
     (arguments
      `(,@(if (string-prefix? "aarch64" (or (%current-target-system)
