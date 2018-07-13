@@ -6488,6 +6488,13 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
         (base32
          "18ln06xl60qzvzz61zq9q72hdbfgjsza3flph8i2asyzx3dffz68"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'disable-post-install
+           (lambda _
+             (substitute* "meson.build"
+               (("meson.add_install_script.*") "")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
