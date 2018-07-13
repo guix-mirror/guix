@@ -17263,6 +17263,114 @@ When false, disable negative caching.
 @end table
 @end deftp
 
+@subsubheading ddclient Service
+
+@cindex ddclient
+The ddclient service described below runs the ddclient daemon, which takes
+care of automatically updating DNS entries for service providers such as
+@uref{https://dyn.com/dns/, Dyn}.
+
+The following example show instantiates the service with its default
+configuration:
+
+@example
+(service ddclient-service-type)
+@end example
+
+Note that ddclient needs to access credentials that are stored in a
+@dfn{secret file}, by default @file{/etc/ddclient/secrets} (see
+@code{secret-file} below.)  You are expected to create this file manually, in
+an ``out-of-band'' fashion (you @emph{could} make this file part of the
+service configuration, for instance by using @code{plain-file}, but it will be
+world-readable @i{via} @file{/gnu/store}.)  See the examples in the
+@file{share/ddclient} directory of the @code{ddclient} package.
+
+@c %start of fragment
+
+Available @code{ddclient-configuration} fields are:
+
+@deftypevr {@code{ddclient-configuration} parameter} package ddclient
+The ddclient package.
+
+@end deftypevr
+
+@deftypevr {@code{ddclient-configuration} parameter} integer daemon
+The period after which ddclient will retry to check IP and domain name.
+
+Defaults to @samp{300}.
+
+@end deftypevr
+
+@deftypevr {@code{ddclient-configuration} parameter} boolean syslog
+Use syslog for the output.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{ddclient-configuration} parameter} string mail
+Mail to user.
+
+Defaults to @samp{"root"}.
+
+@end deftypevr
+
+@deftypevr {@code{ddclient-configuration} parameter} string mail-failure
+Mail failed update to user.
+
+Defaults to @samp{"root"}.
+
+@end deftypevr
+
+@deftypevr {@code{ddclient-configuration} parameter} string pid
+The ddclient PID file.
+
+Defaults to @samp{"/var/run/ddclient/ddclient.pid"}.
+
+@end deftypevr
+
+@deftypevr {@code{ddclient-configuration} parameter} boolean ssl
+Enable SSL support.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{ddclient-configuration} parameter} string user
+Specifies the user name or ID that is used when running ddclient
+program.
+
+Defaults to @samp{"ddclient"}.
+
+@end deftypevr
+
+@deftypevr {@code{ddclient-configuration} parameter} string group
+Group of the user who will run the ddclient program.
+
+Defaults to @samp{"ddclient"}.
+
+@end deftypevr
+
+@deftypevr {@code{ddclient-configuration} parameter} string secret-file
+Secret file which will be appended to @file{ddclient.conf} file.  This
+file contains credentials for use by ddclient.  You are expected to
+create it manually.
+
+Defaults to @samp{"/etc/ddclient/secrets.conf"}.
+
+@end deftypevr
+
+@deftypevr {@code{ddclient-configuration} parameter} list extra-options
+Extra options will be appended to @file{ddclient.conf} file.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+
+@c %end of fragment
+
+
 @node VPN Services
 @subsubsection VPN Services
 @cindex VPN (virtual private network)
