@@ -1031,12 +1031,48 @@ also walk each side of a merge and test those changes individually.")
                           ((" perl -")
                            (string-append " " perl " -")))
 
+                        (substitute* (find-files "src/triggers" ".*")
+                          ((" sed ")
+                           (string-append " " (which "sed") " ")))
+
+                        (substitute*
+                            '("src/triggers/post-compile/update-gitweb-access-list"
+                              "src/triggers/post-compile/ssh-authkeys-split"
+                              "src/triggers/upstream")
+                          ((" grep ")
+                           (string-append " " (which "grep") " ")))
+
                         ;; Avoid references to the store in authorized_keys.
                         ;; This works because gitolite-shell is in the PATH.
                         (substitute* "src/triggers/post-compile/ssh-authkeys"
                           (("\\$glshell \\$user")
                            "gitolite-shell $user"))
                         #t)))
+                  (add-before 'install 'patch-source
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Gitolite uses cat to test the readability of the
+                      ;; pubkey
+                      (substitute* "src/lib/Gitolite/Setup.pm"
+                        (("\"cat ")
+                         (string-append "\"" (which "cat") " "))
+                        (("\"ssh-keygen")
+                         (string-append "\"" (which "ssh-keygen"))))
+
+                      (substitute* '("src/lib/Gitolite/Hooks/PostUpdate.pm"
+                                     "src/lib/Gitolite/Hooks/Update.pm")
+                        (("/usr/bin/perl")
+                         (string-append (assoc-ref inputs "perl")
+                                        "/bin/perl")))
+
+                      (substitute* "src/lib/Gitolite/Common.pm"
+                        (("\"ssh-keygen")
+                         (string-append "\"" (which "ssh-keygen")))
+                        (("\"logger\"")
+                         (string-append "\""
+                                        (assoc-ref inputs "inetutils")
+                                        "/bin/logger\"")))
+
+                      #t))
                   (replace 'install
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((output (assoc-ref outputs "out"))
@@ -1050,9 +1086,24 @@ also walk each side of a merge and test those changes individually.")
                                     (symlink (string-append sharedir "/" script)
                                              (string-append bindir "/" script)))
                                   '("gitolite" "gitolite-shell"))
+                        #t)))
+                  (add-after 'install 'wrap-scripts
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (coreutils (assoc-ref inputs "coreutils"))
+                            (findutils (assoc-ref inputs "findutils"))
+                            (git (assoc-ref inputs "git")))
+                        (wrap-program (string-append out "/bin/gitolite")
+                          `("PATH" ":" prefix
+                            ,(map (lambda (dir)
+                                    (string-append dir "/bin"))
+                                  (list out coreutils findutils git))))
                         #t))))))
     (inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("coreutils" ,coreutils)
+       ("findutils" ,findutils)
+       ("inetutils" ,inetutils)))
     ;; git and openssh are propagated because trying to patch the source via
     ;; regexp matching is too brittle and prone to false positives.
     (propagated-inputs
