@@ -293,6 +293,14 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
                        (symlink so-file base)
                        (loop so-file (cdr numbers))))))
                #t)))
+         (add-after 'install-shared-lib 'move-static-lib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static")))
+               (with-directory-excursion (string-append out "/lib")
+                 (install-file "libbz2.a" (string-append static "/lib"))
+                 (delete-file "libbz2.a")
+                 #t))))
          (add-after 'install-shared-lib 'patch-scripts
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out")))
@@ -307,6 +315,7 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
        ,@(if (%current-target-system)
              '(#:tests? #f)
              '())))
+    (outputs '("out" "static"))
     (synopsis "High-quality data compression program")
     (description
      "bzip2 is a freely available, patent free (see below), high-quality data
