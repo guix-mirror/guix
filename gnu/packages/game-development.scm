@@ -518,7 +518,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
 (define-public physfs
   (package
     (name "physfs")
-    (version "2.0.3")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -527,10 +527,18 @@ sounds from presets such as \"explosion\" or \"powerup\".")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sbbyqzqhyf0g68fcvvv20n3928j0x6ik1njmhn1yigvq2bj11na"))))
+                "1wgj2zqpnfbnyyi1i7bq5pshcc9n5cvwlpzp8im67nb8662ryyxp"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f))                    ; no check target
+     '(#:tests? #f                      ; no check target
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-CMakeLists.txt
+                    (lambda _
+                      (substitute* "CMakeLists.txt"
+                        ;; XXX: For some reason CMakeLists.txt disables
+                        ;; RUNPATH manipulation when the compiler is GCC.
+                        (("CMAKE_COMPILER_IS_GNUCC") "FALSE"))
+                      #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
