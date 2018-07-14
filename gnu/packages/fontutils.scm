@@ -455,17 +455,16 @@ using the above tables.")
 (define-public libspiro
   (package
     (name "libspiro")
-    (version "20071029")
+    (version "0.5.20150702")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/libspiro/libspiro/"
-                          version "/libspiro_src-" version ".tar.bz2"))
+      (uri (string-append "https://github.com/fontforge/libspiro/releases"
+                          "/download/" version "/libspiro-dist-" version ".tar.gz"))
       (sha256
        (base32
-        "1kylz8pvwnb85yya150r9i6mhbpzx38f32qy523qg3ylgd9b3zhy"))))
+        "153ckwj6h3wwlsgcppzqj8cymv1927hi8ar8fzpchq5q89cj2kai"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f))          ;no tests
     (synopsis "Clothoid to bezier conversion library")
     (description
      "Raph Levien's Spiro package as a library.  A mechanism for drawing
