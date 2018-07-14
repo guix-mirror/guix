@@ -74,6 +74,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages stb)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
@@ -451,7 +452,13 @@ clone.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1x3yvhdrln5b6h4g5r4mds76gq8zsxw6icxqpwqkmxsqcq5yviab"))))
+                "1x3yvhdrln5b6h4g5r4mds76gq8zsxw6icxqpwqkmxsqcq5yviab"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Ensure system libraries are used.
+                  (delete-file-recursively "extlibs")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -468,7 +475,9 @@ clone.")
        ("libxrandr" ,libxrandr)
        ("eudev" ,eudev)
        ("libjpeg" ,libjpeg)
-       ("libsndfile" ,libsndfile)))
+       ("libsndfile" ,libsndfile)
+       ("stb-image" ,stb-image)
+       ("stb-image-write" ,stb-image-write)))
     (propagated-inputs
      ;; In Requires.private of pkg-config files.
      `(("flac" ,flac)
