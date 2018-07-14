@@ -49,6 +49,12 @@
             shepherd-service-auto-start?
             shepherd-service-modules
 
+            shepherd-action
+            shepherd-action?
+            shepherd-action-name
+            shepherd-action-documentation
+            shepherd-action-procedure
+
             %default-modules
 
             shepherd-service-file
@@ -146,10 +152,19 @@ DEFAULT is given, use it as the service's default value."
   (start         shepherd-service-start)               ;g-expression (procedure)
   (stop          shepherd-service-stop                 ;g-expression (procedure)
                  (default #~(const #f)))
+  (actions       shepherd-service-actions              ;list of <shepherd-action>
+                 (default '()))
   (auto-start?   shepherd-service-auto-start?          ;Boolean
                  (default #t))
   (modules       shepherd-service-modules              ;list of module names
                  (default %default-modules)))
+
+(define-record-type* <shepherd-action>
+  shepherd-action make-shepherd-action
+  shepherd-action?
+  (name          shepherd-action-name)            ;symbol
+  (procedure     shepherd-action-procedure)       ;gexp
+  (documentation shepherd-action-documentation))  ;string
 
 (define (shepherd-service-canonical-name service)
   "Return the 'canonical name' of SERVICE."
@@ -223,7 +238,13 @@ stored."
                        #:requires '#$(shepherd-service-requirement service)
                        #:respawn? '#$(shepherd-service-respawn? service)
                        #:start #$(shepherd-service-start service)
-                       #:stop #$(shepherd-service-stop service))))))
+                       #:stop #$(shepherd-service-stop service)
+                       #:actions
+                       (make-actions
+                        #$@(map (match-lambda
+                                  (($ <shepherd-action> name proc doc)
+                                   #~(#$name #$doc #$proc)))
+                                (shepherd-service-actions service))))))))
 
 (define (shepherd-configuration-file services)
   "Return the shepherd configuration file for SERVICES."

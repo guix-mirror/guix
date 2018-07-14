@@ -58,15 +58,14 @@
 
     (mkdir build-dir)
     (chdir build-dir)
-    (zero? (apply system* "meson" args))))
+    (apply invoke "meson" args)))
 
 (define* (build #:key parallel-build?
                 #:allow-other-keys)
   "Build a given meson package."
-  (zero? (apply system* "ninja"
-                (if parallel-build?
-                    `("-j" ,(number->string (parallel-job-count)))
-                    '("-j" "1")))))
+  (invoke "ninja" "-j" (if parallel-build?
+                           (number->string (parallel-job-count))
+                           "1")))
 
 (define* (check #:key test-target parallel-tests? tests?
                 #:allow-other-keys)
@@ -75,13 +74,13 @@
               (number->string (parallel-job-count))
               "1"))
   (if tests?
-      (zero? (system* "ninja" test-target))
+      (invoke "ninja" test-target)
       (begin
         (format #t "test suite not run~%")
         #t)))
 
 (define* (install #:rest args)
-  (zero? (system* "ninja" "install")))
+  (invoke "ninja" "install"))
 
 (define* (fix-runpath #:key (elf-directories '("lib" "lib64" "libexec"
                                                "bin" "sbin"))
@@ -135,7 +134,7 @@ for example libraries only needed for the tests."
                                             (find-files dir elf-pred))
                                           existing-elf-dirs))))
          (for-each (lambda (elf-file)
-                     (system* "patchelf" "--shrink-rpath" elf-file)
+                     (invoke "patchelf" "--shrink-rpath" elf-file)
                      (handle-file elf-file elf-list))
                    elf-list)))))
   (for-each handle-output outputs)

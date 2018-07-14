@@ -35,6 +35,7 @@
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8516,6 +8517,10 @@ outline-mode), so there is no such thing like an outshine mode, only
         (base32
          "109fvivsb4r0rbqljngqrmxqvbnbkqlivczx6brrvlr7ci625lhf"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-seq" ,emacs-seq)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-let-alist" ,emacs-let-alist)))
     (home-page "https://github.com/cpitclaudel/biblio.el")
     (synopsis "Browse and import bibliographic references")
     (description "This package provides an extensible Emacs package for
@@ -8550,7 +8555,8 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
          ("emacs-s" ,emacs-s)
          ("emacs-dash" ,emacs-dash)
          ("emacs-f" ,emacs-f)
-         ("emacs-biblio" ,emacs-biblio)))
+         ("emacs-biblio" ,emacs-biblio)
+         ("emacs-ivy" ,emacs-ivy)))
       (home-page "https://github.com/tmalsburg/helm-bibtex")
       (synopsis "Bibliography manager based on Helm")
       (description "This package provides bibliography manager for Emacs,
@@ -11410,3 +11416,50 @@ siblings and friends.  This visual overview can also be used to browse your
 entries.  You can think of entries as nodes in a mind map, or pages in a
 wiki.")
     (license license:expat)))
+
+(define-public emacs-recent-addresses
+  (let ((commit "d9da58db542089a1ceb5ef29e420dbfbc4a36373")
+        (revision "0"))
+    (package
+      (name "emacs-recent-addresses")
+      (home-page "http://nschum.de/src/emacs/recent-addresses/")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/nschum/recent-addresses.el")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "175rvcwmkb5z7ss7q2y5178mvdvp5bhn39irz80qinlvaz8fm4nk"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Record recently-used email addressed and auto-complete them")
+      (description
+       "@code{recent-addresses} is an Emacs allows you to quickly look up
+previously used email addresses.  It can be used alongside the Gnus email
+client.")
+      (license license:gpl2+))))
+
+(define-public emacs-fold-dwim
+  (let ((commit "c46f4bb2ce91b4e307136320e72c28dd50b6cd8b")
+        (revision "0"))
+    (package
+      (name "emacs-fold-dwim")
+      (version (git-version "1.2" revision commit))
+      (home-page "https://github.com/emacsattic/fold-dwim")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "1yz1wis31asw6xa5maliyd1ck2q02xnnh7dc6swgj9cb4wi7k6i1"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Unified user interface for Emacs folding modes")
+      (description
+       "DWIM stands for \"do what I mean\", as in the idea that one keystroke
+can do different things depending on the context.  In this package, it means
+that, if the cursor is in a currently hidden folded construction, we want to
+show it; if it's not, we want to hide whatever fold the cursor is in.")
+      (license license:gpl2+))))

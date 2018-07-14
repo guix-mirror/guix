@@ -338,6 +338,27 @@ as existing hashing techniques, with provably negligible risk of collisions.")
 (define-public oniguruma
   (package
     (name "oniguruma")
+    (version "6.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/kkos/"
+                                  "oniguruma/releases/download/v" version
+                                  "/onig-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00s9gjgb3srn5sbmx4x9bssn52mi04d868ghizssdhjlddgxmsmd"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/kkos/oniguruma")
+    (synopsis "Regular expression library")
+    (description "Oniguruma is a regular expressions library.  The special
+characteristic of this library is that different character encoding for every
+regular expression object can be specified.")
+    (license license:bsd-2)))
+
+;; PHP < 7.3.0 requires this old version.  Remove once no longer needed.
+(define-public oniguruma-5
+  (package
+    (inherit oniguruma)
     (version "5.9.6")
     (source (origin
               (method url-fetch)
@@ -346,14 +367,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
                                   "/onig-" version ".tar.gz"))
               (sha256
                (base32
-                "19s79vsclqn170mw0ajwv7j37qsbn4f1yjz3yavnhvva6c820r6m"))))
-    (build-system gnu-build-system)
-    (home-page "https://github.com/kkos/oniguruma")
-    (synopsis "Regular expression library")
-    (description "Oniguruma is a regular expressions library.  The special
-characteristic of this library is that different character encoding for every
-regular expression object can be specified.")
-    (license license:bsd-2)))
+                "19s79vsclqn170mw0ajwv7j37qsbn4f1yjz3yavnhvva6c820r6m"))))))
 
 (define-public antiword
   (package

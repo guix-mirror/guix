@@ -1,0 +1,72 @@
+Avoid a crash:
+
+https://github.com/syncthing/syncthing/issues/5002
+
+Patch copied from upstream source repository:
+
+https://github.com/syncthing/syncthing/commit/35a75a95dc6383b2d73ab645f1407f7907ec1a2c
+
+From 35a75a95dc6383b2d73ab645f1407f7907ec1a2c Mon Sep 17 00:00:00 2001
+From: Jakob Borg <jakob@kastelo.net>
+Date: Wed, 13 Jun 2018 19:07:52 +0200
+Subject: [PATCH] lib/model: Don't panic when rechecking file (fixes #5002)
+ (#5003)
+
+---
+ lib/model/model.go      |  2 +-
+ lib/model/model_test.go | 26 ++++++++++++++++++++++++++
+ 2 files changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/lib/model/model.go b/lib/model/model.go
+index 5a9146e0..302f06c5 100644
+--- a/lib/model/model.go
++++ b/lib/model/model.go
+@@ -1373,7 +1373,7 @@ func (m *Model) recheckFile(deviceID protocol.DeviceID, folderFs fs.Filesystem,
+ 		return
+ 	}
+ 
+-	if blockIndex > len(cf.Blocks) {
++	if blockIndex >= len(cf.Blocks) {
+ 		l.Debugf("%v recheckFile: %s: %q / %q i=%d: block index too far", m, deviceID, folder, name, blockIndex)
+ 		return
+ 	}
+diff --git a/lib/model/model_test.go b/lib/model/model_test.go
+index 295eafc1..456bbc4a 100644
+--- a/lib/model/model_test.go
++++ b/lib/model/model_test.go
+@@ -3608,6 +3608,32 @@ func TestIssue4903(t *testing.T) {
+ 	}
+ }
+ 
++func TestIssue5002(t *testing.T) {
++	// recheckFile should not panic when given an index equal to the number of blocks
++
++	db := db.OpenMemory()
++	m := NewModel(defaultCfgWrapper, protocol.LocalDeviceID, "syncthing", "dev", db, nil)
++	m.AddFolder(defaultFolderConfig)
++	m.StartFolder("default")
++
++	m.ServeBackground()
++	defer m.Stop()
++
++	if err := m.ScanFolder("default"); err != nil {
++		t.Error(err)
++	}
++
++	file, ok := m.CurrentFolderFile("default", "foo")
++	if !ok {
++		t.Fatal("test file should exist")
++	}
++	nBlocks := len(file.Blocks)
++
++	m.recheckFile(protocol.LocalDeviceID, defaultFolderConfig.Filesystem(), "default", "foo", nBlocks-1, []byte{1, 2, 3, 4})
++	m.recheckFile(protocol.LocalDeviceID, defaultFolderConfig.Filesystem(), "default", "foo", nBlocks, []byte{1, 2, 3, 4}) // panic
++	m.recheckFile(protocol.LocalDeviceID, defaultFolderConfig.Filesystem(), "default", "foo", nBlocks+1, []byte{1, 2, 3, 4})
++}
++
+ func addFakeConn(m *Model, dev protocol.DeviceID) *fakeConnection {
+ 	fc := &fakeConnection{id: dev, model: m}
+ 	m.AddConnection(fc, protocol.HelloResult{})
+-- 
+2.18.0
+

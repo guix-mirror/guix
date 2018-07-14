@@ -85,6 +85,7 @@ MODULES =					\
   guix/nar.scm					\
   guix/derivations.scm				\
   guix/grafts.scm				\
+  guix/inferior.scm				\
   guix/gnu-maintenance.scm			\
   guix/self.scm					\
   guix/upstream.scm				\
@@ -200,6 +201,7 @@ MODULES =					\
   guix/scripts/substitute.scm			\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
+  guix/scripts/repl.scm				\
   guix/scripts/system.scm			\
   guix/scripts/system/search.scm		\
   guix/scripts/lint.scm				\
@@ -357,6 +359,7 @@ SCM_TESTS =					\
   tests/profiles.scm				\
   tests/search-paths.scm			\
   tests/syscalls.scm				\
+  tests/inferior.scm				\
   tests/gremlin.scm				\
   tests/bournish.scm				\
   tests/lint.scm				\

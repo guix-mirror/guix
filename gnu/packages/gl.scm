@@ -224,7 +224,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "17.3.8")
+    (version "18.1.2")
     (source
       (origin
         (method url-fetch)
@@ -236,10 +236,9 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1cd6a4ll5arla3kncxnw9196ak1v4rvnb098aa7lm3n4h7r9p7cg"))
+          "1ydivzm4c2k53b65lvm11d62z140xlmd7viw63bl5cm5idjg02q7"))
         (patches
-         (search-patches "mesa-wayland-egl-symbols-check-mips.patch"
-                         "mesa-skip-disk-cache-test.patch"))))
+         (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(;; The following are in the Requires.private field of gl.pc.
@@ -260,7 +259,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
-             `(("llvm" ,llvm-3.9.1))) ; exactly 3.9.0 or 3.9.1 for swrast
+             `(("llvm" ,llvm)))
             (_
              `()))
         ("makedepend" ,makedepend)
@@ -276,15 +275,15 @@ also known as DXTn or DXTC) for Mesa.")
        '(,@(match (%current-system)
              ("armhf-linux"
               ;; TODO: Add etnaviv,imx when libdrm supports etnaviv.
-              '("--with-gallium-drivers=freedreno,nouveau,r300,r600,swrast,vc4,virgl"))
+              '("--with-gallium-drivers=freedreno,nouveau,r300,r600,swrast,tegra,vc4,virgl"))
              ("aarch64-linux"
               ;; TODO: Fix svga driver for aarch64 and armhf.
-              '("--with-gallium-drivers=freedreno,nouveau,pl111,r300,r600,swrast,vc4,virgl"))
+              '("--with-gallium-drivers=freedreno,nouveau,pl111,r300,r600,swrast,tegra,vc4,virgl"))
              (_
               '("--with-gallium-drivers=i915,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
-         "--with-platforms=x11,drm,wayland,surfaceless"
+         "--with-platforms=x11,drm,surfaceless,wayland"
          "--enable-glx-tls"        ;Thread Local Storage, improves performance
          ;; "--enable-opencl"
          ;; "--enable-omx"
@@ -328,23 +327,15 @@ also known as DXTn or DXTC) for Mesa.")
          (add-after
            'unpack 'patch-create_test_cases
            (lambda _
-             (substitute* "src/compiler/glsl/tests/lower_jumps/create_test_cases.py"
-               (("/usr/bin/env bash") (which "bash")))
              (substitute* "src/intel/genxml/gen_pack_header.py"
                (("/usr/bin/env python2") (which "python")))
              #t))
          (add-before
            'build 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((s2tc (assoc-ref inputs "s2tc"))
-                   (out (assoc-ref outputs "out")))
+             (let ((out (assoc-ref outputs "out")))
                ;; Remain agnostic to .so.X.Y.Z versions while doing
                ;; the substitutions so we're future-safe.
-               (substitute*
-                   '("src/gallium/auxiliary/util/u_format_s3tc.c"
-                     "src/mesa/main/texcompress_s3tc.c")
-                 (("\"libtxc_dxtn\\.so")
-                  (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
                (substitute* "src/glx/dri_common.c"
                  (("dlopen\\(\"libGL\\.so")
                   (string-append "dlopen(\"" out "/lib/libGL.so")))
@@ -559,7 +550,7 @@ OpenGL graphics API.")
 (define-public libepoxy
   (package
     (name "libepoxy")
-    (version "1.5.0")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -567,7 +558,7 @@ OpenGL graphics API.")
                     version "/libepoxy-" version ".tar.xz"))
               (sha256
                (base32
-                "1md58amxyp34yjnw4xa185hw5jm0hnb2xnhdc28zdsx6k19rk52c"))))
+                "1n57xj5i6giw4mp5s59w1m9bm33sd6gjg7r00dzzvcwya6326mm9"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

@@ -27,7 +27,7 @@ Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nils Gillmann@*
-Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
+Copyright @copyright{} 2016, 2017, 2018 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017, 2018 Clément Lassieur@*
@@ -166,6 +166,7 @@ Programming Interface
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
+* Invoking guix repl::          Fiddling with Guix interactively.
 
 Defining Packages
 
@@ -2785,12 +2786,18 @@ Generation 2	Jun 11 2018 11:02:49
     repository URL: https://git.savannah.gnu.org/git/guix.git
     branch: origin/master
     commit: e0cc7f669bec22c37481dd03a7941c7d11a64f1d
+  2 new packages: keepalived, libnfnetlink
+  6 packages upgraded: emacs-nix-mode@@2.0.4,
+    guile2.0-guix@@0.14.0-12.77a1aac, guix@@0.14.0-12.77a1aac,
+    heimdal@@7.5.0, milkytracker@@1.02.00, nix@@2.0.4
 
 Generation 3	Jun 13 2018 23:31:07	(current)
   guix 844cc1c
     repository URL: https://git.savannah.gnu.org/git/guix.git
     branch: origin/master
     commit: 844cc1c8f394f03b404c5bb3aee086922373490c
+  28 new packages: emacs-helm-ls-git, emacs-helm-mu, @dots{}
+  69 packages upgraded: borg@@1.1.6, cheese@@3.28.0, @dots{}
 @end example
 
 This @code{~/.config/guix/current} profile works like any other profile
@@ -3267,6 +3274,7 @@ package definitions.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
+* Invoking guix repl::          Fiddling with Guix interactively.
 @end menu
 
 @node Defining Packages
@@ -4916,6 +4924,12 @@ containing @var{text}, a string.  @var{references} is a list of store items that
 resulting text file refers to; it defaults to the empty list.
 @end deffn
 
+@deffn {Monadic Procedure} binary-file @var{name} @var{data} [@var{references}]
+Return as a monadic value the absolute file name in the store of the file
+containing @var{data}, a bytevector.  @var{references} is a list of store
+items that the resulting binary file refers to; it defaults to the empty list.
+@end deffn
+
 @deffn {Monadic Procedure} interned-file @var{file} [@var{name}] @
          [#:recursive? #t] [#:select? (const #t)]
 Return the name of @var{file} once interned in the store.  Use
@@ -5349,7 +5363,7 @@ procedure (@pxref{The Store Monad, @code{interned-file}}).
 
 @deffn {Scheme Procedure} plain-file @var{name} @var{content}
 Return an object representing a text file called @var{name} with the given
-@var{content} (a string) to be added to the store.
+@var{content} (a string or a bytevector) to be added to the store.
 
 This is the declarative counterpart of @code{text-file}.
 @end deffn
@@ -5538,6 +5552,57 @@ corresponding to @var{obj} for @var{system}, cross-compiling for
 has an associated gexp compiler, such as a @code{<package>}.
 @end deffn
 
+@node Invoking guix repl
+@section Invoking @command{guix repl}
+
+@cindex REPL, read-eval-print loop
+The @command{guix repl} command spawns a Guile @dfn{read-eval-print loop}
+(REPL) for interactive programming (@pxref{Using Guile Interactively,,, guile,
+GNU Guile Reference Manual}).  Compared to just launching the @command{guile}
+command, @command{guix repl} guarantees that all the Guix modules and all its
+dependencies are available in the search path.  You can use it this way:
+
+@example
+$ guix repl
+scheme@@(guile-user)> ,use (gnu packages base)
+scheme@@(guile-user)> coreutils
+$1 = #<package coreutils@@8.29 gnu/packages/base.scm:327 3e28300>
+@end example
+
+@cindex inferiors
+In addition, @command{guix repl} implements a simple machine-readable REPL
+protocol for use by @code{(guix inferior)}, a facility to interact with
+@dfn{inferiors}, separate processes running a potentially different revision
+of Guix.
+
+The available options are as follows:
+
+@table @code
+@item --type=@var{type}
+@itemx -t @var{type}
+Start a REPL of the given @var{TYPE}, which can be one of the following:
+
+@table @code
+@item guile
+This is default, and it spawns a standard full-featured Guile REPL.
+@item machine
+Spawn a REPL that uses the machine-readable protocol.  This is the protocol
+that the @code{(guix inferior)} module speaks.
+@end table
+
+@item --listen=@var{endpoint}
+By default, @command{guix repl} reads from standard input and writes to
+standard output.  When this option is passed, it will instead listen for
+connections on @var{endpoint}.  Here are examples of valid options:
+
+@table @code
+@item --listen=tcp:37146
+Accept connections on localhost on port 37146.
+
+@item --listen=unix:/tmp/socket
+Accept connections on the Unix-domain socket @file{/tmp/socket}.
+@end table
+@end table
 
 @c *********************************************************************
 @node Utilities
@@ -10843,6 +10908,21 @@ gexps to introduce job definitions that are passed to mcron
 @xref{Guile Syntax, mcron job specifications,, mcron, GNU@tie{}mcron},
 for more information on mcron job specifications.  Below is the
 reference of the mcron service.
+
+On a running system, you can use the @code{schedule} action of the service to
+visualize the mcron jobs that will be executed next:
+
+@example
+# herd schedule mcron
+@end example
+
+@noindent
+The example above lists the next five tasks that will be executed, but you can
+also specify the number of tasks to display:
+
+@example
+# herd schedule mcron 10
+@end example
 
 @deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron}]
 Return an mcron service running @var{mcron} that schedules @var{jobs}, a
@@ -21963,6 +22043,17 @@ Constructors,,, shepherd, The GNU Shepherd Manual}).  They are given as
 G-expressions that get expanded in the Shepherd configuration file
 (@pxref{G-Expressions}).
 
+@item @code{actions} (default: @code{'()})
+@cindex actions, of Shepherd services
+This is a list of @code{shepherd-action} objects (see below) defining
+@dfn{actions} supported by the service, in addition to the standard
+@code{start} and @code{stop} actions.  Actions listed here become available as
+@command{herd} sub-commands:
+
+@example
+herd @var{action} @var{service} [@var{arguments}@dots{}]
+@end example
+
 @item @code{documentation}
 A documentation string, as shown when running:
 
@@ -21978,6 +22069,54 @@ This is the list of modules that must be in scope when @code{start} and
 @code{stop} are evaluated.
 
 @end table
+@end deftp
+
+@deftp {Data Type} shepherd-action
+This is the data type that defines additional actions implemented by a
+Shepherd service (see above).
+
+@table @code
+@item name
+Symbol naming the action.
+
+@item documentation
+This is a documentation string for the action.  It can be viewed by running:
+
+@example
+herd doc @var{service} action @var{action}
+@end example
+
+@item procedure
+This should be a gexp that evaluates to a procedure of at least one argument,
+which is the ``running value'' of the service (@pxref{Slots of services,,,
+shepherd, The GNU Shepherd Manual}).
+@end table
+
+The following example defines an action called @code{say-hello} that kindly
+greets the user:
+
+@example
+(shepherd-action
+  (name 'say-hello)
+  (documentation "Say hi!")
+  (procedure #~(lambda (running . args)
+                 (format #t "Hello, friend! arguments: ~s\n"
+                         args)
+                 #t)))
+@end example
+
+Assuming this action is added to the @code{example} service, then you can do:
+
+@example
+# herd say-hello example
+Hello, friend! arguments: ()
+# herd say-hello example a b c
+Hello, friend! arguments: ("a" "b" "c")
+@end example
+
+This, as you can see, is a fairly sophisticated way to say hello.
+@xref{Service Convenience,,, shepherd, The GNU Shepherd Manual}, for more
+info on actions.
 @end deftp
 
 @defvr {Scheme Variable} shepherd-root-service-type

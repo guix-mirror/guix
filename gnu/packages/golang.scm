@@ -1840,3 +1840,138 @@ deliver content")
 store, and deliver content.  It's containe Docker Registry 2.0 and libraries
 to interacting with distribution components.")
       (license license:asl2.0))))
+
+(define-public go-github-com-docker-go-connections
+  (let ((commit "3ede32e2033de7505e6500d6c868c2b9ed9f169d")
+        (revision "0"))
+    (package
+      (name "go-github-com-docker-go-connections")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/docker/go-connections.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "0v1pkr8apwmhyzbjfriwdrs1ihlk6pw7izm57r24mf9jdmg3fyb0"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/docker/go-connections"))
+      (home-page "https://github.com/docker/go-connections")
+      (synopsis "Networking library for Go")
+      (description
+       "This packages provides a library to work with network connections in
+the Go language.  In particular it provides tools to deal with network address
+translation (NAT), proxies, sockets, and transport layer security (TLS).")
+      (license license:asl2.0))))
+
+(define-public go-github-com-docker-machine
+  (let ((commit "7b7a141da84480342357c51838be142bf183b095")
+        (revision "0"))
+    (package
+      (name "go-github-com-docker-machine")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/docker/machine.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0bavk0lvs462yh0lnmnxi9psi5qv1x3nvzmd2b0drsahlp1gxi8s"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/docker/machine"))
+      (home-page "https://github.com/docker/machine")
+      (synopsis "Machine management for a container-centric world")
+      (description
+       "@dfn{Machine} lets you create Docker hosts on your computer, on
+hosting providers, and inside your data center.  It creates servers, installs
+Docker on them, then configures the Docker client to talk to them.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-gorhill-cronexpr
+  (let ((commit "f0984319b44273e83de132089ae42b1810f4933b")
+        (revision "0"))
+    (package
+      (name "go-github-com-gorhill-cronexpr")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gorhill/cronexpr.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0dphhhqy3i7265znv3m8n57l80dmaq6z4hsj5kgd87qd19z8x0l2"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gorhill/cronexpr"))
+      (home-page "https://github.com/gorhill/cronexpr")
+      (synopsis "Cron expression parser in the Go language")
+      (description
+       "This package provides a cron expression parser in the Go language.
+Given a cron expression and a time stamp, you can get the next time stamp
+which satisfies the cron expression.")
+      (license (list license:gpl3+
+                     license:asl2.0)))))
+
+(define-public go-gopkg-in-check-v1
+  (let ((commit "20d25e2804050c1cd24a7eea1e7a6447dd0e74ec")
+        (revision "0"))
+    (package
+      (name "go-gopkg-in-check-v1")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/go-check/check")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0k1m83ji9l1a7ng8a7v40psbymxasmssbrrhpdv2wl4rhs0nc3np"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/check.v1"))
+      (home-page "https://gopkg.in/check.v1")
+      (synopsis "Test framework for the Go language")
+      (description
+       "This package provides a test library for the Go language.")
+      (license license:asl2.0))))
+
+(define-public go-gopkg-in-yaml-v2
+  (let ((commit "14227de293ca979cf205cd88769fe71ed96a97e2")
+        (revision "0"))
+    (package
+      (name "go-gopkg-in-yaml-v2")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://gopkg.in/yaml.v2.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "038hnrjcnjygyi3qidfrkpkakis82qg381sr495d2s40g2dwlzah"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/yaml.v2"))
+      (native-inputs
+       `(("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
+      (home-page "https://gopkg.in/yaml.v2")
+      (synopsis "YAML reader and writer for the Go language")
+      (description
+       "This package provides a Go library for encode and decode YAML
+values.")
+      (license license:asl2.0))))

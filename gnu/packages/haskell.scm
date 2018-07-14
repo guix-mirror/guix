@@ -2487,6 +2487,31 @@ Haskell library @code{regex-base}.")
 @code{libtre} (fork by Roman Cheplyaka).")
     (license license:bsd-3)))
 
+(define-public ghc-regex-tdfa-text
+  (package
+    (name "ghc-regex-tdfa-text")
+    (version "1.0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/regex-tdfa-text/"
+             "regex-tdfa-text-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0090g6lgbdm9lywpqm2d3724nnnh24nx3vnlqr96qc2w486pmmrq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-regex-base" ,ghc-regex-base)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
+    (home-page
+     "http://hackage.haskell.org/package/regex-tdfa-text")
+    (synopsis "Text interface for regex-tdfa")
+    (description
+     "This provides an extra text interface for regex-tdfa.")
+    (license license:bsd-3)))
+
 (define-public ghc-parsers
   (package
     (name "ghc-parsers")
@@ -9676,6 +9701,25 @@ serialization code.")
     (synopsis "Retrieve information about disk space usage")
     (description "A cross-platform library for retrieving information about
 disk space usage.")
+    (license license:bsd-3)))
+
+(define-public ghc-xdg-basedir
+  (package
+    (name "ghc-xdg-basedir")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/xdg-basedir/"
+             "xdg-basedir-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0azlzaxp2dn4l1nr7shsxah2magk1szf6fx0mv75az00qsjw6qg4"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/willdonnelly/xdg-basedir")
+    (synopsis "XDG Base Directory library for Haskell")
+    (description "This package provides a library implementing the XDG Base Directory spec.")
     (license license:bsd-3)))
 
 ;;; haskell.scm ends here

@@ -69,6 +69,65 @@ library
       mtl        >= 2.0      && < 3
 ")
 
+;; Check "-any", "-none" when name is different.
+(define test-cabal-4
+  "name: foo
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description: description
+license: BSD3
+library
+  if impl(ghcjs -any)
+    Build-depends: ghc-a
+  if impl(ghc>=7.2&&<7.6)
+    Build-depends: ghc-b
+  if impl(ghc == 7.8)
+    Build-depends: 
+      HTTP       >= 4000.2.5 && < 4000.3,
+      mtl        >= 2.0      && < 3
+")
+
+;; Check "-any", "-none".
+(define test-cabal-5
+  "name: foo
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description: description
+license: BSD3
+library
+  if impl(ghc == 7.8)
+    Build-depends: 
+      HTTP       >= 4000.2.5 && < 4000.3,
+  if impl(ghc -any)
+    Build-depends: mtl        >= 2.0      && < 3
+  if impl(ghc>=7.2&&<7.6)
+    Build-depends: ghc-b
+")
+
+;; Check "custom-setup".
+(define test-cabal-6
+  "name: foo
+build-type: Custom
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description: description
+license: BSD3
+custom-setup
+  setup-depends: base >= 4.7 && < 5,
+                 Cabal >= 1.24,
+                 haskell-gi == 0.21.*
+library
+  if impl(ghc>=7.2&&<7.6)
+    Build-depends: ghc-b
+  if impl(ghc == 7.8)
+    Build-depends: 
+      HTTP       >= 4000.2.5 && < 4000.3,
+      mtl        >= 2.0      && < 3
+")
+
 ;; A fragment of a real Cabal file with minor modification to check precedence
 ;; of 'and' over 'or', missing final newline, spaces between keywords and
 ;; parentheses and between key and column.
@@ -137,6 +196,18 @@ library
 
 (test-assert "hackage->guix-package test 3"
   (eval-test-with-cabal test-cabal-3
+                        #:cabal-environment '(("impl" . "ghc-7.8"))))
+
+(test-assert "hackage->guix-package test 4"
+  (eval-test-with-cabal test-cabal-4
+                        #:cabal-environment '(("impl" . "ghc-7.8"))))
+
+(test-assert "hackage->guix-package test 5"
+  (eval-test-with-cabal test-cabal-5
+                        #:cabal-environment '(("impl" . "ghc-7.8"))))
+
+(test-assert "hackage->guix-package test 6"
+  (eval-test-with-cabal test-cabal-6
                         #:cabal-environment '(("impl" . "ghc-7.8"))))
 
 (test-assert "read-cabal test 1"

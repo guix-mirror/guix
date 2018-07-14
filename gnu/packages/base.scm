@@ -10,7 +10,7 @@
 ;;; Copyright © 2016, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -1131,7 +1131,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2018d")
+    (version "2018e")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1139,7 +1139,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0m6020dnk9r40z7k36jp13fa06xip3hn0fdx3nly66jzxgffs1ji"))))
+               "0bk97fv2i5ns42prpmlaadsswdjwv0ifi7whj2s4q6l44rcqwa3b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -1189,7 +1189,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1nd882yhsazmcfqmcqyfig3axycryl30gmizgqhqsx5dpa2lxr3x"))))))
+                            "1kpb02631s58i068mwq63xlamcv1ffj4p6y4wpb9kdl01vr0qd6a"))))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -1205,7 +1205,25 @@ and daylight-saving rules.")
 ;;; will typically be obsolete and should never be referred to by a built
 ;;; package.
 (define-public tzdata-for-tests
-  (hidden-package tzdata))
+  (hidden-package
+   (package
+     (inherit tzdata)
+     (version "2018d")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "https://www.iana.org/time-zones/repository"
+                                   "/releases/tzdata" version ".tar.gz"))
+               (sha256
+                (base32
+                 "0m6020dnk9r40z7k36jp13fa06xip3hn0fdx3nly66jzxgffs1ji"))))
+     (inputs `(("tzcode" ,(origin
+                            (method url-fetch)
+                            (uri (string-append
+                                  "http://www.iana.org/time-zones/repository/releases/tzcode"
+                                  version ".tar.gz"))
+                            (sha256
+                             (base32
+                              "1nd882yhsazmcfqmcqyfig3axycryl30gmizgqhqsx5dpa2lxr3x")))))))))
 
 (define-public libiconv
   (package

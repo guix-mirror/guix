@@ -402,8 +402,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17.5")
-(define %linux-libre-hash "0pldqw7f4nhziw3r73l339d79aijxhy6anf1ryiy3makip6gkib1")
+(define %linux-libre-version "4.17.6")
+(define %linux-libre-hash "0d48r5jpj71ikdalz5z756snwq54cpnwnba8bbhg8r2ri3770wcm")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -411,8 +411,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.54")
-(define %linux-libre-4.14-hash "027138z7p5ld1zyrxq1xjc7x3b7wbgikh7gn2xfvwm9gn8qpazki")
+(define %linux-libre-4.14-version "4.14.55")
+(define %linux-libre-4.14-hash "1rlapfwkjfmyk4ahvqwqap4w9flbw2zag0r04fwrmyqz1y5ijayf")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -421,14 +421,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.111"
-                    "0ld57627k6mjp14x5bvndakj6lc4l31zp2yq74h7ski2g3k7ppk2"
+  (make-linux-libre "4.9.112"
+                    "1zrnbvzr7z5ky79r6hpjvn15bxmwcyi8lr7yq2nx1r8ladl8lnb0"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.139"
-                    "0x58ykgx7vbv23q763ydifi548mz39nal7wbvrrl4i9ndk7pzfzz"
+  (make-linux-libre "4.4.140"
+                    "10h4k2c2ncnc1h61kikqb618dh9lp8fmzagz2ydykrdbb5jjiy82"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -537,15 +537,15 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public psmisc
   (package
     (name "psmisc")
-    (version "22.21")
+    (version "23.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
-                          version ".tar.gz"))
+                          version ".tar.xz"))
       (sha256
        (base32
-        "0nhlm1vrrwn4a845p6y4nnnb4liq70n74zbdd5dq844jc6nkqclp"))))
+        "0c5s94hqpwfmyswx2f96gifa6wdbpxxpkyxcrlzbxpvmrxsd911f"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/psmisc/psmisc")
@@ -975,15 +975,8 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "096pwrnhj36yndldvs2pj4r871zhcgisks0is78f1jkjn9sd4b2z"))
-             (patches (search-patches "alsa-lib-add-environment-variable.patch"))))
+               "096pwrnhj36yndldvs2pj4r871zhcgisks0is78f1jkjn9sd4b2z"))))
     (build-system gnu-build-system)
-    (native-search-paths
-     (list (search-path-specification
-             (variable "ALSA_PLUGIN_DIR")
-             (file-type 'regular)
-             (separator #f)                         ;single entry
-             (files '("lib/alsa-lib")))))
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
     (description
@@ -3049,15 +3042,15 @@ Linux Device Mapper multipathing driver:
 (define-public libaio
   (package
     (name "libaio")
-    (version "0.3.110")
+    (version "0.3.111")
     (source (origin
               (method url-fetch)
-             (uri (list
-                   (string-append "mirror://debian/pool/main/liba/libaio/"
-                                  name "_" version ".orig.tar.gz")))
-             (sha256
-              (base32
-               "0zjzfkwd1kdvq6zpawhzisv7qbq1ffs343i5fs9p498pcf7046g0"))))
+              (uri (list
+                    (string-append "https://releases.pagure.org/libaio/"
+                                   name "-" version ".tar.gz")))
+              (sha256
+               (base32
+                "0ajhzbqjwsmz51gwccfyw6w9k4j4gmxcl2ph30sfn2gxv0d8gkv2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -3065,7 +3058,7 @@ Linux Device Mapper multipathing driver:
        #:test-target "partcheck" ; need root for a full 'check'
        #:phases
        (modify-phases %standard-phases (delete 'configure)))) ; no configure script
-    (home-page "http://lse.sourceforge.net/io/aio.html")
+    (home-page "https://pagure.io/libaio")
     (synopsis "Linux-native asynchronous I/O access library")
     (description
      "This library enables userspace to use Linux kernel asynchronous I/O
@@ -3099,7 +3092,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.49")
+    (version "5.50")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3107,7 +3100,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "15ffsaz7l3fgdg03l7g1xx9jw7xgs6pc548zxqsxawsca5x1sc1k"))))
+                "048r91vx9gs5nwwbah2s0xig04nwk14c5s0vb7qmaqdvighsmz2z"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -3290,7 +3283,7 @@ and copy/paste text in the console and in xterm.")
                      ("which" ,which)
                      ;; The tests need 'grep' with perl regexp support.
                      ("grep" ,grep)))
-    (home-page "https://btrfs.wiki.kernel.org/")
+    (home-page "https://btrfs.wiki.kernel.org/index.php/Main_Page")
     (synopsis "Create and manage btrfs copy-on-write file systems")
     (description "Btrfs is a @dfn{copy-on-write} (CoW) file system for Linux
 aimed at implementing advanced features while focusing on fault tolerance,
@@ -3595,7 +3588,7 @@ The following service daemons are also provided:
 (define-public rng-tools
   (package
     (name "rng-tools")
-    (version "6.2")
+    (version "6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nhorman/rng-tools/"
@@ -3603,7 +3596,7 @@ The following service daemons are also provided:
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xy4qmfhvkr5z4jr9j55dn5gnajr2jccdp6n0xsxkipjcgag342j"))))
+                "1lc2kqw3idwmjyjnf16sqz0f4r1w7c638n4la1j1n5c3188q26bv"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.

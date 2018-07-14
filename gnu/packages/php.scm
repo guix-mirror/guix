@@ -318,7 +318,7 @@
        ("libxpm" ,libxpm)
        ("libxslt" ,libxslt)
        ("libx11" ,libx11)
-       ("oniguruma" ,oniguruma)
+       ("oniguruma" ,oniguruma-5)
        ("openldap" ,openldap)
        ("openssl" ,openssl)
        ("pcre" ,pcre)

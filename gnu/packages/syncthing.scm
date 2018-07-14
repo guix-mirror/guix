@@ -24,6 +24,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
+  #:use-module (gnu packages)
   #:use-module (gnu packages golang))
 
 (define-public syncthing
@@ -35,6 +36,7 @@
               (uri (string-append "https://github.com/syncthing/syncthing"
                                   "/releases/download/v" version
                                   "/syncthing-source-v" version ".tar.gz"))
+              (patches (search-patches "syncthing-fix-crash.patch"))
               (sha256
                (base32
                 "0bxkm5jlj6l4gai23bg0y31brr80r9qllh1rdg29pahjn0c2b4ml"))

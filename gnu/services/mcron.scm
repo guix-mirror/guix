@@ -60,29 +60,71 @@
 (define (job-file job)
   (scheme-file "mcron-job" job))
 
+(define (shepherd-schedule-action mcron files)
+  "Return a Shepherd action that runs MCRON with '--schedule' for the given
+files."
+  (shepherd-action
+   (name 'schedule)
+   (documentation
+    "Display jobs that are going to be scheduled.")
+   (procedure
+    #~(lambda* (_ #:optional (n "5"))
+        ;; XXX: This is a global side effect.
+        (setenv "GUILE_AUTO_COMPILE" "0")
+
+        ;; Run 'mcron' in a pipe so we can explicitly redirect its output to
+        ;; 'current-output-port', which at this stage is bound to the client
+        ;; connection.
+        (let ((pipe (open-pipe* OPEN_READ
+                                #$(file-append mcron "/bin/mcron")
+                                (string-append "--schedule=" n)
+                                #$@files)))
+          (let loop ()
+            (match (read-line pipe 'concat)
+              ((? eof-object?)
+               (catch 'system-error
+                 (lambda ()
+                   (zero? (close-pipe pipe)))
+                 (lambda args
+                   ;; There's with race between the SIGCHLD handler, which
+                   ;; could call 'waitpid' before 'close-pipe' above does.  If
+                   ;; we get ECHILD, that means we lost the race, but that's
+                   ;; fine.
+                   (or (= ECHILD (system-error-errno args))
+                       (apply throw args)))))
+              (line
+               (display line)
+               (loop)))))))))
+
 (define mcron-shepherd-services
   (match-lambda
     (($ <mcron-configuration> mcron ())           ;nothing to do!
      '())
     (($ <mcron-configuration> mcron jobs)
-     (list (shepherd-service
-            (provision '(mcron))
-            (requirement '(user-processes))
-            (modules `((srfi srfi-1)
-                       (srfi srfi-26)
-                       ,@%default-modules))
-            (start #~(make-forkexec-constructor
-                      (list (string-append #$mcron "/bin/mcron")
-                            #$@(map job-file jobs))
+     (let ((files (map job-file jobs)))
+       (list (shepherd-service
+              (provision '(mcron))
+              (requirement '(user-processes))
+              (modules `((srfi srfi-1)
+                         (srfi srfi-26)
+                         (ice-9 popen)            ;for the 'schedule' action
+                         (ice-9 rdelim)
+                         (ice-9 match)
+                         ,@%default-modules))
+              (start #~(make-forkexec-constructor
+                        (list (string-append #$mcron "/bin/mcron") #$@files)
 
-                      ;; Disable auto-compilation of the job files and set a
-                      ;; sane value for 'PATH'.
-                      #:environment-variables
-                      (cons* "GUILE_AUTO_COMPILE=0"
-                             "PATH=/run/current-system/profile/bin"
-                             (remove (cut string-prefix? "PATH=" <>)
-                                     (environ)))))
-            (stop #~(make-kill-destructor)))))))
+                        ;; Disable auto-compilation of the job files and set a
+                        ;; sane value for 'PATH'.
+                        #:environment-variables
+                        (cons* "GUILE_AUTO_COMPILE=0"
+                               "PATH=/run/current-system/profile/bin"
+                               (remove (cut string-prefix? "PATH=" <>)
+                                       (environ)))))
+              (stop #~(make-kill-destructor))
+
+              (actions
+               (list (shepherd-schedule-action mcron files)))))))))
 
 (define mcron-service-type
   (service-type (name 'mcron)

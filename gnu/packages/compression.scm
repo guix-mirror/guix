@@ -1889,19 +1889,19 @@ create, manipulate, read, and write Zip archive files.")
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.3.2")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://libzip.org/download/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "11g1hvm2bxa2v5plakfzcwyk5hb5fz4kgrkp38l0xhnv21888xv2"))))
+                "0wnkkvkq90wyawj9221i77sf3nix1vj3ygzdy59k8yvcjnv3bsh4"))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
      `(("zlib" ,zlib)))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
     (description "Libzip is a C library for reading, creating, and modifying

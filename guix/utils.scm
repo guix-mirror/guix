@@ -33,10 +33,11 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 binary-ports)
+  #:use-module (ice-9 ftw)
   #:autoload   (rnrs io ports) (make-custom-binary-input-port)
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix memoization)
-  #:use-module ((guix build utils) #:select (dump-port mkdir-p))
+  #:use-module ((guix build utils) #:select (dump-port mkdir-p delete-file-recursively))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
@@ -631,7 +632,7 @@ delete it when leaving the dynamic extent of this call."
       (lambda ()
         (proc tmp-dir))
       (lambda ()
-        (false-if-exception (rmdir tmp-dir))))))
+        (false-if-exception (delete-file-recursively tmp-dir))))))
 
 (define (with-atomic-file-output file proc)
   "Call PROC with an output port for the file that is going to replace FILE.

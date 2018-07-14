@@ -13,7 +13,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +37,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -343,26 +344,32 @@ reading and editing of existing PDF files.")
 (define-public zathura-cb
   (package
     (name "zathura-cb")
-    (version "0.1.7")
+    (version "0.1.8")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura-cb/download/zathura-cb-"
-                              version ".tar.gz"))
+                              version ".tar.xz"))
               (sha256
                (base32
-                "0r4viisycj39kaz4281cmkr7n9w5q96dmlf7nf45n8zq8qy2npw3"))))
+                "1i6cf0vks501cggwvfsl6qb7mdaf3sszdymphimfvnspw810faj5"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libarchive" ,libarchive)
               ("zathura" ,zathura)))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "PLUGINDIR=" %output "/lib/zathura")
-                          "CC=gcc")
-       #:tests? #f ; Package does not contain tests.
+     `(#:tests? #f                      ; package does not contain tests
        #:phases
-       (modify-phases %standard-phases (delete 'configure))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-plugin-directory
+           ;; Something of a regression in 0.1.8: the new Meson build system
+           ;; now hard-codes an incorrect plugin directory.  Fix it.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("(install_dir:).*" _ key)
+                (string-append key
+                               "'" (assoc-ref outputs "out") "/lib/zathura'\n")))
+             #t)))))
     (home-page "https://pwmt.org/projects/zathura-cb/")
     (synopsis "Comic book support for zathura (libarchive backend)")
     (description "The zathura-cb plugin adds comic book support to zathura
@@ -372,26 +379,32 @@ using libarchive.")
 (define-public zathura-ps
   (package
     (name "zathura-ps")
-    (version "0.2.5")
+    (version "0.2.6")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura-ps/download/zathura-ps-"
-                              version ".tar.gz"))
+                              version ".tar.xz"))
               (sha256
                (base32
-                "1x4knqja8pw2a5cb3y2209nr3iddj1z8nwasy48v5nprj61fdxqj"))))
+                "0wygq89nyjrjnsq7vbpidqdsirjm6iq4w2rijzwpk2f83ys8bc3y"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libspectre" ,libspectre)
               ("zathura" ,zathura)))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "PLUGINDIR=" %output "/lib/zathura")
-                          "CC=gcc")
-       #:tests? #f ; Package does not contain tests.
+     `(#:tests? #f                      ; package does not contain tests
        #:phases
-       (modify-phases %standard-phases (delete 'configure))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-plugin-directory
+           ;; Something of a regression in 0.2.6: the new Meson build system
+           ;; now hard-codes an incorrect plugin directory.  Fix it.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("(install_dir:).*" _ key)
+                (string-append key
+                               "'" (assoc-ref outputs "out") "/lib/zathura'\n")))
+             #t)))))
     (home-page "https://pwmt.org/projects/zathura-ps/")
     (synopsis "PS support for zathura (libspectre backend)")
     (description "The zathura-ps plugin adds PS support to zathura
@@ -401,27 +414,33 @@ using libspectre.")
 (define-public zathura-djvu
   (package
     (name "zathura-djvu")
-    (version "0.2.7")
+    (version "0.2.8")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura-djvu/download/zathura-djvu-"
-                              version ".tar.gz"))
+                              version ".tar.xz"))
               (sha256
                (base32
-                "1sbfdsyp50qc85xc4458sn4w1rv1qbygdwmcr5kjlfpsmdq98vhd"))))
+                "0axkv1crdxn0z44whaqp2ibkdqcykhjnxk7qzms0dp1b67an9rnh"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("djvulibre" ,djvulibre)
        ("zathura" ,zathura)))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "PLUGINDIR=" %output "/lib/zathura")
-                          "CC=gcc")
-       #:tests? #f ; Package does not contain tests.
+     `(#:tests? #f                      ; package does not contain tests
        #:phases
-       (modify-phases %standard-phases (delete 'configure))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-plugin-directory
+           ;; Something of a regression in 0.2.8: the new Meson build system
+           ;; now hard-codes an incorrect plugin directory.  Fix it.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("(install_dir:).*" _ key)
+                (string-append key
+                               "'" (assoc-ref outputs "out") "/lib/zathura'\n")))
+             #t)))))
     (home-page "https://pwmt.org/projects/zathura-djvu/")
     (synopsis "DjVu support for zathura (DjVuLibre backend)")
     (description "The zathura-djvu plugin adds DjVu support to zathura
@@ -431,15 +450,17 @@ using the DjVuLibre library.")
 (define-public zathura-pdf-mupdf
   (package
     (name "zathura-pdf-mupdf")
-    (version "0.3.2")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura-pdf-mupdf"
-                              "/download/zathura-pdf-mupdf-" version ".tar.gz"))
+                              "/download/zathura-pdf-mupdf-" version ".tar.xz"))
+              (patches
+               (search-patches "zathura-pdf-mupdf-link-to-jpeg-libraries.patch"))
               (sha256
                (base32
-                "0xkajc3is7ncmb2fmymbzfgrran2bz12i7zsm1vvxhxds728h7ck"))))
+                "1zbdqimav4wfgimpy3nfzl10qj7vyv23rdy2z5z7z93jwbp2rc2j"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("jbig2dec" ,jbig2dec)
@@ -448,13 +469,20 @@ using the DjVuLibre library.")
        ("openjpeg" ,openjpeg)
        ("openssl" ,openssl)
        ("zathura" ,zathura)))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "PLUGINDIR=" %output "/lib/zathura")
-                          "CC=gcc")
-       #:tests? #f ;No tests.
-       #:phases (modify-phases %standard-phases (delete 'configure))))
+     `(#:tests? #f                      ; package does not contain tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-plugin-directory
+           ;; Something of a regression in 0.3.3: the new Meson build system
+           ;; now hard-codes an incorrect plugin directory.  Fix it.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("(install_dir:).*" _ key)
+                (string-append key
+                               "'" (assoc-ref outputs "out") "/lib/zathura'\n")))
+             #t)))))
     (home-page "https://pwmt.org/projects/zathura-pdf-mupdf/")
     (synopsis "PDF support for zathura (mupdf backend)")
     (description "The zathura-pdf-mupdf plugin adds PDF support to zathura
@@ -464,27 +492,33 @@ by using the @code{mupdf} rendering library.")
 (define-public zathura-pdf-poppler
   (package
     (name "zathura-pdf-poppler")
-    (version "0.2.8")
+    (version "0.2.9")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura-pdf-poppler/download/zathura-pdf-poppler-"
-                              version ".tar.gz"))
+                              version ".tar.xz"))
               (sha256
                (base32
-                "1m55m7s7f8ng8a7lmcw9z4n5zv7xk4vp9n6fp9j84z6rk2imf7a2"))))
+                "1p4jcny0jniygns78mcf0nlm298dszh49qpmjmackrm6dq8hc25y"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("poppler" ,poppler)
        ("zathura" ,zathura)))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" %output)
-                          (string-append "PLUGINDIR=" %output "/lib/zathura")
-                          "CC=gcc")
-       #:tests? #f ; Package does not include tests.
+     `(#:tests? #f                      ; package does not include tests
        #:phases
-       (modify-phases %standard-phases (delete 'configure))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-plugin-directory
+           ;; Something of a regression in 0.2.9: the new Meson build system
+           ;; now hard-codes an incorrect plugin directory.  Fix it.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "meson.build"
+               (("(install_dir:).*" _ key)
+                (string-append key
+                               "'" (assoc-ref outputs "out") "/lib/zathura'\n")))
+             #t)))))
     (home-page "https://pwmt.org/projects/zathura-pdf-poppler/")
     (synopsis "PDF support for zathura (poppler backend)")
     (description "The zathura-pdf-poppler plugin adds PDF support to zathura
@@ -494,20 +528,23 @@ by using the poppler rendering engine.")
 (define-public zathura
   (package
     (name "zathura")
-    (version "0.3.8")
+    (version "0.3.9")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://pwmt.org/projects/zathura/download/zathura-"
-                              version ".tar.gz"))
+                              version ".tar.xz"))
               (sha256
                (base32
-                "0dz5pky3vmf3s2cp2rv1c099gb1s49p9xlgm3ghyy4pzyxc8bgs6"))
+                "0z09kz92a2n8qqv3cy8bx5j5k612g2f9mmh4szqlc7yvi39aax1g"))
               (patches (search-patches
                         "zathura-plugindir-environment-variable.patch"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
+
+                     ;; For building documentation.
+                     ("python-sphinx" ,python-sphinx)
 
                      ;; For tests.
                      ("check" ,check)
@@ -520,15 +557,9 @@ by using the poppler rendering engine.")
      (list (search-path-specification
             (variable "ZATHURA_PLUGIN_PATH")
             (files '("lib/zathura")))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:make-flags
-       `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
-         "CC=gcc" "COLOR=0")
-       #:test-target "test"
-       #:disallowed-references (,xorg-server-1.19.3)
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure)
+     `(#:phases (modify-phases %standard-phases
                   (add-before 'check 'start-xserver
                     ;; Tests require a running X server.
                     (lambda* (#:key inputs #:allow-other-keys)

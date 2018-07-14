@@ -425,8 +425,7 @@ def test_ctrl_c"))
              (apply invoke "make" "tools_defconfig" make-flags)))
          (replace 'build
            (lambda* (#:key inputs make-flags #:allow-other-keys)
-             (apply invoke "make" "tools-only" make-flags)
-             (apply invoke "make" "envtools" make-flags)))
+             (apply invoke "make" "tools-all" make-flags)))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -443,7 +442,8 @@ def test_ctrl_c"))
                            "tools/mkimage"
                            "tools/proftool"
                            "tools/fdtgrep"
-                           "tools/env/fw_printenv"))
+                           "tools/env/fw_printenv"
+                           "tools/sunxi-spl-image-builder"))
                #t)))
            (delete 'check)
            (add-after 'install 'check
@@ -519,7 +519,8 @@ board-independent tools.")))
                     (let ((target-file (string-append libexec "/" file)))
                       (mkdir-p (dirname target-file))
                       (copy-file file target-file)))
-                  uboot-files))))))))))
+                  uboot-files)
+                 #t)))))))))
 
 (define-public u-boot-vexpress
   (make-u-boot-package "vexpress_ca9x4" "arm-linux-gnueabihf"))

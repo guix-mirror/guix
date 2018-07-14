@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +21,11 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gv)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages python)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
 
 (define-public domainfinder
@@ -53,6 +56,84 @@ domains by comparing two protein structures, or from normal mode analysis on a
 single structure.  The software is currently not actively maintained and works
 only with Python 2 and NumPy < 1.9.")
     (license license:cecill-c)))
+
+(define-public inchi
+  (package
+    (name "inchi")
+    (version "1.05")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.inchi-trust.org/download/"
+                                  (string-join (string-split version #\.) "")
+                                  "/INCHI-1-SRC.zip"))
+              (sha256
+               (base32
+                "081pcjx1z5jm23fs1pl2r3bccia0ww8wfkzcjpb7byhn7b513hsa"))
+              (file-name (string-append name "-" version ".zip"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure script
+         (add-before 'build 'chdir-to-build-directory
+           (lambda _ (chdir "INCHI_EXE/inchi-1/gcc") #t))
+         (add-after 'build 'build-library
+           (lambda _
+             (chdir "../../../INCHI_API/libinchi/gcc")
+             (invoke "make")))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/inchi"))
+                    (include-dir (string-append out "/include/inchi"))
+                    (lib (string-append out "/lib/inchi"))
+                    (inchi-doc (assoc-ref inputs "inchi-doc"))
+                    (unzip (string-append (assoc-ref inputs "unzip")
+                                          "/bin/unzip")))
+               (chdir "../../..")
+               ;; Install binary.
+               (with-directory-excursion "INCHI_EXE/bin/Linux"
+                 (rename-file "inchi-1" "inchi")
+                 (install-file "inchi" bin))
+               ;; Install libraries.
+               (with-directory-excursion "INCHI_API/bin/Linux"
+                 (for-each (lambda (file)
+                             (install-file file lib))
+                           (find-files "." "libinchi\\.so\\.1\\.*")))
+               ;; Install header files.
+               (with-directory-excursion "INCHI_BASE/src"
+                 (for-each (lambda (file)
+                             (install-file file include-dir))
+                           (find-files "." "\\.h$")))
+               ;; Install documentation.
+               (mkdir-p doc)
+               (invoke unzip "-j" "-d" doc inchi-doc)
+               #t))))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("inchi-doc"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "http://www.inchi-trust.org/download/"
+                                  (string-join (string-split version #\.) "")
+                                  "/INCHI-1-DOC.zip"))
+           (sha256
+            (base32
+             "1id1qb2y4lwsiw91qr2yqpn6kxbwjwhjk0hb2rwk4fxhdqib6da6"))
+           (file-name (string-append name "-" version ".zip"))))))
+    (home-page "https://www.inchi-trust.org")
+    (synopsis "Utility for manipulating machine-readable chemical structures")
+    (description
+     "The @dfn{InChI} (IUPAC International Chemical Identifier) algorithm turns
+chemical structures into machine-readable strings of information.  InChIs are
+unique to the compound they describe and can encode absolute stereochemistry
+making chemicals and chemistry machine-readable and discoverable.  A simple
+analogy is that InChI is the bar-code for chemistry and chemical structures.")
+    (license (license:non-copyleft
+              "file://LICENCE"
+              "See LICENCE in the distribution."))))
 
 (define with-numpy-1.8
   (package-input-rewriting `((,python2-numpy . ,python2-numpy-1.8))))

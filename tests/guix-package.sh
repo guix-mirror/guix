@@ -185,6 +185,16 @@ grep -E 'emacs[[:blank:]]+42\.5\.9rc7[[:blank:]]+.*-emacs-42.5.9rc7' \
 rm "$emacs_tarball" "$tmpfile"
 rmdir "$module_dir"
 
+# Profiles with a relative file name.  Make sure we don't create dangling
+# symlinks--see bug report at
+# <https://lists.gnu.org/archive/html/guix-devel/2018-07/msg00036.html>.
+mkdir -p "$module_dir/foo"
+( cd "$module_dir" ;						\
+  guix package --bootstrap -i guile-bootstrap -p foo/prof )
+test -f "$module_dir/foo/prof/bin/guile"
+rm "$module_dir/foo"/*
+rmdir "$module_dir/foo"
+rmdir "$module_dir"
 
 #
 # Try with the default profile.
@@ -215,7 +225,7 @@ do
     guix package --bootstrap --roll-back
     ! test -f "$HOME/.guix-profile/bin"
     ! test -f "$HOME/.guix-profile/lib"
-    test "`readlink "$default_profile"`" = "$default_profile-0-link"
+    test "`readlink "$default_profile"`" = "`basename $default_profile-0-link`"
 done
 
 # Check whether '-p ~/.guix-profile' makes any difference.

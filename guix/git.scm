@@ -114,7 +114,8 @@ OID (roughly the commit hash) corresponding to REF."
                                  #:key
                                  (ref '(branch . "origin/master"))
                                  (cache-directory
-                                  (%repository-cache-directory)))
+                                  (url-cache-directory
+                                   url (%repository-cache-directory))))
   "Update the cached checkout of URL to REF in CACHE-DIRECTORY.  Return two
 values: the cache directory name, and the SHA1 commit (a string) corresponding
 to REF.
@@ -122,11 +123,10 @@ to REF.
 REF is pair whose key is [branch | commit | tag] and value the associated
 data, respectively [<branch name> | <sha1> | <tag name>]."
   (with-libgit2
-   (let* ((cache-dir     (url-cache-directory url cache-directory))
-          (cache-exists? (openable-repository? cache-dir))
+   (let* ((cache-exists? (openable-repository? cache-directory))
           (repository    (if cache-exists?
-                             (repository-open cache-dir)
-                             (clone* url cache-dir))))
+                             (repository-open cache-directory)
+                             (clone* url cache-directory))))
      ;; Only fetch remote if it has not been cloned just before.
      (when cache-exists?
        (remote-fetch (remote-lookup repository "origin")))
@@ -138,7 +138,7 @@ data, respectively [<branch name> | <sha1> | <tag name>]."
                               'repository-close!)
          (repository-close! repository))
 
-       (values cache-dir (oid->string oid))))))
+       (values cache-directory (oid->string oid))))))
 
 (define* (latest-repository-commit store url
                                    #:key
@@ -157,12 +157,14 @@ Git repositories are kept in the cache directory specified by
     (and (string=? (basename file) ".git")
          (eq? 'directory (stat:type stat))))
 
-  (let*-values (((checkout commit)
-                 (update-cached-checkout url
-                                         #:ref ref
-                                         #:cache-directory cache-directory))
-                ((name)
-                 (url+commit->name url commit)))
+  (let*-values
+      (((checkout commit)
+        (update-cached-checkout url
+                                #:ref ref
+                                #:cache-directory
+                                (url-cache-directory url cache-directory)))
+       ((name)
+        (url+commit->name url commit)))
     (values (add-to-store store name #t "sha256" checkout
                           #:select? (negate dot-git?))
             commit)))

@@ -37,6 +37,7 @@
 
   #:export (libvirt-configuration
             libvirt-service-type
+            virtlog-configuration
             virtlog-service-type
 
             %qemu-platforms
