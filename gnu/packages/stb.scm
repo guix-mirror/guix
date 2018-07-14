@@ -95,3 +95,9 @@ the C programming language.")
    "stb-image" "2.19"
    "stb-image is a small and self-contained library for image loading or
 decoding from file or memory.  A variety of formats are supported."))
+
+(define-public stb-image-write
+  (make-stb-header-package
+   "stb-image-write" "1.09"
+   "stb-image-write is a small library for writing image files to the
+C@tie{}@code{stdio} interface."))
