@@ -668,39 +668,32 @@ data on your platform, so the seed itself will be as random as possible.
     (license (list license:boost1.0 license:public-domain))))
 
 (define-public libb2
-  (let ((revision "1")                  ; upstream doesn't ‘do’ releases
-        (commit "60ea749837362c226e8501718f505ab138e5c19d"))
-    (package
-      (name "libb2")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/BLAKE2/libb2")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "07a2m8basxrsj9dsp5lj24y8jraj85lfy56756a7za1nfkgy04z7"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
-      (arguments
-       `(#:configure-flags
-         (list
-           ,@(if (any (cute string-prefix? <> (or (%current-system)
-                                                  (%current-target-system)))
-                      '("x86_64" "i686"))
-               ;; fat only checks for Intel optimisations
-               '("--enable-fat")
-               '())
-           "--disable-native")))                 ;don't optimise at build time
-      (home-page "https://blake2.net/")
-      (synopsis "Library implementing the BLAKE2 family of hash functions")
-      (description
-       "libb2 is a portable implementation of the BLAKE2 family of cryptographic
+  (package
+    (name "libb2")
+    (version "0.98")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/BLAKE2/libb2/releases/download/v"
+                    version "/libb2-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vq39cvwy05754l565xl11rqr2jvjb6ykjzca886vi9vm71y0sg8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        ,@(if (any (cute string-prefix? <> (or (%current-system)
+                                               (%current-target-system)))
+                   '("x86_64" "i686"))
+              ;; fat only checks for Intel optimisations
+              '("--enable-fat")
+              '())
+        "--disable-native")))           ;don't optimise at build time
+    (home-page "https://blake2.net/")
+    (synopsis "Library implementing the BLAKE2 family of hash functions")
+    (description
+     "libb2 is a portable implementation of the BLAKE2 family of cryptographic
 hash functions.  It includes optimised implementations for IA-32 and AMD64
 processors, and an interface layer that automatically selects the best
 implementation for the processor it is run on.
@@ -709,7 +702,7 @@ implementation for the processor it is run on.
 that are faster than MD5, SHA-1, SHA-2, and SHA-3, yet are at least as secure
 as the latest standard, SHA-3.  It is an improved version of the SHA-3 finalist
 BLAKE.")
-      (license license:public-domain))))
+    (license license:public-domain)))
 
 (define-public rhash
   (package
