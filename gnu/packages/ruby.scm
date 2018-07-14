@@ -883,7 +883,8 @@ complexity.")
            (lambda _
              ;; This is used in the Rakefile, and setting it avoids an issue
              ;; with running the tests.
-             (setenv "LIB" "options"))))))
+             (setenv "LIB" "options")
+             #t)))))
     (synopsis "Ruby library to parse options from *args cleanly")
     (description
      "The @code{options} library helps with parsing keyword options in Ruby
