@@ -418,7 +418,7 @@ graphical interface.")
 (define-public libcue
   (package
     (name "libcue")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -427,8 +427,10 @@ graphical interface.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0y9808vbly1w6i3diaad9csjmmw6iaw572wjjr68ssqamsw193rj"))))
+               "000j5xqp7cc7njwlixr9byahz9kn8pcfdgm76afwv4p8nbmw6yzj"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))
