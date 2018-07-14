@@ -403,6 +403,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/sssd.scm				\
   %D%/packages/stalonetray.scm			\
   %D%/packages/statistics.scm			\
+  %D%/packages/stb.scm				\
   %D%/packages/storage.scm			\
   %D%/packages/suckless.scm			\
   %D%/packages/swig.scm				\
