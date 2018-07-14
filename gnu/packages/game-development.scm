@@ -440,7 +440,7 @@ clone.")
 (define-public sfml
   (package
     (name "sfml")
-    (version "2.3.2")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               ;; Do not fetch the archives from
@@ -451,24 +451,29 @@ clone.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k2fl5xk3ni2q8bsxl0551inx26ww3w6cp6hssvww0wfjdjcirsm"))))
+                "1x3yvhdrln5b6h4g5r4mds76gq8zsxw6icxqpwqkmxsqcq5yviab"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       (list "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE")
+       (list "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE"
+             "-DSFML_OS_PKGCONFIG_DIR=lib/pkgconfig")
        #:tests? #f)) ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("mesa" ,mesa)
        ("glew" ,glew)
-       ("flac" ,flac)
-       ("libvorbis" ,libvorbis)
        ("libx11" ,libx11)
        ("xcb-util-image" ,xcb-util-image)
        ("libxrandr" ,libxrandr)
        ("eudev" ,eudev)
-       ("freetype" ,freetype)
        ("libjpeg" ,libjpeg)
-       ("libsndfile" ,libsndfile)
+       ("libsndfile" ,libsndfile)))
+    (propagated-inputs
+     ;; In Requires.private of pkg-config files.
+     `(("flac" ,flac)
+       ("freetype" ,freetype)
+       ("libvorbis" ,libvorbis)
        ("openal" ,openal)))
     (home-page "https://www.sfml-dev.org")
     (synopsis "Simple and Fast Multimedia Library")
