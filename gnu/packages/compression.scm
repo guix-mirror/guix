@@ -246,6 +246,7 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
+                  (ice-9 ftw)
                   (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
@@ -274,19 +275,18 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
              ;; it create all the (un)versioned symlinks, so we handle it here.
              (let* ((out    (assoc-ref outputs "out"))
                     (libdir (string-append out "/lib"))
-                    ;; Find the actual library (e.g. "libbz2.so.1.0.6").
-                    (lib (string-drop
-                          (car (find-files
-                                "."
-                                (lambda (file stat)
-                                  (and (string-prefix? "./libbz2.so" file)
-                                       (eq? 'regular (stat:type stat))))))
-                          2))
-                    (soversion (string-drop lib (string-length "libbz2.so."))))
+                    (soname "libbz2.so")
+                    ;; Locate the built library (e.g. "libbz2.so.1.0.6").
+                    (lib (car (scandir "."
+                                       (lambda (file)
+                                         (and (string-prefix? soname file)
+                                              (eq? 'regular
+                                                   (stat:type (lstat file))))))))
+                    (soversion (string-drop lib (+ 1 (string-length soname)))))
                (install-file lib libdir)
                (with-directory-excursion libdir
                  ;; Create symlinks libbz2.so.1 -> libbz2.so.1.0, etc.
-                 (let loop ((base "libbz2.so")
+                 (let loop ((base soname)
                             (numbers (string-split soversion #\.)))
                    (unless (null? numbers)
                      (let ((so-file (string-append base "." (car numbers))))
