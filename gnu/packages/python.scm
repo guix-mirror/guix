@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -12242,14 +12242,14 @@ pure Python module.")
 (define-public python-xenon
   (package
     (name "python-xenon")
-    (version "0.5.1")
+    (version "0.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "xenon" version))
        (sha256
         (base32
-         "14kby2y48vp3sgwxqlm5d5789yibqwb1qli5fwcmdqg3iayrbklc"))))
+         "029cbhysg2vr5n4jz8gpg2793f8wkwnqpr1qgv6c1dn685vy31mc"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyyaml" ,python-pyyaml)
@@ -12261,12 +12261,7 @@ pure Python module.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-test-requirements
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Update requirements from dependency==version to
-             ;; dependency>=version.
-             (substitute* "requirements.txt"
-               (("==") ">=")
-               ((",<1.5.0") ""))
+           (lambda _
              ;; Remove httpretty dependency for tests.
              (substitute* "setup.py"
                (("httpretty") ""))
