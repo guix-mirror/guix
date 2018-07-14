@@ -132,7 +132,7 @@ joystick, and graphics hardware.")
 (define-public libmikmod
   (package
     (name "libmikmod")
-    (version "3.3.10")
+    (version "3.3.11.1")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -144,7 +144,7 @@ joystick, and graphics hardware.")
                                   version "/libmikmod-" version ".tar.gz")))
              (sha256
               (base32
-               "0j7g4jpa2zgzw7x6s3rldypa7zlwjvn97rwx0sylx1iihhlzbcq0"))))
+               "06bdnhb0l81srdzg6gn2v2ydhhaazza7rshrcj3q8dpqr3gn97dd"))))
     (build-system gnu-build-system)
     (arguments
      ;; By default, libmikmod tries to dlopen libasound etc., which won't work
