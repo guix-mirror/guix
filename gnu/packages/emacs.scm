@@ -199,7 +199,7 @@
        ("libxft" ,libxft)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg)
        ("imagemagick" ,imagemagick)
        ("acl" ,acl)
 
