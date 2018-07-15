@@ -554,14 +554,28 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
          ((#:phases phases)
           `(modify-phases ,phases
              (add-after 'patch-cargo-tests 'patch-cargo-index-update
-               (lambda* _
+               (lambda _
                  (substitute* "src/tools/cargo/tests/generate-lockfile.rs"
                    ;; This test wants to update the crate index.
-                   (("fn no_index_update") "#[ignore]\nfn no_index_update"))))
+                   (("fn no_index_update") "#[ignore]\nfn no_index_update"))
+                 #t))
              (add-after 'configure 'enable-codegen-tests
-               (lambda* _
+               (lambda _
                  (substitute* "config.toml"
-                   (("codegen-tests = false") ""))))
+                   (("codegen-tests = false") ""))
+                 #t))
+             (replace 'patch-aarch64-test
+               (lambda _
+                 (substitute* "src/librustc_metadata/dynamic_lib.rs"
+                   ;; This test is known to fail on aarch64 and powerpc64le:
+                   ;; https://github.com/rust-lang/rust/issues/45410
+                   (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
+                 ;; This test fails on aarch64 with llvm@6.0:
+                 ;; https://github.com/rust-lang/rust/issues/49807
+                 ;; other possible solution:
+                 ;; https://github.com/rust-lang/rust/pull/47688
+                 (delete-file "src/test/debuginfo/by-value-self-argument-in-trait-impl.rs")
+                 #t))
              (delete 'ignore-glibc-2.27-incompatible-test))))))))
 
 (define-public rust-1.26
