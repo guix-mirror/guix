@@ -167,7 +167,7 @@ in turn be used to build the final Rust.")
     (snippet '(begin (delete-file-recursively "src/llvm") #t))
     (patches (map search-patch patches))))
 
-(define-public rust-1.19
+(define rust-1.19
   (package
     (name "rust")
     (version "1.19.0")
