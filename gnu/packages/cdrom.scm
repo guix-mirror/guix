@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -768,4 +769,44 @@ It can read metadata of ISO 9660 filesystems, manipulate them, and use them
 to produce new complete file system images or add-on images to be appended
 to the read file system image.
 Supported extensions to ISO 9660 are Rock Ridge, Joliet, AAIP, zisofs.")
+    (license gpl2+)))
+
+(define-public cdrkit-libre
+  (package
+    (name "cdrkit-libre")
+    (version "1.1.11")
+    (source (origin
+              (method url-fetch)
+              ;; cdrkit.org is dead.
+              ;;
+              ;; ‘cdrkit-libre’ removes a couple of problematic files,
+              ;; see <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32165#14>.
+              (uri (string-append
+                    "https://repo.parabola.nu/other/cdrkit-libre/cdrkit-libre-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0g2zyzb56czh429qy87lvaddzjnlcq8c616ddxsmsshz3clhyzrh"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("libcap" ,libcap)
+       ("perl" ,perl)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'old-cdrecord
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion (string-append (assoc-ref outputs "out")
+                                                      "/bin")
+               (symlink "genisoimage" "mkisofs")
+               (symlink "wodim" "cdrecord"))
+             #t)))))
+    (home-page "https://repo.parabola.nu/other/cdrkit-libre/")
+    (synopsis "Command-line CD/DVD recorder")
+    (description "Cdrkit is a suite of programs for recording CDs and DVDs,
+blanking CD-RW media, creating ISO-9660 file system images, extracting audio
+CD data, and more.  It's mostly compatible with @code{cdrtools}.")
     (license gpl2+)))
