@@ -28,6 +28,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +60,7 @@
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
@@ -3699,7 +3701,43 @@ as used on certified hardware security devices.")
          "0zwq19siiwf09h7lwa7n7mgmrr8cxifp45lmwgcfr8c1gviv6b0i"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list "--disable-pywrap")))
+     `(#:configure-flags (list "--disable-pywrap")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-hardcoded-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (utils-linux (assoc-ref inputs "utils-linux"))
+                   (cryptsetup (assoc-ref inputs "cryptsetup"))
+                   (linux-pam (assoc-ref inputs "linux-pam"))
+                   (lvm2 (assoc-ref inputs "lvm2")))
+               (substitute* '("src/utils/ecryptfs-mount-private"
+                              "src/utils/ecryptfs-umount-private"
+                              "src/utils/ecryptfs-setup-private"
+                              "src/utils/mount.ecryptfs.c"
+                              "src/pam_ecryptfs/pam_ecryptfs.c"
+                              "src/desktop/ecryptfs-mount-private.desktop.in"
+                              "src/utils/ecryptfs-setup-swap")
+                 (("/bin/mount")
+                  (string-append utils-linux "/bin/mount"))
+                 (("/bin/umount")
+                  (string-append utils-linux "/bin/umount"))
+                 (("/sbin/mount.ecryptfs_private")
+                  (string-append out "/sbin/mount.ecryptfs_private"))
+                 (("/sbin/umount.ecryptfs_private")
+                  (string-append out "/sbin/umount.ecryptfs_private"))
+                 (("/usr/bin/ecryptfs-mount-private")
+                  (string-append out "/bin/ecryptfs-mount-private"))
+                 (("/usr/bin/ecryptfs-rewrite-file")
+                  (string-append out "/bin/ecryptfs-rewrite-file"))
+                 (("/usr/bin/ecryptfs-setup-private")
+                  (string-append out "/bin/ecryptfs-setup-private"))
+                 (("/sbin/cryptsetup")
+                  (string-append cryptsetup "/sbin/cryptsetup"))
+                 (("/sbin/unix_chkpwd")
+                  (string-append linux-pam "/sbin/unix_chkpwd"))
+                 (("/sbin/dmsetup")
+                  (string-append lvm2 "/sbin/dmsetup")))))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("perl" ,perl)                   ; for pod2man
@@ -3707,6 +3745,9 @@ as used on certified hardware security devices.")
     (inputs
      `(("keyutils" ,keyutils)
        ("linux-pam" ,linux-pam)
+       ("utils-linux" ,util-linux)
+       ("cryptsetup" ,cryptsetup)
+       ("lvm2" ,lvm2)
        ("nss" ,nss)))
     (home-page "http://ecryptfs.org/")
     (synopsis "eCryptfs cryptographic file system utilities")
