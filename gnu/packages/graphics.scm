@@ -391,7 +391,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
     (inputs
      `(("boost" ,boost)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("openexr" ,openexr)
