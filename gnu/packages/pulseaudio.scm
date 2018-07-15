@@ -168,22 +168,21 @@ rates.")
      `(("alsa-lib" ,alsa-lib)
        ("bluez" ,bluez)
        ("sbc" ,sbc)
-       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
        ("libsndfile" ,libsndfile)
-       ("libsamplerate" ,libsamplerate)
        ("jack" ,jack-1) ; For routing the output to jack.
        ("dbus" ,dbus)
        ("glib" ,glib)
-       ("intltool" ,intltool)
-       ("m4" ,m4)
        ("libltdl" ,libltdl)
        ("fftwf" ,fftwf)
        ("avahi" ,avahi)
-       ("eudev" ,eudev)           ;for the detection of hardware audio devices
-       ("check" ,check)))
+       ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib:bin" ,glib "bin")))
+     `(("check" ,check)
+       ("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("m4" ,m4)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; 'libpulse*.la' contain `-lgdbm' and `-lcap', so propagate them.
      `(("libcap" ,libcap)
