@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2013, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -52,7 +52,7 @@
             (sha256 (base32
                      "083xisy6z01zhm7p7rgk4bx9d6zlr8l20qkfv1g29ylnhgwzvij8"))))
    (build-system gnu-build-system)
-   (inputs `(("libjpeg-8" ,libjpeg-8)
+   (inputs `(("libjpeg" ,libjpeg)
              ("libtiff" ,libtiff)
              ("zlib" ,zlib)))
    (synopsis "Little CMS, a small-footprint colour management engine")
