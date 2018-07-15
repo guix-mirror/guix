@@ -676,8 +676,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/findutils-test-xargs.patch		\
   %D%/packages/patches/flann-cmake-3.11.patch			\
   %D%/packages/patches/flint-ldconfig.patch			\
-  %D%/packages/patches/fltk-shared-lib-defines.patch		\
-  %D%/packages/patches/fltk-xfont-on-demand.patch		\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
