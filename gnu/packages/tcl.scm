@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -25,6 +25,7 @@
 (define-module (gnu packages tcl)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages)
@@ -145,11 +146,20 @@ X11 GUIs.")
              (patches (search-patches "tk-find-library.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (add-before
                    'configure 'pre-configure
                    (lambda _
                      (chdir "unix")
+                     #t))
+                  (add-after
+                   'install 'create-wish-symlink
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out")))
+                       (symlink (string-append out "/bin/wish"
+                                               ,(version-major+minor
+                                                  (package-version tk)))
+                                (string-append out "/bin/wish")))
                      #t))
                   (add-after
                    'install 'add-fontconfig-flag
@@ -179,7 +189,7 @@ X11 GUIs.")
     (propagated-inputs `(("libx11" ,libx11)
                          ("libxext" ,libxext)))
 
-    (home-page "http://www.tcl.tk/")
+    (home-page "https://www.tcl.tk/")
     (synopsis "Graphical user interface toolkit for Tcl")
     (description
      "Tk is a graphical toolkit for building graphical user
