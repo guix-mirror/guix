@@ -7357,10 +7357,10 @@ messaging service.")
                  ("bash-completion-prog" (string-append bash "/bin/bash"))))
              #t)))))
    (home-page "https://github.com/szermatt/emacs-bash-completion")
-   (synopsis "BASH completion for the shell buffer")
+   (synopsis "Bash completion for the shell buffer")
    (description
     "@code{bash-completion} defines dynamic completion hooks for shell-mode
-and shell-command prompts that are based on bash completion.")
+and shell-command prompts that are based on Bash completion.")
    (license license:gpl2+)))
 
 (define-public emacs-easy-kill
