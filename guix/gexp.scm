@@ -1098,18 +1098,14 @@ by an arrow followed by a file-like object.  For example:
 
 In this example, the first two modules are taken from MODULE-PATH, and the
 last one is created from the given <scheme-file> object."
-  (mlet %store-monad ((files
-                       (mapm %store-monad
-                             (match-lambda
-                               (((module ...) '=> file)
-                                (return
-                                 (cons (module->source-file-name module)
-                                       file)))
-                               ((module ...)
-                                (let ((f (module->source-file-name module)))
-                                  (return
-                                   (cons f (search-path* module-path f))))))
-                             modules)))
+  (let ((files (map (match-lambda
+                      (((module ...) '=> file)
+                       (cons (module->source-file-name module)
+                             file))
+                      ((module ...)
+                       (let ((f (module->source-file-name module)))
+                         (cons f (search-path* module-path f)))))
+                    modules)))
     (imported-files files #:name name #:system system
                     #:guile guile
                     #:deprecation-warnings deprecation-warnings)))
