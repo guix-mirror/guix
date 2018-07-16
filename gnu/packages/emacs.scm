@@ -107,6 +107,7 @@
   #:use-module (gnu packages gd)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages password-utils)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages gnupg)
@@ -8836,6 +8837,17 @@ navigate and display hierarchy structures.")
           (base32
            "10cgg1r00kz2fsnnryvzay5pf8s1pwb1dzlds1fbjdnyfvdgammv"))))
       (build-system emacs-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'patch-file-name
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (let ((pulseaudio (assoc-ref inputs "pulseaudio")))
+                          (chmod "pulseaudio-control.el" #o600)
+                          (emacs-substitute-variables "pulseaudio-control.el"
+                            ("pulseaudio-control-pactl-path"
+                             (string-append pulseaudio "/bin/pactl")))
+                          #t))))))
+      (inputs `(("pulseaudio" ,pulseaudio)))
       (home-page "https://github.com/flexibeast/pulseaudio-control")
       (synopsis "Control @code{pulseaudio} from Emacs")
       (description
