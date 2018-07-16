@@ -635,18 +635,16 @@
                                             "guix/derivations.scm"))
                    ("p/q"   . ,(search-path %load-path "guix.scm"))
                    ("p/z"   . ,(search-path %load-path "guix/store.scm"))))
-       (drv (imported-files files)))
+       (dir (imported-files files)))
     (mbegin %store-monad
-      (built-derivations (list drv))
-      (let ((dir (derivation->output-path drv)))
-        (return
-         (every (match-lambda
-                 ((path . source)
-                  (equal? (call-with-input-file (string-append dir "/" path)
-                            get-bytevector-all)
-                          (call-with-input-file source
-                            get-bytevector-all))))
-                files))))))
+      (return
+       (every (match-lambda
+                ((path . source)
+                 (equal? (call-with-input-file (string-append dir "/" path)
+                           get-bytevector-all)
+                         (call-with-input-file source
+                           get-bytevector-all))))
+              files)))))
 
 (test-assertm "imported-files with file-like objects"
   (mlet* %store-monad ((plain -> (plain-file "foo" "bar!"))
