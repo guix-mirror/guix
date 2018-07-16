@@ -4210,23 +4210,53 @@ support for Python 3 and PyPy.  It is based on cffi.")
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1rk2dvy3fxrga6bvvxc2fi5lbaynm5h4a0w0aaxyn3bc77rszjg9"))))
+        "1rk2dvy3fxrga6bvvxc2fi5lbaynm5h4a0w0aaxyn3bc77rszjg9"))
+      (patches (search-patches "python-cairocffi-dlopen-path.patch"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("cairo" ,cairo)))
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("cairo" ,cairo)
+       ("pango" ,pango)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("python-pytest" ,python-pytest)
        ("python-sphinx" ,python-sphinx)
        ("python-docutils" ,python-docutils)))
     (propagated-inputs
      `(("python-xcffib" ,python-xcffib))) ; used at run time
     (arguments
      `(;; FIXME: Tests cannot find 'libcairo.so.2'.
-       #:tests? #f
+       #:tests? #t
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* (find-files "." "\\.py$")
+              (("dlopen\\(ffi, 'cairo'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "cairo")
+                              "/lib/libcairo.so.2'"))
+              (("dlopen\\(ffi, 'gdk-3'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "gtk+")
+                              "/lib/libgtk-3.so.0'"))
+              (("dlopen\\(ffi, 'gdk_pixbuf-2.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "gdk-pixbuf")
+                              "/lib/libgdk_pixbuf-2.0.so.0'"))
+              (("dlopen\\(ffi, 'glib-2.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "glib")
+                              "/lib/libglib-2.0.so.0'"))
+              (("dlopen\\(ffi, 'gobject-2.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "glib")
+                              "/lib/libgobject-2.0.so.0'"))
+              (("dlopen\\(ffi, 'pangocairo-1.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "pango")
+                              "/lib/libpangocairo-1.0.so.0'"))
+              (("dlopen\\(ffi, 'pango-1.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "pango")
+                              "/lib/libpango-1.0.so.0'")))
+             #t))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "doc") "/share"))

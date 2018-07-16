@@ -1057,6 +1057,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3-fix-tests.patch			\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
+  %D%/packages/patches/python-cairocffi-dlopen-path.patch	\
   %D%/packages/patches/python-dendropy-fix-tests.patch		\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-genshi-add-support-for-python-3.4-AST.patch	\
