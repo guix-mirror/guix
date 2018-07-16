@@ -635,7 +635,20 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0j2mdpyvj41vkq2rwrzky88b7170hzz6gy2vb2bc1447s2gp3q67"))))
+                "0j2mdpyvj41vkq2rwrzky88b7170hzz6gy2vb2bc1447s2gp3q67"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled snappy and xz.
+                  (delete-file-recursively "storage/tokudb/PerconaFT/third_party")
+
+                  ;; Preserve CMakeLists.txt for these.
+                  (for-each (lambda (file)
+                              (unless (string-suffix? "CMakeLists.txt" file)
+                                (delete-file file)))
+                            (append (find-files "extra/yassl")
+                                    (find-files "pcre") (find-files "zlib")))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -648,6 +661,12 @@ Language.")
 
          ;; For now, disable the features that that use libarchive (xtrabackup).
          "-DWITH_LIBARCHIVE=OFF"
+
+         ;; Ensure the system libraries are used.
+         "-DWITH_JEMALLOC=yes"
+         "-DWITH_PCRE=system"
+         "-DWITH_SSL=system"
+         "-DWITH_ZLIB=system"
 
          "-DDEFAULT_CHARSET=utf8"
          "-DDEFAULT_COLLATION=utf8_general_ci"
@@ -665,6 +684,26 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle
+           (lambda _
+             ;; The bundled PCRE in MariaDB has a patch that was upstreamed
+             ;; in version 8.34.  Unfortunately the upstream patch behaves
+             ;; slightly differently and the build system fails to detect it.
+             ;; See <https://bugs.exim.org/show_bug.cgi?id=2173>.
+             ;; XXX: Consider patching PCRE instead.
+             (substitute* "cmake/pcre.cmake"
+               ((" OR NOT PCRE_STACK_SIZE_OK") ""))
+
+             (substitute* "storage/tokudb/PerconaFT/ft/CMakeLists.txt"
+               ;; Remove dependency on these CMake targets.
+               ((" build_lzma build_snappy") ""))
+
+             (substitute* "storage/tokudb/PerconaFT/CMakeLists.txt"
+               ;; This file checks that the bundled sources are present and
+               ;; declares build procedures for them.  We don't need that.
+               (("^include\\(TokuThirdParty\\)") ""))
+
+             #t))
          (add-after 'unpack 'adjust-tests
            (lambda _
              (let ((disabled-tests
@@ -703,11 +742,6 @@ Language.")
                                        "disks")))
                (for-each disable-plugin disabled-plugins)
                #t)))
-         (add-before
-          'configure 'pre-configure
-          (lambda _
-            (setenv "CONFIG_SHELL" (which "sh"))
-            #t))
          (replace 'check
            (lambda* (#:key (tests? #t) #:allow-other-keys)
              (if tests?
@@ -741,6 +775,8 @@ Language.")
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
        ("pcre" ,pcre)
+       ("snappy" ,snappy)
+       ("xz" ,xz)
        ("zlib" ,zlib)))
     ;; The test suite is very resource intensive and can take more than three
     ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
