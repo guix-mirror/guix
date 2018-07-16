@@ -11498,3 +11498,24 @@ is also intended for 'text viewing modes' such as info or (wo)man.  This gives a
 common look and feel, or let's say theme, across different markup language modes
 and 'text viewing modes' respectively.")
     (license license:gpl3+)))
+
+(define-public emacs-adoc-mode
+  (package
+    (name "emacs-adoc-mode")
+    (version "0.6.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://stable.melpa.org/packages/adoc-mode-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1c6hrgxxsnl2c19rgjykpm7r4xg9lp6bmk5z6bi7g8pqlrgwffcy"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-markup-faces" ,emacs-markup-faces)))
+    (home-page "https://github.com/sensorflo/adoc-mode/wiki")
+    (synopsis "AsciiDoc mode for Emacs")
+    (description "This package provides an Emacs major mode for editing AsciiDoc
+files.  It focuses on highlighting the document to improve readability.")
+    (license license:gpl2+)))
