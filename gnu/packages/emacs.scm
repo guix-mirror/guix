@@ -36,6 +36,7 @@
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11475,3 +11476,25 @@ can do different things depending on the context.  In this package, it means
 that, if the cursor is in a currently hidden folded construction, we want to
 show it; if it's not, we want to hide whatever fold the cursor is in.")
       (license license:gpl2+))))
+
+(define-public emacs-markup-faces
+  (package
+    (name "emacs-markup-faces")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://stable.melpa.org/packages/markup-faces-"
+                           version ".el"))
+       (sha256
+        (base32
+         "124dxbaa25fwxnpwsygpz7pw6da6dnnw7y2lic3jf8rgz7lw4v32"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/sensorflo/markup-faces")
+    (synopsis "Collection of Emacs faces for markup language modes")
+    (description "emacs-markup-faces is like font-lock-faces, but tailored for
+markup languages instead programming languages.  The sub group markup-faces-text
+is also intended for 'text viewing modes' such as info or (wo)man.  This gives a
+common look and feel, or let's say theme, across different markup language modes
+and 'text viewing modes' respectively.")
+    (license license:gpl3+)))
