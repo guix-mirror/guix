@@ -8425,15 +8425,15 @@ algorithms and xxHash hashing algorithm.")
 (define-public java-bouncycastle
   (package
     (name "java-bouncycastle")
-    (version "1.59")
+    (version "1.60")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bcgit/bc-java/archive/r"
-                                  (substring version 0 1) "rv"
+                                  (substring version 0 1) "v"
                                   (substring version 2 4) ".tar.gz"))
               (sha256
                (base32
-                "1bwl499whlbq896w18idqw2dkp8v0wp0npv9g71i5fgf8xjh0k3q"))
+                "0v434513y708qc87k4xz13p2kzydc736lk3ks67df9mg11s7hchv"))
               (modules '((guix build utils)))
               (snippet
                '(begin
