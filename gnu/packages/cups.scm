@@ -174,6 +174,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
+    (replacement cups-minimal-2.2.8)
     (version "2.2.6")
     (source
      (origin
@@ -234,8 +235,21 @@ describe printer capabilities and features, and a wide variety of generic and
 device-specific programs to convert and print many types of files.")
     (license license:gpl2)))
 
+(define-public cups-minimal-2.2.8
+  (package
+    (inherit cups-minimal)
+    (version "2.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/apple/cups/releases/download/v"
+                           version "/cups-" version "-source.tar.gz"))
+       (sha256
+        (base32
+         "1r7r7b3nqpzc1a9dczqpj2mr8rkcwf01676v11sp4j7w4qfzqs1r"))))))
+
 (define-public cups
-  (package (inherit cups-minimal)
+  (package/inherit cups-minimal
     (name "cups")
     (arguments
      `(;; Three tests fail:
