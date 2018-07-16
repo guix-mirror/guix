@@ -112,6 +112,27 @@ GUILE-VERSION (\"2.0\" or \"2.2\"), or #f if none of the packages matches."
   (dependencies  node-dependencies)               ;list of nodes
   (compiled      node-compiled))                  ;node -> lowerable object
 
+;; File mappings are essentially an alist as passed to 'imported-files'.
+(define-record-type <file-mapping>
+  (file-mapping name alist)
+  file-mapping?
+  (name  file-mapping-name)
+  (alist file-mapping-alist))
+
+(define-gexp-compiler (file-mapping-compiler (mapping <file-mapping>)
+                                             system target)
+  ;; Here we use 'imported-files', which can arrange to directly import all
+  ;; the files instead of creating a derivation, when possible.
+  (imported-files (map (match-lambda
+                         ((destination (? local-file? file))
+                          (cons destination
+                                (local-file-absolute-file-name file)))
+                         ((destination source)
+                          (cons destination source))) ;silliness
+                       (file-mapping-alist mapping))
+                  #:name (file-mapping-name mapping)
+                  #:system system))
+
 (define (node-fold proc init nodes)
   (let loop ((nodes nodes)
              (visited (setq))
@@ -166,8 +187,8 @@ must be present in the search path."
                           (closure modules
                                    (node-modules/recursive dependencies))))
          (module-files (map module->import modules))
-         (source (imported-files (string-append name "-source")
-                                 (append module-files extra-files))))
+         (source (file-mapping (string-append name "-source")
+                               (append module-files extra-files))))
     (node name modules source dependencies
           (compiled-modules name source
                             (map car module-files)
@@ -765,38 +786,6 @@ assumed to be part of MODULES."
 ;;;
 ;;; Building.
 ;;;
-
-(define (imported-files name files)
-  ;; This is a non-monadic, simplified version of 'imported-files' from (guix
-  ;; gexp).
-  (define same-target?
-    (match-lambda*
-      (((file1 . _) (file2 . _))
-       (string=? file1 file2))))
-
-  (define build
-    (with-imported-modules (source-module-closure
-                            '((guix build utils)))
-      #~(begin
-          (use-modules (ice-9 match)
-                       (guix build utils))
-
-          (mkdir (ungexp output)) (chdir (ungexp output))
-          (for-each (match-lambda
-                      ((final-path store-path)
-                       (mkdir-p (dirname final-path))
-
-                       ;; Note: We need regular files to be regular files, not
-                       ;; symlinks, as this makes a difference for
-                       ;; 'add-to-store'.
-                       (copy-file store-path final-path)))
-                    '#$(delete-duplicates files same-target?)))))
-
-  ;; We're just copying files around, no need to substitute or offload it.
-  (computed-file name build
-                 #:options '(#:local-build? #t
-                             #:substitutable? #f
-                             #:env-vars (("COLUMNS" . "200")))))
 
 (define* (compiled-modules name module-tree module-files
                            #:optional
