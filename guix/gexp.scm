@@ -1078,6 +1078,7 @@ to a tree suitable for 'interned-file-tree'."
 
 (define* (imported-files/derivation files
                                     #:key (name "file-import")
+                                    (symlink? #f)
                                     (system (%current-system))
                                     (guile (%guile-for-build))
 
@@ -1091,7 +1092,8 @@ to a tree suitable for 'interned-file-tree'."
   "Return a derivation that imports FILES into STORE.  FILES must be a list
 of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
 resulting store path.  FILE can be either a file name, or a file-like object,
-as returned by 'local-file' for example."
+as returned by 'local-file' for example.  If SYMLINK? is true, create symlinks
+to the source files instead of copying them."
   (define file-pair
     (match-lambda
      ((final-path . (? string? file-name))
@@ -1114,7 +1116,8 @@ as returned by 'local-file' for example."
          (for-each (match-lambda
                     ((final-path store-path)
                      (mkdir-p (dirname final-path))
-                     (symlink store-path final-path)))
+                     ((ungexp (if symlink? 'symlink 'copy-file))
+                      store-path final-path)))
                    '(ungexp files)))))
 
     ;; TODO: Pass FILES as an environment variable so that BUILD remains
@@ -1160,6 +1163,7 @@ as returned by 'local-file' for example."
                  (_ #f))
                files))
       (imported-files/derivation files #:name name
+                                 #:symlink? derivation?
                                  #:system system #:guile guile
                                  #:deprecation-warnings deprecation-warnings)
       (interned-file-tree `(,name directory

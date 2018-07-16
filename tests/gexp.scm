@@ -652,16 +652,19 @@
                        (files -> `(("a/b/c" . ,q-scm)
                                    ("p/q"   . ,plain)))
                        (drv      (imported-files files)))
+    (define (file=? file1 file2)
+      ;; Assume deduplication is in place.
+      (= (stat:ino (lstat file1))
+         (stat:ino (lstat file2))))
+
     (mbegin %store-monad
       (built-derivations (list drv))
       (mlet %store-monad ((dir -> (derivation->output-path drv))
                           (plain* (text-file "foo" "bar!"))
                           (q-scm* (interned-file q-scm "c")))
         (return
-         (and (string=? (readlink (string-append dir "/a/b/c"))
-                        q-scm*)
-              (string=? (readlink (string-append dir "/p/q"))
-                        plain*)))))))
+         (and (file=? (string-append dir "/a/b/c") q-scm*)
+              (file=? (string-append dir "/p/q") plain*)))))))
 
 (test-equal "gexp-modules & ungexp"
   '((bar) (foo))
