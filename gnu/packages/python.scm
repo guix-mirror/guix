@@ -6284,14 +6284,14 @@ designed to efficiently cope with extremely large amounts of data.")
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyasn1" version))
        (sha256
         (base32
-         "05bxnr4wmrg62m4qr1pg1p3z7bhwrv74jll3k42pgxwl36kv0n6j"))))
+         "1z5h38anjzzrxpraa9iq9llffyx2zs8gx0q6dc1g029miwnn50gv"))))
     (build-system python-build-system)
     (home-page "http://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
