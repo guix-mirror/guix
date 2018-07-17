@@ -998,7 +998,7 @@ treaming protocols.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cdparanoia" ,cdparanoia)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
 ;;        ("giflib" ,giflib) ; uses QuantizeBuffer, requires version >= 5
