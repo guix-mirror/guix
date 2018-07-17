@@ -673,9 +673,8 @@ watch your CPU playing while enjoying a cup of tea!")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://www.nethack.org/download/"
-               version "/" name "-361-src.tgz"))
+        (uri (string-append "https://www.nethack.org/download/"
+                            version "/" name "-361-src.tgz"))
         (sha256
           (base32 "1dha0ijvxhx7c9hr0452h93x81iiqsll8bc9msdnp7xdqcfbz32b"))))
     (inputs
@@ -703,7 +702,15 @@ watch your CPU playing while enjoying a cup of tea!")
                                  "/bin/gzip"))
                 (("^WINTTYLIB=.*") "WINTTYLIB=-lncurses"))
               (substitute* "include/config.h"
-                (("^.*define CHDIR.*$") ""))
+                (("^.*define CHDIR.*$") "")
+                (("^/\\* *#*define *REPRODUCIBLE_BUILD *\\*/")
+                 ;; Honor SOURCE_DATE_EPOCH.
+                 "#define REPRODUCIBLE_BUILD"))
+
+              ;; Note: 'makedefs' rejects and ignores dates that are too old
+              ;; or too new, so we must choose something reasonable here.
+              (setenv "SOURCE_DATE_EPOCH" "1531865062")
+
               (substitute* "sys/unix/Makefile.src"
                  (("^# CC = gcc") "CC = gcc"))
               #t))
