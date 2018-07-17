@@ -161,19 +161,20 @@ application can be customized via its API for Python scripting.")
 (define-public assimp
   (package
     (name "assimp")
-    (version "3.3.1")
+    (version "4.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/assimp/assimp/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/assimp/assimp.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gy7zlgkf4nmyv8n674p3f30asis0gjz8icyy11i693n13ww71fk"))))
+                "1rhyqfhzifdj7yibyanph3rh13ykw3i98dnn8mz65j780472hw28"))))
     (build-system cmake-build-system)
     (inputs
      `(("zlib" ,zlib)))
-    (home-page "http://assimp.org/")
+    (home-page "http://www.assimp.org/")
     (synopsis "Asset import library")
     (description
      "The Open Asset Import Library loads more than 40 3D file formats into
