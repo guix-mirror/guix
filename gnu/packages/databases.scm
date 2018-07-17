@@ -665,6 +665,29 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'adjust-tests
+           (lambda _
+             (let ((disabled-tests
+                    '(;; These fail because root@hostname == root@localhost in
+                      ;; the build environment, causing a user count mismatch.
+                      ;; See <https://jira.mariadb.org/browse/MDEV-7761>.
+                      "main.join_cache"
+                      "main.explain_non_select"
+                      "roles.acl_statistics"))
+
+                   ;; This file contains a list of known-flaky tests for this
+                   ;; release.  Append our own items.
+                   (unstable-tests (open-file "mysql-test/unstable-tests" "a")))
+               (for-each (lambda (test)
+                           (format unstable-tests "~a : ~a\n"
+                                   test "Disabled in Guix"))
+                         disabled-tests)
+               (close-port unstable-tests)
+
+               (substitute* "mysql-test/mysql-test-run.pl"
+                 (("/bin/ls") (which "ls"))
+                 (("/bin/sh") (which "sh")))
+               #t)))
          (add-before 'configure 'disable-plugins
            (lambda _
              (let ((disable-plugin (lambda (name)
@@ -675,7 +698,9 @@ Language.")
                                          (format port "\n")))))
                    (disabled-plugins '(;; FIXME: On armhf-linux, this plugin
                                        ;; triggers a GCC ICE.  Disable for now.
-                                       "semisync")))
+                                       "semisync"
+                                       ;; XXX: Causes a test failure.
+                                       "disks")))
                (for-each disable-plugin disabled-plugins)
                #t)))
          (add-before
@@ -683,6 +708,15 @@ Language.")
           (lambda _
             (setenv "CONFIG_SHELL" (which "sh"))
             #t))
+         (replace 'check
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (if tests?
+                 (with-directory-excursion "mysql-test"
+                   (invoke "./mtr" "--verbose"
+                           "--parallel" (number->string (parallel-job-count))
+                           "--skip-test-list=unstable-tests"))
+                 (format #t "test suite not run~%"))
+             #t))
          (add-after
           'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
@@ -708,6 +742,9 @@ Language.")
        ("openssl" ,openssl)
        ("pcre" ,pcre)
        ("zlib" ,zlib)))
+    ;; The test suite is very resource intensive and can take more than three
+    ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
+    (properties '((timeout . 64800)))        ;18 hours
     (home-page "https://mariadb.org/")
     (synopsis "SQL database server")
     (description
