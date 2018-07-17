@@ -87,6 +87,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libunwind)
@@ -664,6 +665,124 @@ up to three players (either human or CPU) compete with each other sending
 removed lines to all opponents.  There is also a Demo mode in which you can
 watch your CPU playing while enjoying a cup of tea!")
     (license license:gpl2+)))
+
+(define-public nethack
+  (package
+    (name "nethack")
+    (version "3.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://www.nethack.org/download/"
+               version "/" name "-361-src.tgz"))
+        (sha256
+          (base32 "1dha0ijvxhx7c9hr0452h93x81iiqsll8bc9msdnp7xdqcfbz32b"))))
+    (inputs
+      `(("ncurses" ,ncurses)
+        ("bison" ,bison)
+        ("flex" ,flex)
+        ("less" ,less)))
+    (build-system gnu-build-system)
+    (arguments
+      '(#:make-flags
+        `(,(string-append "PREFIX=" (assoc-ref %outputs "out")))
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'patch-paths
+            (lambda _
+              (substitute* "sys/unix/nethack.sh"
+                (("^ *cd .*$") ""))
+              (substitute* "sys/unix/Makefile.utl"
+                (("^YACC *=.*$") "YACC = bison -y\n")
+                (("^LEX *=.*$") "LEX = flex\n")
+                (("^# CC = gcc") "CC = gcc"))
+              (substitute* "sys/unix/hints/linux"
+                (("/bin/gzip") (string-append
+                                 (assoc-ref %build-inputs "gzip")
+                                 "/bin/gzip"))
+                (("^WINTTYLIB=.*") "WINTTYLIB=-lncurses"))
+              (substitute* "include/config.h"
+                (("^.*define CHDIR.*$") ""))
+              (substitute* "sys/unix/Makefile.src"
+                 (("^# CC = gcc") "CC = gcc"))
+              #t))
+          (replace 'configure
+            (lambda _
+              (let ((bash (string-append
+                            (assoc-ref %build-inputs "bash")
+                            "/bin/bash")))
+                (with-directory-excursion "sys/unix"
+                  (substitute* "setup.sh" (("/bin/sh") bash))
+                  (invoke bash "setup.sh" "hints/linux"))
+                #t)))
+          (add-after 'install 'fixup-paths
+            (lambda _
+              (let* ((output (assoc-ref %outputs "out"))
+                     (nethack-script (string-append output "/bin/nethack")))
+                (mkdir-p (string-append output "/games/lib/nethackuserdir"))
+                (for-each
+                  (lambda (file)
+                    (rename-file
+                      (string-append output "/games/lib/nethackdir/" file)
+                      (string-append output "/games/lib/nethackuserdir/"
+                                     file)))
+                  '("xlogfile" "logfile" "perm" "record" "save"))
+                (mkdir-p (string-append output "/bin"))
+                (call-with-output-file nethack-script
+                  (lambda (port)
+                    (format port "#!~a/bin/sh
+PATH=~a:$PATH
+if [ ! -d ~~/.config/nethack ]; then
+  mkdir -p ~~/.config/nethack
+  cp -r ~a/games/lib/nethackuserdir/* ~~/.config/nethack
+  chmod -R +w ~~/.config/nethack
+fi
+
+RUNDIR=$(mktemp -d)
+
+cleanup() {
+  rm -rf $RUNDIR
+}
+trap cleanup EXIT
+
+cd $RUNDIR
+for i in ~~/.config/nethack/*; do
+  ln -s $i $(basename $i)
+done
+for i in ~a/games/lib/nethackdir/*; do
+  ln -s $i $(basename $i)
+done
+~a/games/nethack"
+                      (assoc-ref %build-inputs "bash")
+                      (list->search-path-as-string
+                        (list
+                          (string-append
+                            (assoc-ref %build-inputs "coreutils") "/bin")
+                          (string-append
+                            (assoc-ref %build-inputs "less") "/bin"))
+                        ":")
+                      output
+                      output
+                      output)))
+                (chmod nethack-script #o555)
+                #t)))
+          (delete 'check))))
+    (home-page "https://nethack.org")
+    (synopsis "Classic dungeon crawl game")
+    (description "NetHack is a single player dungeon exploration game that runs
+on a wide variety of computer systems, with a variety of graphical and text
+interfaces all using the same game engine.  Unlike many other Dungeons &
+Dragons-inspired games, the emphasis in NetHack is on discovering the detail of
+the dungeon and not simply killing everything in sight - in fact, killing
+everything in sight is a good way to die quickly.  Each game presents a
+different landscape - the random number generator provides an essentially
+unlimited number of variations of the dungeon and its denizens to be discovered
+by the player in one of a number of characters: you can pick your race, your
+role, and your gender.")
+    (license
+      (license:fsdg-compatible
+        "https://nethack.org/common/license.html"))))
 
 (define-public prboom-plus
   (package
