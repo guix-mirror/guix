@@ -2336,7 +2336,7 @@ supported players in addition to this package.")
     (inputs
      `(("bzip2" ,bzip2)
        ("dbus-glib" ,dbus-glib)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)           ;compilation errors with ffmpeg-4
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)
