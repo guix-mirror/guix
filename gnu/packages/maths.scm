@@ -1367,6 +1367,7 @@ can solve two kinds of problems:
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
+       ("qhull" ,qhull)
        ("readline" ,readline)
        ("gl2ps" ,gl2ps)
        ("glpk" ,glpk)
