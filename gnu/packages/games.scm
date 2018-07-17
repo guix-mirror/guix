@@ -955,15 +955,16 @@ that beneath its ruins lay buried an ancient evil.")
 (define-public angband
   (package
     (name "angband")
-    (version "4.0.5")
+    (version "4.1.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://rephial.org/downloads/4.0/"
-                           "angband-" version ".tar.gz"))
+       (uri (string-append "http://rephial.org/downloads/"
+                           (version-major+minor version)
+                           "/angband-" version ".tar.gz"))
        (sha256
         (base32
-         "0lpq2kms7hp421vrasx2bkkn9w08kr581ldwik3v0hlq6h7rlxhd"))
+         "0ahfzb66ihxvkxcbhcib816x40sdsp26b3ravr1xqp44w1whkg1h"))
        (modules '((guix build utils)))
        (snippet
         ;; So, some of the sounds/graphics/tilesets are under different
@@ -987,11 +988,11 @@ that beneath its ruins lay buried an ancient evil.")
        #:configure-flags (list (string-append "--bindir=" %output "/bin"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen.sh
+         (replace 'bootstrap
            (lambda _
              (substitute* "acinclude.m4"
                (("ncursesw5-config") "ncursesw6-config"))
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
