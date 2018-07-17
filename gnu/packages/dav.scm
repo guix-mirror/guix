@@ -105,5 +105,5 @@ between two storage locations.  The most popular purpose is to
 synchronize a CalDAV or CardDAV server with a local folder or file.  The
 local data can then be accessed via a variety of programs, none of which
 have to know or worry about syncing to a server.")
-    (home-page "https://github.com/untitaker/vdirsyncer")
+    (home-page "https://github.com/pimutils/vdirsyncer")
     (license bsd-3)))
