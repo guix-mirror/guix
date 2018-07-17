@@ -348,7 +348,7 @@ the Nix package manager.")
                (let ((out (assoc-ref outputs "out")))
                  (substitute* (find-files (string-append out "/libexec"))
                    (("exec \".*/bin/guix\"")
-                    "exec ~root/.config/current/bin/guix"))
+                    "exec ~root/.config/guix/current/bin/guix"))
                  #t)))
            (delete 'wrap-program)))))))
 
