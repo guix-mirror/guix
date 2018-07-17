@@ -498,8 +498,6 @@ EXTRA_DIST +=						\
   build-aux/run-system-tests.scm			\
   d3.v3.js						\
   graph.js						\
-  srfi/srfi-64.scm					\
-  srfi/srfi-64.upstream.scm				\
   tests/test.drv					\
   tests/signing-key.pub					\
   tests/signing-key.sec					\
