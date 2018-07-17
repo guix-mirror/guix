@@ -1686,14 +1686,14 @@ problems as well as resampling based estimators of prediction error.")
 (define-public r-psych
   (package
     (name "r-psych")
-    (version "1.7.8")
+    (version "1.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "psych" version))
        (sha256
         (base32
-         "0daismb8pdk392vdy304hqx0m3jx62gx3a0hygjygc125rhfla7k"))))
+         "1kzv9nc7rwn1sj1zxd8xrbs6c7qlka7j2c8lsr4f20znkd3qx8gf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreign" ,r-foreign)
@@ -3466,37 +3466,6 @@ written for Matlab and GNU Octave.  It includes filter generation utilities,
 filtering functions, resampling routines, and visualization of filter models.
 It also includes interpolation functions.")
     (license license:gpl2)))
-
-(define-public r-psych
-  (package
-    (name "r-psych")
-    (version "1.8.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "psych" version))
-       (sha256
-        (base32
-         "1kzv9nc7rwn1sj1zxd8xrbs6c7qlka7j2c8lsr4f20znkd3qx8gf"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-foreign" ,r-foreign)
-       ("r-lattice" ,r-lattice)
-       ("r-mnormt" ,r-mnormt)
-       ("r-nlme" ,r-nlme)))
-    (home-page "http://cran.r-project.org/web/packages/psych")
-    (synopsis "Procedures for psychological, psychometric, and personality research")
-    (description
-     "This package provides a general purpose toolbox for personality,
-psychometric theory and experimental psychology.  The functions are primarily
-for multivariate analysis and scale construction using factor analysis,
-principal component analysis, cluster analysis and reliability analysis,
-although others provide basic descriptive statistics.  It provides functions
-for analyzing data at multiple levels within and between group statistics,
-including correlations and factor analysis; functions for simulating and
-testing particular item and test structures are included.  Several functions
-serve as a useful front end for structural equation modeling.")
-    (license license:gpl2+)))
 
 (define-public r-gsubfn
   (package
