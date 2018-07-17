@@ -62,7 +62,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.2.4")
+    (version "7.2.7")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -70,7 +70,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "123s0lbyz4fxr3kk91r4v658mk899dym36lggxnx9pwd2jyv25kr"))
+                "1w1iix3hkwlgkr83zpr2wbnjzd8lwhy02i5hp1j1zbrv7caw00gb"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -248,6 +248,9 @@
                          ;; iconv breaks the loop after the first error with Termsig=11.
                          "ext/iconv/tests/iconv_strpos_variation4.phpt"
                          "ext/iconv/tests/iconv_strrpos_variation3.phpt"
+                         ;; Expects "invalid multibyte sequence" but got
+                         ;; "unknown error".
+                         "ext/iconv/tests/bug76249.phpt"
 
                          ;; XXX: These test failures appear legitimate, needs investigation.
                          ;; open_basedir() restriction failure.
@@ -288,7 +291,10 @@
                          "ext/mbstring/tests/mb_ereg_variation3.phpt"
                          "ext/mbstring/tests/mb_ereg_replace_variation1.phpt"
                          "ext/mbstring/tests/bug72994.phpt"
-                         "ext/ldap/tests/ldap_set_option_error.phpt"))
+                         "ext/ldap/tests/ldap_set_option_error.phpt"
+
+                         ;; Sometimes cannot start the LDAP server.
+                         "ext/ldap/tests/bug76248.phpt"))
 
              ;; Skip tests requiring network access.
              (setenv "SKIP_ONLINE_TESTS" "1")
