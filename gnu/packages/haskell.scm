@@ -9278,26 +9278,6 @@ each constructor are represented using an n-ary product.")
 parser that uses ByteStrings for parsing and representing the URI data.")
     (license license:bsd-3)))
 
-(define-public ghc-time-locale-compat
-  (package
-    (name "ghc-time-locale-compat")
-    (version "0.1.1.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/"
-                           "time-locale-compat-" version "/"
-                           "time-locale-compat-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1vdcfr2hp9qh3ag90x6ikbdf42wiqpdylnplffna54bpnilbyi4i"))))
-    (build-system haskell-build-system)
-    (home-page "https://github.com/khibino/haskell-time-locale-compat")
-    (synopsis "Compatibility of TimeLocale between old-locale and time-1.5")
-    (description "This Haskell package contains wrapped name module for
-TimeLocale.")
-    (license license:bsd-3)))
-
 (define-public ghc-http-api-data
   (package
     (name "ghc-http-api-data")
