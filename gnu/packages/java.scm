@@ -3643,7 +3643,8 @@ on the XPP3 API (XML Pull Parser).")))
                 "115l5pqblirdkmzi32dxx7gbcm4jy0s14y5wircr6h8jdr9aix00"))))
     (build-system ant-build-system)
     (propagated-inputs
-     `(("java-aqute-bndlib" ,java-aqute-bndlib)))
+     `(("java-aqute-bndlib" ,java-aqute-bndlib)
+       ("java-aqute-libg" ,java-aqute-libg)))
     (arguments
      `(#:build-target "compile"
        ;; The tests require an old version of Janino, which no longer compiles
