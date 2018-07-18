@@ -37,6 +37,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11519,3 +11520,36 @@ and 'text viewing modes' respectively.")
     (description "This package provides an Emacs major mode for editing AsciiDoc
 files.  It focuses on highlighting the document to improve readability.")
     (license license:gpl2+)))
+
+(define-public emacs-rust-mode
+  (let ((commit
+         ;; Last release is old (2016), use more recent commit to get bug
+         ;; fixes.
+         "64b4a2450e4d4c47f6307851c9b2598cd2254d68")
+        (revision "0"))
+    (package
+      (name "emacs-rust-mode")
+      (version (git-version "0.3.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri
+                 (git-reference
+                  (url "https://github.com/rust-lang/rust-mode")
+                  (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0pbz36lljgb7bdgx3h3g0pq1nss1kvn8mhk1l3mknsmynd6w4nd8"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (invoke "sh" "run_rust_emacs_tests.sh"))))))
+      (home-page "https://github.com/rust-lang/rust-mode")
+      (synopsis "Major Emacs mode for editing Rust source code")
+      (description "This package provides a major Emacs mode for editing Rust
+source code.")
+      (license (list license:expat
+                     license:asl2.0)))))
