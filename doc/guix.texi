@@ -4045,6 +4045,21 @@ specified with the @code{#:glib} parameter.
 Both phases are executed after the @code{install} phase.
 @end defvr
 
+@defvr {Scheme Variable} guile-build-system
+This build system is for Guile packages that consist exclusively of Scheme
+code and that are so lean that they don't even have a makefile, let alone a
+@file{configure} script.  It compiles Scheme code using @command{guild
+compile} (@pxref{Compilation,,, guile, GNU Guile Reference Manual}) and
+installs the @file{.scm} and @file{.go} files in the right place.  It also
+installs documentation.
+
+This build system supports cross-compilation by using the @code{--target}
+option of @command{guild compile}.
+
+Packages built with @code{guile-build-system} must provide a Guile package in
+their @code{native-inputs} field.
+@end defvr
+
 @defvr {Scheme Variable} minify-build-system
 This variable is exported by @code{(guix build-system minify)}.  It
 implements a minification procedure for simple JavaScript packages.
