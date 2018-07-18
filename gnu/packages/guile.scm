@@ -1974,6 +1974,78 @@ It has a nice, simple s-expression based syntax.")
      "Guile-colorized provides you with a colorized REPL for GNU Guile.")
     (license license:gpl3+)))
 
+(define-public guile-pfds
+  (package
+    (name "guile-pfds")
+    (version "0.3")
+    (home-page "https://github.com/ijp/pfds")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "19y33wg94pf0n98dkfqd1zbw93fgky4sawxsxl6s3vyqwl0yi5vh"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system guile-build-system)
+    (arguments
+     '(#:source-directory "src"
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'move-files-around
+                    (lambda _
+                      ;; Move files under a pfds/ directory to reflect the
+                      ;; module hierarchy.
+                      (mkdir-p "src/pfds")
+                      (for-each (lambda (file)
+                                  (rename-file file
+                                               (string-append "src/pfds/"
+                                                              file)))
+                                '("bbtrees.sls"
+                                  "deques"
+                                  "deques.sls"
+                                  "dlists.sls"
+                                  "fingertrees.sls"
+                                  "hamts.sls"
+                                  "heaps.sls"
+                                  "private"
+                                  "psqs.sls"
+                                  "queues"
+                                  "queues.sls"
+                                  "sequences.sls"
+                                  "sets.sls"))
+
+                      ;; In Guile <= 2.2.4, there's no way to tell 'guild
+                      ;; compile' to accept the ".sls" extension.  So...
+                      (for-each (lambda (file)
+                                  (rename-file file
+                                               (string-append
+                                                (string-drop-right file 4)
+                                                ".scm")))
+                                (find-files "." "\\.sls$"))
+                      #t)))))
+    (native-inputs
+     `(("guile" ,guile-2.2)))
+    (synopsis "Purely functional data structures for Guile")
+    (description
+     "This package provides purely functional data structures written in R6RS
+Scheme and compiled for Guile.  It has been tested with Racket, Guile 2,
+Vicare Scheme and IronScheme.  Right now it contains:
+
+@itemize
+@item queues
+@item deques
+@item bbtrees
+@item sets
+@item dlists
+@item priority search queues (PSQs)
+@item finger trees
+@item sequences
+@item heaps
+@item hash array mapped tries (HAMTs).
+@end itemize\n")
+    (license license:bsd-3)))
+
 (define-public guile-simple-zmq
   (let ((commit "1f3b7c0b9b249c6fde8e8a632b252d8a1b794424")
         (revision "1"))
