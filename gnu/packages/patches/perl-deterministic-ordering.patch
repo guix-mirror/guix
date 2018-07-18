@@ -12,10 +12,10 @@ reproducibility.
  cpan/Devel-PPPort/PPPort_xs.PL | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/cpan/Devel-PPPort/PPPort_xs.PL b/cpan/Devel-PPPort/PPPort_xs.PL
+diff --git a/dist/Devel-PPPort/PPPort_xs.PL b/dist/Devel-PPPort/PPPort_xs.PL
 index 5f18940..149f2fe 100644
---- a/cpan/Devel-PPPort/PPPort_xs.PL
-+++ b/cpan/Devel-PPPort/PPPort_xs.PL
+--- a/dist/Devel-PPPort/PPPort_xs.PL
++++ b/dist/Devel-PPPort/PPPort_xs.PL
 @@ -38,7 +38,7 @@ END
  my $file;
  my $sec;

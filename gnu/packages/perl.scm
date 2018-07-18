@@ -61,18 +61,16 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.26.2")
+    (version "5.28.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "03gpnxx1g6hvlh0v4aqx00580h787sfywp1vlvw64q2xcbm9qbsp"))
+               "1a3f822lcl8dr8v0hk80yyhpzqlljg49z9flb48rs3nbsij9z4ky"))
              (patches (search-patches
-                       "perl-file-path-CVE-2017-6512.patch"
                        "perl-no-sys-dirs.patch"
-                       "perl-archive-tar-CVE-2018-12015.patch"
                        "perl-autosplit-default-time.patch"
                        "perl-deterministic-ordering.patch"
                        "perl-reproducible-build-date.patch"))))
