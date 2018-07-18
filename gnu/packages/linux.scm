@@ -423,8 +423,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.112"
-                    "1zrnbvzr7z5ky79r6hpjvn15bxmwcyi8lr7yq2nx1r8ladl8lnb0"
+  (make-linux-libre "4.9.113"
+                    "12xj0ymwb0rdxnkl18xg40hiqcr5ad636xsjqz6aag2wxj8ld2xr"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
