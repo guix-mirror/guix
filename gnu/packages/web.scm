@@ -122,14 +122,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.33")
+    (version "2.4.34")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "01bghiq4pbgjbgd6gic0nb8bbk6mfpwx3gcsbf21f3dhb4c520ny"))))
+               "1w1q2smdgf6ln0x741lk5pv5r0gzrxj2iza1vslhifzy65bcjlzs"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
