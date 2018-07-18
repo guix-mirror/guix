@@ -435,14 +435,14 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.30")
+   (version "2.31.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "028cklfqaab24glva1ks2aqa1zxa6w6xmc8q34zs1sb7h22dxspg"))
+              "1l34hn1zkmhr1wcrgf0d4z7r3najxnw3cx2y2fk7v55zjlk3ik7z"))
             (patches (search-patches "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
 
@@ -479,17 +479,6 @@ the strings in a binary file, and utilities for working with archives.  The
 included.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/binutils/")))
-
-(define-public binutils/fixed
-  ;; TODO: Incorporate this in binutils during the next rebuild cycle.
-  (hidden-package
-   (package
-     (inherit binutils)
-     (source (origin
-               (inherit (package-source binutils))
-               (patches (append (origin-patches (package-source binutils))
-                                (search-patches
-                                 "binutils-aarch64-symbol-relocation.patch"))))))))
 
 (define* (make-ld-wrapper name #:key
                           (target (const #f))
