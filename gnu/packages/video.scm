@@ -820,15 +820,16 @@ audio/video codec library.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.3")
+    (version "3.0.3-1")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://download.videolan.org/pub/videolan/vlc/"
-                   version "/vlc-" version ".tar.xz"))
+                   (car (string-split version #\-))
+                   "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "0lavzly8l0ll1d9iris9cnirgcs77g48lxj14058dxqkvd5v1a4v"))))
+               "1p7qvdvg9w4lz8vckzhn6bswfkq3qw7fqkgvwjcskdgc266xx7dw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
