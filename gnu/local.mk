@@ -584,6 +584,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/audacity-build-with-system-portaudio.patch \
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
   %D%/packages/patches/avahi-localstatedir.patch		\
+  %D%/packages/patches/avogadro-boost148.patch			\
+  %D%/packages/patches/avogadro-eigen3-update.patch		\
+  %D%/packages/patches/avogadro-python-eigen-lib.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/azr3.patch				\

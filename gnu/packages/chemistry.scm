@@ -23,15 +23,95 @@
   #:use-module (guix download)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages gv)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
+
+(define-public avogadro
+  (package
+    (name "avogadro")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cryos/avogadro/archive/"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "02v4h6hi1m7ilv0apdf74a8l1cm6dxnxyqp0rdaidrp3i9pf6lv4"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (patches
+               (search-patches "avogadro-eigen3-update.patch"
+                               "avogadro-python-eigen-lib.patch"
+                               "avogadro-boost148.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f
+       #:configure-flags
+       (list "-DENABLE_GLSL=ON"
+             (string-append "-DPYTHON_LIBRARIES="
+                            (assoc-ref %build-inputs "python")
+                            "/lib")
+             (string-append "-DPYTHON_INCLUDE_DIRS="
+                            (assoc-ref %build-inputs "python")
+                            "/include/python2.7"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-python-lib-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This is necessary to install the Python module in the correct
+             ;; directory.
+             (substitute* "libavogadro/src/python/CMakeLists.txt"
+               (("^EXECUTE_PROCESS.*$") "")
+               (("^.*from sys import stdout.*$") "")
+               (("^.*OUTPUT_VARIABLE.*")
+                (string-append "set(PYTHON_LIB_PATH \""
+                               (assoc-ref outputs "out")
+                               "/lib/python2.7/site-packages\")")))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'avogadro' runs with the correct PYTHONPATH.
+             (let* ((out (assoc-ref outputs "out")))
+               (setenv "PYTHONPATH"
+                       (string-append
+                        (assoc-ref outputs "out")
+                        "/lib/python2.7/site-packages:"
+                        (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/avogadro")
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH")))))
+             #t)))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("eigen" ,eigen)
+       ("glew" ,glew)
+       ("openbabel" ,openbabel)
+       ("python" ,python-2)
+       ("python-numpy" ,python2-numpy)
+       ("python-pyqt" ,python2-pyqt-4)
+       ("python-sip" ,python2-sip)
+       ("qt" ,qt-4)
+       ("zlib" ,zlib)))
+    (home-page "https://avogadro.cc")
+    (synopsis "Advanced molecule editor")
+    (description
+     "Avogadro is an advanced molecule editor and visualizer designed for use
+in computational chemistry, molecular modeling, bioinformatics, materials
+science, and related areas.  It offers flexible high quality rendering and a
+powerful plugin architecture.")
+    (license license:gpl2+)))
 
 (define-public domainfinder
   (package
