@@ -404,14 +404,25 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17.6")
-(define %linux-libre-hash "0d48r5jpj71ikdalz5z756snwq54cpnwnba8bbhg8r2ri3770wcm")
+(define %linux-libre-version "4.17.7")
+(define %linux-libre-hash "1815h0kf6c07zp9782v9n9a21x8wzdr4ws190nqp7z2xyip6xfjj")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %linux-compatible-systems
-                    #:configuration-file kernel-config))
+                    #:configuration-file kernel-config
+                    #:patches
+                    (list
+                     (origin
+                       (method url-fetch)
+                       (uri "https://git.kernel.org/pub/scm/linux/kernel/git/\
+stable/linux.git/patch/?id=27d8b7daf73827e8263ab0b740da6ebdda9f9d56")
+                       (file-name "linux-libre-4.17.7-fix-i686.patch")
+                       (sha256
+                        (base32
+                         "0xbv04vwhyk3wvia13ca6kbysjqwsywcj6501i2wpddawm4q23sc")))
+                     %boot-logo-patch)))
 
 (define %linux-libre-4.14-version "4.14.56")
 (define %linux-libre-4.14-hash "15a4gsi1nsjab16qwfizc0bdn0h27w54qy2a50847i0ln4akdrzl")
