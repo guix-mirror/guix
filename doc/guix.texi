@@ -12156,7 +12156,7 @@ secure connections to the print server.
 
 Suppose you want to enable the Web interface of CUPS and also add
 support for Epson printers @i{via} the @code{escpr} package and for HP
-printers @i{via} the @code{hplip} package.  You can do that directly,
+printers @i{via} the @code{hplip-minimal} package.  You can do that directly,
 like this (you need to use the @code{(gnu packages cups)} module):
 
 @example
@@ -12164,8 +12164,12 @@ like this (you need to use the @code{(gnu packages cups)} module):
          (cups-configuration
            (web-interface? #t)
            (extensions
-             (list cups-filters escpr hplip))))
+             (list cups-filters escpr hplip-minimal))))
 @end example
+
+Note: If you wish to use the Qt5 based GUI which comes with the hplip
+package then it is suggested that you install the @code{hplip} package,
+either in your OS configuration file or as your user.
 
 The available configuration parameters follow.  Each parameter
 definition is preceded by its type; for example, @samp{string-list foo}
