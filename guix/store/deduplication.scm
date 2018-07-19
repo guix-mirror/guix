@@ -31,37 +31,15 @@
   #:export (nar-sha256
             deduplicate))
 
-;; Would it be better to just make WRITE-FILE give size as well? I question
-;; the general utility of this approach.
-(define (counting-wrapper-port output-port)
-  "Some custom ports don't implement GET-POSITION at all. But if we want to
-figure out how many bytes are being written, we will want to use that. So this
-makes a wrapper around a port which implements GET-POSITION."
-  (let ((byte-count 0))
-    (make-custom-binary-output-port "counting-wrapper"
-                                    (lambda (bytes offset count)
-                                      (set! byte-count
-                                        (+ byte-count count))
-                                      (put-bytevector output-port bytes
-                                                      offset count)
-                                      count)
-                                    (lambda ()
-                                      byte-count)
-                                    #f
-                                    (lambda ()
-                                      (close-port output-port)))))
-
 (define (nar-sha256 file)
   "Gives the sha256 hash of a file and the size of the file in nar form."
   (let-values (((port get-hash) (open-sha256-port)))
-    (let ((wrapper (counting-wrapper-port port)))
-      (write-file file wrapper)
-      (force-output wrapper)
-      (force-output port)
-      (let ((hash (get-hash))
-            (size (port-position wrapper)))
-        (close-port wrapper)
-        (values hash size)))))
+    (write-file file port)
+    (force-output port)
+    (let ((hash (get-hash))
+          (size (port-position port)))
+      (close-port port)
+      (values hash size))))
 
 (define (tempname-in directory)
   "Gives an unused temporary name under DIRECTORY. Not guaranteed to still be
