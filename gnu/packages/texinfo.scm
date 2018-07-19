@@ -37,6 +37,7 @@
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
+              (patches (search-patches "texinfo-perl-compat.patch"))
               (sha256
                (base32
                 "0qjzvbvnv9003xdrcpi3jp7y68j4hq2ciw9frh2hghh698zlnxvp"))))
