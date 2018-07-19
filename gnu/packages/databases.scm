@@ -665,6 +665,19 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'disable-plugins
+           (lambda _
+             (let ((disable-plugin (lambda (name)
+                                     (call-with-output-file
+                                         (string-append "plugin/" name
+                                                        "/CMakeLists.txt")
+                                       (lambda (port)
+                                         (format port "\n")))))
+                   (disabled-plugins '(;; FIXME: On armhf-linux, this plugin
+                                       ;; triggers a GCC ICE.  Disable for now.
+                                       "semisync")))
+               (for-each disable-plugin disabled-plugins)
+               #t)))
          (add-before
           'configure 'pre-configure
           (lambda _
