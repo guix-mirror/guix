@@ -64,12 +64,12 @@
     (get)))
 
 (test-equal "open-sha256-port, hello"
-  %hello-sha256
+  (list %hello-sha256 (string-length "hello world"))
   (let-values (((port get)
                 (open-sha256-port)))
     (put-bytevector port (string->utf8 "hello world"))
     (force-output port)
-    (get)))
+    (list (get) (port-position port))))
 
 (test-assert "port-sha256"
   (let* ((file     (search-path %load-path "ice-9/psyntax.scm"))
