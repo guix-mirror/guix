@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -31,7 +31,7 @@
 (define-public busybox
   (package
     (name "busybox")
-    (version "1.26.2")
+    (version "1.29.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -39,11 +39,18 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "05mg6rh5smkzfwqfcazkpwy6h6555llsazikqnvwkaf17y8l8gns"))))
+                "1hqlr5b3bsyb6avadz1z4za6pyl32r1krnpcpwwqilhnx8q0f9gw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'disable-taskset
+           ;; This feature fails its tests in the build environment,
+           ;; was default 'n' until after 1.26.2.
+           (lambda _
+             (substitute* "util-linux/taskset.c"
+               (("default y") "default n"))
+             #t))
          (replace 'configure
            (lambda _ (invoke "make" "defconfig")))
          (replace 'check
