@@ -26,6 +26,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -816,6 +817,35 @@ audio/video codec library.")
                     "--disable-mipsdspr1"
                     flag))
               ,flags))))))
+
+(define-public ffmpegthumbnailer
+  (package
+    (name "ffmpegthumbnailer")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dirkvdb/"
+                                  name "/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "13qs4iwd4l3iiim30s5051n80z0vgsnikym8vsn321cnm9algiwb"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("gvfs" ,gvfs)))
+    (arguments
+     `(#:configure-flags (list "-DENABLE_GIO=ON" "-DENABLE_THUMBNAILER=ON")))
+    (home-page "https://github.com/dirkvdb/ffmpegthumbnailer")
+    (synopsis "Create thumbnails from video files")
+    (description "FFmpegthumbnailer is a lightweight video thumbnailer that
+can be used by file managers to create thumbnails for your video files.  The
+thumbnailer uses ffmpeg to decode frames from the video files, so supported
+videoformats depend on the configuration flags of ffmpeg.")
+    (license license:gpl2+)))
 
 (define-public vlc
   (package
