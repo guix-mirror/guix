@@ -190,12 +190,14 @@ Every store item in REFERENCES must already be registered."
 (define (reset-timestamps file)
   "Reset the modification time on FILE and on all the files it contains, if
 it's a directory.  While at it, canonicalize file permissions."
+  ;; Note: We're resetting to one second after the Epoch like 'guix-daemon'
+  ;; has always done.
   (let loop ((file file)
              (type (stat:type (lstat file))))
     (case type
       ((directory)
        (chmod file #o555)
-       (utime file 0 0 0 0)
+       (utime file 1 1 0 0)
        (let ((parent file))
          (for-each (match-lambda
                      (("." . _) #f)
@@ -209,10 +211,10 @@ it's a directory.  While at it, canonicalize file permissions."
                                 (type type))))))
                    (scandir* parent))))
       ((symlink)
-       (utime file 0 0 0 0 AT_SYMLINK_NOFOLLOW))
+       (utime file 1 1 0 0 AT_SYMLINK_NOFOLLOW))
       (else
        (chmod file (if (executable-file? file) #o555 #o444))
-       (utime file 0 0 0 0)))))
+       (utime file 1 1 0 0)))))
 
 (define* (register-path path
                         #:key (references '()) deriver prefix
