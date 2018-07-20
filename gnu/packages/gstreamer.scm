@@ -386,18 +386,16 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1pknqpjxq1l3vlprdsmxxwk0lwqa555fqd543k9vphngqlwiqdca"))))
+                "1pknqpjxq1l3vlprdsmxxwk0lwqa555fqd543k9vphngqlwiqdca"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Drop bundled ffmpeg.
+                  (delete-file-recursively "gst-libs/ext/libav")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--with-system-libav")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-/bin/sh
-                     (lambda _
-                       (substitute* "gst-libs/ext/libav/configure"
-                         (("#! /bin/sh")
-                          (string-append "#! "(which "sh"))))
-                       #t)))))
+     '(#:configure-flags '("--with-system-libav")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
