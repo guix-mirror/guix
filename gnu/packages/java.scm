@@ -2537,6 +2537,37 @@ ClasspathX project.  It provides implementations of version 3.0 of the servlet
 API and version 2.1 of the Java ServerPages API.")
     (license license:gpl3+)))
 
+(define-public java-javaee-servletapi
+  (package
+    (name "java-javaee-servletapi")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/javaee/servlet-spec/"
+                                  "archive/" version ".zip"))
+              (file-name (string-append name "-" version ".zip"))
+              (sha256
+               (base32
+                "0m6p13vgfb1ihich1jp5j6fqlhkjsrkn32c86bsbkryp38ipwg8w"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "javax-servletapi.jar"
+       ;; no tests
+       #:tests? #f
+       #:source-dir "src/main/java"))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://javaee.github.io/servlet-spec/")
+    (synopsis "Java servlet API")
+    (description "Java Servlet is the foundation web specification in the
+Java Enterprise Platform.  Developers can build web applications using the
+Servlet API to interact with the request/response workflow.  This project
+provides information on the continued development of the Java Servlet
+specification.")
+    ;; Main code is dual-licensed by Oracle under either GLP2 or CDDL 1.1.
+    ;; Some files are licensed under ASL 2.0.
+    (license (list license:asl2.0 license:gpl2 license:cddl1.1))))
+
 (define-public java-swt
   (package
     (name "java-swt")
