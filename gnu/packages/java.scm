@@ -7908,6 +7908,10 @@ the dependency is said to be unsatisfied, and the application is broken.")
               (uri (string-append "https://github.com/google/guice/archive/"
                                   version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  (for-each delete-file (find-files "." ".*.jar"))))
               (sha256
                (base32
                 "0dwmqjzlavb144ywqqglj3h68hqszkff8ai0a42hyb5il0qh4rbp"))))
