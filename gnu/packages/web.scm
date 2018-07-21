@@ -5719,7 +5719,13 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
                                   version "/src/apache-tomcat-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1qjsr6zmkdciakya4jqz0ssnsk02qlmmd898c05rasfwcrpj0xi6"))))
+                "1qjsr6zmkdciakya4jqz0ssnsk02qlmmd898c05rasfwcrpj0xi6"))
+              (modules '((guix build utils)))
+              ;; Delete bundled jars.
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.jar$"))
+                  #t))))
     (build-system ant-build-system)
     (inputs
      `(("java-eclipse-jdt-core" ,java-eclipse-jdt-core)))
