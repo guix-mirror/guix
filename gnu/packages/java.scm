@@ -10144,7 +10144,7 @@ and reporting) project dependencies.  It is characterized by the following:
      `(("java-guice" ,java-guice)
        ("java-guice-servlet" ,java-guice-servlet)
        ("java-javax-inject" ,java-javax-inject)
-       ("java-tomcat" ,java-tomcat)
+       ("java-javaee-servletapi" ,java-javaee-servletapi)
        ("java-junit" ,java-junit)
        ("java-slf4j-api" ,java-slf4j-api)
        ("java-jsr305" ,java-jsr305)
@@ -10339,7 +10339,7 @@ static code analysis or code manipulation.")))
              #t)))))
     (inputs
      `(("java-javax-mail" ,java-javax-mail)
-       ("java-tomcat" ,java-tomcat)
+       ("servlet" ,java-javaee-servletapi)
        ("java-commons-compiler" ,java-commons-compiler)
        ("java-janino" ,java-janino)))
     (native-inputs
@@ -10383,7 +10383,7 @@ This module lays the groundwork for the other two modules.")
                                             (find-files (assoc-ref inputs input)
                                                         ".*.jar"))
                                           '("java-logback-core" "java-slf4j-api"
-                                            "java-commons-compiler" "java-tomcat"
+                                            "java-commons-compiler" "servlet"
                                             "groovy")))
                        ":"))
              (apply invoke "groovyc" "-d" "build/classes" "-j"
