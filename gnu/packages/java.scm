@@ -4449,7 +4449,7 @@ these scripting language engines.")
        #:tests? #f
        #:source-dir "src/java"))
     (inputs
-     `(("java-tomcat" ,java-tomcat)
+     `(("servlet" ,java-classpathx-servletapi)
        ("java-jdom" ,java-jdom)
        ("java-commons-beanutils" ,java-commons-beanutils)))
     (native-inputs
@@ -7944,7 +7944,7 @@ Java 6 and above.")
        #:tests? #f)); FIXME: not in a java subdir
     (inputs
      `(("guice" ,java-guice)
-       ("servlet" ,java-tomcat)
+       ("servlet"  ,java-classpathx-servletapi)
        ,@(package-inputs java-guice)))))
 
 (define-public java-assertj
