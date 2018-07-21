@@ -18,6 +18,7 @@
 # Copyright © 2017, 2018 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 # Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+# Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -1124,7 +1125,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/scotch-build-parallelism.patch		\
   %D%/packages/patches/scotch-graph-diam-64.patch		\
   %D%/packages/patches/scotch-graph-induce-type-64.patch	\
-  %D%/packages/patches/sddm-fix-build-with-qt-5.11-1024.patch  \
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
