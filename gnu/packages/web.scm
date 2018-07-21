@@ -5747,6 +5747,14 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
                (("depends=\"validate\"") "depends=\"build-prepare\"")
                ((",download-validate") ""))
              #t))
+         (add-after 'unpack 'strip-timestamps
+           (lambda _
+             (substitute* "build.xml"
+               (("<filter token=\"YEAR\" value=.*")
+                "<filter token=\"YEAR\" value=\"1970\"/>")
+               (("<filter token=\"VERSION_BUILT\" value=.*")
+                "<filter token=\"VERSION_BUILT\" value=\"Jan 1 1970 00:00:00 UTC\"/>"))
+             #t))
          (add-after 'unpack 'generate-properties
            (lambda _
              ;; This could have been passed to make-flags, but getcwd returns
