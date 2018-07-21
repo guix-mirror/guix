@@ -213,7 +213,9 @@ NumPy < 1.9.")
                                   version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1z3d6xm70dpfikhwdnbzc66j2l49vq105ch041wivrfz5ic3ch90"))))
+                "1z3d6xm70dpfikhwdnbzc66j2l49vq105ch041wivrfz5ic3ch90"))
+              (patches
+               (search-patches "openbabel-fix-crash-on-nwchem-output.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

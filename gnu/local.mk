@@ -979,6 +979,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-graph-honor-source-date-epoch.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
+  %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
   %D%/packages/patches/opencascade-oce-glibc-2.26.patch		\
   %D%/packages/patches/openblas-fix-tests-i686.patch		\
   %D%/packages/patches/openexr-missing-samples.patch		\
