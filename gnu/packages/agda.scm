@@ -67,6 +67,19 @@
        ("ghc-text" ,ghc-text)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-zlib" ,ghc-zlib)))
+    (arguments
+     `(#:modules ((guix build haskell-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'compile 'agda-compile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (agda-compiler (string-append out "/bin/agda")))
+               (for-each (cut invoke agda-compiler <>)
+                         (find-files (string-append out "/share") "\\.agda$"))
+               #t))))))
     (home-page "http://wiki.portal.chalmers.se/agda/")
     (synopsis
      "Dependently typed functional programming language and proof assistant")
