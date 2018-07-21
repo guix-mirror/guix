@@ -10277,6 +10277,7 @@ static code analysis or code manipulation.")))
               (method url-fetch)
               (uri (string-append "https://github.com/qos-ch/logback/archive/v_"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1x6ga74yfgm94cfx98gybakbrlilx8i2gn6dx13l40kasmys06mi"))
