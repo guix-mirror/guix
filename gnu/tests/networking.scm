@@ -30,7 +30,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages networking)
   #:use-module (gnu services shepherd)
-  #:export (%test-inetd %test-openvswitch %test-dhcpd))
+  #:export (%test-inetd %test-openvswitch %test-dhcpd %test-tor))
 
 (define %inetd-os
   ;; Operating system with 2 inetd services.
@@ -339,3 +339,57 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
    (name "dhcpd")
    (description "Test a running DHCP daemon configuration.")
    (value (run-dhcpd-test))))
+
+
+;;;
+;;; Services related to Tor
+;;;
+
+(define %tor-os
+  (simple-operating-system
+   (tor-service)))
+
+(define (run-tor-test)
+  (define os
+    (marionette-operating-system %tor-os
+                                 #:imported-modules '((gnu services herd))
+                                 #:requirements '(tor)))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (ice-9 popen)
+                       (ice-9 rdelim)
+                       (srfi srfi-64))
+
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "tor")
+
+          (test-assert "tor is alive"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd)
+                             (srfi srfi-1))
+                (live-service-running
+                 (find (lambda (live)
+                         (memq 'tor
+                               (live-service-provision live)))
+                       (current-services))))
+             marionette))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "tor-test" test))
+
+(define %test-tor
+  (system-test
+   (name "tor")
+   (description "Test a running Tor daemon configuration.")
+   (value (run-tor-test))))
