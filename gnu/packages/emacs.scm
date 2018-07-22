@@ -11100,10 +11100,10 @@ from @code{emms-source-file-default-directory}.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-exwm
-  (let ((commit "82a856c80c8d295e3be522a01c5a15af50d08990"))
+  (let ((commit "56266f261ba3b3d2753b374b50da20eb768c06f5"))
     (package
       (name "emacs-helm-exwm")
-      (version (git-version "20180523" "1" commit))
+      (version (git-version "20180703" "2" commit))
       (source
        (origin
          (method url-fetch)
@@ -11113,7 +11113,7 @@ from @code{emms-source-file-default-directory}.")
                ".tar.gz"))
          (sha256
           (base32
-           "1xsg2lar1vh7jmj5lnnyi14vssxkgy95sv9r8pbfhbnkjkbjm9pb"))))
+           "0n7hdiajw5vxl8ha2r9r4cl4i7crza25348825wb6acwhhzijxcj"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
