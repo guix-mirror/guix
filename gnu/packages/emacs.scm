@@ -11533,3 +11533,27 @@ files.  It focuses on highlighting the document to improve readability.")
 source code.")
       (license (list license:expat
                      license:asl2.0)))))
+
+(define-public emacs-ztree
+  (let ((commit "c54425a094353ec40a8179f9eab3596f76c6cf94"))
+    (package
+      (name "emacs-ztree")
+      (version (git-version "1.0.5" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fourier/ztree")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0j8fpxds8m1zi04nrs8vv21091abvh4n8ab76f1sgdxnp4l5cfb0"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/fourier/ztree")
+      (synopsis "Directory tree comparison mode for Emacs")
+      (description "Ztree is a project dedicated to implementation of several
+text-tree applications inside GNU Emacs.  It consists of 2 subprojects:
+@command{ztree-diff} and @command{ztree-dir} (the basis of
+@command{ztree-diff}).")
+      (license license:gpl3))))
