@@ -8825,22 +8825,21 @@ navigate and display hierarchy structures.")
       (license license:gpl3+))))
 
 (define-public emacs-pulseaudio-control
-  (let ((commit "08c59e1dc45ec96edb62f34036e82cf5f14c0e8b")
-        (revision "1"))
+  (let ((commit "1da372ec79f5d2fb901d1f9f0679fee8848fd011")
+        (revision "2"))
     (package
       (name "emacs-pulseaudio-control")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/flexibeast/pulseaudio-control.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "10cgg1r00kz2fsnnryvzay5pf8s1pwb1dzlds1fbjdnyfvdgammv"))))
+           "02xrsms2pjqdk6327midi61i5vg2h9cq5jwaxv43ldm68wl7hi6k"))))
       (build-system emacs-build-system)
       (arguments
        '(#:phases (modify-phases %standard-phases
