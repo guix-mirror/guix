@@ -3177,46 +3177,28 @@ This driver is intended for the spice qxl virtio device.")
     (license license:x11)))
 
 (define-public xf86-video-r128
-  ;; We need a newer version than 6.10.2 to build against the latest xorg-server.
-  ;; Remove this binding and the bootstrap inputs when >6.10.2 is released.
-  (let ((commit "c4c878d2ccb75fa75afe46e0e50ee9975c5c57fc")
-        (revision "0"))
-    (package
-      (name "xf86-video-r128")
-      (version (git-version "6.10.2" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url (string-append "https://anongit.freedesktop.org/git/xorg"
-                                          "/driver/" name ".git"))
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "01pff30zz4zxjhw28h8bn9x2kq7c6iswgn19b72wnfgl0arxb63j"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    (add-before 'bootstrap 'prevent-configure
-                      (lambda _
-                        ;; Prevent autogen from calling "./configure" as part of
-                        ;; the bootstrap step, which fails due to wrong shebang.
-                        (setenv "NOCONFIGURE" "1")
-                        #t)))))
-      (inputs `(("mesa" ,mesa)
-                ("xorgproto" ,xorgproto)
-                ("xorg-server" ,xorg-server)))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
-      (home-page "https://www.x.org/wiki/")
-      (synopsis "ATI Rage 128 video driver for X server")
-      (description
-       "xf86-video-r128 is a video driver for the Xorg X server.
+  (package
+    (name "xf86-video-r128")
+    (version "6.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/driver/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0snvwmrh8dqyyaq7ggicym6yrsg4brygkx9156r0m095m7fp3rav"))))
+    (build-system gnu-build-system)
+    (inputs `(("mesa" ,mesa)
+              ("xorgproto" ,xorgproto)
+              ("xorg-server" ,xorg-server)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "ATI Rage 128 video driver for X server")
+    (description
+     "xf86-video-r128 is a video driver for the Xorg X server.
 This driver is intended for ATI Rage 128 based cards.")
-      (license license:x11))))
+    (license license:x11)))
 
 (define-public xf86-video-savage
   (package
