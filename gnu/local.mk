@@ -1098,6 +1098,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
+  %D%/packages/patches/qtwebkit-pbutils-include.patch		\
   %D%/packages/patches/rapicorn-isnan.patch			\
   %D%/packages/patches/raptor2-heap-overflow.patch		\
   %D%/packages/patches/ratpoison-shell.patch			\
