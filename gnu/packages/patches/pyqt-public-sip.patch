@@ -1,0 +1,55 @@
+https://sources.debian.org/data/main/p/pyqt5/5.11.2+dfsg-1/debian/patches/public_sip.diff
+
+From: Dmitry Shachnev <mitya57@debian.org>
+Date: Tue, 3 Jul 2018 09:46:42 +0300
+Subject: Use the public version of sip module
+
+Per https://www.debian.org/doc/debian-policy/#convenience-copies-of-code.
+---
+ configure.py | 19 +------------------
+ 1 file changed, 1 insertion(+), 18 deletions(-)
+
+diff --git a/configure.py b/configure.py
+index 7c48136..ca23f93 100644
+--- a/configure.py
++++ b/configure.py
+@@ -642,15 +642,6 @@ class TargetConfiguration:
+                     "Unable to import enum.  Please install the enum34 "
+                     "package from PyPI.")
+ 
+-        # Check there is a private copy of the sip module already installed.
+-        try:
+-            from PyQt5 import sip
+-        except ImportError:
+-            error(
+-                    "Unable to import PyQt5.sip.  Make sure you have "
+-                    "configured SIP to create a private copy of the sip "
+-                    "module.")
+-
+         # Get the details of the Python interpreter library.
+         py_major = self.py_version >> 16
+         py_minor = (self.py_version >> 8) & 0x0ff
+@@ -2438,7 +2429,7 @@ def get_sip_flags(target_config):
+     the target configuration.
+     """
+ 
+-    sip_flags = ['-n', 'PyQt5.sip']
++    sip_flags = ['-n', 'sip']
+ 
+     # If we don't check for signed interpreters, we exclude the 'VendorID'
+     # feature
+@@ -2914,14 +2905,6 @@ def check_sip(target_config):
+     target_config is the target configuration.
+     """
+ 
+-    # Check there is a private copy of the sip module already installed.
+-    try:
+-        from PyQt5 import sip
+-    except ImportError:
+-        error(
+-                "Unable to import PyQt5.sip.  Make sure you have configured "
+-                "SIP to create a private copy of the sip module.")
+-
+     if target_config.sip is None:
+         error(
+                 "Make sure you have a working sip on your PATH or use the "

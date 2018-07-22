@@ -1632,7 +1632,6 @@ message.")))
                                         python-major+minor
                                         "/site-packages")))
                (invoke "python" "configure.py"
-                       "--sip-module" "PyQt5.sip" ; for python-pyqt
                        "--bindir" bin
                        "--destdir" lib
                        "--incdir" include)))))))
@@ -1671,7 +1670,8 @@ module provides support functions to the automatically generated code.")
         (sha256
          (base32
           "00wn9svgyp0fsrkc4ma15zcxg31pw4gsgaz6nwb3fhy3al8miakw"))
-       (patches (search-patches "pyqt-configure.patch"))))
+       (patches (search-patches "pyqt-configure.patch"
+                                "pyqt-public-sip.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("qtbase" ,qtbase))) ; for qmake
