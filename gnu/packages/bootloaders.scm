@@ -580,6 +580,9 @@ board-independent tools.")))
 (define-public u-boot-cubieboard
   (make-u-boot-package "Cubieboard" "arm-linux-gnueabihf"))
 
+(define-public u-boot-cubietruck
+  (make-u-boot-package "Cubietruck" "arm-linux-gnueabihf"))
+
 (define-public u-boot-puma-rk3399
   (let ((base (make-u-boot-package "puma-rk3399" "aarch64-linux-gnu")))
     (package
