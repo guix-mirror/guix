@@ -6232,14 +6232,14 @@ which code derived from Kelvin H's org-page.")
 (define-public emacs-xelb
   (package
     (name "emacs-xelb")
-    (version "0.14")
+    (version "0.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/xelb-"
                                   version ".tar"))
               (sha256
                (base32
-                "09flnbjy9ck784kprz036rwg9qk45hpv0w5hz3pz3zhwyk57fv74"))))
+                "031rvgprsqhf344p9wsczr50vj2qcpwdmhxi80jdbrsm7wyxf3qz"))))
     (build-system emacs-build-system)
     ;; The following functions and variables needed by emacs-xelb are
     ;; not included in emacs-minimal:
