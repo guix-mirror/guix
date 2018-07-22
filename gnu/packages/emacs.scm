@@ -11321,31 +11321,8 @@ file.")
       (license license:gpl3+))))
 
 (define-public emacs-wgrep-helm
-  (let ((commit "1cdd7c136f1e7565bb13d2df69be3dc77b83698d"))
-    (package
-      (name "emacs-wgrep-helm")
-      (version (git-version "2.1.10" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/mhayashi1120/Emacs-wgrep")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "057p99hq0r6z1k8sl15w3sxrqvlv0g9wp39zy1pqhccv2mn3g2d6"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-wgrep" ,emacs-wgrep)))
-      (home-page
-       "https://github.com/mhayashi1120/Emacs-wgrep")
-      (synopsis
-       "Writable helm-grep-mode buffer and apply the changes to files")
-      (description
-       "@code{wgrep-helm} allows you to edit a @code{helm-grep-mode} buffer and
-apply those changes to the file buffer.")
-      (license license:gpl3+))))
+  ;; `emacs-wgrep-helm' was mistakenly added.
+  (deprecated-package "emacs-wgrep-helm" emacs-wgrep))
 
 (define-public emacs-mu4e-conversation
   (let ((commit "b60d6bd27d7220c3dd041ff2a090e29f2166a319"))
