@@ -1748,9 +1748,9 @@ contain over 620 classes.")
        ("python2-enum34" ,python2-enum34)
        ,@(alist-delete "python" (package-inputs python-pyqt))))))
 
-(define-public python-pyqt-4
+(define-public python2-pyqt-4
   (package (inherit python-pyqt)
-    (name "python-pyqt")
+    (name "python2-pyqt")
     (version "4.12")
     (source
       (origin
@@ -1763,9 +1763,9 @@ contain over 620 classes.")
          (base32
           "1nw8r88a5g2d550yvklawlvns8gd5slw53yy688kxnsa65aln79w"))))
     (native-inputs
-     `(("python-sip" ,python-sip)
+     `(("python-sip" ,python2-sip)
        ("qt" ,qt-4)))
-    (inputs `(("python" ,python-wrapper)))
+    (inputs `(("python" ,python-2)))
     (arguments
      `(#:tests? #f ; no check target
        #:modules ((srfi srfi-1)
@@ -1793,15 +1793,6 @@ contain over 620 classes.")
                                "--destdir" lib
                                "--sipdir" sip))))))))
     (license (list license:gpl2 license:gpl3)))) ; choice of either license
-
-(define-public python2-pyqt-4
-  (package (inherit python-pyqt-4)
-           (name "python2-pyqt")
-           (native-inputs
-            `(("python-sip" ,python2-sip)
-              ("qt" ,qt-4)))
-           (inputs
-            `(("python" ,python-2)))))
 
 (define-public qscintilla
   (package
