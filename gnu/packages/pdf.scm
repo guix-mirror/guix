@@ -169,43 +169,6 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
              ,@(package-inputs poppler)))
    (synopsis "Qt5 frontend for the Poppler PDF rendering library")))
 
-(define-public python-poppler-qt4
-  (package
-    (name "python-poppler-qt4")
-    (version "0.24.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://pypi.python.org/packages/source/p"
-                            "/python-poppler-qt4/python-poppler-qt4-"
-                            version ".tar.gz"))
-        (sha256
-         (base32
-          "0x63niylkk4q3h3ay8zrk3m1xiik0x3hlr4gvj7kswx48qi1vb99"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after
-          'unpack 'patch-poppler-include-paths
-          (lambda _
-            (substitute* (find-files "." "poppler-.*\\.sip")
-              (("qt4/poppler-.*\\.h" header)
-               (string-append "poppler/" header)))
-            #t)))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("python-sip" ,python-sip)
-       ("python-pyqt-4" ,python-pyqt-4)
-       ("poppler-qt4" ,poppler-qt4)))
-    (home-page "https://pypi.python.org/pypi/python-poppler-qt4")
-    (synopsis "Python bindings for Poppler-Qt4")
-    (description
-     "This package provides Python bindings for the Qt4 interface of the
-Poppler PDF rendering library.")
-    (license license:lgpl2.1+)))
-
 (define-public python-poppler-qt5
   (package
     (name "python-poppler-qt5")
