@@ -11557,3 +11557,31 @@ text-tree applications inside GNU Emacs.  It consists of 2 subprojects:
 @command{ztree-diff} and @command{ztree-dir} (the basis of
 @command{ztree-diff}).")
       (license license:gpl3))))
+
+(define-public emacs-helm-org-contacts
+  (let ((commit "0af703bd9a43032b89fdf5559673151d1ac2fffc"))
+    (package
+      (name "emacs-helm-org-contacts")
+      (version (git-version "20180707" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tmalsburg/helm-org-contacts")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1cl7cm2ic9pg4vc9cdh84vzjj1x2lpd5ymimiva8h4l17kiphk4s"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-helm" ,emacs-helm)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/tmalsburg/helm-org-contacts")
+      (synopsis "Helm source for org-contacts")
+      (description "This Helm source can be used to search contacts stored in
+org-contacts format.  There are actions for inserting postal addresses, email
+addresses, and phone numbers in the buffer where @command{helm-org-contacts}
+was called.")
+      (license license:gpl3))))
