@@ -790,3 +790,26 @@ specifically designed to be easy to call from other languages.  A Python binding
 using ctypes is included, and several other language bindings are available.")
     (home-page "https://botan.randombit.net")
     (license license:bsd-2)))
+
+(define-public ccrypt
+  (package
+    (name "ccrypt")
+    (version "1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ccrypt/ccrypt/"
+                                  version "/ccrypt-" version ".tar.gz"))
+              (sha256
+               (base32
+                "184v9676hx2w875cz04rd3a20wrcms33a1zwybvapb0g2yi6vml7"))))
+    (build-system gnu-build-system)
+    (home-page "http://ccrypt.sourceforge.net")
+    (synopsis "Command-line utility for encrypting and decrypting files and streams")
+    (description "@command{ccrypt} is a utility for encrypting and decrypting
+files and streams.  It was designed as a replacement for the standard unix
+@command{crypt} utility, which is notorious for using a very weak encryption
+algorithm.  @command{ccrypt} is based on the Rijndael block cipher, a version of
+which is also used in the Advanced Encryption Standard (AES, see
+@url{http://www.nist.gov/aes}).  This cipher is believed to provide very strong
+security.")
+    (license license:gpl2)))
