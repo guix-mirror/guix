@@ -11585,3 +11585,30 @@ org-contacts format.  There are actions for inserting postal addresses, email
 addresses, and phone numbers in the buffer where @command{helm-org-contacts}
 was called.")
       (license license:gpl3))))
+
+(define-public emacs-dired-du
+  (package
+    (name "emacs-dired-du")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/dired-du-"
+             version ".tar"))
+       (sha256
+        (base32
+         "09yj37p2fa5f81fqrzwghjkyy2ydsf4rbkfwpn2yyvzd5nd97bpl"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/dired-du.html")
+    (synopsis "Dired with recursive directory sizes")
+    (description
+     "Display the recursive size of directories in Dired.
+This file defines a minor mode @command{dired-du-mode} to show the recursive
+size of directories in Dired buffers.  If @command{du} program is available,
+then the directory sizes are obtained with it.  Otherwise, the directory sizes
+are obtained with Lisp.  The former is faster and provide a more precise
+value.  For directories where the user doesn't have read permission, the
+recursive size is not obtained.  Once this mode is enabled, every new Dired
+buffer displays recursive dir sizes.")
+    (license license:gpl3+)))
