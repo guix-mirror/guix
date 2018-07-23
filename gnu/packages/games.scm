@@ -3472,7 +3472,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.0g")
+    (version "10.4j")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3483,7 +3483,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "0f68pcnsgl406dhm91ckn3f364bar9m9i5njp9vrmvhvv9p2icy0"))))
+                "0909p4xvbi1c2jc5rdgrf8b1c60fmsaapabsi6yyglh5znkf0k27"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3495,7 +3495,6 @@ throwing people around in pseudo-randomly generated buildings.")
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl-union")
                                     "/include/SDL"))))
-         ;; Fix font and music paths.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3505,17 +3504,18 @@ throwing people around in pseudo-randomly generated buildings.")
                                  "/share/fonts/truetype"))
                     (dejavu-font "DejaVuSans-Bold.ttf")
                     (music-file "hyperrogue-music.txt"))
+               ;; Fix font and music paths.
                (substitute* "basegraph.cpp"
                  ((dejavu-font)
                   (string-append dejavu-dir "/" dejavu-font)))
-               (substitute* "sound.cpp"
-                 (((string-append "\\./" music-file))
-                  (string-append share-dir "/" music-file))
-                 (("sounds/")
-                  (string-append share-dir "/sounds/")))
                (substitute* music-file
                  (("\\*/")
                   (string-append share-dir "/sounds/"))))
+             ;; Fix Makefile.
+             (substitute* "Makefile"
+               (("g\\+\\+ langen.cpp")
+                "g++ langen.cpp ${CXXFLAGS}")
+               (("savepng.c") "savepng.cpp"))
              #t))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3532,21 +3532,18 @@ throwing people around in pseudo-randomly generated buildings.")
                     (out (assoc-ref outputs "out"))
                     (sounds (string-append out "/share/hyperrogue/sounds"))
                     (unzip (string-append (assoc-ref inputs "unzip") "/bin/unzip")))
-               (and
-                ;; Extract media license information into sounds directory.
-                (zero?
-                 (system* unzip "-j" data
-                          (string-append
-                           "hyperrogue"
-                           (string-join (string-split ,version #\.) "")
-                           "/sounds/credits.txt") "-d" sounds))
-                ;; Extract sounds and music into sounds directory.
-                (zero?
-                 (system* "unzip" "-j" data
-                          (string-append
-                           "hyperrogue"
-                           (string-join (string-split ,version #\.) "")
-                           "/*.ogg") "-d" sounds)))))))))
+               ;; Extract media license information into sounds directory.
+               (invoke unzip "-j" data
+                       (string-append
+                        "hyperrogue"
+                        (string-join (string-split ,version #\.) "")
+                        "/sounds/credits.txt") "-d" sounds)
+               ;; Extract sounds and music into sounds directory.
+               (invoke "unzip" "-j" data
+                       (string-append
+                        "hyperrogue"
+                        (string-join (string-split ,version #\.) "")
+                        "/*.ogg") "-d" sounds)))))))
     (native-inputs
      `(("hyperrogue-data"
         ,(origin
@@ -3558,7 +3555,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "0bnp077qvlmxjlz1jjd6kpghlv9flxc19ac1xq3m3wyq1w9p3pab"))))
+             "0w61iv2rn93hi0q3hxyyyf9xcr8vi9zd7fjvpz5adpgf94jm3zsc"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
