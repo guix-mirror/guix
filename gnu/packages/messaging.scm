@@ -961,14 +961,14 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.16.1")
+    (version "1.16.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/qTox/qTox/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "11l4klw0g6j4qq95krgyd0npxmmpcgk4vp9jq429sbsqn1s039j4"))
+                "10n3cgw9xaqin9la8wpd8v83bkjmimicgbyp5ninsdgsrgky4hmq"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -990,7 +990,7 @@ instant messenger with audio and video chat capabilities.")
                    ,(list (string-append (assoc-ref inputs "qtsvg")
                                          "/lib/qt5/plugins/"))))))))))
     (inputs
-     `(("ffmpeg" ,ffmpeg-3.4)
+     `(("ffmpeg" ,ffmpeg)
        ("filteraudio" ,filteraudio)
        ("glib" ,glib)
        ("gtk+" ,gtk+-2)
