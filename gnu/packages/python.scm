@@ -10767,6 +10767,32 @@ projects.")
 (define-public python2-incremental
   (package-with-python2 python-incremental))
 
+(define-public python-invoke
+  (package
+    (name "python-invoke")
+    (home-page "http://www.pyinvoke.org/")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "invoke" version))
+              (sha256
+               (base32
+                "0aiy1xvk1f91246zxd1zqrm679vdvd10h843a2na41cqr3cflpi6"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: Requires many dependencies that are not yet in Guix.
+     `(#:tests? #f))
+    (synopsis "Pythonic task execution")
+    (description
+     "Invoke is a Python task execution tool and library, drawing inspiration
+from various sources to arrive at a powerful and clean feature set.  It is
+evolved from the Fabric project, but focuses on local and abstract concerns
+instead of servers and network commands.")
+    (license license:bsd-3)))
+
+(define-public python2-invoke
+  (package-with-python2 python-invoke))
+
 (define-public python-automat
   (package
     (name "python-automat")
