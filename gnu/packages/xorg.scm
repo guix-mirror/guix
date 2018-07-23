@@ -5819,7 +5819,7 @@ programs that cannot use the window system directly.")
        ("xcb-proto" ,xcb-proto)
        ("xcb-util" ,xcb-util)
        ("xcb-util-wm" ,xcb-util-wm)))
-    (home-page "http://search.cpan.org/dist/X11-XCB")
+    (home-page "https://metacpan.org/release/X11-XCB")
     (synopsis "Perl bindings for libxcb")
     (description
      "These bindings wrap @code{libxcb} (a C library to speak with X11,
@@ -5846,7 +5846,7 @@ interface to its methods (using @code{Mouse}).")
      "X11::Protocol is a client-side interface to the X11 Protocol, allowing
 perl programs to display windows and graphics on X11 servers.")
     (home-page
-     (string-append "http://search.cpan.org/~smccam/X11-Protocol-" version))
+     (string-append "https://metacpan.org/release/SMCCAM/X11-Protocol-" version))
     ;; From the package README: "you can redistribute and/or modify it under
     ;; the same terms as Perl itself. (As an exception, the file
     ;; Keysyms.pm,which is derived from a file in the standard X11
@@ -5874,7 +5874,7 @@ perl programs to display windows and graphics on X11 servers.")
        ("perl-module-util" ,perl-module-util)))
     (propagated-inputs
      `(("perl-x11-protocol" ,perl-x11-protocol)))
-    (home-page "http://search.cpan.org/dist/X11-Protocol-Other/")
+    (home-page "https://metacpan.org/release/X11-Protocol-Other")
     (synopsis "Miscellaneous helpers for @code{X11::Protocol} connections")
     (description
      "@code{X11::Protocol::Other} contains window manager related functions for
