@@ -729,26 +729,15 @@ supports coverage of subprocesses.")
 (define-public python-pytest-runner
   (package
     (name "python-pytest-runner")
-    (version "2.11.1")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-runner" version))
        (sha256
         (base32
-         "1cw978kqqcq916b9gfns1qjqvg33c5ail5jhw9054dsynkm32flq"))))
+         "1gkpyphawxz38ni1gdq1fmwyqcg02m7ypzqvv46z06crwdxi2gyj"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; The fancy way of setting the version with setuptools_scm does not
-         ;; seem to work here.
-         (add-after 'unpack 'set-version
-          (lambda _
-            (substitute* "docs/conf.py"
-              (("version = setuptools_scm\\.get_version\\(root='\\.\\.')")
-               (string-append "version = \"" ,version "\"")))
-            #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest-bootstrap)
        ("python-setuptools-scm" ,python-setuptools-scm)))
