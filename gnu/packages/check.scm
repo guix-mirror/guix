@@ -619,14 +619,14 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "3.5.0")
+    (version "3.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "1q832zd07zak2lyxbycxjydh0jp7y3hvawjqzlvra6aghz8r3r7s"))))
+         "0lnppwpz5i06sdhzv5b2j4x2f42mil38nx1l0kmnzvibdikwhlq4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -644,7 +644,8 @@ standard library.")
                                line)))
              #t)))))
     (propagated-inputs
-     `(("python-attrs" ,python-attrs-bootstrap)
+     `(("python-atomicwrites" ,python-atomicwrites)
+       ("python-attrs" ,python-attrs-bootstrap)
        ("python-more-itertools" ,python-more-itertools)
        ("python-pluggy" ,python-pluggy)
        ("python-py" ,python-py)
@@ -653,6 +654,7 @@ standard library.")
      `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
        ("bash" ,bash)
        ("python-hypothesis" ,python-hypothesis)
+       ("python-invoke" ,python-invoke)   ;XXX: not needed for >3.6.3
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
        ("python-setuptools-scm" ,python-setuptools-scm)))
