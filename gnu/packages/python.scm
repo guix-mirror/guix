@@ -361,6 +361,9 @@ data types.")
            (add-after 'remove-tests 'rebuild-bytecode
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
+                 ;; Disable hash randomization to ensure the generated .pycs
+                 ;; are reproducible.
+                 (setenv "PYTHONHASHSEED" "0")
                  (for-each
                   (lambda (opt)
                     (format #t "Compiling with optimization level: ~a\n"
@@ -372,7 +375,7 @@ data types.")
                                          "-m" "compileall"
                                          "-f" ; force rebuild
                                          ;; Don't build lib2to3, because it's Python 2 code.
-                                         "-x" "lib2to3.*"
+                                         "-x" "lib2to3/.*"
                                          ,file)))
                               (find-files out "\\.py$")))
                   (list '() '("-O") '("-OO")))
