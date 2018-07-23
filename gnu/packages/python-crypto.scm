@@ -610,7 +610,7 @@ ECB and OFB).")
 (define-public python-asn1crypto
   (package
     (name "python-asn1crypto")
-    (version "0.22.0")
+    (version "0.24.0")
     (source
       (origin
        (method git-fetch)
@@ -620,7 +620,7 @@ ECB and OFB).")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1n5chs5wzf1v8aii6z80dnwywjv6prk0wydamyn65kxg586wqqlf"))))
+          "10lai2cs5mnz3gpaffbw1m7b885ls8328q5wxm35vfmcip1f0xmb"))))
     (build-system python-build-system)
     (home-page "https://github.com/wbond/asn1crypto")
     (synopsis "ASN.1 parser and serializer in Python")
