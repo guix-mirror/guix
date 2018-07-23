@@ -358,7 +358,7 @@ data types.")
            ;; FIXME: Without this phase we have close to 400 files that
            ;; differ across different builds of this package.  With this phase
            ;; there are 44 files left that differ.
-           (add-after 'install 'rebuild-bytecode
+           (add-after 'remove-tests 'rebuild-bytecode
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
                  (for-each
@@ -372,8 +372,7 @@ data types.")
                                          "-m" "compileall"
                                          "-f" ; force rebuild
                                          ;; Don't build lib2to3, because it's Python 2 code.
-                                         ;; Also don't build obviously broken test code.
-                                         "-x" "(lib2to3|test/bad.*)"
+                                         "-x" "lib2to3.*"
                                          ,file)))
                               (find-files out "\\.py$")))
                   (list '() '("-O") '("-OO")))
