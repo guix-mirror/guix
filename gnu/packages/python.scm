@@ -178,23 +178,7 @@
                "tk"))                     ;tkinter; adds 50 MiB to the closure
     (build-system gnu-build-system)
     (arguments
-     `(;; 356 tests OK.
-       ;; 6 tests failed:
-       ;;     test_compileall test_distutils test_import test_shutil test_socket
-       ;;     test_subprocess
-       ;; 39 tests skipped:
-       ;;     test_aepack test_al test_applesingle test_bsddb test_bsddb185
-       ;;     test_bsddb3 test_cd test_cl test_codecmaps_cn test_codecmaps_hk
-       ;;     test_codecmaps_jp test_codecmaps_kr test_codecmaps_tw test_curses
-       ;;     test_dl test_gdb test_gl test_imageop test_imgfile test_ioctl
-       ;;     test_kqueue test_linuxaudiodev test_macos test_macostools
-       ;;     test_msilib test_ossaudiodev test_scriptpackages test_smtpnet
-       ;;     test_socketserver test_startfile test_sunaudiodev test_timeout
-       ;;     test_tk test_ttk_guionly test_urllib2net test_urllibnet
-       ;;     test_winreg test_winsound test_zipfile64
-       ;; 4 skips unexpected on linux2:
-       ;;     test_bsddb test_bsddb3 test_gdb test_ioctl
-       #:test-target "test"
+     `(#:test-target "test"
        #:configure-flags
        (list "--enable-shared"                    ;allow embedding
              "--with-system-ffi"                  ;build ctypes
@@ -219,11 +203,6 @@
                                     "Lib/test/support/__init__.py"
                                     "Lib/test/test_subprocess.py"))
                (("/bin/sh") (which "sh")))
-
-             ;; Use zero as the timestamp in .pyc files so that builds are
-             ;; deterministic.  TODO: Remove it when this variable is set in
-             ;; gnu-build-system.scm.
-             (setenv "SOURCE_DATE_EPOCH" "1")
              #t))
           (add-before 'configure 'do-not-record-configure-flags
             (lambda* (#:key configure-flags #:allow-other-keys)
@@ -281,15 +260,6 @@
                                                               file))))))
                        (call-with-output-file "__init__.py" (const #t))
                        #t)))))))
-          (add-before 'strip 'make-libraries-writable
-            (lambda* (#:key outputs #:allow-other-keys)
-              ;; Make .so files writable so they can be stripped.
-              (let ((out (assoc-ref outputs "out")))
-                (for-each (lambda (file)
-                            (chmod file #o755))
-                          (find-files (string-append out "/lib")
-                                      "\\.so"))
-                #t)))
           (add-after 'install 'move-tk-inter
             (lambda* (#:key outputs #:allow-other-keys)
               ;; When Tkinter support is built move it to a separate output so
@@ -377,7 +347,6 @@ data types.")
                   #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
-       ((#:tests? _) #t)
        ((#:phases phases)
         `(modify-phases ,phases
            (add-after 'unpack 'patch-timestamp-for-pyc-files
