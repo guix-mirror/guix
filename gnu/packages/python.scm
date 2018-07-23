@@ -844,14 +844,14 @@ API for locking files.")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "31.0.0")
+    (version "40.0.0")
     (source
      (origin
       (method url-fetch)
-      (uri (pypi-uri "setuptools" version))
+      (uri (pypi-uri "setuptools" version ".zip"))
       (sha256
        (base32
-        "0ypybh4hx3bv4vhg2dc74xpj1g56ggnaffm87k4abhwjwq6wq608"))
+        "0pq116lr14gnc62v76nk0npkm6krb2mpp7p9ab369zgv4n7dnah1"))
       (modules '((guix build utils)))
       (snippet
        '(begin
