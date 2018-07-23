@@ -1725,6 +1725,8 @@ matching them against a list of media-ranges.")
      ;; Expected '/tmp/guix-build-python-py-1.4.31.drv-0/py-1.4.31/py'.
      ;; Is this module globally installed?"
      '(#:tests? #f))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "http://pylib.readthedocs.io/")
     (synopsis "Python library for parsing, I/O, instrospection, and logging")
     (description
