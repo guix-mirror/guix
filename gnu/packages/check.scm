@@ -693,14 +693,14 @@ and many external plugins.")
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
-    (version "2.4.0")
+    (version "2.5.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-cov" version))
         (sha256
          (base32
-          "03c2qc42r4bczyw93gd7n0qi1h1jfhw7fnbhi33c3vp1hs81gm2k"))))
+          "0bbfpwdh9k3636bxc88vz9fa7vf4akchgn513ql1vd0xy4n7bah3"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
