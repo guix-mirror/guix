@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
@@ -49,6 +50,19 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'build 'set-filter-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Change the default value of 'filter-path' so that filters such
+             ;; as 'tex-filter.so' can be found.  By default none of the
+             ;; filters would be found.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (libdir (string-append out "/lib/aspell-"
+                                           ,(version-major+minor version))))
+               (substitute* "common/config.cpp"
+                 (("\"filter-path(.*)DICT_DIR" _ middle)
+                  (string-append "\"filter-path" middle
+                                 "\"" libdir "\"")))
+               #t)))
          (add-after 'install 'wrap-aspell
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin/aspell (string-append (assoc-ref outputs "out")
