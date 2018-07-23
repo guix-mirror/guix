@@ -1727,7 +1727,7 @@ matching them against a list of media-ranges.")
      '(#:tests? #f))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
-    (home-page "http://pylib.readthedocs.io/")
+    (home-page "https://github.com/pytest-dev/py")
     (synopsis "Python library for parsing, I/O, instrospection, and logging")
     (description
      "Py is a Python library for file name parsing, .ini file parsing, I/O,
