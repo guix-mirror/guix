@@ -321,10 +321,10 @@ data types.")
     (name "python")
     (properties `((superseded . ,python-2)))))
 
-(define-public python-3.6
+(define-public python-3.7
   (package (inherit python-2)
     (name "python")
-    (version "3.6.5")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -337,7 +337,7 @@ data types.")
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "19l7inxm056jjw33zz97z0m02hsi7jnnx5kyb76abj5ml4xhad7l"))
+                "0j9mic5c9lbd2b20wka7hily7szz740wy9ilfrczxap63rnrk0h3"))
               (snippet
                '(begin
                   (for-each delete-file
@@ -348,53 +348,18 @@ data types.")
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
        ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'patch-timestamp-for-pyc-files
-             (lambda _
-               ;; We set DETERMINISTIC_BUILD to only override the mtime when
-               ;; building with Guix, lest we break auto-compilation in
-               ;; environments.
-               (setenv "DETERMINISTIC_BUILD" "1")
-               (substitute* "Lib/py_compile.py"
-                 (("source_stats\\['mtime'\\]")
-                  "(1 if 'DETERMINISTIC_BUILD' in os.environ else source_stats['mtime'])"))
-
-               ;; Use deterministic hashes for strings, bytes, and datetime
-               ;; objects.
-               (setenv "PYTHONHASHSEED" "0")
-
-               ;; Reset mtime when validating bytecode header.
-               (substitute* "Lib/importlib/_bootstrap_external.py"
-                 (("source_mtime = int\\(source_stats\\['mtime'\\]\\)")
-                  "source_mtime = 1"))
-               #t))
-           ;; These tests fail because of our change to the bytecode
-           ;; validation.  They fail because expected exceptions do not get
-           ;; thrown.  This seems to be no problem.
-           (add-after 'unpack 'disable-broken-bytecode-tests
-             (lambda _
-               (substitute* "Lib/test/test_importlib/source/test_file_loader.py"
-                 (("test_bad_marshal")
-                  "disable_test_bad_marshal")
-                 (("test_no_marshal")
-                  "disable_test_no_marshal")
-                 (("test_non_code_marshal")
-                  "disable_test_non_code_marshal"))
-               #t))
-           ;; Unset DETERMINISTIC_BUILD to allow for tests that check that
-           ;; stale pyc files are rebuilt.
-           (add-before 'check 'allow-non-deterministic-compilation
-             (lambda _ (unsetenv "DETERMINISTIC_BUILD") #t))
-           ;; We need to rebuild all pyc files for three different
-           ;; optimization levels to replace all files that were not built
-           ;; deterministically.
-
-           ;; FIXME: Without this phase we have close to 2000 files that
+       `(modify-phases ,phases
+          ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
+          ;; again afterwards.  See <https://bugs.python.org/issue34022>.
+          (add-before 'check 'unset-SOURCE_DATE_EPOCH
+            (lambda _ (unsetenv "SOURCE_DATE_EPOCH") #t))
+          (add-after 'check 'reset-SOURCE_DATE_EPOCH
+            (lambda _ (setenv "SOURCE_DATE_EPOCH" "1") #t))
+           ;; FIXME: Without this phase we have close to 400 files that
            ;; differ across different builds of this package.  With this phase
-           ;; there are about 500 files left that differ.
+           ;; there are 44 files left that differ.
            (add-after 'install 'rebuild-bytecode
              (lambda* (#:key outputs #:allow-other-keys)
-               (setenv "DETERMINISTIC_BUILD" "1")
                (let ((out (assoc-ref outputs "out")))
                  (for-each
                   (lambda (opt)
@@ -421,7 +386,7 @@ data types.")
                                         "/site-packages"))))))))
 
 ;; Current 3.x version.
-(define-public python-3 python-3.6)
+(define-public python-3 python-3.7)
 
 ;; Current major version.
 (define-public python python-3)
