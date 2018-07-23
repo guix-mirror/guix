@@ -756,14 +756,14 @@ supports coverage of subprocesses.")
 (define-public python-pytest-mock
   (package
     (name "python-pytest-mock")
-    (version "1.6.3")
+    (version "1.10.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-mock" version))
         (sha256
          (base32
-          "075v7b2wm5f839r1a30n21wfk5rfqp3d05q7zb9jlb2wmxki23cj"))))
+          "1h6lgpmsvs9s8j2s80v06f9f3iaw1n1rc51mbrxk1f12sw4q56nq"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
