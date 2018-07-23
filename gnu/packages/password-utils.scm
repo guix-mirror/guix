@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages opencl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -696,4 +698,34 @@ to use a different password manager.")
 rotating passwords on various web services.  It makes it easier to rotate your
 passwords, one at a time or in bulk, when security events or routine upkeep of
 your online accounts makes it necessary.")
+    (license license:expat)))
+
+(define-public hashcat
+  (package
+    (name "hashcat")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hashcat.net/files/hashcat-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "170i2y32ykgzb1qf1wz3klwn31c09bviz4x3bnrwia65adqrj8xx"))))
+    (native-inputs
+     `(("opencl-headers" ,opencl-headers)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ;no tests
+       #:make-flags (list (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://hashcat.net/hashcat/")
+    (synopsis "Advanced password recovery utility")
+    (description "Hashcat is an password recovery utility, supporting five
+unique modes of attack for over 200 highly-optimized hashing algorithms.
+Hashcat currently supports CPUs, GPUs, and other hardware accelerators on
+Linux, Windows, and macOS, and has facilities to help enable distributed
+password cracking.")
     (license license:expat)))
