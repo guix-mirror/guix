@@ -1386,13 +1386,13 @@ normally the case.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "3.52.0")
+    (version "3.66.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "0g54cypfi5qj6cgxfr7l1nb41r1cqhhngx4qxn4ga9h720rcsbr8"))))
+                "0jlcbnirj5ndv4gvb3rmydligljn1alim9d4dk377188y09iwl5k"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-flake8" ,python-flake8)
