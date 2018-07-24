@@ -703,11 +703,11 @@ database in Go.")
       (license bsd-2))))
 
 (define-public go-github-com-thejerf-suture
-  (let ((commit "87e298c9891673c9ae76e10c2c9be589127e5f49")
+  (let ((commit "3f1fb62fe0a3cc6429122d7dc45588a8b59c5bb6")
         (revision "0"))
     (package
       (name "go-github-com-thejerf-suture")
-      (version (git-version "2.0.1" revision commit))
+      (version (git-version "2.0.3" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -716,7 +716,7 @@ database in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0srw0g94z6jplvlsjqsr6wf7885alnbb6h4fhvbg2i7q1ia5ldy2"))))
+                  "0mp7gz6bp6xhggkgmbl33vpmrq3a6n2dkgcxbkb7csnpv4r4d59k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/thejerf/suture"))
