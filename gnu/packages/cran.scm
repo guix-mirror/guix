@@ -4722,3 +4722,23 @@ Bioinformatics Institute) and from the UCSC genome browser (University of
 California, Santa Cruz) and annotation routines for genomic positions and
 splice site positions.")
     (license license:gpl2)))
+
+(define-public r-basix
+  (package
+    (name "r-basix")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BASIX" version))
+       (sha256
+        (base32
+         "18dkvv1iwskfnlpl6xridcgqpalbbpm2616mvc3hfrc0b26v01id"))))
+    (properties `((upstream-name . "BASIX")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/BASIX/")
+    (synopsis "Efficient C/C++ toolset for R")
+    (description
+     "BASIX provides some efficient C/C++ implementations of native R
+procedures to speed up calculations in R.")
+    (license license:gpl2)))
