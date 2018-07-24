@@ -33,6 +33,7 @@
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4888,6 +4889,25 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
                     "file://LICENSE"
                     "See Info-Zip section.")
                    license:public-domain)))) ; stb
+
+(define-public nudoku
+  (package
+    (name "nudoku")
+    (version "1.0.0")
+    (source (origin
+	      (method url-fetch)
+	      (uri (string-append "https://github.com/jubalh/nudoku/"
+                                  "releases/download/" version
+                                  "/nudoku-" version ".tar.xz"))
+	      (sha256
+               (base32
+                "0nr2j2z07nxk70s8xnmmpzccxicf7kn5mbwby2kg6aq8paarjm8k"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "https://jubalh.github.io/nudoku/")
+    (synopsis "Sudoku for your terminal")
+    (description "Nudoku is a ncurses-based Sudoku game for your terminal.")
+    (license license:gpl3+)))
 
 (define-public the-butterfly-effect
   (package
