@@ -2177,6 +2177,42 @@ easier to build concurrent applications.")
 (define-public python2-pykka
   (package-with-python2 python-pykka))
 
+(define-public python-pympler
+  (package
+    (name "python-pympler")
+    (home-page "https://pythonhosted.org/Pympler/")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Pympler" version))
+              (sha256
+               (base32
+                "03qwsbilqgvnbl3a1jmpgixbr2kq6m3fvdlzyr3wdp01bwlc85kx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'check)
+                  (add-after 'install 'check
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (add-installed-pythonpath inputs outputs)
+                      (invoke "python" "setup.py" "test"))))))
+    (synopsis "Measure, monitor and analyze memory behavior")
+    (description
+     "Pympler is a development tool to measure, monitor and analyze
+the memory behavior of Python objects in a running Python application.
+
+By pympling a Python application, detailed insight in the size and the
+lifetime of Python objects can be obtained.  Undesirable or unexpected
+runtime behavior like memory bloat and other @samp{pymples} can easily
+be identified.
+
+A web profiling frontend exposes process statistics, garbage
+visualisation and class tracker statistics.")
+    (license license:asl2.0)))
+
+(define-public python2-pympler
+  (package-with-python2 python-pympler))
+
 (define-public python-itsdangerous
   (package
     (name "python-itsdangerous")
