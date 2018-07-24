@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -478,6 +479,34 @@ utility as a demonstration of the @code{scrypt} key derivation function.
 attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
     (license license:bsd-2)))
 
+(define-public libscrypt
+  (package
+    (name "libscrypt")
+    (version "1.21")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/technion/libscrypt.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d76ys6cp7fi4ng1w3mz2l0p9dbr7ljbk33dcywyimzjz8bahdng"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "PREFIX=" %output)
+                          "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://lolware.net/libscrypt.html")
+    (synopsis "Password hashing library")
+    (description "@code{libscrypt} implements @code{scrypt} key derivation
+function.  It is designed to be far more secure against hardware brute-force
+attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
+    (license license:bsd-3)))
+
 (define-public perl-math-random-isaac-xs
   (package
     (name "perl-math-random-isaac-xs")
@@ -639,39 +668,32 @@ data on your platform, so the seed itself will be as random as possible.
     (license (list license:boost1.0 license:public-domain))))
 
 (define-public libb2
-  (let ((revision "1")                  ; upstream doesn't ‘do’ releases
-        (commit "60ea749837362c226e8501718f505ab138e5c19d"))
-    (package
-      (name "libb2")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/BLAKE2/libb2")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "07a2m8basxrsj9dsp5lj24y8jraj85lfy56756a7za1nfkgy04z7"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
-      (arguments
-       `(#:configure-flags
-         (list
-           ,@(if (any (cute string-prefix? <> (or (%current-system)
-                                                  (%current-target-system)))
-                      '("x86_64" "i686"))
-               ;; fat only checks for Intel optimisations
-               '("--enable-fat")
-               '())
-           "--disable-native")))                 ;don't optimise at build time
-      (home-page "https://blake2.net/")
-      (synopsis "Library implementing the BLAKE2 family of hash functions")
-      (description
-       "libb2 is a portable implementation of the BLAKE2 family of cryptographic
+  (package
+    (name "libb2")
+    (version "0.98")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/BLAKE2/libb2/releases/download/v"
+                    version "/libb2-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vq39cvwy05754l565xl11rqr2jvjb6ykjzca886vi9vm71y0sg8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        ,@(if (any (cute string-prefix? <> (or (%current-system)
+                                               (%current-target-system)))
+                   '("x86_64" "i686"))
+              ;; fat only checks for Intel optimisations
+              '("--enable-fat")
+              '())
+        "--disable-native")))           ;don't optimise at build time
+    (home-page "https://blake2.net/")
+    (synopsis "Library implementing the BLAKE2 family of hash functions")
+    (description
+     "libb2 is a portable implementation of the BLAKE2 family of cryptographic
 hash functions.  It includes optimised implementations for IA-32 and AMD64
 processors, and an interface layer that automatically selects the best
 implementation for the processor it is run on.
@@ -680,7 +702,7 @@ implementation for the processor it is run on.
 that are faster than MD5, SHA-1, SHA-2, and SHA-3, yet are at least as secure
 as the latest standard, SHA-3.  It is an improved version of the SHA-3 finalist
 BLAKE.")
-      (license license:public-domain))))
+    (license license:public-domain)))
 
 (define-public rhash
   (package
@@ -726,14 +748,14 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 (define-public botan
   (package
     (name "botan")
-    (version "2.6.0")
+    (version "2.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://botan.randombit.net/releases/"
                                   "Botan-" version ".tgz"))
               (sha256
                (base32
-                "1iawmymmnp5j2mcjj70slivn6bgg8gbpppldc1rjqw5sbdan3wn1"))))
+                "142aqabwc266jxn8wrp0f1ffrmcvdxwvyh8frb38hx9iaqazjbg4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -768,3 +790,26 @@ specifically designed to be easy to call from other languages.  A Python binding
 using ctypes is included, and several other language bindings are available.")
     (home-page "https://botan.randombit.net")
     (license license:bsd-2)))
+
+(define-public ccrypt
+  (package
+    (name "ccrypt")
+    (version "1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ccrypt/ccrypt/"
+                                  version "/ccrypt-" version ".tar.gz"))
+              (sha256
+               (base32
+                "184v9676hx2w875cz04rd3a20wrcms33a1zwybvapb0g2yi6vml7"))))
+    (build-system gnu-build-system)
+    (home-page "http://ccrypt.sourceforge.net")
+    (synopsis "Command-line utility for encrypting and decrypting files and streams")
+    (description "@command{ccrypt} is a utility for encrypting and decrypting
+files and streams.  It was designed as a replacement for the standard unix
+@command{crypt} utility, which is notorious for using a very weak encryption
+algorithm.  @command{ccrypt} is based on the Rijndael block cipher, a version of
+which is also used in the Advanced Encryption Standard (AES, see
+@url{http://www.nist.gov/aes}).  This cipher is believed to provide very strong
+security.")
+    (license license:gpl2)))

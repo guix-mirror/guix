@@ -108,7 +108,9 @@ actually installing them.  So that you can distinguish between your
 ``end-user'' hat and your ``motley'' costume.
 
 To that end, all the command-line tools can be used even if you have not
-run @code{make install}.  To do that, prefix each command with
+run @code{make install}.  To do that, you first need to have an environment
+with all the dependencies available (@pxref{Building from Git}), and then
+simply prefix each command with
 @command{./pre-inst-env} (the @file{pre-inst-env} script lives in the
 top build tree of Guix), as in@footnote{The @option{-E} flag to
 @command{sudo} guarantees that @code{GUILE_LOAD_PATH} is correctly set
@@ -210,7 +212,8 @@ The commit message snippets depend on @url{https://magit.vc/, Magit} to
 display staged files.  When editing a commit message type @code{add}
 followed by @kbd{TAB} to insert a commit message template for adding a
 package; type @code{update} followed by @kbd{TAB} to insert a template
-for updating a package.
+for updating a package; type @code{https} followed by @kbd{TAB} to
+insert a template for changing the home page URI of a package to HTTPS.
 
 The main snippet for @code{scheme-mode} is triggered by typing
 @code{package...} followed by @kbd{TAB}.  This snippet also inserts the

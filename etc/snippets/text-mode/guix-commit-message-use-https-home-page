@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: guix-commit-message-use-https-home-page
+# key: https
+# condition: git-commit-mode
+# --
+gnu: $1: Use HTTPS home page URI.
+
+* `(car (magit-staged-files))` ($1)[home-page]: Use HTTPS URI.
+`(mapconcat (lambda (file) (concat "* " file)) (cdr (magit-staged-files)) "\n")`

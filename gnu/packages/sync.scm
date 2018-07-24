@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,17 +22,24 @@
 (define-module (gnu packages sync)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system meson)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages acl)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages rsync)
+  #:use-module (gnu packages selinux)
   #:use-module (gnu packages tls))
 
 (define-public owncloud-client
@@ -208,3 +216,46 @@ machines.  Lsyncd is thus a light-weight live mirror solution that is
 comparatively easy to install not requiring new file systems or block devices
 and does not hamper local file system performance.")
     (license license:gpl2+)))
+
+(define-public casync
+  (package
+    (name "casync")
+    (version "2")
+    (home-page "https://github.com/systemd/casync/")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0znkp3fcksrykcsv06y2mjvf2lbwmin25snmvfa8i5qfm3f4rm88"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-sphinx" ,python-sphinx)
+       ("rsync" ,rsync)))                         ;for tests
+    (inputs
+     `(("xz" ,xz)                                 ;for liblzma
+       ("zstd" ,zstd)
+       ("curl" ,curl)
+       ("acl" ,acl)
+       ("libselinux" ,libselinux)
+       ("fuse" ,fuse)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (synopsis "File synchronization and backup system")
+    (description
+     "casync is a @dfn{content-addressable data synchronizer} that can be used
+as the basis of a backup system.  It is:
+
+@itemize
+@item A combination of the rsync algorithm and content-addressable storage;
+@item An efficient way to store and retrieve multiple related versions of
+large file systems or directory trees;
+@item An efficient way to deliver and update OS, VM, IoT and container images
+over the Internet in an HTTP and CDN friendly way;
+@item An efficient backup system.
+@end itemize\n")
+    (license license:lgpl2.1+)))

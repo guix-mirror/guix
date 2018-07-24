@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -184,8 +185,8 @@ their dependencies.")
       (license l:gpl3+))))
 
 (define-public cuirass
-  (let ((commit "238f856e48ee333ed3e19fa32ce5e1742c650c67")
-        (revision "16"))
+  (let ((commit "7b2f9e0de1ad2d320973b7aea132a8afcad8bece")
+        (revision "17"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -197,7 +198,7 @@ their dependencies.")
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "15iwdgy561gnsr224rs5z8qn7nrsh1wdlsxr8gwxyk0v4zp6yvbf"))))
+                  "0knww99adgjh8s6f38z3hpwi9hxhmnvqj5g35pcj80xv8j4xj3y3"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)

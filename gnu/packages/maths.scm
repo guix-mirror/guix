@@ -207,16 +207,47 @@ programming languages.")
     (home-page "https://stcorp.nl/coda")
     (license license:gpl2+)))
 
+(define-public qhull
+  (package
+    (name "qhull")
+    (version "2015.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.qhull.org/download/qhull-"
+                                  (car (string-split version #\.))
+                                  "-src-7.2.0.tgz"))
+              (sha256
+               (base32
+                "0dm4b2xr3asy6w74khq2zg4gf26zsy3qf9sq7pf7lmrvbj911c3q"))))
+    (build-system cmake-build-system)
+    (synopsis "Calculate convex hulls and related structures")
+    (description
+     "@code{Qhull} computes the convex hull, Delaunay triangulation, Voronoi
+diagram, halfspace intersection about a point, furthest-site Delaunay
+triangulation, and furthest-site Voronoi diagram.  The source code runs in 2-d,
+3-d, 4-d, and higher dimensions.  @code{Qhull} implements the Quickhull
+algorithm for computing the convex hull.  It handles roundoff errors from
+floating point arithmetic.  It computes volumes, surface areas, and
+approximations to the convex hull.
+
+@code{Qhull} does not support triangulation of non-convex surfaces, mesh
+generation of non-convex objects, medium-sized inputs in 9-D and higher, alpha
+shapes, weighted Voronoi diagrams, Voronoi volumes, or constrained Delaunay
+triangulations.")
+    (home-page "http://qhull.org")
+    (license (license:non-copyleft "file://COPYING.txt"
+                                   "See COPYING in the distribution."))))
+
 (define-public units
   (package
    (name "units")
-   (version "2.16")
+   (version "2.17")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/units/units-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "11hnp3gcmcc5kci2caxw4hs6m08h2mhqs3xzqq7iafx1ha2ggwyw"))))
+                     "1n2xzpnxfn475zkd8rzs5gg58xszjbr4bdbgvk6hryzimvwwj0qz"))))
    (build-system gnu-build-system)
    (inputs
     `(("readline" ,readline)
@@ -1336,6 +1367,7 @@ can solve two kinds of problems:
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
+       ("qhull" ,qhull)
        ("readline" ,readline)
        ("gl2ps" ,gl2ps)
        ("glpk" ,glpk)
@@ -1400,12 +1432,18 @@ script files.")
 (define-public qtoctave
   (package (inherit octave)
     (name "qtoctave")
+    (source (origin
+              (inherit (package-source octave))
+              (patches (append (origin-patches (package-source octave))
+                               (search-patches
+                                "qtoctave-qt-5.11-fix.patch")))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("qt" ,qtbase)
        ,@(package-inputs octave)))
     (native-inputs
      `(("qttools" , qttools) ;for lrelease
+       ("texlive" ,texlive) ;for texi2dvi
        ,@(package-native-inputs octave)))
     (arguments
      (substitute-keyword-arguments (package-arguments octave)
@@ -1598,7 +1636,7 @@ September 2004}")
                             ,@configure-flags)))
               (format #t "build directory: ~s~%" (getcwd))
               (format #t "configure flags: ~s~%" flags)
-              (zero? (apply system* "./configure" flags)))))
+              (apply invoke "./configure" flags))))
         (add-after 'configure 'clean-local-references
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
@@ -1755,7 +1793,8 @@ savings are consistently > 5x.")
           ;; documentation is difficult.
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out")))
-              (for-each delete-file (find-files out "\\.html$")))))
+              (for-each delete-file (find-files out "\\.html$"))
+              #t)))
          (add-after 'install 'clean-install
           ;; Clean up unnecessary build logs from installation.
           (lambda* (#:key outputs #:allow-other-keys)
@@ -1766,7 +1805,8 @@ savings are consistently > 5x.")
                               (delete-file f))))
                         '("configure.log" "make.log" "gmake.log"
                           "test.log" "error.log" "RDict.db"
-                          "uninstall.py"))))))))
+                          "uninstall.py"))
+              #t))))))
     (home-page "http://slepc.upv.es")
     (synopsis "Scalable library for eigenproblems")
     (description "SLEPc is a software library for the solution of large sparse
@@ -1911,8 +1951,8 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
           ;; By default only the d-precision library is built.  Make with "all"
           ;; target so that all precision libraries and examples are built.
           (lambda _
-            (zero? (system* "make" "all"
-                            (format #f "-j~a" (parallel-job-count))))))
+            (invoke "make" "all"
+                    (format #f "-j~a" (parallel-job-count)))))
          (replace 'check
           ;; Run the simple test drivers, which read test input from stdin:
           ;; from the "real" input for the single- and double-precision
@@ -2231,11 +2271,11 @@ CDEFS       = -DAdd_"
              ;; isn't used anyway.)
              (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
              (with-directory-excursion "EXAMPLE"
-               (and
-                (zero? (system* "mpirun" "-n" "2"
-                                "./pddrive" "-r" "1" "-c" "2" "g20.rua"))
-                (zero? (system* "mpirun" "-n" "2"
-                                "./pzdrive" "-r" "1" "-c" "2" "cg20.cua"))))))
+               (invoke "mpirun" "-n" "2"
+                       "./pddrive" "-r" "1" "-c" "2" "g20.rua")
+               (invoke "mpirun" "-n" "2"
+                       "./pzdrive" "-r" "1" "-c" "2" "cg20.cua"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Library is placed in lib during the build phase.  Copy over
@@ -2283,7 +2323,7 @@ implemented in ANSI C, and MPI for communications.")
        (modify-phases %standard-phases
          (add-after
           'unpack 'chdir-to-src
-          (lambda _ (chdir "src")))
+          (lambda _ (chdir "src") #t))
          (replace
           'configure
           (lambda _
@@ -2320,7 +2360,8 @@ YACC = bison -pscotchyy -y -b y
                           ;; XXX: Causes invalid frees in superlu-dist tests
                           ;; "SCOTCH_PTHREAD"
                           ;; "SCOTCH_PTHREAD_NUMBER=2"
-                          "restrict=__restrict"))))))
+                          "restrict=__restrict"))))
+            #t))
          (add-after
           'build 'build-esmumps
           (lambda _
@@ -2330,24 +2371,25 @@ YACC = bison -pscotchyy -y -b y
             ;; isn't used anyway.)
             (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
 
-            (zero? (system* "make"
-                            (format #f "-j~a" (parallel-job-count))
-                            "esmumps"))))
+            (invoke "make"
+                    (format #f "-j~a" (parallel-job-count))
+                    "esmumps")))
          (replace
           'install
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (mkdir out)
-              (zero? (system* "make"
-                              (string-append "prefix=" out)
-                              "install"))
+              (invoke "make"
+                      (string-append "prefix=" out)
+                      "install")
               ;; esmumps files are not installed with the above
               (for-each (lambda (f)
                           (copy-file f (string-append out "/include/" f)))
                         (find-files "../include" ".*esmumps.h$"))
               (for-each (lambda (f)
                           (copy-file f (string-append out "/lib/" f)))
-                        (find-files "../lib" "^lib.*esmumps.*"))))))))
+                        (find-files "../lib" "^lib.*esmumps.*"))
+              #t))))))
     (home-page "http://www.labri.fr/perso/pelegrin/scotch/")
     (synopsis "Programs and libraries for graph algorithms")
     (description "SCOTCH is a set of programs and libraries which implement
@@ -2788,7 +2830,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.2.20")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
@@ -2797,7 +2839,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1bd03c5xni0bla0wg1wba841b36b0sg13sjja955kn5xzvy4i61a"))))
+         "14a9vyvp2k5zpd0axbnqk0d3khc1v3cck10nb5fj7d2sgn8490ky"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -2836,6 +2878,16 @@ parts of it.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         ;; Conditionally apply a patch on i686 to avoid rebuilding
+         ;; all architectures.  FIXME: This should be moved to the
+         ;; (source (patches ...)) field in the next rebuild cycle.
+         ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                          (%current-system)))
+               `((add-after 'unpack 'fix-tests
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (invoke "patch" "-p1"
+                             "--input" (assoc-ref inputs "i686-fix-tests.patch")))))
+               '())
          (add-before 'build 'set-extralib
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Get libgfortran found when building in utest.
@@ -2847,6 +2899,11 @@ parts of it.")
      `(("fortran-lib" ,gfortran "lib")))
     (native-inputs
      `(("cunit" ,cunit)
+       ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                        (%current-system)))
+             `(("i686-fix-tests.patch"
+                ,(search-patch "openblas-fix-tests-i686.patch")))
+             '())
        ("fortran" ,gfortran)
        ("perl" ,perl)))
     (home-page "http://www.openblas.net/")

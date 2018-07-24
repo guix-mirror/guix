@@ -28,7 +28,7 @@
 (define-public lsof
   (package
    (name "lsof")
-   (version "4.89")
+   (version "4.91")
    (source
     (origin
       (method url-fetch)
@@ -53,7 +53,7 @@
                 (string-append "ftp://ftp.mirrorservice.org/sites/"
                                "lsof.itap.purdue.edu/pub/tools/unix/lsof")))))
       (sha256
-       (base32 "061p18v0mhzq517791xkjs8a5dfynq1418a1mwxpji69zp2jzb41"))))
+       (base32 "18sh4hbl9jw2szkf0gvgan8g13f3g4c6s2q9h3zq5gsza9m99nn9"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
@@ -73,14 +73,16 @@
         (add-after 'configure 'patch-timestamps
           (lambda _
             (substitute* "Makefile"
-              (("`date`") "`date --date=@1`"))))
+              (("`date`") "`date --date=@1`"))
+            #t))
         (add-before 'check 'disable-failing-tests
           (lambda _
             (substitute* "tests/Makefile"
               ;; Fails with ‘ERROR!!! client gethostbyaddr() failure’.
               (("(STDTST=.*) LTsock" _ prefix) prefix)
               ;; Fails without access to a remote NFS server.
-              (("(OPTTST=.*) LTnfs"  _ prefix) prefix))))
+              (("(OPTTST=.*) LTnfs"  _ prefix) prefix))
+            #t))
         (replace 'check
           (lambda _
             (with-directory-excursion "tests"

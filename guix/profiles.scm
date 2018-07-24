@@ -91,6 +91,7 @@
             manifest-lookup
             manifest-installed?
             manifest-matching-entries
+            manifest-search-paths
 
             manifest-transaction
             manifest-transaction?
@@ -109,6 +110,7 @@
             ca-certificate-bundle
             %default-profile-hooks
             profile-derivation
+            profile-search-paths
 
             generation-number
             generation-numbers
@@ -545,6 +547,14 @@ no match.."
 
   (filter matches? (manifest-entries manifest)))
 
+(define (manifest-search-paths manifest)
+  "Return the list of search path specifications that apply to MANIFEST,
+including the search path specification for $PATH."
+  (delete-duplicates
+   (cons $PATH
+         (append-map manifest-entry-search-paths
+                     (manifest-entries manifest)))))
+
 
 ;;;
 ;;; Manifest transactions.
@@ -703,6 +713,8 @@ MANIFEST."
     (module-ref (resolve-interface '(gnu packages texinfo)) 'texinfo))
   (define gzip                                    ;lazy reference
     (module-ref (resolve-interface '(gnu packages compression)) 'gzip))
+  (define glibc-utf8-locales                      ;lazy reference
+    (module-ref (resolve-interface '(gnu packages base)) 'glibc-utf8-locales))
 
   (define build
     (with-imported-modules '((guix build utils))
@@ -720,11 +732,31 @@ MANIFEST."
               (map (cut string-append infodir "/" <>)
                    (or (scandir infodir info-file?) '()))))
 
+          (define (info-file-language file)
+            (let* ((base (if (string-suffix? ".gz" file)
+                             (basename file ".info.gz")
+                             (basename file ".info")))
+                   (dot  (string-rindex base #\.)))
+              (if dot
+                  (string-drop base (+ 1 dot))
+                  "en")))
+
           (define (install-info info)
-            (setenv "PATH" (string-append #+gzip "/bin")) ;for info.gz files
-            (zero?
-             (system* (string-append #+texinfo "/bin/install-info") "--silent"
-                      info (string-append #$output "/share/info/dir"))))
+            (let ((language (info-file-language info)))
+              ;; We need to choose a valid locale for $LANGUAGE to be honored.
+              (setenv "LC_ALL" "en_US.utf8")
+              (setenv "LANGUAGE" language)
+              (zero?
+               (system* #+(file-append texinfo "/bin/install-info")
+                        "--silent" info
+                        (apply string-append #$output "/share/info/dir"
+                               (if (string=? "en" language)
+                                   '("")
+                                   `("." ,language)))))))
+
+          (setenv "PATH" (string-append #+gzip "/bin")) ;for info.gz files
+          (setenv "GUIX_LOCPATH"
+                  #+(file-append glibc-utf8-locales "/lib/locale"))
 
           (mkdir-p (string-append #$output "/share/info"))
           (exit (every install-info
@@ -1345,8 +1377,7 @@ are cross-built for TARGET."
               (map sexp->search-path-specification
                    (delete-duplicates
                     '#$(map search-path-specification->sexp
-                            (append-map manifest-entry-search-paths
-                                        (manifest-entries manifest))))))
+                            (manifest-search-paths manifest)))))
 
             (build-profile #$output '#$inputs
                            #:symlink #$(if relative-symlinks?
@@ -1369,6 +1400,19 @@ are cross-built for TARGET."
                       ;; connection to the substitute server, which is likely
                       ;; to have no substitute to offer.
                       #:substitutable? #f)))
+
+(define* (profile-search-paths profile
+                               #:optional (manifest (profile-manifest profile))
+                               #:key (getenv (const #f)))
+  "Read the manifest of PROFILE and evaluate the values of search path
+environment variables required by PROFILE; return a list of
+specification/value pairs.  If MANIFEST is not #f, it is assumed to be the
+manifest of PROFILE, which avoids rereading it.
+
+Use GETENV to determine the current settings and report only settings not
+already effective."
+  (evaluate-search-paths (manifest-search-paths manifest)
+                         (list profile) getenv))
 
 (define (profile-regexp profile)
   "Return a regular expression that matches PROFILE's name and number."
@@ -1477,7 +1521,7 @@ the generation that was current before switching."
                               (profile profile)
                               (generation number)))))
           (else
-           (switch-symlinks profile generation)
+           (switch-symlinks profile (basename generation))
            current))))
 
 (define (switch-to-previous-generation profile)

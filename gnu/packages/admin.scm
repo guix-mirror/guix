@@ -1261,7 +1261,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20180531")
+    (version "20180629")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1269,7 +1269,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0q7vg1nr51f3rg16vjh4glz361a64r6gpm46fqkl2jf4fq7g43g5"))))
+                "0rsh7ya5brpbsj7y44k1z77cvgv3zahiy8hvwvl61d6fh3db7pdp"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2632,7 +2632,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.13-1")
+      (version "3.0.14-1")
       (source
        (origin
          (method git-fetch)
@@ -2641,7 +2641,7 @@ Python loading in HPC environments.")
                (commit version)))
          (sha256
           (base32
-           "0732ligzmzwpwaxin4g8rbfj91ghyvf69lx2jyrahi4df0bfamh5"))))
+           "1f342basqlp7hl6zw29fb018jd55dx85a6dmm3sap032a3dgds73"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash)

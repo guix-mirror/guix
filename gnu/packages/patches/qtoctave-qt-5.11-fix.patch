@@ -1,0 +1,26 @@
+This patch comes from upstream:
+https://hg.savannah.gnu.org/hgweb/octave/rev/cdaa884568b1.
+
+# HG changeset patch
+# User Mike Miller <mtmiller@octave.org>
+# Date 1527214835 25200
+# Node ID cdaa884568b159549bd373f04386ff62417f6df9
+# Parent  9e39a53b4e007d3f79f88b711ab9fa5f2f24fbc9
+add Qt include needed to build against Qt 5.11 (bug #53978)
+
+* settings-dialog.cc: Add missing include for <QButtonGroup> to fix build
+failure with Qt 5.11.
+
+diff --git a/libgui/src/settings-dialog.cc b/libgui/src/settings-dialog.cc
+--- a/libgui/src/settings-dialog.cc
++++ b/libgui/src/settings-dialog.cc
+@@ -34,6 +34,8 @@
+ #include "workspace-model.h"
+ #include "settings-dialog.h"
+ #include "ui-settings-dialog.h"
++
++#include <QButtonGroup>
+ #include <QDir>
+ #include <QFileInfo>
+ #include <QFileDialog>
+

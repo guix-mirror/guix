@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
@@ -122,14 +122,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.33")
+    (version "2.4.34")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "01bghiq4pbgjbgd6gic0nb8bbk6mfpwx3gcsbf21f3dhb4c520ny"))))
+               "1w1q2smdgf6ln0x741lk5pv5r0gzrxj2iza1vslhifzy65bcjlzs"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -719,7 +719,14 @@ current version of any major web browser.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "13nrpvw8f1wx0ga7svbzld7pgrv8l172nangpipnj7jaf0lysz5z"))))
+               "13nrpvw8f1wx0ga7svbzld7pgrv8l172nangpipnj7jaf0lysz5z"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Remove code using the problematic JSON license (see
+                 ;; <https://www.gnu.org/licenses/license-list.html#JSON>).
+                 (delete-file-recursively "bin/jsonchecker")
+                 #t))))
     (build-system cmake-build-system)
     (arguments
      `(,@(if (string-prefix? "aarch64" (or (%current-target-system)
@@ -752,6 +759,14 @@ style API.")
                (base32
                 "0nmcqpaiq4pv7dymyg3n3jsd57yhp5npxl26a1hzw3m3lmj37drz"))))
     (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-tests
+           (lambda _
+             (substitute* "test/parsing/run_tests.sh"
+               (("`which echo`") (which "echo")))
+             #t)))))
     (home-page "https://lloyd.github.io/yajl/")
     (synopsis "C library for parsing JSON")
     (description
@@ -4379,6 +4394,11 @@ NetSurf project.")
                  "        addenv(\"PERL5LIB\", \""
                  (getenv "PERL5LIB")
                  "\");")))))
+         (add-after 'patch-source-shebangs 'patch-Makefile
+           (lambda _
+             (substitute* "Makefile.PL"
+               (("SYSCONFDIR\\?=") "SYSCONFDIR?=$(PREFIX)"))
+             #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))

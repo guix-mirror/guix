@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
@@ -610,16 +610,17 @@ ECB and OFB).")
 (define-public python-asn1crypto
   (package
     (name "python-asn1crypto")
-    (version "0.22.0")
+    (version "0.24.0")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/wbond/asn1crypto/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/wbond/asn1crypto.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "1kn910896l3knmilla1c9ly20q181s43w1ah08lzkbm1h3j6pcz0"))))
+          "10lai2cs5mnz3gpaffbw1m7b885ls8328q5wxm35vfmcip1f0xmb"))))
     (build-system python-build-system)
     (home-page "https://github.com/wbond/asn1crypto")
     (synopsis "ASN.1 parser and serializer in Python")
@@ -884,14 +885,29 @@ through the Engine interface.")
          "1b3rgzl6dbzs08vhv41b6y4n5189wv7lr27acxn104hs45745abs"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;FIXME: unable to find libraries
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'hard-code-path-to-libscrypt
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libscrypt (assoc-ref inputs "libscrypt")))
+               (substitute* "pylibscrypt/pylibscrypt.py"
+                 (("find_library\\('scrypt'\\)")
+                  (string-append "'" libscrypt "/lib/libscrypt.so'")))
+               #t))))
+       ;; The library can use various scrypt implementations and tests all of
+       ;; them.  Since we only provide a single implementation, most tests
+       ;; fail.  Simply skip them.
+       #:tests? #f))
+    ;; FIXME: Using "libscrypt" is the second best choice.  The best one
+    ;; requires "hashlib.scrypt", provided by Python 3.6+ built with OpenSSL
+    ;; 1.1+.  Use that as soon as Guix provides it.
     (inputs
-     `(("openssl" ,openssl)))
+     `(("libscrypt" ,libscrypt)))
     (home-page "https://github.com/jvarho/pylibscrypt")
     (synopsis "Scrypt for Python")
     (description "There are a lot of different scrypt modules for Python, but
 none of them have everything that I'd like, so here's one more.  It uses
-hashlib.scrypt on Python 3.6 and OpenSSL 1.1.")
+@code{libscrypt}.")
     (license license:isc)))
 
 (define-public python-libnacl
@@ -929,46 +945,22 @@ been constructed to maintain extensive documentation on how to use
 @code{NaCl} as well as being completely portable.")
     (license license:asl2.0)))
 
-(define-public python-duniterpy
+(define-public python-scrypt
   (package
-    (name "python-duniterpy")
-    (version "0.43.2")
+    (name "python-scrypt")
+    (version "0.8.6")
     (source
      (origin
-       (method git-fetch)
-       ;; Pypi's default URI is missing "requirements.txt" file.
-       (uri (git-reference
-             (url "https://github.com/duniter/duniter-python-api.git")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (pypi-uri "scrypt" version))
        (sha256
         (base32
-         "1ch4f150k1p1l876pp08p5rxqhpv5xfbxdw6njcmr06hspv8v8x4"))))
+         "0b9nw10hfdl0jflm3b62q485ssc3f3f33lpg4yy407gs8wnrn8zq"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Among 108 tests, a single one is failing: FAIL:
-         ;; test_from_pubkey.  Remove it.
-         (add-after 'unpack 'remove-failing-test
-           (lambda _
-             (delete-file "tests/documents/test_crc_pubkey.py")
-             #t)))))
-    (propagated-inputs
-     `(("python-aiohttp" ,python-aiohttp)
-       ("python-base58" ,python-base58)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-libnacl" ,python-libnacl)
-       ("python-pylibscrypt" ,python-pylibscrypt)
-       ("python-pypeg2" ,python-pypeg2)))
-    (home-page "https://github.com/duniter/duniter-python-api")
-    (synopsis "Python implementation of Duniter API")
-    (description "@code{duniterpy} is an implementation of
-@uref{https://github.com/duniter/duniter/, duniter} API. Its
-main features are:
-@itemize
-@item Supports Duniter's Basic Merkle API and protocol
-@item Asynchronous
-@item Duniter signing key
-@end itemize")
-    (license license:gpl3+)))
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "http://bitbucket.org/mhallin/py-scrypt")
+    (synopsis "Bindings for the scrypt key derivation function library")
+    (description "This is a set of Python bindings for the scrypt key
+derivation function.")
+    (license license:bsd-2)))

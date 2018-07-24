@@ -157,16 +157,17 @@ in turn be used to build the final Rust.")
     (license license:asl2.0)))
 
 
-(define (rust-source version hash)
+(define* (rust-source version hash #:key (patches '()))
   (origin
     (method url-fetch)
     (uri (string-append "https://static.rust-lang.org/dist/"
                         "rustc-" version "-src.tar.gz"))
     (sha256 (base32 hash))
     (modules '((guix build utils)))
-    (snippet '(begin (delete-file-recursively "src/llvm") #t))))
+    (snippet '(begin (delete-file-recursively "src/llvm") #t))
+    (patches (map search-patch patches))))
 
-(define-public rust-1.19
+(define rust-1.19
   (package
     (name "rust")
     (version "1.19.0")
@@ -203,20 +204,29 @@ in turn be used to build the final Rust.")
                 (("fn test_process_mask") "#[allow(unused_attributes)]
     #[ignore]
     fn test_process_mask"))
-               ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
-               ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
-               (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
-               (substitute* "src/librustc_back/dynamic_lib.rs"
-                 ;; This test is known to fail on aarch64 and powerpc64le:
-                 ;; https://github.com/rust-lang/rust/issues/45410
-                 (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
-               ;; nm doesn't recognize the file format because of the
-               ;; nonstandard sections used by the Rust compiler, but readelf
-               ;; ignores them.
-               (substitute* "src/test/run-make/atomic-lock-free/Makefile"
-                 (("\tnm ")
-                  "\treadelf -c "))
                #t)))
+         (add-after 'patch-tests 'patch-aarch64-test
+           (lambda* _
+             (substitute* "src/librustc_back/dynamic_lib.rs"
+               ;; This test is known to fail on aarch64 and powerpc64le:
+               ;; https://github.com/rust-lang/rust/issues/45410
+               (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
+             #t))
+         (add-after 'patch-tests 'use-readelf-for-tests
+           (lambda* _
+             ;; nm doesn't recognize the file format because of the
+             ;; nonstandard sections used by the Rust compiler, but readelf
+             ;; ignores them.
+             (substitute* "src/test/run-make/atomic-lock-free/Makefile"
+               (("\tnm ")
+                "\treadelf -c "))
+             #t))
+         (add-after 'patch-tests 'remove-unsupported-tests
+           (lambda* _
+             ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
+             ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
+             (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
+             #t))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda* _
              (substitute* "src/Cargo.lock"
@@ -279,13 +289,14 @@ safety and thread safety guarantees.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
-(define (rust-bootstrapped-package base-rust version checksum)
-  "Bootstrap rust VERSION with source checksum CHECKSUM using BASE-RUST."
+(define* (rust-bootstrapped-package base-rust version checksum
+                                    #:key (patches '()))
+  "Bootstrap rust VERSION with source checksum CHECKSUM patched with PATCHES using BASE-RUST."
   (package
     (inherit base-rust)
     (version version)
     (source
-     (rust-source version checksum))
+     (rust-source version checksum #:patches patches))
     (native-inputs
      (alist-replace "cargo-bootstrap" (list base-rust "cargo")
                     (alist-replace "rustc-bootstrap" (list base-rust)
@@ -410,7 +421,12 @@ safety and thread safety guarantees.")
                (substitute* "src/tools/cargo/tests/test.rs"
                  (("fn cargo_test_env") "#[ignore]\nfn cargo_test_env"))
                #t))
-           (add-after 'patch-cargo-tests 'fix-mtime-bug
+           (add-after 'patch-cargo-tests 'ignore-glibc-2.27-incompatible-test
+             ;; https://github.com/rust-lang/rust/issues/47863
+             (lambda _
+               (substitute* "src/test/run-pass/out-of-stack.rs"
+                 (("// ignore-android") "// ignore-test\n// ignore-android"))))
+           (add-after 'ignore-glibc-2.27-incompatible-test 'fix-mtime-bug
              (lambda* _
                (substitute* "src/build_helper/lib.rs"
                  ;; Bug in Rust code.
@@ -452,10 +468,10 @@ localstatedir = \"var/lib\"
 default-linker = \"" gcc "/bin/gcc" "\"
 channel = \"stable\"
 rpath = true
-# There is 2 failed codegen tests:
-# codegen/mainsubprogram.rs and codegen/mainsubprogramstart.rs
-# This tests required patched LLVM
-codegen-tests = false
+" ;; There are 2 failed codegen tests:
+  ;; codegen/mainsubprogram.rs and codegen/mainsubprogramstart.rs
+  ;; These tests require a patched LLVM
+"codegen-tests = false
 [target." ,(nix-system->gnu-triplet-for-rust) "]
 llvm-config = \"" llvm "/bin/llvm-config" "\"
 cc = \"" gcc "/bin/gcc" "\"
@@ -513,51 +529,120 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
           `(modify-phases ,phases
-             (replace 'patch-tests
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((bash (assoc-ref inputs "bash")))
-                   (substitute* "src/libstd/process.rs"
-                     ;; The newline is intentional.
-                     ;; There's a line length "tidy" check in Rust which would
-                     ;; fail otherwise.
-                     (("\"/bin/sh\"") (string-append "\n\"" bash "/bin/sh\"")))
-                   (substitute* "src/libstd/net/tcp.rs"
-                     ;; There is no network in build environment
-                     (("fn connect_timeout_unroutable")
-                      "#[ignore]\nfn connect_timeout_unroutable"))
-                   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00222.html>
-                   (substitute* "src/libstd/sys/unix/process/process_common.rs"
-                    (("fn test_process_mask") "#[allow(unused_attributes)]
-    #[ignore]
-    fn test_process_mask"))
-                   ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
-                   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
-                   (delete-file-recursively "src/test/run-make/linker-output-non-utf8")
-                   (substitute* "src/librustc_metadata/dynamic_lib.rs"
-                     ;; This test is known to fail on aarch64 and powerpc64le:
-                     ;; https://github.com/rust-lang/rust/issues/45410
-                     (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
-                   #t)))
+             (delete 'use-readelf-for-tests)
+             (replace 'patch-aarch64-test
+               (lambda* _
+                 (substitute* "src/librustc_metadata/dynamic_lib.rs"
+                   ;; This test is known to fail on aarch64 and powerpc64le:
+                   ;; https://github.com/rust-lang/rust/issues/45410
+                   (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
+                 #t))
              (delete 'fix-mtime-bug))))))))
 
-(define-public rust
-  (let ((base-rust rust-1.24))
+(define-public rust-1.25
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.24 "1.25.0"
+                                    "0baxjr99311lvwdq0s38bipbnj72pn6fgbk6lcq7j555xq53mxpf")))
     (package
       (inherit base-rust)
-      (version "1.25.0")
-      (source
-       (rust-source version
-                    "0baxjr99311lvwdq0s38bipbnj72pn6fgbk6lcq7j555xq53mxpf"))
-      (native-inputs
-       (alist-replace "cargo-bootstrap" (list base-rust "cargo")
-                      (alist-replace "rustc-bootstrap" (list base-rust)
-                                     (package-native-inputs base-rust))))
+      (inputs
+       ;; Use LLVM 6.0
+       (alist-replace "llvm" (list llvm)
+                      (package-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
           `(modify-phases ,phases
              (add-after 'patch-cargo-tests 'patch-cargo-index-update
-               (lambda* _
+               (lambda _
                  (substitute* "src/tools/cargo/tests/generate-lockfile.rs"
                    ;; This test wants to update the crate index.
-                   (("fn no_index_update") "#[ignore]\nfn no_index_update")))))))))))
+                   (("fn no_index_update") "#[ignore]\nfn no_index_update"))
+                 #t))
+             (add-after 'configure 'enable-codegen-tests
+               (lambda _
+                 (substitute* "config.toml"
+                   (("codegen-tests = false") ""))
+                 #t))
+             (replace 'patch-aarch64-test
+               (lambda _
+                 (substitute* "src/librustc_metadata/dynamic_lib.rs"
+                   ;; This test is known to fail on aarch64 and powerpc64le:
+                   ;; https://github.com/rust-lang/rust/issues/45410
+                   (("fn test_loading_cosine") "#[ignore]\nfn test_loading_cosine"))
+                 ;; This test fails on aarch64 with llvm@6.0:
+                 ;; https://github.com/rust-lang/rust/issues/49807
+                 ;; other possible solution:
+                 ;; https://github.com/rust-lang/rust/pull/47688
+                 (delete-file "src/test/debuginfo/by-value-self-argument-in-trait-impl.rs")
+                 #t))
+             (delete 'ignore-glibc-2.27-incompatible-test))))))))
+
+(define-public rust-1.26
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.25 "1.26.2"
+                                    "0047ais0fvmqvngqkdsxgrzhb0kljg8wy85b01kbbjc88hqcz7pv"
+                                    #:patches '("rust-coresimd-doctest.patch"))))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; binaryen was replaced with LLD project from LLVM
+             (delete 'dont-build-native)
+             (replace 'remove-unsupported-tests
+               (lambda* _
+                 ;; Our ld-wrapper cannot process non-UTF8 bytes in LIBRARY_PATH.
+                 ;; <https://lists.gnu.org/archive/html/guix-devel/2017-06/msg00193.html>
+                 (delete-file-recursively "src/test/run-make-fulldeps/linker-output-non-utf8")
+                 #t))
+             (replace 'patch-cargo-tests
+               (lambda* _
+                 (substitute* "src/tools/cargo/tests/testsuite/build.rs"
+                   (("/usr/bin/env") (which "env"))
+                   ;; Guix llvm is compiled without asmjs-unknown-emscripten.
+                   (("fn wasm32_final_outputs") "#[ignore]\nfn wasm32_final_outputs"))
+                 (substitute* "src/tools/cargo/tests/testsuite/death.rs"
+                   ;; This is stuck when built in container.
+                   (("fn ctrl_c_kills_everyone") "#[ignore]\nfn ctrl_c_kills_everyone"))
+                 ;; Prints test output in the wrong order when built on
+                 ;; i686-linux.
+                 (substitute* "src/tools/cargo/tests/testsuite/test.rs"
+                   (("fn cargo_test_env") "#[ignore]\nfn cargo_test_env"))
+                 #t))
+             (add-after 'patch-cargo-tests 'disable-cargo-test-for-nightly-channel
+               (lambda* _
+                 ;; This test failed to work on "nightly" channel builds
+                 ;; https://github.com/rust-lang/cargo/issues/5648
+                 (substitute* "src/tools/cargo/tests/testsuite/resolve.rs"
+                   (("fn test_resolving_minimum_version_with_transitive_deps")
+                    "#[ignore]\nfn test_resolving_minimum_version_with_transitive_deps"))
+                 #t))
+             (replace 'patch-cargo-index-update
+               (lambda* _
+                 (substitute* "src/tools/cargo/tests/testsuite/generate_lockfile.rs"
+                   ;; This test wants to update the crate index.
+                   (("fn no_index_update") "#[ignore]\nfn no_index_update"))
+                 #t)))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.26 "1.27.0"
+                                    "089d7rhw55zpvnw71dj8vil6qrylvl4xjr4m8bywjj83d4zq1f9c"
+                                    #:patches
+                                    '("rust-coresimd-doctest.patch"
+                                      "rust-bootstrap-stage0-test.patch"))))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'install 'mkdir-prefix-paths
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; As result of https://github.com/rust-lang/rust/issues/36989
+                 ;; `prefix' directory should exist before `install' call
+                 (mkdir-p (assoc-ref outputs "out"))
+                 (mkdir-p (assoc-ref outputs "cargo"))
+                 #t)))))))))

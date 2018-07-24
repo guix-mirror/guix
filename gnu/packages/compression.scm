@@ -990,6 +990,43 @@ provides encoder and a decoder libraries: libbrotlienc and libbrotlidec,
 respectively, based on the reference implementation from Google.")
       (license license:expat))))
 
+(define-public bsdiff
+  (package
+    (name "bsdiff")
+    (version "4.3")
+    (home-page "https://www.daemonology.net/bsdiff/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0j2zm3z271x5aw63mwhr3vymzn45p2vvrlrpm9cz2nywna41b0hq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "INSTALL=install" "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'build 'fix-Makefile
+                    (lambda _
+                      (substitute* "Makefile"
+                        ;; Adjust syntax to make it compatible with GNU Make.
+                        (("^\\.") "")
+                        ;; Help install(1) create the target directory.
+                        (("\\$\\{PREFIX\\}") "-D -t ${PREFIX}"))
+                      #t)))
+       #:tests? #f)) ;no tests
+    (inputs
+     `(("bzip2" ,bzip2)))
+    (synopsis "Patch binary files")
+    (description
+     "@command{bsdiff} and @command{bspatch} are tools for building and
+applying patches to binary files.  By using suffix sorting (specifically
+Larsson and Sadakane's @code{qsufsort}) and taking advantage of how
+executable files change, bsdiff routinely produces binary patches 50-80%
+smaller than those produced by @code{Xdelta}.")
+    (license license:bsd-2)))
+
 (define-public cabextract
  (package
    (name "cabextract")
@@ -1658,7 +1695,7 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.4")
+    (version "1.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/facebook/zstd/archive/v"
@@ -1666,7 +1703,11 @@ or junctions, and always follows hard links.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1a85sqk4z5b2jfp7fqkr38ibql8mdzca32lf4i3bssyjimp1pr4j"))))
+                "1sifbq18p0hc978g0pq8fymrlpzz1fcxqkbxfqk44z6v9jg5bqfn"))
+              ;; Fix a regression that causes the tests to fail.  Both patches
+              ;; have been merged upstream and will be part of the next release.
+              (patches (search-patches "zstd-fix-stdin-list-without-tty.patch"
+                                       "zstd-fix-stdin-list-test.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1894,19 +1935,19 @@ create, manipulate, read, and write Zip archive files.")
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.3.2")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://libzip.org/download/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "11g1hvm2bxa2v5plakfzcwyk5hb5fz4kgrkp38l0xhnv21888xv2"))))
+                "0wnkkvkq90wyawj9221i77sf3nix1vj3ygzdy59k8yvcjnv3bsh4"))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
      `(("zlib" ,zlib)))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
     (description "Libzip is a C library for reading, creating, and modifying

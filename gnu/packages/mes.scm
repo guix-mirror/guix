@@ -25,8 +25,10 @@
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages texinfo)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -73,7 +75,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.16")
+      (version "0.16.1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "https://gitlab.com/janneke/mes"
@@ -81,7 +83,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                                     "/mes-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0c4vz1qw767af5h615055hh8zjwwmwf5mwkb64l0l921zaa9hg2n"))))
+                  "0qghlbx2qn674q8vckxpzsd0p845kclg457bw6r25jpmslgm0bz2"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
@@ -96,7 +98,9 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                `(("i686-linux-binutils" ,(cross-binutils triplet))
                  ("i686-linux-gcc" ,(cross-gcc triplet)))
                '())
-         ("perl" ,perl)))               ;build-aux/gitlog-to-changelog
+         ("help2man" ,help2man)
+         ("perl" ,perl)                 ;build-aux/gitlog-to-changelog
+         ("texinfo" ,texinfo)))
       (arguments
        `(#:phases
          (modify-phases %standard-phases

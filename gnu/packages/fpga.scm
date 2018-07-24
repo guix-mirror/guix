@@ -301,14 +301,14 @@ Includes the actual FTDI connector.")
 (define-public gtkwave
   (package
     (name "gtkwave")
-    (version "3.3.76")
+    (version "3.3.91")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://gtkwave.sourceforge.net/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1vlvavszb1jwwiixiagld88agjrjg0ix8qa4xnxj4ziw0q87jbmn"))))
+                "1vp9qj3wyfwm36jk3pajvi09xvc1m1crf3d4gphfbs6nkyx2z942"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gperf" ,gperf)
@@ -328,7 +328,7 @@ Includes the actual FTDI connector.")
 
     (synopsis "Waveform viewer for FPGA simulator trace files")
     (description "This package is a waveform viewer for FPGA
-simulator trace files (FST).")
+simulator trace files (@dfn{FST}).")
     (home-page "http://gtkwave.sourceforge.net/")
-    ;; Exception against free government use in tcl_np.c and tcl_np.h
+    ;; Exception against free government use in tcl_np.c and tcl_np.h.
     (license (list license:gpl2+ license:expat license:tcl/tk))))

@@ -16,6 +16,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1025,7 +1026,7 @@ of new capabilities and controls for text keyboards.")
 (define-public libdmx
   (package
     (name "libdmx")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -1035,7 +1036,7 @@ of new capabilities and controls for text keyboards.")
                ".tar.bz2"))
         (sha256
           (base32
-            "00djlxas38kbsrglcmwmxfbmxjdchlbj95pqwjvdg8jn5rns6zf9"))))
+            "0hvjfhrcym770cr0zpqajdy3cda30aiwbjzv16iafkqkbl090gr5"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)
@@ -1466,7 +1467,7 @@ treat it as part of their software base when porting.")
 (define-public libxscrnsaver
   (package
     (name "libxscrnsaver")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -1476,7 +1477,7 @@ treat it as part of their software base when porting.")
                ".tar.bz2"))
         (sha256
           (base32
-            "07ff4r20nkkrj7h08f9fwamds9b3imj8jz5iz6y38zqw6jkyzwcg"))))
+            "1y4vx1vabg7j9hamp0vrfrax5b0lmgm3h0lbgbb3hnkv3dd0f5zr"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
@@ -2446,7 +2447,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.27.1")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2454,7 +2455,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1riflw6dc8fp5d74i7zfgsss0zz3z3lsj6zn2lzjm5kgmp2qvbfl"))))
+                "189h8vl0005yizwrs4d0sng6j8lwkd3xi1zwqg8qavn2bw34v691"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2960,7 +2961,7 @@ It supports a variety of Intel graphics chipsets.")
 (define-public xf86-video-mach64
   (package
     (name "xf86-video-mach64")
-    (version "6.9.5")
+    (version "6.9.6")
     (source
       (origin
         (method url-fetch)
@@ -2970,7 +2971,7 @@ It supports a variety of Intel graphics chipsets.")
                ".tar.bz2"))
         (sha256
           (base32
-           "07xlf5nsjm0x18ij5gyy4lf8hwpl10i8chi3skpqjh84drdri61y"))
+           "171wg8r6py1l138s58rlapin3rlpwsg9spmvhc7l68mm3g3hf1vs"))
         (patches (search-patches "xf86-video-mach64-glibc-2.20.patch"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
@@ -3175,33 +3176,29 @@ This driver is intended for the spice qxl virtio device.")
     (home-page "http://www.spice-space.org")
     (license license:x11)))
 
-
 (define-public xf86-video-r128
   (package
     (name "xf86-video-r128")
-    (version "6.10.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/driver/xf86-video-r128-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-           "1pkpka5m4cd6iy0f8iqnmg6xci14nb6887ilvxzn3xrsgx8j3nl4"))))
+    (version "6.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/driver/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0snvwmrh8dqyyaq7ggicym6yrsg4brygkx9156r0m095m7fp3rav"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xorgproto" ,xorgproto)
               ("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "ATI Rage 128 video driver for X server")
     (description
      "xf86-video-r128 is a video driver for the Xorg X server.
 This driver is intended for ATI Rage 128 based cards.")
     (license license:x11)))
-
 
 (define-public xf86-video-savage
   (package
@@ -3214,6 +3211,7 @@ This driver is intended for ATI Rage 128 based cards.")
                "mirror://xorg/individual/driver/xf86-video-savage-"
                version
                ".tar.bz2"))
+        (patches (search-patches "xf86-video-savage-xorg-compat.patch"))
         (sha256
           (base32
            "11pcrsdpdrwk0mrgv83s5nsx8a9i4lhmivnal3fjbrvi3zdw94rc"))))
@@ -3266,6 +3264,7 @@ Xorg X server.")
                "mirror://xorg/individual/driver/xf86-video-sis-"
                version
                ".tar.bz2"))
+        (patches (search-patches "xf86-video-sis-xorg-compat.patch"))
         (sha256
           (base32
            "03f1abjjf68y8y1iz768rn95va9d33wmbwfbsqrgl6k0gi0bf9jj"))))
@@ -3722,7 +3721,7 @@ alternative implementations like XRandR or TwinView.")
 (define xkbcomp-intermediate ; used as input for xkeyboard-config
   (package
     (name "xkbcomp-intermediate")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
       (origin
         (method url-fetch)
@@ -3732,7 +3731,7 @@ alternative implementations like XRandR or TwinView.")
                ".tar.bz2"))
         (sha256
          (base32
-          "0djp7bb0ch2ddwmc1bkg4fddxdvamiiz375x0r0ni5dcb37w93bl"))))
+          "0944rrkkf0dxp07vhh9yr4prslxhqyw63qmbjirbv1bypswvrn3d"))))
     (build-system gnu-build-system)
     (inputs
       `(("xorgproto" ,xorgproto)
@@ -5071,7 +5070,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.19.6")
+    (version "1.20.0")
     (source
       (origin
         (method url-fetch)
@@ -5080,7 +5079,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "15y13ihgkggmly5s07vzvpn35gzx1w0hrkbnlcvcy05h3lpm0cm7"))
+          "1rnka3sp8yg2bir0bjjhwn33jikj8qd8ckqcxrs94w05bwc7v5lx"))
         (patches
          (list
           ;; See:
@@ -5094,7 +5093,8 @@ over Xlib, including:
             (sha256
              (base32
               "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
-            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
+            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))
+          (search-patch "xorg-server-rotate-fb.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpciaccess" ,libpciaccess)
@@ -5820,7 +5820,7 @@ programs that cannot use the window system directly.")
        ("xcb-proto" ,xcb-proto)
        ("xcb-util" ,xcb-util)
        ("xcb-util-wm" ,xcb-util-wm)))
-    (home-page "http://search.cpan.org/dist/X11-XCB")
+    (home-page "https://metacpan.org/release/X11-XCB")
     (synopsis "Perl bindings for libxcb")
     (description
      "These bindings wrap @code{libxcb} (a C library to speak with X11,
@@ -5847,7 +5847,7 @@ interface to its methods (using @code{Mouse}).")
      "X11::Protocol is a client-side interface to the X11 Protocol, allowing
 perl programs to display windows and graphics on X11 servers.")
     (home-page
-     (string-append "http://search.cpan.org/~smccam/X11-Protocol-" version))
+     (string-append "https://metacpan.org/release/SMCCAM/X11-Protocol-" version))
     ;; From the package README: "you can redistribute and/or modify it under
     ;; the same terms as Perl itself. (As an exception, the file
     ;; Keysyms.pm,which is derived from a file in the standard X11
@@ -5875,7 +5875,7 @@ perl programs to display windows and graphics on X11 servers.")
        ("perl-module-util" ,perl-module-util)))
     (propagated-inputs
      `(("perl-x11-protocol" ,perl-x11-protocol)))
-    (home-page "http://search.cpan.org/dist/X11-Protocol-Other/")
+    (home-page "https://metacpan.org/release/X11-Protocol-Other")
     (synopsis "Miscellaneous helpers for @code{X11::Protocol} connections")
     (description
      "@code{X11::Protocol::Other} contains window manager related functions for
@@ -6119,3 +6119,67 @@ and embedded platforms.")
         (append configure-flags (list "--with-qt4-immodule"
                                       "--with-qt4")))))
     (synopsis "Multilingual input method framework (Qt support)")))
+
+(define-public keynav
+  (package
+    (name "keynav")
+    (version "0.20110708.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://http.debian.net/debian/pool/main/k/keynav/keynav_"
+             version ".orig.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gizjhji3yspxxxvb90js3z1bv18rbf5phxg8rciixpj3cccff8z"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxinerama" ,libxinerama)
+       ("libxtst" ,libxtst)
+       ("xdotool" ,xdotool)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:tests? #f ;No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'setenv
+           (lambda _
+             (setenv "CC" (which "gcc"))
+             #t))
+         (add-after 'unpack 'patch-keynav
+           (lambda _
+             (substitute* "keynav.c"
+               (("xdo_symbol_map") "xdo_get_symbol_map")
+               (("xdo_window_setclass") "xdo_set_window_class")
+               (("xdo_window_get_active") "xdo_get_window_at_mouse")
+               (("xdo_click") "xdo_click_window")
+               (("xdo_mouseup") "xdo_mouse_up")
+               (("xdo_mousedown") "xdo_mouse_down")
+               (("xdo_mousemove") "xdo_move_mouse")
+               (("xdo_mousemove_relative") "xdo_move_mouse_relative")
+               (("xdo_mouselocation") "xdo_get_mouse_location")
+               (("xdo_mouse_wait_for_move_to") "xdo_wait_for_mouse_move_to")
+               (("xdo_keysequence_up") "xdo_send_keysequence_window_up")
+               (("xdo_keysequence_down") "xdo_send_keysequence_window_down"))
+             #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "keynav" (string-append out "/bin"))
+               (install-file "keynavrc" (string-append out "/etc")))
+             #t)))))
+    (home-page "https://www.semicomplete.com/projects/keynav/")
+    (synopsis "Keyboard-driven mouse cursor mover")
+    (description
+     "Keynav makes your keyboard a fast mouse cursor mover.  You can move the
+cursor to any point on the screen with a few key strokes.  It also simulates
+mouse click.  You can do everything mouse can do with a keyboard.")
+    (license license:bsd-3)))

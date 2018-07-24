@@ -211,7 +211,7 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
 (define-public grammalecte
   (package
     (name "grammalecte")
-    (version "0.6.4")
+    (version "0.6.5")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -219,7 +219,7 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
                            "Grammalecte-fr-v" version ".zip"))
        (sha256
         (base32
-         "13var1gi3gb2bwi7k21bn2pla0rs17cd7kc3mc5a2nsyqgsrzxfw"))))
+         "1flsahqw2r0cmg0bixpl5w0acricmdh2cf4lf9zr66ydgmjnmv2s"))))
     (build-system python-build-system)
     (home-page "https://www.dicollecte.org")
     (synopsis  "French spelling and grammar checker")

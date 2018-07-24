@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,7 +75,7 @@ rather than \\n."
 ;;;
 
 (define importers '("gnu" "nix" "pypi" "cpan" "hackage" "stackage" "elpa" "gem"
-                    "cran" "crate" "texlive" "json"))
+                    "cran" "crate" "texlive" "json" "opam"))
 
 (define (resolve-importer name)
   (let ((module (resolve-interface
@@ -104,7 +105,7 @@ Run IMPORTER with ARGS.\n"))
     ((or ("-h") ("--help"))
      (show-help)
      (exit 0))
-    (("--version")
+    ((or ("-V") ("--version"))
      (show-version-and-exit "guix import"))
     ((importer args ...)
      (if (member importer importers)

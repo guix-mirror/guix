@@ -28,7 +28,8 @@
   #:use-module (gnu packages cran)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages graph)
-  #:use-module (gnu packages statistics))
+  #:use-module (gnu packages statistics)
+  #:use-module (gnu packages web))
 
 (define-public r-bsgenome-dmelanogaster-ucsc-dm6
   (package
@@ -167,6 +168,35 @@ Repeats Finder (TRF mask).  Only the AGAPS and AMB masks are \"active\" by
 default."  )
     (license license:artistic2.0)))
 
+(define-public r-genelendatabase
+  (package
+    (name "r-genelendatabase")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; We cannot use bioconductor-uri here because this tarball is
+       ;; located under "data/experiment/" instead of "bioc/".
+       (uri (string-append "https://bioconductor.org/packages/"
+                           "release/data/experiment/src/contrib"
+                           "/geneLenDataBase_" version ".tar.gz"))
+       (sha256
+        (base32
+         "07mmmn53kb7v14msc13dsbm8ghssbvwcrhifrk15hn37bw2p4ja5"))))
+    (properties
+     `((upstream-name . "geneLenDataBase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rtracklayer" ,r-rtracklayer)
+       ("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page "https://bioconductor.org/packages/geneLenDataBase/")
+    (synopsis "Lengths of mRNA transcripts for a number of genomes")
+    (description
+     "This package provides the lengths of mRNA transcripts for a number of
+genomes and gene ID formats, largely based on the UCSC table browser.")
+    (license license:lgpl2.0+)))
+
+
 (define-public r-hpar
   (package
     (name "r-hpar")
@@ -675,3 +705,100 @@ experiments.")
 such as ChIA-PET/Hi-C, annotating genomic features with interaction
 information and producing various plots and statistics.")
     (license license:gpl3)))
+
+(define-public r-ctc
+  (package
+    (name "r-ctc")
+    (version "1.54.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ctc" version))
+       (sha256
+        (base32
+         "0sadplm4n9n3z6inmn6y3d6qbr4hllljqh700x5fygrnfacnckk9"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-amap" ,r-amap)))
+    (home-page "https://bioconductor.org/packages/ctc/")
+    (synopsis "Cluster and tree conversion")
+    (description
+     "This package provides tools for exporting and importing classification
+trees and clusters to other programs.")
+    (license license:gpl2)))
+
+(define-public r-goseq
+  (package
+    (name "r-goseq")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "goseq" version))
+       (sha256
+        (base32
+         "0xmbb8ma32lrfy810r82y34gkspq4fqiqxykic9j4rq9rg9n9x2l"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biasedurn" ,r-biasedurn)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genelendatabase" ,r-genelendatabase)
+       ("r-go-db" ,r-go-db)
+       ("r-mgcv" ,r-mgcv)))
+    (home-page "https://bioconductor.org/packages/goseq/")
+    (synopsis "Gene Ontology analyser for RNA-seq and other length biased data")
+    (description
+     "This package provides tools to detect Gene Ontology and/or other user
+defined categories which are over/under represented in RNA-seq data.")
+    (license license:lgpl2.0+)))
+
+(define-public r-glimma
+  (package
+    (name "r-glimma")
+    (version "1.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Glimma" version))
+       (sha256
+        (base32
+         "0kfia60vrlys6amdchdix01iwbkwyb7nfjqn5hczsxp8rhmbg25s"))))
+    (properties `((upstream-name . "Glimma")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-edger" ,r-edger)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://github.com/Shians/Glimma")
+    (synopsis "Interactive HTML graphics")
+    (description
+     "This package generates interactive visualisations for analysis of
+RNA-sequencing data using output from limma, edgeR or DESeq2 packages in an
+HTML page.  The interactions are built on top of the popular static
+representations of analysis results in order to provide additional
+information.")
+    (license license:lgpl3)))
+
+(define-public r-rots
+  (package
+    (name "r-rots")
+    (version "1.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ROTS" version))
+       (sha256
+        (base32
+         "12jvdqanyk86ihpcylp105zip22y0gkbksmyxy00q7iad0jhaqp3"))))
+    (properties `((upstream-name . "ROTS")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "https://bioconductor.org/packages/ROTS/")
+    (synopsis "Reproducibility-Optimized Test Statistic")
+    (description
+     "This package provides tools for calculating the
+@dfn{Reproducibility-Optimized Test Statistic} (ROTS) for differential testing
+in omics data.")
+    (license license:gpl2+)))

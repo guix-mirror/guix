@@ -31,37 +31,39 @@
   #:export (nar-sha256
             deduplicate))
 
-;; Would it be better to just make WRITE-FILE give size as well? I question
-;; the general utility of this approach.
+;; XXX: This port is used as a workaround on Guile <= 2.2.4 where
+;; 'port-position' throws to 'out-of-range' when the offset is great than or
+;; equal to 2^32: <https://bugs.gnu.org/32161>.
 (define (counting-wrapper-port output-port)
-  "Some custom ports don't implement GET-POSITION at all. But if we want to
-figure out how many bytes are being written, we will want to use that. So this
-makes a wrapper around a port which implements GET-POSITION."
+  "Return two values: an output port that wraps OUTPUT-PORT, and a thunk to
+retrieve the number of bytes written to OUTPUT-PORT."
   (let ((byte-count 0))
-    (make-custom-binary-output-port "counting-wrapper"
-                                    (lambda (bytes offset count)
-                                      (set! byte-count
-                                        (+ byte-count count))
-                                      (put-bytevector output-port bytes
-                                                      offset count)
-                                      count)
-                                    (lambda ()
-                                      byte-count)
-                                    #f
-                                    (lambda ()
-                                      (close-port output-port)))))
+    (values (make-custom-binary-output-port "counting-wrapper"
+                                            (lambda (bytes offset count)
+                                              (put-bytevector output-port bytes
+                                                              offset count)
+                                              (set! byte-count
+                                                (+ byte-count count))
+                                              count)
+                                            (lambda ()
+                                              byte-count)
+                                            #f
+                                            (lambda ()
+                                              (close-port output-port)))
+            (lambda ()
+              byte-count))))
 
 (define (nar-sha256 file)
   "Gives the sha256 hash of a file and the size of the file in nar form."
-  (let-values (((port get-hash) (open-sha256-port)))
-    (let ((wrapper (counting-wrapper-port port)))
-      (write-file file wrapper)
-      (force-output wrapper)
-      (force-output port)
-      (let ((hash (get-hash))
-            (size (port-position wrapper)))
-        (close-port wrapper)
-        (values hash size)))))
+  (let*-values (((port get-hash) (open-sha256-port))
+                ((wrapper get-size) (counting-wrapper-port port)))
+    (write-file file wrapper)
+    (force-output wrapper)
+    (force-output port)
+    (let ((hash (get-hash))
+          (size (get-size)))
+      (close-port wrapper)
+      (values hash size))))
 
 (define (tempname-in directory)
   "Gives an unused temporary name under DIRECTORY. Not guaranteed to still be
@@ -88,28 +90,27 @@ LINK-PREFIX."
       (lambda args
         (if (= (system-error-errno args) EEXIST)
             (try (tempname-in link-prefix))
-            (throw 'system-error args))))))
+            (apply throw args))))))
 
 ;; There are 3 main kinds of errors we can get from hardlinking: "Too many
 ;; things link to this" (EMLINK), "this link already exists" (EEXIST), and
 ;; "can't fit more stuff in this directory" (ENOSPC).
 
-(define (replace-with-link target to-replace)
-  "Atomically replace the file TO-REPLACE with a link to TARGET.  Note: TARGET
-and TO-REPLACE must be on the same file system."
-  (let ((temp-link (get-temp-link target (dirname to-replace))))
-    (rename-file temp-link to-replace)))
+(define* (replace-with-link target to-replace
+                            #:key (swap-directory (dirname target)))
+  "Atomically replace the file TO-REPLACE with a link to TARGET.  Use
+SWAP-DIRECTORY as the directory to store temporary hard links.
 
-(define-syntax-rule (false-if-system-error (errors ...) exp ...)
-  "Given ERRORS, a list of system error codes to ignore, evaluates EXP... and
-return #f if any of the system error codes in the given list are thrown."
-  (catch 'system-error
-    (lambda ()
-      exp ...)
-    (lambda args
-      (if (member (system-error-errno args) (list errors ...))
-          #f
-          (apply throw args)))))
+Note: TARGET, TO-REPLACE, and SWAP-DIRECTORY must be on the same file system."
+  (let ((temp-link (get-temp-link target swap-directory)))
+    (make-file-writable (dirname to-replace))
+    (catch 'system-error
+      (lambda ()
+        (rename-file temp-link to-replace))
+      (lambda args
+        (delete-file temp-link)
+        (unless (= EMLINK (system-error-errno args))
+          (apply throw args))))))
 
 (define* (deduplicate path hash #:key (store %store-directory))
   "Check if a store item with sha256 hash HASH already exists.  If so,
@@ -131,8 +132,8 @@ under STORE."
                                      #:store store))))
                   (scandir path))
         (if (file-exists? link-file)
-            (false-if-system-error (EMLINK)
-                                   (replace-with-link link-file path))
+            (replace-with-link link-file path
+                               #:swap-directory links-directory)
             (catch 'system-error
               (lambda ()
                 (link path link-file))
@@ -141,8 +142,8 @@ under STORE."
                   (cond ((= errno EEXIST)
                          ;; Someone else put an entry for PATH in
                          ;; LINKS-DIRECTORY before we could.  Let's use it.
-                         (false-if-system-error (EMLINK)
-                                                (replace-with-link path link-file)))
+                         (replace-with-link path link-file
+                                            #:swap-directory links-directory))
                         ((= errno ENOSPC)
                          ;; There's not enough room in the directory index for
                          ;; more entries in .links, but that's fine: we can

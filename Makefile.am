@@ -85,6 +85,7 @@ MODULES =					\
   guix/nar.scm					\
   guix/derivations.scm				\
   guix/grafts.scm				\
+  guix/inferior.scm				\
   guix/gnu-maintenance.scm			\
   guix/self.scm					\
   guix/upstream.scm				\
@@ -110,6 +111,7 @@ MODULES =					\
   guix/build-system/asdf.scm			\
   guix/build-system/glib-or-gtk.scm		\
   guix/build-system/gnu.scm			\
+  guix/build-system/guile.scm			\
   guix/build-system/haskell.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
@@ -148,6 +150,7 @@ MODULES =					\
   guix/build/glib-or-gtk-build-system.scm	\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
+  guix/build/guile-build-system.scm		\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
   guix/build/ocaml-build-system.scm		\
@@ -200,6 +203,7 @@ MODULES =					\
   guix/scripts/substitute.scm			\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
+  guix/scripts/repl.scm				\
   guix/scripts/system.scm			\
   guix/scripts/system/search.scm		\
   guix/scripts/lint.scm				\
@@ -231,11 +235,13 @@ MODULES +=					\
   guix/import/github.scm   			\
   guix/import/gnome.scm				\
   guix/import/json.scm				\
+  guix/import/opam.scm				\
   guix/import/pypi.scm				\
   guix/import/stackage.scm			\
   guix/scripts/import/crate.scm			\
   guix/scripts/import/gem.scm			\
   guix/scripts/import/json.scm  		\
+  guix/scripts/import/opam.scm			\
   guix/scripts/import/pypi.scm			\
   guix/scripts/import/stackage.scm		\
   guix/scripts/weather.scm
@@ -282,8 +288,6 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/4.9-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.4-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.4-x86_64.conf	\
-  gnu/packages/aux-files/linux-libre/4.1-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.1-x86_64.conf	\
   gnu/packages/aux-files/run-in-namespace.c
 
 # Templates, examples.
@@ -357,6 +361,7 @@ SCM_TESTS =					\
   tests/profiles.scm				\
   tests/search-paths.scm			\
   tests/syscalls.scm				\
+  tests/inferior.scm				\
   tests/gremlin.scm				\
   tests/bournish.scm				\
   tests/lint.scm				\
@@ -384,6 +389,7 @@ if HAVE_GUILE_JSON
 
 SCM_TESTS += 					\
   tests/pypi.scm				\
+  tests/opam.scm				\
   tests/cpan.scm				\
   tests/gem.scm					\
   tests/crate.scm
@@ -494,8 +500,6 @@ EXTRA_DIST +=						\
   build-aux/run-system-tests.scm			\
   d3.v3.js						\
   graph.js						\
-  srfi/srfi-64.scm					\
-  srfi/srfi-64.upstream.scm				\
   tests/test.drv					\
   tests/signing-key.pub					\
   tests/signing-key.sec					\

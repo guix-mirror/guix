@@ -754,7 +754,7 @@ word compounding or character encoding.")
     (name (match variant
             ("classique" "hunspell-dict-fr")
             (_ (string-append "hunspell-dict-fr-" variant))))
-    (version "6.1")
+    (version "6.2")
     (source (origin
               (uri (string-append
                     "http://www.dicollecte.org/download/fr/hunspell-french-dictionaries-v"
@@ -762,7 +762,7 @@ word compounding or character encoding.")
               (method url-fetch)
               (sha256
                (base32
-                "0w2hzh36wj3lsj2yd4mh7z7547dg452sywj79vnzx27csclwqshc"))))
+                "139hfrn5p87sl8hqmgkf6sgvnxrk2mm8vd8xsm8sm98qjnwlg0f9"))))
     (build-system trivial-build-system)
     (native-inputs `(("unzip" ,unzip)))
     (arguments

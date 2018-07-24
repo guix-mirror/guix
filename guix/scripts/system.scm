@@ -126,7 +126,11 @@ REFERENCES as its set of references."
     ;; Remove DEST if it exists to make sure that (1) we do not fail badly
     ;; while trying to overwrite it (see <http://bugs.gnu.org/20722>), and
     ;; (2) we end up with the right contents.
-    (when (file-exists? dest)
+    (when (false-if-exception (lstat dest))
+      (for-each make-file-writable
+                (find-files dest (lambda (file stat)
+                                   (eq? 'directory (stat:type stat)))
+                            #:directories? #t))
       (delete-file-recursively dest))
 
     (copy-recursively item dest
@@ -148,11 +152,17 @@ REFERENCES as its set of references."
   "Copy ITEM and all its dependencies to the store under root directory
 TARGET, and register them."
   (mlet* %store-monad ((to-copy (topologically-sorted* (list item)))
-                       (refs    (mapm %store-monad references* to-copy)))
+                       (refs    (mapm %store-monad references* to-copy))
+                       (info    (mapm %store-monad query-path-info*
+                                      (delete-duplicates
+                                       (append to-copy (concatenate refs)))))
+                       (size -> (reduce + 0 (map path-info-nar-size info))))
     (define progress-bar
       (progress-reporter/bar (length to-copy)
                              (format #f (G_ "copying to '~a'...")
                                      target)))
+
+    (check-available-space size target)
 
     (call-with-progress-reporter progress-bar
       (lambda (report)

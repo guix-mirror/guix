@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,7 +55,7 @@ Build and manipulate Linux containers.\n"))
       ((or ("-h") ("--help"))
        (show-help)
        (exit 0))
-      (("--version")
+      ((or ("-V") ("--version"))
        (show-version-and-exit "guix container"))
       ((action args ...)
        (if (member action %actions)

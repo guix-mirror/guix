@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
-;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
@@ -41,6 +41,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -99,9 +100,9 @@
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
-  (let ((version "0.14.0")
-        (commit "7af5c2a248b6c229187fc850517c84b0917c452b")
-        (revision 13))
+  (let ((version "0.15.0")
+        (commit "8bbb79cf95a07a40950448a8a09d888254404ed4")
+        (revision 2))
     (package
       (name "guix")
 
@@ -117,7 +118,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "06kjimcln4ydirgl05qy98kxjyx3l6brxnq1ly7wb85f73s97gix"))
+                  "0h83l91v2cg9bb78c7vqx9wj71ckz22jbjmm2fy4vqs9216jnvc0"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -262,7 +263,10 @@
 
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
-         ("guile" ,guile-2.2)
+
+         ;; Use 2.2.4 to avoid various thread-safety issues while building
+         ;; code in parallel.
+         ("guile" ,guile-2.2.4)
 
          ;; Many tests rely on the 'guile-bootstrap' package, which is why we
          ;; have it here.
@@ -344,7 +348,7 @@ the Nix package manager.")
                (let ((out (assoc-ref outputs "out")))
                  (substitute* (find-files (string-append out "/libexec"))
                    (("exec \".*/bin/guix\"")
-                    "exec ~root/.config/current/bin/guix"))
+                    "exec ~root/.config/guix/current/bin/guix"))
                  #t)))
            (delete 'wrap-program)))))))
 
@@ -433,20 +437,27 @@ sub-directory.")
 
 (define-public emacs-nix-mode
   (package
-    (inherit nix)
     (name "emacs-nix-mode")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/NixOS/nix-mode/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06aqz0czznsj8835jqnk794sy2p6pa8kxfqwh0nl5d5vxivria6z"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'chdir-elisp
-           ;; Elisp directory is not in root of the source.
-           (lambda _
-             (chdir "misc/emacs"))))))
+    (inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-mmm-mode" ,emacs-mmm-mode)))
+    (home-page "https://github.com/NixOS/nix-mode")
     (synopsis "Emacs major mode for editing Nix expressions")
     (description "@code{nixos-mode} provides an Emacs major mode for editing
 Nix expressions.  It supports syntax highlighting, indenting and refilling of
-comments.")))
+comments.")
+    (license license:lgpl2.1+)))
 
 (define-public stow
   (package

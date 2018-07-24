@@ -160,10 +160,33 @@ interpretation of the specifications for these languages.")
                      ;; include/SPIRV/{bitutils,hex_float}.h are Apache 2.0.
                      license:asl2.0)))))
 
+(define-public vulkan-headers
+  (package
+    (name "vulkan-headers")
+    (version "1.1.77.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/KhronosGroup/Vulkan-Headers/"
+             "archive/sdk-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05pgaqyj516lmzdr4clxll5gvr5zb29sfjhs2d7mkryqs6zk5xdj"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; No tests.
+    (home-page
+     "https://github.com/KhronosGroup/Vulkan-Headers")
+    (synopsis "Vulkan Header files and API registry")
+    (description
+     "Vulkan-Headers contains header files and API registry for Vulkan.")
+    (license (list license:asl2.0)))) ;LICENSE.txt
+
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version "1.1.73.0")
+    (version (package-version vulkan-headers))
     (source
      (origin
        (method url-fetch)
@@ -172,7 +195,7 @@ interpretation of the specifications for these languages.")
              "archive/sdk-" version ".tar.gz"))
        (sha256
         (base32
-         "0lvdpy6ybx5h7w15m9s2n9q3167q618clra2k7yi2cbm397ci4hn"))))
+         "1zg86b5wba9l14ry3ap7yzgd9hwzxxr0rjgwhnv14n75aqpwv02d"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -194,11 +217,12 @@ interpretation of the specifications for these languages.")
               ("libxrandr" ,libxrandr)
               ("mesa" ,mesa)
               ("spirv-tools" ,spirv-tools)
+              ("vulkan-headers" ,vulkan-headers)
               ("wayland" ,wayland)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("python" ,python)))
     (home-page
-     "https://github.com/KhronosGroup/Vulkan-LoaderAndValidationLayers")
+     "https://github.com/KhronosGroup/Vulkan-Loader")
     (synopsis "Khronos official ICD loader and validation layers for Vulkan")
     (description
      "Vulkan allows multiple @dfn{Installable Client Drivers} (ICDs) each
@@ -214,6 +238,41 @@ and the ICD.")
 
 (define-public vulkan-icd-loader
   (deprecated-package "vulkan-icd-loader" vulkan-loader))
+
+(define-public vulkan-tools
+  (package
+    (name "vulkan-tools")
+    (version (package-version vulkan-headers))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/KhronosGroup/Vulkan-Tools/"
+             "archive/sdk-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1imbiw8crrkxgsjkgmv5x6s9yx89g6v3r2s5qfm5h31pv6lyzshm"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("glslang" ,glslang)
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("vulkan-headers" ,vulkan-headers)
+       ("vulkan-loader" ,vulkan-loader)
+       ("wayland" ,wayland)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (arguments
+     `(#:tests? #f)) ; No tests.
+    (home-page
+     "https://github.com/KhronosGroup/Vulkan-Tools")
+    (synopsis "Tools and utilities for Vulkan")
+    (description
+     "Vulkan-Tools provides tools and utilities that can assist development by
+enabling developers to verify their applications correct use of the Vulkan
+API.")
+    (license (list license:asl2.0)))) ;LICENSE.txt
 
 (define-public shaderc
   (let ((commit "be8e0879750303a1de09385465d6b20ecb8b380d")
@@ -316,6 +375,7 @@ shader compilation.")
         ("libxcb" ,libxcb)
         ("spirv-headers" ,spirv-headers)
         ("spirv-tools" ,spirv-tools)
+        ("vulkan-headers" ,vulkan-headers)
         ("vulkan-loader" ,vulkan-loader)
         ("wine" ,wine) ; Needed for 'widl'.
         ("xcb-util" ,xcb-util)

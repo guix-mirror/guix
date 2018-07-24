@@ -27,7 +27,7 @@ Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nils Gillmann@*
-Copyright @copyright{} 2016, 2017 Jan Nieuwenhuizen@*
+Copyright @copyright{} 2016, 2017, 2018 Jan Nieuwenhuizen@*
 Copyright @copyright{} 2016 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017, 2018 Clément Lassieur@*
@@ -48,7 +48,8 @@ Copyright @copyright{} 2017 nee@*
 Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
-Copyright @copyright{} 2018 Pierre-Antoine Rouby
+Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
+Copyright @copyright{} 2018 Gábor Boskovits@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -95,6 +96,15 @@ Edition @value{EDITION} @*
 
 This document describes GNU Guix version @value{VERSION}, a functional
 package management tool written for the GNU system.
+
+@c TRANSLATORS: You can replace the following paragraph with information on
+@c how to join your own translation team and how to report issues with the
+@c translation.
+This manual is also available in French (@pxref{Top,,, guix.fr, Manuel de
+référence de GNU Guix}).  If you would like to translate it in your native
+language, consider joining the
+@uref{https://translationproject.org/domain/guix-manual.html, Translation
+Project}.
 
 @menu
 * Introduction::                What is Guix about?
@@ -156,6 +166,7 @@ Programming Interface
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
+* Invoking guix repl::          Fiddling with Guix interactively.
 
 Defining Packages
 
@@ -420,7 +431,7 @@ Installing goes along these lines:
 @item
 @cindex downloading Guix binary
 Download the binary tarball from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz},
+@indicateurl{https://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz},
 where @var{system} is @code{x86_64-linux} for an @code{x86_64} machine
 already running the kernel Linux, and so on.
 
@@ -429,7 +440,7 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the tarball against it, along these lines:
 
 @example
-$ wget ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
+$ wget https://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
 $ gpg --verify guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
 @end example
 
@@ -2775,12 +2786,18 @@ Generation 2	Jun 11 2018 11:02:49
     repository URL: https://git.savannah.gnu.org/git/guix.git
     branch: origin/master
     commit: e0cc7f669bec22c37481dd03a7941c7d11a64f1d
+  2 new packages: keepalived, libnfnetlink
+  6 packages upgraded: emacs-nix-mode@@2.0.4,
+    guile2.0-guix@@0.14.0-12.77a1aac, guix@@0.14.0-12.77a1aac,
+    heimdal@@7.5.0, milkytracker@@1.02.00, nix@@2.0.4
 
 Generation 3	Jun 13 2018 23:31:07	(current)
   guix 844cc1c
     repository URL: https://git.savannah.gnu.org/git/guix.git
     branch: origin/master
     commit: 844cc1c8f394f03b404c5bb3aee086922373490c
+  28 new packages: emacs-helm-ls-git, emacs-helm-mu, @dots{}
+  69 packages upgraded: borg@@1.1.6, cheese@@3.28.0, @dots{}
 @end example
 
 This @code{~/.config/guix/current} profile works like any other profile
@@ -3257,6 +3274,7 @@ package definitions.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
+* Invoking guix repl::          Fiddling with Guix interactively.
 @end menu
 
 @node Defining Packages
@@ -4025,6 +4043,21 @@ specified with the @code{#:glib} parameter.
 @end table
 
 Both phases are executed after the @code{install} phase.
+@end defvr
+
+@defvr {Scheme Variable} guile-build-system
+This build system is for Guile packages that consist exclusively of Scheme
+code and that are so lean that they don't even have a makefile, let alone a
+@file{configure} script.  It compiles Scheme code using @command{guild
+compile} (@pxref{Compilation,,, guile, GNU Guile Reference Manual}) and
+installs the @file{.scm} and @file{.go} files in the right place.  It also
+installs documentation.
+
+This build system supports cross-compilation by using the @code{--target}
+option of @command{guild compile}.
+
+Packages built with @code{guile-build-system} must provide a Guile package in
+their @code{native-inputs} field.
 @end defvr
 
 @defvr {Scheme Variable} minify-build-system
@@ -4906,6 +4939,12 @@ containing @var{text}, a string.  @var{references} is a list of store items that
 resulting text file refers to; it defaults to the empty list.
 @end deffn
 
+@deffn {Monadic Procedure} binary-file @var{name} @var{data} [@var{references}]
+Return as a monadic value the absolute file name in the store of the file
+containing @var{data}, a bytevector.  @var{references} is a list of store
+items that the resulting binary file refers to; it defaults to the empty list.
+@end deffn
+
 @deffn {Monadic Procedure} interned-file @var{file} [@var{name}] @
          [#:recursive? #t] [#:select? (const #t)]
 Return the name of @var{file} once interned in the store.  Use
@@ -5339,7 +5378,7 @@ procedure (@pxref{The Store Monad, @code{interned-file}}).
 
 @deffn {Scheme Procedure} plain-file @var{name} @var{content}
 Return an object representing a text file called @var{name} with the given
-@var{content} (a string) to be added to the store.
+@var{content} (a string or a bytevector) to be added to the store.
 
 This is the declarative counterpart of @code{text-file}.
 @end deffn
@@ -5464,7 +5503,7 @@ denoting the target file.  Here's an example:
             `(("hosts" ,(plain-file "hosts"
                                     "127.0.0.1 localhost"))
               ("bashrc" ,(plain-file "bashrc"
-                                     "alias ls='ls --color'"))))
+                                     "alias ls='ls --color=auto'"))))
 @end example
 
 This yields an @code{etc} directory containing these two files.
@@ -5528,6 +5567,57 @@ corresponding to @var{obj} for @var{system}, cross-compiling for
 has an associated gexp compiler, such as a @code{<package>}.
 @end deffn
 
+@node Invoking guix repl
+@section Invoking @command{guix repl}
+
+@cindex REPL, read-eval-print loop
+The @command{guix repl} command spawns a Guile @dfn{read-eval-print loop}
+(REPL) for interactive programming (@pxref{Using Guile Interactively,,, guile,
+GNU Guile Reference Manual}).  Compared to just launching the @command{guile}
+command, @command{guix repl} guarantees that all the Guix modules and all its
+dependencies are available in the search path.  You can use it this way:
+
+@example
+$ guix repl
+scheme@@(guile-user)> ,use (gnu packages base)
+scheme@@(guile-user)> coreutils
+$1 = #<package coreutils@@8.29 gnu/packages/base.scm:327 3e28300>
+@end example
+
+@cindex inferiors
+In addition, @command{guix repl} implements a simple machine-readable REPL
+protocol for use by @code{(guix inferior)}, a facility to interact with
+@dfn{inferiors}, separate processes running a potentially different revision
+of Guix.
+
+The available options are as follows:
+
+@table @code
+@item --type=@var{type}
+@itemx -t @var{type}
+Start a REPL of the given @var{TYPE}, which can be one of the following:
+
+@table @code
+@item guile
+This is default, and it spawns a standard full-featured Guile REPL.
+@item machine
+Spawn a REPL that uses the machine-readable protocol.  This is the protocol
+that the @code{(guix inferior)} module speaks.
+@end table
+
+@item --listen=@var{endpoint}
+By default, @command{guix repl} reads from standard input and writes to
+standard output.  When this option is passed, it will instead listen for
+connections on @var{endpoint}.  Here are examples of valid options:
+
+@table @code
+@item --listen=tcp:37146
+Accept connections on localhost on port 37146.
+
+@item --listen=unix:/tmp/socket
+Accept connections on the Unix-domain socket @file{/tmp/socket}.
+@end table
+@end table
 
 @c *********************************************************************
 @node Utilities
@@ -6370,6 +6460,14 @@ The command below imports metadata for the @code{rails} Ruby package:
 guix import gem rails
 @end example
 
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
+
 @item cpan
 @cindex CPAN
 Import metadata from @uref{https://www.metacpan.org/, MetaCPAN}@footnote{This
@@ -6651,6 +6749,12 @@ in Guix.
 @cindex crate
 Import metadata from the crates.io Rust package repository
 @uref{https://crates.io, crates.io}.
+
+@item opam
+@cindex OPAM
+@cindex OCaml
+Import metadata from the @uref{https://opam.ocaml.org/, OPAM} package
+repository used by the OCaml community.
 @end table
 
 The structure of the @command{guix import} code is modular.  It would be
@@ -8329,7 +8433,7 @@ More and more system services are provided (@pxref{Services}), but some
 may be missing.
 
 @item
-More than 6,500 packages are available, but you might
+More than 7,500 packages are available, but you might
 occasionally find that a useful package is missing.
 
 @item
@@ -8383,7 +8487,7 @@ about their support in GNU/Linux.
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz},
+@indicateurl{https://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz},
 where @var{system} is one of:
 
 @table @code
@@ -8399,7 +8503,7 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ wget https://alpha.gnu.org/gnu/guix/guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
 $ gpg --verify guixsd-install-@value{VERSION}.@var{system}.iso.xz.sig
 @end example
 
@@ -8635,6 +8739,17 @@ must have the @code{esp} flag set.  E.g., for @command{parted}:
 @example
 parted /dev/sda set 1 esp on
 @end example
+
+@quotation Note
+@vindex grub-bootloader
+@vindex grub-efi-bootloader
+Unsure whether to use EFI- or BIOS-based GRUB?  If the directory
+@file{/sys/firmware/efi} exists in the installation image, then you should
+probably perform an EFI installation, using @code{grub-efi-bootloader}.
+Otherwise you should use the BIOS-based GRUB, known as
+@code{grub-bootloader}.  @xref{Bootloader Configuration}, for more info on
+bootloaders.
+@end quotation
 
 Once you are done partitioning the target hard disk drive, you have to
 create a file system on the relevant partition(s)@footnote{Currently
@@ -8964,6 +9079,27 @@ Below we discuss the effect of some of the most important fields
 fields), and how to @dfn{instantiate} the operating system using
 @command{guix system}.
 
+@unnumberedsubsubsec Bootloader
+
+@cindex legacy boot, on Intel machines
+@cindex BIOS boot, on Intel machines
+@cindex UEFI boot
+@cindex EFI boot
+The @code{bootloader} field describes the method that will be used to boot
+your system.  Machines based on Intel processors can boot in ``legacy'' BIOS
+mode, as in the example above.  However, more recent machines rely instead on
+the @dfn{Unified Extensible Firmware Interface} (UEFI) to boot.  In that case,
+the @code{bootloader} field should contain something along these lines:
+
+@example
+(bootloader-configuration
+  (bootloader grub-efi-bootloader)
+  (target "/boot/efi"))
+@end example
+
+@xref{Bootloader Configuration}, for more information on the available
+configuration options.
+
 @unnumberedsubsubsec Globally-Visible Packages
 
 @vindex %base-packages
@@ -9074,8 +9210,7 @@ management, power management, and more, would look like this:
 @include os-config-desktop.texi
 @end lisp
 
-@cindex UEFI
-A graphical UEFI system with a choice of lightweight window managers
+A graphical system with a choice of lightweight window managers
 instead of full-blown desktop environments would look like this:
 
 @lisp
@@ -10788,6 +10923,21 @@ gexps to introduce job definitions that are passed to mcron
 @xref{Guile Syntax, mcron job specifications,, mcron, GNU@tie{}mcron},
 for more information on mcron job specifications.  Below is the
 reference of the mcron service.
+
+On a running system, you can use the @code{schedule} action of the service to
+visualize the mcron jobs that will be executed next:
+
+@example
+# herd schedule mcron
+@end example
+
+@noindent
+The example above lists the next five tasks that will be executed, but you can
+also specify the number of tasks to display:
+
+@example
+# herd schedule mcron 10
+@end example
 
 @deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron}]
 Return an mcron service running @var{mcron} that schedules @var{jobs}, a
@@ -15609,6 +15759,39 @@ Specify the path of the base URL.  This can be useful if
 @end table
 @end deftp
 
+@subsubheading Prometheus Node Exporter Service
+
+@cindex prometheus-node-exporter
+The Prometheus ``node exporter'' makes hardware and operating system statistics
+provided by the Linux kernel available for the Prometheus monitoring system.
+This service should be deployed on all physical nodes and virtual machines,
+where monitoring these statistics is desirable.
+
+@defvar {Scheme variable} prometheus-node-exporter-service-type
+This is the service type for the
+@uref{https://github.com/prometheus/node_exporter/, prometheus-node-exporter}
+service, its value must be a @code{prometheus-node-exporter-configuration}
+record as in this example:
+
+@example
+(service prometheus-node-exporter-service-type
+         (prometheus-node-exporter-configuration
+           (web-listen-address ":9100")))
+@end example
+@end defvar
+
+@deftp {Data Type} prometheus-node-exporter-configuration
+Data type representing the configuration of @command{node_exporter}.
+
+@table @asis
+@item @code{package} (default: @code{go-github-com-prometheus-node-exporter})
+The prometheus-node-exporter package to use.
+
+@item @code{web-listen-address} (default: @code{":9100"})
+Bind the web interface to the specified address.
+
+@end table
+@end deftp
 
 @node Kerberos Services
 @subsubsection Kerberos Services
@@ -17573,10 +17756,6 @@ Only evaluate specifications and build derivations once.
 @item @code{fallback?} (default: @code{#f})
 When substituting a pre-built binary fails, fall back to building
 packages locally.
-
-@item @code{load-path} (default: @code{'()})
-This allows users to define their own packages and make them visible to
-cuirass as in @command{guix build} command.
 
 @item @code{cuirass} (default: @code{cuirass})
 The Cuirass package to use.
@@ -20697,21 +20876,34 @@ The type of a bootloader configuration declaration.
 The bootloader to use, as a @code{bootloader} object. For now
 @code{grub-bootloader}, @code{grub-efi-bootloader},
 @code{extlinux-bootloader} and @code{u-boot-bootloader} are supported.
-@code{grub-efi-bootloader} allows to boot on modern systems using the
-@dfn{Unified Extensible Firmware Interface} (UEFI).
 
+@vindex grub-efi-bootloader
+@code{grub-efi-bootloader} allows to boot on modern systems using the
+@dfn{Unified Extensible Firmware Interface} (UEFI).  This is what you should
+use if the installation image contains a @file{/sys/firmware/efi} directory
+when you boot it on your system.
+
+@vindex grub-bootloader
+@code{grub-bootloader} allows you to boot in particular Intel-based machines
+in ``legacy'' BIOS mode.
+
+@cindex ARM, bootloaders
+@cindex AArch64, bootloaders
 Available bootloaders are described in @code{(gnu bootloader @dots{})}
-modules.
+modules.  In particular, @code{(gnu bootloader u-boot)} contains definitions
+of bootloaders for a wide range of ARM and AArch64 systems, using the
+@uref{http://www.denx.de/wiki/U-Boot/, U-Boot bootloader}.
 
 @item @code{target}
 This is a string denoting the target onto which to install the
-bootloader.  The exact interpretation depends on the bootloader in
-question; for @code{grub-bootloader}, for example, it should be a device
-name understood by the bootloader @command{installer} command, such as
-@code{/dev/sda} or @code{(hd0)} (for GRUB, @pxref{Invoking
-grub-install,,, grub, GNU GRUB Manual}).  For
-@code{grub-efi-bootloader}, it should be the path to a mounted EFI file
-system.
+bootloader.
+
+The interpretation depends on the bootloader in question.  For
+@code{grub-bootloader}, for example, it should be a device name understood by
+the bootloader @command{installer} command, such as @code{/dev/sda} or
+@code{(hd0)} (@pxref{Invoking grub-install,,, grub, GNU GRUB Manual}).  For
+@code{grub-efi-bootloader}, it should be the mount point of the EFI file
+system, usually @file{/boot/efi}.
 
 @item @code{menu-entries} (default: @code{()})
 A possibly empty list of @code{menu-entry} objects (see below), denoting
@@ -20736,7 +20928,7 @@ The output terminals used for the bootloader boot menu, as a list of
 symbols.  GRUB accepts the values: @code{console}, @code{serial},
 @code{serial_@{0-3@}}, @code{gfxterm}, @code{vga_text},
 @code{mda_text}, @code{morse}, and @code{pkmodem}.  This field
-corresponds to the GRUB variable GRUB_TERMINAL_OUTPUT (@pxref{Simple
+corresponds to the GRUB variable @code{GRUB_TERMINAL_OUTPUT} (@pxref{Simple
 configuration,,, grub,GNU GRUB manual}).
 
 @item @code{terminal-inputs} (default: @code{'()})
@@ -20745,7 +20937,7 @@ symbols.  For GRUB, the default is the native platform terminal as
 determined at run-time.  GRUB accepts the values: @code{console},
 @code{serial}, @code{serial_@{0-3@}}, @code{at_keyboard}, and
 @code{usb_keyboard}.  This field corresponds to the GRUB variable
-GRUB_TERMINAL_INPUT (@pxref{Simple configuration,,, grub,GNU GRUB
+@code{GRUB_TERMINAL_INPUT} (@pxref{Simple configuration,,, grub,GNU GRUB
 manual}).
 
 @item @code{serial-unit} (default: @code{#f})
@@ -21270,7 +21462,7 @@ example graph.
 @cindex virtual machine
 To run GuixSD in a virtual machine (VM), one can either use the
 pre-built GuixSD VM image distributed at
-@indicateurl{ftp://alpha.gnu.org/guix/guixsd-vm-image-@value{VERSION}.@var{system}.tar.xz}
+@indicateurl{https://alpha.gnu.org/gnu/guix/guixsd-vm-image-@value{VERSION}.@var{system}.xz}
 , or build their own virtual machine image using @command{guix system
 vm-image} (@pxref{Invoking guix system}).  The returned image is in
 qcow2 format, which the @uref{http://qemu.org/, QEMU emulator} can
@@ -21862,6 +22054,17 @@ Constructors,,, shepherd, The GNU Shepherd Manual}).  They are given as
 G-expressions that get expanded in the Shepherd configuration file
 (@pxref{G-Expressions}).
 
+@item @code{actions} (default: @code{'()})
+@cindex actions, of Shepherd services
+This is a list of @code{shepherd-action} objects (see below) defining
+@dfn{actions} supported by the service, in addition to the standard
+@code{start} and @code{stop} actions.  Actions listed here become available as
+@command{herd} sub-commands:
+
+@example
+herd @var{action} @var{service} [@var{arguments}@dots{}]
+@end example
+
 @item @code{documentation}
 A documentation string, as shown when running:
 
@@ -21877,6 +22080,54 @@ This is the list of modules that must be in scope when @code{start} and
 @code{stop} are evaluated.
 
 @end table
+@end deftp
+
+@deftp {Data Type} shepherd-action
+This is the data type that defines additional actions implemented by a
+Shepherd service (see above).
+
+@table @code
+@item name
+Symbol naming the action.
+
+@item documentation
+This is a documentation string for the action.  It can be viewed by running:
+
+@example
+herd doc @var{service} action @var{action}
+@end example
+
+@item procedure
+This should be a gexp that evaluates to a procedure of at least one argument,
+which is the ``running value'' of the service (@pxref{Slots of services,,,
+shepherd, The GNU Shepherd Manual}).
+@end table
+
+The following example defines an action called @code{say-hello} that kindly
+greets the user:
+
+@example
+(shepherd-action
+  (name 'say-hello)
+  (documentation "Say hi!")
+  (procedure #~(lambda (running . args)
+                 (format #t "Hello, friend! arguments: ~s\n"
+                         args)
+                 #t)))
+@end example
+
+Assuming this action is added to the @code{example} service, then you can do:
+
+@example
+# herd say-hello example
+Hello, friend! arguments: ()
+# herd say-hello example a b c
+Hello, friend! arguments: ("a" "b" "c")
+@end example
+
+This, as you can see, is a fairly sophisticated way to say hello.
+@xref{Service Convenience,,, shepherd, The GNU Shepherd Manual}, for more
+info on actions.
 @end deftp
 
 @defvr {Scheme Variable} shepherd-root-service-type

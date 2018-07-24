@@ -59,17 +59,14 @@
 
     (mkdir build-dir)
     (chdir build-dir)
-    (apply invoke "meson" args)
-    #t))
+    (apply invoke "meson" args)))
 
 (define* (build #:key parallel-build?
                 #:allow-other-keys)
   "Build a given meson package."
-  (apply invoke "ninja"
-         (if parallel-build?
-             `("-j" ,(number->string (parallel-job-count)))
-             '("-j" "1")))
-  #t)
+  (invoke "ninja" "-j" (if parallel-build?
+                           (number->string (parallel-job-count))
+                           "1")))
 
 (define* (check #:key test-target parallel-tests? tests?
                 #:allow-other-keys)
@@ -83,8 +80,7 @@
   #t)
 
 (define* (install #:rest args)
-  (invoke "ninja" "install")
-  #t)
+  (invoke "ninja" "install"))
 
 (define* (fix-runpath #:key (elf-directories '("lib" "lib64" "libexec"
                                                "bin" "sbin"))

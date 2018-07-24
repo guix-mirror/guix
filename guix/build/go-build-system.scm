@@ -125,17 +125,17 @@ unset.  When SOURCE is a directory, copy it instead of unpacking."
         (copy-recursively source dest #:keep-mtime? #t)
         #t)
       (if (string-suffix? ".zip" source)
-        (zero? (system* "unzip" "-d" dest source))
-        (zero? (system* "tar" "-C" dest "-xvf" source))))))
+        (invoke "unzip" "-d" dest source)
+        (invoke "tar" "-C" dest "-xvf" source)))))
 
 (define* (install-source #:key install-source? outputs #:allow-other-keys)
   "Install the source code to the output directory."
   (let* ((out (assoc-ref outputs "out"))
          (source "src")
          (dest (string-append out "/" source)))
-    (if install-source?
-      (copy-recursively source dest #:keep-mtime? #t)
-      #t)))
+    (when install-source?
+      (copy-recursively source dest #:keep-mtime? #t))
+    #t))
 
 (define (go-package? name)
   (string-prefix? "go-" name))
@@ -178,24 +178,26 @@ respectively."
 
 (define* (build #:key import-path #:allow-other-keys)
   "Build the package named by IMPORT-PATH."
-  (or
-    (zero? (system* "go" "install"
-                    "-v" ; print the name of packages as they are compiled
-                    "-x" ; print each command as it is invoked
-                    ;; Respectively, strip the symbol table and debug
-                    ;; information, and the DWARF symbol table.
-                    "-ldflags=-s -w"
-                    import-path))
-    (begin
+  (with-throw-handler
+    #t
+    (lambda _
+      (invoke "go" "install"
+              "-v" ; print the name of packages as they are compiled
+              "-x" ; print each command as it is invoked
+              ;; Respectively, strip the symbol table and debug
+              ;; information, and the DWARF symbol table.
+              "-ldflags=-s -w"
+              import-path))
+    (lambda (key . args)
       (display (string-append "Building '" import-path "' failed.\n"
                               "Here are the results of `go env`:\n"))
-      (system* "go" "env")
-      #f)))
+      (invoke "go" "env"))))
 
 (define* (check #:key tests? import-path #:allow-other-keys)
   "Run the tests for the package named by IMPORT-PATH."
-  (if tests?
-    (zero? (system* "go" "test" import-path))))
+  (when tests?
+    (invoke "go" "test" import-path))
+  #t)
 
 (define* (install #:key outputs #:allow-other-keys)
   "Install the compiled libraries. `go install` installs these files to

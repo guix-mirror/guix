@@ -1,6 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
@@ -69,7 +68,7 @@
         (compressor "lzip"  ".lz"
                     #~(#+(file-append lzip "/bin/lzip") "-9"))
         (compressor "xz"    ".xz"
-                    #~(#+(file-append xz "/bin/xz") "-e -T0"))
+                    #~(#+(file-append xz "/bin/xz") "-e"))
         (compressor "bzip2" ".bz2"
                     #~(#+(file-append bzip2 "/bin/bzip2") "-9"))
         (compressor "none" "" #f)))
@@ -77,7 +76,7 @@
 ;; This one is only for use in this module, so don't put it in %compressors.
 (define bootstrap-xz
   (compressor "bootstrap-xz" ".xz"
-              #~(#+(file-append %bootstrap-coreutils&co "/bin/xz") "-e -T0")))
+              #~(#+(file-append %bootstrap-coreutils&co "/bin/xz") "-e")))
 
 (define (lookup-compressor name)
   "Return the compressor object called NAME.  Error out if it could not be
@@ -722,6 +721,7 @@ Create a bundle of PACKAGE.\n"))
                                         (if (assoc-ref opts 'bootstrap?)
                                             %bootstrap-guile
                                             (canonical-package guile-2.2))
+                                        (assoc-ref opts 'system)
                                         #:graft? (assoc-ref opts 'graft?))))
         (let* ((dry-run?    (assoc-ref opts 'dry-run?))
                (relocatable? (assoc-ref opts 'relocatable?))

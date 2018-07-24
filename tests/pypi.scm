@@ -89,7 +89,7 @@ baz > 13.37")
    (dummy-package "foo"
                   (source (dummy-origin
                            (uri
-                            "https://pypi.python.org/packages/a2/3b/4756e6a0ceb14e084042a2a65c615d68d25621c6fd446d0fc10d14c4ce7d/certbot-0.8.1.tar.gz"))))))
+                            "https://pypi.org/packages/a2/3b/4756e6a0ceb14e084042a2a65c615d68d25621c6fd446d0fc10d14c4ce7d/certbot-0.8.1.tar.gz"))))))
 
 (test-equal "guix-package->pypi-name, several URLs"
   "cram"
@@ -120,7 +120,7 @@ baz > 13.37")
           (mock ((guix http-client) http-fetch
                  (lambda (url . rest)
                    (match url
-                     ("https://pypi.python.org/pypi/foo/json"
+                     ("https://pypi.org/pypi/foo/json"
                       (values (open-input-string test-json)
                               (string-length test-json)))
                      ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)
@@ -182,7 +182,7 @@ baz > 13.37")
         (mock ((guix http-client) http-fetch
                (lambda (url . rest)
                  (match url
-                   ("https://pypi.python.org/pypi/foo/json"
+                   ("https://pypi.org/pypi/foo/json"
                     (values (open-input-string test-json)
                             (string-length test-json)))
                    ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)

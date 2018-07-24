@@ -485,6 +485,8 @@ Mumble consists of two applications for separate usage:
              (uri (git-reference
                    (url "https://github.com/LubosD/twinkle")
                    (commit commit)))
+             (patches
+              (search-patches "twinkle-include-qregexpvalidator.patch"))
              (file-name (git-file-name name version))
              (sha256
               (base32

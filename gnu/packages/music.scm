@@ -17,6 +17,7 @@
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,11 +44,13 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system go)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
@@ -104,6 +107,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio) ;libsndfile
@@ -125,6 +129,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages golang)
+  #:use-module (gnu packages lua)
   #:use-module ((srfi srfi-1) #:select (last)))
 
 (define-public aria-maestosa
@@ -3510,16 +3516,16 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "2.2.1")
+    (version "2.3.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/musescore/MuseScore/archive/"
-                    "v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/musescore/MuseScore.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ml99ayzpdyd18cypcp0lbsbasfg3abw57i5fl7ph5739vikj6i6"))
+                "00inrw9g8g34g74bhg5gp0rr5nydhjraiyn7vpl7kaqi5yzmhawd"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3540,8 +3546,8 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
          "USE_SYSTEM_FREETYPE=ON"
          "DOWNLOAD_SOUNDFONT=OFF"
-         ;; The following is not supported since Qt 5.11.  Can be
-         ;; removed in Musescore 2.2.2+.
+         ;; The following is not supported since Qt 5.11.  May be removed in
+         ;; a future release.
          "BUILD_WEBKIT=OFF")
        ;; There are tests, but no simple target to run.  The command
        ;; used to run them is:
@@ -3554,14 +3560,6 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         ;; Fix Qt 5.11 upgrade.  Should be fixed in 2.2.2+, see:
-         ;; <https://github.com/musescore/MuseScore/commit/d10e70415c8e52e2ba9d45de564467e42f66c102>
-         (add-after 'unpack 'patch-sources
-           (lambda _
-             (substitute* "all.h"
-               (("#include <QRadioButton>") "#include <QRadioButton>
-#include <QButtonGroup>"))
-             #t))
          (delete 'configure))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -4019,6 +4017,57 @@ mb_client, is a development library geared towards developers who wish to add
 MusicBrainz lookup capabilities to their applications.")
     (license license:lgpl2.1+)))
 
+(define-public perl-musicbrainz-discid
+  (package
+    (name "perl-musicbrainz-discid")
+    (version "0.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/N/NJ/NJH/MusicBrainz-DiscID-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1i4qk1qfcmxdibqkyfjrrjdq2zk42vjcz590qgiyc47fi9p6xx1j"))))
+    (build-system perl-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("which" ,which)))
+    (inputs `(("libdiscid" ,libdiscid)))
+    (home-page "https://metacpan.org/release/MusicBrainz-DiscID")
+    (synopsis "Perl interface to the MusicBrainz libdiscid library")
+    (description
+     "The @code{MusicBrainz::DiscID} module is a Perl interface to the
+MusicBrainz libdiscid library, allowing you to manipulate digital audio
+compact disc (CDDA) identifiers.")
+    (license license:gpl2)))
+
+(define-public perl-webservice-musicbrainz
+  (package
+    (name "perl-webservice-musicbrainz")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/B/BF/BFAIST/WebService-MusicBrainz-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "182z3xjajk6s7k5xm3kssjy3hqx2qbnq4f8864hma098ryy2ph3a"))))
+    (build-system perl-build-system)
+    (arguments
+     ;; Tests try to connect to http://musicbrainz.org.
+     '(#:tests? #f))
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-mojolicious" ,perl-mojolicious)))
+    (home-page "https://metacpan.org/release/WebService-MusicBrainz")
+    (synopsis "Web service API to the MusicBrainz database")
+    (description
+     "This module searches the MusicBrainz database through their web service
+at @code{musicbrainz.org}.")
+    (license license:perl-license)))
+
 (define-public clyrics
   (package
     (name "clyrics")
@@ -4085,3 +4134,89 @@ MusicBrainz lookup capabilities to their applications.")
 It can be used in daemon mode along with the Music-on-Console (MOC) and cmus
 console music players.")
     (license license:gpl3+)))
+
+(define-public demlo
+  (let ((commit "fe9ec4c8ac2fa995ec18e6ac86d50d46df06ec01")
+        (revision "0"))
+    (package
+      (name "demlo")
+      (version (git-version "3.8" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://gitlab.com/ambrevar/demlo")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1afkbqhzn6da7zaf5ab7dvyqj1izqhzprwfb4hw448fllda9bdvk"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("lua" ,lua)
+         ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
+         ("go-github-com-mattn-go-colorable" ,go-github-com-mattn-go-colorable)
+         ("go-github-com-aarzilli-golua" ,go-github-com-aarzilli-golua)
+         ("go-gitlab-com-ambrevar-damerau" ,go-gitlab-com-ambrevar-damerau)
+         ("go-gitlab-com-ambrevar-golua-unicode" ,go-gitlab-com-ambrevar-golua-unicode)
+         ("go-github-com-mgutz-ansi" ,go-github-com-mgutz-ansi)
+         ("go-github-com-michiwend-gomusicbrainz" ,go-github-com-michiwend-gomusicbrainz)
+         ("go-github-com-stevedonovan-luar" ,go-github-com-stevedonovan-luar)
+         ("go-github-com-wtolson-go-taglib" ,go-github-com-wtolson-go-taglib)
+         ("go-github-com-yookoala-realpath" ,go-github-com-yookoala-realpath)))
+      (inputs
+       `(("chromaprint" ,chromaprint)
+         ("ffmpeg" ,ffmpeg)))
+      (arguments
+       `(#:import-path "gitlab.com/ambrevar/demlo"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (ffmpeg (assoc-ref inputs "ffmpeg"))
+                     (chromaprint (assoc-ref inputs "chromaprint")))
+                 (wrap-program (string-append out "/bin/demlo")
+                   `("XDG_DATA_DIRS" ":" prefix (,out))
+                   `("PATH" ":" prefix
+                     ,(map (lambda (dir)
+                             (string-append dir "/bin:"
+                                            dir "/sbin"))
+                           (list ffmpeg chromaprint))))
+                 #t)))
+           (add-after 'install-source 'install-scripts
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (root (string-append out "/src/gitlab.com/ambrevar/demlo"))
+                      (xdg-data-dirs (string-append out "/demlo")))
+                 (copy-recursively (string-append root "/actions")
+                                   (string-append xdg-data-dirs "/actions"))
+                 (copy-recursively (string-append root "/scripts")
+                                   (string-append xdg-data-dirs "/scripts"))
+                 (install-file (string-append root "/config.lua") xdg-data-dirs)
+                 ;; TODO: Test fish completion.
+                 (install-file (string-append root "/completion/demlo.fish")
+                               (string-append out "/share/fish/vendor_completions.d"))
+                 #t))))))
+      (home-page "https://gitlab.com/ambrevar/demlo")
+      (synopsis "Dynamic and extensible music library organizer")
+      (description "Demlo is a music library organizer.  It can encode, fix
+case, change folder hierarchy according to tags or file properties, tag from
+an online database, copy covers while ignoring duplicates or those below a
+quality threshold, and much more.  It makes it possible to manage your
+libraries uniformly and dynamically.  You can write your own rules to fit your
+needs best.
+
+Demlo can address any of these recurring music library issues (and much more):
+
+@itemize
+@item Fix the lack of folder structure.
+@item Normalize tags, fix their case, chose which tags to keep and which to
+discard.
+@item Handle lossy and lossless audio differently.
+@item Handle mp3 id3tags hell...
+@item Handle multiple covers, whether embedded and/or external, resize covers,
+discard bad quality ones.
+@end itemize\n")
+      (license license:expat))))

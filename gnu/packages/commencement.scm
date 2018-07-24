@@ -1069,4 +1069,7 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
 (define-public gcc-toolchain-7
   (make-gcc-toolchain gcc-7))
 
+(define-public gcc-toolchain-8
+  (make-gcc-toolchain gcc-8))
+
 ;;; commencement.scm ends here

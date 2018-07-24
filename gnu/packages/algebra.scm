@@ -139,7 +139,7 @@ solve the shortest vector problem.")
 (define-public pari-gp
   (package
    (name "pari-gp")
-   (version "2.9.4")
+   (version "2.11.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -147,7 +147,7 @@ solve the shortest vector problem.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "0ir6m3a8r46md5x6zk4xf159qra7aqparby9zk03k81hjrrxr72g"))))
+                "18f9yj8ffn3dxignbxj1x36771zbxy4js0r18mv6831ymb6cld9q"))))
    (build-system gnu-build-system)
    (native-inputs `(("texlive" ,texlive-tiny)))
    (inputs `(("gmp" ,gmp)
@@ -179,7 +179,7 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.10")
+   (version "0.0.11")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -187,7 +187,7 @@ PARI is also available as a C library to allow for faster computations.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "1xhpz5p81iw261ay1kip283ggr0ir8ydz8qx3v24z8jfms1r3y70"))))
+                "1z69xj2dpd8yyi8108rz26c50xpv0k2j8qnk0bzy1c5lw3pd1adm"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
@@ -315,7 +315,7 @@ fast arithmetic.")
 (define-public arb
   (package
    (name "arb")
-   (version "2.12.0")
+   (version "2.14.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -324,7 +324,7 @@ fast arithmetic.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
               (base32
-                "0j37xkxbqpra4sf0a96x4sqbl5fkal8d7c94bi9wdsqqj6kgcsil"))))
+                "0ncr27nd20xxi18nj30cvpa6r52v59nq7gbi34x3l4xym3p8mlmx"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("flint" ,flint))) ; flint.h is included by arf.h
@@ -342,19 +342,18 @@ fast arithmetic.")
                   (mpfr (assoc-ref inputs "mpfr")))
               ;; do not pass "--enable-fast-install", which makes the
               ;; homebrew configure process fail
-              (zero? (system*
-                      "./configure"
+              (invoke "./configure"
                       (string-append "--prefix=" out)
                       (string-append "--with-flint=" flint)
                       (string-append "--with-gmp=" gmp)
-                      (string-append "--with-mpfr=" mpfr)))))))))
+                      (string-append "--with-mpfr=" mpfr))))))))
    (synopsis "Arbitrary precision floating-point ball arithmetic")
    (description
     "Arb is a C library for arbitrary-precision floating-point ball
 arithmetic.  It supports efficient high-precision computation with
 polynomials, power series, matrices and special functions over the
 real and complex numbers, with automatic, rigorous error control.")
-   (license license:gpl2+)
+   (license license:lgpl2.1+)
    (home-page "http://fredrikj.net/arb/")))
 
 (define-public ntl

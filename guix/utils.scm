@@ -5,7 +5,6 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -33,10 +32,11 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 binary-ports)
+  #:use-module (ice-9 ftw)
   #:autoload   (rnrs io ports) (make-custom-binary-input-port)
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix memoization)
-  #:use-module ((guix build utils) #:select (dump-port mkdir-p))
+  #:use-module ((guix build utils) #:select (dump-port mkdir-p delete-file-recursively))
   #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
@@ -175,7 +175,7 @@ a symbol such as 'xz."
   (match compression
     ((or #f 'none) (values input '()))
     ('bzip2        (filtered-port `(,%bzip2 "-dc") input))
-    ('xz           (filtered-port `(,%xz "-dc" "-T0") input))
+    ('xz           (filtered-port `(,%xz "-dc") input))
     ('gzip         (filtered-port `(,%gzip "-dc") input))
     (else          (error "unsupported compression scheme" compression))))
 
@@ -185,7 +185,7 @@ a symbol such as 'xz."
   (match compression
     ((or #f 'none) (values input '()))
     ('bzip2        (filtered-port `(,%bzip2 "-c") input))
-    ('xz           (filtered-port `(,%xz "-c" "-T0") input))
+    ('xz           (filtered-port `(,%xz "-c") input))
     ('gzip         (filtered-port `(,%gzip "-c") input))
     (else          (error "unsupported compression scheme" compression))))
 
@@ -242,7 +242,7 @@ program--e.g., '(\"--fast\")."
   (match compression
     ((or #f 'none) (values output '()))
     ('bzip2        (filtered-output-port `(,%bzip2 "-c" ,@options) output))
-    ('xz           (filtered-output-port `(,%xz "-c" "-T0" ,@options) output))
+    ('xz           (filtered-output-port `(,%xz "-c" ,@options) output))
     ('gzip         (filtered-output-port `(,%gzip "-c" ,@options) output))
     (else          (error "unsupported compression scheme" compression))))
 
@@ -631,7 +631,7 @@ delete it when leaving the dynamic extent of this call."
       (lambda ()
         (proc tmp-dir))
       (lambda ()
-        (false-if-exception (rmdir tmp-dir))))))
+        (false-if-exception (delete-file-recursively tmp-dir))))))
 
 (define (with-atomic-file-output file proc)
   "Call PROC with an output port for the file that is going to replace FILE.
@@ -773,22 +773,28 @@ be determined."
   (line          location-line)                   ; 1-indexed line
   (column        location-column))                ; 0-indexed column
 
-(define location
-  (mlambda (file line column)
-    "Return the <location> object for the given FILE, LINE, and COLUMN."
-    (and line column file
-         (make-location file line column))))
+(define (location file line column)
+  "Return the <location> object for the given FILE, LINE, and COLUMN."
+  (and line column file
+       (make-location file line column)))
 
 (define (source-properties->location loc)
   "Return a location object based on the info in LOC, an alist as returned
 by Guile's `source-properties', `frame-source', `current-source-location',
 etc."
-  (let ((file (assq-ref loc 'filename))
-        (line (assq-ref loc 'line))
-        (col  (assq-ref loc 'column)))
-    ;; In accordance with the GCS, start line and column numbers at 1.  Note
-    ;; that unlike LINE and `port-column', COL is actually 1-indexed here...
-    (location file (and line (+ line 1)) col)))
+  ;; In accordance with the GCS, start line and column numbers at 1.  Note
+  ;; that unlike LINE and `port-column', COL is actually 1-indexed here...
+  (match loc
+    ((('line . line) ('column . col) ('filename . file)) ;common case
+     (and file line col
+          (make-location file (+ line 1) col)))
+    (#f
+     #f)
+    (_
+     (let ((file (assq-ref loc 'filename))
+           (line (assq-ref loc 'line))
+           (col  (assq-ref loc 'column)))
+       (location file (and line (+ line 1)) col)))))
 
 (define (location->source-properties loc)
   "Return the source property association list based on the info in LOC,

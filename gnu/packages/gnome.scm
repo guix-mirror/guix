@@ -30,6 +30,7 @@
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
+;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2116,7 +2117,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.50.2.a")
+    (version "0.52.2.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -2131,14 +2132,13 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sv666ilid916ja6gw2d376nyyy66gvhsds8ans02x4b7gagj5sx"))))
+                "1fd65mk7c87k03vhnb2ixkjvv9nja04mfq813iyjji1b11f2sh7v"))))
     (arguments
-      `(#:configure-flags '("CXXFLAGS=-Wformat=0")
-        #:phases (modify-phases %standard-phases
-                   (replace 'bootstrap
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'bootstrap
                     (lambda _
                       (setenv "NOCONFIGURE" "true")
-                      (zero? (system* "sh" "autogen.sh")))))))
+                      (invoke "sh" "autogen.sh"))))))
   (synopsis "Enhanced VTE terminal widget")
   (description
    "VTE is a library (libvte) implementing a terminal emulator widget for
@@ -3342,7 +3342,7 @@ presentations, kiosk style applications and so on.")
 (define-public clutter-gtk
   (package
     (name "clutter-gtk")
-    (version "1.8.2")
+    (version "1.8.4")
     (source
      (origin
        (method url-fetch)
@@ -3351,7 +3351,7 @@ presentations, kiosk style applications and so on.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "153bl9256yjnfcplp7jmgf7lm2zb790zkayjclzsv42l6a3d89ys"))))
+         "01ibniy4ich0fgpam53q252idm7f4fn5xg5qvizcfww90gn9652j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -3645,7 +3645,7 @@ for application developers.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.26.0")
+    (version "3.26.1")
     (source
      (origin
        (method url-fetch)
@@ -3654,7 +3654,7 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "04zfx47mgyd0f4p3pjrxl6iaw0awgwbvilbsr1smw14ph2kbjbz3"))
+         "10n302fdp3lhkzbij5sbzmsnln738029xil6cnng2d4dxv4n1099"))
        (patches (search-patches "totem-meson-easy-codec.patch"))))
     (build-system meson-build-system)
     (native-inputs
@@ -6328,7 +6328,16 @@ fit the GNOME desktop.")
                (base32
                 "007k2bq8iplg4psdpz074r5d4zxvn4s95qym4rw9hs6giljbrf0n"))))
     (build-system meson-build-system)
-    (arguments '(#:glib-or-gtk? #t))
+    (arguments '(#:glib-or-gtk? #t
+                 #:phases (modify-phases %standard-phases
+                            (add-after 'unpack 'patch-install-script
+                              (lambda _
+                                ;; This script attempts to compile glib schemas
+                                ;; and create an empty MIME database.  We do
+                                ;; that elsewhere, so prevent it from running.
+                                (substitute* "build-aux/post-install.sh"
+                                  (("\\[ -z \"\\$DESTDIR\" \\]") "false"))
+                                #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
@@ -6474,7 +6483,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
 (define-public faba-icon-theme
   (package
     (name "faba-icon-theme")
-    (version "4.1.2")
+    (version "4.3")
     (source
      (origin
        (method url-fetch)
@@ -6483,23 +6492,15 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hi2dl627ayfnihn3v6x9xzid668m4hp098hb7hrkxvahh4h9by7"))))
-    (build-system gnu-build-system)
+         "18ln06xl60qzvzz61zq9q72hdbfgjsza3flph8i2asyzx3dffz68"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-makefile.am
+         (add-before 'configure 'disable-post-install
            (lambda _
-             (substitute* '("Makefile.am")
-               (("\\$\\(DESTDIR\\)/usr/share")
-                "$(datadir)"))
-             #t))
-         (add-after 'unpack 'disable-configure-during-bootstrap
-           (lambda _
-             ;; Do not run configure as part of autogen.sh because references
-             ;; to /bin are not fixed yet.
-             (setenv "NOCONFIGURE" "y")
-             #t)))))
+             (substitute* "meson.build"
+               (("meson.add_install_script.*") "")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -6515,7 +6516,7 @@ Moka")
   (package
     (inherit faba-icon-theme)
     (name "moka-icon-theme")
-    (version "5.3.6")
+    (version "5.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/moka-project"
@@ -6524,7 +6525,7 @@ Moka")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04axinv79qnngsxkwqzi5j9lc3hn24rjqps5ai8d42pdnfaf0x37"))))
+                "1nbwdjj268hxv9lfagd9aylily9f0hhallp841v0i3imljp84bmk"))))
     (propagated-inputs
      ;; Moka is based on Faba by using it as a fallback icon set instead of
      ;; bundling it, so we need to add it as a propagated input.

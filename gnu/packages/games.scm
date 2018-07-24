@@ -32,6 +32,7 @@
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gimp)
@@ -85,6 +87,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libunwind)
@@ -663,6 +666,131 @@ removed lines to all opponents.  There is also a Demo mode in which you can
 watch your CPU playing while enjoying a cup of tea!")
     (license license:gpl2+)))
 
+(define-public nethack
+  (package
+    (name "nethack")
+    (version "3.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.nethack.org/download/"
+                            version "/" name "-361-src.tgz"))
+        (sha256
+          (base32 "1dha0ijvxhx7c9hr0452h93x81iiqsll8bc9msdnp7xdqcfbz32b"))))
+    (inputs
+      `(("ncurses" ,ncurses)
+        ("bison" ,bison)
+        ("flex" ,flex)
+        ("less" ,less)))
+    (build-system gnu-build-system)
+    (arguments
+      '(#:make-flags
+        `(,(string-append "PREFIX=" (assoc-ref %outputs "out")))
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'patch-paths
+            (lambda _
+              (substitute* "sys/unix/nethack.sh"
+                (("^ *cd .*$") ""))
+              (substitute* "sys/unix/Makefile.utl"
+                (("^YACC *=.*$") "YACC = bison -y\n")
+                (("^LEX *=.*$") "LEX = flex\n")
+                (("^# CC = gcc") "CC = gcc"))
+              (substitute* "sys/unix/hints/linux"
+                (("/bin/gzip") (string-append
+                                 (assoc-ref %build-inputs "gzip")
+                                 "/bin/gzip"))
+                (("^WINTTYLIB=.*") "WINTTYLIB=-lncurses"))
+              (substitute* "include/config.h"
+                (("^.*define CHDIR.*$") "")
+                (("^/\\* *#*define *REPRODUCIBLE_BUILD *\\*/")
+                 ;; Honor SOURCE_DATE_EPOCH.
+                 "#define REPRODUCIBLE_BUILD"))
+
+              ;; Note: 'makedefs' rejects and ignores dates that are too old
+              ;; or too new, so we must choose something reasonable here.
+              (setenv "SOURCE_DATE_EPOCH" "1531865062")
+
+              (substitute* "sys/unix/Makefile.src"
+                 (("^# CC = gcc") "CC = gcc"))
+              #t))
+          (replace 'configure
+            (lambda _
+              (let ((bash (string-append
+                            (assoc-ref %build-inputs "bash")
+                            "/bin/bash")))
+                (with-directory-excursion "sys/unix"
+                  (substitute* "setup.sh" (("/bin/sh") bash))
+                  (invoke bash "setup.sh" "hints/linux"))
+                #t)))
+          (add-after 'install 'fixup-paths
+            (lambda _
+              (let* ((output (assoc-ref %outputs "out"))
+                     (nethack-script (string-append output "/bin/nethack")))
+                (mkdir-p (string-append output "/games/lib/nethackuserdir"))
+                (for-each
+                  (lambda (file)
+                    (rename-file
+                      (string-append output "/games/lib/nethackdir/" file)
+                      (string-append output "/games/lib/nethackuserdir/"
+                                     file)))
+                  '("xlogfile" "logfile" "perm" "record" "save"))
+                (mkdir-p (string-append output "/bin"))
+                (call-with-output-file nethack-script
+                  (lambda (port)
+                    (format port "#!~a/bin/sh
+PATH=~a:$PATH
+if [ ! -d ~~/.config/nethack ]; then
+  mkdir -p ~~/.config/nethack
+  cp -r ~a/games/lib/nethackuserdir/* ~~/.config/nethack
+  chmod -R +w ~~/.config/nethack
+fi
+
+RUNDIR=$(mktemp -d)
+
+cleanup() {
+  rm -rf $RUNDIR
+}
+trap cleanup EXIT
+
+cd $RUNDIR
+for i in ~~/.config/nethack/*; do
+  ln -s $i $(basename $i)
+done
+for i in ~a/games/lib/nethackdir/*; do
+  ln -s $i $(basename $i)
+done
+~a/games/nethack"
+                      (assoc-ref %build-inputs "bash")
+                      (list->search-path-as-string
+                        (list
+                          (string-append
+                            (assoc-ref %build-inputs "coreutils") "/bin")
+                          (string-append
+                            (assoc-ref %build-inputs "less") "/bin"))
+                        ":")
+                      output
+                      output
+                      output)))
+                (chmod nethack-script #o555)
+                #t)))
+          (delete 'check))))
+    (home-page "https://nethack.org")
+    (synopsis "Classic dungeon crawl game")
+    (description "NetHack is a single player dungeon exploration game that runs
+on a wide variety of computer systems, with a variety of graphical and text
+interfaces all using the same game engine.  Unlike many other Dungeons &
+Dragons-inspired games, the emphasis in NetHack is on discovering the detail of
+the dungeon and not simply killing everything in sight - in fact, killing
+everything in sight is a good way to die quickly.  Each game presents a
+different landscape - the random number generator provides an essentially
+unlimited number of variations of the dungeon and its denizens to be discovered
+by the player in one of a number of characters: you can pick your race, your
+role, and your gender.")
+    (license
+      (license:fsdg-compatible
+        "https://nethack.org/common/license.html"))))
+
 (define-public prboom-plus
   (package
    (name "prboom-plus")
@@ -953,15 +1081,16 @@ that beneath its ruins lay buried an ancient evil.")
 (define-public angband
   (package
     (name "angband")
-    (version "4.0.5")
+    (version "4.1.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://rephial.org/downloads/4.0/"
-                           "angband-" version ".tar.gz"))
+       (uri (string-append "http://rephial.org/downloads/"
+                           (version-major+minor version)
+                           "/angband-" version ".tar.gz"))
        (sha256
         (base32
-         "0lpq2kms7hp421vrasx2bkkn9w08kr581ldwik3v0hlq6h7rlxhd"))
+         "0ahfzb66ihxvkxcbhcib816x40sdsp26b3ravr1xqp44w1whkg1h"))
        (modules '((guix build utils)))
        (snippet
         ;; So, some of the sounds/graphics/tilesets are under different
@@ -985,11 +1114,11 @@ that beneath its ruins lay buried an ancient evil.")
        #:configure-flags (list (string-append "--bindir=" %output "/bin"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen.sh
+         (replace 'bootstrap
            (lambda _
              (substitute* "acinclude.m4"
                (("ncursesw5-config") "ncursesw6-config"))
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -1171,7 +1300,28 @@ To that extent, it also includes a front-end for managing all of your D-Mods.")
      "This package contains the game data of GNU Freedink.")
     (license license:gpl3+)))
 
-;; TODO: Add freedink-dfarc when there's a wxWidgets package.
+(define-public freedink-dfarc
+  (package
+    (name "freedink-dfarc")
+    (version "3.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/freedink/dfarc-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1yp8n3w426xnlp10xk06vfi2y3k9xrcfyck7s7qs1v0ys7n284d5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("wxwidgets" ,wxwidgets)))
+    (home-page "https://www.gnu.org/software/freedink/")
+    (synopsis "Front-end for managing and playing Dink Modules")
+    (description "DFArc makes it easy to play and manage the GNU FreeDink game
+and its numerous D-Mods.")
+    (license license:gpl3+)))
 
 (define-public freedink
   ;; This is a wrapper that tells the engine where to find the data.
@@ -1425,7 +1575,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "0.4.16")
+    (version "0.4.17")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1434,7 +1584,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0nibpm600rbv9dg1zgcsl5grlbqx0b5l6cg1lp6sqkwvjialb4ga"))))
+                "0pa9skjwbq27aky6dgr7g3mb0a7c5rpa6xmz2qh0nm618z5hgazh"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)
@@ -1467,7 +1617,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "0.4.16")
+    (version "0.4.17")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1476,7 +1626,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0mbnf1ma4gsw9ah68ply04059xkfx5psdxwalxp78sgmx4ypkwqf"))))
+                "0wpbad5bssbbgspgdcq3hhq4bhckrj53nhymsz34d8g01j0csr46"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -1807,7 +1957,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.3")
+    (version "1.14.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -1816,7 +1966,7 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "06648041nr77sgzr7jpmcn37cma3hp41qynp50xzddx28l17zwg9"))))
+                "1hw1ap8xxpdwyx1sf8fm1g75p6724y3hwb4kpvyqbsq7bwfwsb9i"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
@@ -2299,7 +2449,7 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.1.1")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -2307,11 +2457,12 @@ Transport Tycoon Deluxe.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1bahkzlf9k92cc4zs4nk4wy59323kiw8d3wm0vjps3kp7iznqyjx"))
+         "1yrbjra27n2xxb1x47v962lc3qi8gwm5ws4f97952nvn533zrwxz"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DDOWNLOAD_TITLE_SEQUENCES=OFF")
+     `(#:configure-flags (list "-DDOWNLOAD_OBJECTS=OFF"
+                               "-DDOWNLOAD_TITLE_SEQUENCES=OFF")
        #:tests? #f ; Tests require network.
        #:phases
         (modify-phases %standard-phases
@@ -2320,14 +2471,23 @@ Transport Tycoon Deluxe.")
               (let ((titles (assoc-ref inputs "openrct2-title-sequences"))
                     (objects (assoc-ref inputs "openrct2-objects")))
               ;; Fix some references to /usr/share.
-              ;; Change to Platform.Linux.cpp on 0.1.2+
-              (substitute* "src/openrct2/platform/linux.c"
+              (substitute* "src/openrct2/platform/Platform.Linux.cpp"
                 (("/usr/share")
                  (string-append (assoc-ref %outputs "out") "/share")))
               (copy-recursively (string-append titles
                                 "/share/openrct2/title-sequences") "data/title")
               (copy-recursively (string-append objects
-                                "/share/openrct2/objects") "data/object")))))))
+                                "/share/openrct2/objects") "data/object"))))
+          (add-before 'configure 'fixgcc7
+             (lambda _
+               (unsetenv "C_INCLUDE_PATH")
+               (unsetenv "CPLUS_INCLUDE_PATH")
+               #t))
+          (add-after 'fixgcc7 'get-rid-of-errors
+            (lambda _
+              ;; Don't treat warnings as errors.
+              (substitute* "CMakeLists.txt"
+                (("-Werror") "")))))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
@@ -2343,7 +2503,8 @@ Transport Tycoon Deluxe.")
               ("speexdsp" ,speexdsp)
               ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gcc" ,gcc-7)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://github.com/OpenRCT2/OpenRCT2")
     (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
     (description "OpenRCT2 is a free software re-implementation of
@@ -3198,16 +3359,17 @@ programmers may also add their own favorite language.")
 (define-public bambam
   (package
     (name "bambam")
-    (version "0.5")
+    (version "0.6")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/porridge/bambam/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/porridge/bambam")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "10w110mjdwbvddzihh9rganvvjr5jfiz8cs9n7w12zndwwcc3ria"))))
+          "08hcd0gzia3pz7fzk4pqc5kbq1074j4q0jcmbpgvr7n623nj2xa5"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -3310,7 +3472,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.0g")
+    (version "10.4j")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3321,7 +3483,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "0f68pcnsgl406dhm91ckn3f364bar9m9i5njp9vrmvhvv9p2icy0"))))
+                "0909p4xvbi1c2jc5rdgrf8b1c60fmsaapabsi6yyglh5znkf0k27"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3333,7 +3495,6 @@ throwing people around in pseudo-randomly generated buildings.")
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl-union")
                                     "/include/SDL"))))
-         ;; Fix font and music paths.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3343,17 +3504,18 @@ throwing people around in pseudo-randomly generated buildings.")
                                  "/share/fonts/truetype"))
                     (dejavu-font "DejaVuSans-Bold.ttf")
                     (music-file "hyperrogue-music.txt"))
+               ;; Fix font and music paths.
                (substitute* "basegraph.cpp"
                  ((dejavu-font)
                   (string-append dejavu-dir "/" dejavu-font)))
-               (substitute* "sound.cpp"
-                 (((string-append "\\./" music-file))
-                  (string-append share-dir "/" music-file))
-                 (("sounds/")
-                  (string-append share-dir "/sounds/")))
                (substitute* music-file
                  (("\\*/")
                   (string-append share-dir "/sounds/"))))
+             ;; Fix Makefile.
+             (substitute* "Makefile"
+               (("g\\+\\+ langen.cpp")
+                "g++ langen.cpp ${CXXFLAGS}")
+               (("savepng.c") "savepng.cpp"))
              #t))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3370,21 +3532,18 @@ throwing people around in pseudo-randomly generated buildings.")
                     (out (assoc-ref outputs "out"))
                     (sounds (string-append out "/share/hyperrogue/sounds"))
                     (unzip (string-append (assoc-ref inputs "unzip") "/bin/unzip")))
-               (and
-                ;; Extract media license information into sounds directory.
-                (zero?
-                 (system* unzip "-j" data
-                          (string-append
-                           "hyperrogue"
-                           (string-join (string-split ,version #\.) "")
-                           "/sounds/credits.txt") "-d" sounds))
-                ;; Extract sounds and music into sounds directory.
-                (zero?
-                 (system* "unzip" "-j" data
-                          (string-append
-                           "hyperrogue"
-                           (string-join (string-split ,version #\.) "")
-                           "/*.ogg") "-d" sounds)))))))))
+               ;; Extract media license information into sounds directory.
+               (invoke unzip "-j" data
+                       (string-append
+                        "hyperrogue"
+                        (string-join (string-split ,version #\.) "")
+                        "/sounds/credits.txt") "-d" sounds)
+               ;; Extract sounds and music into sounds directory.
+               (invoke "unzip" "-j" data
+                       (string-append
+                        "hyperrogue"
+                        (string-join (string-split ,version #\.) "")
+                        "/*.ogg") "-d" sounds)))))))
     (native-inputs
      `(("hyperrogue-data"
         ,(origin
@@ -3396,7 +3555,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "0bnp077qvlmxjlz1jjd6kpghlv9flxc19ac1xq3m3wyq1w9p3pab"))))
+             "0w61iv2rn93hi0q3hxyyyf9xcr8vi9zd7fjvpz5adpgf94jm3zsc"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -3666,46 +3825,43 @@ emerges from a sewer hole and pulls her below ground.")
                      license:cc-by-sa3.0)))))
 
 (define-public cdogs-sdl
-  ;; XXX: Use version 0.6.7 when it's available.
-  (let ((commit "bab2031369b9ea2dbeb7eedbde10a43dd8ca83db")
-        (revision "1"))
-   (package
-     (name "cdogs-sdl")
-     (version (git-version "0.6.6" revision commit))
-     (source (origin
-               (method git-fetch)
-               (uri (git-reference
-                     (url "https://github.com/cxong/cdogs-sdl.git")
-                     (commit commit)))
-               (file-name (git-file-name name version))
-               (sha256
-                (base32
-                 "09sfqhrrffhvxbhigvrxfmai52w01w3f9kjmixjhqvqlkhn77c9n"))))
-     (build-system cmake-build-system)
-     (arguments
-      `(#:configure-flags
-        (list (string-append "-DCDOGS_DATA_DIR="
-                             (assoc-ref %outputs "out")
-                             "/share/cdogs-sdl/"))))
-     (inputs
-      `(("mesa" ,mesa)
-        ("sdl2" ,sdl2)
-        ("sdl2-image" ,sdl2-image)
-        ("sdl2-mixer" ,sdl2-mixer)))
-     (home-page "https://cxong.github.io/cdogs-sdl/")
-     (synopsis "Classic overhead run-and-gun game")
-     (description "C-Dogs SDL is a classic overhead run-and-gun game,
+  (package
+    (name "cdogs-sdl")
+    (version "0.6.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cxong/cdogs-sdl.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1frafzsj3f83xkmn4llr7g728c82lcqi424ini1hv3gv5zjgpa15"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DCDOGS_DATA_DIR="
+                            (assoc-ref %outputs "out")
+                            "/share/cdogs-sdl/"))))
+    (inputs
+     `(("mesa" ,mesa)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "https://cxong.github.io/cdogs-sdl/")
+    (synopsis "Classic overhead run-and-gun game")
+    (description "C-Dogs SDL is a classic overhead run-and-gun game,
 supporting up to 4 players in co-op and deathmatch modes.  Customize your
 player, choose from many weapons, and blast, slide and slash your way through
 over 100 user-created campaigns.")
-     ;; GPLv2+ for code (includes files under BSD-2 and BSD-3),
-     ;; CC0/CC-BY/CC-BY-SA for assets.
-     (license (list license:gpl2+
-                    license:bsd-2
-                    license:bsd-3
-                    license:cc0
-                    license:cc-by3.0
-                    license:cc-by-sa3.0)))))
+    ;; GPLv2+ for code (includes files under BSD-2 and BSD-3),
+    ;; CC0/CC-BY/CC-BY-SA for assets.
+    (license (list license:gpl2+
+                   license:bsd-2
+                   license:bsd-3
+                   license:cc0
+                   license:cc-by3.0
+                   license:cc-by-sa3.0))))
 
 (define-public kiki
   (package
@@ -3883,7 +4039,8 @@ settings.link.libs:Add(\"wavpack\")\n"))
        ("zlib" ,zlib)))
     (native-inputs
      `(("bam" ,bam)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.teeworlds.com")
     (synopsis "2D retro multiplayer shooter game")
     (description "Teeworlds is an online multiplayer game.  Battle with up to
@@ -4613,7 +4770,8 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                         #t))))
        ,@(strip-keyword-arguments '(#:make-flags #:phases)
                                   (package-arguments quakespasm))))
-    (inputs `(("vulkan-loader" ,vulkan-loader)
+    (inputs `(("vulkan-headers" ,vulkan-headers)
+              ("vulkan-loader" ,vulkan-loader)
               ,@(package-inputs quakespasm)))
     (description "vkquake is a modern engine for id software's Quake 1.
 It includes support for 64 bit CPUs, custom music playback, a new sound driver,

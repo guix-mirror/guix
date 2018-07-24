@@ -341,6 +341,7 @@ X11-system or any other graphical user interface.")
       (uri (git-reference
             (url "https://github.com/silnrsi/teckit")
             (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
       (sha256
        (base32 "1jmsdmfz7bgq1n5qsqgpq1b1n77f1hll0czfw5wkxz4knzb14ndn"))))
    (build-system gnu-build-system)
@@ -458,17 +459,16 @@ using the above tables.")
 (define-public libspiro
   (package
     (name "libspiro")
-    (version "20071029")
+    (version "0.5.20150702")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/libspiro/libspiro/"
-                          version "/libspiro_src-" version ".tar.bz2"))
+      (uri (string-append "https://github.com/fontforge/libspiro/releases"
+                          "/download/" version "/libspiro-dist-" version ".tar.gz"))
       (sha256
        (base32
-        "1kylz8pvwnb85yya150r9i6mhbpzx38f32qy523qg3ylgd9b3zhy"))))
+        "153ckwj6h3wwlsgcppzqj8cymv1927hi8ar8fzpchq5q89cj2kai"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f))          ;no tests
     (synopsis "Clothoid to bezier conversion library")
     (description
      "Raph Levien's Spiro package as a library.  A mechanism for drawing
@@ -479,27 +479,28 @@ smooth contours with constant curvature at the spline joins.")
 (define-public libuninameslist
   (package
     (name "libuninameslist")
-    (version "20170807")
+    (version "20180701")
+    (home-page "https://github.com/fontforge/libuninameslist")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/fontforge/libuninameslist/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append home-page "/releases/download/" version
+                           "/libuninameslist-dist-" version ".tar.gz"))
        (sha256
         (base32
-         "0axwxjgcrwms9682vmpsq1x4swdx6q6qk6997rkfr8xrgi124c6a"))))
+         "141wh2f5jsaw84mgw6vf2c9hd2wm957a2hpnicyqjbc7pk89gvca"))))
     (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)))
     (synopsis "Unicode names and annotation list")
     (description
      "LibUniNamesList holds www.unicode.org Nameslist.txt data which can be
 useful for programs that need Unicode \"Names\", \"Annotations\", and block
 definitions.")
-    (license license:gpl2)
-    (home-page "https://github.com/fontforge/libuninameslist")))
+    ;; COPYING specifies GPL2, but according to LICENSE it only covers the
+    ;; configure script.  The actual code is BSD-3, and the Unicode data
+    ;; is governed by an X11-style license only found on the web.
+    (license (list license:bsd-3
+                   (license:x11-style
+                    "https://www.unicode.org/copyright.html#License")))))
 
 (define-public fontforge
   (package

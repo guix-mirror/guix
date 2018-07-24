@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -782,14 +782,14 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
 (define-public python-h5py
   (package
     (name "python-h5py")
-    (version "2.7.0")
+    (version "2.8.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "h5py" version))
       (sha256
        (base32
-        "0433sdv6xc9p7v1xs1gvbxp7p152ywi3nplgjb258q9fvw9469br"))))
+        "0mdr6wrq02ac93m1aqx9kad0ppfzmm4imlxqgyy1x4l7hmdcc9p6"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no test target
@@ -2218,14 +2218,14 @@ environments and back.")
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
-    (version "3.12")
+    (version "3.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyYAML" version))
        (sha256
         (base32
-         "1aqjl8dk9amd4zr99n8v2qxzgmr2hdvqfma4zh7a41rj6336c9sr"))))
+         "1gx603g484z46cb74j9rzr6sjlh2vndxayicvlyhxdz98lhhkwry"))))
     (build-system python-build-system)
     (inputs
      `(("libyaml" ,libyaml)))
@@ -2683,14 +2683,14 @@ and several other projects.")
 (define-public python-rst.linker
   (package
     (name "python-rst.linker")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rst.linker" version))
        (sha256
         (base32
-         "16crgnai6020vdmnpwdimw1vm3jb74ysfyb3kmcidb0lgma5xq2d"))))
+         "0iqaacp7pj1s8avs4kc0qg0r7dscywaq37y6l9j14glqdikk0wdj"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -4210,23 +4210,53 @@ support for Python 3 and PyPy.  It is based on cffi.")
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1rk2dvy3fxrga6bvvxc2fi5lbaynm5h4a0w0aaxyn3bc77rszjg9"))))
+        "1rk2dvy3fxrga6bvvxc2fi5lbaynm5h4a0w0aaxyn3bc77rszjg9"))
+      (patches (search-patches "python-cairocffi-dlopen-path.patch"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("cairo" ,cairo)))
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("cairo" ,cairo)
+       ("pango" ,pango)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("python-pytest" ,python-pytest)
        ("python-sphinx" ,python-sphinx)
        ("python-docutils" ,python-docutils)))
     (propagated-inputs
      `(("python-xcffib" ,python-xcffib))) ; used at run time
     (arguments
      `(;; FIXME: Tests cannot find 'libcairo.so.2'.
-       #:tests? #f
+       #:tests? #t
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* (find-files "." "\\.py$")
+              (("dlopen\\(ffi, 'cairo'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "cairo")
+                              "/lib/libcairo.so.2'"))
+              (("dlopen\\(ffi, 'gdk-3'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "gtk+")
+                              "/lib/libgtk-3.so.0'"))
+              (("dlopen\\(ffi, 'gdk_pixbuf-2.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "gdk-pixbuf")
+                              "/lib/libgdk_pixbuf-2.0.so.0'"))
+              (("dlopen\\(ffi, 'glib-2.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "glib")
+                              "/lib/libglib-2.0.so.0'"))
+              (("dlopen\\(ffi, 'gobject-2.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "glib")
+                              "/lib/libgobject-2.0.so.0'"))
+              (("dlopen\\(ffi, 'pangocairo-1.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "pango")
+                              "/lib/libpangocairo-1.0.so.0'"))
+              (("dlopen\\(ffi, 'pango-1.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "pango")
+                              "/lib/libpango-1.0.so.0'")))
+             #t))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
@@ -6284,14 +6314,14 @@ designed to efficiently cope with extremely large amounts of data.")
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyasn1" version))
        (sha256
         (base32
-         "05bxnr4wmrg62m4qr1pg1p3z7bhwrv74jll3k42pgxwl36kv0n6j"))))
+         "1z5h38anjzzrxpraa9iq9llffyx2zs8gx0q6dc1g029miwnn50gv"))))
     (build-system python-build-system)
     (home-page "http://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
@@ -6306,14 +6336,14 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
 (define-public python-pyasn1-modules
   (package
     (name "python-pyasn1-modules")
-    (version "0.0.8")
+    (version "0.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pyasn1-modules" version))
         (sha256
          (base32
-          "0drqgw81xd3fxdlg89kgd79zzrabvfncvkbybi2wr6w2y4s1jmhh"))))
+          "0ivm850yi7ajjbi8j115qpsj95bgxdsx48nbjzg0zip788c3xkx0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pyasn1" ,python-pyasn1)))
@@ -7834,14 +7864,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "03dyxgjknp4ffsv7vwfd28l5bbpzi0ylp20543wpg3iahyyrwma8"))))
+         "1bi5gnr8r8dva06qpyx4kgjc6spm2k1y908183nbbaylggjzs0jf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
@@ -10426,14 +10456,14 @@ network.")
 (define-public python-xopen
   (package
     (name "python-xopen")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xopen" version))
         (sha256
           (base32
-           "0bzjmn3rl1cd3d2q39cjwnkhaspk2b0hfj3rl64pclm44ihg5fb6"))
+           "1a0wbil552wsmklwd89ssmgz3pjd86qa9i7jh8wqb9wslc8a2qjr"))
         (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (home-page "https://github.com/marcelm/xopen/")
@@ -10446,7 +10476,12 @@ possible on all supported Python versions.")
     (license license:expat)))
 
 (define-public python2-xopen
-  (package-with-python2 python-xopen))
+  (let ((base (package-with-python2
+               (strip-python2-variant python-xopen))))
+    (package
+      (inherit base)
+      (propagated-inputs `(("python2-bz2file" ,python2-bz2file)
+                           ,@(package-propagated-inputs base))))))
 
 (define-public python2-cheetah
   (package
@@ -12237,14 +12272,14 @@ pure Python module.")
 (define-public python-xenon
   (package
     (name "python-xenon")
-    (version "0.5.1")
+    (version "0.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "xenon" version))
        (sha256
         (base32
-         "14kby2y48vp3sgwxqlm5d5789yibqwb1qli5fwcmdqg3iayrbklc"))))
+         "029cbhysg2vr5n4jz8gpg2793f8wkwnqpr1qgv6c1dn685vy31mc"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyyaml" ,python-pyyaml)
@@ -12256,12 +12291,7 @@ pure Python module.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-test-requirements
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Update requirements from dependency==version to
-             ;; dependency>=version.
-             (substitute* "requirements.txt"
-               (("==") ">=")
-               ((",<1.5.0") ""))
+           (lambda _
              ;; Remove httpretty dependency for tests.
              (substitute* "setup.py"
                (("httpretty") ""))
@@ -13419,14 +13449,14 @@ time-based (TOTP) passwords.")
 (define-public python-parso
   (package
     (name "python-parso")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parso" version))
        (sha256
         (base32
-         "0lamywk6dm5xshlkdvxxf5j6fa2k2zpi7xagf0bwidaay3vnpgb2"))))
+         "0zvh4rdhv2wkglkgh0h9kn9ndpsw5p639wcwv47jn1kfp504lq7h"))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (build-system python-build-system)
@@ -13794,3 +13824,23 @@ Let's Encrypt.")
 
 (define-public python2-dns-lexicon
   (package-with-python2 python-dns-lexicon))
+
+(define-public python-commandlines
+  (package
+    (name "python-commandlines")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "commandlines" version))
+       (sha256
+        (base32
+         "0r7xcr0knv02p4mswa2bng61nn8nbhhrs6kvdnb9bb3hhjvm1dl6"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/chrissimpkins/commandlines")
+    (synopsis "Command line argument to object parsing library")
+    (description
+     "@code{Commandlines} is a Python library for command line application
+development that supports command line argument parsing, command string
+validation testing and application logic.")
+    (license license:expat)))

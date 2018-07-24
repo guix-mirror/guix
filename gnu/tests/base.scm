@@ -100,6 +100,23 @@ initialization step, such as entering a LUKS passphrase."
                                     version)
                     (string-prefix? architecture %host-type)))))
 
+          ;; Shepherd reads the config file *before* binding its control
+          ;; socket, so /var/run/shepherd/socket might not exist yet when the
+          ;; 'marionette' service is started.
+          (test-assert "shepherd socket ready"
+            (marionette-eval
+             `(begin
+                (use-modules (gnu services herd))
+                (let loop ((i 10))
+                  (cond ((file-exists? (%shepherd-socket-file))
+                         #t)
+                        ((> i 0)
+                         (sleep 1)
+                         (loop (- i 1)))
+                        (else
+                         #f))))
+             marionette))
+
           (test-assert "shell and user commands"
             ;; Is everything in $PATH?
             (zero? (marionette-eval '(system "
@@ -614,6 +631,13 @@ non-ASCII names from /tmp.")
             ""
             (wait-for-file "/root/witness-touch" marionette
                            #:read '(@ (ice-9 rdelim) read-string)))
+
+          ;; Make sure the 'schedule' action is accepted.
+          (test-equal "schedule action"
+            '(#t)                                 ;one value, #t
+            (marionette-eval '(with-shepherd-action 'mcron ('schedule) result
+                                result)
+                             marionette))
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))

@@ -2,12 +2,12 @@
 ;;; Copyright © 2014 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
+;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
@@ -74,6 +74,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages stb)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
@@ -225,14 +226,14 @@ PCM data.")
 (define-public gzochi
   (package
     (name "gzochi")
-    (version "0.11.1")
+    (version "0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/gzochi/gzochi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13j1m92zhxwkaaja3lg5x0h0b28mrrawdzk9d3hd19031akfxwb3"))))
+                "0h8yvk7154kd8zdfa9nqy73blrjq2x19kv305jcnwlmm09vvss59"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -265,7 +266,7 @@ provide connectivity for client applications written in any language.")
 (define-public nml
   (package
     (name "nml")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
@@ -273,12 +274,12 @@ provide connectivity for client applications written in any language.")
                            version "/nml-" version ".tar.gz"))
        (sha256
         (base32
-         "0wk9ls5qyjwkra54rkj1gg94xbwzi7b84a5fh1ma1q7pbimi8rmg"))))
+         "1pmvvm3sgnpngfa7884mqhq3fwdjh9sr0ca07ypnidcg0y341w53"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pillow" ,python-pillow)
        ("python-ply" ,python-ply)))
-    (home-page "http://dev.openttdcoop.org/projects/nml")
+    (home-page "https://dev.openttdcoop.org/projects/nml")
     (synopsis "NML compiler")
     (description
      "@dfn{NewGRF Meta Language} (NML) is a python-based compiler, capable of
@@ -440,7 +441,7 @@ clone.")
 (define-public sfml
   (package
     (name "sfml")
-    (version "2.3.2")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               ;; Do not fetch the archives from
@@ -451,24 +452,37 @@ clone.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k2fl5xk3ni2q8bsxl0551inx26ww3w6cp6hssvww0wfjdjcirsm"))))
+                "1x3yvhdrln5b6h4g5r4mds76gq8zsxw6icxqpwqkmxsqcq5yviab"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Ensure system libraries are used.
+                  (delete-file-recursively "extlibs")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       (list "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE")
+       (list "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE"
+             "-DSFML_OS_PKGCONFIG_DIR=lib/pkgconfig")
        #:tests? #f)) ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("mesa" ,mesa)
        ("glew" ,glew)
-       ("flac" ,flac)
-       ("libvorbis" ,libvorbis)
        ("libx11" ,libx11)
        ("xcb-util-image" ,xcb-util-image)
        ("libxrandr" ,libxrandr)
        ("eudev" ,eudev)
-       ("freetype" ,freetype)
        ("libjpeg" ,libjpeg)
        ("libsndfile" ,libsndfile)
+       ("stb-image" ,stb-image)
+       ("stb-image-write" ,stb-image-write)))
+    (propagated-inputs
+     ;; In Requires.private of pkg-config files.
+     `(("flac" ,flac)
+       ("freetype" ,freetype)
+       ("libvorbis" ,libvorbis)
        ("openal" ,openal)))
     (home-page "https://www.sfml-dev.org")
     (synopsis "Simple and Fast Multimedia Library")
@@ -518,7 +532,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
 (define-public physfs
   (package
     (name "physfs")
-    (version "2.0.3")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -527,10 +541,18 @@ sounds from presets such as \"explosion\" or \"powerup\".")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sbbyqzqhyf0g68fcvvv20n3928j0x6ik1njmhn1yigvq2bj11na"))))
+                "1wgj2zqpnfbnyyi1i7bq5pshcc9n5cvwlpzp8im67nb8662ryyxp"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f))                    ; no check target
+     '(#:tests? #f                      ; no check target
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-CMakeLists.txt
+                    (lambda _
+                      (substitute* "CMakeLists.txt"
+                        ;; XXX: For some reason CMakeLists.txt disables
+                        ;; RUNPATH manipulation when the compiler is GCC.
+                        (("CMAKE_COMPILER_IS_GNUCC") "FALSE"))
+                      #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
@@ -1019,18 +1041,23 @@ of use.")
     (license license:expat)))
 
 (define-public openmw
+  ;; XXX The current version does not support qt 5.11, but the upcoming
+  ;; version (0.44) will do.
+  (let ((commit "5bc073603e8c7887e015a0ef41b4cefd6e688aaf")
+        (revision "1"))
   (package
     (name "openmw")
-    (version "0.43.0")
+    (version (git-version "0.43" revision commit))
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/OpenMW/openmw/archive/"
-                       name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/OpenMW/openmw.git")
+             (commit commit)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "11phjx7b3mv4n295xgq25lkcwq0mgr35i5k05hf1h77y6n6jbw64"))))
+         "1sp4n3f1syvv0iz7n72wh226fyc0jh98cg8bvs574jvvqx6qn851"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -1057,21 +1084,21 @@ the 2002 open-world RPG Morrowind.  The engine comes with its own editor,
 called OpenMW-CS which allows the user to edit or create their own original
 games.")
     (home-page "https://openmw.org")
-    (license license:gpl3)))
+    (license license:gpl3))))
 
 (define-public godot
   (package
     (name "godot")
-    (version "3.0.2")
+    (version "3.0.4")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/godotengine/godot/archive/"
-                              version "-stable.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/godotengine/godot")
+                    (commit (string-append version "-stable"))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ldnk3j4w2kh454mzclmq8nk7zqrn758yrqq85i4kzljpkf93g0m"))
+                "0i4ssfb6igga9zwvsmahrnasx9cyqrsd6mlmssjgc482fy9q2kz4"))
               (modules '((guix build utils)))
               (snippet
                '(begin

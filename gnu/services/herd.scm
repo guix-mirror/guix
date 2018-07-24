@@ -45,6 +45,7 @@
             live-service-requirement
             live-service-running
 
+            with-shepherd-action
             current-services
             unload-services
             unload-service
@@ -168,6 +169,8 @@ return #f."
 
 (define-syntax-rule (with-shepherd-action service (action args ...)
                       result body ...)
+  "Invoke ACTION on SERVICE with the given ARGS, and evaluate BODY with RESULT
+bound to the action's result."
   (invoke-action service action (list args ...)
                  (lambda (result) body ...)))
 

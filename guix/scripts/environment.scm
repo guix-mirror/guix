@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -49,11 +49,6 @@
   #:use-module (srfi srfi-98)
   #:export (guix-environment))
 
-(define (evaluate-profile-search-paths profile search-paths)
-  "Evaluate SEARCH-PATHS, a list of search-path specifications, for the
-directories in PROFILE, the store path of a profile."
-  (evaluate-search-paths search-paths (list profile)))
-
 ;; Protect some env vars from purification.  Borrowed from nix-shell.
 (define %precious-variables
   '("HOME" "USER" "LOGNAME" "DISPLAY" "TERM" "TZ" "PAGER"))
@@ -70,8 +65,8 @@ as 'HOME' and 'USER' are left untouched."
                       (((names . _) ...)
                        names)))))
 
-(define (create-environment profile paths pure?)
-  "Set the environment variables specified by PATHS for PROFILE.  When PURE?
+(define* (create-environment profile manifest #:key pure?)
+  "Set the environment variables specified by MANIFEST for PROFILE.  When PURE?
 is #t, unset the variables in the current environment.  Otherwise, augment
 existing environment variables with additional search paths."
   (when pure? (purify-environment))
@@ -84,53 +79,41 @@ existing environment variables with additional search paths."
                                  (string-append value separator current)
                                  value)
                              value)))))
-            (evaluate-profile-search-paths profile paths))
+            (profile-search-paths profile manifest))
 
   ;; Give users a way to know that they're in 'guix environment', so they can
   ;; adjust 'PS1' accordingly, for instance.  Set it to PROFILE so users can
   ;; conveniently access its contents.
   (setenv "GUIX_ENVIRONMENT" profile))
 
-(define (show-search-paths profile search-paths pure?)
-  "Display SEARCH-PATHS applied to PROFILE.  When PURE? is #t, do not augment
-existing environment variables with additional search paths."
+(define* (show-search-paths profile manifest #:key pure?)
+  "Display the search paths of MANIFEST applied to PROFILE.  When PURE? is #t,
+do not augment existing environment variables with additional search paths."
   (for-each (match-lambda
               ((search-path . value)
                (display
                 (search-path-definition search-path value
                                         #:kind (if pure? 'exact 'prefix)))
                (newline)))
-            (evaluate-profile-search-paths profile search-paths)))
+            (profile-search-paths profile manifest)))
 
-(define (strip-input-name input)
-  "Remove the name element from the tuple INPUT."
+(define (input->manifest-entry input)
+  "Return a manifest entry for INPUT, or #f if INPUT does not correspond to a
+package."
   (match input
-    ((_ package) package)
-    ((_ package output)
-     (list package output))))
-
-(define (package+propagated-inputs package output)
-  "Return the union of PACKAGE's OUTPUT and its transitive propagated inputs."
-  (cons (list package output)
-        (map strip-input-name
-             (package-transitive-propagated-inputs package))))
-
-(define (package-or-package+output? expr)
-  "Return #t if EXPR is a package or a 2 element list consisting of a package
-and an output string."
-  (match expr
-    ((or (? package?) ; bare package object
-         ((? package?) (? string?))) ; package+output tuple
-     #t)
-    (_ #f)))
+    ((_ (? package? package))
+     (package->manifest-entry package))
+    ((_ (? package? package) output)
+     (package->manifest-entry package output))
+    (_
+     #f)))
 
 (define (package-environment-inputs package)
-  "Return a list of the transitive input packages for PACKAGE."
+  "Return a list of manifest entries corresponding to the transitive input
+packages for PACKAGE."
   ;; Remove non-package inputs such as origin records.
-  (filter package-or-package+output?
-          (map strip-input-name
-               (bag-transitive-inputs
-                (package->bag package)))))
+  (filter-map input->manifest-entry
+              (bag-transitive-inputs (package->bag package))))
 
 (define (show-help)
   (display (G_ "Usage: guix environment [OPTION]... PACKAGE... [-- COMMAND...]
@@ -287,55 +270,50 @@ COMMAND or an interactive shell in that environment.\n"))
             (_ memo)))
         '() alist))
 
-(define (compact lst)
-  "Remove all #f elements from LST."
-  (filter identity lst))
-
 (define (options/resolve-packages opts)
-  "Return OPTS with package specification strings replaced by actual
-packages."
-  (define (package->output package mode)
-    (match package
-      ((? package?)
-       (list mode package "out"))
-      (((? package? package) (? string? output))
-       (list mode package output))))
+  "Return OPTS with package specification strings replaced by manifest entries
+for the corresponding packages."
+  (define (manifest-entry=? e1 e2)
+    (and (eq? (manifest-entry-item e1) (manifest-entry-item e2))
+         (string=? (manifest-entry-output e1)
+                   (manifest-entry-output e2))))
 
   (define (packages->outputs packages mode)
     (match packages
-      ((? package-or-package+output? package) ; single package
-       (list (package->output package mode)))
-      (((? package-or-package+output?) ...) ; many packages
-       (map (cut package->output <> mode) packages))))
+      ((? package? package)
+       (if (eq? mode 'ad-hoc-package)
+           (list (package->manifest-entry package))
+           (package-environment-inputs package)))
+      (((? package? package) (? string? output))
+       (if (eq? mode 'ad-hoc-package)
+           (list (package->manifest-entry package output))
+           (package-environment-inputs package)))
+      ((lst ...)
+       (append-map (cut packages->outputs <> mode) lst))))
 
-  (define (manifest->outputs manifest)
-    (map (lambda (entry)
-           (cons 'ad-hoc-package ; manifests are implicitly ad-hoc
-                 (if (package? (manifest-entry-item entry))
-                     (list (manifest-entry-item entry)
-                           (manifest-entry-output entry))
-                     ;; Direct store paths have no output.
-                     (list (manifest-entry-item entry)))))
-         (manifest-entries manifest)))
-
-  (compact
-   (append-map (match-lambda
-                 (('package mode (? string? spec))
-                  (let-values (((package output)
-                                (specification->package+output spec)))
-                    (list (list mode package output))))
-                 (('expression mode str)
-                  ;; Add all the outputs of the package STR evaluates to.
-                  (packages->outputs (read/eval str) mode))
-                 (('load mode file)
-                  ;; Add all the outputs of the package defined in FILE.
-                  (let ((module (make-user-module '())))
-                    (packages->outputs (load* file module) mode)))
-                 (('manifest . file)
-                  (let ((module (make-user-module '((guix profiles) (gnu)))))
-                    (manifest->outputs (load* file module))))
-                 (_ '(#f)))
-               opts)))
+  (manifest
+   (delete-duplicates
+    (append-map (match-lambda
+                  (('package 'ad-hoc-package (? string? spec))
+                   (let-values (((package output)
+                                 (specification->package+output spec)))
+                     (list (package->manifest-entry package output))))
+                  (('package 'package (? string? spec))
+                   (package-environment-inputs
+                    (specification->package+output spec)))
+                  (('expression mode str)
+                   ;; Add all the outputs of the package STR evaluates to.
+                   (packages->outputs (read/eval str) mode))
+                  (('load mode file)
+                   ;; Add all the outputs of the package defined in FILE.
+                   (let ((module (make-user-module '())))
+                     (packages->outputs (load* file module) mode)))
+                  (('manifest . file)
+                   (let ((module (make-user-module '((guix profiles) (gnu)))))
+                     (manifest-entries (load* file module))))
+                  (_ '()))
+                opts)
+    manifest-entry=?)))
 
 (define* (build-environment derivations opts)
   "Build the DERIVATIONS required by the environment using the build options
@@ -350,11 +328,10 @@ in OPTS."
           (return #f)
           (built-derivations derivations)))))
 
-(define (inputs->profile-derivation inputs system bootstrap?)
-  "Return the derivation for a profile consisting of INPUTS for SYSTEM.
-BOOTSTRAP?  specifies whether to use the bootstrap Guile to build the
-profile."
-  (profile-derivation (packages->manifest inputs)
+(define (manifest->derivation manifest system bootstrap?)
+  "Return the derivation for a profile of MANIFEST.
+BOOTSTRAP? specifies whether to use the bootstrap Guile to build the profile."
+  (profile-derivation manifest
                       #:system system
 
                       ;; Packages can have conflicting inputs, or explicit
@@ -397,32 +374,34 @@ and suitable for 'exit'."
 (define exit/status (compose exit status->exit-code))
 (define primitive-exit/status (compose primitive-exit status->exit-code))
 
-(define (launch-environment command inputs paths pure?)
+(define* (launch-environment command profile manifest
+                             #:key pure?)
   "Run COMMAND in a new environment containing INPUTS, using the native search
 paths defined by the list PATHS.  When PURE?, pre-existing environment
 variables are cleared before setting the new ones."
   ;; Properly handle SIGINT, so pressing C-c in an interactive terminal
   ;; application works.
   (sigaction SIGINT SIG_DFL)
-  (create-environment inputs paths pure?)
+  (create-environment profile manifest #:pure? pure?)
   (match command
     ((program . args)
      (apply execlp program program args))))
 
-(define (launch-environment/fork command inputs paths pure?)
-  "Run COMMAND in a new process with an environment containing INPUTS, using
-the native search paths defined by the list PATHS.  When PURE?, pre-existing
-environment variables are cleared before setting the new ones."
+(define* (launch-environment/fork command profile manifest #:key pure?)
+  "Run COMMAND in a new process with an environment containing PROFILE, with
+the search paths specified by MANIFEST.  When PURE?, pre-existing environment
+variables are cleared before setting the new ones."
   (match (primitive-fork)
-    (0 (launch-environment command inputs paths pure?))
+    (0 (launch-environment command profile manifest
+                           #:pure? pure?))
     (pid (match (waitpid pid)
            ((_ . status) status)))))
 
 (define* (launch-environment/container #:key command bash user user-mappings
-                                       profile paths link-profile? network?)
+                                       profile manifest link-profile? network?)
   "Run COMMAND within a container that features the software in PROFILE.
-Environment variables are set according to PATHS, a list of native search
-paths.  The global shell is BASH, a file name for a GNU Bash binary in the
+Environment variables are set according to the search paths of MANIFEST.
+The global shell is BASH, a file name for a GNU Bash binary in the
 store.  When NETWORK?, access to the host system network is permitted.
 USER-MAPPINGS, a list of file system mappings, contains the user-specified
 host file systems to mount inside the container.  If USER is not #f, each
@@ -514,7 +493,7 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
             (primitive-exit/status
              ;; A container's environment is already purified, so no need to
              ;; request it be purified again.
-             (launch-environment command profile paths #f)))
+             (launch-environment command profile manifest #:pure? #f)))
           #:namespaces (if network?
                            (delq 'net %namespaces) ; share host network
                            %namespaces)))))))
@@ -671,25 +650,8 @@ message if any test fails."
                                ;; within the container.
                                '("/bin/sh")
                                (list %default-shell))))
-           (packages   (options/resolve-packages opts))
-           (mappings   (pick-all opts 'file-system-mapping))
-           (inputs     (delete-duplicates
-                        (append-map (match-lambda
-                                      (('ad-hoc-package package output)
-                                       (package+propagated-inputs package
-                                                                  output))
-                                      (('package package _)
-                                       (package-environment-inputs package)))
-                                    packages)))
-           (paths      (delete-duplicates
-                        (cons $PATH
-                              (append-map (match-lambda
-                                            ((or ((? package? p) _ ...)
-                                                 (? package? p))
-                                             (package-native-search-paths p))
-                                            (_ '()))
-                                          inputs))
-                        eq?)))
+           (manifest   (options/resolve-packages opts))
+           (mappings   (pick-all opts 'file-system-mapping)))
 
       (when container? (assert-container-features))
 
@@ -714,8 +676,8 @@ message if any test fails."
             (mlet* %store-monad ((bash       (environment-bash container?
                                                                bootstrap?
                                                                system))
-                                 (prof-drv   (inputs->profile-derivation
-                                              inputs system bootstrap?))
+                                 (prof-drv   (manifest->derivation
+                                              manifest system bootstrap?))
                                  (profile -> (derivation->output-path prof-drv))
                                  (gc-root -> (assoc-ref opts 'gc-root)))
 
@@ -734,7 +696,7 @@ message if any test fails."
                  ((assoc-ref opts 'dry-run?)
                   (return #t))
                  ((assoc-ref opts 'search-paths)
-                  (show-search-paths profile paths pure?)
+                  (show-search-paths profile manifest #:pure? pure?)
                   (return #t))
                  (container?
                   (let ((bash-binary
@@ -747,11 +709,11 @@ message if any test fails."
                                                   #:user user
                                                   #:user-mappings mappings
                                                   #:profile profile
-                                                  #:paths paths
+                                                  #:manifest manifest
                                                   #:link-profile? link-prof?
                                                   #:network? network?)))
                  (else
                   (return
                    (exit/status
-                    (launch-environment/fork command profile
-                                             paths pure?)))))))))))))
+                    (launch-environment/fork command profile manifest
+                                             #:pure? pure?)))))))))))))

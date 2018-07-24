@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -315,6 +316,35 @@ more.")
 between different versions of ØMQ.")
     (license license:mpl2.0)))
 
+(define-public cppzmq
+  (let ((revision "0")
+        (commit "d9f0f016c07046742738c65e1eb84722ae32d7d4"))
+    (package
+      (name "cppzmq")
+      (version (string-append "4.2.2-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/zeromq/cppzmq")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1gmqlm00y6xpa5m6d4ajq3ww63n2w7h4sy997wj81vcqmqx45b1f"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system cmake-build-system)
+      (arguments '(#:tests? #f)) ; No tests.
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("zeromq" ,zeromq)))
+      (home-page "http://zeromq.org")
+      (synopsis "C++ bindings for the ØMQ messaging library")
+      (description
+       "This package provides header-only C++ bindings for ØMQ.  The header
+files contain direct mappings of the abstractions provided by the ØMQ C API.")
+      (license license:expat))))
+
 (define-public librdkafka
   (package
     (name "librdkafka")
@@ -504,7 +534,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.3.1")
+    (version "5.3.2")
     (source
      (origin
        (method url-fetch)
@@ -512,7 +542,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0gl98l26dcgmlap0pxllbv4b9n2fr5b7zml3ijf8sf3a60qsskpg"))))
+         "0m3352d5b0ragygbqjbaimghrbx4va2rixa34j5a1g3jj6l4nwbr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite

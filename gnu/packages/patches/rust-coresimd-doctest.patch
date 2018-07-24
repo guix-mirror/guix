@@ -1,0 +1,21 @@
+Doctest coresimd::x86::__m256 failed on processors withouth "avx" feature.
+Backported patch with changes from https://github.com/rust-lang-nursery/stdsimd/issues/481
+
+--- rustc-1.26.2-src-orig/src/stdsimd/coresimd/x86/mod.rs	1970-01-01 05:00:00.000000000 +0500
++++ rustc-1.26.2-src/src/stdsimd/coresimd/x86/mod.rs	2018-06-22 00:01:55.142026720 +0500
+@@ -293,13 +293,13 @@
+     /// use std::arch::x86_64::*;
+     ///
+     /// # fn main() {
+-    /// # #[target_feature(enable = "sse")]
++    /// # #[target_feature(enable = "avx")]
+     /// # unsafe fn foo() {
+     /// let eight_zeros = _mm256_setzero_ps();
+     /// let eight_ones = _mm256_set1_ps(1.0);
+     /// let eight_floats = _mm256_set_ps(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0);
+     /// # }
+-    /// # if is_x86_feature_detected!("sse") { unsafe { foo() } }
++    /// # if is_x86_feature_detected!("avx") { unsafe { foo() } }
+     /// # }
+     /// ```
+     pub struct __m256(f32, f32, f32, f32, f32, f32, f32, f32);

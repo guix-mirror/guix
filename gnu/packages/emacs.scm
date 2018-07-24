@@ -35,6 +35,9 @@
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -106,6 +109,7 @@
   #:use-module (gnu packages gd)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages password-utils)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages gnupg)
@@ -198,7 +202,7 @@
        ("libxft" ,libxft)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg)
        ("imagemagick" ,imagemagick)
        ("acl" ,acl)
 
@@ -1167,14 +1171,14 @@ rather than the contents of files.")
 (define-public emacs-async
   (package
     (name "emacs-async")
-    (version "1.9.2")
+    (version "1.9.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/async-"
+              (uri (string-append "https://stable.melpa.org/packages/async-"
                                   version ".tar"))
               (sha256
                (base32
-                "17fnvrj7jww29sav6a6jpizclg4w2962m6h37akpii71gf0vrffw"))))
+                "0xvi50y96y2qh81qkhj8p6ar1xnfasg58qvlsvgvvmdf4g8srlij"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
@@ -1913,18 +1917,19 @@ display and behaviour is easily customisable.")
 (define-public emacs-git-timemachine
   (package
     (name "emacs-git-timemachine")
-    (version "3.0")
+    (version "4.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/pidu/git-timemachine/"
-                           "archive/" version ".tar.gz"))
+       (uri (string-append "https://gitlab.com/pidu/git-timemachine"
+                           "/-/archive/" version
+                           "/git-timemachine-" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1l4g0r69wfrnjsywv03v4bpdd53byg6zdx6mzabfxyymss3kvisa"))))
+         "0ii40qcincasg7s1yrvqcxkqcqzb4sfs7gcxscn6m4x4ans165zy"))))
     (build-system emacs-build-system)
-    (home-page "https://github.com/pidu/git-timemachine")
+    (home-page "https://gitlab.com/pidu/git-timemachine")
     (synopsis "Step through historic versions of Git-controlled files")
     (description "This package enables you to step through historic versions
 of files under Git version control from within Emacs.")
@@ -3199,6 +3204,27 @@ started with 20 minutes.  All values are customizable.")
 organizer.")
     (license license:gpl3+)))
 
+(define-public emacs-atom-one-dark-theme
+  (let ((commit "1f1185bf667a38d3d0d180ce85fd4c131818aae2")
+        (revision "0"))
+    (package
+     (name "emacs-atom-one-dark-theme")
+     (version (git-version "0.4.0" revision commit))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jonathanchu/atom-one-dark-theme.git")
+                    (commit commit)))
+              (sha256
+               (base32
+                "1alma16hg3mfjly8a9s3mrswkjjx4lrpdnf43869hn2ibkn7zx9z"))
+              (file-name (git-file-name name version))))
+     (build-system emacs-build-system)
+     (home-page "https://github.com/jonathanchu/atom-one-dark-theme")
+     (synopsis "Atom One Dark color theme for Emacs")
+     (description "An Emacs port of the Atom One Dark theme from Atom.io.")
+     (license license:gpl3+))))
+
 (define-public emacs-zenburn-theme
   (package
     (name "emacs-zenburn-theme")
@@ -4160,6 +4186,99 @@ errors and strict-mode warnings, smart line-wrapping within comments and
 strings, and code folding.")
     (license license:gpl3+)))
 
+(define-public emacs-nodejs-repl
+  (package
+    (name "emacs-nodejs-repl")
+    (version "0.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/abicky/nodejs-repl.el"
+                                  "/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sphg1jxi3a5l0gqdp27d0qgyjaiq2p293av9zm8ksm0vwqp3fr9"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/abicky/nodejs-repl.el")
+    (synopsis "Node.js REPL inside Emacs")
+    (description
+     "This program is derived from comint-mode and provides the following
+features:
+
+@itemize
+@item TAB completion same as Node.js REPL
+@item file name completion in string
+@item incremental history search
+@end itemize")
+    (license license:gpl3+)))
+
+(define-public emacs-typescript-mode
+  (package
+    (name "emacs-typescript-mode")
+    (version "0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ananthakumaran/typescript.el"
+                    "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gqjirm8scf0wysm7x97zdfbs4qa5nqdl64jfbkd18iskv5mg3rj"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ananthakumaran/typescript.el")
+    (synopsis "Emacs major mode for editing Typescript code")
+    (description
+     "This is based on Karl Landstrom's barebones @code{typescript-mode}.
+This is much more robust and works with @code{cc-mode}'s comment
+filling (mostly).  The modifications to the original @code{javascript.el} mode
+mainly consisted in replacing \"javascript\" with \"typescript\"
+
+The main features of this Typescript mode are syntactic highlighting (enabled
+with @code{font-lock-mode} or @code{global-font-lock-mode}), automatic
+indentation and filling of comments and C preprocessor fontification.")
+    (license license:gpl3+)))
+
+(define-public emacs-tide
+  (package
+    (name "emacs-tide")
+    (version "2.8.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ananthakumaran/tide"
+                                  "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1k0kzqiv1hfs0kqm37947snzhrsmand3i9chvm6a2r5lb8v9q47y"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)
+       ("emacs-flycheck" ,flycheck)
+       ("emacs-typescript-mode" ,emacs-typescript-mode)))
+    (home-page "https://github.com/ananthakumaran/tide")
+    (synopsis "Typescript IDE for Emacs")
+    (description
+     "Tide is an Interactive Development Environment (IDE) for Emacs which
+provides the following features:
+
+@itemize
+@item ElDoc
+@item Auto complete
+@item Flycheck
+@item Jump to definition, Jump to type definition
+@item Find occurrences
+@item Rename symbol
+@item Imenu
+@item Compile On Save
+@item Highlight Identifiers
+@item Code Fixes
+@item Code Refactor
+@item Organize Imports
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public emacs-markdown-mode
   (package
     (name "emacs-markdown-mode")
@@ -4457,25 +4576,28 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
     (license license:gpl3+)))
 
 (define-public emacs-wgrep
-  (package
-    (name "emacs-wgrep")
-    (version "2.1.10")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/mhayashi1120/Emacs-wgrep/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1r2bpypar70xg6dsx12x1k74f39ww930rday7rgqpyknzsx1k4l1"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
-    (synopsis "Edit a grep buffer and apply those changes to the files")
-    (description
-     "Emacs wgrep allows you to edit a grep buffer and apply those changes to
-the file buffer.")
-    (license license:gpl3+)))
+  (let ((commit "414be70bd313e482cd9f0b70fd2daad4ee23497c"))
+    ;; Late commit fixes compatibility issue with Emacs 26+.
+    (package
+      (name "emacs-wgrep")
+      (version (git-version "2.1.10" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mhayashi1120/Emacs-wgrep")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1sdhd587q3pg92lhiayph87azhalmf1gzrnsprkmqvnphv7mvks9"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
+      (synopsis "Edit a grep buffer and apply those changes to the files")
+      (description
+       "Emacs wgrep allows you to edit a grep buffer and apply those changes
+to the file buffer.  Several backends are supported beside the classic grep:
+ack, ag, helm and pt.")
+      (license license:gpl3+))))
 
 (define-public emacs-helm
   (package
@@ -4739,11 +4861,11 @@ extensions.")
       (license license:gpl3+))))
 
 (define-public emacs-evil-collection
-  (let ((commit "ac21b8957cfc22485cdaa316384edf9cb220d837")
-        (revision "1"))
+  (let ((commit "5d739f58118a5a316c4fe25adb4e13ccea3fdc10")
+        (revision "2"))
     (package
       (name "emacs-evil-collection")
-      (version (git-version "20180617" revision commit))
+      (version (git-version "20180721" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -4752,7 +4874,7 @@ extensions.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "082a3c5c2ls9ryqrl5kzb4z6bcprhqx8pypnlj1razbld3lny934"))))
+                  "05p612qncd0cp5q61hq2ag1k558vhb10049xrc88n9l6qwz9bpk3"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
@@ -5453,32 +5575,30 @@ Yasnippet.")
       (license license:gpl2+))))
 
 (define-public emacs-helm-system-packages
-  (let ((commit "b41f8f251695cf236e9d1627070049a5b41aa38a")
-        (revision "2"))
-    (package
-      (name "emacs-helm-system-packages")
-      (version (git-version "1.9.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/emacs-helm/helm-system-packages")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "1wrsx1j86c9a74nsdndjv21slzl46idd3p6wqy5wnasawj0kfn8r"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)))
-      (home-page "https://github.com/emacs-helm/helm-system-packages")
-      (synopsis "Helm System Packages is an interface to your package manager")
-      (description "List all available packages in Helm (with installed
+  (package
+    (name "emacs-helm-system-packages")
+    (version "1.10.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-helm/helm-system-packages")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0y5wzvfycb1bvgdk782xyl744fih43vz14wmq6gcqjarw6xfniz5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/emacs-helm/helm-system-packages")
+    (synopsis "Helm System Packages is an interface to your package manager")
+    (description "List all available packages in Helm (with installed
 packages displayed in their own respective face).  Fuzzy-search, mark and
 execute the desired action over any selections of packages: Install,
 uninstall, display packages details (in Org Mode) or insert details at point,
 find files owned by packages...  And much more, including performing all the
 above over the network.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-memoize
   (package
@@ -5771,35 +5891,34 @@ abbreviation of the mode line displays (lighters) of minor modes.")
     (license license:gpl2+)))
 
 (define-public emacs-use-package
-  (package
-    (name "emacs-use-package")
-    (version "2.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/jwiegley/use-package/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0x4h136jb3imyli6zsh7dyzjrra6pv0v6b0yk94jdng3rdfcmsf5"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-diminish" ,emacs-diminish)))
-    (arguments
-     ;; Tests fail in this release, but have been fixed in
-     ;; upstream commit 7956d40eed57d6c06bef36ebc174cf57d934e30d
-     `(#:tests? #f
-       #:test-command '("emacs" "--batch"
-                        "-l" "use-package-tests.el"
-                        "-f" "ert-run-tests-batch-and-exit")))
-    (home-page "https://github.com/jwiegley/use-package")
-    (synopsis "Declaration for simplifying your .emacs")
-    (description "The use-package macro allows you to isolate package
+  (let ((commit "da8c9e2840343906e732f9699e43d35a1f06481d")
+        (revision "1"))
+    (package
+     (name "emacs-use-package")
+     (version (git-version "2.3" revision commit))
+     (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jwiegley/use-package")
+                    (commit commit)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0jz38pbq1p9h85i6qcsh3sfzkd103y6mw3rg5zd14dxigp8ir3xz"))))
+     (build-system emacs-build-system)
+     (propagated-inputs
+      `(("emacs-diminish" ,emacs-diminish)))
+     (arguments
+      `(#:tests? #t
+        #:test-command '("emacs" "--batch"
+                         "-l" "use-package-tests.el"
+                         "-f" "ert-run-tests-batch-and-exit")))
+     (home-page "https://github.com/jwiegley/use-package")
+     (synopsis "Declaration for simplifying your .emacs")
+     (description "The use-package macro allows you to isolate package
 configuration in your @file{.emacs} file in a way that is both
 performance-oriented and tidy.")
-    (license license:gpl2+)))
+     (license license:gpl2+))))
 
 (define-public emacs-strace-mode
   (let* ((commit "6a69b4b06db6797af56f33eda5cb28af94e59f11")
@@ -6116,14 +6235,14 @@ which code derived from Kelvin H's org-page.")
 (define-public emacs-xelb
   (package
     (name "emacs-xelb")
-    (version "0.14")
+    (version "0.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/xelb-"
                                   version ".tar"))
               (sha256
                (base32
-                "09flnbjy9ck784kprz036rwg9qk45hpv0w5hz3pz3zhwyk57fv74"))))
+                "031rvgprsqhf344p9wsczr50vj2qcpwdmhxi80jdbrsm7wyxf3qz"))))
     (build-system emacs-build-system)
     ;; The following functions and variables needed by emacs-xelb are
     ;; not included in emacs-minimal:
@@ -6155,7 +6274,7 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.18")
+    (version "0.19")
     (synopsis "Emacs X window manager")
     (source (origin
               (method url-fetch)
@@ -6163,7 +6282,7 @@ It should enable you to implement low-level X11 applications.")
                                   version ".tar"))
               (sha256
                (base32
-                "1shz5bf4v4gg3arjaaldics5qkg3aiiaf3ngys8lb6qyxhcpvh6q"))))
+                "11xd2w4h3zdwkdxypvmcz8s7q72cn76lfr9js77jbizyj6b04lr0"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -7027,39 +7146,35 @@ Idris.")
     (license license:gpl3+)))
 
 (define-public emacs-browse-at-remote
-  (let ((commit "31dcf77d7c89a12f230e2b2332585db2c44530ef")
-        (revision "1"))
-    (package
-      (name "emacs-browse-at-remote")
-      (version (string-append "0.9.0-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/rmuslimov/browse-at-remote.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version "-checkout"))
-                (patches
-                 (search-patches "emacs-browse-at-remote-cgit-gnu.patch"))
-                (sha256
-                 (base32
-                  "017cb8lf7zbg0jmr7zxzd7d5kz2jy35cvw5vcpdmq1fdr3wqwkgj"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-f" ,emacs-f)
-         ("emacs-s" ,emacs-s)))
-      (native-inputs
-       `(("ert-runner" ,ert-runner)))
-      (arguments
-       `(#:tests? #t
-         #:test-command '("ert-runner")))
-      (home-page "https://github.com/rmuslimov/browse-at-remote")
-      (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
-      (description
-       "This Emacs package allows you to open a target page on
+  (package
+    (name "emacs-browse-at-remote")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/rmuslimov/browse-at-remote/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ymslsp6i1naw25zckv25bf4aaq6qwkbkn95qyzlwg869l802686"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)))
+    (native-inputs
+     `(("ert-runner" ,ert-runner)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
+    (home-page "https://github.com/rmuslimov/browse-at-remote")
+    (synopsis "Open github/gitlab/bitbucket/stash page from Emacs")
+    (description
+     "This Emacs package allows you to open a target page on
 github/gitlab (or bitbucket) by calling @code{browse-at-remote} command.
 It supports dired buffers and opens them in tree mode at destination.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-tiny
   (package
@@ -7247,10 +7362,10 @@ messaging service.")
                  ("bash-completion-prog" (string-append bash "/bin/bash"))))
              #t)))))
    (home-page "https://github.com/szermatt/emacs-bash-completion")
-   (synopsis "BASH completion for the shell buffer")
+   (synopsis "Bash completion for the shell buffer")
    (description
     "@code{bash-completion} defines dynamic completion hooks for shell-mode
-and shell-command prompts that are based on bash completion.")
+and shell-command prompts that are based on Bash completion.")
    (license license:gpl2+)))
 
 (define-public emacs-easy-kill
@@ -8408,6 +8523,10 @@ outline-mode), so there is no such thing like an outshine mode, only
         (base32
          "109fvivsb4r0rbqljngqrmxqvbnbkqlivczx6brrvlr7ci625lhf"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-seq" ,emacs-seq)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-let-alist" ,emacs-let-alist)))
     (home-page "https://github.com/cpitclaudel/biblio.el")
     (synopsis "Browse and import bibliographic references")
     (description "This package provides an extensible Emacs package for
@@ -8442,7 +8561,8 @@ automatically fetched from well-curated sources, and formatted as BibTeX.")
          ("emacs-s" ,emacs-s)
          ("emacs-dash" ,emacs-dash)
          ("emacs-f" ,emacs-f)
-         ("emacs-biblio" ,emacs-biblio)))
+         ("emacs-biblio" ,emacs-biblio)
+         ("emacs-ivy" ,emacs-ivy)))
       (home-page "https://github.com/tmalsburg/helm-bibtex")
       (synopsis "Bibliography manager based on Helm")
       (description "This package provides bibliography manager for Emacs,
@@ -8705,23 +8825,33 @@ navigate and display hierarchy structures.")
       (license license:gpl3+))))
 
 (define-public emacs-pulseaudio-control
-  (let ((commit "08c59e1dc45ec96edb62f34036e82cf5f14c0e8b")
-        (revision "1"))
+  (let ((commit "1da372ec79f5d2fb901d1f9f0679fee8848fd011")
+        (revision "2"))
     (package
       (name "emacs-pulseaudio-control")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.1" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/flexibeast/pulseaudio-control.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "10cgg1r00kz2fsnnryvzay5pf8s1pwb1dzlds1fbjdnyfvdgammv"))))
+           "02xrsms2pjqdk6327midi61i5vg2h9cq5jwaxv43ldm68wl7hi6k"))))
       (build-system emacs-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'patch-file-name
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (let ((pulseaudio (assoc-ref inputs "pulseaudio")))
+                          (chmod "pulseaudio-control.el" #o600)
+                          (emacs-substitute-variables "pulseaudio-control.el"
+                            ("pulseaudio-control-pactl-path"
+                             (string-append pulseaudio "/bin/pactl")))
+                          #t))))))
+      (inputs `(("pulseaudio" ,pulseaudio)))
       (home-page "https://github.com/flexibeast/pulseaudio-control")
       (synopsis "Control @code{pulseaudio} from Emacs")
       (description
@@ -10104,10 +10234,10 @@ keep Parens and Indentation inline with one another.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-eww
-  (let ((commit "5d6c2c66d4694415ef8a16a6d38a37aeae76c5ac"))
+  (let ((commit "1a09f11b2376dec8237df40140f056be8a256ef0"))
     (package
       (name "emacs-helm-eww")
-      (version (git-version "0.1" "1" commit))
+      (version (git-version "0.1" "2" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -10116,7 +10246,7 @@ keep Parens and Indentation inline with one another.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1x442ylrr7cx587s4rvfh187h3qbkr79qp95qr57a4igxkkw6183"))))
+                  "1kqdjhz2xiqw3bxjhfl9namhqrkbc2x70gcv6ljljya5hbkm62sm"))))
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)))
       (build-system emacs-build-system)
@@ -10969,10 +11099,10 @@ from @code{emms-source-file-default-directory}.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-exwm
-  (let ((commit "82a856c80c8d295e3be522a01c5a15af50d08990"))
+  (let ((commit "56266f261ba3b3d2753b374b50da20eb768c06f5"))
     (package
       (name "emacs-helm-exwm")
-      (version (git-version "20180523" "1" commit))
+      (version (git-version "20180703" "2" commit))
       (source
        (origin
          (method url-fetch)
@@ -10982,7 +11112,7 @@ from @code{emms-source-file-default-directory}.")
                ".tar.gz"))
          (sha256
           (base32
-           "1xsg2lar1vh7jmj5lnnyi14vssxkgy95sv9r8pbfhbnkjkbjm9pb"))))
+           "0n7hdiajw5vxl8ha2r9r4cl4i7crza25348825wb6acwhhzijxcj"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
@@ -11190,37 +11320,14 @@ file.")
       (license license:gpl3+))))
 
 (define-public emacs-wgrep-helm
-  (let ((commit "1cdd7c136f1e7565bb13d2df69be3dc77b83698d"))
-    (package
-      (name "emacs-wgrep-helm")
-      (version (git-version "2.1.10" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/mhayashi1120/Emacs-wgrep")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "057p99hq0r6z1k8sl15w3sxrqvlv0g9wp39zy1pqhccv2mn3g2d6"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-wgrep" ,emacs-wgrep)))
-      (home-page
-       "https://github.com/mhayashi1120/Emacs-wgrep")
-      (synopsis
-       "Writable helm-grep-mode buffer and apply the changes to files")
-      (description
-       "@code{wgrep-helm} allows you to edit a @code{helm-grep-mode} buffer and
-apply those changes to the file buffer.")
-      (license license:gpl3+))))
+  ;; `emacs-wgrep-helm' was mistakenly added.
+  (deprecated-package "emacs-wgrep-helm" emacs-wgrep))
 
 (define-public emacs-mu4e-conversation
-  (let ((commit "b60d6bd27d7220c3dd041ff2a090e29f2166a319"))
+  (let ((commit "223cc66e99c7665326e3d991d6d383cb0d7512bb"))
     (package
       (name "emacs-mu4e-conversation")
-      (version (git-version "20180615" "1" commit))
+      (version (git-version "20180722" "2" commit))
       (source
        (origin
          (method url-fetch)
@@ -11231,7 +11338,7 @@ apply those changes to the file buffer.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0x8kmi0rmbaaxn5zicm1f9yb8ynxi8074hi2n0rvymlfpxbpn0ma"))))
+           "1ivy7pihhma465hi25p1y45dyi8h52nsm2m0cvizj5sw36jw0n81"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("mu" ,mu)))
@@ -11276,3 +11383,231 @@ To use, add @code{allow-emacs-pinentry} to @code{~/.gnupg/gpg-agent.conf},
 reload the configuration with @code{gpgconf --reload gpg-agent}, and start the
 server with @code{M-x pinentry-start}.")
       (license license:gpl3+))))
+
+(define-public emacs-org-brain
+  (package
+    (name "emacs-org-brain")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Kungsgeten/org-brain.git")
+             (commit "3faf9303af3f2356e3444e69c22dc6c5774047d1")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ad681zk6kckw2zbk0r4iaj4bw8cfqrbd1s3gdwgdjlzq81q9mmj"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Kungsgeten/org-brain")
+    (synopsis "Org-mode wiki and concept-mapping for Emacs")
+    (description "@code{emacs-org-brain} implements a variant of concept
+mapping in Emacs, using @code{org-mode}.  An org-brain is a network of
+org-mode entries, where each entry is a file or a headline, and you can get a
+visual overview of the relationships between the entries: parents, children,
+siblings and friends.  This visual overview can also be used to browse your
+entries.  You can think of entries as nodes in a mind map, or pages in a
+wiki.")
+    (license license:expat)))
+
+(define-public emacs-recent-addresses
+  (let ((commit "d9da58db542089a1ceb5ef29e420dbfbc4a36373")
+        (revision "0"))
+    (package
+      (name "emacs-recent-addresses")
+      (home-page "http://nschum.de/src/emacs/recent-addresses/")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/nschum/recent-addresses.el")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "175rvcwmkb5z7ss7q2y5178mvdvp5bhn39irz80qinlvaz8fm4nk"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Record recently-used email addressed and auto-complete them")
+      (description
+       "@code{recent-addresses} is an Emacs allows you to quickly look up
+previously used email addresses.  It can be used alongside the Gnus email
+client.")
+      (license license:gpl2+))))
+
+(define-public emacs-fold-dwim
+  (let ((commit "c46f4bb2ce91b4e307136320e72c28dd50b6cd8b")
+        (revision "0"))
+    (package
+      (name "emacs-fold-dwim")
+      (version (git-version "1.2" revision commit))
+      (home-page "https://github.com/emacsattic/fold-dwim")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (sha256
+                 (base32
+                  "1yz1wis31asw6xa5maliyd1ck2q02xnnh7dc6swgj9cb4wi7k6i1"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (synopsis "Unified user interface for Emacs folding modes")
+      (description
+       "DWIM stands for \"do what I mean\", as in the idea that one keystroke
+can do different things depending on the context.  In this package, it means
+that, if the cursor is in a currently hidden folded construction, we want to
+show it; if it's not, we want to hide whatever fold the cursor is in.")
+      (license license:gpl2+))))
+
+(define-public emacs-markup-faces
+  (package
+    (name "emacs-markup-faces")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://stable.melpa.org/packages/markup-faces-"
+                           version ".el"))
+       (sha256
+        (base32
+         "124dxbaa25fwxnpwsygpz7pw6da6dnnw7y2lic3jf8rgz7lw4v32"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/sensorflo/markup-faces")
+    (synopsis "Collection of Emacs faces for markup language modes")
+    (description "emacs-markup-faces is like font-lock-faces, but tailored for
+markup languages instead programming languages.  The sub group markup-faces-text
+is also intended for 'text viewing modes' such as info or (wo)man.  This gives a
+common look and feel, or let's say theme, across different markup language modes
+and 'text viewing modes' respectively.")
+    (license license:gpl3+)))
+
+(define-public emacs-adoc-mode
+  (package
+    (name "emacs-adoc-mode")
+    (version "0.6.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://stable.melpa.org/packages/adoc-mode-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1c6hrgxxsnl2c19rgjykpm7r4xg9lp6bmk5z6bi7g8pqlrgwffcy"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-markup-faces" ,emacs-markup-faces)))
+    (home-page "https://github.com/sensorflo/adoc-mode/wiki")
+    (synopsis "AsciiDoc mode for Emacs")
+    (description "This package provides an Emacs major mode for editing AsciiDoc
+files.  It focuses on highlighting the document to improve readability.")
+    (license license:gpl2+)))
+
+(define-public emacs-rust-mode
+  (let ((commit
+         ;; Last release is old (2016), use more recent commit to get bug
+         ;; fixes.
+         "64b4a2450e4d4c47f6307851c9b2598cd2254d68")
+        (revision "0"))
+    (package
+      (name "emacs-rust-mode")
+      (version (git-version "0.3.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri
+                 (git-reference
+                  (url "https://github.com/rust-lang/rust-mode")
+                  (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0pbz36lljgb7bdgx3h3g0pq1nss1kvn8mhk1l3mknsmynd6w4nd8"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (invoke "sh" "run_rust_emacs_tests.sh"))))))
+      (home-page "https://github.com/rust-lang/rust-mode")
+      (synopsis "Major Emacs mode for editing Rust source code")
+      (description "This package provides a major Emacs mode for editing Rust
+source code.")
+      (license (list license:expat
+                     license:asl2.0)))))
+
+(define-public emacs-ztree
+  (let ((commit "c54425a094353ec40a8179f9eab3596f76c6cf94"))
+    (package
+      (name "emacs-ztree")
+      (version (git-version "1.0.5" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fourier/ztree")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0j8fpxds8m1zi04nrs8vv21091abvh4n8ab76f1sgdxnp4l5cfb0"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/fourier/ztree")
+      (synopsis "Directory tree comparison mode for Emacs")
+      (description "Ztree is a project dedicated to implementation of several
+text-tree applications inside GNU Emacs.  It consists of 2 subprojects:
+@command{ztree-diff} and @command{ztree-dir} (the basis of
+@command{ztree-diff}).")
+      (license license:gpl3))))
+
+(define-public emacs-helm-org-contacts
+  (let ((commit "0af703bd9a43032b89fdf5559673151d1ac2fffc"))
+    (package
+      (name "emacs-helm-org-contacts")
+      (version (git-version "20180707" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tmalsburg/helm-org-contacts")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1cl7cm2ic9pg4vc9cdh84vzjj1x2lpd5ymimiva8h4l17kiphk4s"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-helm" ,emacs-helm)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/tmalsburg/helm-org-contacts")
+      (synopsis "Helm source for org-contacts")
+      (description "This Helm source can be used to search contacts stored in
+org-contacts format.  There are actions for inserting postal addresses, email
+addresses, and phone numbers in the buffer where @command{helm-org-contacts}
+was called.")
+      (license license:gpl3))))
+
+(define-public emacs-dired-du
+  (package
+    (name "emacs-dired-du")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/dired-du-"
+             version ".tar"))
+       (sha256
+        (base32
+         "09yj37p2fa5f81fqrzwghjkyy2ydsf4rbkfwpn2yyvzd5nd97bpl"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/dired-du.html")
+    (synopsis "Dired with recursive directory sizes")
+    (description
+     "Display the recursive size of directories in Dired.
+This file defines a minor mode @command{dired-du-mode} to show the recursive
+size of directories in Dired buffers.  If @command{du} program is available,
+then the directory sizes are obtained with it.  Otherwise, the directory sizes
+are obtained with Lisp.  The former is faster and provide a more precise
+value.  For directories where the user doesn't have read permission, the
+recursive size is not obtained.  Once this mode is enabled, every new Dired
+buffer displays recursive dir sizes.")
+    (license license:gpl3+)))

@@ -139,8 +139,8 @@ to the stack."
   "Generate a parser for Cabal files."
   (lalr-parser
    ;; --- token definitions
-   (CCURLY VCCURLY OPAREN CPAREN TEST ID VERSION RELATION TRUE FALSE
-           (right: IF FLAG EXEC TEST-SUITE SOURCE-REPO BENCHMARK LIB OCURLY)
+   (CCURLY VCCURLY OPAREN CPAREN TEST ID VERSION RELATION TRUE FALSE -ANY -NONE
+           (right: IF FLAG EXEC TEST-SUITE CUSTOM-SETUP SOURCE-REPO BENCHMARK LIB OCURLY)
            (left: OR)
            (left: PROPERTY AND)
            (right: ELSE NOT))
@@ -150,6 +150,7 @@ to the stack."
                 (sections source-repo)  : (append $1 (list $2))
                 (sections executables)  : (append $1 $2)
                 (sections test-suites)  : (append $1 $2)
+                (sections custom-setup) : (append $1 $2)
                 (sections benchmarks)   : (append $1 $2)
                 (sections lib-sec)      : (append $1 (list $2))
                 ()                      : '())
@@ -172,6 +173,7 @@ to the stack."
                 (ts-sec)                : (list $1))
    (ts-sec      (TEST-SUITE OCURLY exprs CCURLY) : `(section test-suite ,$1 ,$3)
                 (TEST-SUITE open exprs close)    : `(section test-suite ,$1 ,$3))
+   (custom-setup (CUSTOM-SETUP exprs) : (list `(section custom-setup ,$1 ,$2)))
    (benchmarks  (benchmarks bm-sec)     : (append $1 (list $2))
                 (bm-sec)                : (list $1))
    (bm-sec      (BENCHMARK OCURLY exprs CCURLY) : `(section benchmark ,$1 ,$3)
@@ -211,6 +213,10 @@ to the stack."
                 (FALSE)                        : 'false
                 (TEST OPAREN ID RELATION VERSION CPAREN)
                 : `(,$1 ,(string-append $3 " " $4 " " $5))
+                (TEST OPAREN ID -ANY CPAREN)
+                : `(,$1 ,(string-append $3 " -any"))
+                (TEST OPAREN ID -NONE CPAREN)
+                : `(,$1 ,(string-append $3 " -none"))
                 (TEST OPAREN ID RELATION VERSION AND RELATION VERSION CPAREN)
                 : `(and (,$1 ,(string-append $3 " " $4 " " $5))
                         (,$1 ,(string-append $3 " " $7 " " $8)))
@@ -349,6 +355,9 @@ matching a string against the created regexp."
 (define is-test-suite (make-rx-matcher "^test-suite +([a-z0-9_-]+)"
                                        regexp/icase))
 
+(define is-custom-setup (make-rx-matcher "^(custom-setup)"
+                                         regexp/icase))
+
 (define is-benchmark (make-rx-matcher "^benchmark +([a-z0-9_-]+)"
                                       regexp/icase))
 
@@ -362,13 +371,17 @@ matching a string against the created regexp."
 
 (define (is-false s) (string-ci=? s "false"))
 
+(define (is-any s) (string-ci=? s "-any"))
+
+(define (is-none s) (string-ci=? s "-none"))
+
 (define (is-and s) (string=? s "&&"))
 
 (define (is-or s) (string=? s "||"))
 
 (define (is-id s port)
   (let ((cabal-reserved-words
-         '("if" "else" "library" "flag" "executable" "test-suite"
+         '("if" "else" "library" "flag" "executable" "test-suite" "custom-setup"
            "source-repository" "benchmark"))
         (spaces (read-while (cut char-set-contains? char-set:blank <>) port))
         (c (peek-char port)))
@@ -392,8 +405,11 @@ matching a string against the created regexp."
 
 (define (lex-version loc port)
   (make-lexical-token 'VERSION loc
-                      (read-while char-numeric? port
-                                  (cut char=? #\. <>) char-numeric?)))
+                      (read-while (lambda (x)
+                                    (or (char-numeric? x)
+                                        (char=? x #\*)
+                                        (char=? x #\.)))
+                                  port)))
 
 (define* (read-while is? port #:optional
                      (is-if-followed-by? (lambda (c) #f))
@@ -435,6 +451,8 @@ string with the read characters."
 
 (define (lex-test-suite ts-rx-res loc) (lex-rx-res ts-rx-res 'TEST-SUITE loc))
 
+(define (lex-custom-setup ts-rx-res loc) (lex-rx-res ts-rx-res 'CUSTOM-SETUP loc))
+
 (define (lex-benchmark bm-rx-res loc) (lex-rx-res bm-rx-res 'BENCHMARK loc))
 
 (define (lex-lib loc) (make-lexical-token 'LIB loc #f))
@@ -446,6 +464,10 @@ string with the read characters."
 (define (lex-true loc) (make-lexical-token 'TRUE loc #t))
 
 (define (lex-false loc) (make-lexical-token 'FALSE loc #f))
+
+(define (lex-any loc) (make-lexical-token '-ANY loc #f))
+
+(define (lex-none loc) (make-lexical-token '-NONE loc #f))
 
 (define (lex-and loc) (make-lexical-token 'AND loc #f))
 
@@ -514,6 +536,8 @@ LOC is the current port location."
           ((is-test w port) (lex-test w loc))
           ((is-true w) (lex-true loc))
           ((is-false w) (lex-false loc))
+          ((is-any w) (lex-any loc))
+          ((is-none w) (lex-none loc))
           ((is-and w) (lex-and loc))
           ((is-or w) (lex-or loc))
           ((is-id w port) (lex-id w loc))
@@ -529,6 +553,7 @@ the current port location."
      ((is-src-repo s) => (cut lex-src-repo <> loc))
      ((is-exec s) => (cut lex-exec <> loc))
      ((is-test-suite s) => (cut lex-test-suite <> loc))
+     ((is-custom-setup s) => (cut lex-custom-setup <> loc))
      ((is-benchmark s) => (cut lex-benchmark <> loc))
      ((is-lib s) (lex-lib loc))
      ((is-else s) (lex-else loc))
@@ -658,6 +683,12 @@ If #f use the function 'port-filename' to obtain it."
   (name cabal-test-suite-name)
   (dependencies cabal-test-suite-dependencies)) ; list of <cabal-dependency>
 
+(define-record-type <cabal-custom-setup>
+  (make-cabal-custom-setup name dependencies)
+  cabal-custom-setup?
+  (name cabal-custom-setup-name)
+  (dependencies cabal-custom-setup-dependencies)) ; list of <cabal-dependency>
+
 (define (cabal-flags->alist flag-list)
     "Retrun an alist associating the flag name to its default value from a
 list of <cabal-flag> objects."
@@ -694,13 +725,20 @@ the ordering operation and the version."
     (let* ((with-ver-matcher-fn (make-rx-matcher
                                  "([a-zA-Z0-9_-]+) *([<>=]+) *([0-9.]+) *"))
            (without-ver-matcher-fn (make-rx-matcher "([a-zA-Z0-9_-]+)"))
+           (without-ver-matcher-fn-2 (make-rx-matcher "([a-zA-Z0-9_-]+) (-any|-none)"))
            (name (or (and=> (with-ver-matcher-fn spec)
                             (cut match:substring <> 1))
+                     (and=> (without-ver-matcher-fn-2 spec)
+                            (cut match:substring <> 1))
                      (match:substring (without-ver-matcher-fn spec) 1)))
-           (operator (and=> (with-ver-matcher-fn spec)
-                            (cut match:substring <> 2)))
-           (version (and=> (with-ver-matcher-fn spec)
-                           (cut match:substring <> 3))))
+           (operator (or (and=> (with-ver-matcher-fn spec)
+                                (cut match:substring <> 2))
+                         (and=> (without-ver-matcher-fn-2 spec)
+                                (cut match:substring <> 2))))
+           (version (or (and=> (with-ver-matcher-fn spec)
+                               (cut match:substring <> 3))
+                        (and=> (without-ver-matcher-fn-2 spec)
+                               (cut match:substring <> 2)))))
       (values name operator version)))
   
   (define (impl haskell)
@@ -716,6 +754,8 @@ the ordering operation and the version."
            ((string= spec-op ">") (version>? comp-ver spec-ver))
            ((string= spec-op "<=") (not (version>? comp-ver spec-ver)))
            ((string= spec-op "<") (not (version>=? comp-ver spec-ver)))
+           ((string= spec-op "-any") #t)
+           ((string= spec-op "-none") #f)
            (else
             (raise (condition
                     (&message (message "Failed to evaluate 'impl' test."))))))
@@ -728,7 +768,6 @@ the ordering operation and the version."
     (let ((value (or (assoc-ref env name)
                      (assoc-ref (cabal-flags->alist (cabal-flags)) name))))
       (if (eq? value 'false) #f #t)))
-  
   (define (eval sexp)
     (match sexp
       (() '())
@@ -755,6 +794,8 @@ the ordering operation and the version."
       ;; no need to evaluate flag parameters
       (('section 'flag name parameters)
        (list 'section 'flag name parameters))
+      (('section 'custom-setup parameters)
+       (list 'section 'custom-setup parameters))
       ;; library does not have a name parameter
       (('section 'library parameters)
        (list 'section 'library (eval parameters)))
@@ -795,12 +836,15 @@ See the manual for limitations.")))))))
 (define (make-cabal-section sexp section-type)
   "Given an SEXP as produced by 'read-cabal', produce a list of objects
 pertaining to SECTION-TYPE sections.  SECTION-TYPE must be one of:
-'executable, 'flag, 'test-suite, 'source-repository or 'library."
+'executable, 'flag, 'test-suite, 'custom-setup, 'source-repository or
+'library."
   (filter-map (cut match <>
                    (('section (? (cut equal? <> section-type)) name parameters)
                     (case section-type
                       ((test-suite) (make-cabal-test-suite
                                       name (dependencies parameters)))
+                      ((custom-setup) (make-cabal-custom-setup
+                                       name (dependencies parameters "setup-depends")))
                       ((executable) (make-cabal-executable
                                       name (dependencies parameters)))
                       ((source-repository) (make-cabal-source-repository
@@ -843,10 +887,10 @@ to be added between the values found in different key/value pairs."
 (define dependency-name-version-rx
   (make-regexp "([a-zA-Z0-9_-]+) *(.*)"))
 
-(define (dependencies key-values-list)
+(define* (dependencies key-values-list #:optional (key "build-depends"))
   "Return a list of 'cabal-dependency' objects for the dependencies found in
 KEY-VALUES-LIST."
-  (let ((deps (string-tokenize (lookup-join key-values-list "build-depends" ",")
+  (let ((deps (string-tokenize (lookup-join key-values-list key ",")
                                (char-set-complement (char-set #\,)))))
     (map (lambda (d)
            (let ((rx-result (regexp-exec dependency-name-version-rx d)))
