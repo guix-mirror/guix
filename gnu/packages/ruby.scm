@@ -4983,3 +4983,28 @@ Markdown.")
 in standard Ruby syntax.")
     (home-page "https://github.com/ruby/rake")
     (license license:expat)))
+
+(define-public ruby-childprocess
+  (package
+    (name "ruby-childprocess")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "childprocess" version))
+       (sha256
+        (base32
+         "0a61922kmvcxyj5l70fycapr87gz1dzzlkfpq85rfqk5vdh3d28p"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-ffi" ,ruby-ffi)))
+    (synopsis "Control external programs running in the background, in Ruby")
+    (description "@code{childprocess} provides a gem to control external
+programs running in the background, in Ruby.")
+    (home-page "http://github.com/enkessler/childprocess")
+    (license license:expat)))
