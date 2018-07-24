@@ -35,14 +35,18 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages docker)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages selinux)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages virtualization)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages linux))
 
@@ -855,3 +859,55 @@ safest way, on a file image.")
      "Androguard is a full Python tool to manipulate Android files.  It is
 useful for reverse engineering, analysis of Android applications and more.")
     (license license:asl2.0)))
+
+(define-public fdroidserver
+  (package
+    (name "fdroidserver")
+    (version "1.0.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fdroidserver" version))
+        (sha256
+         (base32
+          "0cwb1fmindw6v9jkiim9yn3496rk1pvnk94s1r0vz2hxgz16xp7n"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-versioning
+           (lambda _
+             (substitute* "setup.py"
+               (("0.2.1") ,(package-version python-pyasn1-modules)))
+             #t)))))
+    (propagated-inputs
+     `(("python-androguard" ,python-androguard)
+       ("python-apache-libcloud" ,python-apache-libcloud)
+       ("python-clint" ,python-clint)
+       ("python-docker-py" ,python-docker-py)
+       ("python-gitpython" ,python-gitpython)
+       ("python-mwclient" ,python-mwclient)
+       ("python-paramiko" ,python-paramiko)
+       ("python-pillow" ,python-pillow)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-qrcode" ,python-qrcode)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-requests" ,python-requests)
+       ("python-vagrant" ,python-vagrant)))
+    (native-inputs
+     `(("python-babel" ,python-babel)
+       ("python-bcrypt" ,python-bcrypt)
+       ("python-docker-pycreds" ,python-docker-pycreds)
+       ("python-pynacl" ,python-pynacl)
+       ("python-websocket-client" ,python-websocket-client)))
+    (home-page "https://f-droid.org")
+    (synopsis "F-Droid server tools")
+    (description
+     "The F-Droid server tools provide various scripts and tools that are used
+to maintain F-Droid, the repository of free Android applications.  You can use
+these same tools to create your own additional or alternative repository for
+publishing, or to assist in creating, testing and submitting metadata to the
+main repository.")
+    (license license:agpl3+)))
