@@ -4694,3 +4694,31 @@ Group (Non-)Overlap considerations.")
 @item miscellaneous other utilities.
 @end itemize\n")
     (license license:gpl2+)))
+
+(define-public r-refgenome
+  (package
+    (name "r-refgenome")
+    (version "1.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "refGenome" version))
+       (sha256
+        (base32
+         "15p0ra2p1pwhy5ixbhsz1g79c5sc2aap4i4c8kil0m2syg9y45sn"))))
+    (properties `((upstream-name . "refGenome")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dbi" ,r-dbi)
+       ("r-doby" ,r-doby)
+       ("r-rsqlite" ,r-rsqlite)))
+    (home-page "https://cran.r-project.org/web/packages/refGenome/")
+    (synopsis
+     "Gene and splice site annotation using annotation data from Ensembl and UCSC")
+    (description
+     "This package contains functionality for importing and managing of
+downloaded genome annotation data from the Ensembl genome browser (European
+Bioinformatics Institute) and from the UCSC genome browser (University of
+California, Santa Cruz) and annotation routines for genomic positions and
+splice site positions.")
+    (license license:gpl2)))
