@@ -5093,7 +5093,8 @@ over Xlib, including:
             (sha256
              (base32
               "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
-            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
+            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))
+          (search-patch "xorg-server-rotate-fb.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpciaccess" ,libpciaccess)

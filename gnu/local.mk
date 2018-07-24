@@ -1234,6 +1234,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
+  %D%/packages/patches/xorg-server-rotate-fb.patch		\
   %D%/packages/patches/zathura-pdf-mupdf-link-to-jpeg-libraries.patch \
   %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
   %D%/packages/patches/zstd-fix-stdin-list-without-tty.patch	\
