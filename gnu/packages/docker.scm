@@ -32,14 +32,14 @@
 (define-public python-docker-py
   (package
     (name "python-docker-py")
-    (version "1.6.0")
+    (version "1.10.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docker-py" version))
        (sha256
         (base32
-         "16ba4xyd46hkj9nkfpz15r8kskl7ljx1afjzchyrhdsrklvzgzim"))))
+         "05f49f6hnl7npmi7kigg0ibqk8s3fhzx1ivvz1kqvlv4ay3paajc"))))
     (build-system python-build-system)
     ;; TODO: Tests require a running Docker daemon.
     (arguments '(#:tests? #f))
