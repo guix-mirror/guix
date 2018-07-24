@@ -4742,3 +4742,27 @@ splice site positions.")
      "BASIX provides some efficient C/C++ implementations of native R
 procedures to speed up calculations in R.")
     (license license:gpl2)))
+
+(define-public r-blockfest
+  (package
+    (name "r-blockfest")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BlockFeST" version))
+       (sha256
+        (base32
+         "0hj7a5as7nxbgjac7lbj6qfwffx3g8x8phpf9a55f1c9cdzi73a5"))))
+    (properties `((upstream-name . "BlockFeST")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-basix" ,r-basix)))
+    (home-page "https://cran.r-project.org/web/packages/BlockFeST/")
+    (synopsis "Bayesian calculation of region-specific fixation index")
+    (description
+     "This package provides an R implementation of an extension of the
+BayeScan software for codominant markers, adding the option to group
+individual SNPs into pre-defined blocks.  A typical application of this new
+approach is the identification of genomic regions, genes, or gene sets
+containing one or more SNPs that evolved under directional selection.")
+    (license license:gpl2)))
