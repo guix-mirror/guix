@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,10 +38,12 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages ssh)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages linux))
 
 (define-public android-make-stub
@@ -807,3 +810,48 @@ script that you can put anywhere in your path.")
 Boot Images.  @code{abootimg} can work directly on block devices, or, the
 safest way, on a file image.")
     (license license:gpl2+)))
+
+(define-public python-androguard
+  (package
+    (name "python-androguard")
+    (version "3.2.1")
+    (source
+      (origin
+        ;; The pypi release doesn't have the tests, but the tests use
+        ;; packaged binaries, so we skip them.
+        (method url-fetch)
+        (uri (pypi-uri "androguard" version))
+        (sha256
+         (base32
+          "0ndsw00pkyda4i2s3wi5ap8gbk6a9d23xhhxpdbk02padv8sxkfv"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Adapted from .travis.yml
+           (lambda _
+             (invoke "nosetests" "--with-coverage" "--with-timer"
+                     "--timer-top-n" "50"))))))
+    (native-inputs
+     `(("python-codecov" ,python-codecov)
+       ("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-nose-timer" ,python-nose-timer)))
+    (propagated-inputs
+     `(("python-asn1crypto" ,python-asn1crypto)
+       ("python-colorama" ,python-colorama)
+       ("python-future" ,python-future)
+       ("python-ipython" ,python-ipython)
+       ("python-lxml" ,python-lxml)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-networkx" ,python-networkx)
+       ("python-pygments" ,python-pygments)
+       ("python-pyperclip" ,python-pyperclip)))
+    (home-page "https://github.com/androguard/androguard")
+    (synopsis "Python tool to play with Android files")
+    (description
+     "Androguard is a full Python tool to manipulate Android files.  It is
+useful for reverse engineering, analysis of Android applications and more.")
+    (license license:asl2.0)))
