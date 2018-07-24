@@ -11650,6 +11650,15 @@ When true, forwarding of X11 graphical client connections is
 enabled---in other words, @command{ssh} options @option{-X} and
 @option{-Y} will work.
 
+@item @code{allow-agent-forwarding?} (default: @code{#t})
+Whether to allow agent forwarding.
+
+@item @code{allow-tcp-forwarding?} (default: @code{#t})
+Whether to allow TCP forwarding.
+
+@item @code{gateway-ports?} (default: @code{#f})
+Whether to allow gateway ports.
+
 @item @code{challenge-response-authentication?} (default: @code{#f})
 Specifies whether challenge response authentication is allowed (e.g. via
 PAM).
