@@ -1611,7 +1611,7 @@ processes currently causing I/O.")
 (define-public fuse
   (package
     (name "fuse")
-    (version "2.9.7")
+    (version "2.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libfuse/libfuse/releases/"
@@ -1619,7 +1619,7 @@ processes currently causing I/O.")
                                   "/fuse-" version ".tar.gz"))
               (sha256
                (base32
-                "0x486nri30f7cgy0acj87v9sjxsjrr0cymrvw4h3r0sgmp8k4943"))
+                "1k4ggl2y5v0lr98l189pc81w0zijj23wbbnijsc6zlx84117nd0j"))
               (patches (search-patches "fuse-overlapping-headers.patch"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
