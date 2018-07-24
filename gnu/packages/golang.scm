@@ -2171,7 +2171,7 @@ anyways and Go regexps are more powerful.")
       (description "This package provides @code{realpath}, a Go module that
 when provided with a valid relative path / alias path, it will return you with
 a string of its real absolute path in the system.")
-      (license license:bsd-style))))
+      (license license:expat))))
 
 (define-public go-gitlab-com-ambrevar-damerau
   (let ((commit "883829e1f25fad54015772ea663e69017cf22352")
