@@ -1849,6 +1849,32 @@ with processes on remote servers, via SSH2.")
     (home-page "https://github.com/net-ssh/net-ssh")
     (license license:expat)))
 
+(define-public ruby-net-scp
+  (package
+    (name "ruby-net-scp")
+    ;; The 1.2.1 release would be incompatible with ruby-net-ssh >= 4.
+    (version "1.2.2.rc2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/net-ssh/net-scp/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0xyf17mhgvyz54xjj9ria4wnq3x62bhmkfgzqv8jwiip2bplv1nk"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)
+       ("ruby-mocha" ,ruby-mocha)))
+    (propagated-inputs
+     `(("ruby-net-ssh" ,ruby-net-ssh)))
+    (synopsis "Pure-Ruby SCP client library")
+    (description "@code{Net::SCP} is a pure-Ruby implementation of the SCP
+client protocol.")
+    (home-page "https://github.com/net-ssh/net-scp")
+    (license license:expat)))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
