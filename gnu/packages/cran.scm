@@ -4662,3 +4662,35 @@ Superiority (PS), and the Number needed to treat (NNT) effect size.  Moreover,
 comparisons to Cohen's d are offered based on Huberty & Lowman's Percentage of
 Group (Non-)Overlap considerations.")
     (license license:gpl2)))
+
+(define-public r-doby
+  (package
+    (name "r-doby")
+    (version "4.6-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "doBy" version))
+       (sha256
+        (base32
+         "1y02awzid23bxz8hx6j8pxd6i7jaq8pdw3k60rag8y6m69incrw5"))))
+    (properties `((upstream-name . "doBy")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-plyr" ,r-plyr)))
+    (home-page "http://people.math.aau.dk/~sorenh/software/doBy/")
+    (synopsis "Groupwise statistics, LSmeans, linear contrasts, and utilities")
+    (description
+     "This package contains:
+
+@itemize
+@item facilities for working with grouped data: @code{do}
+  something to data stratified @code{by} some variables.
+@item implementations of least-squares means, general linear contrasts, and
+@item miscellaneous other utilities.
+@end itemize\n")
+    (license license:gpl2+)))
