@@ -6,7 +6,6 @@
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,8 +143,7 @@ Qt-style API for Wayland clients.")
                     "sddm-" version ".tar.xz"))
               (sha256
                (base32
-                "0ch6rdppgy2vbzw0c2x9a4c6ry46vx7p6b76d8xbh2nvxh23xv0k"))
-              (patches (search-patches "sddm-fix-build-with-qt-5.11-1024.patch"))))
+                "0ch6rdppgy2vbzw0c2x9a4c6ry46vx7p6b76d8xbh2nvxh23xv0k"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
