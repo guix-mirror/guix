@@ -70,7 +70,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.31")
+    (version "1.32")
     (source
      (origin
       (method url-fetch)
@@ -78,7 +78,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1vx4nw6rxh2biy3h8n96fyr86q29h8gjl6837437i51jr4isil20"))))
+        "1jj08ns4sh1hmafqp1giskvdicdz18la516va26jycy27kkwaif3"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
