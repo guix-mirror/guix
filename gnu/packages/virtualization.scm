@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -977,3 +977,25 @@ the image.
 
 @end enumerate")
     (license license:asl2.0)))
+
+(define-public python-vagrant
+  (package
+    (name "python-vagrant")
+    (version "0.5.15")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-vagrant" version))
+        (sha256
+         (base32
+          "1ikrh6canhcxg5y7pzmkcnnydikppv7s6sm9prfx90nk0ac8m6mg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests involve running vagrant.
+    (home-page "https://github.com/todddeluca/python-vagrant")
+    (synopsis "Python bindings for Vagrant")
+    (description
+     "Python-vagrant is a Python module that provides a thin wrapper around the
+@code{vagrant} command line executable, allowing programmatic control of Vagrant
+virtual machines.")
+    (license license:expat)))
