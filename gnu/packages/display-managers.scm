@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
@@ -257,7 +257,7 @@ create smooth, animated user interfaces.")
     (inputs
      `(("audit" ,audit)
        ("linux-pam" ,linux-pam)
-       ("util-linux" ,util-linux) ; for sbin/nologin
+       ("shadow" ,shadow)                         ;for sbin/nologin
        ("libgcrypt" ,libgcrypt)
        ("libxcb" ,libxcb)))
     (native-inputs
