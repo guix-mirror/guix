@@ -446,6 +446,29 @@ outcomes of a code example.")
     (propagated-inputs
      `(("ruby-diff-lcs" ,ruby-diff-lcs)))))
 
+(define-public ruby-rspec-its
+  (package
+    (name "ruby-rspec-its")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rspec-its" version))
+       (sha256
+        (base32
+         "1pwphny5jawcm1hda3vs9pjv1cybaxy17dc1s75qd7drrvx697p3"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; needs cucumber.
+    (propagated-inputs
+     `(("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)))
+    (synopsis "RSpec extension gem for attribute matching")
+    (description "@code{rspec-its} is an RSpec extension gem for attribute
+matching.")
+    (home-page "https://github.com/rspec/rspec-its")
+    (license license:expat)))
+
 (define-public ruby-rspec-mocks
   (package
     (name "ruby-rspec-mocks")
