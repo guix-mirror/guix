@@ -394,7 +394,6 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (replacement libtiff/fixed)
    (version "4.0.9")
    (source
      (origin
@@ -405,7 +404,9 @@ extracting icontainer icon files.")
         (base32
          "1kfg4q01r4mqn7dj63ifhi6pmqzbf4xax6ni6kkk81ri5kndwyvf"))
        (patches (search-patches "libtiff-CVE-2017-9935.patch"
-                                "libtiff-CVE-2017-18013.patch"))))
+                                "libtiff-CVE-2017-18013.patch"
+                                "libtiff-CVE-2018-8905.patch"
+                                "libtiff-CVE-2018-10963.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -426,17 +427,6 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:non-copyleft "file://COPYRIGHT"
                                   "See COPYRIGHT in the distribution."))
    (home-page "http://www.simplesystems.org/libtiff/")))
-
-(define libtiff/fixed
-  (package
-    (inherit libtiff)
-    (source
-      (origin
-        (inherit (package-source libtiff))
-        (patches
-          (append (origin-patches (package-source libtiff))
-                  (search-patches "libtiff-CVE-2018-8905.patch"
-                                  "libtiff-CVE-2018-10963.patch")))))))
 
 (define-public leptonica
   (package
