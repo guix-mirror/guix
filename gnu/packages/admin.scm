@@ -1783,7 +1783,8 @@ platform-specific methods.")
                 "0f4ci6ffznnmgblwgv7ich9mjfk3p6y5l6m6h3chhmzw156nj454"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list "--with-python=no")))
+     `(#:configure-flags (list "--with-python=no"
+                               "--disable-static")))
     (inputs
      `(("openldap" ,openldap)
        ("gnutls" ,gnutls)
