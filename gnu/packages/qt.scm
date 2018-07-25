@@ -249,9 +249,24 @@ system, and the core design of Django is reused in Grantlee.")
                        "./configure"
                        "-verbose"
                        "-prefix" out
-                       "-examplesdir" examples ; 89MiB
+                       "-docdir" (string-append out "/share/doc/qt5")
+                       "-headerdir" (string-append out "/include/qt5")
+                       "-archdatadir" (string-append out "/lib/qt5")
+                       "-datadir" (string-append out "/share/qt5")
+                       "-examplesdir" (string-append
+                                        examples "/share/doc/qt5/examples") ; 151MiB
                        "-opensource"
                        "-confirm-license"
+
+                       ;; These features require higher versions of Linux than the
+                       ;; minimum version of the glibc.  See
+                       ;; src/corelib/global/minimum-linux_p.h.  By disabling these
+                       ;; features Qt5 applications can be used on the oldest
+                       ;; kernels that the glibc supports, including the RHEL6
+                       ;; (2.6.32) and RHEL7 (3.10) kernels.
+                       "-no-feature-getentropy"  ; requires Linux 3.17
+                       "-no-feature-renameat2"   ; requires Linux 3.16
+
                        ;; Do not build examples; for the time being, we
                        ;; prefer to save the space and build time.
                        "-no-compile-examples"
@@ -259,6 +274,7 @@ system, and the core design of Django is reused in Grantlee.")
                        ;; the bundled copy by default.
                        ;"-system-sqlite"
                        "-system-harfbuzz"
+                       "-system-pcre"
                        ;; explicitly link with openssl instead of dlopening it
                        "-openssl-linked"
                        ;; explicitly link with dbus instead of dlopening it
@@ -273,12 +289,92 @@ system, and the core design of Django is reused in Grantlee.")
                              '()
                              '("-no-sse2"))
                        "-no-mips_dsp"
-                       "-no-mips_dspr2"))))))))
-    (home-page "https://www.qt.io/")
-    (synopsis "Cross-platform GUI library")
-    (description "Qt is a cross-platform application and UI framework for
-developers using C++ or QML, a CSS & JavaScript like language.")
-    (license license:lgpl2.1)
+                       "-no-mips_dspr2")))))
+           (add-after 'install 'patch-mkspecs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (archdata (string-append out "/lib/qt5"))
+                      (mkspecs (string-append archdata "/mkspecs"))
+                      (qt_config.prf (string-append
+                                      mkspecs "/features/qt_config.prf")))
+                 ;; For each Qt module, let `qmake' uses search paths in the
+                 ;; module directory instead of all in QT_INSTALL_PREFIX.
+                 (substitute* qt_config.prf
+                   (("\\$\\$\\[QT_INSTALL_HEADERS\\]")
+                    "$$clean_path($$replace(dir, mkspecs/modules, ../../include/qt5))")
+                   (("\\$\\$\\[QT_INSTALL_LIBS\\]")
+                    "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
+                   (("\\$\\$\\[QT_HOST_LIBS\\]")
+                    "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
+                   (("\\$\\$\\[QT_INSTALL_BINS\\]")
+                    "$$clean_path($$replace(dir, mkspecs/modules, ../../bin))"))
+
+                 ;; Searches Qt tools in the current PATH instead of QT_HOST_BINS.
+                 (substitute* (string-append mkspecs "/features/qt_functions.prf")
+                   (("cmd = \\$\\$\\[QT_HOST_BINS\\]/\\$\\$2")
+                    "cmd = $$system(which $${2}.pl 2>/dev/null || which $${2})"))
+
+                 ;; Resolve qmake spec files within qtbase by absolute paths.
+                 (substitute*
+                     (map (lambda (file)
+                            (string-append mkspecs "/features/" file))
+                          '("device_config.prf" "moc.prf" "qt_build_config.prf"
+                            "qt_config.prf" "winrt/package_manifest.prf"))
+                   (("\\$\\$\\[QT_HOST_DATA/get\\]") archdata)
+                   (("\\$\\$\\[QT_HOST_DATA/src\\]") archdata))
+                 #t)))
+           (add-after 'unpack 'patch-paths
+             ;; Use the absolute paths for dynamically loaded libs, otherwise
+             ;; the lib will be searched in LD_LIBRARY_PATH which typically is
+             ;; not set in guix.
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; libresolve
+               (let ((glibc (assoc-ref inputs ,(if (%current-target-system)
+                                                   "cross-libc" "libc"))))
+                 (substitute* '("qtbase/src/network/kernel/qdnslookup_unix.cpp"
+                                "qtbase/src/network/kernel/qhostinfo_unix.cpp")
+                   (("^\\s*(lib.setFileName\\(QLatin1String\\(\")(resolv\"\\)\\);)" _ a b)
+                  (string-append a glibc "/lib/lib" b))))
+               ;; X11/locale (compose path)
+               (substitute* "qtbase/src/plugins/platforminputcontexts/compose/generator/qtablegenerator.cpp"
+                 ;; Don't search in /usr/…/X11/locale, …
+                 (("^\\s*m_possibleLocations.append\\(QStringLiteral\\(\"/usr/.*/X11/locale\"\\)\\);" line)
+                  (string-append "// " line))
+                 ;; … but use libx11's path
+                 (("^\\s*(m_possibleLocations.append\\(QStringLiteral\\()X11_PREFIX \"(/.*/X11/locale\"\\)\\);)" _ a b)
+                  (string-append a "\"" (assoc-ref inputs "libx11") b)))
+               ;; libGL
+               (substitute* "qtbase/src/plugins/platforms/xcb/gl_integrations/xcb_glx/qglxintegration.cpp"
+                 (("^\\s*(QLibrary lib\\(QLatin1String\\(\")(GL\"\\)\\);)" _ a b)
+                  (string-append a (assoc-ref inputs "mesa") "/lib/lib" b)))
+               ;; libXcursor
+               (substitute* "qtbase/src/plugins/platforms/xcb/qxcbcursor.cpp"
+                 (("^\\s*(QLibrary xcursorLib\\(QLatin1String\\(\")(Xcursor\"\\), 1\\);)" _ a b)
+                  (string-append a (assoc-ref inputs "libxcursor") "/lib/lib" b))
+                 (("^\\s*(xcursorLib.setFileName\\(QLatin1String\\(\")(Xcursor\"\\)\\);)" _ a b)
+                  (string-append a (assoc-ref inputs "libxcursor") "/lib/lib" b)))
+               #t)))))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "QMAKEPATH")
+              (files '("lib/qt5")))
+             (search-path-specification
+              (variable "QML2_IMPORT_PATH")
+              (files '("lib/qt5/qml")))
+             (search-path-specification
+              (variable "QT_PLUGIN_PATH")
+              (files '("lib/qt5/plugins")))
+             (search-path-specification
+              (variable "XDG_DATA_DIRS")
+              (files '("share")))
+             (search-path-specification
+              (variable "XDG_CONFIG_DIRS")
+              (files '("etc/xdg")))))
+      (home-page "https://www.qt.io/")
+      (synopsis "Cross-platform GUI library")
+      (description "Qt is a cross-platform application and UI framework for
+  developers using C++ or QML, a CSS & JavaScript like language.")
+      (license (list license:lgpl2.1 license:lgpl3))
 
     ;; Qt 4: 'QBasicAtomicPointer' leads to build failures on MIPS;
     ;; see <http://hydra.gnu.org/build/112828>.
