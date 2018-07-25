@@ -529,10 +529,10 @@ device-specific programs to convert and print many types of files.")
     (arguments
       (substitute-keyword-arguments (package-arguments hplip)
         ((#:configure-flags cf)
-         ``(,@(delete "--enable-qt5" ,cf)))))
+         `(delete "--enable-qt5" ,cf))))
     (inputs
-     `(,@(fold alist-delete (package-inputs hplip)
-               '("python-pygobject" "python-pyqt"))))
+     (fold alist-delete (package-inputs hplip)
+           '("python-pygobject" "python-pyqt")))
     (synopsis "GUI-less version of hplip")))
 
 (define-public foomatic-filters
