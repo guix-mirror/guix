@@ -676,7 +676,7 @@ HiddenServicePort ~a ~a~%"
                 (stop #~(make-kill-destructor))
                 (documentation "Run the Tor anonymous network overlay."))))))))
 
-(define (tor-hidden-service-activation config)
+(define (tor-activation config)
   "Set up directories for Tor and its hidden services, if any."
   #~(begin
       (use-modules (guix build utils))
@@ -721,7 +721,7 @@ HiddenServicePort ~a ~a~%"
                        (service-extension account-service-type
                                           (const %tor-accounts))
                        (service-extension activation-service-type
-                                          tor-hidden-service-activation)))
+                                          tor-activation)))
 
                 ;; This can be extended with hidden services.
                 (compose concatenate)
