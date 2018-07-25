@@ -226,7 +226,8 @@ system, and the core design of Django is reused in Grantlee.")
        ("ruby" ,ruby)
        ("which" ,(@ (gnu packages base) which))))
     (arguments
-     `(#:phases
+     `(#:parallel-build? #f ; Triggers race condition in qtbase module on Hydra.
+       #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-bin-sh
            (lambda _
