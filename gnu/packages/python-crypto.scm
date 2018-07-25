@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
@@ -610,16 +610,17 @@ ECB and OFB).")
 (define-public python-asn1crypto
   (package
     (name "python-asn1crypto")
-    (version "0.22.0")
+    (version "0.24.0")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/wbond/asn1crypto/archive/"
-                            version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/wbond/asn1crypto.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "1kn910896l3knmilla1c9ly20q181s43w1ah08lzkbm1h3j6pcz0"))))
+          "10lai2cs5mnz3gpaffbw1m7b885ls8328q5wxm35vfmcip1f0xmb"))))
     (build-system python-build-system)
     (home-page "https://github.com/wbond/asn1crypto")
     (synopsis "ASN.1 parser and serializer in Python")

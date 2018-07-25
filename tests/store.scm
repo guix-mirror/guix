@@ -210,6 +210,52 @@
            (valid-path? store path)
            (file-exists? path)))))
 
+(test-equal "add-file-tree-to-store"
+  `(42
+    ("." directory #t)
+    ("./bar" directory #t)
+    ("./foo" directory #t)
+    ("./foo/a" regular "file a")
+    ("./foo/b" symlink "a")
+    ("./foo/c" directory #t)
+    ("./foo/c/p" regular "file p")
+    ("./foo/c/q" directory #t)
+    ("./foo/c/q/x" regular "#!/bin/sh\nexit 42")
+    ("./foo/c/q/y" symlink "..")
+    ("./foo/c/q/z" directory #t))
+  (let* ((tree  `("file-tree" directory
+                  ("foo" directory
+                   ("a" regular (data "file a"))
+                   ("b" symlink "a")
+                   ("c" directory
+                    ("p" regular (data ,(string->utf8 "file p")))
+                    ("q" directory
+                     ("x" executable
+                      (data "#!/bin/sh\nexit 42"))
+                     ("y" symlink "..")
+                     ("z" directory))))
+                  ("bar" directory)))
+         (result (add-file-tree-to-store %store tree)))
+    (cons (status:exit-val (system* (string-append result "/foo/c/q/x")))
+          (with-directory-excursion result
+            (map (lambda (file)
+                   (let ((type (stat:type (lstat file))))
+                     `(,file ,type
+                             ,(match type
+                                ((or 'regular 'executable)
+                                 (call-with-input-file file
+                                   get-string-all))
+                                ('symlink (readlink file))
+                                ('directory #t)))))
+                 (find-files "." #:directories? #t))))))
+
+(test-equal "add-file-tree-to-store, flat"
+  "Hello, world!"
+  (let* ((tree   `("flat-file" regular (data "Hello, world!")))
+         (result (add-file-tree-to-store %store tree)))
+    (and (file-exists? result)
+         (call-with-input-file result get-string-all))))
+
 (test-assert "references"
   (let* ((t1 (add-text-to-store %store "random1"
                                 (random-text)))

@@ -74,6 +74,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages stb)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
@@ -440,7 +441,7 @@ clone.")
 (define-public sfml
   (package
     (name "sfml")
-    (version "2.3.2")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               ;; Do not fetch the archives from
@@ -451,24 +452,37 @@ clone.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k2fl5xk3ni2q8bsxl0551inx26ww3w6cp6hssvww0wfjdjcirsm"))))
+                "1x3yvhdrln5b6h4g5r4mds76gq8zsxw6icxqpwqkmxsqcq5yviab"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Ensure system libraries are used.
+                  (delete-file-recursively "extlibs")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       (list "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE")
+       (list "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE"
+             "-DSFML_OS_PKGCONFIG_DIR=lib/pkgconfig")
        #:tests? #f)) ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("mesa" ,mesa)
        ("glew" ,glew)
-       ("flac" ,flac)
-       ("libvorbis" ,libvorbis)
        ("libx11" ,libx11)
        ("xcb-util-image" ,xcb-util-image)
        ("libxrandr" ,libxrandr)
        ("eudev" ,eudev)
-       ("freetype" ,freetype)
        ("libjpeg" ,libjpeg)
        ("libsndfile" ,libsndfile)
+       ("stb-image" ,stb-image)
+       ("stb-image-write" ,stb-image-write)))
+    (propagated-inputs
+     ;; In Requires.private of pkg-config files.
+     `(("flac" ,flac)
+       ("freetype" ,freetype)
+       ("libvorbis" ,libvorbis)
        ("openal" ,openal)))
     (home-page "https://www.sfml-dev.org")
     (synopsis "Simple and Fast Multimedia Library")
@@ -518,7 +532,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
 (define-public physfs
   (package
     (name "physfs")
-    (version "2.0.3")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -527,10 +541,18 @@ sounds from presets such as \"explosion\" or \"powerup\".")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sbbyqzqhyf0g68fcvvv20n3928j0x6ik1njmhn1yigvq2bj11na"))))
+                "1wgj2zqpnfbnyyi1i7bq5pshcc9n5cvwlpzp8im67nb8662ryyxp"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f))                    ; no check target
+     '(#:tests? #f                      ; no check target
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-CMakeLists.txt
+                    (lambda _
+                      (substitute* "CMakeLists.txt"
+                        ;; XXX: For some reason CMakeLists.txt disables
+                        ;; RUNPATH manipulation when the compiler is GCC.
+                        (("CMAKE_COMPILER_IS_GNUCC") "FALSE"))
+                      #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs

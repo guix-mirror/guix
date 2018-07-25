@@ -101,8 +101,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "0.15.0")
-        (commit "4876bc8234095e2af191b0c6470455ce67d9f5f7")
-        (revision 1))
+        (commit "8bbb79cf95a07a40950448a8a09d888254404ed4")
+        (revision 2))
     (package
       (name "guix")
 
@@ -118,7 +118,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0qw0ffrxzxfk76pp38kx222ndpsv9mbhlmfycagyipgypgjdd9lq"))
+                  "0h83l91v2cg9bb78c7vqx9wj71ckz22jbjmm2fy4vqs9216jnvc0"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -263,7 +263,10 @@
 
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
-         ("guile" ,guile-2.2)
+
+         ;; Use 2.2.4 to avoid various thread-safety issues while building
+         ;; code in parallel.
+         ("guile" ,guile-2.2.4)
 
          ;; Many tests rely on the 'guile-bootstrap' package, which is why we
          ;; have it here.
@@ -345,7 +348,7 @@ the Nix package manager.")
                (let ((out (assoc-ref outputs "out")))
                  (substitute* (find-files (string-append out "/libexec"))
                    (("exec \".*/bin/guix\"")
-                    "exec ~root/.config/current/bin/guix"))
+                    "exec ~root/.config/guix/current/bin/guix"))
                  #t)))
            (delete 'wrap-program)))))))
 

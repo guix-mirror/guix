@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
@@ -161,19 +161,20 @@ application can be customized via its API for Python scripting.")
 (define-public assimp
   (package
     (name "assimp")
-    (version "3.3.1")
+    (version "4.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/assimp/assimp/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/assimp/assimp.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gy7zlgkf4nmyv8n674p3f30asis0gjz8icyy11i693n13ww71fk"))))
+                "1rhyqfhzifdj7yibyanph3rh13ykw3i98dnn8mz65j780472hw28"))))
     (build-system cmake-build-system)
     (inputs
      `(("zlib" ,zlib)))
-    (home-page "http://assimp.org/")
+    (home-page "http://www.assimp.org/")
     (synopsis "Asset import library")
     (description
      "The Open Asset Import Library loads more than 40 3D file formats into
@@ -373,13 +374,14 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
     (name "openimageio")
     (version "1.7.19")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/OpenImageIO/oiio/"
-                                  "archive/Release-" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenImageIO/oiio.git")
+                    (commit (string-append "Release-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qlmfhvl2wva4aifyiq7c4sdy61ddl7wykwvlpfys9p701xghvj7"))))
+                "0yxxy43l3lllw7maqg42dlkgqms2d4772sxzxk7kmxg4lnhsvndc"))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see
@@ -390,7 +392,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
     (inputs
      `(("boost" ,boost)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("openexr" ,openexr)

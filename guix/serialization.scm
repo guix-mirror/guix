@@ -47,6 +47,7 @@
             nar-read-error-token
 
             write-file
+            write-file-tree
             restore-file))
 
 ;;; Comment:
@@ -211,14 +212,19 @@ substitute invalid byte sequences with question marks.  This is a
           (lambda ()
             (close-port port))))))
 
-  (write-string "contents" p)
-  (write-long-long size p)
   (call-with-binary-input-file file
-    ;; Use 'sendfile' when P is a file port.
-    (if (file-port? p)
-        (cut sendfile p <> size 0)
-        (cut dump <> p size)))
-  (write-padding size p))
+    (lambda (input)
+      (write-contents-from-port input p size))))
+
+(define (write-contents-from-port input output size)
+  "Write SIZE bytes from port INPUT to port OUTPUT."
+  (write-string "contents" output)
+  (write-long-long size output)
+  ;; Use 'sendfile' when both OUTPUT and INPUT are file ports.
+  (if (and (file-port? output) (file-port? input))
+      (sendfile output input size 0)
+      (dump input output size))
+  (write-padding size output))
 
 (define (read-contents in out)
   "Read the contents of a file from the Nar at IN, write it to OUT, and return
@@ -263,47 +269,113 @@ the size in bytes."
 sub-directories of FILE as needed.  For each directory entry, call (SELECT?
 FILE STAT), where FILE is the entry's absolute file name and STAT is the
 result of 'lstat'; exclude entries for which SELECT? does not return true."
+  (write-file-tree file port
+                   #:file-type+size
+                   (lambda (file)
+                     (let* ((stat (lstat file))
+                            (size (stat:size stat)))
+                       (case (stat:type stat)
+                         ((directory)
+                          (values 'directory size))
+                         ((regular)
+                          (values (if (zero? (logand (stat:mode stat)
+                                                     #o100))
+                                      'regular
+                                      'executable)
+                                  size))
+                         (else
+                          (values (stat:type stat) size))))) ;bah!
+                   #:file-port (cut open-file <> "r0b")
+                   #:symlink-target readlink
+
+                   #:directory-entries
+                   (lambda (directory)
+                     ;; 'scandir' defaults to 'string-locale<?' to sort files,
+                     ;; but this happens to be case-insensitive (at least in
+                     ;; 'en_US' locale on libc 2.18.)  Conversely, we want
+                     ;; files to be sorted in a case-sensitive fashion.
+                     (define basenames
+                       (scandir directory (negate (cut member <> '("." "..")))
+                                string<?))
+
+                     (filter-map (lambda (base)
+                                   (let ((file (string-append directory
+                                                              "/" base)))
+                                     (and (not (member base '("." "..")))
+                                          (select? file (lstat file))
+                                          base)))
+                                 basenames))
+
+                   ;; The 'scandir' call above gives us filtered and sorted
+                   ;; entries, so no post-processing is needed.
+                   #:postprocess-entries identity))
+
+(define (filter/sort-directory-entries lst)
+  "Remove dot and dot-dot entries from LST, and sort it in lexicographical
+order."
+  (delete-duplicates
+   (sort (remove (cute member <> '("." "..")) lst)
+         string<?)
+   string=?))
+
+(define* (write-file-tree file port
+                          #:key
+                          file-type+size
+                          file-port
+                          symlink-target
+                          directory-entries
+                          (postprocess-entries filter/sort-directory-entries))
+  "Write the contents of FILE to PORT in Nar format, recursing into
+sub-directories of FILE as needed.
+
+This procedure does not make any file-system I/O calls.  Instead, it calls the
+user-provided FILE-TYPE+SIZE, FILE-PORT, SYMLINK-TARGET, and DIRECTORY-ENTRIES
+procedures, which roughly correspond to 'lstat', 'readlink', and 'scandir'.
+POSTPROCESS-ENTRIES ensures that directory entries are valid; leave it as-is
+unless you know that DIRECTORY-ENTRIES provide filtered and sorted entries, in
+which case you can use 'identity'."
   (define p port)
 
   (write-string %archive-version-1 p)
 
-  (let dump ((f file) (s (lstat file)))
+  (let dump ((f file))
+    (define-values (type size)
+      (file-type+size f))
+
     (write-string "(" p)
-    (case (stat:type s)
-      ((regular)
+    (case type
+      ((regular executable)
        (write-string "type" p)
        (write-string "regular" p)
-       (if (not (zero? (logand (stat:mode s) #o100)))
-           (begin
-             (write-string "executable" p)
-             (write-string "" p)))
-       (write-contents f p (stat:size s)))
+       (when (eq? 'executable type)
+         (write-string "executable" p)
+         (write-string "" p))
+       (let ((input (file-port f)))
+         (dynamic-wind
+           (const #t)
+           (lambda ()
+             (write-contents-from-port input p size))
+           (lambda ()
+             (close-port input)))))
       ((directory)
        (write-string "type" p)
        (write-string "directory" p)
-       (let ((entries
-              ;; 'scandir' defaults to 'string-locale<?' to sort files, but
-              ;; this happens to be case-insensitive (at least in 'en_US'
-              ;; locale on libc 2.18.)  Conversely, we want files to be
-              ;; sorted in a case-sensitive fashion.
-              (scandir f (negate (cut member <> '("." ".."))) string<?)))
+       (let ((entries (postprocess-entries (directory-entries f))))
          (for-each (lambda (e)
-                     (let* ((f (string-append f "/" e))
-                            (s (lstat f)))
-                       (when (select? f s)
-                         (write-string "entry" p)
-                         (write-string "(" p)
-                         (write-string "name" p)
-                         (write-string e p)
-                         (write-string "node" p)
-                         (dump f s)
-                         (write-string ")" p))))
+                     (let* ((f (string-append f "/" e)))
+                       (write-string "entry" p)
+                       (write-string "(" p)
+                       (write-string "name" p)
+                       (write-string e p)
+                       (write-string "node" p)
+                       (dump f)
+                       (write-string ")" p)))
                    entries)))
       ((symlink)
        (write-string "type" p)
        (write-string "symlink" p)
        (write-string "target" p)
-       (write-string (readlink f) p))
+       (write-string (symlink-target f) p))
       (else
        (raise (condition (&message (message "unsupported file type"))
                          (&nar-error (file f) (port port))))))
@@ -378,5 +450,9 @@ Restore it as FILE."
           (condition
            (&message (message "unsupported nar entry type"))
            (&nar-read-error (port port) (file file) (token x)))))))))
+
+;;; Local Variables:
+;;; eval: (put 'call-with-binary-input-file 'scheme-indent-function 1)
+;;; End:
 
 ;;; serialization.scm ends here

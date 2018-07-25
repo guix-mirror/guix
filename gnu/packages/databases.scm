@@ -702,6 +702,7 @@ Language.")
 as a drop-in replacement of MySQL.")
     (license license:gpl2)))
 
+;; Don't forget to update the other postgresql packages when upgrading this one.
 (define-public postgresql
   (package
     (name "postgresql")
@@ -750,14 +751,14 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.8")
+    (version "9.6.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0w7bwf19wbdd3jjbjv03cnx56qka4801srcbsayk9v792awv7zga"))))))
+                "0biy8j69dbvdmrag55pdszpc0702agzqhhcwdx21xp02mzim4ydr"))))))
 
 (define-public qdbm
   (package

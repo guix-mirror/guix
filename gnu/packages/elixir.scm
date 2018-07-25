@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 nee <nee.git@cock.li>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright (C) 2018 Nils Gillmann <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,7 @@
 (define-public elixir
   (package
     (name "elixir")
-    (version "1.5.3")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/elixir-lang/elixir"
@@ -40,10 +41,11 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0acnxfwvkx1m1d0h5z051mz95n35zm468hcvc3wpmn17c15h5ihg"))))
+                "0c9qz5hasa59a9x1iwpcqpqj6wdbzpijfxqfmzimwj5z8q37nl3l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:parallel-tests? #f ;see <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32171#23>
        #:make-flags (list (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
        #:phases

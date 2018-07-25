@@ -428,7 +428,7 @@ artifact and repository handling code.")
        ("java-eclipse-jetty-server-9.2" ,java-eclipse-jetty-server-9.2)
        ("java-eclipse-jetty-servlet-9.2" ,java-eclipse-jetty-servlet-9.2)
        ("java-slf4j-api" ,java-slf4j-api)
-       ("java-tomcat" ,java-tomcat)
+       ("java-javaee-servletapi" ,java-javaee-servletapi)
        ("maven-wagon-provider-api" ,maven-wagon-provider-api)))
     (synopsis "Test classes from maven-wagon")
     (description "Maven Wagon is a transport abstraction that is used in Maven's

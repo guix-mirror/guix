@@ -21,10 +21,15 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gv)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages xml)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
 
@@ -198,3 +203,42 @@ neutron scattering spectra, but also computes other quantities.  The software
 is currently not actively maintained and works only with Python 2 and
 NumPy < 1.9.")
     (license license:cecill)))
+
+(define-public openbabel
+  (package
+    (name "openbabel")
+    (version "2.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                                  version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z3d6xm70dpfikhwdnbzc66j2l49vq105ch041wivrfz5ic3ch90"))
+              (patches
+               (search-patches "openbabel-fix-crash-on-nwchem-output.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DOPENBABEL_USE_SYSTEM_INCHI=ON"
+             (string-append "-DINCHI_LIBRARY="
+                            (assoc-ref %build-inputs "inchi")
+                            "/lib/inchi/libinchi.so.1")
+             (string-append "-DINCHI_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "inchi") "/include/inchi"))
+       #:test-target "test"))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("eigen" ,eigen)
+       ("inchi" ,inchi)
+       ("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
+    (home-page "http://openbabel.org/wiki/Main_Page")
+    (synopsis "Chemistry data manipulation toolbox")
+    (description
+     "Open Babel is a chemical toolbox designed to speak the many languages of
+chemical data.  It's a collaborative project allowing anyone to search, convert,
+analyze, or store data from molecular modeling, chemistry, solid-state
+materials, biochemistry, or related areas.")
+    (license license:gpl2)))

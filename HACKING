@@ -27,7 +27,7 @@ mailing list.  When you get commit access, please make sure to follow the
 policy below (discussions of the policy can take place on guix-devel@gnu.org.)
 
 Non-trivial patches should always be posted to guix-patches@gnu.org (trivial
-patches include fixing typos, etc.)  This mailing list fills the
+patches include fixing typos, etc.).  This mailing list fills the
 patch-tracking database at [[https://bugs.gnu.org/guix-patches]]; see
 "Contributing" in the manual for details.
 

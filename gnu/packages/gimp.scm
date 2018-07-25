@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
@@ -100,7 +100,7 @@ provided, as well as a framework to add new color models and data types.")
      `(("cairo" ,cairo)
        ("pango" ,pango)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg-8)))
+       ("libjpeg" ,libjpeg)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for gtester
@@ -154,7 +154,7 @@ buffers.")
        ("glib" ,glib)
        ("glib-networking" ,glib-networking)
        ("libtiff" ,libtiff)
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg)
        ("atk" ,atk)
        ("gexiv2" ,gexiv2)
        ("gtk+" ,gtk+-2)

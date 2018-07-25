@@ -26,6 +26,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -612,14 +613,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.0.1")
+    (version "4.0.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1vn04n0n46zdxq14cma3w8ml2ckh5jxwlybsc4xmvcqdqq0mqpv0"))))
+               "15rgzcmdccy4flajs63gkz4n3k24wkkg50r13l1r83lrxg4hqp59"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -788,26 +789,26 @@ audio/video codec library.")
 (define-public ffmpeg-3.4
   (package
     (inherit ffmpeg)
-    (version "3.4.3")
+    (version "3.4.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0p45s3h7mg7v0jm77bymw2617i08f086dlcdmaylnk7795yind3b"))))))
+               "1iizgnhjbhar9y1ykqlj1czqanlv24knkfq5vvfnppv5x00pcvrq"))))))
 
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.14")
+    (version "2.8.15")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "05m1272r5qa2r0ym5vq4figdfnpvcys1fgb1026n5s6xdjd1s1pg"))))
+               "065xbvnfmxfbfrc14cavpqyd2slil99vcjksw4ndb7w8zdh0wp3v"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -817,18 +818,48 @@ audio/video codec library.")
                     flag))
               ,flags))))))
 
+(define-public ffmpegthumbnailer
+  (package
+    (name "ffmpegthumbnailer")
+    (version "2.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dirkvdb/"
+                                  name "/archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "13qs4iwd4l3iiim30s5051n80z0vgsnikym8vsn321cnm9algiwb"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("gvfs" ,gvfs)))
+    (arguments
+     `(#:configure-flags (list "-DENABLE_GIO=ON" "-DENABLE_THUMBNAILER=ON")))
+    (home-page "https://github.com/dirkvdb/ffmpegthumbnailer")
+    (synopsis "Create thumbnails from video files")
+    (description "FFmpegthumbnailer is a lightweight video thumbnailer that
+can be used by file managers to create thumbnails for your video files.  The
+thumbnailer uses ffmpeg to decode frames from the video files, so supported
+videoformats depend on the configuration flags of ffmpeg.")
+    (license license:gpl2+)))
+
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.3")
+    (version "3.0.3-1")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://download.videolan.org/pub/videolan/vlc/"
-                   version "/vlc-" version ".tar.xz"))
+                   (car (string-split version #\-))
+                   "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "0lavzly8l0ll1d9iris9cnirgcs77g48lxj14058dxqkvd5v1a4v"))))
+               "1p7qvdvg9w4lz8vckzhn6bswfkq3qw7fqkgvwjcskdgc266xx7dw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -998,7 +1029,7 @@ treaming protocols.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cdparanoia" ,cdparanoia)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
 ;;        ("giflib" ,giflib) ; uses QuantizeBuffer, requires version >= 5
@@ -1075,7 +1106,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.28.2")
+    (version "0.29.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1083,7 +1114,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "15fp4sa5glqhgidd54vs6knf9dp809wszzsqiqz5nyri4ph19nma"))
+                "06bk8836brzik1qmq8kycwg5n35r438sd2176k6msjg5rrwghakp"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -1224,7 +1255,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.06.19")
+    (version "2018.07.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1232,7 +1263,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ys2mc84r7mjpn7rykb57sn3ii1kp3divjdn2ivwqknj8jrzg3z6"))))
+                "1rigah941k2drzx5qz937lk68gw9jrizj5lgd9f9znp0bgi2d0xd"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2336,7 +2367,7 @@ supported players in addition to this package.")
     (inputs
      `(("bzip2" ,bzip2)
        ("dbus-glib" ,dbus-glib)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-3.4)           ;compilation errors with ffmpeg-4
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("glib" ,glib)

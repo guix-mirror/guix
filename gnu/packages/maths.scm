@@ -207,6 +207,37 @@ programming languages.")
     (home-page "https://stcorp.nl/coda")
     (license license:gpl2+)))
 
+(define-public qhull
+  (package
+    (name "qhull")
+    (version "2015.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.qhull.org/download/qhull-"
+                                  (car (string-split version #\.))
+                                  "-src-7.2.0.tgz"))
+              (sha256
+               (base32
+                "0dm4b2xr3asy6w74khq2zg4gf26zsy3qf9sq7pf7lmrvbj911c3q"))))
+    (build-system cmake-build-system)
+    (synopsis "Calculate convex hulls and related structures")
+    (description
+     "@code{Qhull} computes the convex hull, Delaunay triangulation, Voronoi
+diagram, halfspace intersection about a point, furthest-site Delaunay
+triangulation, and furthest-site Voronoi diagram.  The source code runs in 2-d,
+3-d, 4-d, and higher dimensions.  @code{Qhull} implements the Quickhull
+algorithm for computing the convex hull.  It handles roundoff errors from
+floating point arithmetic.  It computes volumes, surface areas, and
+approximations to the convex hull.
+
+@code{Qhull} does not support triangulation of non-convex surfaces, mesh
+generation of non-convex objects, medium-sized inputs in 9-D and higher, alpha
+shapes, weighted Voronoi diagrams, Voronoi volumes, or constrained Delaunay
+triangulations.")
+    (home-page "http://qhull.org")
+    (license (license:non-copyleft "file://COPYING.txt"
+                                   "See COPYING in the distribution."))))
+
 (define-public units
   (package
    (name "units")
@@ -1336,6 +1367,7 @@ can solve two kinds of problems:
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
+       ("qhull" ,qhull)
        ("readline" ,readline)
        ("gl2ps" ,gl2ps)
        ("glpk" ,glpk)

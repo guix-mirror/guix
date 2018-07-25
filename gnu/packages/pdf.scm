@@ -548,23 +548,26 @@ interaction.")
 (define-public podofo
   (package
     (name "podofo")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/podofo/podofo/" version
                                   "/podofo-" version ".tar.gz"))
               (sha256
                (base32
-                "012kgfx5j5n6w4zkc1d290d2cwjk60jhzsjlr2x19g3yi75q2jc5"))))
+                "0wj0y4zcmj4q79wrn3vv3xq4bb0vhhxs8yifafwy9f2sjm83c5p9"))))
     (build-system cmake-build-system)
-    (inputs                                      ; TODO: Add cppunit for tests
-     `(("lua" ,lua-5.1)
-       ("libpng" ,libpng)
-       ("openssl" ,openssl)
-       ("fontconfig" ,fontconfig)
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libjpeg" ,libjpeg)
        ("libtiff" ,libtiff)
-       ("libjpeg" ,libjpeg-8)
+       ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("libpng" ,libpng)
+       ("lua" ,lua-5.1)
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("-DPODOFO_BUILD_SHARED=ON"

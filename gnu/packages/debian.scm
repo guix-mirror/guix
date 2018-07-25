@@ -17,6 +17,7 @@
 (define-module (gnu packages debian)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -112,15 +113,17 @@ contains the archive keys used for that.")
 (define-public debootstrap
   (package
     (name "debootstrap")
-    (version "1.0.101")
+    (version "1.0.106")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "mirror://debian/pool/main/d/" name "/"
-                            name "_" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://salsa.debian.org/installer-team/debootstrap.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "1p1a81s8hq73byd7256iljdls389x2q7w6srgrgfmx5bl1csnzp3"))))
+          "1fm5bgllcwgwizrqi4sn8p4fpbzhbzgwprrfppfq9hqdzbmlfmnv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -165,7 +168,7 @@ contains the archive keys used for that.")
      `(("binutils" ,binutils)
        ("gnupg" ,gnupg)
        ("perl" ,perl)))
-    (home-page "https://anonscm.debian.org/cgit/d-i/debootstrap.git")
+    (home-page "https://tracker.debian.org/pkg/debootstrap")
     (synopsis "Bootstrap a basic Debian system")
     (description "Debootstrap is used to create a Debian base system from
 scratch, without requiring the availability of @code{dpkg} or @code{apt}.

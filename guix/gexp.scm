@@ -601,6 +601,12 @@ names and file names suitable for the #:allowed-references argument to
                            allowed-references disallowed-references
                            leaked-env-vars
                            local-build? (substitutable? #t)
+
+                           ;; TODO: This parameter is transitional; it's here
+                           ;; to avoid a full rebuild.  Remove it on the next
+                           ;; rebuild cycle.
+                           import-creates-derivation?
+
                            deprecation-warnings
                            (script-name (string-append name "-builder")))
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
@@ -695,6 +701,8 @@ The other arguments are as for 'derivation'."
                                        extensions))
                        (modules  (if (pair? %modules)
                                      (imported-modules %modules
+                                                       #:derivation?
+                                                       import-creates-derivation?
                                                        #:system system
                                                        #:module-path module-path
                                                        #:guile guile-for-build
@@ -703,6 +711,8 @@ The other arguments are as for 'derivation'."
                                      (return #f)))
                        (compiled (if (pair? %modules)
                                      (compiled-modules %modules
+                                                       #:derivation?
+                                                       import-creates-derivation?
                                                        #:system system
                                                        #:module-path module-path
                                                        #:extensions extensions
@@ -735,7 +745,9 @@ The other arguments are as for 'derivation'."
                                      "/bin/guile")
                       `("--no-auto-compile"
                         ,@(if (pair? %modules)
-                              `("-L" ,(derivation->output-path modules)
+                              `("-L" ,(if (derivation? modules)
+                                          (derivation->output-path modules)
+                                          modules)
                                 "-C" ,(derivation->output-path compiled))
                               '())
                         ,@(append-map extension-flags exts)
@@ -1013,6 +1025,49 @@ execution environment."
 ;;; Module handling.
 ;;;
 
+(define %not-slash
+  (char-set-complement (char-set #\/)))
+
+(define (file-mapping->tree mapping)
+  "Convert MAPPING, an alist like:
+
+  ((\"guix/build/utils.scm\" . \"…/utils.scm\"))
+
+to a tree suitable for 'interned-file-tree'."
+  (let ((mapping (map (match-lambda
+                        ((destination . source)
+                         (cons (string-tokenize destination
+                                                %not-slash)
+                               source)))
+                      mapping)))
+    (fold (lambda (pair result)
+            (match pair
+              ((destination . source)
+               (let loop ((destination destination)
+                          (result result))
+                 (match destination
+                   ((file)
+                    (let* ((mode (stat:mode (stat source)))
+                           (type (if (zero? (logand mode #o100))
+                                     'regular
+                                     'executable)))
+                      (alist-cons file
+                                  `(,type (file ,source))
+                                  result)))
+                   ((file rest ...)
+                    (let ((directory (assoc-ref result file)))
+                      (alist-cons file
+                                  `(directory
+                                    ,@(loop rest
+                                            (match directory
+                                              (('directory . entries) entries)
+                                              (#f '()))))
+                                  (if directory
+                                      (alist-delete file result)
+                                      result)))))))))
+          '()
+          mapping)))
+
 (define %utils-module
   ;; This file provides 'mkdir-p', needed to implement 'imported-files' and
   ;; other primitives below.  Note: We give the file name relative to this
@@ -1021,22 +1076,24 @@ execution environment."
   (local-file "build/utils.scm"
               "build-utils.scm"))
 
-(define* (imported-files files
-                         #:key (name "file-import")
-                         (system (%current-system))
-                         (guile (%guile-for-build))
+(define* (imported-files/derivation files
+                                    #:key (name "file-import")
+                                    (symlink? #f)
+                                    (system (%current-system))
+                                    (guile (%guile-for-build))
 
-                         ;; XXX: The only reason we have
-                         ;; #:deprecation-warnings is because (guix build
-                         ;; utils), which we use here, relies on _IO*, which
-                         ;; is deprecated in 2.2.  On the next full-rebuild
-                         ;; cycle, we should disable such warnings
-                         ;; unconditionally.
-                         (deprecation-warnings #f))
+                                    ;; XXX: The only reason we have
+                                    ;; #:deprecation-warnings is because (guix
+                                    ;; build utils), which we use here, relies
+                                    ;; on _IO*, which is deprecated in 2.2.  On
+                                    ;; the next full-rebuild cycle, we should
+                                    ;; disable such warnings unconditionally.
+                                    (deprecation-warnings #f))
   "Return a derivation that imports FILES into STORE.  FILES must be a list
 of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
 resulting store path.  FILE can be either a file name, or a file-like object,
-as returned by 'local-file' for example."
+as returned by 'local-file' for example.  If SYMLINK? is true, create symlinks
+to the source files instead of copying them."
   (define file-pair
     (match-lambda
      ((final-path . (? string? file-name))
@@ -1059,7 +1116,8 @@ as returned by 'local-file' for example."
          (for-each (match-lambda
                     ((final-path store-path)
                      (mkdir-p (dirname final-path))
-                     (symlink store-path final-path)))
+                     ((ungexp (if symlink? 'symlink 'copy-file))
+                      store-path final-path)))
                    '(ungexp files)))))
 
     ;; TODO: Pass FILES as an environment variable so that BUILD remains
@@ -1081,8 +1139,39 @@ as returned by 'local-file' for example."
                         (else
                          '())))))
 
+(define* (imported-files files
+                         #:key (name "file-import")
+
+                         ;; TODO: Remove this parameter on the next rebuild
+                         ;; cycle.
+                         (derivation? #f)
+
+                         ;; The following parameters make sense when creating
+                         ;; an actual derivation.
+                         (system (%current-system))
+                         (guile (%guile-for-build))
+                         (deprecation-warnings #f))
+  "Import FILES into the store and return the resulting derivation or store
+file name (a derivation is created if and only if some elements of FILES are
+file-like objects and not local file names.)  FILES must be a list
+of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
+resulting store path.  FILE can be either a file name, or a file-like object,
+as returned by 'local-file' for example."
+  (if (or derivation?
+          (any (match-lambda
+                 ((_ . (? struct? source)) #t)
+                 (_ #f))
+               files))
+      (imported-files/derivation files #:name name
+                                 #:symlink? derivation?
+                                 #:system system #:guile guile
+                                 #:deprecation-warnings deprecation-warnings)
+      (interned-file-tree `(,name directory
+                                  ,@(file-mapping->tree files)))))
+
 (define* (imported-modules modules
                            #:key (name "module-import")
+                           (derivation? #f)      ;TODO: remove on next rebuild
                            (system (%current-system))
                            (guile (%guile-for-build))
                            (module-path %load-path)
@@ -1098,24 +1187,23 @@ by an arrow followed by a file-like object.  For example:
 
 In this example, the first two modules are taken from MODULE-PATH, and the
 last one is created from the given <scheme-file> object."
-  (mlet %store-monad ((files
-                       (mapm %store-monad
-                             (match-lambda
-                               (((module ...) '=> file)
-                                (return
-                                 (cons (module->source-file-name module)
-                                       file)))
-                               ((module ...)
-                                (let ((f (module->source-file-name module)))
-                                  (return
-                                   (cons f (search-path* module-path f))))))
-                             modules)))
-    (imported-files files #:name name #:system system
+  (let ((files (map (match-lambda
+                      (((module ...) '=> file)
+                       (cons (module->source-file-name module)
+                             file))
+                      ((module ...)
+                       (let ((f (module->source-file-name module)))
+                         (cons f (search-path* module-path f)))))
+                    modules)))
+    (imported-files files #:name name
+                    #:derivation? derivation?
+                    #:system system
                     #:guile guile
                     #:deprecation-warnings deprecation-warnings)))
 
 (define* (compiled-modules modules
                            #:key (name "module-import-compiled")
+                           (derivation? #f)      ;TODO: remove on next rebuild
                            (system (%current-system))
                            (guile (%guile-for-build))
                            (module-path %load-path)
@@ -1135,6 +1223,7 @@ they can refer to each other."
          (not (equal? module-path %load-path))))
 
   (mlet %store-monad ((modules (imported-modules modules
+                                                 #:derivation? derivation?
                                                  #:system system
                                                  #:guile guile
                                                  #:module-path

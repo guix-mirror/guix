@@ -18,6 +18,7 @@
 # Copyright © 2017, 2018 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 # Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+# Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -403,6 +404,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/sssd.scm				\
   %D%/packages/stalonetray.scm			\
   %D%/packages/statistics.scm			\
+  %D%/packages/stb.scm				\
   %D%/packages/storage.scm			\
   %D%/packages/suckless.scm			\
   %D%/packages/swig.scm				\
@@ -671,13 +673,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/fcgi-2.4.0-poll.patch			\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\
   %D%/packages/patches/fifo-map-remove-catch.hpp.patch		\
-  %D%/packages/patches/file-CVE-2017-1000249.patch		\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/findutils-test-xargs.patch		\
   %D%/packages/patches/flann-cmake-3.11.patch			\
   %D%/packages/patches/flint-ldconfig.patch			\
-  %D%/packages/patches/fltk-shared-lib-defines.patch		\
-  %D%/packages/patches/fltk-xfont-on-demand.patch		\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
   %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
@@ -716,6 +715,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch \
   %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
+  %D%/packages/patches/ghostscript-CVE-2018-10194.patch		\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
@@ -942,6 +942,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
+  %D%/packages/patches/monero-use-system-miniupnpc.patch			\
   %D%/packages/patches/mongodb-support-unknown-linux-distributions.patch	\
   %D%/packages/patches/mozjs17-aarch64-support.patch		\
   %D%/packages/patches/mozjs24-aarch64-support.patch		\
@@ -979,6 +980,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-graph-honor-source-date-epoch.patch	\
   %D%/packages/patches/omake-fix-non-determinism.patch	\
   %D%/packages/patches/ola-readdir-r.patch			\
+  %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
   %D%/packages/patches/opencascade-oce-glibc-2.26.patch		\
   %D%/packages/patches/openblas-fix-tests-i686.patch		\
   %D%/packages/patches/openexr-missing-samples.patch		\
@@ -1060,6 +1062,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-search-paths.patch		\
   %D%/packages/patches/python-3-fix-tests.patch			\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
+  %D%/packages/patches/python-cairocffi-dlopen-path.patch	\
   %D%/packages/patches/python-dendropy-fix-tests.patch		\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-genshi-add-support-for-python-3.4-AST.patch	\
@@ -1136,7 +1139,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
-  %D%/packages/patches/syncthing-fix-crash.patch 		\
   %D%/packages/patches/synfigstudio-fix-ui-with-gtk3.patch 	\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
@@ -1162,6 +1164,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
+  %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\
   %D%/packages/patches/unrtf-CVE-2016-10091.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\
@@ -1230,6 +1233,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
+  %D%/packages/patches/xorg-server-rotate-fb.patch		\
   %D%/packages/patches/zathura-pdf-mupdf-link-to-jpeg-libraries.patch \
   %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
   %D%/packages/patches/zstd-fix-stdin-list-without-tty.patch	\

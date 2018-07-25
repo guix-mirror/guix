@@ -122,14 +122,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.33")
+    (version "2.4.34")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "01bghiq4pbgjbgd6gic0nb8bbk6mfpwx3gcsbf21f3dhb4c520ny"))))
+               "1w1q2smdgf6ln0x741lk5pv5r0gzrxj2iza1vslhifzy65bcjlzs"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -719,7 +719,14 @@ current version of any major web browser.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "13nrpvw8f1wx0ga7svbzld7pgrv8l172nangpipnj7jaf0lysz5z"))))
+               "13nrpvw8f1wx0ga7svbzld7pgrv8l172nangpipnj7jaf0lysz5z"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Remove code using the problematic JSON license (see
+                 ;; <https://www.gnu.org/licenses/license-list.html#JSON>).
+                 (delete-file-recursively "bin/jsonchecker")
+                 #t))))
     (build-system cmake-build-system)
     (arguments
      `(,@(if (string-prefix? "aarch64" (or (%current-target-system)
@@ -5705,14 +5712,20 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
 (define-public java-tomcat
   (package
     (name "java-tomcat")
-    (version "8.5.28")
+    (version "8.5.32")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/tomcat/tomcat-8/v"
                                   version "/src/apache-tomcat-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0q2bc3sajrmcx3z3vhhwp78y47ryc2ky8ssbdmfk24zvqdb76hvl"))))
+                "1qjsr6zmkdciakya4jqz0ssnsk02qlmmd898c05rasfwcrpj0xi6"))
+              (modules '((guix build utils)))
+              ;; Delete bundled jars.
+              (snippet
+               '(begin
+                  (for-each delete-file (find-files "." "\\.jar$"))
+                  #t))))
     (build-system ant-build-system)
     (inputs
      `(("java-eclipse-jdt-core" ,java-eclipse-jdt-core)))
@@ -5733,6 +5746,14 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
                (("download-compile,") "")
                (("depends=\"validate\"") "depends=\"build-prepare\"")
                ((",download-validate") ""))
+             #t))
+         (add-after 'unpack 'strip-timestamps
+           (lambda _
+             (substitute* "build.xml"
+               (("<filter token=\"YEAR\" value=.*")
+                "<filter token=\"YEAR\" value=\"1970\"/>")
+               (("<filter token=\"VERSION_BUILT\" value=.*")
+                "<filter token=\"VERSION_BUILT\" value=\"Jan 1 1970 00:00:00 UTC\"/>"))
              #t))
          (add-after 'unpack 'generate-properties
            (lambda _
@@ -5931,7 +5952,7 @@ or embedded instantiation.  This package provides utility classes.")
              #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
-       ("servlet" ,java-tomcat)
+       ("servlet" ,java-javaee-servletapi)
        ("util" ,java-eclipse-jetty-util)))
     (synopsis "Jetty :: IO Utility")
     (description "The Jetty Web Server provides an HTTP server and Servlet
@@ -5974,7 +5995,7 @@ or embedded instantiation.  This package provides IO-related utility classes."))
              #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
-       ("servlet" ,java-tomcat)
+       ("servlet" ,java-javaee-servletapi)
        ("io" ,java-eclipse-jetty-io)
        ("util" ,java-eclipse-jetty-util)))
     (synopsis "Jetty :: Http Utility")
@@ -6009,7 +6030,7 @@ or embedded instantiation.  This package provides HTTP-related utility classes."
              #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
-       ("servlet" ,java-tomcat)
+       ("servlet" ,java-javaee-servletapi)
        ("util" ,java-eclipse-jetty-util)))
     (synopsis "Jetty :: JMX Management")
     (description "The Jetty Web Server provides an HTTP server and Servlet
@@ -6090,7 +6111,7 @@ or embedded instantiation.  This package provides the JMX management.")))
              #t)))))
     (inputs
      `(("slf4j" ,java-slf4j-api)
-       ("servlet" ,java-tomcat)
+       ("servlet" ,java-javaee-servletapi)
        ("http" ,java-eclipse-jetty-http)
        ("io" ,java-eclipse-jetty-io)
        ("jmx" ,java-eclipse-jetty-jmx)
@@ -6286,7 +6307,7 @@ container.")))
        ("java-eclipse-jetty-servlet" ,java-eclipse-jetty-servlet)
        ("java-eclipse-jetty-security" ,java-eclipse-jetty-security)
        ("java-eclipse-jetty-xml" ,java-eclipse-jetty-xml)
-       ("java-tomcat" ,java-tomcat)))
+       ("java-javaee-servletapi" ,java-javaee-servletapi)))
     (native-inputs
      `(("java-eclipse-jetty-io" ,java-eclipse-jetty-io)
        ,@(package-native-inputs java-eclipse-jetty-util)))))

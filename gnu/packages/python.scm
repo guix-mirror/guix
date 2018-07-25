@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -4210,23 +4210,53 @@ support for Python 3 and PyPy.  It is based on cffi.")
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1rk2dvy3fxrga6bvvxc2fi5lbaynm5h4a0w0aaxyn3bc77rszjg9"))))
+        "1rk2dvy3fxrga6bvvxc2fi5lbaynm5h4a0w0aaxyn3bc77rszjg9"))
+      (patches (search-patches "python-cairocffi-dlopen-path.patch"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("cairo" ,cairo)))
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("cairo" ,cairo)
+       ("pango" ,pango)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("python-pytest" ,python-pytest)
        ("python-sphinx" ,python-sphinx)
        ("python-docutils" ,python-docutils)))
     (propagated-inputs
      `(("python-xcffib" ,python-xcffib))) ; used at run time
     (arguments
      `(;; FIXME: Tests cannot find 'libcairo.so.2'.
-       #:tests? #f
+       #:tests? #t
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* (find-files "." "\\.py$")
+              (("dlopen\\(ffi, 'cairo'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "cairo")
+                              "/lib/libcairo.so.2'"))
+              (("dlopen\\(ffi, 'gdk-3'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "gtk+")
+                              "/lib/libgtk-3.so.0'"))
+              (("dlopen\\(ffi, 'gdk_pixbuf-2.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "gdk-pixbuf")
+                              "/lib/libgdk_pixbuf-2.0.so.0'"))
+              (("dlopen\\(ffi, 'glib-2.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "glib")
+                              "/lib/libglib-2.0.so.0'"))
+              (("dlopen\\(ffi, 'gobject-2.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "glib")
+                              "/lib/libgobject-2.0.so.0'"))
+              (("dlopen\\(ffi, 'pangocairo-1.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "pango")
+                              "/lib/libpangocairo-1.0.so.0'"))
+              (("dlopen\\(ffi, 'pango-1.0'")
+               (string-append "dlopen(ffi, '" (assoc-ref inputs "pango")
+                              "/lib/libpango-1.0.so.0'")))
+             #t))
          (add-after 'install 'install-doc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
@@ -6284,14 +6314,14 @@ designed to efficiently cope with extremely large amounts of data.")
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyasn1" version))
        (sha256
         (base32
-         "05bxnr4wmrg62m4qr1pg1p3z7bhwrv74jll3k42pgxwl36kv0n6j"))))
+         "1z5h38anjzzrxpraa9iq9llffyx2zs8gx0q6dc1g029miwnn50gv"))))
     (build-system python-build-system)
     (home-page "http://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
@@ -6306,14 +6336,14 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
 (define-public python-pyasn1-modules
   (package
     (name "python-pyasn1-modules")
-    (version "0.0.8")
+    (version "0.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pyasn1-modules" version))
         (sha256
          (base32
-          "0drqgw81xd3fxdlg89kgd79zzrabvfncvkbybi2wr6w2y4s1jmhh"))))
+          "0ivm850yi7ajjbi8j115qpsj95bgxdsx48nbjzg0zip788c3xkx0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pyasn1" ,python-pyasn1)))
@@ -12242,14 +12272,14 @@ pure Python module.")
 (define-public python-xenon
   (package
     (name "python-xenon")
-    (version "0.5.1")
+    (version "0.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "xenon" version))
        (sha256
         (base32
-         "14kby2y48vp3sgwxqlm5d5789yibqwb1qli5fwcmdqg3iayrbklc"))))
+         "029cbhysg2vr5n4jz8gpg2793f8wkwnqpr1qgv6c1dn685vy31mc"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pyyaml" ,python-pyyaml)
@@ -12261,12 +12291,7 @@ pure Python module.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-test-requirements
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Update requirements from dependency==version to
-             ;; dependency>=version.
-             (substitute* "requirements.txt"
-               (("==") ">=")
-               ((",<1.5.0") ""))
+           (lambda _
              ;; Remove httpretty dependency for tests.
              (substitute* "setup.py"
                (("httpretty") ""))

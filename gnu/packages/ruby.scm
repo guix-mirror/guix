@@ -446,6 +446,29 @@ outcomes of a code example.")
     (propagated-inputs
      `(("ruby-diff-lcs" ,ruby-diff-lcs)))))
 
+(define-public ruby-rspec-its
+  (package
+    (name "ruby-rspec-its")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rspec-its" version))
+       (sha256
+        (base32
+         "1pwphny5jawcm1hda3vs9pjv1cybaxy17dc1s75qd7drrvx697p3"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; needs cucumber.
+    (propagated-inputs
+     `(("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)))
+    (synopsis "RSpec extension gem for attribute matching")
+    (description "@code{rspec-its} is an RSpec extension gem for attribute
+matching.")
+    (home-page "https://github.com/rspec/rspec-its")
+    (license license:expat)))
+
 (define-public ruby-rspec-mocks
   (package
     (name "ruby-rspec-mocks")
@@ -883,7 +906,8 @@ complexity.")
            (lambda _
              ;; This is used in the Rakefile, and setting it avoids an issue
              ;; with running the tests.
-             (setenv "LIB" "options"))))))
+             (setenv "LIB" "options")
+             #t)))))
     (synopsis "Ruby library to parse options from *args cleanly")
     (description
      "The @code{options} library helps with parsing keyword options in Ruby
@@ -4981,4 +5005,29 @@ Markdown.")
      "Rake is a Make-like program where tasks and dependencies are specified
 in standard Ruby syntax.")
     (home-page "https://github.com/ruby/rake")
+    (license license:expat)))
+
+(define-public ruby-childprocess
+  (package
+    (name "ruby-childprocess")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "childprocess" version))
+       (sha256
+        (base32
+         "0a61922kmvcxyj5l70fycapr87gz1dzzlkfpq85rfqk5vdh3d28p"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (propagated-inputs
+     `(("ruby-ffi" ,ruby-ffi)))
+    (synopsis "Control external programs running in the background, in Ruby")
+    (description "@code{childprocess} provides a gem to control external
+programs running in the background, in Ruby.")
+    (home-page "http://github.com/enkessler/childprocess")
     (license license:expat)))

@@ -111,6 +111,7 @@ MODULES =					\
   guix/build-system/asdf.scm			\
   guix/build-system/glib-or-gtk.scm		\
   guix/build-system/gnu.scm			\
+  guix/build-system/guile.scm			\
   guix/build-system/haskell.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
@@ -149,6 +150,7 @@ MODULES =					\
   guix/build/glib-or-gtk-build-system.scm	\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
+  guix/build/guile-build-system.scm		\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
   guix/build/ocaml-build-system.scm		\
@@ -498,8 +500,6 @@ EXTRA_DIST +=						\
   build-aux/run-system-tests.scm			\
   d3.v3.js						\
   graph.js						\
-  srfi/srfi-64.scm					\
-  srfi/srfi-64.upstream.scm				\
   tests/test.drv					\
   tests/signing-key.pub					\
   tests/signing-key.sec					\
