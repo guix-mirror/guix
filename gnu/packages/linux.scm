@@ -3714,10 +3714,12 @@ as used on certified hardware security devices.")
                (substitute* '("src/utils/ecryptfs-mount-private"
                               "src/utils/ecryptfs-umount-private"
                               "src/utils/ecryptfs-setup-private"
+                              "src/utils/ecryptfs-setup-swap"
                               "src/utils/mount.ecryptfs.c"
+                              "src/utils/umount.ecryptfs.c"
                               "src/pam_ecryptfs/pam_ecryptfs.c"
                               "src/desktop/ecryptfs-mount-private.desktop.in"
-                              "src/utils/ecryptfs-setup-swap")
+                              "src/desktop/ecryptfs-setup-private.desktop.in")
                  (("/bin/mount")
                   (string-append utils-linux "/bin/mount"))
                  (("/bin/umount")
