@@ -1773,27 +1773,17 @@ platform-specific methods.")
 (define-public audit
   (package
     (name "audit")
-    (version "2.4.5")
+    (home-page "https://people.redhat.com/sgrubb/audit/")
+    (version "2.8.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://people.redhat.com/sgrubb/audit/"
-                                  "audit-" version ".tar.gz"))
+              (uri (string-append home-page name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1q1q51dvxscbi4kbakmd4bn0xrvwwaiwvaya79925cbrqwzxsg77"))))
+                "0f4ci6ffznnmgblwgv7ich9mjfk3p6y5l6m6h3chhmzw156nj454"))))
     (build-system gnu-build-system)
-    (home-page "https://people.redhat.com/sgrubb/audit/")
     (arguments
-     `(#:configure-flags (list "--with-python=no")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             ;; In the build environmnte /etc/passwd does not contain an entry
-             ;; for root/0, so we have to patch the expected value.
-             (substitute* "auparse/test/auparse_test.ref"
-               (("=0 \\(root\\)") "=0 (unknown(0))"))
-             #t)))))
+     `(#:configure-flags (list "--with-python=no")))
     (inputs
      `(("openldap" ,openldap)
        ("gnutls" ,gnutls)
