@@ -651,6 +651,8 @@ sfArk file format to the uncompressed sf2 format.")
       (sha256
        (base32 "0wi7ydq8vjiq0kfnpkj2d6vll2s49x38bywnsdqphqb0vdn53q1n"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (home-page "http://www.cabextract.org.uk/libmspack/")
     (synopsis "Compression tools for some formats used by Microsoft")
     (description
