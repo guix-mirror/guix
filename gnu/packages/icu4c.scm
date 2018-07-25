@@ -58,7 +58,15 @@
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'chdir-to-source
-          (lambda _ (chdir "source") #t)))))
+          (lambda _ (chdir "source") #t))
+        (add-after 'install 'avoid-coreutils-reference
+          ;; Don't keep a reference to the build tools.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* (find-files (string-append out "/lib/icu")
+                                       "\\.inc$")
+                (("INSTALL_CMD=.*/bin/install") "INSTALL_CMD=install"))
+              #t))))))
    (synopsis "International Components for Unicode")
    (description
     "ICU is a set of C/C++ and Java libraries providing Unicode and
