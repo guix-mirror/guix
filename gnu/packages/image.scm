@@ -1237,7 +1237,7 @@ PNG, and performs PNG integrity checks and corrections.")
     (arguments
      '(#:test-target "test"
        #:configure-flags (list "--with-build-date=1970-01-01")))
-    (home-page "http://www.libjpeg-turbo.org/")
+    (home-page "https://libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
     (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
 JPEG compression and decompression using SIMD instructions: MMX on x86, SSE2 on
