@@ -10,7 +10,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2017, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -4105,6 +4105,38 @@ Oxyd stones.  Enigma’s game objects (and there are hundreds of them, lest you
 get bored) interact in many unexpected ways, and since many of them follow the
 laws of physics (Enigma’s special laws of physics, that is), controlling them
 with the mouse isn’t always trivial.")
+    (license license:gpl2+)))
+
+(define-public chroma
+  (package
+    (name "chroma")
+    (version "1.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0nzm3j5wjazr1d6pkydqlc48sjf72hggq0hmx8mhq03114mmiir5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests included
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)))
+       ("freetype" ,freetype)
+       ("ncurses" ,ncurses)
+       ("fontconfig" ,fontconfig)
+       ("libxft" ,libxft)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://level7.org.uk/chroma/")
+    (synopsis "Abstract puzzle game")
+    (description "Chroma is an abstract puzzle game. A variety of colourful
+shapes are arranged in a series of increasingly complex patterns, forming
+ fiendish traps that must be disarmed and mysterious puzzles that must be
+ manipulated in order to give up their subtle secrets. Initially so
+ straightforward that anyone can pick it up and begin to play, yet gradually
+ becoming difficult enough to tax even the brightest of minds.")
     (license license:gpl2+)))
 
 (define-public fillets-ng
