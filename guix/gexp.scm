@@ -697,9 +697,7 @@ The other arguments are as for 'derivation'."
                                      (imported-modules %modules
                                                        #:system system
                                                        #:module-path module-path
-                                                       #:guile guile-for-build
-                                                       #:deprecation-warnings
-                                                       deprecation-warnings)
+                                                       #:guile guile-for-build)
                                      (return #f)))
                        (compiled (if (pair? %modules)
                                      (compiled-modules %modules
@@ -1070,15 +1068,7 @@ to a tree suitable for 'interned-file-tree'."
                                     #:key (name "file-import")
                                     (symlink? #f)
                                     (system (%current-system))
-                                    (guile (%guile-for-build))
-
-                                    ;; XXX: The only reason we have
-                                    ;; #:deprecation-warnings is because (guix
-                                    ;; build utils), which we use here, relies
-                                    ;; on _IO*, which is deprecated in 2.2.  On
-                                    ;; the next full-rebuild cycle, we should
-                                    ;; disable such warnings unconditionally.
-                                    (deprecation-warnings #f))
+                                    (guile (%guile-for-build)))
   "Return a derivation that imports FILES into STORE.  FILES must be a list
 of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
 resulting store path.  FILE can be either a file name, or a file-like object,
@@ -1118,24 +1108,17 @@ to the source files instead of copying them."
                       #:guile-for-build guile
                       #:local-build? #t
 
-                      ;; TODO: On the next rebuild cycle, set to "no"
-                      ;; unconditionally.
+                      ;; Avoid deprecation warnings about the use of the _IO*
+                      ;; constants in (guix build utils).
                       #:env-vars
-                      (case deprecation-warnings
-                        ((#f)
-                         '(("GUILE_WARN_DEPRECATED" . "no")))
-                        ((detailed)
-                         '(("GUILE_WARN_DEPRECATED" . "detailed")))
-                        (else
-                         '())))))
+                      '(("GUILE_WARN_DEPRECATED" . "no")))))
 
 (define* (imported-files files
                          #:key (name "file-import")
                          ;; The following parameters make sense when creating
                          ;; an actual derivation.
                          (system (%current-system))
-                         (guile (%guile-for-build))
-                         (deprecation-warnings #f))
+                         (guile (%guile-for-build)))
   "Import FILES into the store and return the resulting derivation or store
 file name (a derivation is created if and only if some elements of FILES are
 file-like objects and not local file names.)  FILES must be a list
@@ -1148,8 +1131,7 @@ as returned by 'local-file' for example."
            files)
       (imported-files/derivation files #:name name
                                  #:symlink? derivation?
-                                 #:system system #:guile guile
-                                 #:deprecation-warnings deprecation-warnings)
+                                 #:system system #:guile guile)
       (interned-file-tree `(,name directory
                                   ,@(file-mapping->tree files)))))
 
@@ -1157,8 +1139,7 @@ as returned by 'local-file' for example."
                            #:key (name "module-import")
                            (system (%current-system))
                            (guile (%guile-for-build))
-                           (module-path %load-path)
-                           (deprecation-warnings #f))
+                           (module-path %load-path))
   "Return a derivation that contains the source files of MODULES, a list of
 module names such as `(ice-9 q)'.  All of MODULES must be either names of
 modules to be found in the MODULE-PATH search path, or a module name followed
@@ -1180,8 +1161,7 @@ last one is created from the given <scheme-file> object."
                     modules)))
     (imported-files files #:name name
                     #:system system
-                    #:guile guile
-                    #:deprecation-warnings deprecation-warnings)))
+                    #:guile guile)))
 
 (define* (compiled-modules modules
                            #:key (name "module-import-compiled")
@@ -1199,9 +1179,7 @@ they can refer to each other."
                                                  #:system system
                                                  #:guile guile
                                                  #:module-path
-                                                 module-path
-                                                 #:deprecation-warnings
-                                                 deprecation-warnings)))
+                                                 module-path)))
     (define build
       (gexp
        (begin
