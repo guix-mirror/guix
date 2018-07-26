@@ -628,7 +628,7 @@ specifies modules in scope when evaluating SNIPPET."
                                           #:fail-on-error? #t)))))
               (apply invoke
                      (string-append #+tar "/bin/tar")
-                     "cvf" #$output
+                     "cvfa" #$output
                      ;; avoid non-determinism in the archive
                      "--mtime=@0"
                      "--owner=root:0"
