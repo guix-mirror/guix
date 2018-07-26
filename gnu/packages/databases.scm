@@ -662,7 +662,7 @@ Language.")
          "-DINSTALL_SUPPORTFILESDIR=share/mysql/support-files"
          "-DINSTALL_MYSQLSHAREDIR=share/mysql"
          "-DINSTALL_DOCDIR=share/mysql/docs"
-         "-DINSTALL_SHAREDIR=share/mysql")
+         "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
          (add-before
