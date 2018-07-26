@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,17 +45,12 @@
          (prefix (assoc-ref outputs "out"))
          (args `(,(string-append "--prefix=" prefix)
                  ,(string-append "--buildtype=" build-type)
+                 ,(string-append "-Dc_link_args=-Wl,-rpath="
+                                 (assoc-ref outputs "out") "/lib")
+                 ,(string-append "-Dcpp_link_args=-Wl,-rpath="
+                                 (assoc-ref outputs "out") "/lib")
                  ,@configure-flags
                  ,source-dir)))
-
-    ;; Meson lacks good facilities for dealing with RUNPATH, so we
-    ;; add the output "lib" directory here to avoid doing that in
-    ;; many users.  Related issues:
-    ;; * <https://github.com/mesonbuild/meson/issues/314>
-    ;; * <https://github.com/mesonbuild/meson/issues/3038>
-    ;; * <https://github.com/NixOS/nixpkgs/issues/31222>
-    (unless (getenv "LDFLAGS")
-      (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib")))
 
     (mkdir build-dir)
     (chdir build-dir)
@@ -148,8 +144,13 @@ for example libraries only needed for the tests."
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)
-    (replace 'install install)
-    (add-after 'strip 'fix-runpath fix-runpath)))
+    ;; XXX: We used to have 'fix-runpath' here, but it appears no longer
+    ;; necessary with newer Meson.  However on 'core-updates' there is a
+    ;; useful 'strip-runpath' procedure to ensure no bogus directories in
+    ;; RUNPATH (remember that we tell Meson to not touch RUNPATH in
+    ;; (@ (gnu packages build-tools) meson-for-build)), so it should be
+    ;; re-added there sans the augment-rpath calls (which are not needed).
+    (replace 'install install)))
 
 (define* (meson-build #:key inputs phases
                       #:allow-other-keys #:rest args)
