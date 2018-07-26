@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3240,12 +3241,16 @@ VCF.")
                                            (msg (format #f
                                                         "\
 Class-Path: /~a \
- ~a/share/java/htsjdk.jar${line.separator}"
+ ~a/share/java/htsjdk.jar${line.separator}${line.separator}"
                                                         ;; maximum line length is 70
                                                         (string-tabulate (const #\b) 57)
                                                         (assoc-ref inputs "java-htsjdk"))))
                                        (if (member "manifest" name)
                                            `(,tag ,@kids
+                                                  (replaceregexp
+                                                   (@ (file "${manifest.file}")
+                                                      (match "\\r\\n\\r\\n")
+                                                      (replace "${line.separator}")))
                                                   (echo
                                                    (@ (message ,msg)
                                                       (file "${manifest.file}")
