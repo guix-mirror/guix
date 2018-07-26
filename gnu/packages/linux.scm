@@ -1619,7 +1619,7 @@ processes currently causing I/O.")
                                   "/fuse-" version ".tar.gz"))
               (sha256
                (base32
-                "1k4ggl2y5v0lr98l189pc81w0zijj23wbbnijsc6zlx84117nd0j"))
+                "1qxg1r1mgysfq6qakmvid2njph3lr00w0swvydsfl9ymilfzi12y"))
               (patches (search-patches "fuse-overlapping-headers.patch"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
