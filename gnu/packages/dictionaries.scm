@@ -257,7 +257,8 @@ and a Python library.")
          (add-after 'install 'emacs-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
-                    (dest  (string-append out "/share/emacs/site-lisp"))
+                    (dest  (string-append out "/share/emacs/site-lisp/guix.d/"
+                                          ,name "-" ,version))
                     (emacs (string-append (assoc-ref inputs "emacs") "/bin/emacs")))
                (install-file "google-translate-mode.el" dest)
                (emacs-generate-autoloads ,name dest)))))

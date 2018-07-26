@@ -651,16 +651,17 @@ sfArk file format to the uncompressed sf2 format.")
 (define-public libmspack
   (package
     (name "libmspack")
-    (version "0.6")
+    (home-page "https://cabextract.org.uk/libmspack/")
+    (version "0.7")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.cabextract.org.uk/libmspack/libmspack-"
-                          version "alpha.tar.gz"))
+      (uri (string-append home-page name "-" version "alpha.tar.gz"))
       (sha256
-       (base32 "08gr2pcinas6bdqz3k0286g5cnksmcx813skmdwyca6bmj1fxnqy"))))
+       (base32 "0wi7ydq8vjiq0kfnpkj2d6vll2s49x38bywnsdqphqb0vdn53q1n"))))
     (build-system gnu-build-system)
-    (home-page "http://www.cabextract.org.uk/libmspack/")
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (synopsis "Compression tools for some formats used by Microsoft")
     (description
      "The purpose of libmspack is to provide both compression and
@@ -1030,21 +1031,26 @@ smaller than those produced by @code{Xdelta}.")
 (define-public cabextract
  (package
    (name "cabextract")
-   (version "1.6")
+   (home-page "https://cabextract.org.uk/")
+   (version "1.7")
    (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://cabextract.org.uk/cabextract-" version ".tar.gz"))
+              (uri (string-append home-page name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ysmmz25fjghq7mxb2anyyvr1ljxqxzi4piwjhk0sdamcnsn3rnf"))))
+                "1g86wmb8lkjiv2jarfz979ngbgg7d3si8x5il4g801604v406wi9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled libmspack.
+                  (delete-file-recursively "mspack")
+                  #t))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-external-libmspack")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libmspack" ,libmspack)))
-    (home-page "http://www.cabextract.org.uk/")
     (synopsis "Tool to unpack Cabinet archives")
     (description "Extracts files out of Microsoft Cabinet (.cab) archives")
     ;; Some source files specify gpl2+, lgpl2+, however COPYING is gpl3.

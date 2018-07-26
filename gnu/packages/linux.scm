@@ -398,8 +398,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17.9")
-(define %linux-libre-hash "1mahjxn4j7sdjdrbkrgal37nfx23njhnmrxcmixmphps8i44rlwm")
+(define %linux-libre-version "4.17.10")
+(define %linux-libre-hash "1ab349s18avigd2592i11pab4klqzzxy11a1zp16mb842d8chkj2")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -407,8 +407,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.57")
-(define %linux-libre-4.14-hash "1qp8g87ss4a3iz6k3k4mkllibvdrixh6ys4a9l7jidp2wmkxj3kc")
+(define %linux-libre-4.14-version "4.14.58")
+(define %linux-libre-4.14-hash "1ny2b5zmgvbxglpy88aicdxix2ygr1qmar2rgaa336czfjninwr5")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -417,14 +417,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.114"
-                    "069ckgck4skzci6sjrpk1sja0h1fdmrlcbpnqwl2844m5vfffzk9"
+  (make-linux-libre "4.9.115"
+                    "12n3wwfz22hxqqy7bdchl894x5krylcd4vx65837w7rybnb5w2wj"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.143"
-                    "0kawgpmmv37gds3cbww791bbzvwfjg760yg3qw3dk913dawhdmzw"
+  (make-linux-libre "4.4.144"
+                    "1001nw9d51vbiisrjv5ffqigcwfs0r9gav2f8hkw9hzjw64nhanp"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -1605,7 +1605,7 @@ processes currently causing I/O.")
 (define-public fuse
   (package
     (name "fuse")
-    (version "2.9.7")
+    (version "2.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libfuse/libfuse/releases/"
@@ -1613,7 +1613,7 @@ processes currently causing I/O.")
                                   "/fuse-" version ".tar.gz"))
               (sha256
                (base32
-                "0x486nri30f7cgy0acj87v9sjxsjrr0cymrvw4h3r0sgmp8k4943"))
+                "1qxg1r1mgysfq6qakmvid2njph3lr00w0swvydsfl9ymilfzi12y"))
               (patches (search-patches "fuse-overlapping-headers.patch"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))

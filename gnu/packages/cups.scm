@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
@@ -46,7 +46,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (srfi srfi-1))
 
 (define-public cups-filters
   (package
@@ -505,6 +507,19 @@ device-specific programs to convert and print many types of files.")
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))))
+
+(define-public hplip-minimal
+  (package
+    (inherit hplip)
+    (name "hplip-minimal")
+    (arguments
+      (substitute-keyword-arguments (package-arguments hplip)
+        ((#:configure-flags cf)
+         `(delete "--enable-qt5" ,cf))))
+    (inputs
+     (fold alist-delete (package-inputs hplip)
+           '("python-pygobject" "python-pyqt")))
+    (synopsis "GUI-less version of hplip")))
 
 (define-public foomatic-filters
   (package

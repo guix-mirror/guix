@@ -78,7 +78,8 @@ operation is not deterministic, we replace it with `find`."
   (when (not (gem-archive? source))
     (let ((gemspec (first-gemspec)))
       (substitute* gemspec
-        (("`git ls-files`") "`find . -type f |sort`"))))
+        (("`git ls-files`") "`find . -type f |sort`")
+        (("`git ls-files -z`") "`find . -type f -print0 |sort -z`"))))
   #t)
 
 (define* (extract-gemspec #:key source #:allow-other-keys)
