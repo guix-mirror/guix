@@ -1029,7 +1029,13 @@ smaller than those produced by @code{Xdelta}.")
               (uri (string-append home-page name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1g86wmb8lkjiv2jarfz979ngbgg7d3si8x5il4g801604v406wi9"))))
+                "1g86wmb8lkjiv2jarfz979ngbgg7d3si8x5il4g801604v406wi9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled libmspack.
+                  (delete-file-recursively "mspack")
+                  #t))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-external-libmspack")))
     (native-inputs
