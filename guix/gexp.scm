@@ -601,12 +601,6 @@ names and file names suitable for the #:allowed-references argument to
                            allowed-references disallowed-references
                            leaked-env-vars
                            local-build? (substitutable? #t)
-
-                           ;; TODO: This parameter is transitional; it's here
-                           ;; to avoid a full rebuild.  Remove it on the next
-                           ;; rebuild cycle.
-                           import-creates-derivation?
-
                            deprecation-warnings
                            (script-name (string-append name "-builder")))
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
@@ -701,8 +695,6 @@ The other arguments are as for 'derivation'."
                                        extensions))
                        (modules  (if (pair? %modules)
                                      (imported-modules %modules
-                                                       #:derivation?
-                                                       import-creates-derivation?
                                                        #:system system
                                                        #:module-path module-path
                                                        #:guile guile-for-build
@@ -711,8 +703,6 @@ The other arguments are as for 'derivation'."
                                      (return #f)))
                        (compiled (if (pair? %modules)
                                      (compiled-modules %modules
-                                                       #:derivation?
-                                                       import-creates-derivation?
                                                        #:system system
                                                        #:module-path module-path
                                                        #:extensions extensions
@@ -1141,11 +1131,6 @@ to the source files instead of copying them."
 
 (define* (imported-files files
                          #:key (name "file-import")
-
-                         ;; TODO: Remove this parameter on the next rebuild
-                         ;; cycle.
-                         (derivation? #f)
-
                          ;; The following parameters make sense when creating
                          ;; an actual derivation.
                          (system (%current-system))
@@ -1157,11 +1142,10 @@ file-like objects and not local file names.)  FILES must be a list
 of (FINAL-PATH . FILE) pairs.  Each FILE is mapped to FINAL-PATH in the
 resulting store path.  FILE can be either a file name, or a file-like object,
 as returned by 'local-file' for example."
-  (if (or derivation?
-          (any (match-lambda
-                 ((_ . (? struct? source)) #t)
-                 (_ #f))
-               files))
+  (if (any (match-lambda
+             ((_ . (? struct? source)) #t)
+             (_ #f))
+           files)
       (imported-files/derivation files #:name name
                                  #:symlink? derivation?
                                  #:system system #:guile guile
@@ -1171,7 +1155,6 @@ as returned by 'local-file' for example."
 
 (define* (imported-modules modules
                            #:key (name "module-import")
-                           (derivation? #f)      ;TODO: remove on next rebuild
                            (system (%current-system))
                            (guile (%guile-for-build))
                            (module-path %load-path)
@@ -1196,14 +1179,12 @@ last one is created from the given <scheme-file> object."
                          (cons f (search-path* module-path f)))))
                     modules)))
     (imported-files files #:name name
-                    #:derivation? derivation?
                     #:system system
                     #:guile guile
                     #:deprecation-warnings deprecation-warnings)))
 
 (define* (compiled-modules modules
                            #:key (name "module-import-compiled")
-                           (derivation? #f)      ;TODO: remove on next rebuild
                            (system (%current-system))
                            (guile (%guile-for-build))
                            (module-path %load-path)
@@ -1223,7 +1204,6 @@ they can refer to each other."
          (not (equal? module-path %load-path))))
 
   (mlet %store-monad ((modules (imported-modules modules
-                                                 #:derivation? derivation?
                                                  #:system system
                                                  #:guile guile
                                                  #:module-path

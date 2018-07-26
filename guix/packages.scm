@@ -641,9 +641,6 @@ specifies modules in scope when evaluating SNIPPET."
 
     (let ((name (tarxz-name original-file-name)))
       (gexp->derivation name build
-                        ;; TODO: Remove this on the next rebuild cycle.
-                        #:import-creates-derivation? #t
-
                         #:graft? #f
                         #:system system
                         #:deprecation-warnings #t ;to avoid a rebuild
