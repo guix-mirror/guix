@@ -3621,7 +3621,7 @@ for Un*x systems with X11.")
 (define-public freeciv
   (package
    (name "freeciv")
-   (version "2.5.7")
+   (version "2.6.0")
    (source
     (origin
      (method url-fetch)
@@ -3634,7 +3634,7 @@ for Un*x systems with X11.")
                   "/freeciv-" version ".tar.bz2")))
      (sha256
       (base32
-       "1lmydnnqraa947l7gdz6xgm0bgks1ywsivp9h4v8jr3avcv6gqzz"))))
+       "16f9wsnn7073s6chzbm3819swd0iw019p9nrzr3diiynk28kj83w"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
