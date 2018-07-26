@@ -1023,13 +1023,13 @@ smaller than those produced by @code{Xdelta}.")
  (package
    (name "cabextract")
    (home-page "https://cabextract.org.uk/")
-   (version "1.6")
+   (version "1.7")
    (source (origin
               (method url-fetch)
               (uri (string-append home-page name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ysmmz25fjghq7mxb2anyyvr1ljxqxzi4piwjhk0sdamcnsn3rnf"))))
+                "1g86wmb8lkjiv2jarfz979ngbgg7d3si8x5il4g801604v406wi9"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-external-libmspack")))
     (native-inputs
