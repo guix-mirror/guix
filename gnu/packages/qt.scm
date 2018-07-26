@@ -1959,6 +1959,10 @@ indicators, code completion and call tips.")
                             "Qsci/Makefile")
                (("\\$\\(INSTALL_ROOT\\)/gnu/store/[^/]+")
                 (assoc-ref outputs "out")))
+             ;; And fix the installed.txt file
+             (substitute* "installed.txt"
+               (("/gnu/store/[^/]+")
+                (assoc-ref outputs "out")))
              #t)))))
     (inputs
      `(("qscintilla" ,qscintilla)
