@@ -733,7 +733,15 @@ programs.")
                     version "/flycheck-" version ".tar"))
               (sha256
                (base32
-                "01rnwan16m7cyyrfca3c5c60mbj2r3knkpzbhji2fczsf0wns240"))))
+                "01rnwan16m7cyyrfca3c5c60mbj2r3knkpzbhji2fczsf0wns240"))
+              (modules '((guix build utils)))
+              (snippet `(begin
+                          ;; Change 'flycheck-version' so that it does not
+                          ;; attempt to get its version from pkg-info.el.
+                          (substitute* "flycheck.el"
+                            (("\\(pkg-info-version-info 'flycheck\\)")
+                             (string-append "\"" ,version "\"")))
+                          #t))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
