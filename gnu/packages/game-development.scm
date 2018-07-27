@@ -357,14 +357,14 @@ levels.")
 (define-public python-xsge
   (package
     (name "python-xsge")
-    (version "2017.06.09")
+    (version "2018.02.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/xsge/xsge/xsge-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1vy7c2y7ihvmggs93zgfv2h3049s384wid8a5snzrrba8bhbb89p"))))
+                "0bx93hgf7cgdw2gsygbh59y8vpw37pgsa279rajw3fkdpl8vrc40"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -373,10 +373,9 @@ levels.")
          ;; system's default flags, "--single-version-externally-managed".
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero?
-              (system* "python" "setup.py" "install"
-                       (string-append "--prefix=" (assoc-ref outputs "out"))
-                       "--root=/")))))
+             (invoke "python" "setup.py" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--root=/"))))
        #:tests? #f)) ; no check target
     (propagated-inputs
      `(("python-sge-pygame" ,python-sge-pygame)
