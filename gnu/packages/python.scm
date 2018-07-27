@@ -5136,6 +5136,30 @@ of the structure, dynamics, and functions of complex networks.")
 (define-public python2-networkx2
   (package-with-python2 python-networkx2))
 
+(define-public python-datrie
+  (package
+    (name "python-datrie")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "datrie" version))
+       (sha256
+        (base32
+         "08r0if7dry2q7p34gf7ffyrlnf4bdvnprxgydlfxgfnvq8f3f4bs"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/kmike/datrie")
+    (synopsis "Fast, efficiently stored trie for Python")
+    (description
+     "This package provides a fast, efficiently stored trie implementation for
+Python.")
+    (license license:lgpl2.1+)))
+
 (define-public snakemake
   (package
     (name "snakemake")
