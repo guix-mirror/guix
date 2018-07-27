@@ -264,9 +264,7 @@
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
 
-         ;; Use 2.2.4 to avoid various thread-safety issues while building
-         ;; code in parallel.
-         ("guile" ,guile-2.2.4)
+         ("guile" ,guile-2.2)
 
          ;; Many tests rely on the 'guile-bootstrap' package, which is why we
          ;; have it here.

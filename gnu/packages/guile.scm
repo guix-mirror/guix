@@ -228,7 +228,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
-    (version "2.2.3")
+    (version "2.2.4")
     (source (origin
               (method url-fetch)
 
@@ -238,7 +238,7 @@ without requiring the source code to be rewritten.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "11j01agvnci2cx32wwpqs9078856yxmvs15gcsz7ganpkj2ahlw3"))
+                "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
@@ -301,20 +301,6 @@ without requiring the source code to be rewritten.")
               (sha256
                (base32
                 "1azm25zcmxif0skxfrp11d2wc89nrzpjaann9yxdw6pvjxhs948w"))))))
-
-(define-public guile-2.2.4
-  ;; This version contains important bug fixes, in particular wrt. to crashes
-  ;; of multi-threaded code as used by 'guix pull' and grafting.
-  (package
-    (inherit guile-2.2)
-    (version "2.2.4")
-    (source (origin
-              (inherit (package-source guile-2.2))
-              (uri (string-append "mirror://gnu/guile/guile-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))))))
 
 (define-public guile-next
   (deprecated-package "guile-next" guile-2.2))
