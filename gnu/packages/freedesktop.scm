@@ -721,19 +721,21 @@ message bus.")
 (define-public accountsservice
   (package
     (name "accountsservice")
-    (version "0.6.43")
+    (version "0.6.50")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.freedesktop.org/software/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1k6n9079001sgcwlkq0bz6mkn4m8y4dwf6hs1qm85swcld5ajfzd"))))
+                "0jn7vg1z4vxnna0hl33hbcb4bb3zpilxc2vyclh24vx4vvsjhn83"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: tests require DocBook 4.1.2
        #:configure-flags
-       '("--localstatedir=/var")
+       '("--localstatedir=/var"
+         "--disable-systemd"
+         "--enable-elogind")
        #:phases
        (modify-phases %standard-phases
          (add-before
@@ -756,8 +758,9 @@ message bus.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("shadow" ,shadow)
-       ("polkit" ,polkit)))
+     `(("elogind" ,elogind)
+       ("polkit" ,polkit)
+       ("shadow" ,shadow)))
     (home-page "https://www.freedesktop.org/wiki/Software/AccountsService/")
     (synopsis "D-Bus interface for user account query and manipulation")
     (description
