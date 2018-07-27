@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
@@ -1261,4 +1261,33 @@ available in Keter YG.")
 Lohit supports the Assamese, Bengali, Devanagari (Hindi, Kashmiri, Konkani,
 Maithili, Marathi, Nepali, Sindhi, Santali, Bodo, Dogri languages), Gujarati,
 Kannada, Malayalam, Manipuri, Oriya, Punjabi, Tamil and Telugu scripts.")
+    (license license:silofl1.1)))
+
+(define-public font-blackfoundry-inria
+  (package
+    (name "font-blackfoundry-inria")
+    (version "1.200")
+    (home-page "https://github.com/BlackFoundry/InriaFonts")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "06775y99lyh6hj5hzvrx56iybdck8a8xfqkipqd5c4cldg0a9hh8"))
+              (file-name (string-append name "-" version "-checkout"))))
+    ;; XXX: There are .ufo directories (the "source") so in theory we should
+    ;; be able to rebuild TTF and OTF files with FontForge.  Unfortunately a
+    ;; command like:
+    ;;
+    ;;  fontforge -lang=ff -c "Open('InriaSans-Regular.ufo'); Generate('foo.ttf');"
+    ;;
+    ;; segfaults in '_UFOLoadGlyph', which calls out to libpython.  :-/
+    ;; In the meantime we ship the precompiled OTF and TTF files.
+    (build-system font-build-system)
+    (synopsis "Inria Sans and Inria Serif type family")
+    (description
+     "Inria Sans and Inria Serif are the two members of a type family designed
+for Inria, a public research institute in computer science and mathematics.")
     (license license:silofl1.1)))
