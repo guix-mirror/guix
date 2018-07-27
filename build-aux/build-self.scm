@@ -297,8 +297,15 @@ person's version identifier."
 ;; The procedure below is our return value.
 (define* (build source
                 #:key verbose? (version (date-version-string)) system
-                (guile-version (effective-version))
                 (pull-version 0)
+
+                ;; For the standalone Guix, default to Guile 2.2.  For old
+                ;; versions of 'guix pull' (pre-0.15.0), we have to use the
+                ;; same Guile as the current one.
+                (guile-version (if (> pull-version 0)
+                                   "2.2"
+                                   (effective-version)))
+
                 #:allow-other-keys
                 #:rest rest)
   "Return a derivation that unpacks SOURCE into STORE and compiles Scheme
