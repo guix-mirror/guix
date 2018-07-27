@@ -287,21 +287,6 @@ without requiring the source code to be rewritten.")
                   (max-silent-time . 36000))))) ;10 hours (needed on ARM
                                                 ;  when heavily loaded)
 
-(define-public guile-2.2.2
-  ;; Keep it so that, when 'guix' runs on 2.2.2, 'guix pull' compiles objects
-  ;; with 2.2.2, thereby avoiding the ABI incompatibility issues described in
-  ;; <https://bugs.gnu.org/29570>.
-  (package
-    (inherit guile-2.2)
-    (version "2.2.2")
-    (source (origin
-              (inherit (package-source guile-2.2))
-              (uri (string-append "mirror://gnu/guile/guile-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "1azm25zcmxif0skxfrp11d2wc89nrzpjaann9yxdw6pvjxhs948w"))))))
-
 (define-public guile-next
   (deprecated-package "guile-next" guile-2.2))
 

@@ -890,11 +890,6 @@ running Guile."
                 'canonical-package))
 
   (match version
-    ("2.2.2"
-     ;; Gross hack to avoid ABI incompatibilities (see
-     ;; <https://bugs.gnu.org/29570>.)
-     (module-ref (resolve-interface '(gnu packages guile))
-                 'guile-2.2.2))
     ("2.2"
      (canonical-package (module-ref (resolve-interface '(gnu packages guile))
                                     'guile-2.2)))
@@ -925,9 +920,7 @@ is not supported."
                                #:name (string-append "guix-"
                                                      (shorten version))
                                #:pull-version pull-version
-                               #:guile-version (match guile-version
-                                                 ("2.2.2" "2.2")
-                                                 (version version))
+                               #:guile-version guile-version
                                #:guile-for-build guile)))
       (if guix
           (lower-object guix)

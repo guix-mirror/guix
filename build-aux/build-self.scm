@@ -297,9 +297,7 @@ person's version identifier."
 ;; The procedure below is our return value.
 (define* (build source
                 #:key verbose? (version (date-version-string)) system
-                (guile-version (match ((@ (guile) version))
-                                 ("2.2.2" "2.2.2")
-                                 (_       (effective-version))))
+                (guile-version (effective-version))
                 (pull-version 0)
                 #:allow-other-keys
                 #:rest rest)
