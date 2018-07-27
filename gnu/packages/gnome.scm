@@ -2229,7 +2229,7 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.26.1")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2238,8 +2238,8 @@ and RDP protocols.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0da587hpiqy8h3pswn1102h4b905x8k6mk3ajpi7kf4kzkvv30ym"))))
-    (build-system glib-or-gtk-build-system)
+                "0hn7v6769xabqz7kvyb2hfm19h46z1whkair7ff752zmbs3b7lv1"))))
+    (build-system meson-build-system)
     (propagated-inputs
      ;; In Requires of dconf.pc.
      `(("glib" ,glib)))
@@ -2251,16 +2251,15 @@ and RDP protocols.")
        ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
+       ("glib:bin" ,glib "bin")
        ("gtk-doc" ,gtk-doc)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (arguments
      `(#:tests? #f ; To contact dbus it needs to load /var/lib/dbus/machine-id
                    ; or /etc/machine-id.
-       #:configure-flags
-       ;; Set the correct RUNPATH in binaries.
-       (list (string-append "LDFLAGS=-Wl,-rpath="
-                            (assoc-ref %outputs "out") "/lib")
-             "--enable-gtk-doc")))
+       #:glib-or-gtk? #t
+       #:configure-flags '("-Denable-gtk-doc=true")))
     (home-page "https://developer.gnome.org/dconf")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
