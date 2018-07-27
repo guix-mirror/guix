@@ -644,18 +644,15 @@ etc.")
 (define-public allegro
   (package
     (name "allegro")
-    (version "5.2.2.0")
+    (version "5.2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/releases"
                                   "/download/" version "/allegro-"
-                                  (if (equal? "0" (string-take-right version 1))
-                                    (string-drop-right version 2)
-                                    version)
-                                  ".tar.gz"))
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1z4lrrlmn471wb7vzbd9iw7g379vj0k964vy1s64hcvv5bhvk1g2"))))
+                "1w9a5yqi5q03b2qvmx5ff90paz0xbr9cy7i7f0xiqa65ava66q9l"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; there are no tests
     (inputs
