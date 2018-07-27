@@ -2251,6 +2251,7 @@ and RDP protocols.")
        ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
+       ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:tests? #f ; To contact dbus it needs to load /var/lib/dbus/machine-id
@@ -2259,7 +2260,7 @@ and RDP protocols.")
        ;; Set the correct RUNPATH in binaries.
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib")
-             "--disable-gtk-doc-html"))) ; FIXME: requires gtk-doc
+             "--enable-gtk-doc")))
     (home-page "https://developer.gnome.org/dconf")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
