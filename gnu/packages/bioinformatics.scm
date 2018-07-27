@@ -12833,6 +12833,7 @@ once.  This package provides tools to perform Drop-seq analyses.")
            (lambda _
              (substitute* "Makefile.in"
                (("(^  tests/test_trim_galore/test.sh).*" _ m) m)
+               (("^  tests/test_multiqc/test.sh") "")
                (("^  test.sh") ""))
              #t)))))
     (inputs
