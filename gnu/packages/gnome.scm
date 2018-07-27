@@ -2240,16 +2240,17 @@ and RDP protocols.")
                (base32
                 "0da587hpiqy8h3pswn1102h4b905x8k6mk3ajpi7kf4kzkvv30ym"))))
     (build-system glib-or-gtk-build-system)
+    (propagated-inputs
+     ;; In Requires of dconf.pc.
+     `(("glib" ,glib)))
     (inputs
      `(("gtk+" ,gtk+)
-       ("glib" ,glib)
-       ("dbus" ,dbus)
-       ("libxml2" ,libxml2)))
+       ("dbus" ,dbus)))
     (native-inputs
-     `(("libxslt" ,libxslt)
+     `(("libxslt" ,libxslt)                     ;for xsltproc
+       ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
-       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:tests? #f ; To contact dbus it needs to load /var/lib/dbus/machine-id
@@ -2258,21 +2259,7 @@ and RDP protocols.")
        ;; Set the correct RUNPATH in binaries.
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib")
-             "--disable-gtk-doc-html") ; FIXME: requires gtk-doc
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-docbook
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "docs/Makefile.in"
-               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl)
-                               "/manpages/docbook.xsl")))
-             (setenv "XML_CATALOG_FILES"
-                     (string-append (assoc-ref inputs "docbook-xml")
-                                    "/xml/dtd/docbook/catalog.xml"))
-             #t)))))
+             "--disable-gtk-doc-html"))) ; FIXME: requires gtk-doc
     (home-page "https://developer.gnome.org/dconf")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
