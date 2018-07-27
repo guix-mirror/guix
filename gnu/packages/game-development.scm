@@ -397,7 +397,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.1.5")
+    (version "1.1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -405,7 +405,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1zrq1nhb50mwqzw3fln6vj49ljddil1v7yby3ahjbcm94s25ll1y"))))
+                "194ciw8688mikndvxivzb8ql5vm405pkwnn4srzm7ymwfc4xygb0"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -424,8 +424,8 @@ support.")
                                (assoc-ref inputs "qttools")
                                "/bin/lrelease\n")))
              (let ((out (assoc-ref outputs "out")))
-               (system* "qmake"
-                        (string-append "PREFIX=" out))))))))
+               (invoke "qmake"
+                       (string-append "PREFIX=" out))))))))
     (home-page "http://www.mapeditor.org/")
     (synopsis "Tile map editor")
     (description
