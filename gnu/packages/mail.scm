@@ -2554,3 +2554,47 @@ and binaries. It supports offline reading, scoring and killfiles, yEnc, NZB,
 PGP handling, multiple servers, and secure connections.")
     ;; License of the docs: fdl-1.1; Others: gpl2.
     (license (list fdl1.1+ gpl2))))
+
+(define-public imapfilter
+  (package
+    (name "imapfilter")
+    (version "2.6.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/lefcha/imapfilter/archive/"
+                       "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yslvwr3w5fnl06gfrp0lim8zdlasx3cvgd2fsqi0695xnb9bsms"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-include-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((pcre (assoc-ref inputs "pcre")))
+               (substitute* "src/Makefile"
+                 (("INCDIRS =")
+                  (string-append "INCDIRS ="
+                                 "-I" pcre "/include")))
+               #t))))))
+    (native-inputs
+     `(("lua" ,lua)
+       ("pcre" ,pcre)
+       ("openssl" ,openssl)))
+    (home-page "https://github.com/lefcha/imapfilter")
+    (synopsis "IMAP mail filtering utility")
+    (description "IMAPFilter is a mail filtering utility.  It connects
+to remote mail servers using IMAP, sends searching queries to the server and
+processes mailboxes based on the results.  It can be used to delete, copy,
+move, flag, etc. messages residing in mailboxes at the same or different mail
+servers.  The 4rev1 and 4 versions of IMAP are supported.")
+    (license license:expat)))
