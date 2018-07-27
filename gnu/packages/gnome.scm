@@ -2266,7 +2266,7 @@ and RDP protocols.")
     (description "Dconf is a low-level configuration system.  Its main purpose
 is to provide a backend to GSettings on platforms that don't already have
 configuration storage systems.")
-    (license license:lgpl2.1)))
+    (license license:lgpl2.1+)))
 
 (define-public json-glib
   (package
