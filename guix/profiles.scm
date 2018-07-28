@@ -91,6 +91,7 @@
             manifest-lookup
             manifest-installed?
             manifest-matching-entries
+            manifest-search-paths
 
             manifest-transaction
             manifest-transaction?
@@ -109,6 +110,7 @@
             ca-certificate-bundle
             %default-profile-hooks
             profile-derivation
+            profile-search-paths
 
             generation-number
             generation-numbers
@@ -544,6 +546,14 @@ no match.."
          predicates))
 
   (filter matches? (manifest-entries manifest)))
+
+(define (manifest-search-paths manifest)
+  "Return the list of search path specifications that apply to MANIFEST,
+including the search path specification for $PATH."
+  (delete-duplicates
+   (cons $PATH
+         (append-map manifest-entry-search-paths
+                     (manifest-entries manifest)))))
 
 
 ;;;
@@ -1367,8 +1377,7 @@ are cross-built for TARGET."
               (map sexp->search-path-specification
                    (delete-duplicates
                     '#$(map search-path-specification->sexp
-                            (append-map manifest-entry-search-paths
-                                        (manifest-entries manifest))))))
+                            (manifest-search-paths manifest)))))
 
             (build-profile #$output '#$inputs
                            #:symlink #$(if relative-symlinks?
@@ -1391,6 +1400,19 @@ are cross-built for TARGET."
                       ;; connection to the substitute server, which is likely
                       ;; to have no substitute to offer.
                       #:substitutable? #f)))
+
+(define* (profile-search-paths profile
+                               #:optional (manifest (profile-manifest profile))
+                               #:key (getenv (const #f)))
+  "Read the manifest of PROFILE and evaluate the values of search path
+environment variables required by PROFILE; return a list of
+specification/value pairs.  If MANIFEST is not #f, it is assumed to be the
+manifest of PROFILE, which avoids rereading it.
+
+Use GETENV to determine the current settings and report only settings not
+already effective."
+  (evaluate-search-paths (manifest-search-paths manifest)
+                         (list profile) getenv))
 
 (define (profile-regexp profile)
   "Return a regular expression that matches PROFILE's name and number."
@@ -1499,7 +1521,7 @@ the generation that was current before switching."
                               (profile profile)
                               (generation number)))))
           (else
-           (switch-symlinks profile generation)
+           (switch-symlinks profile (basename generation))
            current))))
 
 (define (switch-to-previous-generation profile)

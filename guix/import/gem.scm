@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,8 @@
   #:use-module (guix base32)
   #:use-module (guix build-system ruby)
   #:export (gem->guix-package
-            %gem-updater))
+            %gem-updater
+            gem-recursive-import))
 
 (define (rubygems-fetch name)
   "Return an alist representation of the RubyGems metadata for the package NAME,
@@ -115,29 +117,30 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
                  ((license) (license->symbol license))
                  (_ `(list ,@(map license->symbol licenses)))))))
 
-(define* (gem->guix-package package-name #:optional version)
+(define* (gem->guix-package package-name #:optional (repo 'rubygems) version)
   "Fetch the metadata for PACKAGE-NAME from rubygems.org, and return the
 `package' s-expression corresponding to that package, or #f on failure."
   (let ((package (rubygems-fetch package-name)))
     (and package
-         (let ((name         (assoc-ref package "name"))
-               (version      (assoc-ref package "version"))
-               (hash         (assoc-ref package "sha"))
-               (synopsis     (assoc-ref package "info")) ; nothing better to use
-               (description  (beautify-description
-                              (assoc-ref package "info")))
-               (home-page    (assoc-ref package "homepage_uri"))
-               (dependencies (map (lambda (dep)
-                                    (let ((name (assoc-ref dep "name")))
-                                      (if (string=? name "bundler")
-                                          "bundler" ; special case, no prefix
-                                          (ruby-package-name name))))
-                                  (assoc-ref* package "dependencies"
-                                              "runtime")))
-               (licenses     (map string->license
-                                  (assoc-ref package "licenses"))))
-           (make-gem-sexp name version hash home-page synopsis
-                          description dependencies licenses)))))
+         (let* ((name         (assoc-ref package "name"))
+                (version      (assoc-ref package "version"))
+                (hash         (assoc-ref package "sha"))
+                (synopsis     (assoc-ref package "info")) ; nothing better to use
+                (description  (beautify-description
+                               (assoc-ref package "info")))
+                (home-page    (assoc-ref package "homepage_uri"))
+                (dependencies-names (map (lambda (dep) (assoc-ref dep "name"))
+                                         (assoc-ref* package "dependencies" "runtime")))
+                (dependencies (map (lambda (dep)
+                                     (if (string=? dep "bundler")
+                                         "bundler" ; special case, no prefix
+                                         (ruby-package-name dep)))
+                                   dependencies-names))
+                (licenses     (map string->license
+                                   (assoc-ref package "licenses"))))
+           (values (make-gem-sexp name version hash home-page synopsis
+                                  description dependencies licenses)
+                   dependencies-names)))))
 
 (define (guix-package->gem-name package)
   "Given a PACKAGE built from rubygems.org, return the name of the
@@ -192,3 +195,8 @@ package on RubyGems."
    (description "Updater for RubyGem packages")
    (pred gem-package?)
    (latest latest-release)))
+
+(define* (gem-recursive-import package-name #:optional version)
+  (recursive-import package-name '()
+                    #:repo->guix-package gem->guix-package
+                    #:guix-name ruby-package-name))

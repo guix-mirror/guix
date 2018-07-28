@@ -180,7 +180,7 @@ and driving.")
     (inputs
      `(("cairo" ,cairo)
        ("libpng" ,libpng)
-       ("libjepeg-turbo" ,libjpeg-turbo)
+       ("libjpeg-turbo" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("libgeotiff" ,libgeotiff)
        ("proj.4" ,proj.4)

@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,27 +35,27 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system waf))
+  #:use-module (guix build-system waf)
+  #:use-module (srfi srfi-1))
 
 (define-public fltk
   (package
     (name "fltk")
-    (version "1.3.3")
+    (version "1.3.4-2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://fltk.org/pub/fltk/" version
+      (uri (string-append "http://fltk.org/pub/fltk/"
+                          (first (string-split version #\-))
                           "/fltk-" version "-source.tar.gz"))
       (sha256
        (base32
-        "15qd7lkz5d5ynz70xhxhigpz3wns39v9xcf7ggkl0792syc8sfgq"))
-      (patches (search-patches "fltk-shared-lib-defines.patch"
-                               "fltk-xfont-on-demand.patch"))))
+        "0459rm1gl5x3famiqma7ja7k6hvan8p5l8lgshvqfl4rik0lklr5"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (inputs
-    `(("libjpeg" ,libjpeg-8)     ;jpeg_read_header argument error in libjpeg-9
+    `(("libjpeg" ,libjpeg)
       ("libpng" ,libpng)
       ("libx11" ,libx11)
       ("libxft" ,libxft)
@@ -76,12 +77,11 @@
            ;; Provide -L flags for image libraries when querying fltk-config to
            ;; avoid propagating inputs.
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (use-modules (srfi srfi-26))
-             (let* ((conf (string-append (assoc-ref outputs "out")
-                                         "/bin/fltk-config"))
-                    (jpeg (assoc-ref inputs "libjpeg"))
-                    (png  (assoc-ref inputs "libpng"))
-                    (zlib (assoc-ref inputs "zlib")))
+             (let ((conf (string-append (assoc-ref outputs "out")
+                                        "/bin/fltk-config"))
+                   (jpeg (assoc-ref inputs "libjpeg"))
+                   (png  (assoc-ref inputs "libpng"))
+                   (zlib (assoc-ref inputs "zlib")))
                (substitute* conf
                  (("-ljpeg") (string-append "-L" jpeg "/lib -ljpeg"))
                  (("-lpng") (string-append "-L" png "/lib -lpng"))

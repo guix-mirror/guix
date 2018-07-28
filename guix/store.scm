@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,6 +78,8 @@
             add-data-to-store
             add-text-to-store
             add-to-store
+            add-file-tree-to-store
+            binary-file
             build-things
             build
             query-failed-paths
@@ -135,6 +138,7 @@
             set-current-system
             text-file
             interned-file
+            interned-file-tree
 
             %store-prefix
             store-path
@@ -949,6 +953,101 @@ where FILE is the entry's absolute file name and STAT is the result of
               (hash-set! cache args path)
               path))))))
 
+(define %not-slash
+  (char-set-complement (char-set #\/)))
+
+(define* (add-file-tree-to-store server tree
+                                 #:key
+                                 (hash-algo "sha256")
+                                 (recursive? #t))
+  "Add the given TREE to the store on SERVER.  TREE must be an entry such as:
+
+  (\"my-tree\" directory
+    (\"a\" regular (data \"hello\"))
+    (\"b\" symlink \"a\")
+    (\"c\" directory
+      (\"d\" executable (file \"/bin/sh\"))))
+
+This is a generalized version of 'add-to-store'.  It allows you to reproduce
+an arbitrary directory layout in the store without creating a derivation."
+
+  ;; Note: The format of TREE was chosen to allow trees to be compared with
+  ;; 'equal?', which in turn allows us to memoize things.
+
+  (define root
+    ;; TREE is a single entry.
+    (list tree))
+
+  (define basename
+    (match tree
+      ((name . _) name)))
+
+  (define (lookup file)
+    (let loop ((components (string-tokenize file %not-slash))
+               (tree root))
+      (match components
+        ((basename)
+         (assoc basename tree))
+        ((head . rest)
+         (loop rest
+               (match (assoc-ref tree head)
+                 (('directory . entries) entries)))))))
+
+  (define (file-type+size file)
+    (match (lookup file)
+      ((_ (and type (or 'directory 'symlink)) . _)
+       (values type 0))
+      ((_ type ('file file))
+       (values type (stat:size (stat file))))
+      ((_ type ('data (? string? data)))
+       (values type (string-length data)))
+      ((_ type ('data (? bytevector? data)))
+       (values type (bytevector-length data)))))
+
+  (define (file-port file)
+    (match (lookup file)
+      ((_ (or 'regular 'executable) content)
+       (match content
+         (('file (? string? file))
+          (open-file file "r0b"))
+         (('data (? string? str))
+          (open-input-string str))
+         (('data (? bytevector? bv))
+          (open-bytevector-input-port bv))))))
+
+  (define (symlink-target file)
+    (match (lookup file)
+      ((_ 'symlink target) target)))
+
+  (define (directory-entries directory)
+    (match (lookup directory)
+      ((_ 'directory (names . _) ...) names)))
+
+  (define cache
+    (nix-server-add-to-store-cache server))
+
+  (or (hash-ref cache tree)
+      (begin
+        ;; We don't use the 'operation' macro so we can use 'write-file-tree'
+        ;; instead of 'write-file'.
+        (record-operation 'add-to-store/tree)
+        (let ((port (nix-server-socket server)))
+          (write-int (operation-id add-to-store) port)
+          (write-string basename port)
+          (write-int 1 port)                      ;obsolete, must be #t
+          (write-int (if recursive? 1 0) port)
+          (write-string hash-algo port)
+          (write-file-tree basename port
+                           #:file-type+size file-type+size
+                           #:file-port file-port
+                           #:symlink-target symlink-target
+                           #:directory-entries directory-entries)
+          (let loop ((done? (process-stderr server)))
+            (or done? (loop (process-stderr server))))
+          (let ((result (read-store-path port)))
+            (hash-set! cache tree result)
+            result)))))
+
 (define build-things
   (let ((build (operation (build-things (string-list things)
                                         (integer mode))
@@ -1362,7 +1461,18 @@ taking the store as its first argument."
 ;; Store monad operators.
 ;;
 
-(define* (text-file name text
+(define* (binary-file name
+                      data ;bytevector
+                      #:optional (references '()))
+  "Return as a monadic value the absolute file name in the store of the file
+containing DATA, a bytevector.  REFERENCES is a list of store items that the
+resulting text file refers to; it defaults to the empty list."
+  (lambda (store)
+    (values (add-data-to-store store name data references)
+            store)))
+
+(define* (text-file name
+                    text ;string
                     #:optional (references '()))
   "Return as a monadic value the absolute file name in the store of the file
 containing TEXT, a string.  REFERENCES is a list of store items that the
@@ -1388,6 +1498,9 @@ where FILE is the entry's absolute file name and STAT is the result of
                           recursive? "sha256" file
                           #:select? select?)
             store)))
+
+(define interned-file-tree
+  (store-lift add-file-tree-to-store))
 
 (define build
   ;; Monadic variant of 'build-things'.

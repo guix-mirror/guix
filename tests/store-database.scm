@@ -32,7 +32,8 @@
 
 (test-begin "store-database")
 
-(test-assert "register-path"
+(test-equal "register-path"
+  '(1 1)
   (let ((file (string-append (%store-prefix) "/" (make-string 32 #\f)
                              "-fake")))
     (when (valid-path? %store file)
@@ -50,7 +51,9 @@
       (and (valid-path? %store file)
            (equal? (references %store file) (list ref))
            (null? (valid-derivers %store file))
-           (null? (referrers %store file))))))
+           (null? (referrers %store file))
+           (list (stat:mtime (lstat file))
+                 (stat:mtime (lstat ref)))))))
 
 (test-equal "new database"
   (list 1 2)

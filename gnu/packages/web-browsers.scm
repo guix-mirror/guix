@@ -27,12 +27,16 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -41,9 +45,11 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages image)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python))
 
 (define-public dillo
@@ -127,6 +133,68 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
     ;; One file (https.c) contains an exception permitting
     ;; linking of the program with openssl.
     (license license:gpl1+)))
+
+(define-public luakit
+  (package
+    (name "luakit")
+    (version "2017.08.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/luakit/luakit/archive/" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0dwxhnq90whakgdg21lzcf03n2g1c7hqgliwhav8av5na5mqpn93"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (inputs
+     `(("lua-5.1", lua-5.1)
+       ("gtk+" ,gtk+)
+       ("gsettings-desktop-schemas", gsettings-desktop-schemas)
+       ("glib-networking", glib-networking)
+       ("lua5.1-filesystem", lua5.1-filesystem)
+       ("luajit", luajit)
+       ("webkitgtk", webkitgtk)
+       ("sqlite", sqlite)))
+    (native-inputs
+     `(("pkg-config", pkg-config)))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list
+          "CC=gcc"
+          "LUA_BIN_NAME=lua"
+          "DEVELOPMENT_PATHS=0"
+          (string-append "PREFIX=" out)
+          (string-append "XDGPREFIX=" out "/etc/xdg")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'lfs-workaround
+           (lambda _
+             (setenv "LUA_CPATH"
+                     (string-append
+                      (assoc-ref %build-inputs "lua5.1-filesystem")
+                      "/lib/lua/5.1/?.so;;"))
+             #t))
+         (delete 'configure)
+         (delete 'check)
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((luakit (assoc-ref outputs "out"))
+                    (lua5.1-filesystem (assoc-ref inputs "lua5.1-filesystem") )
+                    (gtk (assoc-ref inputs "gtk+"))
+                    (gtk-share (string-append gtk "/share")))
+               (wrap-program (string-append luakit "/bin/luakit")
+                 `("LUA_CPATH" prefix
+                   (,(string-append lua5.1-filesystem
+                                    "/lib/lua/5.1/?.so;;"))))
+               #t))))))
+    (synopsis "Fast, lightweight, and simple browser based on WebKit")
+    (description "Luakit is a fast, lightweight, and simple to use
+micro-browser framework extensible by Lua using the WebKit web content engine
+and the GTK+ toolkit.")
+    (home-page "https://luakit.github.io/")
+    (license license:gpl3+)))
 
 (define-public lynx
   (package

@@ -9,10 +9,10 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
-;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;;
@@ -487,14 +487,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.7.0")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0vxra50418bsjfdpf8vl70fijv8syvasjqdxfyjliff6k91k2zn0"))))
+                "1i1r1lh9q2mr1bg520zrvrlwhrhy6wibrin78wjxq1gab1qymks4"))))
     ;; TODO: autotools support has been deprecated, and new features like i18n
     ;; are only supported when building with cmake.
     (build-system gnu-build-system)
@@ -873,7 +873,7 @@ protocols.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.2.2")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
@@ -882,7 +882,7 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "18bfqx0ylbas9gs91rkspf04l5fjjcl0mxm1gfs2d59bv65mvcm3"))))
+         "0sdszy079f82ncrgq1wsjpk2374n5hm4las75gj3lrdhljl15izl"))))
     (arguments
      `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
                      ; for now.
@@ -961,14 +961,14 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.16.1")
+    (version "1.16.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/qTox/qTox/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "11l4klw0g6j4qq95krgyd0npxmmpcgk4vp9jq429sbsqn1s039j4"))
+                "10n3cgw9xaqin9la8wpd8v83bkjmimicgbyp5ninsdgsrgky4hmq"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -990,7 +990,7 @@ instant messenger with audio and video chat capabilities.")
                    ,(list (string-append (assoc-ref inputs "qtsvg")
                                          "/lib/qt5/plugins/"))))))))))
     (inputs
-     `(("ffmpeg" ,ffmpeg-3.4)
+     `(("ffmpeg" ,ffmpeg)
        ("filteraudio" ,filteraudio)
        ("glib" ,glib)
        ("gtk+" ,gtk+-2)
@@ -1643,5 +1643,78 @@ building the IRC clients and bots.")
 c-toxcore and ncurses.  It provides audio calls, sound and desktop
 notifications, and Python scripting support.")
     (license license:gpl3+)))
+
+(define-public libqmatrixclient
+  (package
+    (name "libqmatrixclient")
+    (version "0.3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/QMatrixClient/libqmatrixclient/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0yl7lw0s2z98xkxbklkb3i8xcd9af9qayl1zxl070d8ykl6ayqy3"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qt" ,qt)))
+    (arguments
+     `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")
+       #:tests? #f)) ; No tests
+    (home-page "https://matrix.org/docs/projects/sdk/libqmatrixclient.html")
+    (synopsis "Qt5 client library for the Matrix instant messaging protocol")
+    (description "libqmatrixclient is a Qt5 library to write clients for the
+Matrix instant messaging protocol.  Quaternion is the reference client
+implementation.  Quaternion and libqmatrixclient together form the
+QMatrixClient project.")
+    (license license:lgpl2.1+)))
+
+(define-public quaternion
+  (package
+    (name "quaternion")
+    (version "0.0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/QMatrixClient/Quaternion/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0s2mpw11s2n21ds1spf94j1p2lj2px2bv5zxldlcx81ch0rb4ng8"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libqmatrixclient" ,libqmatrixclient)
+       ("qt" ,qt)))
+    (arguments
+     `(#:tests? #f ; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-libqmatrixclient-dynamic-linking
+           ;; Upstream recommends statically linking with
+           ;; libqmatrixclient. Patch the source so that we can dynamically
+           ;; link instead. In a future release, when upstream moves to
+           ;; dynamic linking, remove this phase.
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("^add_subdirectory\\(lib\\)" all)
+                (string-append "#" all)))
+             (for-each
+              (lambda (file)
+                (substitute* file
+                  (("#include \"lib/([^\"]*)\"" all header)
+                   (string-append "#include <" header ">"))))
+              (find-files "client" "\\.(cpp|h)$"))
+             #t)))))
+    (home-page "https://matrix.org/docs/projects/client/quaternion.html")
+    (synopsis "Graphical client for the Matrix instant messaging protocol")
+    (description "Quaternion is a Qt5 desktop client for the Matrix instant
+messaging protocol.  It uses libqmatrixclient and is its reference client
+implementation.  Quaternion and libqmatriclient together form the
+QMatrixClient project.")
+    (license (list license:gpl3+ ; all source code
+                   license:lgpl3+)))) ; icons/breeze
 
 ;;; messaging.scm ends here

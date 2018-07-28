@@ -190,7 +190,7 @@ do not treat collisions in MANIFEST as an error."
              (let* ((entries (manifest-entries manifest))
                     (count   (length entries)))
                (switch-symlinks name prof)
-               (switch-symlinks profile name)
+               (switch-symlinks profile (basename name))
                (unless (string=? profile %current-profile)
                  (register-gc-root store name))
                (format #t (N_ "~a package in profile~%"

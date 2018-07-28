@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,31 +58,32 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.16.6")
+    (version "0.16.7")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri name version))
              (sha256
               (base32
-               "07iqq5c53cfrb5xnmam1rsl683hc3rykmdak896n2gm81r361c66"))))
+               "1vqjhn2bffy2bx45a1r14crsyn2cylf5by567g44c4mhpjwwz6vc"))))
     (build-system python-build-system)
     (arguments
-      `(#:phases (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (setenv "DETERMINISTIC_TESTS" "true")
-             (setenv "DAV_SERVER" "radicale")
-             (setenv "REMOTESTORAGE_SERVER" "skip")
-             (zero? (system* "make" "test"))))
-         (add-after 'install 'manpage
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (zero? (system* "make" "--directory=docs/" "man"))
-             (install-file
-               "docs/_build/man/vdirsyncer.1"
-               (string-append
-                 (assoc-ref outputs "out")
-                 "/share/man/man1")))))))
+     `(#:phases (modify-phases %standard-phases
+        (replace 'check
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (add-installed-pythonpath inputs outputs)
+            (setenv "DETERMINISTIC_TESTS" "true")
+            (setenv "DAV_SERVER" "radicale")
+            (setenv "REMOTESTORAGE_SERVER" "skip")
+            (invoke "make" "test")))
+        (add-after 'install 'manpage
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (invoke "make" "--directory=docs/" "man")
+            (install-file
+              "docs/_build/man/vdirsyncer.1"
+              (string-append
+                (assoc-ref outputs "out")
+                "/share/man/man1"))
+            #t)))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
        ("python-sphinx" ,python-sphinx)
@@ -105,5 +107,5 @@ between two storage locations.  The most popular purpose is to
 synchronize a CalDAV or CardDAV server with a local folder or file.  The
 local data can then be accessed via a variety of programs, none of which
 have to know or worry about syncing to a server.")
-    (home-page "https://github.com/untitaker/vdirsyncer")
+    (home-page "https://github.com/pimutils/vdirsyncer")
     (license bsd-3)))

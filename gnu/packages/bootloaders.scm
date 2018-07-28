@@ -357,7 +357,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2018.05")
+    (version "2018.07")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -365,10 +365,12 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0j60p4iskzb4hamxgykc6gd7xchxfka1zwh8hv08r9rrc4m3r8ad"))))
+                "1m7nw64mxflpc6sqvnz2kb5fxfkb4mrpy8b1wi15dcwipj4dy44z"))))
     (native-inputs
      `(("bc" ,bc)
+       ("bison" ,bison)
        ("dtc" ,dtc)
+       ("flex" ,flex)
        ("openssl" ,openssl)
        ("python-2" ,python-2)
        ("python2-coverage" ,python2-coverage)
@@ -423,8 +425,7 @@ def test_ctrl_c"))
              (apply invoke "make" "tools_defconfig" make-flags)))
          (replace 'build
            (lambda* (#:key inputs make-flags #:allow-other-keys)
-             (apply invoke "make" "tools-only" make-flags)
-             (apply invoke "make" "envtools" make-flags)))
+             (apply invoke "make" "tools-all" make-flags)))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -441,7 +442,8 @@ def test_ctrl_c"))
                            "tools/mkimage"
                            "tools/proftool"
                            "tools/fdtgrep"
-                           "tools/env/fw_printenv"))
+                           "tools/env/fw_printenv"
+                           "tools/sunxi-spl-image-builder"))
                #t)))
            (delete 'check)
            (add-after 'install 'check
@@ -506,7 +508,18 @@ board-independent tools.")))
                (let* ((out (assoc-ref outputs "out"))
                       (libexec (string-append out "/libexec"))
                       (uboot-files (append
-                                    (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb|rksd)$")
+                                    (remove
+                                     ;; Those would not be reproducible
+                                     ;; because of the randomness used
+                                     ;; to produce them.
+                                     ;; It's expected that the user will
+                                     ;; use u-boot-tools to generate them
+                                     ;; instead.
+                                     (lambda (name)
+                                       (string-suffix?
+                                        "sunxi-spl-with-ecc.bin"
+                                        name))
+                                     (find-files "." ".*\\.(bin|efi|img|spl|itb|dtb|rksd)$"))
                                     (find-files "." "^(MLO|SPL)$"))))
                  (mkdir-p libexec)
                  (install-file ".config" libexec)
@@ -517,7 +530,8 @@ board-independent tools.")))
                     (let ((target-file (string-append libexec "/" file)))
                       (mkdir-p (dirname target-file))
                       (copy-file file target-file)))
-                  uboot-files))))))))))
+                  uboot-files)
+                 #t)))))))))
 
 (define-public u-boot-vexpress
   (make-u-boot-package "vexpress_ca9x4" "arm-linux-gnueabihf"))
@@ -576,6 +590,9 @@ board-independent tools.")))
 
 (define-public u-boot-cubieboard
   (make-u-boot-package "Cubieboard" "arm-linux-gnueabihf"))
+
+(define-public u-boot-cubietruck
+  (make-u-boot-package "Cubietruck" "arm-linux-gnueabihf"))
 
 (define-public u-boot-puma-rk3399
   (let ((base (make-u-boot-package "puma-rk3399" "aarch64-linux-gnu")))

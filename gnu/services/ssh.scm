@@ -455,7 +455,7 @@ of user-name/file-like tuples."
 
   (list (shepherd-service
          (documentation "OpenSSH server.")
-         (requirement '(syslogd))
+         (requirement '(syslogd loopback))
          (provision '(ssh-daemon))
          (start #~(make-forkexec-constructor #$openssh-command
                                              #:pid-file #$pid-file))

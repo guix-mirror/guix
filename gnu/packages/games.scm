@@ -87,6 +87,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libunwind)
@@ -665,6 +666,131 @@ removed lines to all opponents.  There is also a Demo mode in which you can
 watch your CPU playing while enjoying a cup of tea!")
     (license license:gpl2+)))
 
+(define-public nethack
+  (package
+    (name "nethack")
+    (version "3.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.nethack.org/download/"
+                            version "/" name "-361-src.tgz"))
+        (sha256
+          (base32 "1dha0ijvxhx7c9hr0452h93x81iiqsll8bc9msdnp7xdqcfbz32b"))))
+    (inputs
+      `(("ncurses" ,ncurses)
+        ("bison" ,bison)
+        ("flex" ,flex)
+        ("less" ,less)))
+    (build-system gnu-build-system)
+    (arguments
+      '(#:make-flags
+        `(,(string-append "PREFIX=" (assoc-ref %outputs "out")))
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'patch-paths
+            (lambda _
+              (substitute* "sys/unix/nethack.sh"
+                (("^ *cd .*$") ""))
+              (substitute* "sys/unix/Makefile.utl"
+                (("^YACC *=.*$") "YACC = bison -y\n")
+                (("^LEX *=.*$") "LEX = flex\n")
+                (("^# CC = gcc") "CC = gcc"))
+              (substitute* "sys/unix/hints/linux"
+                (("/bin/gzip") (string-append
+                                 (assoc-ref %build-inputs "gzip")
+                                 "/bin/gzip"))
+                (("^WINTTYLIB=.*") "WINTTYLIB=-lncurses"))
+              (substitute* "include/config.h"
+                (("^.*define CHDIR.*$") "")
+                (("^/\\* *#*define *REPRODUCIBLE_BUILD *\\*/")
+                 ;; Honor SOURCE_DATE_EPOCH.
+                 "#define REPRODUCIBLE_BUILD"))
+
+              ;; Note: 'makedefs' rejects and ignores dates that are too old
+              ;; or too new, so we must choose something reasonable here.
+              (setenv "SOURCE_DATE_EPOCH" "1531865062")
+
+              (substitute* "sys/unix/Makefile.src"
+                 (("^# CC = gcc") "CC = gcc"))
+              #t))
+          (replace 'configure
+            (lambda _
+              (let ((bash (string-append
+                            (assoc-ref %build-inputs "bash")
+                            "/bin/bash")))
+                (with-directory-excursion "sys/unix"
+                  (substitute* "setup.sh" (("/bin/sh") bash))
+                  (invoke bash "setup.sh" "hints/linux"))
+                #t)))
+          (add-after 'install 'fixup-paths
+            (lambda _
+              (let* ((output (assoc-ref %outputs "out"))
+                     (nethack-script (string-append output "/bin/nethack")))
+                (mkdir-p (string-append output "/games/lib/nethackuserdir"))
+                (for-each
+                  (lambda (file)
+                    (rename-file
+                      (string-append output "/games/lib/nethackdir/" file)
+                      (string-append output "/games/lib/nethackuserdir/"
+                                     file)))
+                  '("xlogfile" "logfile" "perm" "record" "save"))
+                (mkdir-p (string-append output "/bin"))
+                (call-with-output-file nethack-script
+                  (lambda (port)
+                    (format port "#!~a/bin/sh
+PATH=~a:$PATH
+if [ ! -d ~~/.config/nethack ]; then
+  mkdir -p ~~/.config/nethack
+  cp -r ~a/games/lib/nethackuserdir/* ~~/.config/nethack
+  chmod -R +w ~~/.config/nethack
+fi
+
+RUNDIR=$(mktemp -d)
+
+cleanup() {
+  rm -rf $RUNDIR
+}
+trap cleanup EXIT
+
+cd $RUNDIR
+for i in ~~/.config/nethack/*; do
+  ln -s $i $(basename $i)
+done
+for i in ~a/games/lib/nethackdir/*; do
+  ln -s $i $(basename $i)
+done
+~a/games/nethack"
+                      (assoc-ref %build-inputs "bash")
+                      (list->search-path-as-string
+                        (list
+                          (string-append
+                            (assoc-ref %build-inputs "coreutils") "/bin")
+                          (string-append
+                            (assoc-ref %build-inputs "less") "/bin"))
+                        ":")
+                      output
+                      output
+                      output)))
+                (chmod nethack-script #o555)
+                #t)))
+          (delete 'check))))
+    (home-page "https://nethack.org")
+    (synopsis "Classic dungeon crawl game")
+    (description "NetHack is a single player dungeon exploration game that runs
+on a wide variety of computer systems, with a variety of graphical and text
+interfaces all using the same game engine.  Unlike many other Dungeons &
+Dragons-inspired games, the emphasis in NetHack is on discovering the detail of
+the dungeon and not simply killing everything in sight - in fact, killing
+everything in sight is a good way to die quickly.  Each game presents a
+different landscape - the random number generator provides an essentially
+unlimited number of variations of the dungeon and its denizens to be discovered
+by the player in one of a number of characters: you can pick your race, your
+role, and your gender.")
+    (license
+      (license:fsdg-compatible
+        "https://nethack.org/common/license.html"))))
+
 (define-public prboom-plus
   (package
    (name "prboom-plus")
@@ -955,15 +1081,16 @@ that beneath its ruins lay buried an ancient evil.")
 (define-public angband
   (package
     (name "angband")
-    (version "4.0.5")
+    (version "4.1.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://rephial.org/downloads/4.0/"
-                           "angband-" version ".tar.gz"))
+       (uri (string-append "http://rephial.org/downloads/"
+                           (version-major+minor version)
+                           "/angband-" version ".tar.gz"))
        (sha256
         (base32
-         "0lpq2kms7hp421vrasx2bkkn9w08kr581ldwik3v0hlq6h7rlxhd"))
+         "0ahfzb66ihxvkxcbhcib816x40sdsp26b3ravr1xqp44w1whkg1h"))
        (modules '((guix build utils)))
        (snippet
         ;; So, some of the sounds/graphics/tilesets are under different
@@ -987,11 +1114,11 @@ that beneath its ruins lay buried an ancient evil.")
        #:configure-flags (list (string-append "--bindir=" %output "/bin"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen.sh
+         (replace 'bootstrap
            (lambda _
              (substitute* "acinclude.m4"
                (("ncursesw5-config") "ncursesw6-config"))
-             (zero? (system* "sh" "autogen.sh")))))))
+             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -1448,7 +1575,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "0.4.16")
+    (version "0.4.17")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1457,7 +1584,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0nibpm600rbv9dg1zgcsl5grlbqx0b5l6cg1lp6sqkwvjialb4ga"))))
+                "0pa9skjwbq27aky6dgr7g3mb0a7c5rpa6xmz2qh0nm618z5hgazh"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)
@@ -1490,7 +1617,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "0.4.16")
+    (version "0.4.17")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1499,7 +1626,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0mbnf1ma4gsw9ah68ply04059xkfx5psdxwalxp78sgmx4ypkwqf"))))
+                "0wpbad5bssbbgspgdcq3hhq4bhckrj53nhymsz34d8g01j0csr46"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -1830,7 +1957,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.3")
+    (version "1.14.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -1839,7 +1966,7 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "06648041nr77sgzr7jpmcn37cma3hp41qynp50xzddx28l17zwg9"))))
+                "1hw1ap8xxpdwyx1sf8fm1g75p6724y3hwb4kpvyqbsq7bwfwsb9i"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f)) ; no check target
@@ -3345,7 +3472,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "10.0g")
+    (version "10.4j")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -3356,7 +3483,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "0f68pcnsgl406dhm91ckn3f364bar9m9i5njp9vrmvhvv9p2icy0"))))
+                "0909p4xvbi1c2jc5rdgrf8b1c60fmsaapabsi6yyglh5znkf0k27"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -3368,7 +3495,6 @@ throwing people around in pseudo-randomly generated buildings.")
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl-union")
                                     "/include/SDL"))))
-         ;; Fix font and music paths.
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -3378,17 +3504,18 @@ throwing people around in pseudo-randomly generated buildings.")
                                  "/share/fonts/truetype"))
                     (dejavu-font "DejaVuSans-Bold.ttf")
                     (music-file "hyperrogue-music.txt"))
+               ;; Fix font and music paths.
                (substitute* "basegraph.cpp"
                  ((dejavu-font)
                   (string-append dejavu-dir "/" dejavu-font)))
-               (substitute* "sound.cpp"
-                 (((string-append "\\./" music-file))
-                  (string-append share-dir "/" music-file))
-                 (("sounds/")
-                  (string-append share-dir "/sounds/")))
                (substitute* music-file
                  (("\\*/")
                   (string-append share-dir "/sounds/"))))
+             ;; Fix Makefile.
+             (substitute* "Makefile"
+               (("g\\+\\+ langen.cpp")
+                "g++ langen.cpp ${CXXFLAGS}")
+               (("savepng.c") "savepng.cpp"))
              #t))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -3405,21 +3532,18 @@ throwing people around in pseudo-randomly generated buildings.")
                     (out (assoc-ref outputs "out"))
                     (sounds (string-append out "/share/hyperrogue/sounds"))
                     (unzip (string-append (assoc-ref inputs "unzip") "/bin/unzip")))
-               (and
-                ;; Extract media license information into sounds directory.
-                (zero?
-                 (system* unzip "-j" data
-                          (string-append
-                           "hyperrogue"
-                           (string-join (string-split ,version #\.) "")
-                           "/sounds/credits.txt") "-d" sounds))
-                ;; Extract sounds and music into sounds directory.
-                (zero?
-                 (system* "unzip" "-j" data
-                          (string-append
-                           "hyperrogue"
-                           (string-join (string-split ,version #\.) "")
-                           "/*.ogg") "-d" sounds)))))))))
+               ;; Extract media license information into sounds directory.
+               (invoke unzip "-j" data
+                       (string-append
+                        "hyperrogue"
+                        (string-join (string-split ,version #\.) "")
+                        "/sounds/credits.txt") "-d" sounds)
+               ;; Extract sounds and music into sounds directory.
+               (invoke "unzip" "-j" data
+                       (string-append
+                        "hyperrogue"
+                        (string-join (string-split ,version #\.) "")
+                        "/*.ogg") "-d" sounds)))))))
     (native-inputs
      `(("hyperrogue-data"
         ,(origin
@@ -3431,7 +3555,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "0bnp077qvlmxjlz1jjd6kpghlv9flxc19ac1xq3m3wyq1w9p3pab"))))
+             "0w61iv2rn93hi0q3hxyyyf9xcr8vi9zd7fjvpz5adpgf94jm3zsc"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -3497,7 +3621,7 @@ for Un*x systems with X11.")
 (define-public freeciv
   (package
    (name "freeciv")
-   (version "2.5.7")
+   (version "2.6.0")
    (source
     (origin
      (method url-fetch)
@@ -3510,7 +3634,7 @@ for Un*x systems with X11.")
                   "/freeciv-" version ".tar.bz2")))
      (sha256
       (base32
-       "1lmydnnqraa947l7gdz6xgm0bgks1ywsivp9h4v8jr3avcv6gqzz"))))
+       "16f9wsnn7073s6chzbm3819swd0iw019p9nrzr3diiynk28kj83w"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)

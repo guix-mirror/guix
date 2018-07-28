@@ -1,12 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Joshua Grant <tadni@riseup.net>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -135,7 +134,7 @@ Qt-style API for Wayland clients.")
 (define-public sddm
   (package
     (name "sddm")
-    (version "0.17.0")
+    (version "0.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -144,8 +143,7 @@ Qt-style API for Wayland clients.")
                     "sddm-" version ".tar.xz"))
               (sha256
                (base32
-                "0ch6rdppgy2vbzw0c2x9a4c6ry46vx7p6b76d8xbh2nvxh23xv0k"))
-              (patches (search-patches "sddm-fix-build-with-qt-5.11-1024.patch"))))
+                "0icyi9nqgbp2v6dwh3n3jzff9jv2xy8d4rbsz89hd65x7c3hrv87"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -258,7 +256,7 @@ create smooth, animated user interfaces.")
     (inputs
      `(("audit" ,audit)
        ("linux-pam" ,linux-pam)
-       ("util-linux" ,util-linux) ; for sbin/nologin
+       ("shadow" ,shadow)                         ;for sbin/nologin
        ("libgcrypt" ,libgcrypt)
        ("libxcb" ,libxcb)))
     (native-inputs

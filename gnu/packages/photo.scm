@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -81,7 +81,7 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libjpeg" ,libjpeg-8)))         ;for lossy DNGs and old Kodak cameras
+     `(("libjpeg" ,libjpeg)))           ;for lossy DNGs and old Kodak cameras
     (propagated-inputs
      `(("lcms" ,lcms)))                 ;for color profiles
     (home-page "https://www.libraw.org")

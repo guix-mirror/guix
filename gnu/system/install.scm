@@ -298,6 +298,13 @@ You have been warned.  Thanks for being so brave.\x1b[0m
                    `(("/bin/sh" ,(file-append (canonical-package bash)
                                               "/bin/sh"))))
 
+          ;; Loopback device, needed by OpenSSH notably.
+          (service static-networking-service-type
+                   (list (static-networking (interface "lo")
+                                            (ip "127.0.0.1")
+                                            (requirement '())
+                                            (provision '(loopback)))))
+
           ;; Keep a reference to BARE-BONES-OS to make sure it can be
           ;; installed without downloading/building anything.  Also keep the
           ;; things needed by 'profile-derivation' to minimize the amount of

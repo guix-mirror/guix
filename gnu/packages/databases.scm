@@ -651,7 +651,7 @@ Language.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        '("-DBUILD_CONFIG=mysql_release"
          ;; Linking with libarchive fails, like this:
 
@@ -684,6 +684,17 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
+         ;; Apply this patch that's only needed on ARM.
+         ,@(if (and (not (%current-target-system))
+                    (string=? "armhf-linux" (%current-system)))
+               `((add-after 'unpack 'apply-patch
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((patch (assoc-ref inputs "gcc-ice-patch")))
+                       (invoke "patch" "-p1" "--force"
+                               "--input" patch)
+                       #t))))
+               '())
+
          (add-after 'unpack 'unbundle
            (lambda _
              ;; The bundled PCRE in MariaDB has a patch that was upstreamed
@@ -771,7 +782,10 @@ Language.")
               #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ,@(if (string=? "armhf-linux" (%current-system))
+             `(("gcc-ice-patch" ,(search-patch "mariadb-gcc-ice.patch")))
+             '())))
     (inputs
      `(("jemalloc" ,jemalloc)
        ("libaio" ,libaio)
@@ -792,6 +806,7 @@ Language.")
 as a drop-in replacement of MySQL.")
     (license license:gpl2)))
 
+;; Don't forget to update the other postgresql packages when upgrading this one.
 (define-public postgresql
   (package
     (name "postgresql")
@@ -840,14 +855,14 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.8")
+    (version "9.6.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0w7bwf19wbdd3jjbjv03cnx56qka4801srcbsayk9v792awv7zga"))))))
+                "0biy8j69dbvdmrag55pdszpc0702agzqhhcwdx21xp02mzim4ydr"))))))
 
 (define-public qdbm
   (package
@@ -1160,14 +1175,14 @@ is in the public domain.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.15")
+    (version "1.3.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0a37jhpij8wr4f4pjqdlwnffy2l6a2vkqdpz1bqxj6v06cwbz8dl"))))
+                "1ibcz466xwk1x6xvzlgzd5va4lyrjzm3rnjak29kkwk7cmhw4gva"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

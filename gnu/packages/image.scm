@@ -1223,21 +1223,21 @@ PNG, and performs PNG integrity checks and corrections.")
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "1.5.3")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" version "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08r5b5mywwrxv4axvq80dm31cklz81grczlzlxr2xqa6pgi90j5j"))))
-    (build-system gnu-build-system)
+                "0s48zz6awd493hmb200abmsizh68fh1jmz98r41n4c8dbl87d23p"))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
     (arguments
-     '(#:test-target "test"
-       #:configure-flags (list "--with-build-date=1970-01-01")))
-    (home-page "http://www.libjpeg-turbo.org/")
+     '(#:configure-flags '("-DCMAKE_INSTALL_LIBDIR:PATH=lib"
+                           "-DENABLE_STATIC=0")))
+    (home-page "https://libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
     (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
 JPEG compression and decompression using SIMD instructions: MMX on x86, SSE2 on
@@ -1248,8 +1248,10 @@ libjpeg-turbo implements both the traditional libjpeg API and the less powerful
 but more straightforward TurboJPEG API, and provides a full-featured Java
 interface.  It supports color space extensions that allow it to compress from
 and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
-    (license (list license:bsd-3        ; jsimd*.[ch] and most of simd/
-                   license:ijg))))      ; the rest
+    ;; libjpeg-turbo is covered by three different licenses; see LICENSE.md.
+    (license (list license:bsd-3        ;the TurboJPEG API library and programs
+                   license:ijg          ;the libjpeg library and associated tools
+                   license:zlib))))     ;the libjpeg-turbo SIMD extensions
 
 (define-public niftilib
   (package

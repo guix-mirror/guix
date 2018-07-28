@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,9 +73,7 @@
   (one-shot?        cuirass-configuration-one-shot? ;boolean
                     (default #f))
   (fallback?        cuirass-configuration-fallback? ;boolean
-                    (default #f))
-  (load-path        cuirass-configuration-load-path
-                    (default '())))
+                    (default #f)))
 
 (define (cuirass-shepherd-service config)
   "Return a <shepherd-service> for the Cuirass service with CONFIG."
@@ -92,8 +91,7 @@
          (specs            (cuirass-configuration-specifications config))
          (use-substitutes? (cuirass-configuration-use-substitutes? config))
          (one-shot?        (cuirass-configuration-one-shot? config))
-         (fallback?        (cuirass-configuration-fallback? config))
-         (load-path        (cuirass-configuration-load-path config)))
+         (fallback?        (cuirass-configuration-fallback? config)))
      (list (shepherd-service
             (documentation "Run Cuirass.")
             (provision '(cuirass))
@@ -109,9 +107,7 @@
                             "--interval" #$(number->string interval)
                             #$@(if use-substitutes? '("--use-substitutes") '())
                             #$@(if one-shot? '("--one-shot") '())
-                            #$@(if fallback? '("--fallback") '())
-                            #$@(if (null? load-path) '()
-                                 `("--load-path" ,(string-join load-path ":"))))
+                            #$@(if fallback? '("--fallback") '()))
 
                       #:environment-variables
                       (list "GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt"

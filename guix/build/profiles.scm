@@ -89,7 +89,7 @@ definitions for all the SEARCH-PATHS."
 # When GUIX_PROFILE is undefined, the various environment variables refer
 # to this specific profile generation.
 \n" port)
-      (let ((variables (evaluate-search-paths (cons $PATH search-paths)
+      (let ((variables (evaluate-search-paths search-paths
                                               (list output))))
         (for-each (write-environment-variable-definition port)
                   (map (abstract-profile output) variables))))))

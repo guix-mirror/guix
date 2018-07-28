@@ -28,6 +28,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +60,7 @@
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
@@ -402,8 +404,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17.4")
-(define %linux-libre-hash "1qdywncwwaxghjidihyzvdjq7pffzlswlspjyy420ny967n818jd")
+(define %linux-libre-version "4.17.10")
+(define %linux-libre-hash "1ab349s18avigd2592i11pab4klqzzxy11a1zp16mb842d8chkj2")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -411,8 +413,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.53")
-(define %linux-libre-4.14-hash "1bl20q85vnhbkmjj6gvqhgp379hk26rrivwmc5g5wqz46xyavk2a")
+(define %linux-libre-4.14-version "4.14.58")
+(define %linux-libre-4.14-hash "1ny2b5zmgvbxglpy88aicdxix2ygr1qmar2rgaa336czfjninwr5")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -421,14 +423,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.111"
-                    "0ld57627k6mjp14x5bvndakj6lc4l31zp2yq74h7ski2g3k7ppk2"
+  (make-linux-libre "4.9.115"
+                    "12n3wwfz22hxqqy7bdchl894x5krylcd4vx65837w7rybnb5w2wj"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.139"
-                    "0x58ykgx7vbv23q763ydifi548mz39nal7wbvrrl4i9ndk7pzfzz"
+  (make-linux-libre "4.4.144"
+                    "1001nw9d51vbiisrjv5ffqigcwfs0r9gav2f8hkw9hzjw64nhanp"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -537,15 +539,15 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public psmisc
   (package
     (name "psmisc")
-    (version "22.21")
+    (version "23.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
-                          version ".tar.gz"))
+                          version ".tar.xz"))
       (sha256
        (base32
-        "0nhlm1vrrwn4a845p6y4nnnb4liq70n74zbdd5dq844jc6nkqclp"))))
+        "0c5s94hqpwfmyswx2f96gifa6wdbpxxpkyxcrlzbxpvmrxsd911f"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/psmisc/psmisc")
@@ -1609,7 +1611,7 @@ processes currently causing I/O.")
 (define-public fuse
   (package
     (name "fuse")
-    (version "2.9.7")
+    (version "2.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libfuse/libfuse/releases/"
@@ -1617,7 +1619,7 @@ processes currently causing I/O.")
                                   "/fuse-" version ".tar.gz"))
               (sha256
                (base32
-                "0x486nri30f7cgy0acj87v9sjxsjrr0cymrvw4h3r0sgmp8k4943"))
+                "1qxg1r1mgysfq6qakmvid2njph3lr00w0swvydsfl9ymilfzi12y"))
               (patches (search-patches "fuse-overlapping-headers.patch"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
@@ -3283,7 +3285,7 @@ and copy/paste text in the console and in xterm.")
                      ("which" ,which)
                      ;; The tests need 'grep' with perl regexp support.
                      ("grep" ,grep)))
-    (home-page "https://btrfs.wiki.kernel.org/")
+    (home-page "https://btrfs.wiki.kernel.org/index.php/Main_Page")
     (synopsis "Create and manage btrfs copy-on-write file systems")
     (description "Btrfs is a @dfn{copy-on-write} (CoW) file system for Linux
 aimed at implementing advanced features while focusing on fault tolerance,
@@ -3588,7 +3590,7 @@ The following service daemons are also provided:
 (define-public rng-tools
   (package
     (name "rng-tools")
-    (version "6.2")
+    (version "6.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/nhorman/rng-tools/"
@@ -3596,7 +3598,7 @@ The following service daemons are also provided:
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0xy4qmfhvkr5z4jr9j55dn5gnajr2jccdp6n0xsxkipjcgag342j"))))
+                "04p7wvcm389s21y9mq8ss6z2szxi4nfrfixzwqjkq2qciz705i4s"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
@@ -3699,7 +3701,45 @@ as used on certified hardware security devices.")
          "0zwq19siiwf09h7lwa7n7mgmrr8cxifp45lmwgcfr8c1gviv6b0i"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list "--disable-pywrap")))
+     `(#:configure-flags (list "--disable-pywrap")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-hardcoded-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (utils-linux (assoc-ref inputs "utils-linux"))
+                   (cryptsetup (assoc-ref inputs "cryptsetup"))
+                   (linux-pam (assoc-ref inputs "linux-pam"))
+                   (lvm2 (assoc-ref inputs "lvm2")))
+               (substitute* '("src/utils/ecryptfs-mount-private"
+                              "src/utils/ecryptfs-umount-private"
+                              "src/utils/ecryptfs-setup-private"
+                              "src/utils/ecryptfs-setup-swap"
+                              "src/utils/mount.ecryptfs.c"
+                              "src/utils/umount.ecryptfs.c"
+                              "src/pam_ecryptfs/pam_ecryptfs.c"
+                              "src/desktop/ecryptfs-mount-private.desktop.in"
+                              "src/desktop/ecryptfs-setup-private.desktop.in")
+                 (("/bin/mount")
+                  (string-append utils-linux "/bin/mount"))
+                 (("/bin/umount")
+                  (string-append utils-linux "/bin/umount"))
+                 (("/sbin/mount.ecryptfs_private")
+                  (string-append out "/sbin/mount.ecryptfs_private"))
+                 (("/sbin/umount.ecryptfs_private")
+                  (string-append out "/sbin/umount.ecryptfs_private"))
+                 (("/usr/bin/ecryptfs-mount-private")
+                  (string-append out "/bin/ecryptfs-mount-private"))
+                 (("/usr/bin/ecryptfs-rewrite-file")
+                  (string-append out "/bin/ecryptfs-rewrite-file"))
+                 (("/usr/bin/ecryptfs-setup-private")
+                  (string-append out "/bin/ecryptfs-setup-private"))
+                 (("/sbin/cryptsetup")
+                  (string-append cryptsetup "/sbin/cryptsetup"))
+                 (("/sbin/unix_chkpwd")
+                  (string-append linux-pam "/sbin/unix_chkpwd"))
+                 (("/sbin/dmsetup")
+                  (string-append lvm2 "/sbin/dmsetup")))))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("perl" ,perl)                   ; for pod2man
@@ -3707,6 +3747,9 @@ as used on certified hardware security devices.")
     (inputs
      `(("keyutils" ,keyutils)
        ("linux-pam" ,linux-pam)
+       ("utils-linux" ,util-linux)
+       ("cryptsetup" ,cryptsetup)
+       ("lvm2" ,lvm2)
        ("nss" ,nss)))
     (home-page "http://ecryptfs.org/")
     (synopsis "eCryptfs cryptographic file system utilities")

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
@@ -46,7 +46,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (srfi srfi-1))
 
 (define-public cups-filters
   (package
@@ -174,6 +176,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 (define-public cups-minimal
   (package
     (name "cups-minimal")
+    (replacement cups-minimal-2.2.8)
     (version "2.2.6")
     (source
      (origin
@@ -234,8 +237,21 @@ describe printer capabilities and features, and a wide variety of generic and
 device-specific programs to convert and print many types of files.")
     (license license:gpl2)))
 
+(define-public cups-minimal-2.2.8
+  (package
+    (inherit cups-minimal)
+    (version "2.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/apple/cups/releases/download/v"
+                           version "/cups-" version "-source.tar.gz"))
+       (sha256
+        (base32
+         "1r7r7b3nqpzc1a9dczqpj2mr8rkcwf01676v11sp4j7w4qfzqs1r"))))))
+
 (define-public cups
-  (package (inherit cups-minimal)
+  (package/inherit cups-minimal
     (name "cups")
     (arguments
      `(;; Three tests fail:
@@ -505,6 +521,19 @@ device-specific programs to convert and print many types of files.")
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))))
+
+(define-public hplip-minimal
+  (package
+    (inherit hplip)
+    (name "hplip-minimal")
+    (arguments
+      (substitute-keyword-arguments (package-arguments hplip)
+        ((#:configure-flags cf)
+         `(delete "--enable-qt5" ,cf))))
+    (inputs
+     (fold alist-delete (package-inputs hplip)
+           '("python-pygobject" "python-pyqt")))
+    (synopsis "GUI-less version of hplip")))
 
 (define-public foomatic-filters
   (package

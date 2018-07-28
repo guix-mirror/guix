@@ -635,18 +635,16 @@
                                             "guix/derivations.scm"))
                    ("p/q"   . ,(search-path %load-path "guix.scm"))
                    ("p/z"   . ,(search-path %load-path "guix/store.scm"))))
-       (drv (imported-files files)))
+       (dir (imported-files files)))
     (mbegin %store-monad
-      (built-derivations (list drv))
-      (let ((dir (derivation->output-path drv)))
-        (return
-         (every (match-lambda
-                 ((path . source)
-                  (equal? (call-with-input-file (string-append dir "/" path)
-                            get-bytevector-all)
-                          (call-with-input-file source
-                            get-bytevector-all))))
-                files))))))
+      (return
+       (every (match-lambda
+                ((path . source)
+                 (equal? (call-with-input-file (string-append dir "/" path)
+                           get-bytevector-all)
+                         (call-with-input-file source
+                           get-bytevector-all))))
+              files)))))
 
 (test-assertm "imported-files with file-like objects"
   (mlet* %store-monad ((plain -> (plain-file "foo" "bar!"))
@@ -654,16 +652,19 @@
                        (files -> `(("a/b/c" . ,q-scm)
                                    ("p/q"   . ,plain)))
                        (drv      (imported-files files)))
+    (define (file=? file1 file2)
+      ;; Assume deduplication is in place.
+      (= (stat:ino (lstat file1))
+         (stat:ino (lstat file2))))
+
     (mbegin %store-monad
       (built-derivations (list drv))
       (mlet %store-monad ((dir -> (derivation->output-path drv))
                           (plain* (text-file "foo" "bar!"))
                           (q-scm* (interned-file q-scm "c")))
         (return
-         (and (string=? (readlink (string-append dir "/a/b/c"))
-                        q-scm*)
-              (string=? (readlink (string-append dir "/p/q"))
-                        plain*)))))))
+         (and (file=? (string-append dir "/a/b/c") q-scm*)
+              (file=? (string-append dir "/p/q") plain*)))))))
 
 (test-equal "gexp-modules & ungexp"
   '((bar) (foo))
@@ -948,7 +949,7 @@
       (return (and (zero? (close-pipe pipe))
                    (= (expt n 2) (string->number str)))))))
 
-(test-assertm "gexp->script #:module-path"
+(test-assert "gexp->script #:module-path"
   (call-with-temporary-directory
    (lambda (directory)
      (define str
@@ -961,23 +962,24 @@
                         (define-public %fake! ,str))
                 port)))
 
-     (mlet* %store-monad ((exp -> (with-imported-modules '((guix base32))
-                                    (gexp (begin
-                                            (use-modules (guix base32))
-                                            (write (list %load-path
-                                                         %fake!))))))
-                          (drv    (gexp->script "guile-thing" exp
-                                                #:guile %bootstrap-guile
-                                                #:module-path (list directory)))
-                          (out -> (derivation->output-path drv))
-                          (done   (built-derivations (list drv))))
-       (let* ((pipe  (open-input-pipe out))
-              (data  (read pipe)))
-         (return (and (zero? (close-pipe pipe))
-                      (match data
-                        ((load-path str*)
-                         (and (string=? str* str)
-                              (not (member directory load-path))))))))))))
+     (run-with-store %store
+       (mlet* %store-monad ((exp -> (with-imported-modules '((guix base32))
+                                      (gexp (begin
+                                              (use-modules (guix base32))
+                                              (write (list %load-path
+                                                           %fake!))))))
+                            (drv    (gexp->script "guile-thing" exp
+                                                  #:guile %bootstrap-guile
+                                                  #:module-path (list directory)))
+                            (out -> (derivation->output-path drv))
+                            (done   (built-derivations (list drv))))
+         (let* ((pipe  (open-input-pipe out))
+                (data  (read pipe)))
+           (return (and (zero? (close-pipe pipe))
+                        (match data
+                          ((load-path str*)
+                           (and (string=? str* str)
+                                (not (member directory load-path)))))))))))))
 
 (test-assertm "program-file"
   (let* ((n      (random (expt 2 50)))
@@ -996,7 +998,7 @@
           (return (and (zero? (close-pipe pipe))
                        (= n (string->number str)))))))))
 
-(test-assertm "program-file #:module-path"
+(test-assert "program-file #:module-path"
   (call-with-temporary-directory
    (lambda (directory)
      (define text (random-text))
@@ -1014,14 +1016,15 @@
             (file   (program-file "program" exp
                                   #:guile %bootstrap-guile
                                   #:module-path (list directory))))
-       (mlet* %store-monad ((drv (lower-object file))
-                            (out -> (derivation->output-path drv)))
-         (mbegin %store-monad
-           (built-derivations (list drv))
-           (let* ((pipe  (open-input-pipe out))
-                  (str   (get-string-all pipe)))
-             (return (and (zero? (close-pipe pipe))
-                          (string=? text str))))))))))
+       (run-with-store %store
+         (mlet* %store-monad ((drv (lower-object file))
+                              (out -> (derivation->output-path drv)))
+           (mbegin %store-monad
+             (built-derivations (list drv))
+             (let* ((pipe  (open-input-pipe out))
+                    (str   (get-string-all pipe)))
+               (return (and (zero? (close-pipe pipe))
+                            (string=? text str)))))))))))
 
 (test-assertm "program-file & with-extensions"
   (let* ((exp    (with-extensions (list %extension-package)

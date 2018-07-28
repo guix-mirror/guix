@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages mp3)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -1840,3 +1843,518 @@ deliver content")
 store, and deliver content.  It's containe Docker Registry 2.0 and libraries
 to interacting with distribution components.")
       (license license:asl2.0))))
+
+(define-public go-github-com-docker-go-connections
+  (let ((commit "3ede32e2033de7505e6500d6c868c2b9ed9f169d")
+        (revision "0"))
+    (package
+      (name "go-github-com-docker-go-connections")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/docker/go-connections.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "0v1pkr8apwmhyzbjfriwdrs1ihlk6pw7izm57r24mf9jdmg3fyb0"))))
+      (build-system go-build-system)
+      (arguments
+        '(#:import-path "github.com/docker/go-connections"))
+      (home-page "https://github.com/docker/go-connections")
+      (synopsis "Networking library for Go")
+      (description
+       "This packages provides a library to work with network connections in
+the Go language.  In particular it provides tools to deal with network address
+translation (NAT), proxies, sockets, and transport layer security (TLS).")
+      (license license:asl2.0))))
+
+(define-public go-github-com-docker-machine
+  (let ((commit "7b7a141da84480342357c51838be142bf183b095")
+        (revision "0"))
+    (package
+      (name "go-github-com-docker-machine")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/docker/machine.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0bavk0lvs462yh0lnmnxi9psi5qv1x3nvzmd2b0drsahlp1gxi8s"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/docker/machine"))
+      (home-page "https://github.com/docker/machine")
+      (synopsis "Machine management for a container-centric world")
+      (description
+       "@dfn{Machine} lets you create Docker hosts on your computer, on
+hosting providers, and inside your data center.  It creates servers, installs
+Docker on them, then configures the Docker client to talk to them.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-gorhill-cronexpr
+  (let ((commit "f0984319b44273e83de132089ae42b1810f4933b")
+        (revision "0"))
+    (package
+      (name "go-github-com-gorhill-cronexpr")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gorhill/cronexpr.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0dphhhqy3i7265znv3m8n57l80dmaq6z4hsj5kgd87qd19z8x0l2"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/gorhill/cronexpr"))
+      (home-page "https://github.com/gorhill/cronexpr")
+      (synopsis "Cron expression parser in the Go language")
+      (description
+       "This package provides a cron expression parser in the Go language.
+Given a cron expression and a time stamp, you can get the next time stamp
+which satisfies the cron expression.")
+      (license (list license:gpl3+
+                     license:asl2.0)))))
+
+(define-public go-gopkg-in-check-v1
+  (let ((commit "20d25e2804050c1cd24a7eea1e7a6447dd0e74ec")
+        (revision "0"))
+    (package
+      (name "go-gopkg-in-check-v1")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/go-check/check")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0k1m83ji9l1a7ng8a7v40psbymxasmssbrrhpdv2wl4rhs0nc3np"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/check.v1"))
+      (home-page "https://gopkg.in/check.v1")
+      (synopsis "Test framework for the Go language")
+      (description
+       "This package provides a test library for the Go language.")
+      (license license:asl2.0))))
+
+(define-public go-gopkg-in-yaml-v2
+  (let ((commit "14227de293ca979cf205cd88769fe71ed96a97e2")
+        (revision "0"))
+    (package
+      (name "go-gopkg-in-yaml-v2")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://gopkg.in/yaml.v2.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "038hnrjcnjygyi3qidfrkpkakis82qg381sr495d2s40g2dwlzah"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "gopkg.in/yaml.v2"))
+      (native-inputs
+       `(("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
+      (home-page "https://gopkg.in/yaml.v2")
+      (synopsis "YAML reader and writer for the Go language")
+      (description
+       "This package provides a Go library for encode and decode YAML
+values.")
+      (license license:asl2.0))))
+
+(define-public go-github-com-mattn-go-isatty
+  (let ((commit "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c")
+        (revision "0"))
+    (package
+      (name "go-github-com-mattn-go-isatty")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mattn/go-isatty")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0zs92j2cqaw9j8qx1sdxpv3ap0rgbs0vrvi72m40mg8aa36gd39w"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/mattn/go-isatty"))
+      (home-page "https://github.com/mattn/go-isatty")
+      (synopsis "Provide @code{isatty} for Golang")
+      (description "This package provides @code{isatty}, a Go module that can
+tell you whether a file descriptor points to a terminal and the type of the
+terminal.")
+      (license license:expat))))
+
+(define-public go-github-com-mattn-go-colorable
+  (let ((commit "efa589957cd060542a26d2dd7832fd6a6c6c3ade")
+        (revision "0"))
+    (package
+      (name "go-github-com-mattn-go-colorable")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mattn/go-colorable")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0kshi4hvm0ayrsxqxy0599iv81kryhd2fn9lwjyczpj593cq069r"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("go-github-com-mattn-go-isatty"
+          ,go-github-com-mattn-go-isatty)))
+      (arguments
+       '(#:import-path "github.com/mattn/go-colorable"))
+      (home-page "https://github.com/mattn/go-colorable")
+      (synopsis "Handle ANSI color escapes on Windows")
+      (description "This package provides @code{colorable}, a module that
+makes it possible to handle ANSI color escapes on Windows.")
+      (license license:expat))))
+
+(define-public go-github-com-mgutz-ansi
+  (let ((commit "9520e82c474b0a04dd04f8a40959027271bab992")
+        (revision "0"))
+    (package
+      (name "go-github-com-mgutz-ansi")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/mgutz/ansi")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "00bz22314j26736w1f0q4jy9d9dfaml17vn890n5zqy3cmvmww1j"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("go-github-com-mattn-go-isatty"
+          ,go-github-com-mattn-go-isatty)
+         ("go-github-com-mattn-go-colorable"
+          ,go-github-com-mattn-go-colorable)))
+      (arguments
+       '(#:import-path "github.com/mgutz/ansi"))
+      (home-page "https://github.com/mgutz/ansi")
+      (synopsis "Small, fast library to create ANSI colored strings and codes")
+      (description "This package provides @code{ansi}, a Go module that can
+generate ANSI colored strings.")
+      (license license:expat))))
+
+(define-public go-github-com-aarzilli-golua
+  (let ((commit "03fc4642d792b1f2bc5e7343b403cf490f8c501d")
+        (revision "0"))
+    (package
+      (name "go-github-com-aarzilli-golua")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/aarzilli/golua")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1d9hr29i36cza98afj3g6rs3l7xbkprwzz0blcxsr9dd7nak20di"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("lua" ,lua)))
+      (arguments
+       `(#:unpack-path "github.com/aarzilli/golua"
+         #:import-path "github.com/aarzilli/golua/lua"
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'build
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "install"
+                       "-v"  ; print the name of packages as they are compiled
+                       "-x"  ; print each command as it is invoked
+                       "-ldflags=-s -w" ; strip the symbol table and debug
+                       "-tags" "llua" ; Latest Lua on Guix does not have a version number.
+                       import-path)))
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (invoke "go" "test"
+                       "-tags" "llua" ; Latest Lua on Guix does not have a version number.
+                       import-path))))))
+      (home-page "https://github.com/aarzilli/golua")
+      (synopsis "Go Bindings for the Lua C API")
+      (description "This package provides @code{lua}, a Go module that can
+run a Lua virtual machine.")
+      (license license:expat))))
+
+(define-public go-gitlab-com-ambrevar-golua-unicode
+  (let ((commit "97ce517e7a1fe2407a90c317a9c74b173d396144")
+        (revision "0"))
+    (package
+      (name "go-gitlab-com-ambrevar-golua-unicode")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://gitlab.com/ambrevar/golua")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1izcp7p8nagjwqd13shb0020w7xhppib1a3glw2d1468bflhksnm"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("lua" ,lua)
+         ("go-github-com-aarzilli-golua" ,go-github-com-aarzilli-golua)))
+      (arguments
+       `(#:unpack-path "gitlab.com/ambrevar/golua"
+         #:import-path "gitlab.com/ambrevar/golua/unicode"
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key import-path #:allow-other-keys)
+               (setenv "USER" "homeless-dude")
+               (invoke "go" "test" import-path))))))
+      (home-page "https://gitlab.com/ambrevar/golua")
+      (synopsis "Add Unicode support to Golua")
+      (description "This extension to Arzilli's Golua adds Unicode support to
+all functions from the Lua string library.  Lua patterns are replaced by Go
+regexps.  This breaks compatibility with Lua, but Unicode support breaks it
+anyways and Go regexps are more powerful.")
+      (license license:expat))))
+
+(define-public go-github-com-yookoala-realpath
+  (let ((commit "d19ef9c409d9817c1e685775e53d361b03eabbc8")
+        (revision "0"))
+    (package
+      (name "go-github-com-yookoala-realpath")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/yookoala/realpath")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0qvz1dcdldf53rq69fli76z5k1vr7prx9ds1d5rpzgs68kwn40nw"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/yookoala/realpath"))
+      (home-page "https://github.com/yookoala/realpath")
+      (synopsis "@code{realpath} for Golang")
+      (description "This package provides @code{realpath}, a Go module that
+when provided with a valid relative path / alias path, it will return you with
+a string of its real absolute path in the system.")
+      (license license:expat))))
+
+(define-public go-gitlab-com-ambrevar-damerau
+  (let ((commit "883829e1f25fad54015772ea663e69017cf22352")
+        (revision "0"))
+    (package
+      (name "go-gitlab-com-ambrevar-damerau")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://gitlab.com/ambrevar/damerau")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1b9p8fypc914ij1afn6ir346zsgfqrc5mqc1k3d53n4snypq27qv"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "gitlab.com/ambrevar/damerau"))
+      (home-page "https://gitlab.com/ambrevar/damerau")
+      (synopsis "Damerau-Levenshtein distance for Golang")
+      (description "This is a spelling corrector implementing the
+Damerau-Levenshtein distance.  Takes a string value input from the user.
+Looks for an identical word on a list of words, if none is found, look for a
+similar word.")
+      (license license:expat))))
+
+(define-public go-github-com-stevedonovan-luar
+  (let ((commit "22d247e5366095f491cd83edf779ee99a78f5ead")
+        (revision "0"))
+    (package
+      (name "go-github-com-stevedonovan-luar")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/stevedonovan/luar")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1acjgw9cz1l0l9mzkyk7irz6cfk31wnxgbwa805fvm1rqcjzin2c"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("go-github-com-aarzilli-golua" ,go-github-com-aarzilli-golua)))
+      (arguments
+       `(#:tests? #f                    ; Upstream tests are broken.
+         #:import-path "github.com/stevedonovan/luar"))
+      (home-page "https://github.com/stevedonovan/luar")
+      (synopsis "Lua reflection bindings for Go")
+      (description "Luar is designed to make using Lua from Go more
+convenient.  Go structs, slices and maps can be automatically converted to Lua
+tables and vice-versa.  The resulting conversion can either be a copy or a
+proxy.  In the latter case, any change made to the result will reflect on the
+source.
+
+Any Go function can be made available to Lua scripts, without having to write
+C-style wrappers.
+
+Luar support cyclic structures (lists, etc.).
+
+User-defined types can be made available to Lua as well: their exported
+methods can be called and usual operations such as indexing or arithmetic can
+be performed.")
+      (license license:expat))))
+
+(define-public go-github-com-kr-text
+  (let ((commit "e2ffdb16a802fe2bb95e2e35ff34f0e53aeef34f")
+        (revision "0"))
+    (package
+      (name "go-github-com-kr-text")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/kr/text")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1gm5bsl01apvc84bw06hasawyqm4q84vx1pm32wr9jnd7a8vjgj1"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/kr/text"))
+      (home-page "https://github.com/kr/text")
+      (synopsis "Go package for manipulating paragraphs of text")
+      (description "Package @code{text} provides manipulation Go functions for
+paragraphs of text.")
+      (license license:expat))))
+
+(define-public go-github-com-michiwend-golang-pretty
+  (let ((commit "8ac61812ea3fa540f3f141a444fcb0dd713cdca4")
+        (revision "0"))
+    (package
+      (name "go-github-com-michiwend-golang-pretty")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/michiwend/golang-pretty")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0rjfms0csjqi91xnddzx3rcrcaikc7xc027617px3kdwdap80ir4"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("go-github-com-kr-text" ,go-github-com-kr-text)))
+      (arguments
+       `(#:tests? #f                    ; Upstream tests seem to be broken.
+         #:import-path "github.com/michiwend/golang-pretty"))
+      (home-page "https://github.com/michiwend/golang-pretty")
+      (synopsis "Pretty printing for Go values")
+      (description "Package @code{pretty} provides pretty-printing for Go
+values.  This is useful during debugging, to avoid wrapping long output lines
+in the terminal.
+
+It provides a function, @code{Formatter}, that can be used with any function
+that accepts a format string.  It also provides convenience wrappers for
+functions in packages @code{fmt} and @code{log}.")
+      (license license:expat))))
+
+(define-public go-github-com-michiwend-gomusicbrainz
+  (let ((commit "0cdeb13f9b24d2c714feb7e3c63d595cf7121d7d")
+        (revision "0"))
+    (package
+      (name "go-github-com-michiwend-gomusicbrainz")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/michiwend/gomusicbrainz")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1li9daw0kghb80rdmxbh7g72qhxcvx3rvhwq5gs0jrr9hb8pjvcn"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("go-github-com-michiwend-golang-pretty" ,go-github-com-michiwend-golang-pretty)
+         ("go-github-com-kr-text" ,go-github-com-kr-text)))
+      (arguments
+       `(#:import-path "github.com/michiwend/gomusicbrainz"))
+      (home-page "https://github.com/michiwend/gomusicbrainz")
+      (synopsis "MusicBrainz WS2 client library for Golang")
+      (description "Currently GoMusicBrainz provides methods to perform search
+and lookup requests.  Browse requests are not supported yet.")
+      (license license:expat))))
+
+(define-public go-github-com-wtolson-go-taglib
+  (let ((commit "6e68349ff94ecea412de7e748cb5eaa26f472777")
+        (revision "0"))
+    (package
+      (name "go-github-com-wtolson-go-taglib")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url
+                "https://github.com/wtolson/go-taglib")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1cpjqnrviwflz150g78iir5ndrp3hh7a93zbp4dwbg6sb2q141p2"))))
+      (build-system go-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("taglib" ,taglib)))
+      (arguments
+       `(#:import-path "github.com/wtolson/go-taglib"))
+      (home-page "https://github.com/wtolson/go-taglib")
+      (synopsis "Go wrapper for taglib")
+      (description "Go wrapper for taglib")
+      (license license:unlicense))))

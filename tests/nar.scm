@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,6 +151,66 @@
 
 
 (test-begin "nar")
+
+(test-assert "write-file-tree + restore-file"
+  (let* ((file1  (search-path %load-path "guix.scm"))
+         (file2  (search-path %load-path "guix/base32.scm"))
+         (file3  "#!/bin/something")
+         (output (string-append %test-dir "/output")))
+    (dynamic-wind
+      (lambda () #t)
+      (lambda ()
+        (define-values (port get-bytevector)
+          (open-bytevector-output-port))
+        (write-file-tree "root" port
+                         #:file-type+size
+                         (match-lambda
+                           ("root"
+                            (values 'directory 0))
+                           ("root/foo"
+                            (values 'regular (stat:size (stat file1))))
+                           ("root/lnk"
+                            (values 'symlink 0))
+                           ("root/dir"
+                            (values 'directory 0))
+                           ("root/dir/bar"
+                            (values 'regular (stat:size (stat file2))))
+                           ("root/dir/exe"
+                            (values 'executable (string-length file3))))
+                         #:file-port
+                         (match-lambda
+                           ("root/foo" (open-input-file file1))
+                           ("root/dir/bar" (open-input-file file2))
+                           ("root/dir/exe" (open-input-string file3)))
+                         #:symlink-target
+                         (match-lambda
+                           ("root/lnk" "foo"))
+                         #:directory-entries
+                         (match-lambda
+                           ("root" '("foo" "dir" "lnk"))
+                           ("root/dir" '("bar" "exe"))))
+        (close-port port)
+
+        (rm-rf %test-dir)
+        (mkdir %test-dir)
+        (restore-file (open-bytevector-input-port (get-bytevector))
+                      output)
+        (and (file=? (string-append output "/foo") file1)
+             (string=? (readlink (string-append output "/lnk"))
+                       "foo")
+             (file=? (string-append output "/dir/bar") file2)
+             (string=? (call-with-input-file (string-append output "/dir/exe")
+                         get-string-all)
+                       file3)
+             (> (logand (stat:mode (lstat (string-append output "/dir/exe")))
+                        #o100)
+                0)
+             (equal? '("." ".." "bar" "exe")
+                     (scandir (string-append output "/dir")))
+             (equal? '("." ".." "dir" "foo" "lnk")
+                     (scandir output))))
+      (lambda ()
+        (false-if-exception (rm-rf %test-dir))))))
 
 (test-assert "write-file supports non-file output ports"
   (let ((input  (string-append (dirname (search-path %load-path "guix.scm"))

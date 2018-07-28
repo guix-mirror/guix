@@ -314,7 +314,7 @@
         "USE_SYSTEM_LIBGIT2=1"
         "USE_SYSTEM_OPENSPECFUN=1")))
     (inputs
-     `(("llvm" ,llvm)
+     `(("llvm" ,llvm-3.9.1)
 
        ;; The bundled version is 3.3.0 so stick to that version.  With other
        ;; versions, we get test failures in 'linalg/arnoldi' as described in

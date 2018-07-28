@@ -65,7 +65,7 @@
     (arguments `(#:configure-flags '("--disable-udev")))
     ;; (inputs `(("eudev" ,eudev)))
 
-    (home-page "http://libusb.info")
+    (home-page "https://libusb.info")
     (synopsis "User-space USB library")
     (description
      "Libusb is a library that gives applications easy access to USB
@@ -91,7 +91,7 @@ devices on various operating systems.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libusb" ,libusb)))
-    (home-page "http://libusb.info")
+    (home-page "https://libusb.info")
     (synopsis "Compatibility shim for libusb")
     (description
      "Libusb-compat provides a shim allowing applications based on older

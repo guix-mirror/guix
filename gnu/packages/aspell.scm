@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
@@ -49,6 +50,19 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'build 'set-filter-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Change the default value of 'filter-path' so that filters such
+             ;; as 'tex-filter.so' can be found.  By default none of the
+             ;; filters would be found.
+             (let* ((out    (assoc-ref outputs "out"))
+                    (libdir (string-append out "/lib/aspell-"
+                                           ,(version-major+minor version))))
+               (substitute* "common/config.cpp"
+                 (("\"filter-path(.*)DICT_DIR" _ middle)
+                  (string-append "\"filter-path" middle
+                                 "\"" libdir "\"")))
+               #t)))
          (add-after 'install 'wrap-aspell
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin/aspell (string-append (assoc-ref outputs "out")
@@ -141,10 +155,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-en
   (aspell-dictionary "en" "English"
-                     #:version "2017.08.24-0"
+                     #:version "2018.04.16-0"
                      #:sha256
                      (base32
-                      "0z2vvm1by485cm0sna21cmw6zb771c2l2lnn676zmrwm46q65d89")))
+                      "0bxxdzkk9g27plg22y9qzsx9cfjw3aa29w5bmzs561qc9gkp247i")))
 
 (define-public aspell-dict-eo
   (aspell-dictionary "eo" "Esperanto"

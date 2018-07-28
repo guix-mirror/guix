@@ -45,7 +45,7 @@
      `(("gettext" ,gettext-minimal)
        ("perl" ,perl)
        ("python" ,python-wrapper)))
-    (home-page "https://pkg-isocodes.alioth.debian.org/")
+    (home-page "https://salsa.debian.org/iso-codes-team/iso-codes")
     (synopsis "Various ISO standards")
     (description
      "This package provides lists of various ISO standards (e.g. country,

@@ -2537,6 +2537,37 @@ ClasspathX project.  It provides implementations of version 3.0 of the servlet
 API and version 2.1 of the Java ServerPages API.")
     (license license:gpl3+)))
 
+(define-public java-javaee-servletapi
+  (package
+    (name "java-javaee-servletapi")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/javaee/servlet-spec/"
+                                  "archive/" version ".zip"))
+              (file-name (string-append name "-" version ".zip"))
+              (sha256
+               (base32
+                "0m6p13vgfb1ihich1jp5j6fqlhkjsrkn32c86bsbkryp38ipwg8w"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "javax-servletapi.jar"
+       ;; no tests
+       #:tests? #f
+       #:source-dir "src/main/java"))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://javaee.github.io/servlet-spec/")
+    (synopsis "Java servlet API")
+    (description "Java Servlet is the foundation web specification in the
+Java Enterprise Platform.  Developers can build web applications using the
+Servlet API to interact with the request/response workflow.  This project
+provides information on the continued development of the Java Servlet
+specification.")
+    ;; Main code is dual-licensed by Oracle under either GLP2 or CDDL 1.1.
+    ;; Some files are licensed under ASL 2.0.
+    (license (list license:asl2.0 license:gpl2 license:cddl1.1))))
+
 (define-public java-swt
   (package
     (name "java-swt")
@@ -4450,7 +4481,7 @@ these scripting language engines.")
        #:tests? #f
        #:source-dir "src/java"))
     (inputs
-     `(("java-tomcat" ,java-tomcat)
+     `(("servlet" ,java-classpathx-servletapi)
        ("java-jdom" ,java-jdom)
        ("java-commons-beanutils" ,java-commons-beanutils)))
     (native-inputs
@@ -6165,8 +6196,6 @@ StringTemplate also powers ANTLR.")
              (substitute* "ANTLRv3Parser.java"
                (("public Object getTree") "public CommonTree getTree"))
              (chdir "../../../../../java")
-             (invoke "antlr" "-o" "org/antlr/tool"
-                     "org/antlr/tool/serialize.g")
              (substitute* "org/antlr/tool/LeftRecursiveRuleAnalyzer.java"
                (("import org.antlr.grammar.v3.\\*;") "import org.antlr.grammar.v3.*;
 import org.antlr.grammar.v3.ANTLRTreePrinter;"))
@@ -7911,6 +7940,10 @@ the dependency is said to be unsatisfied, and the application is broken.")
               (uri (string-append "https://github.com/google/guice/archive/"
                                   version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  (for-each delete-file (find-files "." ".*.jar"))))
               (sha256
                (base32
                 "0dwmqjzlavb144ywqqglj3h68hqszkff8ai0a42hyb5il0qh4rbp"))))
@@ -7943,7 +7976,7 @@ Java 6 and above.")
        #:tests? #f)); FIXME: not in a java subdir
     (inputs
      `(("guice" ,java-guice)
-       ("servlet" ,java-tomcat)
+       ("servlet"  ,java-classpathx-servletapi)
        ,@(package-inputs java-guice)))))
 
 (define-public java-assertj
@@ -8428,15 +8461,15 @@ algorithms and xxHash hashing algorithm.")
 (define-public java-bouncycastle
   (package
     (name "java-bouncycastle")
-    (version "1.59")
+    (version "1.60")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bcgit/bc-java/archive/r"
-                                  (substring version 0 1) "rv"
+                                  (substring version 0 1) "v"
                                   (substring version 2 4) ".tar.gz"))
               (sha256
                (base32
-                "1bwl499whlbq896w18idqw2dkp8v0wp0npv9g71i5fgf8xjh0k3q"))
+                "0v434513y708qc87k4xz13p2kzydc736lk3ks67df9mg11s7hchv"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -10112,7 +10145,7 @@ and reporting) project dependencies.  It is characterized by the following:
      `(("java-guice" ,java-guice)
        ("java-guice-servlet" ,java-guice-servlet)
        ("java-javax-inject" ,java-javax-inject)
-       ("java-tomcat" ,java-tomcat)
+       ("java-javaee-servletapi" ,java-javaee-servletapi)
        ("java-junit" ,java-junit)
        ("java-slf4j-api" ,java-slf4j-api)
        ("java-jsr305" ,java-jsr305)
@@ -10276,6 +10309,7 @@ static code analysis or code manipulation.")))
               (method url-fetch)
               (uri (string-append "https://github.com/qos-ch/logback/archive/v_"
                                   version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1x6ga74yfgm94cfx98gybakbrlilx8i2gn6dx13l40kasmys06mi"))
@@ -10306,7 +10340,7 @@ static code analysis or code manipulation.")))
              #t)))))
     (inputs
      `(("java-javax-mail" ,java-javax-mail)
-       ("java-tomcat" ,java-tomcat)
+       ("servlet" ,java-javaee-servletapi)
        ("java-commons-compiler" ,java-commons-compiler)
        ("java-janino" ,java-janino)))
     (native-inputs
@@ -10350,7 +10384,7 @@ This module lays the groundwork for the other two modules.")
                                             (find-files (assoc-ref inputs input)
                                                         ".*.jar"))
                                           '("java-logback-core" "java-slf4j-api"
-                                            "java-commons-compiler" "java-tomcat"
+                                            "java-commons-compiler" "servlet"
                                             "groovy")))
                        ":"))
              (apply invoke "groovyc" "-d" "build/classes" "-j"

@@ -51,8 +51,7 @@
 (define (pypi-fetch name)
   "Return an alist representation of the PyPI metadata for the package NAME,
 or #f on failure."
-  (json-fetch-alist (string-append "https://pypi.python.org/pypi/"
-                                   name "/json")))
+  (json-fetch-alist (string-append "https://pypi.org/pypi/" name "/json")))
 
 ;; For packages found on PyPI that lack a source distribution.
 (define-condition-type &missing-source-error &error
@@ -87,7 +86,7 @@ package."
       (string-append "python-" (snake-case name))))
 
 (define (guix-package->pypi-name package)
-  "Given a Python PACKAGE built from pypi.python.org, return the name of the
+  "Given a Python PACKAGE built from pypi.org, return the name of the
 package on PyPI."
   (define (url->pypi-name url)
     (hyphen-package-name->name+version
@@ -269,7 +268,7 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
              (license ,(license->symbol license)))))))
 
 (define (pypi->guix-package package-name)
-  "Fetch the metadata for PACKAGE-NAME from pypi.python.org, and return the
+  "Fetch the metadata for PACKAGE-NAME from pypi.org, and return the
 `package' s-expression corresponding to that package, or #f on failure."
   (let ((package (pypi-fetch package-name)))
     (and package
@@ -304,7 +303,8 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
   "Return true if PACKAGE is a Python package from PyPI."
 
   (define (pypi-url? url)
-    (or (string-prefix? "https://pypi.python.org/" url)
+    (or (string-prefix? "https://pypi.org/" url)
+        (string-prefix? "https://pypi.python.org/" url)
         (string-prefix? "https://pypi.io/packages" url)))
 
   (let ((source-url (and=> (package-source package) origin-uri))

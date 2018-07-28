@@ -207,6 +207,37 @@ programming languages.")
     (home-page "https://stcorp.nl/coda")
     (license license:gpl2+)))
 
+(define-public qhull
+  (package
+    (name "qhull")
+    (version "2015.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.qhull.org/download/qhull-"
+                                  (car (string-split version #\.))
+                                  "-src-7.2.0.tgz"))
+              (sha256
+               (base32
+                "0dm4b2xr3asy6w74khq2zg4gf26zsy3qf9sq7pf7lmrvbj911c3q"))))
+    (build-system cmake-build-system)
+    (synopsis "Calculate convex hulls and related structures")
+    (description
+     "@code{Qhull} computes the convex hull, Delaunay triangulation, Voronoi
+diagram, halfspace intersection about a point, furthest-site Delaunay
+triangulation, and furthest-site Voronoi diagram.  The source code runs in 2-d,
+3-d, 4-d, and higher dimensions.  @code{Qhull} implements the Quickhull
+algorithm for computing the convex hull.  It handles roundoff errors from
+floating point arithmetic.  It computes volumes, surface areas, and
+approximations to the convex hull.
+
+@code{Qhull} does not support triangulation of non-convex surfaces, mesh
+generation of non-convex objects, medium-sized inputs in 9-D and higher, alpha
+shapes, weighted Voronoi diagrams, Voronoi volumes, or constrained Delaunay
+triangulations.")
+    (home-page "http://qhull.org")
+    (license (license:non-copyleft "file://COPYING.txt"
+                                   "See COPYING in the distribution."))))
+
 (define-public units
   (package
    (name "units")
@@ -1334,6 +1365,7 @@ can solve two kinds of problems:
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
+       ("qhull" ,qhull)
        ("readline" ,readline)
        ("gl2ps" ,gl2ps)
        ("glpk" ,glpk)
@@ -2952,7 +2984,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
 (define-public openlibm
   (package
     (name "openlibm")
-    (version "0.5.5")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
@@ -2961,7 +2993,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1z8cj5q8ca8kmrakwkpjxf8svi81waw0c568cx8v8pv9kvswbp07"))))
+         "0a5fpm8nra5ldhjk0cqd2rx1qh32wiarkxmcqcm5xl8z7l4kjm6l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -3207,19 +3239,19 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.6.3")
+    (version "0.9.9.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/ogl-math/glm-" version
-                           "/glm-" version ".zip"))
+       (uri (string-append "https://github.com/g-truc/glm/releases/download/"
+                           version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "1cnjmi033a16a95v6xfkr1bvfmkd26hzdjka8j1819hgn5b1nr8l"))))
+         "0ihjadp2sb8w312a276skfjsljm3y41bjscbxf79wn23gi00giz1"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://glm.g-truc.net")
+    (home-page "https://glm.g-truc.net/")
     (synopsis "OpenGL Mathematics library")
     (description "OpenGL Mathematics (GLM) is a header-only C++ mathematics
 library for graphics software based on the OpenGL Shading Language (GLSL)

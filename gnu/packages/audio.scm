@@ -2513,7 +2513,7 @@ encode and decode wavpack files.")
 (define-public libmodplug
   (package
     (name "libmodplug")
-    (version "0.8.8.5")
+    (version "0.8.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2521,7 +2521,7 @@ encode and decode wavpack files.")
                     name "/" version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1bfsladg7h6vnii47dd66f5vh1ir7qv12mfb8n36qiwrxq92sikp"))))
+                "1pnri98a603xk47smnxr551svbmgbzcw018mq1k6srbrq6kaaz25"))))
     (build-system gnu-build-system)
     (home-page "http://modplug-xmms.sourceforge.net/")
     (synopsis "Mod file playing library")

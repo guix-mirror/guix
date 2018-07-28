@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
+;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3240,12 +3241,16 @@ VCF.")
                                            (msg (format #f
                                                         "\
 Class-Path: /~a \
- ~a/share/java/htsjdk.jar${line.separator}"
+ ~a/share/java/htsjdk.jar${line.separator}${line.separator}"
                                                         ;; maximum line length is 70
                                                         (string-tabulate (const #\b) 57)
                                                         (assoc-ref inputs "java-htsjdk"))))
                                        (if (member "manifest" name)
                                            `(,tag ,@kids
+                                                  (replaceregexp
+                                                   (@ (file "${manifest.file}")
+                                                      (match "\\r\\n\\r\\n")
+                                                      (replace "${line.separator}")))
                                                   (echo
                                                    (@ (message ,msg)
                                                       (file "${manifest.file}")
@@ -3760,13 +3765,13 @@ experiments.")
 (define-public macs
   (package
     (name "macs")
-    (version "2.1.0.20151222")
+    (version "2.1.1.20160309")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "MACS2" version))
               (sha256
                (base32
-                "1r2hcz6irhcq7lwbafjks98jbn34hv05avgbdjnp6w6mlfjkf8x5"))))
+                "09ixspd1vcqmz1c81ih70xs4m7qml2iy5vyx1y74zww3iy1vl210"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; only compatible with Python 2.7
@@ -12828,11 +12833,12 @@ once.  This package provides tools to perform Drop-seq analyses.")
            (lambda _
              (substitute* "Makefile.in"
                (("(^  tests/test_trim_galore/test.sh).*" _ m) m)
+               (("^  tests/test_multiqc/test.sh") "")
                (("^  test.sh") ""))
              #t)))))
     (inputs
      `(("gzip" ,gzip)
-       ("snakemake" ,snakemake)
+       ("snakemake" ,snakemake-4)
        ("fastqc" ,fastqc)
        ("multiqc" ,multiqc)
        ("star" ,star)
@@ -12926,7 +12932,7 @@ expression report comparing samples in an easily configurable manner.")
        ("fastqc" ,fastqc)
        ("bowtie" ,bowtie)
        ("idr" ,idr)
-       ("snakemake" ,snakemake)
+       ("snakemake" ,snakemake-4)
        ("samtools" ,samtools)
        ("bedtools" ,bedtools)
        ("kentutils" ,kentutils)))
@@ -12987,7 +12993,7 @@ in an easily configurable manner.")
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc-with-pandoc-1)
        ("python-wrapper" ,python-wrapper)
        ("python-pyyaml" ,python-pyyaml)
-       ("snakemake" ,snakemake)
+       ("snakemake" ,snakemake-4)
        ("bismark" ,bismark)
        ("fastqc" ,fastqc)
        ("bowtie" ,bowtie)
@@ -13036,7 +13042,7 @@ methylation and segmentation.")
        ("python-loompy" ,python-loompy)
        ("ghc-pandoc" ,ghc-pandoc-1)
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc-with-pandoc-1)
-       ("snakemake" ,snakemake)
+       ("snakemake" ,snakemake-4)
        ("star" ,star)
        ("r-minimal" ,r-minimal)
        ("r-argparser" ,r-argparser)

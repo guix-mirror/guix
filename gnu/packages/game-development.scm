@@ -2,12 +2,12 @@
 ;;; Copyright © 2014 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Julian Graham <joolean@gmail.com>
+;;; Copyright © 2016, 2017, 2018 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
@@ -74,6 +74,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages stb)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
@@ -225,14 +226,14 @@ PCM data.")
 (define-public gzochi
   (package
     (name "gzochi")
-    (version "0.11.1")
+    (version "0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/gzochi/gzochi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13j1m92zhxwkaaja3lg5x0h0b28mrrawdzk9d3hd19031akfxwb3"))))
+                "0h8yvk7154kd8zdfa9nqy73blrjq2x19kv305jcnwlmm09vvss59"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -356,14 +357,14 @@ levels.")
 (define-public python-xsge
   (package
     (name "python-xsge")
-    (version "2017.06.09")
+    (version "2018.02.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/xsge/xsge/xsge-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1vy7c2y7ihvmggs93zgfv2h3049s384wid8a5snzrrba8bhbb89p"))))
+                "0bx93hgf7cgdw2gsygbh59y8vpw37pgsa279rajw3fkdpl8vrc40"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -372,10 +373,9 @@ levels.")
          ;; system's default flags, "--single-version-externally-managed".
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero?
-              (system* "python" "setup.py" "install"
-                       (string-append "--prefix=" (assoc-ref outputs "out"))
-                       "--root=/")))))
+             (invoke "python" "setup.py" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--root=/"))))
        #:tests? #f)) ; no check target
     (propagated-inputs
      `(("python-sge-pygame" ,python-sge-pygame)
@@ -397,7 +397,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.1.5")
+    (version "1.1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -405,7 +405,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1zrq1nhb50mwqzw3fln6vj49ljddil1v7yby3ahjbcm94s25ll1y"))))
+                "194ciw8688mikndvxivzb8ql5vm405pkwnn4srzm7ymwfc4xygb0"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -424,8 +424,8 @@ support.")
                                (assoc-ref inputs "qttools")
                                "/bin/lrelease\n")))
              (let ((out (assoc-ref outputs "out")))
-               (system* "qmake"
-                        (string-append "PREFIX=" out))))))))
+               (invoke "qmake"
+                       (string-append "PREFIX=" out))))))))
     (home-page "http://www.mapeditor.org/")
     (synopsis "Tile map editor")
     (description
@@ -440,7 +440,7 @@ clone.")
 (define-public sfml
   (package
     (name "sfml")
-    (version "2.3.2")
+    (version "2.5.0")
     (source (origin
               (method url-fetch)
               ;; Do not fetch the archives from
@@ -451,24 +451,37 @@ clone.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0k2fl5xk3ni2q8bsxl0551inx26ww3w6cp6hssvww0wfjdjcirsm"))))
+                "1x3yvhdrln5b6h4g5r4mds76gq8zsxw6icxqpwqkmxsqcq5yviab"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Ensure system libraries are used.
+                  (delete-file-recursively "extlibs")
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
-       (list "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE")
+       (list "-DSFML_INSTALL_PKGCONFIG_FILES=TRUE"
+             "-DSFML_OS_PKGCONFIG_DIR=lib/pkgconfig")
        #:tests? #f)) ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("mesa" ,mesa)
        ("glew" ,glew)
-       ("flac" ,flac)
-       ("libvorbis" ,libvorbis)
        ("libx11" ,libx11)
        ("xcb-util-image" ,xcb-util-image)
        ("libxrandr" ,libxrandr)
        ("eudev" ,eudev)
-       ("freetype" ,freetype)
        ("libjpeg" ,libjpeg)
        ("libsndfile" ,libsndfile)
+       ("stb-image" ,stb-image)
+       ("stb-image-write" ,stb-image-write)))
+    (propagated-inputs
+     ;; In Requires.private of pkg-config files.
+     `(("flac" ,flac)
+       ("freetype" ,freetype)
+       ("libvorbis" ,libvorbis)
        ("openal" ,openal)))
     (home-page "https://www.sfml-dev.org")
     (synopsis "Simple and Fast Multimedia Library")
@@ -518,7 +531,7 @@ sounds from presets such as \"explosion\" or \"powerup\".")
 (define-public physfs
   (package
     (name "physfs")
-    (version "2.0.3")
+    (version "3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -527,10 +540,18 @@ sounds from presets such as \"explosion\" or \"powerup\".")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sbbyqzqhyf0g68fcvvv20n3928j0x6ik1njmhn1yigvq2bj11na"))))
+                "1wgj2zqpnfbnyyi1i7bq5pshcc9n5cvwlpzp8im67nb8662ryyxp"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f))                    ; no check target
+     '(#:tests? #f                      ; no check target
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-CMakeLists.txt
+                    (lambda _
+                      (substitute* "CMakeLists.txt"
+                        ;; XXX: For some reason CMakeLists.txt disables
+                        ;; RUNPATH manipulation when the compiler is GCC.
+                        (("CMAKE_COMPILER_IS_GNUCC") "FALSE"))
+                      #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs
@@ -623,18 +644,15 @@ etc.")
 (define-public allegro
   (package
     (name "allegro")
-    (version "5.2.2.0")
+    (version "5.2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/releases"
                                   "/download/" version "/allegro-"
-                                  (if (equal? "0" (string-take-right version 1))
-                                    (string-drop-right version 2)
-                                    version)
-                                  ".tar.gz"))
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1z4lrrlmn471wb7vzbd9iw7g379vj0k964vy1s64hcvv5bhvk1g2"))))
+                "1w9a5yqi5q03b2qvmx5ff90paz0xbr9cy7i7f0xiqa65ava66q9l"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; there are no tests
     (inputs
@@ -1019,18 +1037,23 @@ of use.")
     (license license:expat)))
 
 (define-public openmw
+  ;; XXX The current version does not support qt 5.11, but the upcoming
+  ;; version (0.44) will do.
+  (let ((commit "5bc073603e8c7887e015a0ef41b4cefd6e688aaf")
+        (revision "1"))
   (package
     (name "openmw")
-    (version "0.43.0")
+    (version (git-version "0.43" revision commit))
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/OpenMW/openmw/archive/"
-                       name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/OpenMW/openmw.git")
+             (commit commit)))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "11phjx7b3mv4n295xgq25lkcwq0mgr35i5k05hf1h77y6n6jbw64"))))
+         "1sp4n3f1syvv0iz7n72wh226fyc0jh98cg8bvs574jvvqx6qn851"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -1057,7 +1080,7 @@ the 2002 open-world RPG Morrowind.  The engine comes with its own editor,
 called OpenMW-CS which allows the user to edit or create their own original
 games.")
     (home-page "https://openmw.org")
-    (license license:gpl3)))
+    (license license:gpl3))))
 
 (define-public godot
   (package

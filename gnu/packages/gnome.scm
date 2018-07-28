@@ -30,6 +30,7 @@
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
+;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2110,7 +2111,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.50.2.a")
+    (version "0.52.2.a")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
@@ -2125,14 +2126,13 @@ editors, IDEs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0sv666ilid916ja6gw2d376nyyy66gvhsds8ans02x4b7gagj5sx"))))
+                "1fd65mk7c87k03vhnb2ixkjvv9nja04mfq813iyjji1b11f2sh7v"))))
     (arguments
-      `(#:configure-flags '("CXXFLAGS=-Wformat=0")
-        #:phases (modify-phases %standard-phases
-                   (replace 'bootstrap
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'bootstrap
                     (lambda _
                       (setenv "NOCONFIGURE" "true")
-                      (zero? (system* "sh" "autogen.sh")))))))
+                      (invoke "sh" "autogen.sh"))))))
   (synopsis "Enhanced VTE terminal widget")
   (description
    "VTE is a library (libvte) implementing a terminal emulator widget for
@@ -2229,7 +2229,7 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.26.1")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2238,47 +2238,34 @@ and RDP protocols.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0da587hpiqy8h3pswn1102h4b905x8k6mk3ajpi7kf4kzkvv30ym"))))
-    (build-system glib-or-gtk-build-system)
+                "0hn7v6769xabqz7kvyb2hfm19h46z1whkair7ff752zmbs3b7lv1"))))
+    (build-system meson-build-system)
+    (propagated-inputs
+     ;; In Requires of dconf.pc.
+     `(("glib" ,glib)))
     (inputs
      `(("gtk+" ,gtk+)
-       ("glib" ,glib)
-       ("dbus" ,dbus)
-       ("libxml2" ,libxml2)))
+       ("dbus" ,dbus)))
     (native-inputs
-     `(("libxslt" ,libxslt)
+     `(("libxslt" ,libxslt)                     ;for xsltproc
+       ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("glib:bin" ,glib "bin")
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (arguments
      `(#:tests? #f ; To contact dbus it needs to load /var/lib/dbus/machine-id
                    ; or /etc/machine-id.
-       #:configure-flags
-       ;; Set the correct RUNPATH in binaries.
-       (list (string-append "LDFLAGS=-Wl,-rpath="
-                            (assoc-ref %outputs "out") "/lib")
-             "--disable-gtk-doc-html") ; FIXME: requires gtk-doc
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-docbook
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "docs/Makefile.in"
-               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl)
-                               "/manpages/docbook.xsl")))
-             (setenv "XML_CATALOG_FILES"
-                     (string-append (assoc-ref inputs "docbook-xml")
-                                    "/xml/dtd/docbook/catalog.xml"))
-             #t)))))
+       #:glib-or-gtk? #t
+       #:configure-flags '("-Denable-gtk-doc=true")))
     (home-page "https://developer.gnome.org/dconf")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
 is to provide a backend to GSettings on platforms that don't already have
 configuration storage systems.")
-    (license license:lgpl2.1)))
+    (license license:lgpl2.1+)))
 
 (define-public json-glib
   (package
@@ -6477,7 +6464,7 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
 (define-public faba-icon-theme
   (package
     (name "faba-icon-theme")
-    (version "4.1.2")
+    (version "4.3")
     (source
      (origin
        (method url-fetch)
@@ -6486,23 +6473,15 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hi2dl627ayfnihn3v6x9xzid668m4hp098hb7hrkxvahh4h9by7"))))
-    (build-system gnu-build-system)
+         "18ln06xl60qzvzz61zq9q72hdbfgjsza3flph8i2asyzx3dffz68"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-makefile.am
+         (add-before 'configure 'disable-post-install
            (lambda _
-             (substitute* '("Makefile.am")
-               (("\\$\\(DESTDIR\\)/usr/share")
-                "$(datadir)"))
-             #t))
-         (add-after 'unpack 'disable-configure-during-bootstrap
-           (lambda _
-             ;; Do not run configure as part of autogen.sh because references
-             ;; to /bin are not fixed yet.
-             (setenv "NOCONFIGURE" "y")
-             #t)))))
+             (substitute* "meson.build"
+               (("meson.add_install_script.*") "")))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -6518,7 +6497,7 @@ Moka")
   (package
     (inherit faba-icon-theme)
     (name "moka-icon-theme")
-    (version "5.3.6")
+    (version "5.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/moka-project"
@@ -6527,7 +6506,7 @@ Moka")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04axinv79qnngsxkwqzi5j9lc3hn24rjqps5ai8d42pdnfaf0x37"))))
+                "1nbwdjj268hxv9lfagd9aylily9f0hhallp841v0i3imljp84bmk"))))
     (propagated-inputs
      ;; Moka is based on Faba by using it as a fallback icon set instead of
      ;; bundling it, so we need to add it as a propagated input.

@@ -132,7 +132,7 @@ joystick, and graphics hardware.")
 (define-public libmikmod
   (package
     (name "libmikmod")
-    (version "3.3.10")
+    (version "3.3.11.1")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -144,7 +144,7 @@ joystick, and graphics hardware.")
                                   version "/libmikmod-" version ".tar.gz")))
              (sha256
               (base32
-               "0j7g4jpa2zgzw7x6s3rldypa7zlwjvn97rwx0sylx1iihhlzbcq0"))))
+               "06bdnhb0l81srdzg6gn2v2ydhhaazza7rshrcj3q8dpqr3gn97dd"))))
     (build-system gnu-build-system)
     (arguments
      ;; By default, libmikmod tries to dlopen libasound etc., which won't work
@@ -484,7 +484,7 @@ sound and device input (keyboards, joysticks, mice, etc.).")
 (define-public guile-sdl2
   (package
     (name "guile-sdl2")
-    (version "0.2.0")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -492,7 +492,7 @@ sound and device input (keyboards, joysticks, mice, etc.).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0yq9lsl17cdvj77padvpk3jcw2g6g0pck9jrchc7n2767rrc012b"))))
+                "0iq6fw213qw292fxhrsg40al7hqyqyh4qpgl0x9rh08y949h2w97"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")
@@ -504,16 +504,7 @@ sound and device input (keyboards, joysticks, mice, etc.).")
              (string-append "--with-libsdl2-ttf-prefix="
                             (assoc-ref %build-inputs "sdl2-ttf"))
              (string-append "--with-libsdl2-mixer-prefix="
-                            (assoc-ref %build-inputs "sdl2-mixer")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'patch-makefile
-           (lambda _
-             ;; Install compiled Guile files in the expected place.
-             (substitute* '("Makefile")
-               (("^godir = .*$")
-                "godir = $(moddir)\n"))
-             #t)))))
+                            (assoc-ref %build-inputs "sdl2-mixer")))))
     (native-inputs
      `(("guile" ,guile-2.2)
        ("pkg-config" ,pkg-config)))

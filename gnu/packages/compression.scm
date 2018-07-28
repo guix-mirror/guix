@@ -642,16 +642,17 @@ sfArk file format to the uncompressed sf2 format.")
 (define-public libmspack
   (package
     (name "libmspack")
-    (version "0.6")
+    (home-page "https://cabextract.org.uk/libmspack/")
+    (version "0.7")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.cabextract.org.uk/libmspack/libmspack-"
-                          version "alpha.tar.gz"))
+      (uri (string-append home-page name "-" version "alpha.tar.gz"))
       (sha256
-       (base32 "08gr2pcinas6bdqz3k0286g5cnksmcx813skmdwyca6bmj1fxnqy"))))
+       (base32 "0wi7ydq8vjiq0kfnpkj2d6vll2s49x38bywnsdqphqb0vdn53q1n"))))
     (build-system gnu-build-system)
-    (home-page "http://www.cabextract.org.uk/libmspack/")
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (synopsis "Compression tools for some formats used by Microsoft")
     (description
      "The purpose of libmspack is to provide both compression and
@@ -981,24 +982,66 @@ provides encoder and a decoder libraries: libbrotlienc and libbrotlidec,
 respectively, based on the reference implementation from Google.")
       (license license:expat))))
 
+(define-public bsdiff
+  (package
+    (name "bsdiff")
+    (version "4.3")
+    (home-page "https://www.daemonology.net/bsdiff/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0j2zm3z271x5aw63mwhr3vymzn45p2vvrlrpm9cz2nywna41b0hq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "INSTALL=install" "CC=gcc"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-before 'build 'fix-Makefile
+                    (lambda _
+                      (substitute* "Makefile"
+                        ;; Adjust syntax to make it compatible with GNU Make.
+                        (("^\\.") "")
+                        ;; Help install(1) create the target directory.
+                        (("\\$\\{PREFIX\\}") "-D -t ${PREFIX}"))
+                      #t)))
+       #:tests? #f)) ;no tests
+    (inputs
+     `(("bzip2" ,bzip2)))
+    (synopsis "Patch binary files")
+    (description
+     "@command{bsdiff} and @command{bspatch} are tools for building and
+applying patches to binary files.  By using suffix sorting (specifically
+Larsson and Sadakane's @code{qsufsort}) and taking advantage of how
+executable files change, bsdiff routinely produces binary patches 50-80%
+smaller than those produced by @code{Xdelta}.")
+    (license license:bsd-2)))
+
 (define-public cabextract
  (package
    (name "cabextract")
-   (version "1.6")
+   (home-page "https://cabextract.org.uk/")
+   (version "1.7")
    (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://cabextract.org.uk/cabextract-" version ".tar.gz"))
+              (uri (string-append home-page name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ysmmz25fjghq7mxb2anyyvr1ljxqxzi4piwjhk0sdamcnsn3rnf"))))
+                "1g86wmb8lkjiv2jarfz979ngbgg7d3si8x5il4g801604v406wi9"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled libmspack.
+                  (delete-file-recursively "mspack")
+                  #t))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--with-external-libmspack")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libmspack" ,libmspack)))
-    (home-page "http://www.cabextract.org.uk/")
     (synopsis "Tool to unpack Cabinet archives")
     (description "Extracts files out of Microsoft Cabinet (.cab) archives")
     ;; Some source files specify gpl2+, lgpl2+, however COPYING is gpl3.
@@ -1889,19 +1932,19 @@ create, manipulate, read, and write Zip archive files.")
 (define-public libzip
   (package
     (name "libzip")
-    (version "1.3.2")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://libzip.org/download/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "11g1hvm2bxa2v5plakfzcwyk5hb5fz4kgrkp38l0xhnv21888xv2"))))
+                "0wnkkvkq90wyawj9221i77sf3nix1vj3ygzdy59k8yvcjnv3bsh4"))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
      `(("zlib" ,zlib)))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
     (description "Libzip is a C library for reading, creating, and modifying

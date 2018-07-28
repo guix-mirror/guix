@@ -2447,7 +2447,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.27.1")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2455,7 +2455,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1riflw6dc8fp5d74i7zfgsss0zz3z3lsj6zn2lzjm5kgmp2qvbfl"))))
+                "189h8vl0005yizwrs4d0sng6j8lwkd3xi1zwqg8qavn2bw34v691"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -3177,46 +3177,28 @@ This driver is intended for the spice qxl virtio device.")
     (license license:x11)))
 
 (define-public xf86-video-r128
-  ;; We need a newer version than 6.10.2 to build against the latest xorg-server.
-  ;; Remove this binding and the bootstrap inputs when >6.10.2 is released.
-  (let ((commit "c4c878d2ccb75fa75afe46e0e50ee9975c5c57fc")
-        (revision "0"))
-    (package
-      (name "xf86-video-r128")
-      (version (git-version "6.10.2" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url (string-append "https://anongit.freedesktop.org/git/xorg"
-                                          "/driver/" name ".git"))
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "01pff30zz4zxjhw28h8bn9x2kq7c6iswgn19b72wnfgl0arxb63j"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    (add-before 'bootstrap 'prevent-configure
-                      (lambda _
-                        ;; Prevent autogen from calling "./configure" as part of
-                        ;; the bootstrap step, which fails due to wrong shebang.
-                        (setenv "NOCONFIGURE" "1")
-                        #t)))))
-      (inputs `(("mesa" ,mesa)
-                ("xorgproto" ,xorgproto)
-                ("xorg-server" ,xorg-server)))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
-      (home-page "https://www.x.org/wiki/")
-      (synopsis "ATI Rage 128 video driver for X server")
-      (description
-       "xf86-video-r128 is a video driver for the Xorg X server.
+  (package
+    (name "xf86-video-r128")
+    (version "6.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/driver/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0snvwmrh8dqyyaq7ggicym6yrsg4brygkx9156r0m095m7fp3rav"))))
+    (build-system gnu-build-system)
+    (inputs `(("mesa" ,mesa)
+              ("xorgproto" ,xorgproto)
+              ("xorg-server" ,xorg-server)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "ATI Rage 128 video driver for X server")
+    (description
+     "xf86-video-r128 is a video driver for the Xorg X server.
 This driver is intended for ATI Rage 128 based cards.")
-      (license license:x11))))
+    (license license:x11)))
 
 (define-public xf86-video-savage
   (package
@@ -5111,7 +5093,8 @@ over Xlib, including:
             (sha256
              (base32
               "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
-            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
+            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))
+          (search-patch "xorg-server-rotate-fb.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpciaccess" ,libpciaccess)
@@ -5837,7 +5820,7 @@ programs that cannot use the window system directly.")
        ("xcb-proto" ,xcb-proto)
        ("xcb-util" ,xcb-util)
        ("xcb-util-wm" ,xcb-util-wm)))
-    (home-page "http://search.cpan.org/dist/X11-XCB")
+    (home-page "https://metacpan.org/release/X11-XCB")
     (synopsis "Perl bindings for libxcb")
     (description
      "These bindings wrap @code{libxcb} (a C library to speak with X11,
@@ -5864,7 +5847,7 @@ interface to its methods (using @code{Mouse}).")
      "X11::Protocol is a client-side interface to the X11 Protocol, allowing
 perl programs to display windows and graphics on X11 servers.")
     (home-page
-     (string-append "http://search.cpan.org/~smccam/X11-Protocol-" version))
+     (string-append "https://metacpan.org/release/SMCCAM/X11-Protocol-" version))
     ;; From the package README: "you can redistribute and/or modify it under
     ;; the same terms as Perl itself. (As an exception, the file
     ;; Keysyms.pm,which is derived from a file in the standard X11
@@ -5892,7 +5875,7 @@ perl programs to display windows and graphics on X11 servers.")
        ("perl-module-util" ,perl-module-util)))
     (propagated-inputs
      `(("perl-x11-protocol" ,perl-x11-protocol)))
-    (home-page "http://search.cpan.org/dist/X11-Protocol-Other/")
+    (home-page "https://metacpan.org/release/X11-Protocol-Other")
     (synopsis "Miscellaneous helpers for @code{X11::Protocol} connections")
     (description
      "@code{X11::Protocol::Other} contains window manager related functions for

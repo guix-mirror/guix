@@ -1,0 +1,34 @@
+From 52cea818bf68f8a2d3c48d55d00c2f8b7da25e4c Mon Sep 17 00:00:00 2001
+From: Daniel Hogan <daniel.hogan@usask.ca>
+Date: Tue, 28 Mar 2017 22:21:18 -0600
+Subject: [PATCH] Remove delete statement.
+
+When from_scratch is true, coordinates is not allocated. A separate if
+statement was added to handle the case when from_scratch is true that
+does not try to free coordinates.
+---
+ src/formats/nwchemformat.cpp | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/src/formats/nwchemformat.cpp b/src/formats/nwchemformat.cpp
+index 6f625ad5b..79298555f 100644
+--- a/src/formats/nwchemformat.cpp
++++ b/src/formats/nwchemformat.cpp
+@@ -232,11 +232,14 @@ static const char* OPTIMIZATION_END_PATTERN = "  Optimization converged";
+           break;
+         tokenize(vs,buffer);
+     }
+-    if ((from_scratch)||(i != natoms))
+-      {
++    if (from_scratch) 
++    {
++        return;
++    }
++    if (i != natoms) {
+         delete[] coordinates;
+         return;
+-      }
++    }
+     molecule->AddConformer(coordinates);
+   }
+ 

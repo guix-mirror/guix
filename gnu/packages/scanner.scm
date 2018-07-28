@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -102,7 +103,7 @@ package contains the library, but no drivers.")
     (inherit sane-backends-minimal)
     (name "sane-backends")
     (inputs
-     `(("hplip" ,(@ (gnu packages cups) hplip))
+     `(("hplip" ,(@ (gnu packages cups) hplip-minimal))
        ,@(package-inputs sane-backends-minimal)))
     (arguments
      (substitute-keyword-arguments (package-arguments sane-backends-minimal)

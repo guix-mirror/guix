@@ -24,12 +24,13 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
+  #:use-module (gnu packages)
   #:use-module (gnu packages golang))
 
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "0.14.48")
+    (version "0.14.49")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -37,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0bxkm5jlj6l4gai23bg0y31brr80r9qllh1rdg29pahjn0c2b4ml"))
+                "06mzzj5iwgqw3yva7azrsqs9zpl84srbamza4gm03grp7v9gf3sj"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -128,7 +129,6 @@
        ("go-github-com-golang-groupcache-lru"
         ,go-github-com-golang-groupcache-lru)
        ("go-github-com-jackpal-gateway" ,go-github-com-jackpal-gateway)
-       ("go-github-com-kardianos-osext" ,go-github-com-kardianos-osext)
        ("go-github-com-kballard-go-shellquote"
         ,go-github-com-kballard-go-shellquote)
        ("go-github-com-lib-pq" ,go-github-com-lib-pq)
@@ -701,11 +701,11 @@ database in Go.")
       (license bsd-2))))
 
 (define-public go-github-com-thejerf-suture
-  (let ((commit "87e298c9891673c9ae76e10c2c9be589127e5f49")
+  (let ((commit "3f1fb62fe0a3cc6429122d7dc45588a8b59c5bb6")
         (revision "0"))
     (package
       (name "go-github-com-thejerf-suture")
-      (version (git-version "2.0.1" revision commit))
+      (version (git-version "2.0.3" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -714,7 +714,7 @@ database in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0srw0g94z6jplvlsjqsr6wf7885alnbb6h4fhvbg2i7q1ia5ldy2"))))
+                  "0mp7gz6bp6xhggkgmbl33vpmrq3a6n2dkgcxbkb7csnpv4r4d59k"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/thejerf/suture"))
@@ -1086,8 +1086,8 @@ using sh's word-splitting rules.")
       (license expat))))
 
 (define-public go-github-com-syncthing-notify
-  (let ((commit "b9ceffc925039c77cd9e0d38f248279ccc4399e2")
-        (revision "0"))
+  (let ((commit "cdf89c4039d13726e227d0a472053ea19de021b4")
+        (revision "1"))
     (package
       (name "go-github-com-syncthing-notify")
       (version (git-version "0.0.0" revision commit))
@@ -1099,7 +1099,7 @@ using sh's word-splitting rules.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1scha9b2r35bvqzqx86sarzjxf72ywvj3g6n9pm3xq4i4xzpylxf"))))
+                  "1ra1id9r06i4q8vhrrv1zpybhjxs3361rg35758dxglkyk4pzk6j"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/syncthing/notify"))

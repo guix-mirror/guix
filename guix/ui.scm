@@ -1428,7 +1428,7 @@ DURATION-RELATION with the current time."
           (format #t "~a~%" header)))))
 
 (define (display-profile-content-diff profile gen1 gen2)
-  "Display the changed packages in PROFILE GEN2 compared to generation GEN2."
+  "Display the changed packages in PROFILE GEN2 compared to generation GEN1."
 
   (define (equal-entry? first second)
     (string= (manifest-entry-item first) (manifest-entry-item second)))

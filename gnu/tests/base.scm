@@ -632,6 +632,13 @@ non-ASCII names from /tmp.")
             (wait-for-file "/root/witness-touch" marionette
                            #:read '(@ (ice-9 rdelim) read-string)))
 
+          ;; Make sure the 'schedule' action is accepted.
+          (test-equal "schedule action"
+            '(#t)                                 ;one value, #t
+            (marionette-eval '(with-shepherd-action 'mcron ('schedule) result
+                                result)
+                             marionette))
+
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 

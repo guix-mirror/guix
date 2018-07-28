@@ -52,18 +52,19 @@ directory."
 (define* (unpack #:key source #:allow-other-keys)
   "Unpack the gem SOURCE and enter the resulting directory."
   (if (gem-archive? source)
-      (and (zero? (system* "gem" "unpack" source))
-           ;; The unpacked gem directory is named the same as the archive,
-           ;; sans the ".gem" extension.  It is renamed to simply "gem" in an
-           ;; effort to keep file names shorter to avoid UNIX-domain socket
-           ;; file names and shebangs that exceed the system's fixed maximum
-           ;; length when running test suites.
-           (let ((dir (match:substring (string-match "^(.*)\\.gem$"
-                                                     (basename source))
-                                       1)))
-             (rename-file dir "gem")
-             (chdir "gem")
-             #t))
+      (begin
+        (invoke "gem" "unpack" source)
+        ;; The unpacked gem directory is named the same as the archive,
+        ;; sans the ".gem" extension.  It is renamed to simply "gem" in an
+        ;; effort to keep file names shorter to avoid UNIX-domain socket
+        ;; file names and shebangs that exceed the system's fixed maximum
+        ;; length when running test suites.
+        (let ((dir (match:substring (string-match "^(.*)\\.gem$"
+                                                  (basename source))
+                                    1)))
+          (rename-file dir "gem")
+          (chdir "gem"))
+        #t)
       ;; Use GNU unpack strategy for things that aren't gem archives.
       (gnu:unpack #:source source)))
 
@@ -77,7 +78,8 @@ operation is not deterministic, we replace it with `find`."
   (when (not (gem-archive? source))
     (let ((gemspec (first-gemspec)))
       (substitute* gemspec
-        (("`git ls-files`") "`find . -type f |sort`"))))
+        (("`git ls-files`") "`find . -type f |sort`")
+        (("`git ls-files -z`") "`find . -type f -print0 |sort -z`"))))
   #t)
 
 (define* (extract-gemspec #:key source #:allow-other-keys)
@@ -104,7 +106,8 @@ generate the files list."
                   (write-char (read-char pipe) out))))
             #t)
           (lambda ()
-            (close-pipe pipe)))))))
+            (close-pipe pipe)))))
+    #t))
 
 (define* (build #:key source #:allow-other-keys)
   "Build a new gem using the gemspec from the SOURCE gem."
@@ -112,13 +115,13 @@ generate the files list."
   ;; Build a new gem from the current working directory.  This also allows any
   ;; dynamic patching done in previous phases to be present in the installed
   ;; gem.
-  (zero? (system* "gem" "build" (first-gemspec))))
+  (invoke "gem" "build" (first-gemspec)))
 
 (define* (check #:key tests? test-target #:allow-other-keys)
   "Run the gem's test suite rake task TEST-TARGET.  Skip the tests if TESTS?
 is #f."
   (if tests?
-      (zero? (system* "rake" test-target))
+      (invoke "rake" test-target)
       #t))
 
 (define* (install #:key inputs outputs (gem-flags '())
@@ -137,43 +140,42 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
                               0
                               (- (string-length gem-file-basename) 4))))
     (setenv "GEM_VENDOR" vendor-dir)
-    (and (let ((install-succeeded?
-                (zero?
-                 (apply system* "gem" "install" gem-file
-                        "--local" "--ignore-dependencies" "--vendor"
-                        ;; Executables should go into /bin, not
-                        ;; /lib/ruby/gems.
-                        "--bindir" (string-append out "/bin")
-                        gem-flags))))
-           (or install-succeeded?
-               (begin
-                 (simple-format #t "installation failed\n")
-                 (let ((failed-output-dir (string-append (getcwd) "/out")))
-                   (mkdir failed-output-dir)
-                   (copy-recursively out failed-output-dir))
-                 #f)))
-         (begin
-           ;; Remove the cached gem file as this is unnecessary and contains
-           ;; timestamped files rendering builds not reproducible.
-           (let ((cached-gem (string-append vendor-dir "/cache/" gem-file)))
-             (log-file-deletion cached-gem)
-             (delete-file cached-gem))
-           ;; For gems with native extensions, several Makefile-related files
-           ;; are created that contain timestamps or other elements making
-           ;; them not reproducible.  They are unnecessary so we remove them.
-           (if (file-exists? (string-append vendor-dir "/ext"))
-               (begin
-                 (for-each (lambda (file)
-                             (log-file-deletion file)
-                             (delete-file file))
-                           (append
-                            (find-files (string-append vendor-dir "/doc")
-                                        "page-Makefile.ri")
-                            (find-files (string-append vendor-dir "/extensions")
-                                        "gem_make.out")
-                            (find-files (string-append vendor-dir "/ext")
-                                        "Makefile")))))
-           #t))))
+
+    (or (zero?
+         (apply system* "gem" "install" gem-file
+                "--local" "--ignore-dependencies" "--vendor"
+                ;; Executables should go into /bin, not
+                ;; /lib/ruby/gems.
+                "--bindir" (string-append out "/bin")
+                gem-flags))
+        (begin
+          (let ((failed-output-dir (string-append (getcwd) "/out")))
+            (mkdir failed-output-dir)
+            (copy-recursively out failed-output-dir))
+          (error "installation failed")))
+
+    ;; Remove the cached gem file as this is unnecessary and contains
+    ;; timestamped files rendering builds not reproducible.
+    (let ((cached-gem (string-append vendor-dir "/cache/" gem-file)))
+      (log-file-deletion cached-gem)
+      (delete-file cached-gem))
+
+    ;; For gems with native extensions, several Makefile-related files
+    ;; are created that contain timestamps or other elements making
+    ;; them not reproducible.  They are unnecessary so we remove them.
+    (when (file-exists? (string-append vendor-dir "/ext"))
+      (for-each (lambda (file)
+                  (log-file-deletion file)
+                  (delete-file file))
+                (append
+                 (find-files (string-append vendor-dir "/doc")
+                             "page-Makefile.ri")
+                 (find-files (string-append vendor-dir "/extensions")
+                             "gem_make.out")
+                 (find-files (string-append vendor-dir "/ext")
+                             "Makefile"))))
+
+    #t))
 
 (define* (wrap-ruby-program prog #:key (gem-clear-paths #t) #:rest vars)
   "Make a wrapper for PROG.  VARS should look like this:
@@ -301,7 +303,8 @@ extended with definitions for VARS."
                 (let ((files (list-of-files dir)))
                   (for-each (cut wrap-ruby-program <> var)
                             files)))
-              bindirs)))
+              bindirs))
+  #t)
 
 (define (log-file-deletion file)
   (display (string-append "deleting '" file "' for reproducibility\n")))

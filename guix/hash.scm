@@ -101,6 +101,7 @@ output port."
     (open-sha256-md))
 
   (define digest #f)
+  (define position 0)
 
   (define (finalize!)
     (let ((ptr (md-read sha256-md 0)))
@@ -114,14 +115,18 @@ output port."
           0)
         (let ((ptr (bytevector->pointer bv offset)))
           (md-write sha256-md ptr len)
+          (set! position (+ position len))
           len)))
+
+  (define (get-position)
+    position)
 
   (define (close)
     (unless digest
       (finalize!)))
 
   (values (make-custom-binary-output-port "sha256"
-                                          write! #f #f
+                                          write! get-position #f
                                           close)
           (lambda ()
             (unless digest
