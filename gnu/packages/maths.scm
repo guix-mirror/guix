@@ -3268,7 +3268,7 @@ Failure to do so will result in a library with poor performance.")
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://glm.g-truc.net")
+    (home-page "https://glm.g-truc.net/")
     (synopsis "OpenGL Mathematics library")
     (description "OpenGL Mathematics (GLM) is a header-only C++ mathematics
 library for graphics software based on the OpenGL Shading Language (GLSL)
