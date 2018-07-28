@@ -1248,8 +1248,10 @@ libjpeg-turbo implements both the traditional libjpeg API and the less powerful
 but more straightforward TurboJPEG API, and provides a full-featured Java
 interface.  It supports color space extensions that allow it to compress from
 and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
-    (license (list license:bsd-3        ; jsimd*.[ch] and most of simd/
-                   license:ijg))))      ; the rest
+    ;; libjpeg-turbo is covered by three different licenses; see LICENSE.md.
+    (license (list license:bsd-3        ;the TurboJPEG API library and programs
+                   license:ijg          ;the libjpeg library and associated tools
+                   license:zlib))))     ;the libjpeg-turbo SIMD extensions
 
 (define-public niftilib
   (package
