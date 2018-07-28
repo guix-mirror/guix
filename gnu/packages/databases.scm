@@ -636,6 +636,7 @@ Language.")
               (sha256
                (base32
                 "0j2mdpyvj41vkq2rwrzky88b7170hzz6gy2vb2bc1447s2gp3q67"))
+              (patches (search-patches "mariadb-gcc-ice.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -684,17 +685,6 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
-         ;; Apply this patch that's only needed on ARM.
-         ,@(if (and (not (%current-target-system))
-                    (string=? "armhf-linux" (%current-system)))
-               `((add-after 'unpack 'apply-patch
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((patch (assoc-ref inputs "gcc-ice-patch")))
-                       (invoke "patch" "-p1" "--force"
-                               "--input" patch)
-                       #t))))
-               '())
-
          (add-after 'unpack 'unbundle
            (lambda _
              ;; The bundled PCRE in MariaDB has a patch that was upstreamed
@@ -746,10 +736,7 @@ Language.")
                                                         "/CMakeLists.txt")
                                        (lambda (port)
                                          (format port "\n")))))
-                   (disabled-plugins '(;; FIXME: On armhf-linux, this plugin
-                                       ;; triggers a GCC ICE.  Disable for now.
-                                       "semisync"
-                                       ;; XXX: Causes a test failure.
+                   (disabled-plugins '(;; XXX: Causes a test failure.
                                        "disks")))
                (for-each disable-plugin disabled-plugins)
                #t)))
@@ -782,10 +769,7 @@ Language.")
               #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)
-       ,@(if (string=? "armhf-linux" (%current-system))
-             `(("gcc-ice-patch" ,(search-patch "mariadb-gcc-ice.patch")))
-             '())))
+       ("perl" ,perl)))
     (inputs
      `(("jemalloc" ,jemalloc)
        ("libaio" ,libaio)
