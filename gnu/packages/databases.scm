@@ -638,7 +638,7 @@ Language.")
                 "0bax748j4srsyhw5cs5jvwigndh0zwmf4r2cjvhja31ckx8jqccl"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        '("-DBUILD_CONFIG=mysql_release"
          ;; Linking with libarchive fails, like this:
 
@@ -665,6 +665,18 @@ Language.")
          "-DINSTALL_SHAREDIR=share/mysql")
        #:phases
        (modify-phases %standard-phases
+
+         ;; Apply this patch that's only needed on ARM.
+         ,@(if (and (not (%current-target-system))
+                    (string=? "armhf-linux" (%current-system)))
+               `((add-after 'unpack 'apply-patch
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((patch (assoc-ref inputs "gcc-ice-patch")))
+                       (invoke "patch" "-p1" "--force"
+                               "--input" patch)
+                       #t))))
+               '())
+
          (add-before
           'configure 'pre-configure
           (lambda _
@@ -686,7 +698,10 @@ Language.")
               #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ,@(if (string=? "armhf-linux" (%current-system))
+             `(("gcc-ice-patch" ,(search-patch "mariadb-gcc-ice.patch")))
+             '())))
     (inputs
      `(("jemalloc" ,jemalloc)
        ("libaio" ,libaio)
