@@ -397,7 +397,8 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
         (sha256
          (base32
           "0qx8mavwdzdpkkby7n29i9av7zsnklavacwfz537mf62q2pzjnbf"))
-        (patches (search-patches "x265-fix-ppc64le-build.patch"))
+        (patches (search-patches "x265-fix-ppc64le-build.patch"
+                                 "x265-arm-asm-primitives.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
