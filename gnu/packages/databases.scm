@@ -18,7 +18,7 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
@@ -814,7 +814,8 @@ as a drop-in replacement of MySQL.")
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "04a07jkvc5s6zgh6jr78149kcjmsxclizsqabjw44ld4j5n633kc"))))
+                "04a07jkvc5s6zgh6jr78149kcjmsxclizsqabjw44ld4j5n633kc"))
+              (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")
