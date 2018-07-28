@@ -145,6 +145,7 @@ hierarchical form with variable field lengths.")
                         #t))))))
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
+    (inputs `(("xz" ,xz)))
     (propagated-inputs `(("zlib" ,zlib))) ; libxml2.la says '-lz'.
     (native-inputs `(("perl" ,perl)))
     ;; $XML_CATALOG_FILES lists 'catalog.xml' files found in under the 'xml'
