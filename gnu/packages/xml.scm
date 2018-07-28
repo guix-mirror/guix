@@ -129,6 +129,20 @@ hierarchical form with variable field lengths.")
               (base32
                "0ci7is75bwqqw2p32vxvrk6ds51ik7qgx73m920rakv5jlayax0b"))))
     (build-system gnu-build-system)
+    (outputs '("out" "static"))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'move-static-libs
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((src (string-append (assoc-ref outputs "out") "/lib"))
+                            (dst (string-append (assoc-ref outputs "static")
+                                                "/lib")))
+                        (mkdir-p dst)
+                        (for-each (lambda (ar)
+                                    (rename-file ar (string-append dst "/"
+                                                                   (basename ar))))
+                                  (find-files src "\\.a$"))
+                        #t))))))
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
     (propagated-inputs `(("zlib" ,zlib))) ; libxml2.la says '-lz'.
