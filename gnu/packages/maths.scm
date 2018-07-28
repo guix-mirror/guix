@@ -3256,15 +3256,15 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.6.3")
+    (version "0.9.9.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/ogl-math/glm-" version
-                           "/glm-" version ".zip"))
+       (uri (string-append "https://github.com/g-truc/glm/releases/download/"
+                           version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "1cnjmi033a16a95v6xfkr1bvfmkd26hzdjka8j1819hgn5b1nr8l"))))
+         "0ihjadp2sb8w312a276skfjsljm3y41bjscbxf79wn23gi00giz1"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
