@@ -5914,9 +5914,7 @@ supports reading and writing of TrueType/OpenType fonts, reading and writing
 of AFM files, reading (and partially writing) of PS Type 1 fonts.  The package
 also contains a tool called “TTX” which converts TrueType/OpenType fonts to and
 from an XML-based format.")
-    (license (license:non-copyleft
-              "file://LICENSE.txt"
-              "See LICENSE.txt in the distribution."))))
+    (license license:expat)))
 
 (define-public python2-fonttools
   (package-with-python2 python-fonttools))
