@@ -1223,21 +1223,20 @@ PNG, and performs PNG integrity checks and corrections.")
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "1.5.3")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" version "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08r5b5mywwrxv4axvq80dm31cklz81grczlzlxr2xqa6pgi90j5j"))))
-    (build-system gnu-build-system)
+                "0s48zz6awd493hmb200abmsizh68fh1jmz98r41n4c8dbl87d23p"))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
     (arguments
-     '(#:test-target "test"
-       #:configure-flags (list "--with-build-date=1970-01-01"
-                               "--disable-static")))
+     '(#:configure-flags '("-DCMAKE_INSTALL_LIBDIR:PATH=lib"
+                           "-DENABLE_STATIC=0")))
     (home-page "https://libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
     (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
