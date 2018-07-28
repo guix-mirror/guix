@@ -619,14 +619,14 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "3.6.3")
+    (version "3.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "0lnppwpz5i06sdhzv5b2j4x2f42mil38nx1l0kmnzvibdikwhlq4"))))
+         "0h85kzdi5pfkz9v0z8xyrsj1rvnmyyjpng7cran28jmnc41w27il"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -654,7 +654,6 @@ standard library.")
      `(;; Tests need the "regular" bash since 'bash-final' lacks `compgen`.
        ("bash" ,bash)
        ("python-hypothesis" ,python-hypothesis)
-       ("python-invoke" ,python-invoke)   ;XXX: not needed for >3.6.3
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
        ("python-setuptools-scm" ,python-setuptools-scm)))
