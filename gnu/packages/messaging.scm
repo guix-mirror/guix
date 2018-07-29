@@ -1689,7 +1689,8 @@ QMatrixClient project.")
     (build-system cmake-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
     (arguments
      `(#:tests? #f ; No tests
        #:phases
