@@ -907,7 +907,8 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
       (sha256
        (base32
         "0vnmb231hyhxm7klaqd8vp3rmvix145bq8iqzv19jgl1yaqkxl21"))
-      (patches (search-patches "libreoffice-icu.patch"))))
+      (patches (search-patches "libreoffice-icu.patch"
+                               "libreoffice-glm.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
