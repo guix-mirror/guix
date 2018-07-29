@@ -1678,13 +1678,14 @@ QMatrixClient project.")
     (version "0.0.9.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/QMatrixClient/Quaternion/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/QMatrixClient/Quaternion")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0s2mpw11s2n21ds1spf94j1p2lj2px2bv5zxldlcx81ch0rb4ng8"))))
+         "0zrr4khbbdf5ziq65gi0cb1yb1d0y5rv18wld22w1x96f7fkmrib"))))
     (build-system cmake-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
