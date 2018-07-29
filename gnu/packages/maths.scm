@@ -3968,7 +3968,7 @@ reduction.")
      `(("boost" ,boost)
        ("glu" ,glu)
        ("mesa" ,mesa)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)))
     (build-system cmake-build-system)
     (synopsis "Toolset for the mCRL2 formal specification language")
     (description
