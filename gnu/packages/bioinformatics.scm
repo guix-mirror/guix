@@ -767,6 +767,29 @@ into separate processes; and more.")
 (define-public python2-biopython
   (package-with-python2 python-biopython))
 
+(define-public python-fastalite
+  (package
+    (name "python-fastalite")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fastalite" version))
+       (sha256
+        (base32
+         "1qli6pxp77i9xn2wfciq2zaxhl82bdxb33cpzqzj1z25yd036wqj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Test data is not distributed.
+    (home-page "https://github.com/nhoffman/fastalite")
+    (synopsis "Simplest possible FASTA parser")
+    (description "This library implements a FASTA and a FASTQ parser without
+relying on a complex dependency tree.")
+    (license license:expat)))
+
+(define-public python2-fastalite
+  (package-with-python2 python-fastalite))
+
 (define-public bpp-core
   ;; The last release was in 2014 and the recommended way to install from source
   ;; is to clone the git repository, so we do this.
