@@ -137,6 +137,10 @@ DEVICE must be a \"/dev\" file name."
           ;; LINUX-MODULES is file names without '.ko', so normalize them.
           (provided (map file-name->module-name linux-modules)))
       (unless (every (cut member <> provided) modules)
+        ;; Note: What we suggest here is a list of module names (e.g.,
+        ;; "usb_storage"), not file names (e.g., "usb-storage.ko").  This is
+        ;; OK because we have machinery that accepts both the hyphen and the
+        ;; underscore version.
         (raise (condition
                 (&message
                  (message (format #f (G_ "you may need these modules \
