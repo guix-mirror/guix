@@ -1660,7 +1660,7 @@ notifications, and Python scripting support.")
          "03pxmr4wa818fgqddkr2fkwz6pda538x3ic9yq7c40x98zqf55w5"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qt" ,qt)))
+     `(("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")
        #:tests? #f)) ; No tests
