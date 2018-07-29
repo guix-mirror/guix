@@ -33,6 +33,7 @@
             module-aliases
             module-dependencies
             normalize-module-name
+            file-name->module-name
             recursive-module-dependencies
             modules-loaded
             module-loaded?

@@ -21,7 +21,7 @@
 (define-module (gnu system mapped-devices)
   #:use-module (guix gexp)
   #:use-module (guix records)
-  #:use-module (guix modules)
+  #:use-module ((guix modules) #:hide (file-name->module-name))
   #:use-module (guix i18n)
   #:use-module ((guix utils)
                 #:select (source-properties->location
@@ -33,7 +33,7 @@
   #:autoload   (gnu build file-systems) (find-partition-by-luks-uuid)
   #:autoload   (gnu build linux-modules)
                  (device-module-aliases matching-modules known-module-aliases
-                  normalize-module-name)
+                  normalize-module-name file-name->module-name)
   #:autoload   (gnu packages cryptsetup) (cryptsetup-static)
   #:autoload   (gnu packages linux) (mdadm-static)
   #:use-module (srfi srfi-1)
@@ -135,7 +135,7 @@ DEVICE must be a \"/dev\" file name."
           ;; Module names (not file names) are supposed to use underscores
           ;; instead of hyphens.  MODULES is a list of module names, whereas
           ;; LINUX-MODULES is file names without '.ko', so normalize them.
-          (provided (map normalize-module-name linux-modules)))
+          (provided (map file-name->module-name linux-modules)))
       (unless (every (cut member <> provided) modules)
         (raise (condition
                 (&message
