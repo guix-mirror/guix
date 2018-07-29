@@ -1971,15 +1971,18 @@ accessing bigWig files.")
 (define-public python-dendropy
   (package
     (name "python-dendropy")
-    (version "4.2.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "DendroPy" version))
+       ;; Source from GitHub so that tests are included.
+       (uri
+        (string-append "https://github.com/jeetsukumaran/DendroPy/archive/v"
+                       version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "15c7s3d5gf19ljsxvq5advaa752wfi7pwrdjyhzmg85hccyvp47p"))
-       (patches (search-patches "python-dendropy-fix-tests.patch"))))
+         "0v2fccny5xjaah546bsch1mw4kh61qq5frz2ibllxs9mp6ih9bsn"))))
     (build-system python-build-system)
     (home-page "http://packages.python.org/DendroPy/")
     (synopsis "Library for phylogenetics and phylogenetic computing")
@@ -1987,23 +1990,10 @@ accessing bigWig files.")
      "DendroPy is a library for phylogenetics and phylogenetic computing: reading,
 writing, simulation, processing and manipulation of phylogenetic
 trees (phylogenies) and characters.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-dendropy))))))
+    (license license:bsd-3)))
 
 (define-public python2-dendropy
-  (let ((base (package-with-python2 (strip-python2-variant python-dendropy))))
-    (package
-      (inherit base)
-      (arguments
-       `(#:python ,python-2
-         #:phases
-           (modify-phases %standard-phases
-             (replace 'check
-               ;; There is currently a test failure that only happens on some
-               ;; systems, and only using "setup.py test"
-               (lambda _ (zero? (system* "nosetests")))))))
-      (native-inputs `(("python2-nose" ,python2-nose)
-                       ,@(package-native-inputs base))))))
+  (package-with-python2 python-dendropy))
 
 (define-public python-py2bit
   (package
