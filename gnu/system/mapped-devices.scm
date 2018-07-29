@@ -128,15 +128,16 @@ DEVICE must be a \"/dev\" file name."
       (const #f)))
 
   (when aliases
-    (let ((modules  (delete-duplicates
-                     (append-map (cut matching-modules <> aliases)
-                                 (device-module-aliases device))))
+    (let* ((modules  (delete-duplicates
+                      (append-map (cut matching-modules <> aliases)
+                                  (device-module-aliases device))))
 
-          ;; Module names (not file names) are supposed to use underscores
-          ;; instead of hyphens.  MODULES is a list of module names, whereas
-          ;; LINUX-MODULES is file names without '.ko', so normalize them.
-          (provided (map file-name->module-name linux-modules)))
-      (unless (every (cut member <> provided) modules)
+           ;; Module names (not file names) are supposed to use underscores
+           ;; instead of hyphens.  MODULES is a list of module names, whereas
+           ;; LINUX-MODULES is file names without '.ko', so normalize them.
+           (provided (map file-name->module-name linux-modules))
+           (missing  (remove (cut member <> provided) modules)))
+      (unless (null? missing)
         ;; Note: What we suggest here is a list of module names (e.g.,
         ;; "usb_storage"), not file names (e.g., "usb-storage.ko").  This is
         ;; OK because we have machinery that accepts both the hyphen and the
@@ -145,7 +146,7 @@ DEVICE must be a \"/dev\" file name."
                 (&message
                  (message (format #f (G_ "you may need these modules \
 in the initrd for ~a:~{ ~a~}")
-                                  device modules)))
+                                  device missing)))
                 (&fix-hint
                  (hint (format #f (G_ "Try adding them to the
 @code{initrd-modules} field of your @code{operating-system} declaration, along
@@ -157,7 +158,7 @@ these lines:
    (initrd-modules (append (list~{ ~s~})
                            %base-initrd-modules)))
 @end example\n")
-                               modules)))
+                               missing)))
                 (&error-location
                  (location (source-properties->location location)))))))))
 
