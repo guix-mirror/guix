@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017, 2018 Clément Lassieur <clement@lassieur.org>
@@ -1650,13 +1650,14 @@ notifications, and Python scripting support.")
     (version "0.3.0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/QMatrixClient/libqmatrixclient/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/QMatrixClient/libqmatrixclient")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0yl7lw0s2z98xkxbklkb3i8xcd9af9qayl1zxl070d8ykl6ayqy3"))))
+         "03pxmr4wa818fgqddkr2fkwz6pda538x3ic9yq7c40x98zqf55w5"))))
     (build-system cmake-build-system)
     (inputs
      `(("qt" ,qt)))
