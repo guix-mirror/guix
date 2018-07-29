@@ -470,7 +470,7 @@ Monero command line client and daemon.")
        (uri (git-reference
              (url "https://github.com/monero-project/monero-gui")
              (commit (string-append "v" version))))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1cnrkwh7kp64lnzz1xfmkf1mhsgm5gls292gpqai3jr8jydpkahl"))))
