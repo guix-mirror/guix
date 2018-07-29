@@ -25,7 +25,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -2400,14 +2400,14 @@ designed to be easy and intuitive to use.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.7.3.1")
+    (version "2.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
         (base32
-         "0rda1j02ds6s28752fhmpwg761sh6jsxi1gpczqkrd28cki1cywv"))))
+         "17klx964gw8z0znl0raz3by8vdc7cq5gxj4pdcrfcina84nrdkzc"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"
@@ -2418,7 +2418,8 @@ designed to be easy and intuitive to use.")
     (home-page "http://initd.org/psycopg/")
     (synopsis "Python PostgreSQL adapter")
     (description
-     "psycopg2 is a thread-safe PostgreSQL adapter that implements DB-API 2.0. ")
+     "psycopg2 is a thread-safe PostgreSQL adapter that implements DB-API
+2.0.")
     (license license:lgpl3+)))
 
 (define-public python2-psycopg2
