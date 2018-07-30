@@ -2962,6 +2962,9 @@ faster results and to avoid unnecessary server load.")
      `(("dbus-glib" ,dbus-glib)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)))
+    (propagated-inputs
+     ;; In Requires of upower-glib.pc.
+     `(("glib" ,glib)))
     (home-page "https://upower.freedesktop.org/")
     (synopsis "System daemon for managing power devices")
     (description
