@@ -46,7 +46,7 @@
 (define-public xapian
   (package
     (name "xapian")
-    (version "1.4.6")
+    (version "1.4.7")
     ;; Note: When updating Xapian, remember to update xapian-bindings below.
     (source (origin
               (method url-fetch)
@@ -54,7 +54,7 @@
                                   "/xapian-core-" version ".tar.xz"))
               (patches (search-patches "xapian-revert-5489fb2f8.patch"))
               (sha256
-               (base32 "166qpfq7pvyrj2w2x07v31ypvqg6c2xyvds5sms9h4g2sg0z23hy"))))
+               (base32 "1lxmlds3v5s1gng9nk1rvmln1zcksrw5ds509y0glylwch5qmw0k"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)
               ("util-linux" ,util-linux)))
@@ -92,7 +92,7 @@ rich set of boolean query operators.")
                                   "/xapian-bindings-" version ".tar.xz"))
               (sha256
                (base32
-                "0z5ma66n742241ys037i3k66c6lvsywviqf33vqsf4jb7j03qsbi"))))
+                "0sjf9ck3a6p7xnd84w09l6s0xn2g03k9a9417f4mjnywfq9pa6a5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-python3")
