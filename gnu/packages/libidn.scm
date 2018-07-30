@@ -43,6 +43,8 @@
               "07pyy0afqikfq51z5kbzbj9ldbd12mri0zvx0mfv3ds6bc0g26pi"))))
    (build-system gnu-build-system)
    ;; FIXME: No Java and C# libraries are currently built.
+   (arguments
+    `(#:configure-flags '("--disable-static")))
    (synopsis "Internationalized string processing library")
    (description
      "libidn is a library implementing of the Stringprep, Punycode and IDNA
