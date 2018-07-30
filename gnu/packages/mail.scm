@@ -2596,3 +2596,29 @@ processes mailboxes based on the results.  It can be used to delete, copy,
 move, flag, etc. messages residing in mailboxes at the same or different mail
 servers.  The 4rev1 and 4 versions of IMAP are supported.")
     (license license:expat)))
+
+(define-public urlscan
+  (package
+    (name "urlscan")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "urlscan" version))
+        (sha256
+         (base32
+          "133f28bisr4xj0nihpwpil8dyadss62mp8qgqdyzd676hg9xjfyc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-urwid" ,python-urwid)))
+    (home-page "https://github.com/firecat53/urlscan")
+    (synopsis "View/select the URLs in an email message or file")
+    (description
+     "Urlscan is a small program that is designed to integrate with the
+@code{mutt} mailreader to allow you to easily launch a Web browser for URLs
+contained in email messages.  It parses an email message or file and scans it
+for URLs and email addresses.  It then displays the URLs and their context
+within the message, and allows you to choose one or more URLs to send to your
+Web browser.  Alternatively, it send a list of all URLs to stdout.  It is a
+replacement for the @code{urlview} program.")
+    (license gpl2)))
