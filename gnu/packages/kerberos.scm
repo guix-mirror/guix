@@ -117,7 +117,7 @@ cryptography.")
      '(;; This is required since we patch some of the build scripts.
        ;; Remove for the next Shishi release after 1.0.2 or when
        ;; removing 'shishi-fix-libgcrypt-detection.patch'.
-       #:configure-flags '("ac_cv_libgcrypt=yes")))
+       #:configure-flags '("ac_cv_libgcrypt=yes" "--disable-static")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("gnutls" ,gnutls)
