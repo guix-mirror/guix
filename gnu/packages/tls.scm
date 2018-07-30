@@ -80,6 +80,8 @@
        (base32
         "1jlc1iahj8k3haz28j55nzg7sgni5h41vqy461i1bpbx6668wlky"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (native-inputs `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
