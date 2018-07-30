@@ -364,7 +364,7 @@ effects and music to make a completely free game.")
 (define-public golly
   (package
     (name "golly")
-    (version "3.1")
+    (version "3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/golly/golly/golly-"
@@ -372,7 +372,7 @@ effects and music to make a completely free game.")
                                   "-src.tar.gz"))
               (sha256
                (base32
-                "0dn74k3rylhx023n047lz4z6qrqijfcxi0b6jryqklhmm2n532f7"))))
+                "0cg9mbwmf4q6qxhqlnzrxh9y047banxdb8pd3hgj3smmja2zf0jd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
