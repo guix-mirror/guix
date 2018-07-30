@@ -78,9 +78,6 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages swig)
   #:use-module (srfi srfi-1))
 
 (define-public xdg-utils
