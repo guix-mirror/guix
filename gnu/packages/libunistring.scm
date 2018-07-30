@@ -48,7 +48,8 @@
     ;; Work around parallel build issue whereby C files may be compiled before
     ;; config.h is built: see <http://hydra.gnu.org/build/59381/nixlog/2/raw> and
     ;; <http://lists.openembedded.org/pipermail/openembedded-core/2012-April/059850.html>.
-    '(#:parallel-build? #f))
+    '(#:parallel-build? #f
+      #:configure-flags '("--disable-static")))
    (synopsis "C library for manipulating Unicode strings")
    (description
     "GNU libunistring is a library providing functions to manipulate
