@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
@@ -1476,3 +1476,27 @@ first.  Additionally, xss-lock uses the inhibition logic to lock the screen
 before the system goes to sleep.")
       (home-page "https://bitbucket.org/raymonad/xss-lock")
       (license license:expat))))
+
+(define-public python-pyperclip
+  (package
+    (name "python-pyperclip")
+    (version "1.6.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyperclip" version))
+        (sha256
+         (base32
+          "1p505c23ji06r28k1y67siihsbdzdf1brhlqpyv9ams4gk9863pp"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; Not clear how to make tests pass.
+    (inputs
+     `(("xclip" ,xclip)
+       ("xsel" ,xsel)))
+    (home-page "https://github.com/asweigart/pyperclip")
+    (synopsis "Python clipboard module")
+    (description
+     "Pyperclip is a clipboard module for Python, handling copy/pasting from
+the X11 clipboard")
+    (license license:bsd-3)))

@@ -767,6 +767,29 @@ into separate processes; and more.")
 (define-public python2-biopython
   (package-with-python2 python-biopython))
 
+(define-public python-fastalite
+  (package
+    (name "python-fastalite")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fastalite" version))
+       (sha256
+        (base32
+         "1qli6pxp77i9xn2wfciq2zaxhl82bdxb33cpzqzj1z25yd036wqj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Test data is not distributed.
+    (home-page "https://github.com/nhoffman/fastalite")
+    (synopsis "Simplest possible FASTA parser")
+    (description "This library implements a FASTA and a FASTQ parser without
+relying on a complex dependency tree.")
+    (license license:expat)))
+
+(define-public python2-fastalite
+  (package-with-python2 python-fastalite))
+
 (define-public bpp-core
   ;; The last release was in 2014 and the recommended way to install from source
   ;; is to clone the git repository, so we do this.
@@ -1948,15 +1971,18 @@ accessing bigWig files.")
 (define-public python-dendropy
   (package
     (name "python-dendropy")
-    (version "4.2.0")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "DendroPy" version))
+       ;; Source from GitHub so that tests are included.
+       (uri
+        (string-append "https://github.com/jeetsukumaran/DendroPy/archive/v"
+                       version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "15c7s3d5gf19ljsxvq5advaa752wfi7pwrdjyhzmg85hccyvp47p"))
-       (patches (search-patches "python-dendropy-fix-tests.patch"))))
+         "0v2fccny5xjaah546bsch1mw4kh61qq5frz2ibllxs9mp6ih9bsn"))))
     (build-system python-build-system)
     (home-page "http://packages.python.org/DendroPy/")
     (synopsis "Library for phylogenetics and phylogenetic computing")
@@ -1964,23 +1990,10 @@ accessing bigWig files.")
      "DendroPy is a library for phylogenetics and phylogenetic computing: reading,
 writing, simulation, processing and manipulation of phylogenetic
 trees (phylogenies) and characters.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-dendropy))))))
+    (license license:bsd-3)))
 
 (define-public python2-dendropy
-  (let ((base (package-with-python2 (strip-python2-variant python-dendropy))))
-    (package
-      (inherit base)
-      (arguments
-       `(#:python ,python-2
-         #:phases
-           (modify-phases %standard-phases
-             (replace 'check
-               ;; There is currently a test failure that only happens on some
-               ;; systems, and only using "setup.py test"
-               (lambda _ (zero? (system* "nosetests")))))))
-      (native-inputs `(("python2-nose" ,python2-nose)
-                       ,@(package-native-inputs base))))))
+  (package-with-python2 python-dendropy))
 
 (define-public python-py2bit
   (package
@@ -6046,7 +6059,13 @@ Cuffdiff or Ballgown programs.")
      `(("python-sqlalchemy" ,python2-sqlalchemy)
        ("python-decorator" ,python2-decorator)
        ("python-biopython" ,python2-biopython)
-       ("python-pandas" ,python2-pandas)))
+       ("python-pandas" ,python2-pandas)
+       ("python-psycopg2" ,python2-psycopg2)
+       ("python-fastalite" ,python2-fastalite)
+       ("python-pyyaml" ,python2-pyyaml)
+       ("python-six" ,python2-six)
+       ("python-jinja2" ,python2-jinja2)
+       ("python-dendropy" ,python2-dendropy)))
     (home-page "https://github.com/fhcrc/taxtastic")
     (synopsis "Tools for taxonomic naming and annotation")
     (description

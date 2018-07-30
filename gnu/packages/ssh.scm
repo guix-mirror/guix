@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -232,7 +232,7 @@ TCP-forwarding.  It provides a flow control service for these channels.
 Additionally, various channel-specific options can be negotiated.")
    (license (license:non-copyleft "file://LICENSE"
                                "See LICENSE in the distribution."))
-   (home-page "http://www.openssh.org/")))
+   (home-page "https://www.openssh.com/")))
 
 (define-public guile-ssh
   (package

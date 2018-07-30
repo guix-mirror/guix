@@ -10,7 +10,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2017, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -2957,7 +2957,7 @@ fullscreen, use F5 or Alt+Enter.")
 (define-public warzone2100
   (package
     (name "warzone2100")
-    (version "3.2.1")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name
@@ -2965,10 +2965,11 @@ fullscreen, use F5 or Alt+Enter.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "1nd609s0g4sya3r4amhkz3f4dpdmm94vsd2ii76ap665a1nbfrhg"))))
+                "10kmpr4cby95zwqsl1zwx95d9achli6khq7flv6xmrq30a39xazw"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--with-distributor=Guix")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'link-tests-with-qt
            (lambda _
@@ -2976,24 +2977,22 @@ fullscreen, use F5 or Alt+Enter.")
                (("(framework_linktest_LDADD|maptest_LDADD) = " prefix)
                 (string-append prefix "$(QT5_LIBS) ")))
              #t))
-         (add-after 'unpack 'remove-reference-to-missing-file
+         (add-after 'unpack 'fix-ivis-linktest
            (lambda _
-             (substitute* "icons/Makefile.in"
-               (("\\$\\(INSTALL_DATA\\) \\$\\(srcdir\\)/warzone2100.appdata.xml.*") ""))
-             #t))
-         (add-after 'unpack 'patch-for-qt5.8
-           (lambda _
-             (substitute* "lib/widget/editbox.cpp"
-               (("== '\\\\0'")
-                "== QChar('\\0')"))
+             (substitute* "tests/ivis_linktest.cpp"
+               (("iV_DrawTextRotated.*;")
+                (string-append "iV_DrawTextRotated(\"Press ESC to exit.\", "
+                               "100, 100, 0.0f, font_regular);")))
              #t)))))
-    (native-inputs `(("pkg-config" ,pkg-config)
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("pkg-config" ,pkg-config)
                      ("unzip" ,unzip)
                      ("zip" ,zip)))
     (inputs `(("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
               ("fribidi" ,fribidi)
               ("glew" ,glew)
+              ("harfbuzz" ,harfbuzz)
               ("libtheora" ,libtheora)
               ("libvorbis" ,libvorbis)
               ("libxrandr" ,libxrandr)
@@ -3002,7 +3001,6 @@ fullscreen, use F5 or Alt+Enter.")
               ("qtbase" ,qtbase)
               ("qtscript" ,qtscript)
               ("openssl" ,openssl)
-              ("quesoglc" ,quesoglc)
               ("sdl2" ,sdl2)))
     (home-page "http://wz2100.net")
     (synopsis "3D Real-time strategy and real-time tactics game")
@@ -4105,6 +4103,38 @@ Oxyd stones.  Enigma’s game objects (and there are hundreds of them, lest you
 get bored) interact in many unexpected ways, and since many of them follow the
 laws of physics (Enigma’s special laws of physics, that is), controlling them
 with the mouse isn’t always trivial.")
+    (license license:gpl2+)))
+
+(define-public chroma
+  (package
+    (name "chroma")
+    (version "1.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://level7.org.uk/chroma/download/chroma-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0nzm3j5wjazr1d6pkydqlc48sjf72hggq0hmx8mhq03114mmiir5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests included
+    (inputs
+     `(("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf)))
+       ("freetype" ,freetype)
+       ("ncurses" ,ncurses)
+       ("fontconfig" ,fontconfig)
+       ("libxft" ,libxft)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://level7.org.uk/chroma/")
+    (synopsis "Abstract puzzle game")
+    (description "Chroma is an abstract puzzle game. A variety of colourful
+shapes are arranged in a series of increasingly complex patterns, forming
+ fiendish traps that must be disarmed and mysterious puzzles that must be
+ manipulated in order to give up their subtle secrets. Initially so
+ straightforward that anyone can pick it up and begin to play, yet gradually
+ becoming difficult enough to tax even the brightest of minds.")
     (license license:gpl2+)))
 
 (define-public fillets-ng

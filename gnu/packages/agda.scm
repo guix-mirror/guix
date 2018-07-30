@@ -20,6 +20,7 @@
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
@@ -67,6 +68,19 @@
        ("ghc-text" ,ghc-text)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-zlib" ,ghc-zlib)))
+    (arguments
+     `(#:modules ((guix build haskell-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'compile 'agda-compile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (agda-compiler (string-append out "/bin/agda")))
+               (for-each (cut invoke agda-compiler <>)
+                         (find-files (string-append out "/share") "\\.agda$"))
+               #t))))))
     (home-page "http://wiki.portal.chalmers.se/agda/")
     (synopsis
      "Dependently typed functional programming language and proof assistant")
@@ -84,3 +98,19 @@ such as Coq, Epigram and NuPRL.")
     ;; Agda is distributed under the MIT license, and a couple of
     ;; source files are BSD-3.  See LICENSE for details.
     (license (list license:expat license:bsd-3))))
+
+(define-public emacs-agda2-mode
+  (package
+    (inherit agda)
+    (name "emacs-agda2-mode")
+    (build-system emacs-build-system)
+    (inputs '())
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-elisp-dir
+           (lambda _ (chdir "src/data/emacs-mode") #t)))))
+    (home-page "https://agda.readthedocs.io/en/latest/tools/emacs-mode.html")
+    (synopsis "Emacs mode for Agda")
+    (description "This Emacs mode enables interactive development with
+Agda.  It also aids the input of Unicode characters.")))

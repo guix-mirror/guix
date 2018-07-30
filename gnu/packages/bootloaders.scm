@@ -476,7 +476,10 @@ board-independent tools.")))
              `(("gcc-7" ,gcc-7)))
          ,@(package-native-inputs u-boot)))
       (arguments
-       `(#:modules ((ice-9 ftw) (guix build utils) (guix build gnu-build-system))
+       `(#:modules ((ice-9 ftw)
+                    (srfi srfi-1)
+                    (guix build utils)
+                    (guix build gnu-build-system))
          #:test-target "test"
          #:make-flags
          (list "HOSTCC=gcc"

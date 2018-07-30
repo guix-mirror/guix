@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,13 +35,19 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages docker)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages selinux)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
-  #:use-module (gnu packages version-control)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages linux))
 
 (define-public android-make-stub
@@ -807,3 +814,100 @@ script that you can put anywhere in your path.")
 Boot Images.  @code{abootimg} can work directly on block devices, or, the
 safest way, on a file image.")
     (license license:gpl2+)))
+
+(define-public python-androguard
+  (package
+    (name "python-androguard")
+    (version "3.2.1")
+    (source
+      (origin
+        ;; The pypi release doesn't have the tests, but the tests use
+        ;; packaged binaries, so we skip them.
+        (method url-fetch)
+        (uri (pypi-uri "androguard" version))
+        (sha256
+         (base32
+          "0ndsw00pkyda4i2s3wi5ap8gbk6a9d23xhhxpdbk02padv8sxkfv"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Adapted from .travis.yml
+           (lambda _
+             (invoke "nosetests" "--with-coverage" "--with-timer"
+                     "--timer-top-n" "50"))))))
+    (native-inputs
+     `(("python-codecov" ,python-codecov)
+       ("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-nose-timer" ,python-nose-timer)))
+    (propagated-inputs
+     `(("python-asn1crypto" ,python-asn1crypto)
+       ("python-colorama" ,python-colorama)
+       ("python-future" ,python-future)
+       ("python-ipython" ,python-ipython)
+       ("python-lxml" ,python-lxml)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-networkx" ,python-networkx)
+       ("python-pygments" ,python-pygments)
+       ("python-pyperclip" ,python-pyperclip)))
+    (home-page "https://github.com/androguard/androguard")
+    (synopsis "Python tool to play with Android files")
+    (description
+     "Androguard is a full Python tool to manipulate Android files.  It is
+useful for reverse engineering, analysis of Android applications and more.")
+    (license license:asl2.0)))
+
+(define-public fdroidserver
+  (package
+    (name "fdroidserver")
+    (version "1.0.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fdroidserver" version))
+        (sha256
+         (base32
+          "0cwb1fmindw6v9jkiim9yn3496rk1pvnk94s1r0vz2hxgz16xp7n"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-versioning
+           (lambda _
+             (substitute* "setup.py"
+               (("0.2.1") ,(package-version python-pyasn1-modules)))
+             #t)))))
+    (propagated-inputs
+     `(("python-androguard" ,python-androguard)
+       ("python-apache-libcloud" ,python-apache-libcloud)
+       ("python-clint" ,python-clint)
+       ("python-docker-py" ,python-docker-py)
+       ("python-gitpython" ,python-gitpython)
+       ("python-mwclient" ,python-mwclient)
+       ("python-paramiko" ,python-paramiko)
+       ("python-pillow" ,python-pillow)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-qrcode" ,python-qrcode)
+       ("python-ruamel.yaml" ,python-ruamel.yaml)
+       ("python-requests" ,python-requests)
+       ("python-vagrant" ,python-vagrant)))
+    (native-inputs
+     `(("python-babel" ,python-babel)
+       ("python-bcrypt" ,python-bcrypt)
+       ("python-docker-pycreds" ,python-docker-pycreds)
+       ("python-pynacl" ,python-pynacl)
+       ("python-websocket-client" ,python-websocket-client)))
+    (home-page "https://f-droid.org")
+    (synopsis "F-Droid server tools")
+    (description
+     "The F-Droid server tools provide various scripts and tools that are used
+to maintain F-Droid, the repository of free Android applications.  You can use
+these same tools to create your own additional or alternative repository for
+publishing, or to assist in creating, testing and submitting metadata to the
+main repository.")
+    (license license:agpl3+)))

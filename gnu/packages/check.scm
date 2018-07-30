@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2017 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -1222,6 +1222,30 @@ testing frameworks.")
 
 (define-public python2-cov-core
  (package-with-python2 python-cov-core))
+
+(define-public python-codecov
+  (package
+    (name "python-codecov")
+    (version "2.0.15")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "codecov" version))
+        (sha256
+         (base32
+          "1217c0vqf7ii65635gvl27a5pfhv0r7zhrpdp9cx640hg73bgn4f"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-unittest2" ,python-unittest2)))
+    (propagated-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-requests" ,python-requests)))
+    (home-page "http://github.com/codecov/codecov-python")
+    (synopsis "Upload code coverage reports to @code{codecov.io}")
+    (description
+     "Codecov collects code coverage reports from code written in Python, Java,
+C/C++, R, and more, and uploads it to the @code{codecov.io} service.")
+    (license license:asl2.0)))
 
 (define-public python-testpath
   (package

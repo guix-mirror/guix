@@ -279,10 +279,15 @@ Return the list of store items actually sent."
                                   (remove (cut valid-path? store <>)
                                           ',files)))))
          (count   (length missing))
+         (sizes   (map (lambda (item)
+                         (path-info-nar-size (query-path-info local item)))
+                       missing))
          (port    (store-import-channel session)))
-    (format log-port (N_ "sending ~a store item to '~a'...~%"
-                         "sending ~a store items to '~a'...~%" count)
-            count (session-get session 'host))
+    (format log-port (N_ "sending ~a store item (~h MiB) to '~a'...~%"
+                         "sending ~a store items (~h MiB) to '~a'...~%" count)
+            count
+            (inexact->exact (round (/ (reduce + 0 sizes) (expt 2. 20))))
+            (session-get session 'host))
 
     ;; Send MISSING in topological order.
     (export-paths local missing port)

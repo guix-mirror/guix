@@ -9221,31 +9221,6 @@ connections.")
 from aeson.")
     (license license:bsd-3)))
 
-(define-public ghc-th-lift-instances
-  (package
-    (name "ghc-th-lift-instances")
-    (version "0.1.11")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/"
-                           "th-lift-instances-" version "/"
-                           "th-lift-instances-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1f56cp6ckcalld5jchv0kxpjkwcsixd7smd0g7r8cg67ppx6m90x"))))
-    (build-system haskell-build-system)
-    (inputs `(("ghc-th-lift" ,ghc-th-lift)
-              ("ghc-vector" ,ghc-vector)
-              ("ghc-text" ,ghc-text)))
-    (native-inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
-    (home-page "https://github.com/bennofs/th-lift-instances")
-    (synopsis "Lift instances for template-haskell for common data types")
-    (description "Most data types in the Haskell platform do not have Lift
-instances.  This package provides orphan instances for containers, text,
-bytestring and vector.")
-    (license license:bsd-3)))
-
 (define-public ghc-generics-sop
   (package
     (name "ghc-generics-sop")
@@ -9301,26 +9276,6 @@ each constructor are represented using an n-ary product.")
     (synopsis "Haskell URI parsing as ByteStrings")
     (description "This Haskell package aims to be an RFC3986 compliant URI
 parser that uses ByteStrings for parsing and representing the URI data.")
-    (license license:bsd-3)))
-
-(define-public ghc-time-locale-compat
-  (package
-    (name "ghc-time-locale-compat")
-    (version "0.1.1.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/"
-                           "time-locale-compat-" version "/"
-                           "time-locale-compat-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1vdcfr2hp9qh3ag90x6ikbdf42wiqpdylnplffna54bpnilbyi4i"))))
-    (build-system haskell-build-system)
-    (home-page "https://github.com/khibino/haskell-time-locale-compat")
-    (synopsis "Compatibility of TimeLocale between old-locale and time-1.5")
-    (description "This Haskell package contains wrapped name module for
-TimeLocale.")
     (license license:bsd-3)))
 
 (define-public ghc-http-api-data

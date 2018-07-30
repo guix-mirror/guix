@@ -27,6 +27,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1256,7 +1257,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.07.10")
+    (version "2018.07.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1264,7 +1265,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1rigah941k2drzx5qz937lk68gw9jrizj5lgd9f9znp0bgi2d0xd"))))
+                "18rszvvpw9zyqfjysydvl24jf0hlpfcd22fgqsijhsq7bznwr9jj"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

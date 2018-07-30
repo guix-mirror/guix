@@ -665,14 +665,14 @@ from the old StarOffice (.sdc, .sdw, ...).")
 (define-public libwps
   (package
     (name "libwps")
-    (version "0.4.7")
+    (version "0.4.9")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           name "-" version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "05xjb35y5ha9grgjqs3viaglq7ydsry1hzdvkm7y5b6f1disnb1g"))))
+               "08j9nxnrzxsnq35d9l824ad8w8az42fivaxn8ajl85dv6g3v1ghk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -907,7 +907,8 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
       (sha256
        (base32
         "0vnmb231hyhxm7klaqd8vp3rmvix145bq8iqzv19jgl1yaqkxl21"))
-      (patches (search-patches "libreoffice-icu.patch"))))
+      (patches (search-patches "libreoffice-icu.patch"
+                               "libreoffice-glm.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
