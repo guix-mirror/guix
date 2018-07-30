@@ -25,6 +25,7 @@
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2096,3 +2097,50 @@ SNMP v3 using both IPv4 and IPv6.")
 between various technologies.  Currently, bridging between UDP tunnels,
 Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
     (license license:gpl3+)))
+
+(define-public hcxtools
+  (let* ((commit "2ecfc9a06c2028c47522ea566ccd82b2c1f94647"))
+    (package
+      (name "hcxtools")
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/ZerBea/hcxtools")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1hzwrpmxjxl674if0pp5iq06mdi24k7ni7bh1h20isp4s40201n3"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("curl" ,curl)
+         ("libpcap" ,libpcap)
+         ("openssl" ,openssl)
+         ("zlib" ,zlib)))
+      (arguments
+       `(#:make-flags (list "CC=gcc"
+                            (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
+         #:tests? #f                    ;no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'set-environment
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "C_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "curl")
+                                    "/include:"
+                                    (assoc-ref inputs "libpcap")
+                                    "/include:"
+                                    (assoc-ref inputs "openssl")
+                                    "/include:"
+                                    (assoc-ref inputs "zlib")
+                                    "/include:"
+                                    (getenv "C_INCLUDE_PATH")))
+             #t)))))
+      (synopsis "Capture wlan traffic to hashcat and John the Ripper")
+      (description
+       "This package contains a small set of tools to capture and convert
+packets from wireless devices for use with hashcat or John the Ripper.")
+      (license license:expat))))
