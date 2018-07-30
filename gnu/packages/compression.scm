@@ -85,6 +85,7 @@
        (base32
         "18dighcs333gsvajvvgqp8l4cx7h1x7yx9gd5xacnk80spyykrf3"))))
     (build-system gnu-build-system)
+    (outputs '("out" "static"))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -99,7 +100,15 @@
                      `((setenv "CHOST" ,(%current-target-system)))
                      '())
                (invoke "./configure"
-                       (string-append "--prefix=" out))))))))
+                       (string-append "--prefix=" out)))))
+         (add-after 'install 'move-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static")))
+               (with-directory-excursion (string-append out "/lib")
+                 (install-file "libz.a" (string-append static "/lib"))
+                 (delete-file "libz.a")
+                 #t)))))))
     (home-page "https://zlib.net/")
     (synopsis "Compression library")
     (description
