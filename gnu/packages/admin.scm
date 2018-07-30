@@ -1573,34 +1573,31 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.4.2.0")
+    (version "2.5.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "0n3n9py4s3aykiii31xq8g4wmd6693jvby0424pjrg0bna01apri"))
+         "0wbsjjx3xjlm8g50a9j9c6p9rn23jx32yn1234bf5rmj1qgy3p85"))
        (patches (search-patches "ansible-wrap-program-hack.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-bcrypt" ,python2-bcrypt)
-       ("python2-pycrypto" ,python2-pycrypto)
-       ("python2-pynacl" ,python2-pynacl)
-       ("python2-httplib2" ,python2-httplib2)
-       ("python2-passlib" ,python2-passlib)
-       ("python2-nose" ,python2-nose)
-       ("python2-mock" ,python2-mock)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-paramiko" ,python2-paramiko)))
+     `(("python-bcrypt" ,python-bcrypt)
+       ("python-pynacl" ,python-pynacl)
+       ("python-httplib2" ,python-httplib2)
+       ("python-passlib" ,python-passlib)
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-paramiko" ,python-paramiko)))
     (inputs
-     `(("python2-pycrypto" ,python2-pycrypto)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-paramiko" ,python2-paramiko)))
-    (arguments
-     `(#:python ,python-2)) ; incompatible with Python 3
+     `(("python-cryptography" ,python-cryptography)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-paramiko" ,python-paramiko)))
     (home-page "https://www.ansible.com/")
     (synopsis "Radically simple IT automation")
     (description "Ansible is a radically simple IT automation system.  It
