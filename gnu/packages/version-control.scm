@@ -1579,7 +1579,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.3.3")
+    (version "2.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1587,7 +1587,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version "/tig-" version ".tar.gz"))
               (sha256
                (base32
-                "1skbhhj1narsnsff1azdylcy6xghxb18mzqysmipcyyvlv2i17fk"))))
+                "1f2qhpzbl7f35lsjcnx8lxzskha24m4frczsw78284jp7qcamdmn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -1608,7 +1608,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
     (description
      "Tig is an ncurses text user interface for Git, primarily intended as
 a history browser.  It can also stage hunks for commit, or colorize the
-output of the 'git' command.")
+output of the @code{git} command.")
     (license license:gpl2+)))
 
 (define-public findnewest
