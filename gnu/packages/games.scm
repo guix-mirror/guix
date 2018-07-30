@@ -875,7 +875,8 @@ role, and your gender.")
 
                (copy-recursively "data" data)
 
-               (install-file "COPYING" doc)))))))
+               (install-file "COPYING" doc)
+               #t))))))
     (inputs
      `(("python-sge-pygame" ,python-sge-pygame)
        ("python-six" ,python-six)
