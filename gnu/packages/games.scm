@@ -545,15 +545,15 @@ destroying an ancient book using a special wand.")
 (define-public gnubg
   (package
     (name "gnubg")
-    (version "1.02")
+    (version "1.06.001")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://files.gnubg.org/media/sources/gnubg-release-"
-                           version ".000-sources." "tar.gz"))
+                           version "-sources." "tar.gz"))
        (sha256
         (base32
-         "015mvjk2iw1cg1kxwxfnvp2rxb9cylf6yc39i30fdy414k07zkky"))))
+         "0snz3j1bvr25ji7lg82bl2gm2s2x9lrpc7viw0hclgz0ql74cw7b"))))
     (build-system gnu-build-system)
     (inputs `(("glib" ,glib)
               ("readline" ,readline)
@@ -567,9 +567,9 @@ destroying an ancient book using a special wand.")
                      ("pkg-config" ,pkg-config)))
     (home-page "http://gnubg.org")
     (synopsis "Backgammon game")
-    (description "The GNU backgammon application can be used for playing, analyzing and
-teaching the game.  It has an advanced evaluation engine based on artificial
-neural networks suitable for both beginners and advanced players.  In
+    (description "The GNU backgammon application can be used for playing,
+analyzing and teaching the game.  It has an advanced evaluation engine based on
+artificial neural networks suitable for both beginners and advanced players.  In
 addition to a command-line interface, it also features an attractive, 3D
 representation of the playing board.")
     (license license:gpl3+)))
