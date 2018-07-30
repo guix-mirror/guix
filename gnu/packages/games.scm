@@ -2957,7 +2957,7 @@ fullscreen, use F5 or Alt+Enter.")
 (define-public warzone2100
   (package
     (name "warzone2100")
-    (version "3.2.1")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name
@@ -2965,10 +2965,11 @@ fullscreen, use F5 or Alt+Enter.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "1nd609s0g4sya3r4amhkz3f4dpdmm94vsd2ii76ap665a1nbfrhg"))))
+                "10kmpr4cby95zwqsl1zwx95d9achli6khq7flv6xmrq30a39xazw"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--with-distributor=Guix")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'link-tests-with-qt
            (lambda _
@@ -2976,24 +2977,22 @@ fullscreen, use F5 or Alt+Enter.")
                (("(framework_linktest_LDADD|maptest_LDADD) = " prefix)
                 (string-append prefix "$(QT5_LIBS) ")))
              #t))
-         (add-after 'unpack 'remove-reference-to-missing-file
+         (add-after 'unpack 'fix-ivis-linktest
            (lambda _
-             (substitute* "icons/Makefile.in"
-               (("\\$\\(INSTALL_DATA\\) \\$\\(srcdir\\)/warzone2100.appdata.xml.*") ""))
-             #t))
-         (add-after 'unpack 'patch-for-qt5.8
-           (lambda _
-             (substitute* "lib/widget/editbox.cpp"
-               (("== '\\\\0'")
-                "== QChar('\\0')"))
+             (substitute* "tests/ivis_linktest.cpp"
+               (("iV_DrawTextRotated.*;")
+                (string-append "iV_DrawTextRotated(\"Press ESC to exit.\", "
+                               "100, 100, 0.0f, font_regular);")))
              #t)))))
-    (native-inputs `(("pkg-config" ,pkg-config)
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("pkg-config" ,pkg-config)
                      ("unzip" ,unzip)
                      ("zip" ,zip)))
     (inputs `(("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
               ("fribidi" ,fribidi)
               ("glew" ,glew)
+              ("harfbuzz" ,harfbuzz)
               ("libtheora" ,libtheora)
               ("libvorbis" ,libvorbis)
               ("libxrandr" ,libxrandr)
@@ -3002,7 +3001,6 @@ fullscreen, use F5 or Alt+Enter.")
               ("qtbase" ,qtbase)
               ("qtscript" ,qtscript)
               ("openssl" ,openssl)
-              ("quesoglc" ,quesoglc)
               ("sdl2" ,sdl2)))
     (home-page "http://wz2100.net")
     (synopsis "3D Real-time strategy and real-time tactics game")
