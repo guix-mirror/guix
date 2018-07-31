@@ -7224,6 +7224,25 @@ be set via config files and/or environment variables.")
 (define-public python2-configargparse
   (package-with-python2 python-configargparse))
 
+(define-public python-argparse-manpage
+  (package
+    (name "python-argparse-manpage")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "argparse-manpage" version))
+       (sha256
+        (base32
+         "0blh31zns68anina9lba5wh81d1414s97p60zw5l0d0shhh0wj5p"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/praiskup/argparse-manpage")
+    (synopsis "Build manual page from Python's ArgumentParser object")
+    (description
+     "This package provides tools to build manual pages from Python's
+@code{ArgumentParser} object.")
+    (license license:asl2.0)))
+
 (define-public python-contextlib2
   (package
     (name "python-contextlib2")
