@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
             marionette-eval
             wait-for-file
             wait-for-tcp-port
+            wait-for-unix-socket
             marionette-control
             marionette-screen-text
             wait-for-screen-text
@@ -213,6 +215,29 @@ MARIONETTE.  Raise an error on failure."
     ('success #t)
     ('failure
      (error "nobody's listening on port" port))))
+
+(define* (wait-for-unix-socket file-name marionette
+                                #:key (timeout 20))
+  "Wait for up to TIMEOUT seconds for FILE-NAME, a Unix domain socket, to
+accept connections in MARIONETTE.  Raise an error on failure."
+  (match (marionette-eval
+          `(begin
+             (let ((sock (socket PF_UNIX SOCK_STREAM 0)))
+               (let loop ((i 0))
+                 (catch 'system-error
+                   (lambda ()
+                     (connect sock AF_UNIX ,file-name)
+                     'success)
+                   (lambda args
+                     (if (< i ,timeout)
+                         (begin
+                           (sleep 1)
+                           (loop (+ 1 i)))
+                         'failure))))))
+          marionette)
+    ('success #t)
+    ('failure
+     (error "nobody's listening on unix domain socket" file-name))))
 
 (define (marionette-control command marionette)
   "Run COMMAND in the QEMU monitor of MARIONETTE.  COMMAND is a string such as
