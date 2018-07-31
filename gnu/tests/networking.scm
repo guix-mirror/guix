@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -349,9 +350,26 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
   (simple-operating-system
    (tor-service)))
 
+(define %tor-os/unix-socks-socket
+  (simple-operating-system
+   (service tor-service-type
+            (tor-configuration
+             (config-file
+              (plain-file "test-torrc"
+                          "\
+SocksPort unix:/var/run/tor/socks-sock
+UnixSocksGroupWritable 1
+")
+              )))))
+
 (define (run-tor-test)
   (define os
     (marionette-operating-system %tor-os
+                                 #:imported-modules '((gnu services herd))
+                                 #:requirements '(tor)))
+
+  (define os/unix-socks-socket
+    (marionette-operating-system %tor-os/unix-socks-socket
                                  #:imported-modules '((gnu services herd))
                                  #:requirements '(tor)))
 
@@ -366,12 +384,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
           (define marionette
             (make-marionette (list #$(virtual-machine os))))
 
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-begin "tor")
-
-          (test-assert "tor is alive"
+          (define (tor-is-alive? marionette)
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd)
@@ -382,6 +395,40 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
                                (live-service-provision live)))
                        (current-services))))
              marionette))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "tor")
+
+          ;; Test the usual Tor service.
+
+          (test-assert "tor is alive"
+            (tor-is-alive? marionette))
+
+          (test-assert "tor is listening"
+            (let ((default-port 9050))
+              (wait-for-tcp-port default-port marionette)))
+
+          ;; Don't run two VMs at once.
+          (marionette-control "quit" marionette)
+
+          ;; Test the Tor service using a SOCKS socket.
+
+          (let* ((socket-directory "/tmp/more-sockets")
+                 (_ (mkdir socket-directory))
+                 (marionette/unix-socks-socket
+                  (make-marionette
+                   (list #$(virtual-machine os/unix-socks-socket))
+                   ;; We can't use the same socket directory as the first
+                   ;; marionette.
+                   #:socket-directory socket-directory)))
+            (test-assert "tor is alive, even when using a SOCKS socket"
+              (tor-is-alive? marionette/unix-socks-socket))
+
+            (test-assert "tor is listening, even when using a SOCKS socket"
+              (wait-for-unix-socket "/var/run/tor/socks-sock"
+                                    marionette/unix-socks-socket)))
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
