@@ -22,9 +22,9 @@
 
 (define-module (gnu packages openldap)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages icu4c)
@@ -33,10 +33,11 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages)
-  #:use-module ((guix licenses) #:select (openldap2.8 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (openldap2.8 lgpl2.1+ psfl))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public openldap
   (package
@@ -138,3 +139,42 @@ get from @file{/etc} flat files or NIS.  It also provides a @dfn{Pluggable
 Authentication Module} (PAM) to do identity and authentication management with
 an LDAP server.")
     (license lgpl2.1+)))
+
+(define-public python-ldap
+  (package
+    (name "python-ldap")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-ldap" version))
+       (sha256
+        (base32
+         "1i97nwfnraylyn0myxlf3vciicrf5h6fymrcff9c00k581wmx5s1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure-openldap-locations
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((openldap (assoc-ref inputs "openldap")))
+               (setenv "SLAPD"
+                       (string-append openldap
+                                      "/libexec/slapd"))
+               (setenv "SCHEMA"
+                       (string-append openldap
+                                      "/etc/openldap/schema/")))
+             #t)))))
+    (inputs
+     `(("openldap" ,openldap)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("mit-krb5" ,mit-krb5)))
+    (propagated-inputs
+     `(("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)))
+    (home-page "https://www.python-ldap.org/")
+    (synopsis "Python modules for implementing LDAP clients")
+    (description
+     "This package provides an object-oriented API to access LDAP directory
+servers from Python programs.")
+    (license psfl)))
