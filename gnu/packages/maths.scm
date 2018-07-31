@@ -1589,6 +1589,8 @@ September 2004}")
                           "petsc-lite-" version ".tar.gz"))
       (sha256
        (base32 "1lajbk3c29hnh83v6cbmm3a8wv6bdykh0p70kwrr4vrnizalk88s"))))
+    (outputs '("out"                    ;libraries and headers
+               "examples"))             ;~24MiB of examples
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1662,6 +1664,15 @@ September 2004}")
                           "PETScBuildInternal.cmake"
                           ;; Once installed, should uninstall with Guix
                           "uninstall.py"))
+              #t)))
+        (add-after 'install 'move-examples
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (examples (assoc-ref outputs "examples"))
+                   (exdir (string-append out "/share/petsc/examples"))
+                   (exdir' (string-append examples "/share/petsc/examples")))
+              (copy-recursively exdir exdir')
+              (delete-file-recursively exdir)
               #t))))))
     (home-page "http://www.mcs.anl.gov/petsc")
     (synopsis "Library to solve PDEs")
