@@ -1760,7 +1760,7 @@ savings are consistently > 5x.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.8.2")
+    (version "3.9.2")
     (source
      (origin
        (method url-fetch)
@@ -1768,7 +1768,7 @@ savings are consistently > 5x.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "04zd48p43rnvg68p6cp28zll0px5whglc5v0sc3s6vdj1v920z8y"))))
+         "0gmhdqac8zm3jx43h935z7bflazjnpvqxjv4jh5za2y1z2rqax94"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
