@@ -354,13 +354,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
   (simple-operating-system
    (service tor-service-type
             (tor-configuration
-             (config-file
-              (plain-file "test-torrc"
-                          "\
-SocksPort unix:/var/run/tor/socks-sock
-UnixSocksGroupWritable 1
-")
-              )))))
+             (socks-socket-type 'unix)))))
 
 (define (run-tor-test)
   (define os

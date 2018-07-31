@@ -577,7 +577,9 @@ demand.")))
   (config-file      tor-configuration-config-file
                     (default (plain-file "empty" "")))
   (hidden-services  tor-configuration-hidden-services
-                    (default '())))
+                    (default '()))
+  (socks-socket-type tor-configuration-socks-socket-type ; 'tcp or 'unix
+                     (default 'tcp)))
 
 (define %tor-accounts
   ;; User account and groups for Tor.
@@ -599,7 +601,7 @@ demand.")))
 (define (tor-configuration->torrc config)
   "Return a 'torrc' file for CONFIG."
   (match config
-    (($ <tor-configuration> tor config-file services)
+    (($ <tor-configuration> tor config-file services socks-socket-type)
      (computed-file
       "torrc"
       (with-imported-modules '((guix build utils))
@@ -615,6 +617,10 @@ User tor
 DataDirectory /var/lib/tor
 PidFile /var/run/tor/tor.pid
 Log notice syslog\n" port)
+                (when (eq? 'unix '#$socks-socket-type)
+                  (display "\
+SocksPort unix:/var/run/tor/socks-sock
+UnixSocksGroupWritable 1\n" port))
 
                 (for-each (match-lambda
                             ((service (ports hosts) ...)
