@@ -4042,3 +4042,80 @@ terminal do calculations simply and quickly.  The formula to be calculated can
 be fed to @command{tcalc} through the command line.")
   (home-page "https://sites.google.com/site/mohammedisam2000/tcalc")
   (license license:gpl3+)))
+
+(define-public sundials
+  (package
+    (name "sundials")
+    (version "3.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://computation.llnl.gov/projects/sundials/download/"
+                           "sundials-" version ".tar.gz"))
+       (sha256
+        (base32
+         "090s8ymhd0g1s1d44fa73r5yi32hb4biwahhbfi327zd64yn8kd2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("python" ,python-2)))    ;for tests; syntax incompatible with python 3
+    (inputs
+     `(("fortran" ,gfortran)            ;for fcmix
+       ("blas" ,openblas)
+       ("suitesparse" ,suitesparse)))   ;TODO: Add hypre
+    (arguments
+     `(#:configure-flags `("-DEXAMPLES_ENABLE_C:BOOL=ON"
+                           "-DEXAMPLES_ENABLE_CXX:BOOL=ON"
+                           "-DEXAMPLES_ENABLE_F77:BOOL=ON"
+                           "-DEXAMPLES_ENABLE_F90:BOOL=ON"
+                           "-DEXAMPLES_INSTALL:BOOL=OFF"
+
+                           "-DFCMIX_ENABLE:BOOL=ON"
+
+                           "-DKLU_ENABLE:BOOL=ON"
+                           ,(string-append "-DKLU_INCLUDE_DIR="
+                                           (assoc-ref %build-inputs "suitesparse")
+                                           "/include")
+                           ,(string-append "-DKLU_LIBRARY_DIR="
+                                           (assoc-ref %build-inputs "suitesparse")
+                                           "/lib"))))
+    (home-page "https://computation.llnl.gov/projects/sundials")
+    (synopsis "Suite of nonlinear and differential/algebraic equation solvers")
+    (description "SUNDIALS is a family of software packages implemented with
+the goal of providing robust time integrators and nonlinear solvers that can
+easily be incorporated into existing simulation codes.")
+    (license license:bsd-3)))
+
+(define-public sundials-openmpi
+  (package (inherit sundials)
+    (name "sundials-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ("petsc" ,petsc-openmpi)         ;support in SUNDIALS requires MPI
+       ,@(package-inputs sundials)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sundials)
+       ((#:configure-flags flags '())
+        `(cons* "-DMPI_ENABLE:BOOL=ON"
+                "-DPETSC_ENABLE:BOOL=ON"
+                (string-append "-DPETSC_INCLUDE_DIR="
+                               (assoc-ref %build-inputs "petsc")
+                               "/include")
+                (string-append "-DPETSC_LIBRARY_DIR="
+                               (assoc-ref %build-inputs "petsc")
+                               "/lib")
+                ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'set-test-environment
+             (lambda _
+               ;; By default, running the test suite would fail because 'ssh'
+               ;; could not be found in $PATH.  Define this variable to
+               ;; placate Open MPI without adding a dependency on OpenSSH (the
+               ;; agent isn't used anyway.)
+               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
+               ;; Allow oversubscription in case there are less
+               ;; physical cores available in the build environment
+               ;; than SUNDIALS wants while testing.
+               (setenv "OMPI_MCA_rmaps_base_oversubscribe" "yes")
+               #t))))))
+    (synopsis "SUNDIALS with OpenMPI support")))
