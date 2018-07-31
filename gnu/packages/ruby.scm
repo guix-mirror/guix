@@ -1830,13 +1830,13 @@ Mocha stubbing and mocking library with Bacon, a small RSpec clone.")
 (define-public ruby-net-ssh
   (package
     (name "ruby-net-ssh")
-    (version "4.1.0")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "net-ssh" version))
               (sha256
                (base32
-                "013p5jb4wy0cq7x7036piw2a3s1i9p752ki1srx2m289mpz4ml3q"))))
+                "07c4v97zl1daabmri9zlbzs6yvkl56z1q14bw74d53jdj0c17nhx"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)
