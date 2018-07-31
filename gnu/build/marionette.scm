@@ -222,7 +222,8 @@ pcsys_monitor\")."
     (($ <marionette> _ _ monitor)
      (display command monitor)
      (newline monitor)
-     (wait-for-monitor-prompt monitor))))
+     ;; The "quit" command terminates QEMU immediately, with no output.
+     (unless (string=? command "quit") (wait-for-monitor-prompt monitor)))))
 
 (define* (marionette-screen-text marionette
                                  #:key
