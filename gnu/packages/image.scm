@@ -1199,10 +1199,17 @@ installed as @code{stb_image}.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0lj4clb851fzpaq446wgj0sfy922zs5l5misbpwv6w7qrqrz4cjg"))))
+         "0lj4clb851fzpaq446wgj0sfy922zs5l5misbpwv6w7qrqrz4cjg"))
+       (modules '((guix build utils)))
+       (snippet
+         '(begin
+            (delete-file-recursively "src/libpng")
+            (delete-file-recursively "src/zlib")
+            #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)))
+     `(("libpng" ,libpng)
+       ("zlib" ,zlib)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -1210,7 +1217,8 @@ installed as @code{stb_image}.")
            (lambda* (#:key outputs #:allow-other-keys)
              ;; configure script doesn't accept arguments CONFIG_SHELL and SHELL
              (invoke "sh" "configure"
-                     (string-append "--prefix=" (assoc-ref outputs "out")))
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "-with-system-libs")
              #t)))))
     (synopsis "Optimizer that recompresses PNG image files to a smaller size")
     (description "OptiPNG is a PNG optimizer that recompresses image
