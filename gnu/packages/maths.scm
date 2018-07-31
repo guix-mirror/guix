@@ -1580,7 +1580,7 @@ September 2004}")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.8.0")
+    (version "3.9.3")
     (source
      (origin
       (method url-fetch)
@@ -1588,9 +1588,9 @@ September 2004}")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "1lajbk3c29hnh83v6cbmm3a8wv6bdykh0p70kwrr4vrnizalk88s"))))
+       (base32 "1fwkbwv4g7zf2lc8fw865xd0bl9anb6jaczfis5dff7h449gwa48"))))
     (outputs '("out"                    ;libraries and headers
-               "examples"))             ;~24MiB of examples
+               "examples"))             ;~30MiB of examples
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -1607,11 +1607,7 @@ September 2004}")
        #:configure-flags
        `("--with-mpi=0"
          "--with-openmp=1"
-         "--with-superlu=1"
-         ,(string-append "--with-superlu-include="
-                         (assoc-ref %build-inputs "superlu") "/include")
-         ,(string-append "--with-superlu-lib="
-                         (assoc-ref %build-inputs "superlu") "/lib/libsuperlu.a"))
+         "--with-superlu=1")
        #:make-flags
        ;; Honor (parallel-job-count) for build.  Do not use --with-make-np,
        ;; whose value is dumped to $out/lib/petsc/conf/petscvariables.
