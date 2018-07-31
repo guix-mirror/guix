@@ -63,6 +63,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages opencl)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -728,4 +729,55 @@ unique modes of attack for over 200 highly-optimized hashing algorithms.
 Hashcat currently supports CPUs, GPUs, and other hardware accelerators on
 Linux, Windows, and macOS, and has facilities to help enable distributed
 password cracking.")
+    (license license:expat)))
+
+(define-public hashcat-utils
+  (package
+    (name "hashcat-utils")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/hashcat/hashcat-utils/releases/download/v"
+                           version "/hashcat-utils-1.8.7z"))
+       (sha256
+        (base32
+         "1x80rngjz7gkhwplhw1iqr0wzb6hjkrjfld2kz9kmgp5dr9nys1p"))))
+    (native-inputs
+     `(("p7zip" ,p7zip)))
+    (inputs
+     `(("perl" ,perl)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags (list "CC=gcc"
+                          ;; Upstream bug(?): "make all" seems to remove the
+                          ;; Perl scripts from the source.
+                          "native")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "7z" "x" source)
+             (chdir (string-append "hashcat-utils-" ,version "/src"))
+             #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p out)
+               (for-each (lambda (file)
+                           (copy-file file (string-append out "/" (basename file ".bin"))))
+                         (find-files "." "\\.bin$"))
+               (for-each (lambda (file)
+                           (copy-file file (string-append out "/" (basename file ".pl"))))
+                         (find-files "../bin" "\\.pl$"))
+               #t))))))
+    (home-page "https://github.com/hashcat/hashcat-utils/")
+    (synopsis "Small utilities that are useful in advanced password cracking")
+    (description "Hashcat-utils are a set of small utilities that are useful
+in advanced password cracking.  They all are packed into multiple stand-alone
+binaries.  All of these utils are designed to execute only one specific
+function.  Since they all work with @code{STDIN} and @code{STDOUT} you can
+group them into chains.")
     (license license:expat)))
