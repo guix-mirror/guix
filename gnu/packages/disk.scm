@@ -671,6 +671,10 @@ libnvdimm (non-volatile memory device) sub-system in the Linux kernel.")
     (native-inputs `(("which" ,which)))
     (arguments
      `(#:tests? #f                      ; No tests.
+       ;; Prevent a race condition where some target would attempt to link
+       ;; libdmraid.so before it had been built as reported in
+       ;; <https://bugs.gnu.org/31999#187>.
+       #:parallel-build? #f
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'change-directory
                     (lambda _
