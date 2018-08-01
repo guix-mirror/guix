@@ -2235,7 +2235,7 @@ and RDP protocols.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.26.1")
+    (version "0.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2244,47 +2244,34 @@ and RDP protocols.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0da587hpiqy8h3pswn1102h4b905x8k6mk3ajpi7kf4kzkvv30ym"))))
-    (build-system glib-or-gtk-build-system)
+                "0hn7v6769xabqz7kvyb2hfm19h46z1whkair7ff752zmbs3b7lv1"))))
+    (build-system meson-build-system)
+    (propagated-inputs
+     ;; In Requires of dconf.pc.
+     `(("glib" ,glib)))
     (inputs
      `(("gtk+" ,gtk+)
-       ("glib" ,glib)
-       ("dbus" ,dbus)
-       ("libxml2" ,libxml2)))
+       ("dbus" ,dbus)))
     (native-inputs
-     `(("libxslt" ,libxslt)
+     `(("libxslt" ,libxslt)                     ;for xsltproc
+       ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("glib:bin" ,glib "bin")
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (arguments
      `(#:tests? #f ; To contact dbus it needs to load /var/lib/dbus/machine-id
                    ; or /etc/machine-id.
-       #:configure-flags
-       ;; Set the correct RUNPATH in binaries.
-       (list (string-append "LDFLAGS=-Wl,-rpath="
-                            (assoc-ref %outputs "out") "/lib")
-             "--disable-gtk-doc-html") ; FIXME: requires gtk-doc
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-docbook
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "docs/Makefile.in"
-               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
-                (string-append (assoc-ref inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-"
-                               ,(package-version docbook-xsl)
-                               "/manpages/docbook.xsl")))
-             (setenv "XML_CATALOG_FILES"
-                     (string-append (assoc-ref inputs "docbook-xml")
-                                    "/xml/dtd/docbook/catalog.xml"))
-             #t)))))
+       #:glib-or-gtk? #t
+       #:configure-flags '("-Denable-gtk-doc=true")))
     (home-page "https://developer.gnome.org/dconf")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
 is to provide a backend to GSettings on platforms that don't already have
 configuration storage systems.")
-    (license license:lgpl2.1)))
+    (license license:lgpl2.1+)))
 
 (define-public json-glib
   (package
@@ -2947,14 +2934,15 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "0.99.4")
+    (version "0.99.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://upower.freedesktop.org/releases/"
-                                  name "-" version ".tar.xz"))
+              (uri (string-append "https://gitlab.freedesktop.org/upower/upower/"
+                                  "uploads/9125ab7ee96fdc4ecc68cfefb50c1cab/"
+                                  "upower-" version ".tar.xz"))
               (sha256
                (base32
-                "1c1ph1j1fnrf3vipxb7ncmdfc36dpvcvpsv8n8lmal7grjk2b8ww"))
+                "00lzr0vyxz5lvmgya48gdb2cdgmfdim4b34jlfdyqakk1i9sl8xv"))
               (patches (search-patches "upower-builddir.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -2965,17 +2953,7 @@ faster results and to avoid unnecessary server load.")
        #:configure-flags (list "--localstatedir=/var"
                                (string-append "--with-udevrulesdir="
                                               (assoc-ref %outputs "out")
-                                              "/lib/udev/rules.d"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-/bin/true
-                     (lambda _
-                       (substitute* "configure"
-                         (("/bin/true") (which "true")))))
-         (add-before 'configure 'patch-integration-test
-                     (lambda _
-                       (substitute* "src/linux/integration-test"
-                         (("/usr/bin/python3") (which "python3"))))))))
+                                              "/lib/udev/rules.d"))))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
@@ -2990,6 +2968,9 @@ faster results and to avoid unnecessary server load.")
      `(("dbus-glib" ,dbus-glib)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)))
+    (propagated-inputs
+     ;; In Requires of upower-glib.pc.
+     `(("glib" ,glib)))
     (home-page "https://upower.freedesktop.org/")
     (synopsis "System daemon for managing power devices")
     (description

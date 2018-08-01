@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system python)
@@ -55,7 +57,16 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages w3m)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages cryptsetup)
+  #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages swig)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages c))
 
 (define-public parted
   (package
@@ -547,3 +558,188 @@ provides a minimalistic and nice curses interface with a view on the directory
 hierarchy.  It ships with @code{rifle}, a file launcher that is good at
 automatically finding out which program to use for what file type.")
     (license license:gpl3)))
+
+(define-public volume-key
+  (package
+    (name "volume-key")
+    (version "0.3.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://releases.pagure.org/volume_key/volume_key-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0vaz15rcgdkh5z4yxc22x76wi44gh50jxnrqz5avaxz4bb17kcp6"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("util-linux" ,util-linux)
+       ("swig" ,swig)
+       ("python" ,python-3)))           ; Used to generate the Python bindings.
+    (inputs
+     `(("cryptsetup" ,cryptsetup)
+       ("nss" ,nss)
+       ("lvm2" ,lvm2)                   ; For "-ldevmapper".
+       ("glib" ,glib)
+       ("gpgme" ,gpgme)))
+    (arguments
+     `(#:tests? #f ; Not sure how tests are supposed to pass, even when run manually.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-python.h-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python")))
+               (substitute* "Makefile.in"
+                 (("/usr/include/python") (string-append python "/include/python")))
+               #t))))))
+    (home-page "https://pagure.io/volume_key")
+    (synopsis "Manipulate storage volume encryption keys")
+    (description
+     "This package provides a library for manipulating storage volume
+encryption keys and storing them separately from volumes to handle forgotten
+passphrases.")
+    (license license:gpl2)))
+
+(define-public ndctl
+  (package
+    (name "ndctl")
+    (version "61.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pmem/ndctl")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0vid78jzhmzh505bpwn8mvlamfhcvl6rlfjc29y4yn7zslpydxl7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libtool" ,libtool)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)
+       ("xmlto" ,xmlto)
+       ;; Required for offline docbook generation:
+       ("which" ,which)))
+    (inputs
+     `(("eudev" ,eudev)
+       ("json-c" ,json-c)
+       ("kmod" ,kmod)
+       ("util-linux" ,util-linux)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (substitute* "autogen.sh"
+               (("/bin/sh") (which "sh")))
+             (substitute* "git-version-gen"
+               (("/bin/sh") (which "sh")))
+             (substitute* "git-version"
+               (("/bin/bash") (which "bash"))))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "BASH_COMPLETION_DIR=" out
+                              "/share/bash-completion/completions")))))
+    (home-page "https://github.com/pmem/ndctl")
+    (synopsis "Manage the non-volatile memory device sub-system in the Linux kernel")
+    (description
+     "This package provides a utility library for managing the
+libnvdimm (non-volatile memory device) sub-system in the Linux kernel.")
+    ;; COPYING says LGPL2.1, but many source files are GPL2 so that's
+    ;; the effective license.  Note that some files under ccan/ are
+    ;; covered by BSD-3 or public domain, see the individual folders.
+    (license license:gpl2)))
+
+(define-public dmraid
+  (package
+    (name "dmraid")
+    (version "1.0.0.rc16-3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://people.redhat.com/~heinzm/sw/dmraid/src/dmraid-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1n7vsqvh7y6yvil682q129d21yhb0cmvd5fvsbkza7ypd78inhlk"))))
+    (build-system gnu-build-system)
+    (inputs `(("lvm2" ,lvm2)))
+    (native-inputs `(("which" ,which)))
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       ;; Prevent a race condition where some target would attempt to link
+       ;; libdmraid.so before it had been built as reported in
+       ;; <https://bugs.gnu.org/31999#187>.
+       #:parallel-build? #f
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'change-directory
+                    (lambda _
+                      (chdir (string-append ,version "/dmraid"))
+                      (substitute* "make.tmpl.in"
+                        (("/bin/sh") (which "sh")))
+                      #t)))
+       #:configure-flags (list ;; Make sure programs such as 'dmevent_tool' can
+                               ;; find libdmraid.so.
+                               (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))))
+    (home-page "https://people.redhat.com/~heinzm/sw/dmraid/")
+    (synopsis "Device mapper RAID interface")
+    (description
+     "This software supports RAID device discovery, RAID set activation, creation,
+removal, rebuild and display of properties for ATARAID/DDF1 metadata.
+
+@command{dmraid} uses @file{libdevmapper} and the device-mapper kernel runtime
+to create devices with respective mappings for the ATARAID sets discovered.")
+    (license license:gpl2+)))
+
+(define-public libblockdev
+  (package
+    (name "libblockdev")
+    (version "2.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/storaged-project/libblockdev/releases/download/"
+                                  version "-1/libblockdev-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1a3kpdr9s6g7nfibazi92i27wbv692b5gm2r24gimis6l6jq4pbh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)
+       ("util-linux" ,util-linux)))
+    (inputs
+     `(("btrfs-progs" ,btrfs-progs)
+       ("cryptsetup" ,cryptsetup)
+       ("dosfstools" ,dosfstools)
+       ("dmraid" ,dmraid)
+       ("eudev" ,eudev)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("kmod" ,kmod)
+       ("libbytesize" ,libbytesize)
+       ("libyaml" ,libyaml)
+       ("lvm2" ,lvm2)
+       ("mdadm" ,mdadm)
+       ("ndctl" ,ndctl)
+       ("nss" ,nss)
+       ("parted" ,parted)
+       ("volume-key" ,volume-key)
+       ;; ("xfsprogs" ,xfsprogs) ; TODO: Package?
+       ))
+    (home-page "https://github.com/storaged-project/libblockdev")
+    (synopsis "Library for manipulating block devices")
+    (description
+     "libblockdev is a C library supporting GObject introspection for
+manipulation of block devices.  It has a plugin-based architecture where each
+technology (like LVM, Btrfs, MD RAID, Swap...) is implemented in a separate
+plugin, possibly with multiple implementations (e.g. using LVM CLI or the new
+LVM D-Bus API).")
+    ;; XXX: Copying says LGPL2.1, but the source files with license
+    ;; information are GPL2+.
+    (license license:gpl2+)))

@@ -3001,7 +3001,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
 (define-public openlibm
   (package
     (name "openlibm")
-    (version "0.5.5")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
@@ -3010,7 +3010,7 @@ access to BLIS implementations via traditional BLAS routine calls.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1z8cj5q8ca8kmrakwkpjxf8svi81waw0c568cx8v8pv9kvswbp07"))))
+         "0a5fpm8nra5ldhjk0cqd2rx1qh32wiarkxmcqcm5xl8z7l4kjm6l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -3256,19 +3256,19 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.6.3")
+    (version "0.9.9.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/ogl-math/glm-" version
-                           "/glm-" version ".zip"))
+       (uri (string-append "https://github.com/g-truc/glm/releases/download/"
+                           version  "/glm-" version ".zip"))
        (sha256
         (base32
-         "1cnjmi033a16a95v6xfkr1bvfmkd26hzdjka8j1819hgn5b1nr8l"))))
+         "0ihjadp2sb8w312a276skfjsljm3y41bjscbxf79wn23gi00giz1"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://glm.g-truc.net")
+    (home-page "https://glm.g-truc.net/")
     (synopsis "OpenGL Mathematics library")
     (description "OpenGL Mathematics (GLM) is a header-only C++ mathematics
 library for graphics software based on the OpenGL Shading Language (GLSL)
@@ -3968,7 +3968,7 @@ reduction.")
      `(("boost" ,boost)
        ("glu" ,glu)
        ("mesa" ,mesa)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)))
     (build-system cmake-build-system)
     (synopsis "Toolset for the mCRL2 formal specification language")
     (description

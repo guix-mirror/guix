@@ -1375,8 +1375,8 @@ derivations.
 @cindex garbage collector roots
 When set to ``yes'', the GC will keep the outputs of any live derivation
 available in the store---the @code{.drv} files.  The default is ``no'',
-meaning that derivation outputs are kept only if they are GC roots.
-@xref{Invoking guix gc}, for more on GC roots.
+meaning that derivation outputs are kept only if they are reachable from a GC
+root.  @xref{Invoking guix gc}, for more on GC roots.
 
 @item --gc-keep-derivations[=yes|no]
 Tell whether the garbage collector (GC) must keep derivations
@@ -1387,12 +1387,13 @@ derivations---i.e., @code{.drv} files---as long as at least one of their
 outputs is live.  This allows users to keep track of the origins of
 items in their store.  Setting it to ``no'' saves a bit of disk space.
 
-Note that when both @code{--gc-keep-derivations} and
-@code{--gc-keep-outputs} are used, the effect is to keep all the build
-prerequisites (the sources, compiler, libraries, and other build-time
-tools) of live objects in the store, regardless of whether these
-prerequisites are live.  This is convenient for developers since it
-saves rebuilds or downloads.
+In this way, setting @code{--gc-keep-derivations} to ``yes'' causes liveness
+to flow from outputs to derivations, and setting @code{--gc-keep-outputs} to
+``yes'' causes liveness to flow from derivations to outputs.  When both are
+set to ``yes'', the effect is to keep all the build prerequisites (the
+sources, compiler, libraries, and other build-time tools) of live objects in
+the store, regardless of whether these prerequisites are reachable from a GC
+root.  This is convenient for developers since it saves rebuilds or downloads.
 
 @item --impersonate-linux-2.6
 On Linux-based systems, impersonate Linux 2.6.  This means that the
@@ -11649,6 +11650,15 @@ When true, forwarding of X11 graphical client connections is
 enabled---in other words, @command{ssh} options @option{-X} and
 @option{-Y} will work.
 
+@item @code{allow-agent-forwarding?} (default: @code{#t})
+Whether to allow agent forwarding.
+
+@item @code{allow-tcp-forwarding?} (default: @code{#t})
+Whether to allow TCP forwarding.
+
+@item @code{gateway-ports?} (default: @code{#f})
+Whether to allow gateway ports.
+
 @item @code{challenge-response-authentication?} (default: @code{#f})
 Specifies whether challenge response authentication is allowed (e.g. via
 PAM).
@@ -17678,9 +17688,9 @@ If it is @code{#f} then the daemon will use the host's fully qualified domain na
 @subsubsection Continuous Integration
 
 @cindex continuous integration
-@uref{https://notabug.org/mthl/cuirass, Cuirass} is a continuous
-integration tool for Guix.  It can be used both for development and for
-providing substitutes to others (@pxref{Substitutes}).
+@uref{https://git.savannah.gnu.org/cgit/guix/guix-cuirass.git, Cuirass} is a
+continuous integration tool for Guix.  It can be used both for development and
+for providing substitutes to others (@pxref{Substitutes}).
 
 The @code{(gnu services cuirass)} module provides the following service.
 

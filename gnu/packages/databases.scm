@@ -25,7 +25,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -638,7 +638,7 @@ Language.")
                 "0bax748j4srsyhw5cs5jvwigndh0zwmf4r2cjvhja31ckx8jqccl"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        '("-DBUILD_CONFIG=mysql_release"
          ;; Linking with libarchive fails, like this:
 
@@ -665,6 +665,18 @@ Language.")
          "-DINSTALL_SHAREDIR=share/mysql")
        #:phases
        (modify-phases %standard-phases
+
+         ;; Apply this patch that's only needed on ARM.
+         ,@(if (and (not (%current-target-system))
+                    (string=? "armhf-linux" (%current-system)))
+               `((add-after 'unpack 'apply-patch
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((patch (assoc-ref inputs "gcc-ice-patch")))
+                       (invoke "patch" "-p1" "--force"
+                               "--input" patch)
+                       #t))))
+               '())
+
          (add-before
           'configure 'pre-configure
           (lambda _
@@ -686,7 +698,10 @@ Language.")
               #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ,@(if (string=? "armhf-linux" (%current-system))
+             `(("gcc-ice-patch" ,(search-patch "mariadb-gcc-ice.patch")))
+             '())))
     (inputs
      `(("jemalloc" ,jemalloc)
        ("libaio" ,libaio)
@@ -2385,14 +2400,14 @@ designed to be easy and intuitive to use.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.7.3.1")
+    (version "2.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
         (base32
-         "0rda1j02ds6s28752fhmpwg761sh6jsxi1gpczqkrd28cki1cywv"))))
+         "17klx964gw8z0znl0raz3by8vdc7cq5gxj4pdcrfcina84nrdkzc"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"
@@ -2403,7 +2418,8 @@ designed to be easy and intuitive to use.")
     (home-page "http://initd.org/psycopg/")
     (synopsis "Python PostgreSQL adapter")
     (description
-     "psycopg2 is a thread-safe PostgreSQL adapter that implements DB-API 2.0. ")
+     "psycopg2 is a thread-safe PostgreSQL adapter that implements DB-API
+2.0.")
     (license license:lgpl3+)))
 
 (define-public python2-psycopg2

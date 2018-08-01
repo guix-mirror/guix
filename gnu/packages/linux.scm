@@ -398,8 +398,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17.10")
-(define %linux-libre-hash "1ab349s18avigd2592i11pab4klqzzxy11a1zp16mb842d8chkj2")
+(define %linux-libre-version "4.17.11")
+(define %linux-libre-hash "0c0ryl8rnzizr0x2gj9kprj9wfjz536574fnn46r0ww3szrzdm78")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -407,8 +407,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.58")
-(define %linux-libre-4.14-hash "1ny2b5zmgvbxglpy88aicdxix2ygr1qmar2rgaa336czfjninwr5")
+(define %linux-libre-4.14-version "4.14.59")
+(define %linux-libre-4.14-hash "1mf22i8a71qs04x4wfqmm21clj4jnqia6rpk7jbh3r3vjfjjbd1d")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -417,14 +417,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.115"
-                    "12n3wwfz22hxqqy7bdchl894x5krylcd4vx65837w7rybnb5w2wj"
+  (make-linux-libre "4.9.116"
+                    "1v5138a5317ddrl0zvlip18586si68ccw6y5wdxgpkh8ixvcamy6"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.144"
-                    "1001nw9d51vbiisrjv5ffqigcwfs0r9gav2f8hkw9hzjw64nhanp"
+  (make-linux-libre "4.4.145"
+                    "1c8lcibc6f8194ix3paip30jb9cqvn4lni6jjskyrmavcfy4rlbp"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2121,12 +2121,24 @@ time.")
                                "--enable-udev_sync"
                                "--enable-udev_rules"
                                "--enable-pkgconfig"
+                               "--enable-cmdlib"
+                               "--enable-dmeventd" ; Requires '--enable-cmdlib'.
 
                                ;; Make sure programs such as 'dmsetup' can
                                ;; find libdevmapper.so.
                                (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib"))
+                                              "/lib,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/device-mapper")
+                               ;; TODO: Patch make.tmpl.in to take LDFLAGS
+                               ;; into account so that we don't need to also
+                               ;; set CLDFLAGS.
+                               (string-append "CLDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/device-mapper"))
 
        ;; The tests use 'mknod', which requires root access.
        #:tests? #f))
@@ -3708,10 +3720,12 @@ as used on certified hardware security devices.")
                (substitute* '("src/utils/ecryptfs-mount-private"
                               "src/utils/ecryptfs-umount-private"
                               "src/utils/ecryptfs-setup-private"
+                              "src/utils/ecryptfs-setup-swap"
                               "src/utils/mount.ecryptfs.c"
+                              "src/utils/umount.ecryptfs.c"
                               "src/pam_ecryptfs/pam_ecryptfs.c"
                               "src/desktop/ecryptfs-mount-private.desktop.in"
-                              "src/utils/ecryptfs-setup-swap")
+                              "src/desktop/ecryptfs-setup-private.desktop.in")
                  (("/bin/mount")
                   (string-append utils-linux "/bin/mount"))
                  (("/bin/umount")

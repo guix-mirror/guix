@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages bootstrap)
@@ -30,6 +32,12 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages pkg-config)
   #:use-module (srfi srfi-1))
 
 (define-public tcc
@@ -166,3 +174,50 @@ compiler while still keeping it small, simple, fast and understandable.")
     ;; PCC incorporates code under various BSD licenses; for new code bsd-2 is
     ;; preferred.  See http://pcc.ludd.ltu.se/licenses/ for more details.
     (license (list license:bsd-2 license:bsd-3))))
+
+(define-public libbytesize
+  (package
+    (name "libbytesize")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/storaged-project/libbytesize/releases/download/1.3/libbytesize-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1l7mxm2vq2h6137fyfa46v9r4lydp9dvmsixkd64xr3ylqk1g6fi"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     `(("mpfr" ,mpfr)
+       ("pcre" ,pcre)))
+    ;; One test fails because busctl (systemd only?) and python2-pocketlint
+    ;; are missing.  Should we fix it, we would need the "python-2" ,
+    ;; "python2-polib" and "python2-six" native-inputs.
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/storaged-project/libbytesize")
+    (synopsis "Tiny C library for working with arbitrary big sizes in bytes")
+    (description
+     "The goal of this project is to provide a tiny library that would
+facilitate the common operations with sizes in bytes.  Many projects need to
+work with sizes in bytes (be it sizes of storage space, memory...) and all of
+them need to deal with the same issues like:
+
+@itemize
+@item How to get a human-readable string for the given size?
+@item How to store the given size so that no significant information is lost?
+@item If we store the size in bytes, what if the given size gets over the
+MAXUINT64 value?
+@item How to interpret sizes entered by users according to their locale and
+typing conventions?
+@item How to deal with the decimal/binary units (MB versus MiB) ambiguity?
+@end itemize
+
+@code{libbytesize} offers a generally usable solution that could be used by
+every project that needs to deal with sizes in bytes.  It is written in the C
+language with thin bindings for other languages.")
+    (license license:lgpl2.1+)))

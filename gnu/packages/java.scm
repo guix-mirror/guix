@@ -1862,6 +1862,11 @@ new Date();"))
                   "test-generative-src"
                   "tools-namespace-src"))
                #t))
+           (add-after 'unpack 'fix-manifest-classpath
+             (lambda _
+               (substitute* "build.xml"
+                 (("<attribute name=\"Class-Path\" value=\".\"/>") ""))
+               #t))
            ;; The javadoc target is not built by default.
            (add-after 'build 'build-doc
              (lambda _

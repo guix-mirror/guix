@@ -1786,7 +1786,7 @@ module provides support functions to the automatically generated code.")
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)
        ("qtwebchannel" ,qtwebchannel)
-       ;("qtwebkit" ,qtwebkit)
+       ("qtwebkit" ,qtwebkit)
        ("qtwebsockets" ,qtwebsockets)
        ("qtx11extras" ,qtx11extras)
        ("qtxmlpatterns" ,qtxmlpatterns)))
@@ -2104,18 +2104,17 @@ different kinds of sliders, and much more.")
 (define-public qtwebkit
   (package
     (name "qtwebkit")
-    (version "5.9.1")
+    (version "5.212.0-alpha2")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://download.qt.io/official_releases/qt/"
-                            (version-major+minor version) "/" version
-                            "/submodules/" name "-opensource-src-"
-                            version ".tar.xz"))
+        (uri (string-append "https://github.com/annulen/webkit/releases/download/"
+                            name "-" version "/" name "-" version ".tar.xz"))
         (sha256
          (base32
-          "1ksjn1vjbfhdm4y4rg08ag4krk87ahp7qcdcpwll42l0rnz61998"))))
-    (build-system gnu-build-system)
+          "12lg7w00d8wsj672s1y5z5gm0xdcgs16nas0b5bgq4byavg03ygq"))
+        (patches (search-patches "qtwebkit-pbutils-include.patch"))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python-2.7)
@@ -2126,6 +2125,8 @@ different kinds of sliders, and much more.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("icu" ,icu4c)
+       ("glib" ,glib)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libwebp" ,libwebp)
@@ -2134,92 +2135,27 @@ different kinds of sliders, and much more.")
        ("libxrender" ,libxrender)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtlocation" ,qtlocation)
        ("qtmultimedia" ,qtmultimedia)
+       ("qtsensors" ,qtsensors)
+       ("qtwebchannel" ,qtwebchannel)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-qmlwebkit-plugins-rpath
-           (lambda _
-             (substitute* "Source/WebKit/qt/declarative/experimental/experimental.pri"
-               (("RPATHDIR_RELATIVE_TO_DESTDIR = \\.\\./\\.\\./lib")
-                "RPATHDIR_RELATIVE_TO_DESTDIR = ../../../../../lib"))
-             (substitute* "Source/WebKit/qt/declarative/public.pri"
-               (("RPATHDIR_RELATIVE_TO_DESTDIR = \\.\\./\\.\\./lib")
-                "RPATHDIR_RELATIVE_TO_DESTDIR = ../../../../lib"))
-             #t))
-         (replace 'configure
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (setenv "QMAKEPATH"
-                              (string-append (getcwd) "/Tools/qmake:"
-                                             (getenv "QMAKEPATH")))
-                      (system* "qmake"))))
-         ;; prevent webkit from trying to install into the qtbase store directory,
-         ;; and replace references to the build directory in linker options:
-         (add-before 'build 'patch-installpaths
-                     (lambda* (#:key outputs inputs #:allow-other-keys)
-                       (let* ((out (assoc-ref outputs "out"))
-                              (qtbase (assoc-ref inputs "qtbase"))
-                              (builddir (getcwd))
-                              (linkbuild (string-append "-L" builddir))
-                              (linkout (string-append "-L" out))
-                              (makefiles
-                               (map-in-order
-                                (lambda (i)
-                                  (let* ((in (car i))
-                                         (mf (string-append (dirname in) "/"
-                                                            (cdr i))))
-                                    ;; by default, these Makefiles are
-                                    ;; generated during install, but we need
-                                    ;; to generate them now
-                                    (system* "qmake" in "-o" mf)
-                                    mf))
-                                '(("Source/api.pri" . "Makefile.api")
-                                  ("Source/widgetsapi.pri"
-                                   . "Makefile.widgetsapi")
-                                  ("Source/WebKit2/WebProcess.pro"
-                                   . "Makefile.WebProcess")
-                                  ("Source/WebKit2/PluginProcess.pro"
-                                   . "Makefile.PluginProcess")
-                                  ("Source/WebKit/qt/declarative/public.pri"
-                                   . "Makefile.declarative.public")
-                                  ("Source/WebKit/qt/declarative/experimental/experimental.pri"
-                                   . "Makefile.declarative.experimental")
-                                  ("Source/WebKit/qt/examples/platformplugin/platformplugin.pro"
-                                   . "Makefile")))))
-                         ;; Order of qmake calls and substitutions matters here.
-                         (system* "qmake" "-prl" "Source/widgetsapi.pri"
-                                  "-o" "Source/Makefile")
-                         (substitute* (find-files "lib" "libQt5.*\\.prl")
-                           ((linkbuild) linkout))
-                         (substitute* (find-files "lib"
-                                                  "libQt5WebKit.*\\.la")
-                           (("libdir='.*'")
-                            (string-append "libdir='" out "/lib'"))
-                           ((linkbuild) linkout))
-                         (substitute* (find-files "lib/pkgconfig"
-                                                  "Qt5WebKit.*\\.pc")
-                           (((string-append "prefix=" qtbase))
-                            (string-append "prefix=" out))
-                           ((linkbuild) linkout))
-                         ;; Makefiles must be modified after .prl/.la/.pc
-                         ;; files, lest they get rebuilt:
-                         (substitute* makefiles
-                           (((string-append "\\$\\(INSTALL_ROOT\\)" qtbase))
-                            out )
-                           (((string-append "-Wl,-rpath," builddir))
-                            (string-append "-Wl,-rpath," out)))))))))
+     `(#:tests? #f ; no apparent tests; it might be necessary to set
+                   ; ENABLE_API_TESTS, see CMakeLists.txt
+       #:configure-flags (list ;"-DENABLE_API_TESTS=TRUE"
+                               "-DPORT=Qt"
+                               "-DUSE_LIBHYPHEN=OFF"
+                               "-DUSE_SYSTEM_MALLOC=ON")))
     (home-page "https://www.webkit.org")
     (synopsis "Web browser engine and classes to render and interact with web
 content")
     (description "QtWebKit provides a Web browser engine that makes it easy to
 embed content from the World Wide Web into your Qt application.  At the same
 time Web content can be enhanced with native controls.")
-
     (license license:lgpl2.1+)))
 
 (define-public dotherside

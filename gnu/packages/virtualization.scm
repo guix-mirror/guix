@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -76,8 +76,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+
-                                               asl2.0))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
@@ -227,7 +226,7 @@ the KVM kernel module in Linux.  When using KVM, QEMU can virtualize x86,
 server and embedded PowerPC, and S390 guests.")
 
     ;; Many files are GPLv2+, but some are GPLv2-only---e.g., `memory.c'.
-    (license gpl2)
+    (license license:gpl2)
 
     ;; Several tests fail on MIPS; see <http://hydra.gnu.org/build/117914>.
     (supported-systems (delete "mips64el-linux" %supported-systems))))
@@ -337,7 +336,7 @@ system on a hypervisor.  Via GObject Introspection, the API is available in
 all common programming languages.  Vala bindings are also provided.")
     ;; The library files are released under LGPLv2.1 or later; the source
     ;; files in the "tools" directory are released under GPLv2+.
-    (license (list lgpl2.1+ gpl2+))))
+    (license (list license:lgpl2.1+ license:gpl2+))))
 
 (define-public lxc
   (package
@@ -382,7 +381,7 @@ all common programming languages.  Vala bindings are also provided.")
      "LXC is a userspace interface for the Linux kernel containment features.
 Through a powerful API and simple tools, it lets Linux users easily create and
 manage system or application containers.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libvirt
   (package
@@ -467,7 +466,7 @@ manage system or application containers.")
 capabilities of recent versions of Linux.  The library aims at providing long
 term stable C API initially for the Xen paravirtualization but should be able
 to integrate other virtualization mechanisms if needed.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libvirt-glib
   (package
@@ -515,7 +514,7 @@ three libraries:
 @item libvirt-gobject - GObjects for managing libvirt objects
 @end enumerate
 ")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public python-libvirt
   (package
@@ -550,7 +549,7 @@ three libraries:
     (synopsis "Python bindings to libvirt")
     (description "This package provides Python bindings to the libvirt
 virtualization library.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public python2-libvirt
   (package-with-python2 python-libvirt))
@@ -649,7 +648,7 @@ virtualization library.")
 virtual machines through libvirt.  It primarily targets KVM VMs, but also
 manages Xen and LXC (Linux containers).  It presents a summary view of running
 domains, their live performance and resource utilization statistics.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public criu
   (package
@@ -743,7 +742,7 @@ was frozen at.  The distinctive feature of the CRIU project is that it is
 mainly implemented in user space.")
     ;; The project is licensed under GPLv2; files in the lib/ directory are
     ;; LGPLv2.1.
-    (license (list gpl2 lgpl2.1))))
+    (license (list license:gpl2 license:lgpl2.1))))
 
 (define-public qmpbackup
   (package
@@ -765,7 +764,7 @@ mainly implemented in user space.")
     (description "qmpbackup is designed to create and restore full and
 incremental backups of running QEMU virtual machines via QMP, the QEMU
 Machine Protocol.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public lookingglass
   (package
@@ -813,7 +812,7 @@ monitor, keyboard or mouse.  It displays the VM's rendered contents on your main
 monitor/GPU.")
    ;; This package requires SSE instructions.
    (supported-systems '("i686-linux" "x86_64-linux"))
-   (license gpl2+)))
+   (license license:gpl2+)))
 
 (define-public runc
   (package
@@ -870,7 +869,7 @@ packaged according to the
 @uref{https://github.com/opencontainers/runtime-spec/blob/master/spec.md, Open
 Container Initiative (OCI) format} and is a compliant implementation of the
 Open Container Initiative specification.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public umoci
   (package
@@ -915,7 +914,7 @@ Open Container Initiative specification.")
     (description
      "@command{umoci} is a tool that allows for high-level modification of an
 Open Container Initiative (OCI) image layout and its tagged images.")
-    (license asl2.0)))
+    (license license:asl2.0)))
 
 (define-public skopeo
   (package
@@ -977,4 +976,26 @@ the image.
 @item Delete container images from a remote container registry.
 
 @end enumerate")
-    (license asl2.0)))
+    (license license:asl2.0)))
+
+(define-public python-vagrant
+  (package
+    (name "python-vagrant")
+    (version "0.5.15")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-vagrant" version))
+        (sha256
+         (base32
+          "1ikrh6canhcxg5y7pzmkcnnydikppv7s6sm9prfx90nk0ac8m6mg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests involve running vagrant.
+    (home-page "https://github.com/todddeluca/python-vagrant")
+    (synopsis "Python bindings for Vagrant")
+    (description
+     "Python-vagrant is a Python module that provides a thin wrapper around the
+@code{vagrant} command line executable, allowing programmatic control of Vagrant
+virtual machines.")
+    (license license:expat)))

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -665,14 +665,14 @@ from the old StarOffice (.sdc, .sdw, ...).")
 (define-public libwps
   (package
     (name "libwps")
-    (version "0.4.7")
+    (version "0.4.9")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/" name "/" name "/"
                           name "-" version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "05xjb35y5ha9grgjqs3viaglq7ydsry1hzdvkm7y5b6f1disnb1g"))))
+               "08j9nxnrzxsnq35d9l824ad8w8az42fivaxn8ajl85dv6g3v1ghk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -896,7 +896,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.0.5.1")
+    (version "6.0.6.2")
     (source
      (origin
       (method url-fetch)
@@ -906,8 +906,9 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256
        (base32
-        "0vnmb231hyhxm7klaqd8vp3rmvix145bq8iqzv19jgl1yaqkxl21"))
-      (patches (search-patches "libreoffice-icu.patch"))))
+        "13kaikaz65xw9a3hxbh245cnydjpy58np22c7s0s65pnmcq68rpi"))
+      (patches (search-patches "libreoffice-icu.patch"
+                               "libreoffice-glm.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)

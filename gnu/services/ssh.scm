@@ -289,6 +289,19 @@ The other options should be self-descriptive."
   ;; Boolean
   (x11-forwarding?       openssh-configuration-x11-forwarding?
                          (default #f))
+
+  ;; Boolean
+  (allow-agent-forwarding? openssh-configuration-allow-agent-forwarding?
+                           (default #t))
+
+  ;; Boolean
+  (allow-tcp-forwarding? openssh-configuration-allow-tcp-forwarding?
+                         (default #t))
+
+  ;; Boolean
+  (gateway-ports? openssh-configuration-gateway-ports?
+                         (default #f))
+
   ;; Boolean
   (challenge-response-authentication? openssh-challenge-response-authentication?
                                       (default #f))
@@ -417,6 +430,15 @@ of user-name/file-like tuples."
                          "yes" "no"))
            (format port "X11Forwarding ~a\n"
                    #$(if (openssh-configuration-x11-forwarding? config)
+                         "yes" "no"))
+           (format port "AllowAgentForwarding ~a\n"
+                   #$(if (openssh-configuration-allow-agent-forwarding? config)
+                         "yes" "no"))
+           (format port "AllowTcpForwarding ~a\n"
+                   #$(if (openssh-configuration-allow-tcp-forwarding? config)
+                         "yes" "no"))
+           (format port "GatewayPorts ~a\n"
+                   #$(if (openssh-configuration-gateway-ports? config)
                          "yes" "no"))
            (format port "PidFile ~a\n"
                    #$(openssh-configuration-pid-file config))

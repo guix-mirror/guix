@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
@@ -222,7 +222,7 @@ X11 (yet).")
 (define-public xdotool
   (package
     (name "xdotool")
-    (version "3.20150503.1")
+    (version "3.20160805.1")
     (source
       (origin
         (method url-fetch)
@@ -231,8 +231,7 @@ X11 (yet).")
               version "/xdotool-" version ".tar.gz"))
         (sha256
           (base32
-           "1lcngsw33fy9my21rdiz1gs474bfdqcfxjrnfggbx4aypn1nhcp8"))
-        (patches (search-patches "xdotool-fix-makefile.patch"))))
+           "1a6c1zr86zb53352yxv104l76l8x21gfl2bgw6h21iphxpv5zgim"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; Test suite requires a lot of black magic
@@ -240,11 +239,11 @@ X11 (yet).")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys #:rest args)
-             (setenv "PREFIX" (assoc-ref outputs "out"))
-             (setenv "LDFLAGS"
-                     (string-append "-Wl,-rpath="
-                                    (assoc-ref %outputs "out") "/lib"))
-             (setenv "CC" "gcc"))))))
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib"))
+               (setenv "PREFIX" out)
+               (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
+               (setenv "CC" "gcc")))))))
     (native-inputs `(("perl" ,perl))) ; for pod2man
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
@@ -1476,3 +1475,27 @@ first.  Additionally, xss-lock uses the inhibition logic to lock the screen
 before the system goes to sleep.")
       (home-page "https://bitbucket.org/raymonad/xss-lock")
       (license license:expat))))
+
+(define-public python-pyperclip
+  (package
+    (name "python-pyperclip")
+    (version "1.6.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyperclip" version))
+        (sha256
+         (base32
+          "1p505c23ji06r28k1y67siihsbdzdf1brhlqpyv9ams4gk9863pp"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; Not clear how to make tests pass.
+    (inputs
+     `(("xclip" ,xclip)
+       ("xsel" ,xsel)))
+    (home-page "https://github.com/asweigart/pyperclip")
+    (synopsis "Python clipboard module")
+    (description
+     "Pyperclip is a clipboard module for Python, handling copy/pasting from
+the X11 clipboard")
+    (license license:bsd-3)))

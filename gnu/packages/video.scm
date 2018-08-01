@@ -27,6 +27,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -397,7 +398,8 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
         (sha256
          (base32
           "0qx8mavwdzdpkkby7n29i9av7zsnklavacwfz537mf62q2pzjnbf"))
-        (patches (search-patches "x265-fix-ppc64le-build.patch"))
+        (patches (search-patches "x265-fix-ppc64le-build.patch"
+                                 "x265-arm-asm-primitives.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
                     (delete-file-recursively "source/compat/getopt")
@@ -1255,7 +1257,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.07.10")
+    (version "2018.07.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1263,7 +1265,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1rigah941k2drzx5qz937lk68gw9jrizj5lgd9f9znp0bgi2d0xd"))))
+                "18rszvvpw9zyqfjysydvl24jf0hlpfcd22fgqsijhsq7bznwr9jj"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

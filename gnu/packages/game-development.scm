@@ -357,14 +357,14 @@ levels.")
 (define-public python-xsge
   (package
     (name "python-xsge")
-    (version "2017.06.09")
+    (version "2018.02.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/xsge/xsge/xsge-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1vy7c2y7ihvmggs93zgfv2h3049s384wid8a5snzrrba8bhbb89p"))))
+                "0bx93hgf7cgdw2gsygbh59y8vpw37pgsa279rajw3fkdpl8vrc40"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -373,10 +373,9 @@ levels.")
          ;; system's default flags, "--single-version-externally-managed".
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (zero?
-              (system* "python" "setup.py" "install"
-                       (string-append "--prefix=" (assoc-ref outputs "out"))
-                       "--root=/")))))
+             (invoke "python" "setup.py" "install"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--root=/"))))
        #:tests? #f)) ; no check target
     (propagated-inputs
      `(("python-sge-pygame" ,python-sge-pygame)
@@ -398,7 +397,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.1.5")
+    (version "1.1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -406,7 +405,7 @@ support.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1zrq1nhb50mwqzw3fln6vj49ljddil1v7yby3ahjbcm94s25ll1y"))))
+                "194ciw8688mikndvxivzb8ql5vm405pkwnn4srzm7ymwfc4xygb0"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -425,8 +424,8 @@ support.")
                                (assoc-ref inputs "qttools")
                                "/bin/lrelease\n")))
              (let ((out (assoc-ref outputs "out")))
-               (system* "qmake"
-                        (string-append "PREFIX=" out))))))))
+               (invoke "qmake"
+                       (string-append "PREFIX=" out))))))))
     (home-page "http://www.mapeditor.org/")
     (synopsis "Tile map editor")
     (description
@@ -645,18 +644,15 @@ etc.")
 (define-public allegro
   (package
     (name "allegro")
-    (version "5.2.2.0")
+    (version "5.2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/releases"
                                   "/download/" version "/allegro-"
-                                  (if (equal? "0" (string-take-right version 1))
-                                    (string-drop-right version 2)
-                                    version)
-                                  ".tar.gz"))
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1z4lrrlmn471wb7vzbd9iw7g379vj0k964vy1s64hcvv5bhvk1g2"))))
+                "1w9a5yqi5q03b2qvmx5ff90paz0xbr9cy7i7f0xiqa65ava66q9l"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ; there are no tests
     (inputs

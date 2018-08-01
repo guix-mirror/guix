@@ -1189,10 +1189,17 @@ installed as @code{stb_image}.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0lj4clb851fzpaq446wgj0sfy922zs5l5misbpwv6w7qrqrz4cjg"))))
+         "0lj4clb851fzpaq446wgj0sfy922zs5l5misbpwv6w7qrqrz4cjg"))
+       (modules '((guix build utils)))
+       (snippet
+         '(begin
+            (delete-file-recursively "src/libpng")
+            (delete-file-recursively "src/zlib")
+            #t))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)))
+     `(("libpng" ,libpng)
+       ("zlib" ,zlib)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -1200,7 +1207,8 @@ installed as @code{stb_image}.")
            (lambda* (#:key outputs #:allow-other-keys)
              ;; configure script doesn't accept arguments CONFIG_SHELL and SHELL
              (invoke "sh" "configure"
-                     (string-append "--prefix=" (assoc-ref outputs "out")))
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "-with-system-libs")
              #t)))))
     (synopsis "Optimizer that recompresses PNG image files to a smaller size")
     (description "OptiPNG is a PNG optimizer that recompresses image
@@ -1213,21 +1221,20 @@ PNG, and performs PNG integrity checks and corrections.")
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "1.5.3")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/" name "/" version "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08r5b5mywwrxv4axvq80dm31cklz81grczlzlxr2xqa6pgi90j5j"))))
-    (build-system gnu-build-system)
+                "0s48zz6awd493hmb200abmsizh68fh1jmz98r41n4c8dbl87d23p"))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
     (arguments
-     '(#:test-target "test"
-       #:configure-flags (list "--with-build-date=1970-01-01"
-                               "--disable-static")))
+     '(#:configure-flags '("-DCMAKE_INSTALL_LIBDIR:PATH=lib"
+                           "-DENABLE_STATIC=0")))
     (home-page "https://libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
     (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
@@ -1239,8 +1246,10 @@ libjpeg-turbo implements both the traditional libjpeg API and the less powerful
 but more straightforward TurboJPEG API, and provides a full-featured Java
 interface.  It supports color space extensions that allow it to compress from
 and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
-    (license (list license:bsd-3        ; jsimd*.[ch] and most of simd/
-                   license:ijg))))      ; the rest
+    ;; libjpeg-turbo is covered by three different licenses; see LICENSE.md.
+    (license (list license:bsd-3        ;the TurboJPEG API library and programs
+                   license:ijg          ;the libjpeg library and associated tools
+                   license:zlib))))     ;the libjpeg-turbo SIMD extensions
 
 (define-public niftilib
   (package

@@ -733,7 +733,15 @@ programs.")
                     version "/flycheck-" version ".tar"))
               (sha256
                (base32
-                "01rnwan16m7cyyrfca3c5c60mbj2r3knkpzbhji2fczsf0wns240"))))
+                "01rnwan16m7cyyrfca3c5c60mbj2r3knkpzbhji2fczsf0wns240"))
+              (modules '((guix build utils)))
+              (snippet `(begin
+                          ;; Change 'flycheck-version' so that it does not
+                          ;; attempt to get its version from pkg-info.el.
+                          (substitute* "flycheck.el"
+                            (("\\(pkg-info-version-info 'flycheck\\)")
+                             (string-append "\"" ,version "\"")))
+                          #t))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -8701,32 +8709,6 @@ region instead.")
 schema validation.")
     (license license:gpl3+)))
 
-(define-public emacs-load-relative
-  (let ((commit "738896e3da491b35399178ed2c6bc92cc728d119")
-        (revision "1"))
-    (package
-      (name "emacs-load-relative")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/rocky/emacs-load-relative")
-               (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
-         (sha256
-          (base32
-           "1rpy5mfncncl6gqgg53d3g25g1700g4b9bivd4c0cfcv5dbxhp73"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/rocky/emacs-load-relative")
-      (synopsis "Relative loads for Emacs Lisp files")
-      (description "@code{load-relative} allows to write small Emacs
-functions or modules in a larger multi-file Emacs package and
-facilitate running from the source tree without having to install the
-code or fiddle with evil @code{load-path}.")
-      (license license:gpl3+))))
-
 (define-public emacs-rainbow-blocks
   (let ((commit "dd435d7bb34ff6f162a5f315df308b90b7e9f842"))
     (package
@@ -9644,26 +9626,6 @@ buffer.")
       (description "@code{download-region} provides in buffer
 downloading manager for Emacs.")
       (license license:gpl3+))))
-
-(define-public emacs-csv-mode
-  (package
-    (name "emacs-csv-mode")
-    (version "1.7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://elpa.gnu.org/packages/csv-mode-"
-                           version ".el"))
-       (sha256
-        (base32
-         "0r4bip0w3h55i8h6sxh06czf294mrhavybz0zypzrjw91m1bi7z6"))))
-    (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/csv-mode.html")
-    (synopsis "Major mode for editing comma or char separated values")
-    (description
-     "This package provides an Emacs CSV mode, a major mode for editing
-records in a generalized CSV (character-separated values) format.")
-    (license license:gpl3+)))
 
 (define-public emacs-helpful
   (package
@@ -11611,3 +11573,72 @@ value.  For directories where the user doesn't have read permission, the
 recursive size is not obtained.  Once this mode is enabled, every new Dired
 buffer displays recursive dir sizes.")
     (license license:gpl3+)))
+
+(define-public emacs-pcre2el
+  ;; Last release is very old so we get the latest commit.
+  (let ((commit "0b5b2a2c173aab3fd14aac6cf5e90ad3bf58fa7d"))
+    (package
+      (name "emacs-pcre2el")
+      (version (git-version "1.8" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/joddie/pcre2el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "14br6ad138qx1z822wqssswqiihxiynz1k69p6mcdisr2q8yyi1z"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/joddie/pcre2el")
+      (synopsis "Convert between PCRE, Emacs and rx regexp syntax")
+      (description "@code{pcre2el} or @code{rxt} (RegeXp Translator or RegeXp
+Tools) is a utility for working with regular expressions in Emacs, based on a
+recursive-descent parser for regexp syntax.  In addition to converting (a
+subset of) PCRE syntax into its Emacs equivalent, it can do the following:
+
+@itemize
+@item convert Emacs syntax to PCRE
+@item convert either syntax to @code{rx}, an S-expression based regexp syntax
+@item untangle complex regexps by showing the parse tree in @code{rx} form and
+highlighting the corresponding chunks of code
+@item show the complete list of strings (productions) matching a regexp,
+provided the list is finite
+@item provide live font-locking of regexp syntax (so far only for Elisp
+buffers – other modes on the TODO list).
+@end itemize\n")
+      (license license:gpl3))))
+
+(define-public emacs-magit-todos
+  ;; TODO: <1.1 is broken with Guix.  Switch to 1.1 when out.
+  (let ((commit "966642762788d335dc2d3667d230a36ede65972e"))
+    (package
+      (name "emacs-magit-todos")
+      (version (git-version "1.0.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/magit-todos")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0nxarip8sf0446xfgrcfsjm4vbsg50klxjbr4i6h09a3lri03gyp"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-async" ,emacs-async)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-hl-todo" ,emacs-hl-todo)
+         ("magit" ,magit)
+         ("emacs-pcre2el" ,emacs-pcre2el)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/alphapapa/magit-todos")
+      (synopsis "Show source files' TODOs (and FIXMEs, etc) in Magit status buffer")
+      (description "This package displays keyword entries from source code
+comments and Org files in the Magit status buffer.  Activating an item jumps
+to it in its file.  By default, it uses keywords from @code{hl-todo}, minus a
+few (like NOTE).")
+      (license license:gpl3))))

@@ -150,10 +150,9 @@ version."
    (_ #f)))
 
 
-(define (cabal-dependencies->names cabal include-test-dependencies?)
-  "Return the list of dependencies names from the CABAL package object.  If
-INCLUDE-TEST-DEPENDENCIES? is #f, do not include dependencies required by test
-suites."
+(define (cabal-dependencies->names cabal)
+  "Return the list of dependencies names from the CABAL package object,
+not including test suite dependencies or custom-setup dependencies."
   (let* ((lib (cabal-package-library cabal))
          (lib-deps (if (pair? lib)
                        (map cabal-dependency-name
@@ -163,15 +162,25 @@ suites."
          (exe-deps (if (pair? exe)
                        (map cabal-dependency-name
                             (append-map cabal-executable-dependencies exe))
-                       '()))
-         (ts (cabal-package-test-suites cabal))
-         (ts-deps (if (pair? ts)
-                       (map cabal-dependency-name
-                            (append-map cabal-test-suite-dependencies ts))
                        '())))
-    (if include-test-dependencies?
-        (delete-duplicates (append lib-deps exe-deps ts-deps))
-        (delete-duplicates (append lib-deps exe-deps)))))
+    (delete-duplicates (append lib-deps exe-deps))))
+
+(define (cabal-test-dependencies->names cabal)
+  "Return the list of test suite dependencies from the CABAL package
+object."
+  (let* ((ts (cabal-package-test-suites cabal))
+         (ts-deps (if (pair? ts)
+                      (map cabal-dependency-name
+                           (append-map cabal-test-suite-dependencies ts))
+                      '())))
+    ts-deps))
+
+(define (cabal-custom-setup-dependencies->names cabal)
+  "Return the list of custom-setup dependencies from the CABAL package
+object."
+  (let* ((custom-setup-dependencies (and=> (cabal-package-custom-setup cabal)
+                                           cabal-custom-setup-dependencies)))
+    (map cabal-dependency-name custom-setup-dependencies)))
 
 (define (filter-dependencies dependencies own-name)
   "Filter the dependencies included with the GHC compiler from DEPENDENCIES, a
@@ -199,8 +208,23 @@ representation of a Cabal file as produced by 'read-cabal'."
            (map hackage-name->package-name
                 ((compose (cut filter-dependencies <>
                                (cabal-package-name cabal))
-                          (cut cabal-dependencies->names <>
-                               include-test-dependencies?))
+                          (cut cabal-dependencies->names <>))
+                 cabal))))
+      (map (lambda (name)
+             (list name (list 'unquote (string->symbol name))))
+           names)))
+
+  (define native-dependencies
+    (let ((names
+           (map hackage-name->package-name
+                ((compose (cut filter-dependencies <>
+                               (cabal-package-name cabal))
+                          ;; FIXME: Check include-test-dependencies?
+                          (lambda (cabal)
+                            (append (if include-test-dependencies?
+                                        (cabal-test-dependencies->names cabal)
+                                        '())
+                                    (cabal-custom-setup-dependencies->names cabal))))
                  cabal))))
       (map (lambda (name)
              (list name (list 'unquote (string->symbol name))))
@@ -234,6 +258,7 @@ representation of a Cabal file as produced by 'read-cabal'."
                         "failed to download tar archive")))))
        (build-system haskell-build-system)
        ,@(maybe-inputs 'inputs dependencies)
+       ,@(maybe-inputs 'native-inputs native-dependencies)
        ,@(maybe-arguments)
        (home-page ,(cabal-package-home-page cabal))
        (synopsis ,(cabal-package-synopsis cabal))

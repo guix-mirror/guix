@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -376,7 +376,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
        (uri (git-reference
              (url "https://github.com/monero-project/monero")
              (commit (string-append "v" version))))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (git-file-name name version))
        (patches (search-patches "monero-use-system-miniupnpc.patch"))
        (sha256
         (base32
@@ -470,7 +470,7 @@ Monero command line client and daemon.")
        (uri (git-reference
              (url "https://github.com/monero-project/monero-gui")
              (commit (string-append "v" version))))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1cnrkwh7kp64lnzz1xfmkf1mhsgm5gls292gpqai3jr8jydpkahl"))))
@@ -478,12 +478,16 @@ Monero command line client and daemon.")
     (native-inputs
      `(("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
     (inputs
      `(("boost" ,boost)
        ("libunwind" ,libunwind)
        ("openssl" ,openssl)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtquickcontrols" ,qtquickcontrols)
        ("readline" ,readline)
        ("unbound" ,unbound)))
     (propagated-inputs
@@ -518,6 +522,15 @@ Monero command line client and daemon.")
                 (string-append "\""(assoc-ref inputs "monero")
                                "/bin/monerod")))
              #t))
+         (add-after 'fix-monerod-path 'fix-qt-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((qttools  (assoc-ref inputs "qttools"))
+                    (lrelease (string-append qttools "/bin/lrelease"))
+                    (lupdate (string-append qttools "/bin/lupdate")))
+               (substitute* "monero-wallet-gui.pro"
+                 (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease") lrelease)
+                 (("\\$\\$\\[QT_INSTALL_BINS\\]/lupdate") lupdate))
+               #t)))
          (replace 'build
            (lambda _
              (invoke "./build.sh")))
@@ -529,7 +542,23 @@ Monero command line client and daemon.")
              #t))
          (add-before 'install 'change-dir
            (lambda _
-             (chdir "build"))))))
+             (chdir "build")))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/monero-wallet-gui")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins"))
+                         '("qtbase" "qtdeclarative")))
+                 `("QML2_IMPORT_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/qml"))
+                         '("qtdeclarative" "qtgraphicaleffects"
+                           "qtquickcontrols"))))
+               #t))))))
     (home-page "https://getmonero.org/")
     (synopsis "Graphical user interface for the Monero currency")
     (description

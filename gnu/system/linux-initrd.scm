@@ -108,34 +108,18 @@ the derivations referenced by EXP are automatically copied to the initrd."
 MODULES and taken from LINUX."
   (define build-exp
     (with-imported-modules (source-module-closure
-                            '((guix build utils)
-                              (gnu build linux-modules)))
+                            '((gnu build linux-modules)))
       #~(begin
-          (use-modules (ice-9 match) (ice-9 regex)
+          (use-modules (gnu build linux-modules)
                        (srfi srfi-1)
-                       (guix build utils)
-                       (gnu build linux-modules))
-
-          (define (string->regexp str)
-            ;; Return a regexp that matches STR exactly.
-            (string-append "^" (regexp-quote str) "$"))
+                       (srfi srfi-26))
 
           (define module-dir
             (string-append #$linux "/lib/modules"))
 
-          (define (lookup module)
-            (let ((name (ensure-dot-ko module)))
-              (match (find-files module-dir (string->regexp name))
-                ((file)
-                 file)
-                (()
-                 (error "module not found" name module-dir))
-                ((_ ...)
-                 (error "several modules by that name"
-                        name module-dir)))))
-
           (define modules
-            (let ((modules (map lookup '#$modules)))
+            (let* ((lookup  (cut find-module-file module-dir <>))
+                   (modules (map lookup '#$modules)))
               (append modules
                       (recursive-module-dependencies modules
                                                      #:lookup-module lookup))))

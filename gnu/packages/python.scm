@@ -1683,30 +1683,6 @@ matching them against a list of media-ranges.")
      `(#:tests? #f
        ,@(package-arguments python2-funcsigs)))))
 
-(define-public python-pafy
-  (package
-    (name "python-pafy")
-    (version "0.5.3.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pafy" version))
-       (sha256
-        (base32
-         "1a7dxi95m1043rxx1r5x3ngb66nwlq6aqcasyqqjzmmmjps4zrim"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f)) ; Currently pafy can not find itself in the tests
-    (propagated-inputs
-     ;; Youtube-dl is a python package which is imported in the file
-     ;; "backend_youtube_dl.py", therefore it needs to be propagated.
-     `(("youtube-dl" ,youtube-dl)))
-    (home-page "https://np1.github.io/pafy/")
-    (synopsis "Retrieve YouTube content and metadata")
-    (description
-     "@code{pafy} is a python library to retrieve YouTube content and metadata.")
-    (license license:lgpl3+)))
-
 (define-public python-py
   (package
     (name "python-py")
@@ -5074,16 +5050,40 @@ of the structure, dynamics, and functions of complex networks.")
 (define-public python2-networkx2
   (package-with-python2 python-networkx2))
 
+(define-public python-datrie
+  (package
+    (name "python-datrie")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "datrie" version))
+       (sha256
+        (base32
+         "08r0if7dry2q7p34gf7ffyrlnf4bdvnprxgydlfxgfnvq8f3f4bs"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/kmike/datrie")
+    (synopsis "Fast, efficiently stored trie for Python")
+    (description
+     "This package provides a fast, efficiently stored trie implementation for
+Python.")
+    (license license:lgpl2.1+)))
+
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "4.4.0")
+    (version "5.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "0g0paia4z7w3srnqdmavq3hrb2x7qnpf81jx50njl0p7y4y0j8jv"))))
+        (base32 "0a1i5v5qxbmmpznp7my9nva8y7pxp8pjrwk2gxgisdskg35sq8s1"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -5105,6 +5105,11 @@ of the structure, dynamics, and functions of complex networks.")
        ("python-requests" ,python-requests)
        ("python-appdirs" ,python-appdirs)
        ("python-configargparse" ,python-configargparse)
+       ("python-datrie" ,python-datrie)
+       ("python-docutils" ,python-docutils)
+       ("python-jinja2" ,python-jinja2)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-networkx" ,python-networkx)
        ("python-pyyaml" ,python-pyyaml)
        ("python-ratelimiter" ,python-ratelimiter)))
     (home-page "https://bitbucket.org/snakemake/snakemake/wiki/Home")
@@ -5114,6 +5119,24 @@ of the structure, dynamics, and functions of complex networks.")
 providing a clean and modern domain specific specification language (DSL) in
 Python style, together with a fast and comfortable execution environment.")
     (license license:expat)))
+
+;; This is currently needed for the pigx-* packages.
+(define-public snakemake-4
+  (package (inherit snakemake)
+    (version "4.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "snakemake" version))
+       (sha256
+        (base32 "0g0paia4z7w3srnqdmavq3hrb2x7qnpf81jx50njl0p7y4y0j8jv"))))
+    (propagated-inputs
+     `(("python-wrapt" ,python-wrapt)
+       ("python-requests" ,python-requests)
+       ("python-appdirs" ,python-appdirs)
+       ("python-configargparse" ,python-configargparse)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-ratelimiter" ,python-ratelimiter)))))
 
 (define-public python-pyqrcode
   (package
