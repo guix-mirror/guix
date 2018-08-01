@@ -1578,36 +1578,28 @@ match, cannon keep, and grave-itation pit.")
     (name "minetest-data")
     (version "0.4.17")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/minetest/minetest_game/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/minetest/minetest_game")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pa9skjwbq27aky6dgr7g3mb0a7c5rpa6xmz2qh0nm618z5hgazh"))))
+                "1g8iw2pya32ifljbdx6z6rpcinmzm81i9minhi2bi1d500ailn7s"))))
     (build-system trivial-build-system)
     (native-inputs
-     `(("source" ,source)
-       ("tar" ,tar)
-       ("gzip" ,(@ (gnu packages compression) gzip))))
+     `(("source" ,source)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder (begin
                    (use-modules (guix build utils))
-                   (let ((tar (string-append (assoc-ref %build-inputs "tar")
-                                             "/bin/tar"))
-                         (install-dir (string-append
+                   (let ((install-dir (string-append
                                        %output
-                                       "/share/minetest/games/minetest_game"))
-                         (path (string-append (assoc-ref %build-inputs
-                                                         "gzip")
-                                              "/bin")))
-                     (setenv "PATH" path)
-                     (invoke tar "xvf" (assoc-ref %build-inputs "source"))
-                     (chdir (string-append "minetest_game-" ,version))
+                                       "/share/minetest/games/minetest_game")))
                      (mkdir-p install-dir)
-                     (copy-recursively "." install-dir)
+                     (copy-recursively
+                       (assoc-ref %build-inputs "source")
+                       install-dir)
                      #t))))
     (synopsis "Main game data for the Minetest game engine")
     (description
