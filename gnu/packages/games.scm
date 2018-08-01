@@ -1612,14 +1612,14 @@ match, cannon keep, and grave-itation pit.")
     (name "minetest")
     (version "0.4.17.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/minetest/minetest/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/minetest/minetest")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ngb3h6hw0zbsr6isjpyp4fach0g4nbn6bxxv9g354plac6d89fd"))))
+                "19sfblgh9mchkgw32n7gdvm7a8a9jxsl9cdlgmxn9bk9m939a2sg"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
