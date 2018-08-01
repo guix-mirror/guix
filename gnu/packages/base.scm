@@ -873,6 +873,23 @@ GLIBC/HURD for a Hurd host"
 (define-syntax glibc
   (identifier-syntax (glibc-for-target)))
 
+;; The "next" libc.  Useful for populating locale data before reconfiguring the
+;; entire system on it.  Will be the default in the next rebuild cycle.
+(define-public glibc-2.28
+  (package
+    (inherit glibc)
+    (version "2.28")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "10iha5ynvdj5m62vgpgqbq4cwvc2yhyl2w9yyyjgfxmdmx8h145i"))
+              (patches (search-patches "glibc-allow-kernel-2.6.32.patch"
+                                       "glibc-ldd-x86_64.patch"
+                                       "glibc-hidden-visibility-ldconfig.patch"
+                                       "glibc-versioned-locpath.patch"))))))
+
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
 
