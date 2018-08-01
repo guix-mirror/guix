@@ -222,7 +222,7 @@ X11 (yet).")
 (define-public xdotool
   (package
     (name "xdotool")
-    (version "3.20150503.1")
+    (version "3.20160805.1")
     (source
       (origin
         (method url-fetch)
@@ -231,8 +231,7 @@ X11 (yet).")
               version "/xdotool-" version ".tar.gz"))
         (sha256
           (base32
-           "1lcngsw33fy9my21rdiz1gs474bfdqcfxjrnfggbx4aypn1nhcp8"))
-        (patches (search-patches "xdotool-fix-makefile.patch"))))
+           "1a6c1zr86zb53352yxv104l76l8x21gfl2bgw6h21iphxpv5zgim"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; Test suite requires a lot of black magic
@@ -240,11 +239,11 @@ X11 (yet).")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys #:rest args)
-             (setenv "PREFIX" (assoc-ref outputs "out"))
-             (setenv "LDFLAGS"
-                     (string-append "-Wl,-rpath="
-                                    (assoc-ref %outputs "out") "/lib"))
-             (setenv "CC" "gcc"))))))
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib"))
+               (setenv "PREFIX" out)
+               (setenv "LDFLAGS" (string-append "-Wl,-rpath=" out "/lib"))
+               (setenv "CC" "gcc")))))))
     (native-inputs `(("perl" ,perl))) ; for pod2man
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)

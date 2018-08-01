@@ -1220,7 +1220,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/x265-fix-ppc64le-build.patch		\
   %D%/packages/patches/xapian-revert-5489fb2f8.patch		\
   %D%/packages/patches/xboing-CVE-2004-0149.patch		\
-  %D%/packages/patches/xdotool-fix-makefile.patch               \
   %D%/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-ast-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-geode-glibc-2.20.patch	\
