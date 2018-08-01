@@ -431,6 +431,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "11zd1hgzkli3b2v70qsm2hyqppngd4616qc96lmm9zl2kl9yl32k"))
               (patches (search-patches "gcc-arm-bug-71399.patch"
+                                       "gcc-libsanitizer-ustat.patch"
                                        "gcc-strmov-store-file-names.patch"
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"

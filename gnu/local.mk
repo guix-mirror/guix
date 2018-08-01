@@ -690,6 +690,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-fix-texi2pod.patch			\
   %D%/packages/patches/gcc-4.9-libsanitizer-fix.patch		\
   %D%/packages/patches/gcc-libsanitizer-fix.patch		\
+  %D%/packages/patches/gcc-libsanitizer-ustat.patch		\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-strmov-store-file-names.patch	\
   %D%/packages/patches/gcc-4-compile-with-gcc-5.patch		 \
