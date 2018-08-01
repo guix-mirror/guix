@@ -561,13 +561,13 @@ store.")
    (name "glibc")
    ;; Note: Always use a dot after the minor version since various places rely
    ;; on "version-major+minor" to determine where locales are found.
-   (version "2.27")
+   (version "2.28")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "0wpwq7gsm7sd6ysidv0z575ckqdg13cr2njyfgrbgh4f65adwwji"))
+              "10iha5ynvdj5m62vgpgqbq4cwvc2yhyl2w9yyyjgfxmdmx8h145i"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -579,7 +579,7 @@ store.")
                 #t))
             (modules '((guix build utils)))
             (patches (search-patches "glibc-ldd-x86_64.patch"
-                                     "glibc-2.27-git-fixes.patch"
+                                     "glibc-2.28-git-fixes.patch"
                                      "glibc-hidden-visibility-ldconfig.patch"
                                      "glibc-versioned-locpath.patch"
                                      "glibc-allow-kernel-2.6.32.patch"
@@ -862,25 +862,25 @@ GLIBC/HURD for a Hurd host"
 (define-syntax glibc
   (identifier-syntax (glibc-for-target)))
 
-;; The "next" libc.  Useful for populating locale data before reconfiguring the
-;; entire system on it.  Will be the default in the next rebuild cycle.
-(define-public glibc-2.28
+;; Below are old libc versions, which we use mostly to build locale data in
+;; the old format (which the new libc cannot cope with.)
+
+(define-public glibc-2.27
   (package
     (inherit glibc)
-    (version "2.28")
+    (version "2.27")
     (source (origin
               (inherit (package-source glibc))
               (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
               (sha256
                (base32
-                "10iha5ynvdj5m62vgpgqbq4cwvc2yhyl2w9yyyjgfxmdmx8h145i"))
-              (patches (search-patches "glibc-allow-kernel-2.6.32.patch"
-                                       "glibc-ldd-x86_64.patch"
+                "0wpwq7gsm7sd6ysidv0z575ckqdg13cr2njyfgrbgh4f65adwwji"))
+              (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-2.27-git-fixes.patch"
                                        "glibc-hidden-visibility-ldconfig.patch"
-                                       "glibc-versioned-locpath.patch"))))))
-
-;; Below are old libc versions, which we use mostly to build locale data in
-;; the old format (which the new libc cannot cope with.)
+                                       "glibc-versioned-locpath.patch"
+                                       "glibc-allow-kernel-2.6.32.patch"
+                                       "glibc-reinstate-prlimit64-fallback.patch"))))))
 
 (define-public glibc-2.26
   (package
