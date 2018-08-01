@@ -11609,3 +11609,36 @@ provided the list is finite
 buffers – other modes on the TODO list).
 @end itemize\n")
       (license license:gpl3))))
+
+(define-public emacs-magit-todos
+  ;; TODO: <1.1 is broken with Guix.  Switch to 1.1 when out.
+  (let ((commit "966642762788d335dc2d3667d230a36ede65972e"))
+    (package
+      (name "emacs-magit-todos")
+      (version (git-version "1.0.4" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/magit-todos")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0nxarip8sf0446xfgrcfsjm4vbsg50klxjbr4i6h09a3lri03gyp"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-async" ,emacs-async)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-hl-todo" ,emacs-hl-todo)
+         ("magit" ,magit)
+         ("emacs-pcre2el" ,emacs-pcre2el)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/alphapapa/magit-todos")
+      (synopsis "Show source files' TODOs (and FIXMEs, etc) in Magit status buffer")
+      (description "This package displays keyword entries from source code
+comments and Org files in the Magit status buffer.  Activating an item jumps
+to it in its file.  By default, it uses keywords from @code{hl-todo}, minus a
+few (like NOTE).")
+      (license license:gpl3))))
