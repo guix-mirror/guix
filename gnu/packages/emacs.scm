@@ -11573,3 +11573,39 @@ value.  For directories where the user doesn't have read permission, the
 recursive size is not obtained.  Once this mode is enabled, every new Dired
 buffer displays recursive dir sizes.")
     (license license:gpl3+)))
+
+(define-public emacs-pcre2el
+  ;; Last release is very old so we get the latest commit.
+  (let ((commit "0b5b2a2c173aab3fd14aac6cf5e90ad3bf58fa7d"))
+    (package
+      (name "emacs-pcre2el")
+      (version (git-version "1.8" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/joddie/pcre2el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "14br6ad138qx1z822wqssswqiihxiynz1k69p6mcdisr2q8yyi1z"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/joddie/pcre2el")
+      (synopsis "Convert between PCRE, Emacs and rx regexp syntax")
+      (description "@code{pcre2el} or @code{rxt} (RegeXp Translator or RegeXp
+Tools) is a utility for working with regular expressions in Emacs, based on a
+recursive-descent parser for regexp syntax.  In addition to converting (a
+subset of) PCRE syntax into its Emacs equivalent, it can do the following:
+
+@itemize
+@item convert Emacs syntax to PCRE
+@item convert either syntax to @code{rx}, an S-expression based regexp syntax
+@item untangle complex regexps by showing the parse tree in @code{rx} form and
+highlighting the corresponding chunks of code
+@item show the complete list of strings (productions) matching a regexp,
+provided the list is finite
+@item provide live font-locking of regexp syntax (so far only for Elisp
+buffers – other modes on the TODO list).
+@end itemize\n")
+      (license license:gpl3))))
