@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,9 +32,10 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages less)
+  #:use-module (gnu packages mail)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages mail)
   #:use-module (gnu packages xml))
 
 (define-public patchutils
@@ -209,3 +210,25 @@ list, and commands that can search that database.  It allows users to track
 the status of a patch, apply patches, and search for patches---all that from
 the command-line or from Emacs via its Notmuch integration.")
       (license gpl2+))))
+
+(define-public vbindiff
+  (package
+    (name "vbindiff")
+    (version "3.0_beta5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.cjmweb.net/vbindiff/vbindiff-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1f1kj4jki08bnrwpzi663mjfkrx4wnfpzdfwd2qgijlkx5ysjkgh"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "https://www.cjmweb.net/vbindiff/")
+    (synopsis "Console-based tool for comparing binary data")
+    (description "Visual Binary Diff (@command{vbindiff}) displays files in
+hexadecimal and ASCII (or EBCDIC).  It can also display two files at once, and
+highlight the differences between them.  It works well with large files (up to 4
+GiB).")
+    (license gpl2+)))
