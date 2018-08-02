@@ -109,6 +109,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages shells)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
@@ -1638,13 +1639,18 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19sfblgh9mchkgw32n7gdvm7a8a9jxsl9cdlgmxn9bk9m939a2sg"))))
+                "19sfblgh9mchkgw32n7gdvm7a8a9jxsl9cdlgmxn9bk9m939a2sg"))
+              (modules '((guix build utils)))
+              (snippet
+                '(begin
+                   (delete-file-recursively "lib") #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
          (list "-DRUN_IN_PLACE=0"
                "-DENABLE_FREETYPE=1"
                "-DENABLE_GETTEXT=1"
+               "-DENABLE_SYSTEM_JSONCPP=TRUE"
                (string-append "-DIRRLICHT_INCLUDE_DIR="
                               (assoc-ref %build-inputs "irrlicht")
                               "/include/irrlicht")
@@ -1659,18 +1665,20 @@ match, cannon keep, and grave-itation pit.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("irrlicht" ,irrlicht)
-       ("libpng" ,libpng)
+     `(("curl" ,curl)
+       ("freetype" ,(@ (gnu packages fontutils) freetype))
+       ("gettext" ,gettext-minimal)
+       ("gmp" ,gmp)
+       ("irrlicht" ,irrlicht)
+       ("jsoncpp" ,jsoncpp)
        ("libjpeg" ,libjpeg)
-       ("libxxf86vm" ,libxxf86vm)
-       ("mesa" ,mesa)
+       ("libpng" ,libpng)
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
-       ("openal" ,openal)
-       ("freetype" ,(@ (gnu packages fontutils) freetype))
-       ("curl" ,curl)
+       ("libxxf86vm" ,libxxf86vm)
        ("luajit" ,luajit)
-       ("gettext" ,gettext-minimal)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
        ("sqlite" ,sqlite)))
     (propagated-inputs
      `(("minetest-data" ,minetest-data)))
