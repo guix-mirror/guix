@@ -1483,34 +1483,53 @@ are primarily in English, however some in other languages are provided.")
                     "/" version "/irrlicht-" version ".zip"))
               (sha256
                (base32
-                "0cz4z4dwrv5ypl19ll67wl6jjpy5k6ly4vr042w4br88qq5jhazl"))))
+                "0cz4z4dwrv5ypl19ll67wl6jjpy5k6ly4vr042w4br88qq5jhazl"))
+              (patches (search-patches "irrlicht-use-system-libs.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file-recursively
+                     '("bin" ; bundled compiled Windows binaries"
+                       "source/Irrlicht/MacOSX"
+                       "source/Irrlicht/bzip2"
+                       "source/Irrlicht/jpeglib"
+                       "source/Irrlicht/libpng"
+                       "source/Irrlicht/lzma"
+                       "source/Irrlicht/zlib"))
+                  (delete-file "source/Irrlicht/glext.h")
+                  (delete-file "source/Irrlicht/glxext.h")
+                  (delete-file "source/Irrlicht/wglext.h")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-env
+         (add-after 'unpack 'chdir-to-source
+           (lambda _
+             ;; The actual source is buried a few directories deep.
+             (chdir "source/Irrlicht/")
+             #t))
+         (add-after 'chdir-to-source 'fix-build-env
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (substitute* "Makefile"
                  (("INSTALL_DIR = /usr/local/lib")
-                  (string-append "INSTALL_DIR = " out "/lib")))
+                  (string-append "INSTALL_DIR = " out "/lib"))
+                 ;; Add '-fpermissive' to the CXXFLAGS
+                 (("-Wall") "-Wall -fpermissive")) ; CImageLoaderJPG.cpp
                ;; The Makefile assumes these directories exist.
                (mkdir-p (string-append out "/lib"))
                (mkdir-p (string-append out "/include")))))
-         (replace 'unpack
-           (lambda* (#:key source #:allow-other-keys)
-             (and (zero? (system* "unzip" source))
-                  ;; The actual source is buried a few directories deep.
-                  (chdir (string-append "irrlicht-" ,version
-                                        "/source/Irrlicht/")))))
          (delete 'configure))           ; no configure script
        #:tests? #f                      ; no check target
        #:make-flags '("CC=gcc" "sharedlib")))
-    (native-inputs
-     `(("unzip" ,unzip)))
     (inputs
-     `(("mesa" ,mesa)
-       ("glu" ,glu)))
+     `(("bzip2" ,bzip2)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxxf86vm" ,libxxf86vm)
+       ("mesa" ,mesa)))
     (synopsis "3D game engine written in C++")
     (description
      "The Irrlicht Engine is a high performance realtime 3D engine written in
