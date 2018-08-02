@@ -13030,7 +13030,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.6")
+    (version "0.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -13038,7 +13038,7 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0fvdymnka598z2ka7zk6rwrf9dq89p5lyd2y9swvyg72hn1jwjai"))))
+                "131zarirv16w8653m0d66jgjnwqfsxqc0hix0rypssz4d83bl51j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -13061,6 +13061,7 @@ methylation and segmentation.")
        ("python-loompy" ,python-loompy)
        ("ghc-pandoc" ,ghc-pandoc-1)
        ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc-with-pandoc-1)
+       ("samtools" ,samtools)
        ("snakemake" ,snakemake-4)
        ("star" ,star)
        ("r-minimal" ,r-minimal)
