@@ -1677,6 +1677,7 @@ match, cannon keep, and grave-itation pit.")
        ("libxxf86vm" ,libxxf86vm)
        ("luajit" ,luajit)
        ("mesa" ,mesa)
+       ("ncurses" ,ncurses)
        ("openal" ,openal)
        ("sqlite" ,sqlite)))
     (propagated-inputs
