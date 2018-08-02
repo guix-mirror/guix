@@ -65,6 +65,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages libedit)
   #:use-module (ice-9 match))
 
 (define (mit-scheme-source-directory system version)
@@ -407,22 +408,19 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "6.12")
+    (version "7.0")
     (source (origin
-             (method url-fetch)
-             (uri (list (string-append "http://mirror.racket-lang.org/installers/"
-                                       version "/racket-" version "-src.tgz")
-                        (string-append
-                         "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
-                         version "/racket-" version "-src.tgz")))
-             (sha256
-              (base32
-               "0cwcypzjfl9py1s695mhqkiapff7c1w29llsmdj7qgn58wl0apk5"))
-             (patches (search-patches
-                       ;; See: https://github.com/racket/racket/issues/1962
-                       ;; This can be removed in whatever Racket release comes after 6.12
-                       "racket-fix-xform-issue.patch"
-                       "racket-store-checksum-override.patch"))))
+              (method url-fetch)
+              (uri (list (string-append "http://mirror.racket-lang.org/installers/"
+                                        version "/racket-" version "-src.tgz")
+                         (string-append
+                          "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
+                          version "/racket-" version "-src.tgz")))
+              (sha256
+               (base32
+                "1glv5amsp9xp480d4yr63hhm9kkyav06yl3a6p489nkr4cln0j9a"))
+              (patches (search-patches
+                        "racket-store-checksum-override.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -485,7 +483,9 @@ implementation techniques and as an expository tool.")
                   ("share/pkgs/gui-lib/mred/private/wx/gtk/gl-context.rkt"
                    ("libGL"))
                   ("share/pkgs/sgl/gl.rkt"
-                   ("libGL" "libGLU")))))
+                   ("libGL" "libGLU"))
+                  ("share/pkgs/readline-lib/readline/rktrl.rkt"
+                   ("libedit")))))
              (chdir "src")
              #t))
          (add-after 'unpack 'patch-/bin/sh
@@ -493,7 +493,7 @@ implementation techniques and as an expository tool.")
              (substitute* "collects/racket/system.rkt"
                (("/bin/sh") (which "sh")))
              #t)))
-       #:tests? #f                                ; XXX: how to run them?
+       #:tests? #f                      ; XXX: how to run them?
        ))
     (inputs
      `(("libffi" ,libffi)
@@ -504,7 +504,7 @@ implementation techniques and as an expository tool.")
        ("glib" ,glib)
        ("glu" ,glu)
        ("gmp" ,gmp)
-       ("gtk+" ,gtk+)  ; propagates gdk-pixbuf+svg
+       ("gtk+" ,gtk+)                   ; propagates gdk-pixbuf+svg
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libx11" ,libx11)
@@ -513,7 +513,8 @@ implementation techniques and as an expository tool.")
        ("openssl" ,openssl)
        ("pango" ,pango)
        ("sqlite" ,sqlite)
-       ("unixodbc" ,unixodbc)))
+       ("unixodbc" ,unixodbc)
+       ("libedit" ,libedit)))
     (home-page "http://racket-lang.org")
     (synopsis "Implementation of Scheme and related languages")
     (description
