@@ -486,6 +486,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/monitoring.scm			\
   %D%/services/networking.scm			\
   %D%/services/nfs.scm			\
+  %D%/services/security-token.scm		\
   %D%/services/shepherd.scm			\
   %D%/services/sound.scm			\
   %D%/services/herd.scm				\
@@ -540,6 +541,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/messaging.scm			\
   %D%/tests/networking.scm			\
   %D%/tests/rsync.scm				\
+  %D%/tests/security-token.scm			\
   %D%/tests/ssh.scm				\
   %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\

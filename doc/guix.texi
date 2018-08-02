@@ -20331,6 +20331,37 @@ An association list specifies kernel parameters and their values.
 @end table
 @end deftp
 
+@cindex pcscd
+@subsubheading PC/SC Smart Card Daemon Service
+
+The @code{(gnu services security-token)} module provides the following service
+to run @command{pcscd}, the PC/SC Smart Card Daemon.  @command{pcscd} is the
+daemon program for pcsc-lite and the MuscleCard framework. It is a resource
+manager that coordinates communications with smart card readers, smart cards
+and cryptographic tokens that are connected to the system.
+
+@defvr {Scheme Variable} pcscd-service-type
+Service type for the @command{pcscd} service.  Its value must be a
+@code{pcscd-configuration} object.  To run pcscd in the default
+configuration, instantiate it as:
+
+@example
+(service pcscd-service-type)
+@end example
+@end defvr
+
+@deftp {Data Type} pcscd-configuration
+The data type representing the configuration of @command{pcscd}.
+
+@table @asis
+@item @code{pcsc-lite} (default: @code{pcsc-lite})
+The pcsc-lite package that provides pcscd.
+@item @code{usb-drivers} (default: @code{(list ccid)})
+List of packages that provide USB drivers to pcscd. Drivers are expected to be
+under @file{pcsc/drivers} in the store directory of the package.
+@end table
+@end deftp
+
 @cindex lirc
 @subsubheading Lirc Service
 
