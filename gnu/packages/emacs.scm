@@ -10025,8 +10025,8 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-racket-mode
-  (let ((commit "48f0cb99d3b2ca6066249546d2063d85437251c1")
-        (revision "1"))
+  (let ((commit "1b78827d310b6d655782b7bba0f2360c9ef34ff6")
+        (revision "2"))
     (package
       (name "emacs-racket-mode")
       (version (string-append "0.0.2" "-" revision "."
@@ -10040,7 +10040,7 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0fxky8xj639bjhiab9way9daqda22301b7w85vm4b4ydgjgnc59x"))))
+           "04mzxcg32av8p6v0pqb0si6qk5qxbrbllx6m3j16fp32bdz71sps"))))
       (build-system emacs-build-system)
       (arguments
        `(#:include '("\\.el$" "\\.rkt$")))
