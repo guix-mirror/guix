@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages autotools)
@@ -251,6 +253,72 @@ in C/C++.")
        ("readline" ,readline)
        ("icu4c" ,icu4c)
        ("zlib" ,zlib)))))
+
+(define-public mozjs-52
+  ;; No releases yet at <https://archive.mozilla.org/pub/spidermonkey/releases/>.
+  ;; While we could take a snapshot of the complete mozilla-esr52 repository at
+  ;; <https://treeherder.mozilla.org/#/jobs?repo=mozilla-esr52&filter-searchStr=sm-tc>,
+  ;; we take the Debian version instead, because it is easier to work with.
+  (let ((commit "6507e63cc416fd7a3269e390efe712f8b56f374a")
+        (revision "1"))
+    (package (inherit mozjs-38)
+      (version (git-version "52.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://salsa.debian.org/gnome-team/mozjs52.git")
+                      (commit commit)))
+                (file-name (git-file-name "mozjs" version))
+                (sha256
+                 (base32
+                  "1ny0s53r8wn4byys87h784xrq1xg767akmfm6gqrbvrz57mlm3q2"))))
+      (arguments
+       `(#:tests? #f ; depends on repository metadata
+         #:configure-flags
+         '("--enable-ctypes"
+           "--enable-optimize"
+           "--enable-pie"
+           "--enable-readline"
+           "--enable-shared-js"
+           "--enable-system-ffi"
+           "--with-system-icu"
+           "--with-system-nspr"
+           "--with-system-zlib"
+
+           ;; Intl API requires bundled ICU.
+           "--without-intl-api")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-and-chdir
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; This patch prevents a segfault when executing JS_Init().
+               ;; The build does not fail without this patch, but the
+               ;; configure phase of the gjs package would fail.
+               ;; See https://bugzilla.mozilla.org/show_bug.cgi?id=1176787
+               (make-file-writable "js/src/old-configure.in")
+               (make-file-writable "js/src/old-configure")
+               (make-file-writable "mozglue/build/moz.build")
+               (invoke "patch" "-p1" "--force"
+                       "--input" "debian/patches/disable-mozglue.patch")
+               (invoke "touch" "js/src/configure")
+               (chdir "js/src")
+               #t))
+           (replace 'configure
+             (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
+               ;; The configure script does not accept environment variables
+               ;; as arguments.
+               (let ((out (assoc-ref outputs "out")))
+                 (setenv "SHELL" (which "sh"))
+                 (setenv "CONFIG_SHELL" (which "sh"))
+                 (setenv "AUTOCONF" (string-append (assoc-ref inputs "autoconf")
+                                                   "/bin/autoconf"))
+                 (apply invoke "./configure"
+                        (cons (string-append "--prefix=" out)
+                              configure-flags))))))))
+      (native-inputs
+       `(("autoconf" ,autoconf-2.13)
+         ("automake" ,automake)
+         ,@(package-native-inputs mozjs-38))))))
 
 (define-public nspr
   (package
