@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2738,21 +2739,24 @@ programmers to access a standard API to open and decompress media files.")
                      name "-" version ".tar.xz"))
               (sha256
                (base32
-                "11b83qazc8h0iidyj1rprnnjdivj1lpphvpa08y53n42bfa36pn5"))))
+                "11b83qazc8h0iidyj1rprnnjdivj1lpphvpa08y53n42bfa36pn5"))
+              (patches (search-patches "aegisub-icu59-include-unistr.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--disable-update-checker"
              "--without-portaudio"
              "--without-openal"
-             "--without-oss")
+             "--without-oss"
+             "CXXFLAGS=-DU_USING_ICU_NAMESPACE=1")
        ;; tests require busted, a lua package we don't have yet
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-ldflags
            (lambda _
-             (setenv "LDFLAGS" "-pthread"))))))
+             (setenv "LDFLAGS" "-pthread")
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("desktop-file-utils" ,desktop-file-utils)
