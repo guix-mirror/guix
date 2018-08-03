@@ -3800,7 +3800,7 @@ atlas_libs = openblas
              (add-installed-pythonpath inputs outputs)
              (with-directory-excursion "/tmp"
                (invoke "python" "-c"
-                       "import scipy; scipy.test('full', verbose=2)")))))))
+                       "import scipy; scipy.test(verbose=2)")))))))
     (home-page "https://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
     (description "The SciPy library is one of the core packages that make up
