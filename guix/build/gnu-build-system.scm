@@ -792,26 +792,26 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
 
   ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
   ;; PHASES can pick the keyword arguments it's interested in.
-  (for-each (match-lambda
-              ((name . proc)
-               (let ((start (current-time time-monotonic)))
-                 (format #t "starting phase `~a'~%" name)
-                 (let ((result (apply proc args))
-                       (end    (current-time time-monotonic)))
-                   (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
-                           name result
-                           (elapsed-time end start))
+  (every (match-lambda
+           ((name . proc)
+            (let ((start (current-time time-monotonic)))
+              (format #t "starting phase `~a'~%" name)
+              (let ((result (apply proc args))
+                    (end    (current-time time-monotonic)))
+                (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
+                        name result
+                        (elapsed-time end start))
 
-                   ;; Issue a warning unless the result is #t.
-                   (unless (eqv? result #t)
-                     (format (current-error-port) "\
+                ;; Issue a warning unless the result is #t.
+                (unless (eqv? result #t)
+                  (format (current-error-port) "\
 ## WARNING: phase `~a' returned `~s'.  Return values other than #t
 ## are deprecated.  Please migrate this package so that its phase
 ## procedures report errors by raising an exception, and otherwise
 ## always return #t.~%"
-                             name result))
+                          name result))
 
-                   ;; Dump the environment variables as a shell script, for handy debugging.
-                   (system "export > $NIX_BUILD_TOP/environment-variables")
-                   result))))
-            phases))
+                ;; Dump the environment variables as a shell script, for handy debugging.
+                (system "export > $NIX_BUILD_TOP/environment-variables")
+                result))))
+         phases))
