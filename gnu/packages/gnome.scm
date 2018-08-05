@@ -461,7 +461,7 @@ commonly used macros.")
 (define-public gnome-desktop
   (package
     (name "gnome-desktop")
-    (version "3.24.2")
+    (version "3.28.2")
     (source
      (origin
       (method url-fetch)
@@ -470,7 +470,7 @@ commonly used macros.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0pkq5l1llw8gkjhfq6y58iyj6wac8dh1mc3rzjzn6nd7lrkdx8cg"))))
+        "0c439hhpfd9axmv4af6fzhibksh69pnn2nnbghbbqqbwy6zqfl30"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -496,6 +496,7 @@ commonly used macros.")
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
        ("iso-codes" ,iso-codes)
+       ("libseccomp" ,libseccomp)
        ("libx11" ,libx11)
        ("libxext" ,libxext)
        ("libxkbfile" ,libxkbfile)
