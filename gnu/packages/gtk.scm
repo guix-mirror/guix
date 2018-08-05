@@ -444,6 +444,19 @@ GTK+ text widget GtkTextView.  It improves GtkTextView by implementing syntax
 highlighting and other features typical of a source code editor.")
    (license license:lgpl2.1+)))
 
+(define-public gtksourceview-3
+ (package (inherit gtksourceview)
+   (name "gtksourceview")
+   (version "3.24.7")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version) "/"
+                                 name "-" version ".tar.xz"))
+             (sha256
+              (base32
+               "1rp8zspwyw3mmdgccsas3pa6v7s0hqjaaglg6n4kcls7ccx0vhm5"))))))
+
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
