@@ -4601,7 +4601,7 @@ share them with others via social networking and more.")
 (define-public file-roller
   (package
     (name "file-roller")
-    (version "3.26.2")
+    (version "3.28.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4609,20 +4609,14 @@ share them with others via social networking and more.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "19d8pc5z2xzhnicgaysxmwx3ghwzl4cw8kygd6nsw69g3j77nrry"))))
-    (build-system glib-or-gtk-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'skip-gtk-update-icon-cache
-           (lambda _
-             ;; Don't create 'icon-theme.cache'
-             (substitute* (find-files "data" "^Makefile$")
-               (("gtk-update-icon-cache") (which "true")))
-             #t)))))
+                "15pn2m80x45bzibig4zrqybnbr0n1f9wpqx7f2p6difldns3jwf1"))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
+       ("glib:bin" ,glib "bin")))
     ;; TODO: Add libnautilus.
     (inputs
      `(("gtk+" ,gtk+)
