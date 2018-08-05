@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,7 +43,7 @@
 (define-public polkit
   (package
     (name "polkit")
-    (version "0.113")
+    (version "0.115")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -50,12 +51,15 @@
                    name "-" version ".tar.gz"))
              (sha256
               (base32
-               "109w86kfqrgz83g9ivggplmgc77rz8kx8646izvm2jb57h4rbh71"))
-             (patches (search-patches "polkit-drop-test.patch"))
+               "0c91y61y4gy6p91cwbzg32dhavw4b7fflg370rimqhdxpzdfr1rg"))
              (modules '((guix build utils)))
              (snippet
               '(begin
                  (use-modules (guix build utils))
+                 ;; Disable broken test.
+                 (substitute* "test/Makefile.in"
+                   (("SUBDIRS = mocklibc . polkit polkitbackend")
+                    "SUBDIRS = mocklibc . polkit"))
                  (substitute* "configure"
                    ;; Replace libsystemd-login with libelogind.
                    (("libsystemd-login") "libelogind")
@@ -66,7 +70,7 @@
                    (("systemd") "elogind"))
                  (substitute* "src/polkitbackend/polkitbackendsessionmonitor-systemd.c"
                    (("systemd") "elogind"))
-                 (substitute* "src/polkitbackend/polkitbackendjsauthority.c"
+                 (substitute* "src/polkitbackend/polkitbackendjsauthority.cpp"
                    (("systemd") "elogind"))
 
                  ;; GuixSD's polkit service stores actions under
@@ -85,7 +89,7 @@
      `(("expat" ,expat)
        ("linux-pam" ,linux-pam)
        ("elogind" ,elogind)
-       ("mozjs" ,mozjs)
+       ("mozjs" ,mozjs-52)
        ("nspr" ,nspr)))
     (propagated-inputs
      `(("glib" ,glib))) ; required by polkit-gobject-1.pc
