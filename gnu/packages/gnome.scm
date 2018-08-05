@@ -1200,7 +1200,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
 (define-public glade3
   (package
     (name "glade")
-    (version "3.20.2")
+    (version "3.22.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1208,7 +1208,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1vdbqqvf6nrkqml4awrq4pzfwsm5v39wdzg943nys6lmf1am9l87"))))
+                "16p38xavpid51qfy0s26n0n21f9ws1w9k5s65bzh1w7ay8p9my6z"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f ; needs X, GL, and software rendering
