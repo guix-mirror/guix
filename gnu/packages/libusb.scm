@@ -324,6 +324,28 @@ wrapper for accessing libusb-1.0.")
 Apple Property List files in binary or XML.")
     (license license:lgpl2.1+)))
 
+(define-public libusbmuxd
+  (package
+    (name "libusbmuxd")
+    (version "1.0.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+                                  "libusbmuxd-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1wn9zq2224786mdr12c5hxad643d29wg4z6b7jn888jx4s8i78hs"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libplist" ,libplist)))
+    (home-page "http://www.libimobiledevice.org/")
+    (synopsis "Library to multiplex connections from and to iOS devices")
+    (description "This package provides a client library to multiplex
+connections from and to iOS devices by connecting to a socket provided by a
+@code{usbmuxd} daemon.")
+    (license license:lgpl2.1+)))
+
 (define-public libmtp
   (package
     (name "libmtp")
