@@ -587,36 +587,43 @@ and keep up to date translations of documentation.")
 (define-public gcr
   (package
     (name "gcr")
-    (version "3.20.0")
+    (version "3.28.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/" name "/"
-                                 (version-major+minor version)  "/"
-                                 name "-" version ".tar.xz"))
-             (sha256
-              (base32
-               "0ydk9dzxx6snxza7j5ps8x932hbr3x1b8hhcaqjq4w4admi2qmwh"))
-             (patches
-              (search-patches "gcr-disable-failing-tests.patch"
-                              "gcr-fix-collection-tests-to-work-with-gpg-21.patch"))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "02xgky22xgvhgd525khqh64l5i21ca839fj9jzaqdi3yvb8pbq8m"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'check 'pre-check
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (substitute* "build/tap-driver"
-                       (("/usr/bin/env python") (which "python"))))))))
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; These fail because /var/lib/dbus/machine-id is not present in the
+         ;; build environment.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (substitute* "gcr/test-system-prompt.c"
+               (("g_test_add") "//")
+               (("return.*") "return 0;"))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Some tests expect to write to $HOME.
+             (setenv "HOME" "/tmp")
+             #t)))))
     (inputs
      `(("dbus" ,dbus)
-       ("gnupg" ,gnupg) ;called as a child process during tests
+       ("gnupg" ,gnupg)                ;called as a child process during tests
        ("libgcrypt" ,libgcrypt)))
     (native-inputs
-     `(("python" ,python-2) ;for tests
+     `(("python" ,python-2)             ;for tests
        ("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
+       ("libxml2" ,libxml2)
        ("xsltproc" ,libxslt)))
     ;; mentioned in gck.pc, gcr.pc and gcr-ui.pc
     (propagated-inputs

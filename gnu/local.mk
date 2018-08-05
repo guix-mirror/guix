@@ -794,8 +794,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-source-date-epoch-1.patch		\
   %D%/packages/patches/gcc-6-source-date-epoch-2.patch		\
   %D%/packages/patches/gcc-8-strmov-store-file-names.patch	\
-  %D%/packages/patches/gcr-disable-failing-tests.patch		\
-  %D%/packages/patches/gcr-fix-collection-tests-to-work-with-gpg-21.patch	\
   %D%/packages/patches/gd-CVE-2018-5711.patch			\
   %D%/packages/patches/gd-CVE-2018-1000222.patch		\
   %D%/packages/patches/gd-CVE-2019-6977.patch			\
