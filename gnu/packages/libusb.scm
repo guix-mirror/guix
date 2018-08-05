@@ -26,7 +26,7 @@
 
 (define-module (gnu packages libusb)
   #:use-module (gnu packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
@@ -71,7 +71,7 @@
     (description
      "Libusb is a library that gives applications easy access to USB
 devices on various operating systems.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libusb-compat
   (package
@@ -97,7 +97,7 @@ devices on various operating systems.")
     (description
      "Libusb-compat provides a shim allowing applications based on older
 version of libusb to run with newer libusb.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 ;; required by 0xffff, which compiles with libusb-compat, but executes only
 ;; with libusb-0.1
@@ -155,7 +155,7 @@ version of libusb to run with newer libusb.")
       (description
        "This package provides Java JNI bindings to the libusb library for use
 with usb4java.")
-      (license expat))))
+      (license license:expat))))
 
 (define-public java-usb4java
   (package
@@ -214,7 +214,7 @@ with usb4java.")
     (description
      "This package provides a USB library for Java based on libusb and
 implementing @code{javax.usb} (JSR-80).")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python-libusb1
   (package
@@ -257,7 +257,7 @@ implementing @code{javax.usb} (JSR-80).")
     (description "Libusb is a library that gives applications easy access to
 USB devices on various operating systems.  This package provides a Python
 wrapper for accessing libusb-1.0.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public python-pyusb
   (package
@@ -296,7 +296,7 @@ wrapper for accessing libusb-1.0.")
     (synopsis "Python bindings to the libusb library")
     (description
      "PyUSB aims to be an easy to use Python module to access USB devices.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public python2-pyusb
   (package-with-python2 python-pyusb))
@@ -335,7 +335,7 @@ proposed for standardization.")
     ;; "GNU Lesser General Public License as published by the Free Software
     ;; Foundation; either version 2 of the License, or (at your option) any
     ;; later version."
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public gmtp
   (package
@@ -369,7 +369,7 @@ proposed for standardization.")
     (description "gMTP is a simple graphical client for the Media Transfer Protocol
   (MTP), which allows media files to be transferred to and from many portable
 devices.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public hidapi
   (package
@@ -397,9 +397,9 @@ devices.")
      "HIDAPI is a library which allows an application to interface with USB and Bluetooth
 HID-Class devices.")
     ;; HIDAPI can be used under one of three licenses.
-    (license (list gpl3
-                   bsd-3
-                   (non-copyleft "file://LICENSE-orig.txt")))))
+    (license (list license:gpl3
+                   license:bsd-3
+                   (license:non-copyleft "file://LICENSE-orig.txt")))))
 
 (define-public python-hidapi
   (package
@@ -454,8 +454,9 @@ HID-Class devices.")
     (synopsis "Cython interface to hidapi")
     (description "This package provides a Cython interface to @code{hidapi}.")
     ;; The library can be used under either of these licenses.
-    (license (list gpl3 bsd-3
-                   (non-copyleft
+    (license (list license:gpl3
+                   license:bsd-3
+                   (license:non-copyleft
                     "https://github.com/trezor/cython-hidapi/blob/master/LICENSE-orig.txt"
                     "You are free to use cython-hidapi code for any purpose.")))))
 
