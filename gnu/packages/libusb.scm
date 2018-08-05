@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
@@ -300,6 +300,29 @@ wrapper for accessing libusb-1.0.")
 
 (define-public python2-pyusb
   (package-with-python2 python-pyusb))
+
+(define-public libplist
+  (package
+    (name "libplist")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libimobiledevice.org/downloads/"
+                                  "libplist-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "00pnh9zf3iwdji2faccns7vagbmbrwbj9a8zp9s53a6rqaa9czis"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("python" ,python)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-cython" ,python-cython)))
+    (home-page "http://www.libimobiledevice.org/")
+    (synopsis "C library to handle Apple Property List files")
+    (description "This package provides a small portable C library to handle
+Apple Property List files in binary or XML.")
+    (license license:lgpl2.1+)))
 
 (define-public libmtp
   (package
