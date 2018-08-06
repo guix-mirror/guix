@@ -636,7 +636,8 @@ Language.")
               (sha256
                (base32
                 "0j2mdpyvj41vkq2rwrzky88b7170hzz6gy2vb2bc1447s2gp3q67"))
-              (patches (search-patches "mariadb-gcc-ice.patch"))
+              (patches (search-patches "mariadb-gcc-ice.patch"
+                                       "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -713,7 +714,18 @@ Language.")
                       ;; See <https://jira.mariadb.org/browse/MDEV-7761>.
                       "main.join_cache"
                       "main.explain_non_select"
-                      "roles.acl_statistics"))
+                      "roles.acl_statistics"
+
+                      ;; FIXME: This test fails on i686:
+                      ;; -myisampack: Can't create/write to file (Errcode: 17 "File exists")
+                      ;; +myisampack: Can't create/write to file (Errcode: 17 "File exists)
+                      ;; When running "myisampack --join=foo/t3 foo/t1 foo/t2"
+                      ;; (all three tables must exist and be identical)
+                      ;; in a loop it produces the same error around 1/240 times.
+                      ;; montywi on #maria suggested removing the real_end check in
+                      ;; "strings/my_vsnprintf.c" on line 503, yet it still does not
+                      ;; reach the ending quote occasionally.  Disable it for now.
+                      "main.myisampack"))
 
                    ;; This file contains a list of known-flaky tests for this
                    ;; release.  Append our own items.
@@ -745,6 +757,9 @@ Language.")
              (if tests?
                  (with-directory-excursion "mysql-test"
                    (invoke "./mtr" "--verbose"
+                           "--retry=3"
+                           "--testcase-timeout=30"
+                           "--suite-timeout=540"
                            "--parallel" (number->string (parallel-job-count))
                            "--skip-test-list=unstable-tests"))
                  (format #t "test suite not run~%"))
