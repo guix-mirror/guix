@@ -3228,7 +3228,7 @@ settings, themes, mouse settings, and startup of other daemons.")
 (define-public totem-pl-parser
  (package
    (name "totem-pl-parser")
-   (version "3.10.8")
+   (version "3.26.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/totem-pl-parser/"
@@ -3236,8 +3236,8 @@ settings, themes, mouse settings, and startup of other daemons.")
                                 "totem-pl-parser-" version ".tar.xz"))
             (sha256
              (base32
-              "0ayxg0gfs5h5jhr811ja5hxlhryklzp6jlal2ach9wym2c3hmigz"))))
-   (build-system gnu-build-system)
+              "0k5pnka907invgds48d73c1xx1a366v5dcld3gr2l1dgmjwc9qka"))))
+   (build-system meson-build-system)
    (arguments
     ;; FIXME: Tests require gvfs.
     `(#:tests? #f))
@@ -3249,11 +3249,11 @@ settings, themes, mouse settings, and startup of other daemons.")
    (propagated-inputs
     `(("glib" ,glib)
       ("gmime" ,gmime)
+      ("libarchive" ,libarchive)
+      ("libgcrypt" ,libgcrypt)
       ("libxml2" ,libxml2)))
    (inputs
-    `(("libarchive" ,libarchive)
-      ("libgcrypt" ,libgcrypt)
-      ("nettle" ,nettle)
+    `(("nettle" ,nettle)
       ("libsoup" ,libsoup)))
    (home-page "https://projects.gnome.org/totem")
    (synopsis "Library to parse and save media playlists for GNOME")
