@@ -4088,7 +4088,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
 (define-public gvfs
   (package
     (name "gvfs")
-    (version "1.32.1")
+    (version "1.36.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4096,13 +4096,21 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1pkahczniar1yyas7awcqpkb4ca8l7qa4msn6mr29m89mgnwkdnh"))))
+                "1xq105596sk9yram5a143b369wpaiiwc9gz86n0j1kfr7nipkqn4"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f)) ; XXX: requiring `pidof'
+     '(#:tests? #f ; XXX: requiring `pidof'
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-broken-autogen-script
+           (lambda _ (delete-file "autogen.sh") #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
-       ("intltool" ,intltool)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("gtk-doc" ,gtk-doc)
+       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
     (inputs
@@ -4120,6 +4128,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("libgcrypt" ,libgcrypt)
        ("libgphoto2" ,libgphoto2)
        ("libgudev" ,libgudev)
+       ("libimobiledevice" ,libimobiledevice)
        ("libmtp" ,libmtp)
        ("libsecret" ,libsecret)
        ("libsmbclient" ,samba)
