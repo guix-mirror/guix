@@ -4857,7 +4857,7 @@ powerful general purpose text editor.")
 (define-public zenity
   (package
     (name "zenity")
-    (version "3.24.0")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4865,7 +4865,7 @@ powerful general purpose text editor.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1xzpm63cib2xzr99phplhbcjzy7lahggk3gp60dvrrclxhka1w3g"))))
+                "0swavrkc5ps3fwzy6h6l5mmim0wwy10xrq0qqkay5d0zf9a965yv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
