@@ -1830,13 +1830,13 @@ Mocha stubbing and mocking library with Bacon, a small RSpec clone.")
 (define-public ruby-net-ssh
   (package
     (name "ruby-net-ssh")
-    (version "4.1.0")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "net-ssh" version))
               (sha256
                (base32
-                "013p5jb4wy0cq7x7036piw2a3s1i9p752ki1srx2m289mpz4ml3q"))))
+                "07c4v97zl1daabmri9zlbzs6yvkl56z1q14bw74d53jdj0c17nhx"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)
@@ -5033,17 +5033,17 @@ in standard Ruby syntax.")
     (home-page "https://github.com/ruby/rake")
     (license license:expat)))
 
-(define-public ruby-childprocess
+(define-public ruby-childprocess-0.6
   (package
     (name "ruby-childprocess")
-    (version "0.9.0")
+    (version "0.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "childprocess" version))
        (sha256
         (base32
-         "0a61922kmvcxyj5l70fycapr87gz1dzzlkfpq85rfqk5vdh3d28p"))))
+         "1p3f43scdzx9zxmy2kw5zsc3az6v46nq4brwcxmnscjy4w4racbv"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f))
@@ -5057,3 +5057,16 @@ in standard Ruby syntax.")
 programs running in the background, in Ruby.")
     (home-page "http://github.com/enkessler/childprocess")
     (license license:expat)))
+
+(define-public ruby-childprocess
+  (package
+    (inherit ruby-childprocess-0.6)
+    (name "ruby-childprocess")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "childprocess" version))
+       (sha256
+        (base32
+         "0a61922kmvcxyj5l70fycapr87gz1dzzlkfpq85rfqk5vdh3d28p"))))))

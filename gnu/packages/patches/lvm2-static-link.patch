@@ -12,3 +12,14 @@ and libm via libdevmapper.a.
  
  liblvm2cmd.a: $(top_builddir)/lib/liblvm-internal.a $(OBJECTS) lvmcmdlib.o lvm2cmd.o
  	cat $(top_builddir)/lib/liblvm-internal.a > $@
+--- a/make.tmpl.in     2018-07-31 22:00:39.969983104 +0200
++++ b/make.tmpl.in     2018-07-31 22:00:58.467613682 +0200
+@@ -53,7 +53,7 @@
+ 
+ LIBS = @LIBS@
+ # Extra libraries always linked with static binaries
+-STATIC_LIBS = $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS)
++STATIC_LIBS = $(SELINUX_LIBS) $(UDEV_LIBS) $(BLKID_LIBS) $(M_LIBS)
+ DEFS += @DEFS@
+ # FIXME set this only where it's needed, not globally?
+ CFLAGS ?= @COPTIMISE_FLAG@ @CFLAGS@

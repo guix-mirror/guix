@@ -419,7 +419,7 @@ FILE-SYSTEM."
                                  '((gnu build file-systems)))
            (shepherd-service
             (provision (list (file-system->shepherd-service-name file-system)))
-            (requirement `(root-file-system
+            (requirement `(root-file-system udev
                            ,@(map dependency->shepherd-service-name dependencies)))
             (documentation "Check, mount, and unmount the given file system.")
             (start #~(lambda args

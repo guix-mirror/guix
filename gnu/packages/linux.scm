@@ -404,8 +404,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17.11")
-(define %linux-libre-hash "0c0ryl8rnzizr0x2gj9kprj9wfjz536574fnn46r0ww3szrzdm78")
+(define %linux-libre-version "4.17.12")
+(define %linux-libre-hash "1zpyrw55pg3rg9rjhasx7n070c81frnaab44f4g9gyh08wbapz7k")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -413,8 +413,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.59")
-(define %linux-libre-4.14-hash "1mf22i8a71qs04x4wfqmm21clj4jnqia6rpk7jbh3r3vjfjjbd1d")
+(define %linux-libre-4.14-version "4.14.60")
+(define %linux-libre-4.14-hash "0550cynydwgnfd1wsl8gqmjsp4qhsimanl7h5sdi297qrz4d93pa")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -423,8 +423,8 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.116"
-                    "1v5138a5317ddrl0zvlip18586si68ccw6y5wdxgpkh8ixvcamy6"
+  (make-linux-libre "4.9.117"
+                    "0lvy6psiw1vkc3ax4fmz07fx635qm9f46p84ds30paw7nhwm115x"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -2127,12 +2127,24 @@ time.")
                                "--enable-udev_sync"
                                "--enable-udev_rules"
                                "--enable-pkgconfig"
+                               "--enable-cmdlib"
+                               "--enable-dmeventd" ; Requires '--enable-cmdlib'.
 
                                ;; Make sure programs such as 'dmsetup' can
                                ;; find libdevmapper.so.
                                (string-append "LDFLAGS=-Wl,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib"))
+                                              "/lib,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/device-mapper")
+                               ;; TODO: Patch make.tmpl.in to take LDFLAGS
+                               ;; into account so that we don't need to also
+                               ;; set CLDFLAGS.
+                               (string-append "CLDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/device-mapper"))
 
        ;; The tests use 'mknod', which requires root access.
        #:tests? #f))

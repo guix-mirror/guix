@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
@@ -23,6 +23,8 @@
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -577,7 +579,7 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.6.1")
+    (version "2.6.2")
     (source
      (origin
        (method url-fetch)
@@ -585,7 +587,7 @@ of the same name.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "126dvd6myjbxjr69dy9vzzdda2lmjy1wwwc6gcs5djb46jy5nvmb"))))
+         "153h6prxamv5a62f3pfadkry0y57696xrgxfy2gfy5xswdg8kcj9"))))
     (build-system gnu-build-system)
     (inputs `(("c-ares" ,c-ares)
               ("glib" ,glib)
@@ -1965,3 +1967,78 @@ Features:
 @item Destination IP blacklist
 @end itemize")
       (license license:asl2.0))))
+
+(define-public net-snmp
+  (package
+    (name "net-snmp")
+    (version "5.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/net-snmp/net-snmp/"
+                                  version "/net-snmp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pvajzj9gmj56dmwix0ywmkmy2pglh6nny646hkm7ghfhh03bz5j"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Drop bundled libraries.
+                  (delete-file-recursively "snmplib/openssl")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       ;; XXX: With parallel build enabled, Perl modules may not get linked with
+       ;; libnetsnmp.  See e.g. <https://bugzilla.novell.com/show_bug.cgi?id=819497>.
+       #:parallel-build? #f
+       #:configure-flags
+       (list (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib")
+             "--with-logfile=/var/log/snmpd.log")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "testing/fulltests/support/simple_TESTCONF.sh"
+               (("NETSTAT=\"\"")
+                (string-append "NETSTAT=\"" (which "netstat") "\"")))
+             (substitute* '("testing/fulltests/default/T065agentextend_simple"
+                            "testing/fulltests/default/T115agentxperl_simple")
+               (("/usr/bin/env") (which "env")))
+             (substitute* "testing/fulltests/default/T065agentextend_sh_simple"
+               (("/bin/sh") (which "sh")))
+             ;; These tests require network access.
+             (for-each delete-file
+                       '("testing/fulltests/default/T070com2sec_simple"
+                         "testing/fulltests/default/T071com2sec6_simple"))
+             #t))
+         (add-after 'unpack 'patch-Makefile.PL
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("Makefile.PL -NET")
+                (string-append "Makefile.PL PREFIX="
+                               (assoc-ref outputs "out")
+                               " INSTALLDIRS=site" " NO_PERLLOCAL=1"
+                               " -NET")))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)
+       ("openssl" ,openssl)
+       ("libnl" ,libnl)))
+    ;; These inputs are only needed for tests.
+    (native-inputs
+     `(("net-tools" ,net-tools)
+       ("coreutils" ,coreutils)
+       ("grep" ,grep)))
+    (home-page "http://www.net-snmp.org/")
+    (synopsis "Simple Network Management Protocol library and tools")
+    (description "The @dfn{Simple Network Management Protocol} (SNMP) is a
+widely used protocol for monitoring the health and welfare of network
+equipment (e.g. routers), computer equipment and even devices like UPSs.
+Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and
+SNMP v3 using both IPv4 and IPv6.")
+    (license (list license:bsd-3
+                   (license:non-copyleft
+                    "http://www.net-snmp.org/about/license.html"
+                    "CMU/UCD copyright notice")))))

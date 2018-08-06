@@ -105,6 +105,15 @@
              (substitute* "duplicity/gpginterface.py"
                (("self.call = 'gpg'")
                 (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))
+
+             ;; This matches up with an unreleased upstream fix, it should be
+             ;; removed when the package is updated
+             ;; https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/revision/1308
+             (substitute* "duplicity/gpg.py"
+               (("--no-secmem-warning'\\)")
+                "--no-secmem-warning')
+        gnupg.options.extra_args.append('--ignore-mdc-error')"))
+
              (substitute* '("testing/functional/__init__.py"
                             "testing/overrides/bin/lftp")
                (("/bin/sh") (which "sh")))

@@ -2928,14 +2928,15 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "0.99.4")
+    (version "0.99.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://upower.freedesktop.org/releases/"
-                                  name "-" version ".tar.xz"))
+              (uri (string-append "https://gitlab.freedesktop.org/upower/upower/"
+                                  "uploads/9125ab7ee96fdc4ecc68cfefb50c1cab/"
+                                  "upower-" version ".tar.xz"))
               (sha256
                (base32
-                "1c1ph1j1fnrf3vipxb7ncmdfc36dpvcvpsv8n8lmal7grjk2b8ww"))
+                "00lzr0vyxz5lvmgya48gdb2cdgmfdim4b34jlfdyqakk1i9sl8xv"))
               (patches (search-patches "upower-builddir.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -2946,17 +2947,7 @@ faster results and to avoid unnecessary server load.")
        #:configure-flags (list "--localstatedir=/var"
                                (string-append "--with-udevrulesdir="
                                               (assoc-ref %outputs "out")
-                                              "/lib/udev/rules.d"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-/bin/true
-                     (lambda _
-                       (substitute* "configure"
-                         (("/bin/true") (which "true")))))
-         (add-before 'configure 'patch-integration-test
-                     (lambda _
-                       (substitute* "src/linux/integration-test"
-                         (("/usr/bin/python3") (which "python3"))))))))
+                                              "/lib/udev/rules.d"))))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
@@ -2971,6 +2962,9 @@ faster results and to avoid unnecessary server load.")
      `(("dbus-glib" ,dbus-glib)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)))
+    (propagated-inputs
+     ;; In Requires of upower-glib.pc.
+     `(("glib" ,glib)))
     (home-page "https://upower.freedesktop.org/")
     (synopsis "System daemon for managing power devices")
     (description

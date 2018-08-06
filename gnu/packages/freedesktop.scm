@@ -12,6 +12,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -623,20 +624,23 @@ Analysis and Reporting Technology) functionality.")
 (define-public udisks
   (package
     (name "udisks")
-    (version "2.1.8")
+    (version "2.7.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://udisks.freedesktop.org/releases/"
-                                  name "-" version ".tar.bz2"))
+              (uri (string-append
+                    "https://github.com/storaged-project/udisks/releases/download/udisks-"
+                    version "/udisks-" version ".tar.bz2"))
               (sha256
                (base32
-                "1nkxhnqh39c9pzvm4zfj50rgv6apqawdx09bv3sfaxrah4a6jhfs"))))
+                "1dnlxqgy9v0mjdknv3b1s64szdykyk3hk0rxj3chwhpd415lrwgs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("docbook-xml" ,docbook-xml-4.3) ; to build the manpages
        ("docbook-xsl" ,docbook-xsl)
-       ("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("glib:bin" ,glib "bin")         ; for glib-mkenums
+       ("gnome-common" ,gnome-common)   ; TODO: Why is this needed?
        ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
@@ -644,12 +648,12 @@ Analysis and Reporting Technology) functionality.")
      `(("glib" ,glib))) ; required by udisks2.pc
     (inputs
      `(("acl" ,acl)
+       ("cryptsetup" ,cryptsetup)
        ("libatasmart" ,libatasmart)
+       ("libblockdev" ,libblockdev)
        ("libgudev" ,libgudev)
        ("polkit" ,polkit)
-       ("util-linux" ,util-linux)
-       ("cryptsetup" ,cryptsetup)
-       ("parted" ,parted)))
+       ("util-linux" ,util-linux)))
     (outputs '("out"
                "doc"))                            ;5 MiB of gtk-doc HTML
     (arguments
@@ -657,6 +661,8 @@ Analysis and Reporting Technology) functionality.")
        #:disallowed-references ("doc")            ;enforce separation of "doc"
        #:configure-flags
        (list "--enable-man"
+             "--enable-gtk-doc" ; Without this the HTML doc does not seem to build automatically.
+             "--enable-available-modules" ; Such as lvm2, btrfs, etc.
              "--localstatedir=/var"
              "--enable-fhs-media"     ;mount devices in /media, not /run/media
              (string-append "--with-html-dir="
@@ -702,9 +708,6 @@ Analysis and Reporting Technology) functionality.")
                     ;; cryptsetup is required for setting encrypted
                     ;; partitions, e.g. in gnome-disks
                     ,(string-append cryptsetup "/sbin")
-                    ;; parted is required for managing partitions, e.g. in
-                    ;; gnome-disks
-                    ,(string-append parted "/sbin")
                     "/run/current-system/profile/bin"
                     "/run/current-system/profile/sbin")))
                #t))))))

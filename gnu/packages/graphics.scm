@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -455,6 +456,71 @@ virtual reality, scientific visualization and modeling.")
     ;; The 'LICENSE' file explains that the source is licensed under
     ;; LGPL 2.1, but with 4 exceptions. This version is called OSGPL.
     (license license:lgpl2.1)))
+
+(define-public povray
+  (package
+    (name "povray")
+    (version "3.7.0.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/POV-Ray/povray")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1q114n4m3r7qy3yn954fq7p46rg7ypdax5fazxr9yj1jklf1lh6z"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled libraries.
+                  (delete-file-recursively "libraries")
+                  #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("openexr" ,openexr)
+       ("sdl" ,sdl)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:configure-flags
+       (list "COMPILED_BY=Guix"
+             (string-append "--with-boost-libdir="
+                            (assoc-ref %build-inputs "boost") "/lib")
+             "CXXFLAGS=-std=c++11"
+             "--disable-optimiz-arch")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'run-prebuild
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (with-directory-excursion "unix"
+               (substitute* "prebuild.sh"
+                 (("/bin/sh") (which "sh")))
+               (invoke "sh" "prebuild.sh"))
+             #t))
+         ;; The bootstrap script is run by the prebuild script in the
+         ;; "run-prebuild" phase.
+         (delete 'bootstrap))))
+    (synopsis "Tool for creating three-dimensional graphics")
+    (description
+     "@code{POV-Ray} is short for the Persistence of Vision Raytracer, a tool
+for producing high-quality computer graphics.  @code{POV-Ray} creates
+three-dimensional, photo-realistic images using a rendering technique called
+ray-tracing.  It reads in a text file containing information describing the
+objects and lighting in a scene and generates an image of that scene from the
+view point of a camera also described in the text file.  Ray-tracing is not a
+fast process by any means, but it produces very high quality images with
+realistic reflections, shading, perspective and other effects.")
+    (home-page "http://www.povray.org/")
+    (license license:agpl3+)))
 
 (define-public rapicorn
   (package
