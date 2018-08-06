@@ -6440,16 +6440,15 @@ desktop.  It supports multiple calendars, month, week and year view.")
 (define-public gnome-todo
   (package
     (name "gnome-todo")
-    (version "3.26.2")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
-              (patches (search-patches "gnome-todo-libical-compat.patch"))
               (sha256
                (base32
-                "106xx1w18pxjmj5k0k2qjzi6b3c3kaz7b5kyrpknykibnr401ff9"))))
+                "08ygqbib72jlf9y0a16k54zz51sncpq2wa18wp81v46q8301ymy7"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
