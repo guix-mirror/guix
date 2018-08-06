@@ -650,6 +650,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("soxr" ,soxr)
        ("speex" ,speex)
        ("twolame" ,twolame)
+       ("vidstab" ,vidstab)
        ("x265" ,x265)
        ("xvid" ,xvid)
        ("zlib" ,zlib)))
@@ -701,8 +702,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ;;   --enable-libutvideo      enable Ut Video encoding and decoding via
        ;;                            libutvideo [no]
        ;;   --enable-libv4l2         enable libv4l2/v4l-utils [no]
-       ;;   --enable-libvidstab      enable video stabilization using
-       ;;                            vid.stab [no]
        ;;   --enable-libvo-aacenc    enable AAC encoding via libvo-aacenc [no]
        ;;   --enable-libvo-amrwbenc  enable AMR-WB encoding via
        ;;                            libvo-amrwbenc [no]
@@ -730,6 +729,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-libspeex"
          "--enable-libtheora"
          "--enable-libtwolame"
+         "--enable-libvidstab"
          "--enable-libvorbis"
          "--enable-libvpx"
          "--enable-libxvid"
