@@ -3034,3 +3034,27 @@ project, which is released into the public domain, as well as ISO 14496-12:2005
 online.")
     (home-page "https://github.com/danielgtaylor/qtfaststart")
     (license license:expat)))
+
+(define-public vidstab
+  (package
+    (name "vidstab")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/georgmartius/vid.stab/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fy03n343djfdi19msac81833v5iivpv635yjzrx9nkfwm9s1lhl"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests are not run as part of standard build process
+    (home-page "http://public.hronopik.de/vid.stab/")
+    (synopsis "Video stabilization library")
+    (description "Vidstab is a video stabilization library which can be used
+with FFmpeg.  A video acquired using a hand-held camera or a camera mounted on a
+vehicle typically suffers from undesirable shakes and jitters.  Activities such
+as surfing, skiing, riding and walking while shooting videos are especially
+prone to erratic camera shakes.  Vidstab targets these video contents to help
+create smoother and stable videos.")
+    (license license:gpl2+)))
