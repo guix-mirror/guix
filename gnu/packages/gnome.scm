@@ -7012,7 +7012,7 @@ Bluefish supports many programming and markup languages.")
 (define-public gnome-system-monitor
   (package
     (name "gnome-system-monitor")
-    (version "3.26.0")
+    (version "3.28.2")
     (source
      (origin
        (method url-fetch)
@@ -7021,20 +7021,22 @@ Bluefish supports many programming and markup languages.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1cz6s0cvagj422f9dc231nvg8jsfkva5s81skpq4q5jyrb1ahj7q"))))
+         "164in885dyfvna5yjzgdyrbrsskvh5wzxdmkjgb4mbh54lzqd1zb"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums.
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("libgtop" ,libgtop)
+       ("polkit" ,polkit)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf) ; for loading SVG files.
        ("gtk+" ,gtk+)
        ("gtkmm" ,gtkmm)
        ("librsvg" ,librsvg)
-       ("libxml2" ,libxml2)))
+       ("libxml2" ,libxml2)
+       ("libwnck" ,libwnck)))
     (home-page "https://wiki.gnome.org/Apps/SystemMonitor")
     (synopsis "Process viewer and system resource monitor for GNOME")
     (description
