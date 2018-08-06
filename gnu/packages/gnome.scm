@@ -5319,7 +5319,7 @@ services.")
 (define-public network-manager-openvpn
   (package
     (name "network-manager-openvpn")
-    (version "1.8.0")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5328,7 +5328,7 @@ services.")
                     "/NetworkManager-openvpn-" version ".tar.xz"))
               (sha256
                (base32
-                "1973n89g66a3jfx8r45a811fga4kadh6r1w35cb25cz1mlii2vhn"))))
+                "0gyrv46h9k17qym48qacq4zpxbap6hi17shn921824zm98m2bdvr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-absolute-paths")))
