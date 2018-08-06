@@ -4884,7 +4884,7 @@ to display dialog boxes from the commandline and shell scripts.")
 (define-public mutter
   (package
     (name "mutter")
-    (version "3.24.4")
+    (version "3.28.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4892,7 +4892,7 @@ to display dialog boxes from the commandline and shell scripts.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1slspy5krbqfvnma72lvdnxjf8ag2cvxssa8bvi7y3xxy7xv603k"))))
+                "0ighs1zvlssgq16v1h3vg280za7y448snq65gc5m1zmqqawqkymg"))))
     ;; NOTE: Since version 3.21.x, mutter now bundles and exports forked
     ;; versions of cogl and clutter.  As a result, many of the inputs,
     ;; propagated-inputs, and configure flags used in cogl and clutter are
