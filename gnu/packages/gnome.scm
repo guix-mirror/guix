@@ -5917,7 +5917,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "1.12.3")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5925,8 +5925,43 @@ easy, safe, and automatic.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1mpq418lzba7fad0w0m3bnxvz3khf461b5zya8zmq5n1g0w99ki3"))))
+                "1mfc5lv820kr7ssi7hldn25gmshh65k19kh478qjsnb64sshsbyf"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             ;; FIXME: Most of these fail with GLib-GIO-FATAL-ERROR: Settings
+             ;; schema 'org.freedesktop.Tracker.FTS' is not installed.
+             (substitute* "tests/libtracker-miner/Makefile.in"
+               (("tracker-file-notifier-test\\$\\(EXEEXT\\)") "")
+               (("tracker-miner-fs-test\\$\\(EXEEXT\\)") "")
+               (("tracker-monitor-test\\$\\(EXEEXT\\)") ""))
+             (substitute* "tests/libtracker-fts/Makefile.in"
+               (("tracker-fts-test\\$\\(EXEEXT\\)") ""))
+             (substitute* "tests/libtracker-data/Makefile.in"
+               (("tracker-ontology\\$\\(EXEEXT\\)") "")
+               (("tracker-ontology-change\\$\\(EXEEXT\\)") "")
+               (("tracker-backup\\$\\(EXEEXT\\)") "")
+               (("tracker-sparql-blank\\$\\(EXEEXT\\)") "")
+               (("tracker-sparql\\$\\(EXEEXT\\)") ""))
+             ;; These fail because the SPARQL backend could not be loaded.
+             ;; That's because /etc/machine-id is missing, but
+             ;; DBUS_FATAL_WARNINGS does not help here.
+             (substitute* "tests/libtracker-sparql/Makefile.in"
+               (("tracker-gb-737023-test\\$\\(EXEEXT\\)") "")
+               (("tracker-sparql-test\\$\\(EXEEXT\\)") ""))
+             (substitute* "tests/tracker-steroids/Makefile.in"
+               (("tracker-test\\$\\(EXEEXT\\)") ""))
+             #t))
+         ;; Two tests fail if LANG is not set.
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "LANG" "en_US.UTF-8")
+             ;; For the missing /etc/machine-id.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
     (native-inputs
      `(("gnome-common" ,gnome-common)
        ("gobject-introspection" ,gobject-introspection)
@@ -5940,6 +5975,7 @@ easy, safe, and automatic.")
        ("gst-plugins-base" ,gst-plugins-base)
        ("sqlite" ,sqlite)
        ("nettle" ,nettle)  ; XXX why is this needed?
+       ("python" ,python)
        ("poppler" ,poppler)
        ("libgsf" ,libgsf)
        ("libexif" ,libexif)
@@ -5961,7 +5997,6 @@ easy, safe, and automatic.")
        ("libseccomp" ,libseccomp)
        ("libsoup" ,libsoup)
        ("libuuid" ,util-linux)))
-    (arguments `(#:tests? #f))  ; XXX FIXME enable tests (some fail)
     (synopsis "Metadata database, indexer and search tool")
     (home-page "https://wiki.gnome.org/Projects/Tracker")
     (description
