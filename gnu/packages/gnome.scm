@@ -5749,7 +5749,7 @@ properties, screen resolution, and other GNOME parameters.")
 (define-public gnome-shell
   (package
     (name "gnome-shell")
-    (version "3.24.3")
+    (version "3.28.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5757,17 +5757,11 @@ properties, screen resolution, and other GNOME parameters.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1f20x36ymkp1j667hb7s7byly2gqc4m0anldy3qwp38vm8437caq"))
+                "1b9n89ij2g5nqaqp7a13jnqcd8qa2v9p55rbi71al3xvqk091ri7"))
               (patches (search-patches "gnome-shell-theme.patch"))
               (modules '((guix build utils)))
               (snippet
                #~(begin
-                   ;; CSS files have to be regenerated from the .scss source
-                   ;; that 'gnome-shell-theme.patch' modifies.
-                   (for-each delete-file
-                             (find-files "data/theme"
-                                         "^gnome-shell.*\\.css$"))
-
                    ;; Copy images for use on the GDM log-in screen.
                    (copy-file #$(file-append %artwork-repository
                                              "/slim/0.x/background.png")
@@ -5777,48 +5771,65 @@ properties, screen resolution, and other GNOME parameters.")
                            #$(file-append %artwork-repository
                                           "/logo/Guix-horizontal-white.svg"))
                    #t))))
-    (build-system glib-or-gtk-build-system)
+    (build-system meson-build-system)
     (arguments
-     '(#:phases
+     '(#:glib-or-gtk? #t
+       #:configure-flags
+       (list "-Dsystemd=false"
+             ;; Otherwise, the RUNPATH will lack the final path component.
+             (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/gnome-shell"))
+       #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'rebuild-css
-           (lambda _
-             ;; Rebuild the CSS files from the .scss files that our patch
-             ;; modifies.
-             (invoke "make" "-C" "data"
-                     "theme/gnome-shell.css"
-                     "theme/gnome-shell-high-contrast.css")))
-         (replace 'install
+         (add-after 'unpack 'fix-keysdir
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
                     (keysdir (string-append
                               out "/share/gnome-control-center/keybindings")))
-               (zero? (system* "make"
-                               (string-append "keysdir=" keysdir)
-                               "install")))))
-         (add-after
-          'install 'wrap-programs
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out              (assoc-ref outputs "out"))
-                  (gi-typelib-path  (getenv "GI_TYPELIB_PATH"))
-                  (python-path      (getenv "PYTHONPATH")))
-              (wrap-program (string-append out "/bin/gnome-shell")
-                `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))
-              (for-each
-               (lambda (prog)
-                 (wrap-program (string-append out "/bin/" prog)
-                   `("PYTHONPATH"      ":" prefix (,python-path))
-                   `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-               '("gnome-shell-extension-tool" "gnome-shell-perf-tool"))
-              #t))))))
+               (substitute* "meson.build"
+                 (("keysdir =.*")
+                  (string-append "keysdir = '" keysdir "'\n")))
+               #t)))
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             #t))
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out              (assoc-ref outputs "out"))
+                   (gi-typelib-path  (getenv "GI_TYPELIB_PATH"))
+                   (python-path      (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/gnome-shell")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                 ;; FIXME: gnome-shell loads these libraries with unqualified
+                 ;; names only, so they need to be on LD_LIBRARY_PATH.  The
+                 ;; alternative might be to patch gnome-shell.
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   ,(map (lambda (pkg)
+                           (string-append (assoc-ref inputs pkg) "/lib"))
+                         '("gnome-bluetooth" "librsvg" "libgweather"))))
+               (for-each
+                (lambda (prog)
+                  (wrap-program (string-append out "/bin/" prog)
+                    `("PYTHONPATH"      ":" prefix (,python-path))
+                    `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+                '("gnome-shell-extension-tool" "gnome-shell-perf-tool"))
+               #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
+       ("ruby-sass" ,ruby-sass)
+       ("sassc" ,sassc)
        ("xsltproc" ,libxslt)
-       ("ruby-sass" ,ruby-sass)))
+       ;; For tests
+       ("xorg-server" ,xorg-server)))
     (inputs
      `(("accountsservice" ,accountsservice)
        ("caribou" ,caribou)
@@ -5849,9 +5860,7 @@ properties, screen resolution, and other GNOME parameters.")
        ;; XXX: These requirements were added in 3.24, but no mention in NEWS.
        ;; Missing propagation? See also: <https://bugs.gnu.org/27264>
        ("librsvg" ,librsvg)
-       ("geoclue" ,geoclue)
-       ;; XXX: required by libgjs.la.
-       ("readline" ,readline)))
+       ("geoclue" ,geoclue)))
     (synopsis "Desktop shell for GNOME")
     (home-page "https://wiki.gnome.org/Projects/GnomeShell")
     (description
