@@ -1321,7 +1321,9 @@ dealing with different structured file formats.")
                 "1h3qnqhr0l7pd2bxg69ki6ckl4srdwgr471dpp4jq9i4784hp0v6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-static")
+     `(#:configure-flags
+       (list "--disable-static"
+             "--enable-vala") ; needed for e.g. gnome-mines
        #:make-flags '("CC=gcc")
        #:phases
        (modify-phases %standard-phases
@@ -1374,6 +1376,7 @@ dealing with different structured file formats.")
        ;; This is the minimum supported Rust version in Librsvg 2.44.
        ("rust" ,rust-1.27)
        ("cargo" ,rust-1.27 "cargo")
+       ("vala" ,vala)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
     (inputs
