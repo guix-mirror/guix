@@ -4740,7 +4740,7 @@ configuration program to choose applications starting on login.")
 (define-public gjs
   (package
     (name "gjs")
-    (version "1.48.6")
+    (version "1.52.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4748,7 +4748,7 @@ configuration program to choose applications starting on login.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "04nkig077r7xq55dxg9v46w8i7p8zkkdyja92yv81grq9fx6apz8"))))
+                "1z4n15wdz6pbqd2hfzrqc8mmprhv50v4jk43p08v0xv07yldh8ff"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -4781,7 +4781,7 @@ configuration program to choose applications starting on login.")
      ;; These are all in the Requires.private field of gjs-1.0.pc.
      `(("cairo" ,cairo)
        ("gobject-introspection" ,gobject-introspection)
-       ("mozjs" ,mozjs-38)))
+       ("mozjs" ,mozjs-52)))
     (inputs
      `(("gtk+" ,gtk+)
        ("readline" ,readline)))
