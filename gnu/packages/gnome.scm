@@ -6166,7 +6166,7 @@ beautifying border effects.")
 (define-public dconf-editor
   (package
     (name "dconf-editor")
-    (version "3.26.2")
+    (version "3.28.0")
     (source
      (origin
        (method url-fetch)
@@ -6175,21 +6175,14 @@ beautifying border effects.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1lcarg8igsqpq4iv5834mf9kz4cmfhfw11bwy3x7v7f497z57d18"))))
-    (build-system glib-or-gtk-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'skip-gtk-update-icon-cache
-           (lambda _
-             ;; Don't create 'icon-theme.cache'.
-             (substitute* "editor/Makefile"
-               (("gtk-update-icon-cache") "true"))
-             #t)))))
+         "0nhcpwqrkmpxbhaf0cafvy6dlp6s7vhm5vknl4lgs3l24zc56ns5"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
+       ("gtk+-bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (inputs
      `(("dconf" ,dconf)
        ("gtk+" ,gtk+)
