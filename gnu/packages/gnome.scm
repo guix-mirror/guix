@@ -4663,7 +4663,7 @@ such as gzip tarballs.")
 (define-public gnome-session
   (package
     (name "gnome-session")
-    (version "3.24.1")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4671,25 +4671,21 @@ such as gzip tarballs.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1vkfjsgks9czajivcg3y1krzlnilv2cnzzbdc7wrasrriqilji1v"))))
+                "14nmbirgrp2nm16khbz109saqdlinlbrlhjnbjydpnrlimfgg4xq"))))
     (arguments
-     '(#:phases
+     '(#:glib-or-gtk? #t
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Use elogind instead of systemd.
-             (substitute* "configure"
-               (("libsystemd-login >= 183 libsystemd-daemon libsystemd-journal")
-                "libelogind")
-               (("systemd") "elogind"))
+             (substitute* "meson.build"
+               (("libsystemd-login") "libelogind")
+               (("and libsystemd_daemon_dep.found.*") ","))
              (substitute* "gnome-session/gsm-systemd.c"
                (("#include <systemd/sd-login.h>")
                 "#include <elogind/sd-login.h>"))
-             ;; Remove uses of the systemd journal.
-             (substitute* "gnome-session/main.c"
-               (("#ifdef HAVE_SYSTEMD") "#if 0"))
-             (substitute* "gnome-session/gsm-manager.c"
-               (("#ifdef HAVE_SYSTEMD") "#if 0"))
+             ;; Remove uses of the systemd daemon.
              (substitute* "gnome-session/gsm-autostart-app.c"
                (("#ifdef HAVE_SYSTEMD") "#if 0"))
              #t))
@@ -4711,13 +4707,19 @@ such as gzip tarballs.")
                #t))))
 
        #:configure-flags
-       '("--enable-elogind")))
-    (build-system glib-or-gtk-build-system)
+       '("-Ddocbook=false" ; FIXME: disabled because of docbook validation error
+         "-Dman=false" ; FIXME: disabled because of docbook validation error
+         "-Dsystemd_journal=false")))
+    (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
-       ("xsltproc" ,libxslt)))
+       ("xsltproc" ,libxslt)
+       ("libxml2" ,libxml2) ;for 'XML_CATALOG_FILES'
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml)
+       ("xmlto" ,xmlto)))
     (inputs
      `(("elogind" ,elogind)
        ("gnome-desktop" ,gnome-desktop)
