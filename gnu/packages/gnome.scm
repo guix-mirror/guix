@@ -5452,7 +5452,7 @@ libxml2.")
 (define-public gdm
   (package
     (name "gdm")
-    (version "3.26.2.1")
+    (version "3.28.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5461,7 +5461,7 @@ libxml2.")
               (patches (search-patches "gdm-CVE-2018-14424.patch"))
               (sha256
                (base32
-                "0mxdal6hh345xk2xqmw5192jgpprkbcv1d4bwmnl4arcc00cpp8p"))))
+                "0wdm1503x66n1crdlmzmincbd2hccpxsdgjsl5anx3yjpdzs0hb0"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
