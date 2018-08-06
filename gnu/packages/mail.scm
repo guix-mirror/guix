@@ -300,7 +300,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20180323")
+    (version "20180716")
     (source
      (origin
        (method url-fetch)
@@ -308,7 +308,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "12v7zkm809cvjxfz0n7jb4qa410ns1ydyf0gjin99vbdrlj88jac"))))
+         "0072in2d6znwqq461shsaxlf40r4zr7w3j9848qvm4xlh1lq52dx"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
