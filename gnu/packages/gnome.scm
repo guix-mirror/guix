@@ -3582,7 +3582,7 @@ queries upon that data.")
 (define-public libgnome-games-support
   (package
     (name "libgnome-games-support")
-    (version "1.2.3")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3590,7 +3590,7 @@ queries upon that data.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1vwad7kqy7yd6wqyr71nq0blh7m53r3lz6ya16dmh942kd0w48v1"))))
+                "1j7lfcnc29lgn8ppn13wkn9w2y1n3lsapagwp91zh3bf0h2h4hv1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
