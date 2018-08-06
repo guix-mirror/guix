@@ -672,7 +672,7 @@ GNOME Desktop.")
 (define-public gnome-keyring
   (package
     (name "gnome-keyring")
-    (version "3.20.1")
+    (version "3.28.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -680,7 +680,7 @@ GNOME Desktop.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "134ci3mn6jjap59z3lrvyiip7zf2nlw5xvanr44yajs57xr4x5lp"))))
+               "0sk4las4ji8wv9nx8mldzqccmpmkvvr9pdwv9imj26r10xyin5w1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;48 of 603 tests fail because /var/lib/dbus/machine-id does
@@ -693,11 +693,11 @@ GNOME Desktop.")
                        (assoc-ref %outputs "out") "/share/p11-kit/modules/"))
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'check 'pre-check
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "build/tap-driver"
-              (("/usr/bin/env python") (which "python")))))
+         (add-after 'unpack 'fix-/bin/sh-reference
+           (lambda _
+             (substitute* "po/Makefile.in.in"
+               (("/bin/sh") (which "sh")))
+             #t))
          (add-before
           'configure 'fix-docbook
           (lambda* (#:key inputs #:allow-other-keys)
@@ -710,7 +710,6 @@ GNOME Desktop.")
             (setenv "XML_CATALOG_FILES"
                     (string-append (assoc-ref inputs "docbook-xml")
                                    "/xml/dtd/docbook/catalog.xml"))
-
             ;; Rerun the whole thing to avoid version mismatch ("This is
             ;; Automake 1.15.1, but the definition used by this
             ;; AM_INIT_AUTOMAKE comes from Automake 1.15.").  Note: we don't
@@ -721,6 +720,7 @@ GNOME Desktop.")
     (inputs
      `(("libgcrypt" ,libgcrypt)
        ("linux-pam" ,linux-pam)
+       ("openssh" ,openssh)
        ("dbus" ,dbus)
        ("gcr" ,gcr)))
     (native-inputs
