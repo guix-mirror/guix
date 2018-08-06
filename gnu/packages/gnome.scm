@@ -3123,7 +3123,7 @@ service via the system message bus.")
 (define-public libgweather
   (package
     (name "libgweather")
-    (version "3.26.1")
+    (version "3.28.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3131,30 +3131,14 @@ service via the system message bus.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1f64ix7acj0j0qvxwxaazii2bhsjgh5ang1kw14fkg25ndq899zw"))))
-    (build-system gnu-build-system)
+                "0xfy5ghwvnz2g9074dy6512m4z2pv66pmja14vhi9imgacbfh708"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       `(,(string-append "--with-zoneinfo-dir="
+     `(#:tests? #f ; one of two tests requires network access
+       #:configure-flags
+       `(,(string-append "-Dzoneinfo_dir="
                          (assoc-ref %build-inputs "tzdata")
-                         "/share/zoneinfo"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'pre-check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "data/check-timezones.sh"
-               (("/usr/share/zoneinfo/zone.tab")
-                (string-append (assoc-ref inputs "tzdata")
-                               "/share/zoneinfo/zone.tab")))
-             #t))
-         (replace 'install
-           (lambda _
-             (zero?
-              (system* "make"
-                       ;; Install vala bindings into $out.
-                       (string-append "vapidir=" %output
-                                      "/share/vala/vapi")
-                       "install")))))))
+                         "/share/zoneinfo"))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
@@ -3167,10 +3151,10 @@ service via the system message bus.")
      `(("gtk+" ,gtk+)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("libxml2" ,libxml2)
-       ("libsoup" ,libsoup)))
-    (inputs
-     `(("tzdata" ,tzdata)
+       ("libsoup" ,libsoup)
        ("geocode-glib" ,geocode-glib)))
+    (inputs
+     `(("tzdata" ,tzdata)))
     (home-page "https://wiki.gnome.org/action/show/Projects/LibGWeather")
     (synopsis "Location, time zone, and weather library for GNOME")
     (description
