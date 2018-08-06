@@ -6946,37 +6946,78 @@ basically a text box in which notes can be written.")
     (license license:gpl3+)))
 
 (define-public gucharmap
-  (package
-    (name "gucharmap")
-    (version "3.18.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
-                           (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
-       (sha256
-        (base32
-         "0c1q9w5vql0vvg6g0knxfnv4ap19fg5cdrwndi1cj9lsym92c78j"))))
-    (build-system glib-or-gtk-build-system)
-    (native-inputs
-     `(("desktop-file-utils" ,desktop-file-utils)
-       ("glib:bin" ,glib "bin") ; for glib-compile-resources.
-       ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("itstool" ,itstool)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("gtk+" ,gtk+)
-       ("xmllint" ,libxml2)))
-    (home-page "https://wiki.gnome.org/Apps/Gucharmap")
-    (synopsis "Unicode character picker and font browser")
-    (description
-     "This program allows you to browse through all the available Unicode
+  (let ((unicode-files
+         '(("Blocks.txt"
+            "19zf2kd198mcv1paa194c1zf36hay1irbxssi35yi2pd8ad69qas")
+           ("DerivedAge.txt"
+            "1h9p1g0wnh686l6cqar7cmky465vwc6vjzzn1s7v0i9zcjaqkr4h")
+           ("NamesList.txt"
+            "0gvpcyq852rnlqmx4y5i1by7bavvcw6rj40i54w48yc7xr3zmgd1")
+           ("Scripts.txt"
+            "0b9prz2hs6w61afqaplcxnv115f8yk4d5hn9dc5hks8nqpj28bnh")
+           ("UnicodeData.txt"
+            "1cfak1j753zcrbgixwgppyxhm4w8vda8vxhqymi7n5ljfi6kwhjj")
+           ("Unihan.zip"
+            "199kz6laypkvc0ykms6d7bkb571jmpds39sv2p7kd5jjm1ij08q1"))))
+    (package
+      (name "gucharmap")
+      (version "10.0.4")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "mirror://gnome/sources/" name "/"
+                             (version-major+minor version) "/"
+                             name "-" version ".tar.xz"))
+         (sha256
+          (base32
+           "00gh3lll6wykd2qg1lrj05a4wvscsypmrx7rpb6jsbvb4scnh9mv"))))
+      (build-system glib-or-gtk-build-system)
+      (arguments
+       `(#:modules ((ice-9 match)
+                    (guix build glib-or-gtk-build-system)
+                    (guix build utils))
+         #:configure-flags
+         (list "--with-unicode-data=../unicode-data")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'prepare-unicode-data
+             (lambda* (#:key inputs #:allow-other-keys)
+               (mkdir-p "../unicode-data")
+               (with-directory-excursion "../unicode-data"
+                 (for-each (match-lambda
+                             ((file _)
+                              (install-file (assoc-ref inputs file) ".")))
+                           ',unicode-files))
+               #t)))))
+      (native-inputs
+       `(("desktop-file-utils" ,desktop-file-utils)
+         ("glib:bin" ,glib "bin")       ; for glib-compile-resources.
+         ("gobject-introspection" ,gobject-introspection)
+         ("intltool" ,intltool)
+         ("itstool" ,itstool)
+         ("pkg-config" ,pkg-config)
+         ,@(map (match-lambda
+                  ((file hash)
+                   `(,file
+                     ,(origin
+                        (method url-fetch)
+                        (uri (string-append
+                              "http://www.unicode.org/Public/10.0.0/ucd/"
+                              file))
+                        (sha256 (base32 hash))))))
+                unicode-files)
+         ("unzip" ,unzip)))
+      (inputs
+       `(("gtk+" ,gtk+)
+         ("xmllint" ,libxml2)))
+      (home-page "https://wiki.gnome.org/Apps/Gucharmap")
+      (synopsis "Unicode character picker and font browser")
+      (description
+       "This program allows you to browse through all the available Unicode
 characters and categories for the installed fonts, and to examine their
 detailed properties.  It is an easy way to find the character you might
 only know by its Unicode name or code point.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public bluefish
   (package
