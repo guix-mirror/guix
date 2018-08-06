@@ -3961,7 +3961,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
 (define-public eog
  (package
    (name "eog")
-   (version "3.26.2")
+   (version "3.28.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3969,25 +3969,25 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1b87i31mxzayd3knn9zg00y816d093qrbyx556w8a03xz96ksgmm"))))
-   (build-system glib-or-gtk-build-system)
+              "1gasrfqi7qrzdq1idh29r0n6ikkqjb6pbp7a8k5krfz5hkhyfin0"))))
+   (build-system meson-build-system)
    (arguments
     `(#:phases
       (modify-phases %standard-phases
-        (add-after
-         'install 'wrap-eog
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((out               (assoc-ref outputs "out"))
-                 (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
-             (wrap-program (string-append out "/bin/eog")
-               `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
-           #t)))))
+        (add-after 'install 'wrap-eog
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out               (assoc-ref outputs "out"))
+                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+              (wrap-program (string-append out "/bin/eog")
+                `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+            #t)))))
    (propagated-inputs
     `(("dconf" ,dconf)))
    (native-inputs
     `(("intltool" ,intltool)
       ("itstool" ,itstool)
       ("glib" ,glib "bin")
+      ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("xmllint" ,libxml2)))
