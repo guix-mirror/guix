@@ -3165,7 +3165,7 @@ services for numerous locations.")
 (define-public gnome-settings-daemon
   (package
     (name "gnome-settings-daemon")
-    (version "3.24.3")
+    (version "3.28.1")
     (source
      (origin
        (method url-fetch)
@@ -3174,20 +3174,27 @@ services for numerous locations.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "14w5jhpq02mbcxvn41qcj3cjfqdr3sgzl96c6glwpdrjphw61i38"))))
-    (build-system glib-or-gtk-build-system)
+         "0z9dip9p0iav646cmxisii5sbkdr9hmaklc5fzvschpbjkhphksr"))))
+    (build-system meson-build-system)
     (arguments
-     `(;; Color management test can't reach the colord system service.
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       (list (string-append "-Dudev_dir="
+                            (assoc-ref %outputs "out")
+                            "/lib/udev/rules.d/"))
+       ;; Color management test can't reach the colord system service.
        #:tests? #f))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("glib:bin" ,glib "bin")     ; for glib-mkenums
+       ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("xsltproc" ,libxslt)
        ("libxml2" ,libxml2)                       ;for XML_CATALOG_FILES
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)))
     (inputs
-     `(("colord" ,colord)
+     `(("alsa-lib" ,alsa-lib)
+       ("colord" ,colord)
        ("libgudev" ,libgudev)
        ("upower" ,upower)
        ("polkit" ,polkit)
@@ -3207,6 +3214,7 @@ services for numerous locations.")
        ("libwacom" ,libwacom)
        ("librsvg" ,librsvg)
        ("xf86-input-wacom" ,xf86-input-wacom)
+       ("wayland" ,wayland)
        ("network-manager" ,network-manager)))
     (home-page "https://www.gnome.org")
     (synopsis "GNOME settings daemon")
