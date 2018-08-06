@@ -5373,7 +5373,7 @@ to virtual private networks (VPNs) via OpenVPN.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.8.4")
+    (version "1.8.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5381,7 +5381,7 @@ to virtual private networks (VPNs) via OpenVPN.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ag3pvjp58ykrzsjfbdxi0j5xd2i796jk7nns67zy03xwg9i0l0h"))))
+                "1js0i2kwfklahsn77qgxzdscy33drrlym3mrj1qhlw0zf8ri56ya"))))
     (build-system glib-or-gtk-build-system)
     (arguments '(#:configure-flags '("--disable-migration")))
     (native-inputs
