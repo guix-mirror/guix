@@ -2797,7 +2797,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.26.0")
+    (version "3.28.0")
     (source
      (origin
        (method url-fetch)
@@ -2806,21 +2806,21 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1sfxdvns8nppdagnhpd9vd7n77sk5rdji3kdqnc78c2p1npiw11b"))))
-    (build-system glib-or-gtk-build-system)
+         "16w55hqaxipcv870n9gpn6qiywbqbyg7bjshaa02r75ias8dfxvf"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'patch-/bin/true
-                     (lambda _
-                       (substitute* "configure"
-                         (("/bin/true") (which "true"))))))))
+         (delete 'bootstrap))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
+       ("pkg-config" ,pkg-config)
        ("desktop-file-utils" ,desktop-file-utils)
        ("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("xmllint" ,libxml2)))
+       ("vala" ,vala)
+       ("yelp" ,yelp)
+       ("appstream-glib" ,appstream-glib)))
     (inputs
      `(("gtk+" ,gtk+)
        ("libgnome-games-support" ,libgnome-games-support)
