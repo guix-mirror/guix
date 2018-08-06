@@ -6886,7 +6886,7 @@ handling the startup notification side.")
 (define-public gnome-calculator
   (package
     (name "gnome-calculator")
-    (version "3.26.0")
+    (version "3.28.2")
     (source
      (origin
        (method url-fetch)
@@ -6895,7 +6895,7 @@ handling the startup notification side.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1iv3b3mvqxm17r5gv15dyq6gz08w0ljhzgbf22xnnfnpzhvmn8b2"))))
+         "0izsrqc9fm2lh25jr3nzi94p5hh2d3cklxqczbq16by85wr1xm5s"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
@@ -6903,8 +6903,10 @@ handling the startup notification side.")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtksourceview" ,gtksourceview)
+     `(("glib" ,glib)
+       ("gtksourceview" ,gtksourceview-3)
        ("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)
        ("mpc" ,mpc)
        ("mpfr" ,mpfr)))
     (home-page "https://wiki.gnome.org/Apps/Calculator")
