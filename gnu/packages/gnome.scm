@@ -6091,7 +6091,7 @@ can add your own files to the collection.")
 (define-public gnome-screenshot
   (package
     (name "gnome-screenshot")
-    (version "3.22.0")
+    (version "3.26.0")
     (source
      (origin
        (method url-fetch)
@@ -6100,11 +6100,14 @@ can add your own files to the collection.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0c02n1hgv21m4082jx399b1yazsc0cr07ba8k0pv8v3w7i5z21ca"))))
-    (build-system glib-or-gtk-build-system)
+         "1fy8fjl29i3xhj8caik03d3za06x96xgkk8r4fwz88iqbmci3g0v"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("gtk+-bin" ,gtk+ "bin") ; for gtk-update-icon-cache
+       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("intltool" ,intltool)
+       ("appstream-glib" ,appstream-glib)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gtk+" ,gtk+)
