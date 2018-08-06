@@ -3029,7 +3029,7 @@ permission from user.")
 (define-public geocode-glib
   (package
     (name "geocode-glib")
-    (version "3.20.1")
+    (version "3.26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/geocode-glib/"
@@ -3037,15 +3037,24 @@ permission from user.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "18iphsx3bybw7lssbb7rxc1rrnsc8vxai521zkqc535zr8rci7v6"))))
-    (build-system gnu-build-system)
+                "1vmydxs5xizcmaxpkfrq75xpj6pqrpdjizxyb30m00h54yqqch7a"))))
+    (build-system meson-build-system)
     (arguments
-     `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
-       ;; work for the builder.  Punt.
-       #:tests? #f))
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The tests require a bunch of locales.
+         (add-before 'check 'set-locales
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "GUIX_LOCPATH"
+                     (string-append (assoc-ref inputs "glibc-locales")
+                                    "/lib/locale"))
+             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("glibc-locales" ,glibc-locales) ; for tests
+       ("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)
        ("json-glib" ,json-glib)))
     (propagated-inputs
