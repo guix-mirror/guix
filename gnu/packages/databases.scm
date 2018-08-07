@@ -758,8 +758,8 @@ Language.")
                  (with-directory-excursion "mysql-test"
                    (invoke "./mtr" "--verbose"
                            "--retry=3"
-                           "--testcase-timeout=30"
-                           "--suite-timeout=540"
+                           "--testcase-timeout=40"
+                           "--suite-timeout=600"
                            "--parallel" (number->string (parallel-job-count))
                            "--skip-test-list=unstable-tests"))
                  (format #t "test suite not run~%"))
