@@ -2042,3 +2042,40 @@ SNMP v3 using both IPv4 and IPv6.")
                    (license:non-copyleft
                     "http://www.net-snmp.org/about/license.html"
                     "CMU/UCD copyright notice")))))
+
+(define-public ubridge
+  (package
+    (name "ubridge")
+    (version "0.9.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/GNS3/ubridge/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hivb8wqkk5047bdl2vbsbcvkmam1107hx1ahy4virq2bkqki1fj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'install 'set-bindir
+           (lambda* (#:key  inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out")
+                                       "/bin")))
+               (mkdir-p bin)
+               (substitute* "Makefile"
+                 (("\\$\\(BINDIR\\)") bin)
+                 (("\tsetcap cap_net.*$") "")))
+             #t)))))
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (home-page "https://github.com/GNS3/ubridge/")
+    (synopsis "Bridge for UDP tunnels, Ethernet, TAP and VMnet interfaces")
+    (description "uBridge is a simple program to create user-land bridges
+between various technologies.  Currently, bridging between UDP tunnels,
+Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
+    (license license:gpl3+)))
