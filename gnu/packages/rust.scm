@@ -303,12 +303,12 @@ safety and thread safety guarantees.")
                                    (package-native-inputs base-rust))))))
 
 (define-public mrustc
-  (let ((commit "b5b70897015ee70d62ddda9711c256ca7c720e0f")
-        (revision "3")
+  (let ((commit "ec907f56199c495db061f2712a5be3977bcb11e8")
+        (revision "1")
         (rustc-version "1.19.0"))
     (package
       (name "mrustc")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.8" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -317,7 +317,7 @@ safety and thread safety guarantees.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1d6jr6agiy598ab8lax0h9dfn9n67wg906y1f46l1c27sz3w82lb"))))
+                  "0a7v8ccyzp1sdkwni8h1698hxpfz2sxhcpx42n6l2pbm0rbjp08i"))))
       (outputs '("out" "cargo"))
       (build-system gnu-build-system)
       (inputs
@@ -335,7 +335,12 @@ safety and thread safety guarantees.")
                                            "/bin/llvm-config"))
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'unpack-target-compiler
+          (add-after 'unpack 'patch-date
+            (lambda _
+              (substitute* "Makefile"
+               (("shell date") "shell date -d @1"))
+              #t))
+           (add-after 'patch-date 'unpack-target-compiler
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (substitute* "minicargo.mk"
                  ;; Don't try to build LLVM.
