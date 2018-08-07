@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -831,9 +832,9 @@ See the manual for limitations.")))))))
            (test-suites (make-cabal-section evaluated-sexp 'test-suite))
            (flags (make-cabal-section evaluated-sexp 'flag))
            (eval-environment '())
-           (custom-setup (match
-                          (make-cabal-section evaluated-sexp 'custom-setup)
-                          ((x) x))))
+           (custom-setup (match (make-cabal-section evaluated-sexp 'custom-setup)
+                           ((x) x)
+                           (_ #f))))
       (make-cabal-package name version license home-page-or-hackage
                           source-repository synopsis description executables lib
                           test-suites flags eval-environment custom-setup)))
