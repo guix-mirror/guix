@@ -53,7 +53,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.20.3")
+    (version "1.20.4")
     (source(origin
               (method url-fetch)
               (uri
@@ -61,7 +61,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "1g18qkvl9zdxickiblgs2vvkip4b6p2jalw4d30zzz3hh8f1g6iv"))
+                "0sjkmclcb1r77015wllsyz26272br3s17v6b1q2xwb2nm2gnwx9k"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
