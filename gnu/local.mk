@@ -644,7 +644,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/doxygen-gcc-ice.patch			\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
-  %D%/packages/patches/e2fsprogs-glibc-2.27.patch		\
   %D%/packages/patches/eigen-arm-neon-fixes.patch		\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elogind-glibc-2.27.patch			\

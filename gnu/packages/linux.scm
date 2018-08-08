@@ -732,7 +732,7 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.43.6")
+    (version "1.44.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -741,8 +741,7 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "00ilv65dzcgiap435j89xk86shf7rrav3wsik7cahy789qijdcn9"))
-             (patches (search-patches "e2fsprogs-glibc-2.27.patch"))))
+               "1djb9qnid1j0vvna2bhq4jsz2ig1xckbx7h4d86cr0gl61yrz2ax"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
