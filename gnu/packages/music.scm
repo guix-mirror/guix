@@ -1474,14 +1474,14 @@ reverb effects.")
     (name "setbfree")
     (version "0.8.5")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/pantherb/setBfree/archive/v"
-                              version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pantherb/setBfree")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qfccny0hh9lq54272mzmxvfz2jmzcgigjkjwn6v9h6n00gi5bw4"))))
+                "0pafb5m7aifcvggqlwckib3ra738nvqwdfrh1ql5fqrz5487hql1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
