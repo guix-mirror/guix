@@ -122,6 +122,12 @@
                           (("/usr/local/lib/cups/filter")
                            (string-append out "/lib/cups/filter")))
                         #t)))
+                  (add-after 'unpack 'patch-for-poppler
+                    (lambda _
+                      (substitute* "filter/pdf.cxx"
+                        (("GooString \\*field_name;" m)
+                         (string-append "const " m)))
+                      #t))
                   (add-after 'install 'wrap-filters
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Some filters expect to find 'gs' in $PATH.  We cannot
