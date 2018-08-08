@@ -584,14 +584,14 @@ Microsoft Visio documents of all versions.")
 (define-public libodfgen
   (package
     (name "libodfgen")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://dev-www.libreoffice.org/src/"
-                          name "-" version ".tar.bz2"))
+      (uri (string-append "mirror://sourceforge/libwpd/" name "/"
+                          name "-" version "/" name "-" version ".tar.xz"))
       (sha256 (base32
-               "1hn91bm6dni7n3frh7lpbj3mjqmdrpn12ipq8rswd9445y4j2yrc"))))
+               "0cdq48wlpp8m0qmndybv64r0m4vh0qsqx69cn6ms533cjlgljgij"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
