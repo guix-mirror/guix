@@ -1857,7 +1857,7 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.2.6")
+    (version "1.2.8")
     (source
      (origin
        (method url-fetch)
@@ -1865,15 +1865,13 @@ converts them to maildir format directories.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0p1ix63jh64dibrlccch8q7gxl9nn18wd2qpyr5z1h4gs2fpmv4z"))))
+         "1skrda7lbks5h0v03ab8bhpg6ma1b63if8x9x3kb2fv70x2pkhqn"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
        ("libidn" ,libidn)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (arguments
-     `(#:configure-flags (list "--with-tls=gnutls")))
     (home-page "https://marlam.de/mpop/")
     (synopsis "POP3 mail client")
     (description "mpop is a small and fast POP3 client suitable as a
