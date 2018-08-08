@@ -1811,9 +1811,8 @@ compressed, transparent to other programs, without decompressing them.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "ftp://oss.sgi.com/www/projects/libnuma/download/numactl-"
-                    version
-                    ".tar.gz"))
+                    "https://github.com/numactl/numactl/releases/download/v"
+                    version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0qbqa9gac2vlahrngi553hws2mqgqdwv2lc69a3yx4gq6l90j325"))))
@@ -1826,7 +1825,7 @@ compressed, transparent to other programs, without decompressing them.")
     ;; NUMA is apparently not supported on armhf, see
     ;; http://www.spinics.net/lists/linux-numa/msg01157.html
     (supported-systems (delete "armhf-linux" %supported-systems))
-    (home-page "http://oss.sgi.com/projects/libnuma/")
+    (home-page "https://github.com/numactl/numactl")
     (synopsis "Tools for non-uniform memory access (NUMA) machines")
     (description
      "NUMA stands for Non-Uniform Memory Access, in other words a system whose
