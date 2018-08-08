@@ -546,7 +546,7 @@ repository and Maildir/IMAP as LOCAL repository.")
     (version "6.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://mew.org/Release/mew-"
+              (uri (string-append "https://mew.org/Release/mew-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -584,7 +584,7 @@ repository and Maildir/IMAP as LOCAL repository.")
                 "mew" (string-append (assoc-ref outputs "out") ,elisp-dir))
                #t)))
          #:tests? #f)))
-    (home-page "http://www.mew.org")
+    (home-page "https://mew.org")
     (synopsis "Emacs e-mail client")
     (description "Mew (Messaging in the Emacs World) is a user interface
 for text messages, multimedia messages (MIME), news articles and
