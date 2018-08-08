@@ -5660,7 +5660,8 @@ complexity of Python source code.")
          (add-after 'install 'check
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (add-installed-pythonpath inputs outputs)
-            (zero? (system* "pytest" "-v")))))))
+            (invoke "pytest" "-v")
+            #t)))))
     (propagated-inputs
       `(("python-pycodestyle" ,python-pycodestyle)
         ("python-pyflakes" ,python-pyflakes)
