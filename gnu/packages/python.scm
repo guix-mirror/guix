@@ -4873,15 +4873,15 @@ toolkit.  Use it to build trees of widgets.")
 (define-public python-dbus
   (package
     (name "python-dbus")
-    (version "1.2.0")
+    (version "1.2.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://dbus.freedesktop.org/releases/dbus-python/dbus-python-"
-             version ".tar.gz"))
+       (uri (string-append "https://dbus.freedesktop.org/releases/dbus-python/"
+                           "dbus-python-" version ".tar.gz"))
        (sha256
-        (base32 "1py62qir966lvdkngg0v8k1khsqxwk5m4s8nflpk1agk5f5nqb71"))))
+        (base32
+         "0vvvjmiwnc9cjlks3gcdk43ap7llhlpz7cm1wbw0nc2yfsxjpwdb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -4897,7 +4897,7 @@ toolkit.  Use it to build trees of widgets.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("python" ,python)
+     `(("python" ,python-wrapper)
        ("dbus-glib" ,dbus-glib)))
     (synopsis "Python bindings for D-bus")
     (description "python-dbus provides bindings for libdbus, the reference
