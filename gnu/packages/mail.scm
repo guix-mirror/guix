@@ -1861,8 +1861,8 @@ converts them to maildir format directories.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/mpop/mpop/" version
-                           "/mpop-" version ".tar.xz"))
+       (uri (string-append "https://marlam.de/mpop/releases/"
+                           name "-" version ".tar.xz"))
        (sha256
         (base32
          "0p1ix63jh64dibrlccch8q7gxl9nn18wd2qpyr5z1h4gs2fpmv4z"))))
@@ -1874,7 +1874,7 @@ converts them to maildir format directories.")
      `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags (list "--with-tls=gnutls")))
-    (home-page "http://mpop.sourceforge.net/")
+    (home-page "https://marlam.de/mpop/")
     (synopsis "POP3 mail client")
     (description "mpop is a small and fast POP3 client suitable as a
 fetchmail replacement.
