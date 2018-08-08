@@ -862,6 +862,15 @@ is like a time machine for your data. ")
                                         ,version)
                (invoke "go" "run" "build.go"))))
 
+         (replace 'check
+           (lambda _
+             (with-directory-excursion (string-append
+                                        "src/github.com/restic/restic-"
+                                        ,version)
+               ;; unexpected error: fusermount: exit status 1
+               (delete-file "cmd/restic/integration_fuse_test.go")
+               (invoke "go" "run" "build.go" "--test"))))
+
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
