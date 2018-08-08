@@ -347,6 +347,7 @@ all common programming languages.  Vala bindings are also provided.")
               (uri (string-append
                     "https://linuxcontainers.org/downloads/lxc/lxc-"
                     version ".tar.gz"))
+              (patches (search-patches "lxc-CVE-2018-6556.patch"))
               (sha256
                (base32
                 "1nyml98k28sc5sda0260cmby4irkpnhpwgmx4yhqy10wpr4nr625"))))
