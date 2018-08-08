@@ -1807,7 +1807,7 @@ compressed, transparent to other programs, without decompressing them.")
 (define-public numactl
   (package
     (name "numactl")
-    (version "2.0.11")
+    (version "2.0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1815,7 +1815,7 @@ compressed, transparent to other programs, without decompressing them.")
                     version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qbqa9gac2vlahrngi553hws2mqgqdwv2lc69a3yx4gq6l90j325"))))
+                "0ad7mpi3vacbfnx3aqxnvgsj64yp3mav9yxnaz8ancjv7wvdmfsm"))))
     (build-system gnu-build-system)
     (arguments
      '(;; There's a 'test' target, but it requires NUMA support in the kernel
