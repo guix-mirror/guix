@@ -6661,6 +6661,11 @@ The value associated with a flag has to be either the symbol
 has to conform to the Cabal file format definition.  The default value
 associated with the keys @code{os}, @code{arch} and @code{impl} is
 @samp{linux}, @samp{x86_64} and @samp{ghc}, respectively.
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
 @end table
 
 The command below imports metadata for the latest version of the
