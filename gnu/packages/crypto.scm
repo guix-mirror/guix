@@ -794,14 +794,14 @@ using ctypes is included, and several other language bindings are available.")
 (define-public ccrypt
   (package
     (name "ccrypt")
-    (version "1.10")
+    (version "1.11")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/ccrypt/ccrypt/"
+              (uri (string-append "mirror://sourceforge/ccrypt/"
                                   version "/ccrypt-" version ".tar.gz"))
               (sha256
                (base32
-                "184v9676hx2w875cz04rd3a20wrcms33a1zwybvapb0g2yi6vml7"))))
+                "0kx4a5mhmp73ljknl2lcccmw9z3f5y8lqw0ghaymzvln1984g75i"))))
     (build-system gnu-build-system)
     (home-page "http://ccrypt.sourceforge.net")
     (synopsis "Command-line utility for encrypting and decrypting files and streams")
