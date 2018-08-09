@@ -20,6 +20,7 @@
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -461,8 +462,18 @@ through the pass command.")
              (let ((out (assoc-ref outputs "out")))
                (substitute* "Makefile"
                  (("PREFIX = /usr") (string-append "PREFIX = " out)))
+               (substitute* "libargon2.pc"
+                 (("prefix=/usr") (string-append "prefix=" out))
+                 (("@HOST_MULTIARCH@") "")
+                 (("@UPSTREAM_VER@") ,version))
                #t)))
-         (delete 'configure))))
+         (delete 'configure)
+         (add-after 'install 'install-argon2.pc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "libargon2.pc"
+                             (string-append out "/lib/pkgconfig"))
+               #t))))))
     (home-page "https://www.argon2.com/")
     (synopsis "Password hashing library")
     (description "Argon2 provides a key derivation function that was declared
