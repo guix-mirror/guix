@@ -6352,14 +6352,14 @@ This is a part of the Apache Commons Project.")
 (define-public java-commons-daemon
   (package
     (name "java-commons-daemon")
-    (version "1.0.15")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/commons/daemon/source/"
                                   "commons-daemon-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0ci46kq8jpz084ccwq0mmkahcgsmh20ziclp2jf5i0djqv95gvhi"))))
+                "141gkhfzv5v3pdhic6y4ardq2dhsa3v36j8wmmhy6f8mac48fp7n"))))
     (build-system ant-build-system)
     (arguments
      `(#:test-target "test"
