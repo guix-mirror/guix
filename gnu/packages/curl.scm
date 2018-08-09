@@ -188,7 +188,6 @@ tunneling, and so on.")
     (inputs
      `(("go-github-com-alsm-ioprogress" ,go-github-com-alsm-ioprogress)
        ("go-github-com-aki237-nscjar" ,go-github-com-aki237-nscjar)
-       ("go-github-com-davidjpeacock-cli" ,go-github-com-davidjpeacock-cli)
        ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)))
     (synopsis "Command-line HTTP client")
     (description "kurly is an alternative to the @code{curl} program written in
