@@ -547,7 +547,7 @@ Haskell, no knowledge of the language is required to install and use it.")
 (define-public ghc-xmonad-contrib
   (package
     (name "ghc-xmonad-contrib")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -555,7 +555,7 @@ Haskell, no knowledge of the language is required to install and use it.")
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
         (base32
-         "0vj72jhfng6y7hv5frx2v99jvl3jn9rbpk2j7xw9vydiwmzq4q57"))))
+         "1660w3xhbfrlq8b8s1rviq2mcn1vyqpypli4023gqxwry52brk6y"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-mtl" ,ghc-mtl)
