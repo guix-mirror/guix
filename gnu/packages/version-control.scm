@@ -143,8 +143,8 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   ;; XXX When updating Git, check if the special 'git:src' input to cgit needs
-   ;; to be updated as well.
+   ;; XXX When updating Git, check if the special 'git-source' input to cgit
+   ;; needs to be updated as well.
    (version "2.18.0")
    (source (origin
             (method url-fetch)
@@ -558,9 +558,7 @@ collaboration using typical untrusted file hosts or services.")
 (define-public cgit
   (package
     (name "cgit")
-    ;; XXX When updating cgit, try removing the special 'git:src' input and
-    ;; using the source of the git package.
-    (version "1.1")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -568,7 +566,7 @@ collaboration using typical untrusted file hosts or services.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "142qcgs8dwnzhymn0a7xx47p9fc2z5wrb86ah4a9iz0mpqlsz288"))))
+                "1gw2j5xc5qdx2hwiwkr8h6kgya7v9d9ff9j32ga1dys0cca7qm1w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: fail to build the in-source git.
@@ -580,7 +578,7 @@ collaboration using typical untrusted file hosts or services.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Unpack the source of git into the 'git' directory.
              (invoke "tar" "--strip-components=1" "-C" "git" "-xf"
-                     (assoc-ref inputs "git:src"))))
+                     (assoc-ref inputs "git-source"))))
          (add-after 'unpack 'patch-absolute-file-names
            (lambda* (#:key inputs #:allow-other-keys)
              (define (quoted-file-name input path)
@@ -642,16 +640,8 @@ collaboration using typical untrusted file hosts or services.")
        ("bzip2" ,bzip2)
        ("xz" ,xz)))
     (inputs
-     `(;; Cgit directly accesses some internal Git interfaces that changed in
-       ;; Git 2.12.  Try removing this special input and using the source of the
-       ;; Git package for cgit > 1.1.
-       ("git:src"
-        ,(origin
-           (method url-fetch)
-           (uri "mirror://kernel.org/software/scm/git/git-2.10.5.tar.xz")
-           (sha256
-            (base32
-             "1r2aa19gnrvm2y4fqcvpw1g9l72n48axqmpgv18s6d0y2p72vhzj"))))
+     `(;; Building cgit requires a Git source tree.
+       ("git-source" ,(package-source git))
        ("openssl" ,openssl)
        ("groff" ,groff)
        ("python" ,python)
