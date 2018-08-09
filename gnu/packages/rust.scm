@@ -303,17 +303,15 @@ safety and thread safety guarantees.")
                                    (package-native-inputs base-rust))))))
 
 (define-public mrustc
-  (let ((commit "ec907f56199c495db061f2712a5be3977bcb11e8")
-        (revision "1")
-        (rustc-version "1.19.0"))
+  (let ((rustc-version "1.19.0"))
     (package
       (name "mrustc")
-      (version (git-version "0.8" revision commit))
+      (version "0.8.0")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/thepowersgang/mrustc.git")
-                      (commit commit)))
+                      (commit (string-append "v" version))))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
