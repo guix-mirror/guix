@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,11 +76,11 @@
                (("/bin/echo") (which "echo")))
              #t)))))
     (native-inputs
-     `(("perl" ,perl)
+     `(("pcsc-lite" ,pcsc-lite) ; only required for headers
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libusb" ,libusb)
-       ("pcsc-lite" ,pcsc-lite)))
+     `(("libusb" ,libusb)))
     (home-page "https://ccid.apdu.fr/")
     (synopsis "PC/SC driver for USB smart card devices")
     (description
