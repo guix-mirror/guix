@@ -1295,8 +1295,8 @@ install: libbitshuffle.so
        ("perl" ,perl)))
     (home-page "https://github.com/xerial/snappy-java")
     (synopsis "Compression/decompression algorithm in Java")
-    (description "Snappy-java is a Java port of the snappy, a fast C++
-compresser/decompresser.")
+    (description "Snappy-java is a Java port of snappy, a fast C++
+compressor/decompressor.")
     (license license:asl2.0)))
 
 (define-public java-snappy-1
