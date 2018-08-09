@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -178,9 +179,10 @@ first match and return the content of the group."
                   (unless (file-exists? dest)
                     (copy-file file dest))))
               conf-files)
-    (zero? (system* "ghc-pkg"
-                    (string-append "--package-db=" %tmp-db-dir)
-                    "recache"))))
+    (invoke "ghc-pkg"
+            (string-append "--package-db=" %tmp-db-dir)
+            "recache")
+    #t))
 
 (define* (register #:key name system inputs outputs #:allow-other-keys)
   "Generate the compiler registration and binary package database files for a
@@ -238,32 +240,31 @@ given Haskell package."
           (list (string-append "--gen-pkg-config=" config-file))))
     (run-setuphs "register" params)
     ;; The conf file is created only when there is a library to register.
-    (or (not (file-exists? config-file))
-        (begin
-          (mkdir-p config-dir)
-          (let* ((config-file-name+id
-                  (call-with-ascii-input-file config-file (cut grep id-rx <>))))
-            (install-transitive-deps config-file %tmp-db-dir config-dir)
-            (rename-file config-file
-                         (string-append config-dir "/"
-                                        config-file-name+id ".conf"))
-            (zero? (system* "ghc-pkg"
-                            (string-append "--package-db=" config-dir)
-                            "recache")))))))
+    (unless (file-exists? config-file)
+      (mkdir-p config-dir)
+      (let* ((config-file-name+id
+              (call-with-ascii-input-file config-file (cut grep id-rx <>))))
+        (install-transitive-deps config-file %tmp-db-dir config-dir)
+        (rename-file config-file
+                     (string-append config-dir "/"
+                                    config-file-name+id ".conf"))
+        (invoke "ghc-pkg"
+                (string-append "--package-db=" config-dir)
+                "recache")))
+    #t))
 
 (define* (check #:key tests? test-target #:allow-other-keys)
   "Run the test suite of a given Haskell package."
   (if tests?
       (run-setuphs test-target '())
-      (begin
-        (format #t "test suite not run~%")
-        #t)))
+      (format #t "test suite not run~%"))
+  #t)
 
 (define* (haddock #:key outputs haddock? haddock-flags #:allow-other-keys)
   "Run the test suite of a given Haskell package."
-  (if haddock?
-      (run-setuphs "haddock" haddock-flags)
-      #t))
+  (when haddock?
+    (run-setuphs "haddock" haddock-flags))
+  #t)
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
