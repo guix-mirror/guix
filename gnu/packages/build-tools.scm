@@ -77,7 +77,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public bear
   (package
     (name "bear")
-    (version "2.3.11")
+    (version "2.3.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -86,7 +86,7 @@ makes a few sacrifices to acquire fast full and incremental build times.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r6ykvclq9ws055ssd8w33dicmk5l9pisv0fpzkks700n8d3z9f3"))))
+                "1zzz2yiiny9pm4h6ayb82xzxc2j5djcpf8va2wagcw92m7w6miqw"))))
     (build-system cmake-build-system)
     (inputs
      `(("python" ,python-wrapper)))
