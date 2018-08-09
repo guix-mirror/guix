@@ -455,7 +455,7 @@ desktop environment.")
 (define-public xmonad
   (package
     (name "xmonad")
-    (version "0.13")
+    (version "0.14")
     (synopsis "Tiling window manager")
     (source (origin
               (method url-fetch)
@@ -463,12 +463,13 @@ desktop environment.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jh3lcs20qpna36fa5a0r174xqrsxhj10x1rm5vwf64zariipy7r"))))
+                "0lq3k0ap7jxrrswpd954mqa6h8diccbif5srcgbmr39y6y8x0mm4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-mtl"                   ,ghc-mtl)
        ("ghc-quickcheck"            ,ghc-quickcheck)
+       ("ghc-semigroups"            ,ghc-semigroups)
        ("ghc-setlocale"             ,ghc-setlocale)
        ("ghc-utf8-string"           ,ghc-utf8-string)
        ("ghc-x11"                   ,ghc-x11)))
