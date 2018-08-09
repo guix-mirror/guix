@@ -845,7 +845,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        ("python-libnacl" ,python-libnacl)
        ("python-pylibscrypt" ,python-pylibscrypt)
        ("python-pypeg2" ,python-pypeg2)))
-    (home-page "https://github.com/duniter/duniter-python-api")
+    (home-page "https://git.duniter.org/clients/python/duniterpy")
     (synopsis "Python implementation of Duniter API")
     (description "@code{duniterpy} is an implementation of
 @uref{https://github.com/duniter/duniter/, duniter} API. Its
