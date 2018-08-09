@@ -166,8 +166,8 @@ performance measurement opportunites across the hardware and software stack.")
              #t)))))
     (home-page "http://www.vi-hps.org/projects/score-p/")
     (synopsis "Open Trace Format 2 library")
-    (description "The Open Trace Format 2 (OTF2) is a scalable, memory
-efficient event trace data format plus support library.")
+    (description "The Open Trace Format 2 (@dfn{OTF2}) is a scalable,
+memory-efficient event trace data format plus support library.")
     (license license:bsd-3)))
 
 (define-public opari2
