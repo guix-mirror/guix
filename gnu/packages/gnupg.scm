@@ -101,7 +101,9 @@ Daemon and possibly more in the future.")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0z5gs1khzyknyfjr19k8gk4q148s6q987ya85cpn0iv70fz91v36"))))
+               "0z5gs1khzyknyfjr19k8gk4q148s6q987ya85cpn0iv70fz91v36"))
+             (patches
+              (search-patches "libgcrypt-make-yat2m-reproducible.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
