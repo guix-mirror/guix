@@ -489,7 +489,7 @@ desktop environment.")
                     Comment=~a~@
                     Exec=~a/bin/xmonad~@
                     Type=Application~%" ,name ,synopsis %output)))))))))
-    (home-page "http://xmonad.org")
+    (home-page "https://xmonad.org")
     (description
      "Xmonad is a tiling window manager for X.  Windows are arranged
 automatically to tile the screen without gaps or overlap, maximising screen
@@ -566,7 +566,7 @@ Haskell, no knowledge of the language is required to install and use it.")
        ("ghc-x11" ,ghc-x11)
        ("ghc-x11-xft" ,ghc-x11-xft)
        ("xmonad" ,xmonad)))
-    (home-page "http://xmonad.org")
+    (home-page "https://xmonad.org")
     (synopsis "Third party extensions for xmonad")
     (description
      "Third party tiling algorithms, configurations, and scripts to Xmonad, a
