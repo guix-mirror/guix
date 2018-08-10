@@ -451,7 +451,8 @@ Go.  It also includes runtime support libraries for these languages.")
                      "$OBJDUMP_FOR_TARGET -T"))
                   #t))))
     (inputs
-     `(("isl" ,isl)
+     `(;; GCC5 needs <isl/band.h> which is removed in later versions.
+       ("isl" ,isl-0.18)
        ,@(package-inputs gcc-4.7)))))
 
 (define-public gcc-6
@@ -859,6 +860,20 @@ enumeration.  It also includes an ILP solver based on generalized basis
 reduction, transitive closures on maps (which may encode infinite graphs),
 dependence analysis and bounds on piecewise step-polynomials.")
     (license lgpl2.1+)))
+
+(define-public isl-0.18
+  (package
+    (inherit isl)
+    (version "0.18")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "http://isl.gforge.inria.fr/isl-"
+                                        version ".tar.bz2")
+                         (string-append %gcc-infrastructure
+                                        "isl-" version ".tar.gz")))
+              (sha256
+               (base32
+                "06ybml6llhi4i56q90jnimbcgk1lpcdwhy9nxdxra2hxz3bhz2vb"))))))
 
 (define-public isl-0.11
   (package
