@@ -386,9 +386,9 @@ any X11 window.")
              #t))
          (add-after 'install 'install-passmenu
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (copy-file "contrib/dmenu/passmenu"
-                          (string-append out "/bin/passmenu"))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "contrib/dmenu/passmenu" bin)
                #t)))
          (add-after 'install 'wrap-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
