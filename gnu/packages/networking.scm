@@ -822,17 +822,19 @@ allows for heavy scripting.")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
-             version
-             ".tar.gz"))
+      (uri
+       (list
+        (string-append "https://www.net-dns.org/download/Net-DNS-"
+                       version ".tar.gz")
+        (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
+                       version ".tar.gz")))
       (sha256
         (base32
           "1q62w9rf2w8kjzqagzr0rdn20ybl8gj3l6cdq4k8fw0sxa7zsycs"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
-  (home-page "http://search.cpan.org/dist/Net-DNS")
+  (home-page "https://www.net-dns.org/")
   (synopsis
     "Perl Interface to the Domain Name System")
   (description "Net::DNS is the Perl Interface to the Domain Name System.")
