@@ -32,7 +32,7 @@
 (define-public xfig
   (package
     (name "xfig")
-    (version "3.2.7")
+    (version "3.2.7a")
     (source
      (origin
        (method url-fetch)
@@ -40,7 +40,7 @@
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0anlrr68knr401j7z76k6hx33w16l02dzb7szdkrc4rb2gj1rs2z"))))
+         "096zgp0bqnxhgxbrv2jjylrjz3pr4da0xxznlk2z7ffxr5pri2fa"))))
     (build-system gnu-build-system)
     (native-inputs
      ;; For tests.
