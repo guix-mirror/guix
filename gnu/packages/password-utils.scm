@@ -422,7 +422,7 @@ any X11 window.")
        ("which" ,which)
        ("xclip" ,xclip)
        ("xdotool" ,xdotool)))
-    (home-page "http://www.passwordstore.org/")
+    (home-page "https://www.passwordstore.org/")
     (synopsis "Encrypted password manager")
     (description "Password-store is a password manager which uses GnuPG to
 store and retrieve passwords.  The tool stores each password in its own
