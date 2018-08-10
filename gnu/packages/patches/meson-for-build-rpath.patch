@@ -2,22 +2,24 @@ This patch removes a part of meson that clears the rpath upon installation.
 This will only be applied to a special version of meson, used for the
 meson-build-system.
 
-Patch by Peter Mikkelsen <petermikkelsen10@gmail.com>
+Patch for Meson 0.42.0 by Peter Mikkelsen <petermikkelsen10@gmail.com>
+Adjusted for Meson 0.47.1 by Ricardo Wurmus <rekado@elephly.net>
 
---- meson-0.42.0/mesonbuild/scripts/meson_install.py.orig	2017-09-09 01:49:39.147374148 +0200
-+++ meson-0.42.0/mesonbuild/scripts/meson_install.py	2017-09-09 01:51:01.209134717 +0200
-@@ -391,14 +391,6 @@
-                     print("Symlink creation does not work on this platform. "
-                           "Skipping all symlinking.")
-                     printed_symlink_error = True
--        if os.path.isfile(outname):
--            try:
--                depfixer.fix_rpath(outname, install_rpath, False)
--            except SystemExit as e:
--                if isinstance(e.code, int) and e.code == 0:
--                    pass
--                else:
--                    raise
-
+--- meson-0.47.1/mesonbuild/minstall.py.old	2018-08-10 11:01:27.812327013 +0200
++++ meson-0.47.1/mesonbuild/minstall.py	2018-08-10 11:01:51.940368505 +0200
+@@ -436,15 +436,6 @@
+                         print("Symlink creation does not work on this platform. "
+                               "Skipping all symlinking.")
+                         printed_symlink_error = True
+-            if os.path.isfile(outname):
+-                try:
+-                    depfixer.fix_rpath(outname, install_rpath, final_path,
+-                                       install_name_mappings, verbose=False)
+-                except SystemExit as e:
+-                    if isinstance(e.code, int) and e.code == 0:
+-                        pass
+-                    else:
+-                        raise
+ 
  def run(args):
-     global install_log_file
+     parser = buildparser()
