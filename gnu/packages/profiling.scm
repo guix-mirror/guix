@@ -173,7 +173,7 @@ efficient event trace data format plus support library.")
 (define-public opari2
   (package
     (name "opari2")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
       (method url-fetch)
@@ -182,7 +182,7 @@ efficient event trace data format plus support library.")
                   (minor (cadr parts)))
              (string-append "http://www.vi-hps.org/upload/packages/opari2/opari2-"
                             version ".tar.gz")))
-      (sha256 (base32 "1ph8l5c646bm9l5vcn8rrbjvkyi7y8yvn2ny95r6kmlzs766g3q8"))))
+      (sha256 (base32 "0v785mhw9azj3ln5v7akj5b1cxvzfkxz8kj565pfwllir7xzqbky"))))
     (build-system gnu-build-system)
     (inputs `(("gfortran" ,gfortran)))
     (native-inputs `(("gawk" ,gawk)     ;for tests
