@@ -187,15 +187,6 @@ efficient event trace data format plus support library.")
     (inputs `(("gfortran" ,gfortran)))
     (native-inputs `(("gawk" ,gawk)     ;for tests
                      ("which" ,which)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'licence
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((doc (string-append (assoc-ref outputs "out")
-                                       "/share/doc/opari2")))
-               (install-file "COPYING" doc)
-               #t))))))
     (home-page "http://www.vi-hps.org/projects/score-p")
     (synopsis "OpenMP runtime performance measurement instrumenter")
     (description "OPARI2 is a source-to-source instrumentation tool for OpenMP
