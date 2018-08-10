@@ -404,8 +404,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17.12")
-(define %linux-libre-hash "1zpyrw55pg3rg9rjhasx7n070c81frnaab44f4g9gyh08wbapz7k")
+(define %linux-libre-version "4.17.13")
+(define %linux-libre-hash "07z4yisl4krz1ja6123xp32g00nx6ajsc9x1lywmmpvvjilsz4ax")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -413,8 +413,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.60")
-(define %linux-libre-4.14-hash "0550cynydwgnfd1wsl8gqmjsp4qhsimanl7h5sdi297qrz4d93pa")
+(define %linux-libre-4.14-version "4.14.61")
+(define %linux-libre-4.14-hash "0jr0qi3473fn32cyisp3baf68sfr6vir5ydaphmqmz379ymxxm0z")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -423,14 +423,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.117"
-                    "0lvy6psiw1vkc3ax4fmz07fx635qm9f46p84ds30paw7nhwm115x"
+  (make-linux-libre "4.9.118"
+                    "0zh9l0r828jjbmmqp0hwkjm34ly8kqhfddlyigmliz0j39dg0137"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.145"
-                    "1c8lcibc6f8194ix3paip30jb9cqvn4lni6jjskyrmavcfy4rlbp"
+  (make-linux-libre "4.4.146"
+                    "1gpshdkn2rfg8kkf2qb2z30yk1lgzndk0fn1bvnrmfmx7swc45w8"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -1807,16 +1807,15 @@ compressed, transparent to other programs, without decompressing them.")
 (define-public numactl
   (package
     (name "numactl")
-    (version "2.0.11")
+    (version "2.0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "ftp://oss.sgi.com/www/projects/libnuma/download/numactl-"
-                    version
-                    ".tar.gz"))
+                    "https://github.com/numactl/numactl/releases/download/v"
+                    version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0qbqa9gac2vlahrngi553hws2mqgqdwv2lc69a3yx4gq6l90j325"))))
+                "0ad7mpi3vacbfnx3aqxnvgsj64yp3mav9yxnaz8ancjv7wvdmfsm"))))
     (build-system gnu-build-system)
     (arguments
      '(;; There's a 'test' target, but it requires NUMA support in the kernel
@@ -1826,7 +1825,7 @@ compressed, transparent to other programs, without decompressing them.")
     ;; NUMA is apparently not supported on armhf, see
     ;; http://www.spinics.net/lists/linux-numa/msg01157.html
     (supported-systems (delete "armhf-linux" %supported-systems))
-    (home-page "http://oss.sgi.com/projects/libnuma/")
+    (home-page "https://github.com/numactl/numactl")
     (synopsis "Tools for non-uniform memory access (NUMA) machines")
     (description
      "NUMA stands for Non-Uniform Memory Access, in other words a system whose
@@ -4287,7 +4286,7 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
       (origin
         (method url-fetch)
@@ -4295,7 +4294,7 @@ re-use code and to avoid re-inventing the wheel.")
                             "libnftnl-" version ".tar.bz2"))
         (sha256
          (base32
-          "0v4gywcjvv2vg4zk632al1zv3ad0lx87nshynv110l8n3fhsq3pc"))))
+          "1wmgjfcb35mscb2srzia5931srygywrs1aznxmg67v177x0nasjx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

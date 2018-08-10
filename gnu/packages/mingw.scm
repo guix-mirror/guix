@@ -37,14 +37,14 @@
 (define-public mingw-w64
   (package
     (name "mingw-w64")
-    (version "5.0.3")
+    (version "5.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://sourceforge.net/projects/mingw-w64/files/mingw-w64/"
                     "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
               (sha256
-               (base32 "1d4wrjfdlq5xqpv9zg6ssw4lm8jnv6522xf7d6zbjygmkswisq1a"))
+               (base32 "00zq3z1hbzd5yzmskskjg79xrzwsqx7ihyprfaxy4hb897vf29sm"))
               (patches (search-patches "mingw-w64-5.0rc2-gcc-4.9.3.patch"))))
     (native-inputs `(("xgcc-core" ,(cross-gcc %mingw-triplet))
                      ("xbinutils" ,(cross-binutils %mingw-triplet))))

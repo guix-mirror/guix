@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
 (define-public autogen
   (package
     (name "autogen")
-    (version "5.18.12")
+    (version "5.18.14")
     (source
      (origin
       (method url-fetch)
@@ -39,12 +40,12 @@
                           "/autogen-" version ".tar.xz"))
       (sha256
        (base32
-        "1n5zq4872sakvz9c7ncsdcfp0z8rsybsxvbmhkpbd19ii0pacfxy"))))
+        "1r06gam7sicb9ssn02mhv6r0g5vr4k0l0c67shpqa5i172cspizz"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)     ;for doc generator mdoc
-                     ("pkg-config" ,pkg-config)))
-    (inputs `(("which" ,which)
-              ("guile" ,guile-2.0)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("which" ,which)))
+    (inputs `(("guile" ,guile-2.0)
+              ("perl" ,perl)))          ; for doc generator mdoc
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -54,8 +55,7 @@
                (substitute*
                  (append (find-files "agen5/test" "\\.test$")
                          (find-files "autoopts/test" "\\.(test|in)$"))
-                 (("/bin/sh") sh)
-                 (("/usr/bin/tr") "tr"))
+                 (("/bin/sh") sh))
                #t))))))
     (home-page "https://www.gnu.org/software/autogen/")
     (synopsis "Automated program generator")

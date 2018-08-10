@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -178,8 +179,9 @@ object."
 (define (cabal-custom-setup-dependencies->names cabal)
   "Return the list of custom-setup dependencies from the CABAL package
 object."
-  (let* ((custom-setup-dependencies (and=> (cabal-package-custom-setup cabal)
-                                           cabal-custom-setup-dependencies)))
+  (let* ((custom-setup-dependencies (or (and=> (cabal-package-custom-setup cabal)
+                                               cabal-custom-setup-dependencies)
+                                        '())))
     (map cabal-dependency-name custom-setup-dependencies)))
 
 (define (filter-dependencies dependencies own-name)

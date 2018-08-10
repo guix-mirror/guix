@@ -140,13 +140,13 @@ performance measurement opportunites across the hardware and software stack.")
 (define-public otf2
   (package
     (name "otf2")
-    (version "2.1")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.vi-hps.org/upload/packages/otf2/otf2-"
                            version ".tar.gz"))
-       (sha256 (base32 "1lyaqhdfaqm1kd23yk71g71vkscw83s7m57j017y768h8sh8xlwa"))))
+       (sha256 (base32 "1ls7rz6qwnqbkifpafc95bnfh3m9xbs74in8zxlnhfbgwx11nn81"))))
     (native-inputs `(("python" ,python)))
     (outputs '("doc"                              ; 18MB
                "lib"

@@ -4086,14 +4086,14 @@ a pure C99 library.")
 (define-public uwsgi
   (package
     (name "uwsgi")
-    (version "2.0.17")
+    (version "2.0.17.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://projects.unbit.it/downloads/uwsgi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1wlbaairsmhp6bx5wv282q9pgh6w7w6yrb8vxjznfaxrinsfkhix"))))
+                "0xxjb9dyivq5531birvxq2gnyxf2x5q7gz54440acra6qwsq4cfj"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (arguments
@@ -4946,7 +4946,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.47")
+  (version "5.48")
   (source
     (origin
       (method url-fetch)
@@ -4954,7 +4954,7 @@ tools like SSH (Secure Shell) to reach the outside world.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "02qx0b0dd38rfcl9vfd6zq1pcg5gv0z2mxw5z3p2pfbfk7dpbrn4"))))
+        "1pxqn9ixl80nrhfq12igyi874653jclji56hh9w24snf0aixa48h"))))
   (build-system gnu-build-system)
   (native-inputs
    ;; For tests.

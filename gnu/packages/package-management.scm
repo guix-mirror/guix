@@ -895,14 +895,14 @@ Microsoft cabinet (.@dfn{CAB}) files.")
 (define-public msitools
   (package
     (name "msitools")
-    (version "0.97")
+    (version "0.98")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0pn6izlgwi4ngpk9jk2n38gcjjpk29nm15aad89bg9z3k9n2hnrs"))))
+                "19wb3n3nwkpc6bjr0q3f1znaxsfaqgjbdxxnbx8ic8bb5b49hwac"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -923,7 +923,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2018.5")
+    (version "2018.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -931,7 +931,7 @@ for packaging and deployment of cross-compiled Windows applications.")
                     version "/libostree-" version ".tar.xz"))
               (sha256
                (base32
-                "0q82d6rvp119nx7ck7j63a591kz8vg7v465kf9ygh8kzg875l3xd"))))
+                "1nc310lv36psxn5yslkxlgi9gjxwqpwqzkg2pldgpwrlv6gkagj8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

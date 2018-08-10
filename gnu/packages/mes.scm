@@ -24,6 +24,7 @@
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages man)
   #:use-module (gnu packages package-management)
@@ -75,15 +76,14 @@ extensive examples, including parsers for the Javascript and C99 languages.")
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (name "mes")
-      (version "0.16.1")
+      (version "0.17")
       (source (origin
                 (method url-fetch)
-                (uri (string-append "https://gitlab.com/janneke/mes"
-                                    "/-/archive/v" version
-                                    "/mes-" version ".tar.gz"))
+                (uri (string-append "http://alpha.gnu.org/gnu/mes/"
+                                    "mes-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "0qghlbx2qn674q8vckxpzsd0p845kclg457bw6r25jpmslgm0bz2"))))
+                  "1j32x4zqy2cqjlg9m35f2411mwac2b0p5ch4hm99gddmfbxzgyhg"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (propagated-inputs
@@ -98,27 +98,19 @@ extensive examples, including parsers for the Javascript and C99 languages.")
                `(("i686-linux-binutils" ,(cross-binutils triplet))
                  ("i686-linux-gcc" ,(cross-gcc triplet)))
                '())
+         ("graphviz" ,graphviz)
          ("help2man" ,help2man)
-         ("perl" ,perl)                 ;build-aux/gitlog-to-changelog
+         ("perl" ,perl)                 ; build-aux/gitlog-to-changelog
          ("texinfo" ,texinfo)))
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'generate-changelog
-             (lambda _
-               (with-output-to-file "ChangeLog"
-                 (lambda ()
-                   (display "Please run
-    build-aux/gitlog-to-changelog --srcdir=<git-checkout> > ChangeLog\n")))
-               #t))
-           (delete 'strip)))) ; binutil's strip b0rkes MesCC/M1/hex2 binaries
+       `(#:strip-binaries? #f))  ; binutil's strip b0rkes MesCC/M1/hex2 binaries
       (synopsis "Scheme interpreter and C compiler for full source bootstrapping")
       (description
-       "Mes [Maxwell Equations of Software] aims to create full source
+       "GNU Mes [Maxwell Equations of Software] aims to create full source
 bootstrapping for GuixSD.  It consists of a mutual self-hosting [close to
 Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
 [Guile] Scheme.")
-      (home-page "https://gitlab.com/janneke/mes")
+      (home-page "https://gnu.org/software/mes")
       (license gpl3+))))
 
 (define-public mescc-tools

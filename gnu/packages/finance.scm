@@ -825,28 +825,19 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.43.2")
+    (version "0.43.7")
     (source
      (origin
        (method git-fetch)
        ;; Pypi's default URI is missing "requirements.txt" file.
        (uri (git-reference
-             (url "https://github.com/duniter/duniter-python-api.git")
+             (url "https://git.duniter.org/clients/python/duniterpy.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ch4f150k1p1l876pp08p5rxqhpv5xfbxdw6njcmr06hspv8v8x4"))))
+         "19m36z98361bqxjdb65597j2kxbly491927c6p9z47s1vxc3raaq"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; Among 108 tests, a single one is failing: FAIL:
-         ;; test_from_pubkey.  Remove it.
-         (add-after 'unpack 'remove-failing-test
-           (lambda _
-             (delete-file "tests/documents/test_crc_pubkey.py")
-             #t)))))
     (propagated-inputs
      `(("python-aiohttp" ,python-aiohttp)
        ("python-base58" ,python-base58)
@@ -854,7 +845,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        ("python-libnacl" ,python-libnacl)
        ("python-pylibscrypt" ,python-pylibscrypt)
        ("python-pypeg2" ,python-pypeg2)))
-    (home-page "https://github.com/duniter/duniter-python-api")
+    (home-page "https://git.duniter.org/clients/python/duniterpy")
     (synopsis "Python implementation of Duniter API")
     (description "@code{duniterpy} is an implementation of
 @uref{https://github.com/duniter/duniter/, duniter} API. Its

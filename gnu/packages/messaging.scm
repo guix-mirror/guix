@@ -873,7 +873,7 @@ protocols.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.2.4")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
@@ -882,7 +882,7 @@ protocols.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0sdszy079f82ncrgq1wsjpk2374n5hm4las75gj3lrdhljl15izl"))))
+         "1n6j3brfz7kp9a7dd1xnwsa29whrb24zglbz1130l3n8vars7n4s"))))
     (arguments
      `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
                      ; for now.

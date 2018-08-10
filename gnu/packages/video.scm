@@ -650,6 +650,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("soxr" ,soxr)
        ("speex" ,speex)
        ("twolame" ,twolame)
+       ("vidstab" ,vidstab)
        ("x265" ,x265)
        ("xvid" ,xvid)
        ("zlib" ,zlib)))
@@ -701,8 +702,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ;;   --enable-libutvideo      enable Ut Video encoding and decoding via
        ;;                            libutvideo [no]
        ;;   --enable-libv4l2         enable libv4l2/v4l-utils [no]
-       ;;   --enable-libvidstab      enable video stabilization using
-       ;;                            vid.stab [no]
        ;;   --enable-libvo-aacenc    enable AAC encoding via libvo-aacenc [no]
        ;;   --enable-libvo-amrwbenc  enable AMR-WB encoding via
        ;;                            libvo-amrwbenc [no]
@@ -730,6 +729,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-libspeex"
          "--enable-libtheora"
          "--enable-libtwolame"
+         "--enable-libvidstab"
          "--enable-libvorbis"
          "--enable-libvpx"
          "--enable-libxvid"
@@ -1257,7 +1257,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2018.07.29")
+    (version "2018.08.04")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://yt-dl.org/downloads/"
@@ -1265,7 +1265,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "18rszvvpw9zyqfjysydvl24jf0hlpfcd22fgqsijhsq7bznwr9jj"))))
+                "1hcx99qbbyigc8k98c8bcc6a2wnhq6493fmrkl7rysc8krlxr0pm"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -3034,3 +3034,27 @@ project, which is released into the public domain, as well as ISO 14496-12:2005
 online.")
     (home-page "https://github.com/danielgtaylor/qtfaststart")
     (license license:expat)))
+
+(define-public vidstab
+  (package
+    (name "vidstab")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/georgmartius/vid.stab/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fy03n343djfdi19msac81833v5iivpv635yjzrx9nkfwm9s1lhl"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests are not run as part of standard build process
+    (home-page "http://public.hronopik.de/vid.stab/")
+    (synopsis "Video stabilization library")
+    (description "Vidstab is a video stabilization library which can be used
+with FFmpeg.  A video acquired using a hand-held camera or a camera mounted on a
+vehicle typically suffers from undesirable shakes and jitters.  Activities such
+as surfing, skiing, riding and walking while shooting videos are especially
+prone to erratic camera shakes.  Vidstab targets these video contents to help
+create smoother and stable videos.")
+    (license license:gpl2+)))

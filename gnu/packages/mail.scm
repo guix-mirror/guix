@@ -1206,7 +1206,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.1")
+    (version "2.3.2.1")
     (source
      (origin
        (method url-fetch)
@@ -1214,7 +1214,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "14zva4f8k64x86sm9n21cp2yvrpph6k6k52bm22a00pxjwdq50q8"))))
+                "0d2ffbicgl3wswbnyjbw6qigz7r1aqzprpchbwp5cynw122i2raa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2364,7 +2364,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.21.999")
+    (version "2.21.9999")
     (source
      (origin
        (method url-fetch)
@@ -2373,11 +2373,11 @@ operators and scripters.")
        ;; the patched version, and so do we to not break expectations.
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
        (uri (string-append "http://repo.or.cz/alpine.git/snapshot/"
-                           "349642a84039a4b026513c32a3b4f8594acd50df.tar.gz"))
+                           "d3e6f3932f2af9deca8eed09e30a55e9bd524362.tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1rkvlfk3q7h9jcvaj91pk7l087bq4b38j30060jaw21zz94b90np"))))
+         "0w4qyybfdxi29r2z3giq0by6aa6v6nrgibh1xgv4d1vwwq4hw35w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc")

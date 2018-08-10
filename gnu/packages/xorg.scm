@@ -5070,7 +5070,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.0")
+    (version "1.20.1")
     (source
       (origin
         (method url-fetch)
@@ -5079,7 +5079,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1rnka3sp8yg2bir0bjjhwn33jikj8qd8ckqcxrs94w05bwc7v5lx"))
+          "0679942x1ma2p30vlvqylpjc5v1ak1pgqysnqrj82nz7dzl9zjar"))
         (patches
          (list
           ;; See:
@@ -5093,8 +5093,7 @@ over Xlib, including:
             (sha256
              (base32
               "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
-            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))
-          (search-patch "xorg-server-rotate-fb.patch")))))
+            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpciaccess" ,libpciaccess)

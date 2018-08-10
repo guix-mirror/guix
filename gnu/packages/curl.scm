@@ -157,19 +157,19 @@ tunneling, and so on.")
 (define-public kurly
   (package
     (name "kurly")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/davidjpeacock/kurly.git")
+                     (url "https://gitlab.com/davidjpeacock/kurly.git")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01kp33gvzxmk6ipz7323wqwmbc90q2mwzsjig8rzpqsm4kji5hi6"))))
+                "003jv2k45hg2svhjpy5253ccd250vi2r17x2zhm51iw54kgwxipm"))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "github.com/davidjpeacock/kurly"
+     `(#:import-path "gitlab.com/davidjpeacock/kurly"
        #:install-source? #f
        #:phases
        (modify-phases %standard-phases
@@ -182,20 +182,20 @@ tunneling, and so on.")
                (with-directory-excursion source
                  (install-file "README.md" doc)
                  (mkdir-p man)
-                 (copy-file "meta/kurly.man"
+                 (copy-file "doc/kurly.man"
                             (string-append man "/kurly.1")))
                #t))))))
     (inputs
      `(("go-github-com-alsm-ioprogress" ,go-github-com-alsm-ioprogress)
        ("go-github-com-aki237-nscjar" ,go-github-com-aki237-nscjar)
-       ("go-github-com-davidjpeacock-cli" ,go-github-com-davidjpeacock-cli)))
+       ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)))
     (synopsis "Command-line HTTP client")
     (description "kurly is an alternative to the @code{curl} program written in
 Go.  kurly is designed to operate in a similar manner to curl, with select
 features.  Notably, kurly is not aiming for feature parity, but common flags and
 mechanisms particularly within the HTTP(S) realm are to be expected.  kurly does
 not offer a replacement for libcurl.")
-    (home-page "https://github.com/davidjpeacock/kurly")
+    (home-page "https://gitlab.com/davidjpeacock/kurly")
     (license license:asl2.0)))
 
 (define-public guile-curl
