@@ -627,7 +627,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.34")
+    (version "10.1.35")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -635,7 +635,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0j2mdpyvj41vkq2rwrzky88b7170hzz6gy2vb2bc1447s2gp3q67"))
+                "0k9walaglwmwdwmkq48ir17g98n83vliyyg5wck22rjgxn2xk4cy"))
               (patches (search-patches "mariadb-gcc-ice.patch"
                                        "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
