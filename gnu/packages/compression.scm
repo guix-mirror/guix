@@ -237,8 +237,10 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
     (version "1.0.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.bzip.org/" version "/bzip2-"
-                                  version ".tar.gz"))
+              ;; XXX The bzip.org domain was allowed to expire.
+              (uri (string-append "https://web.archive.org/web/20180624184806/"
+                                  "http://www.bzip.org/"
+                                  version "/bzip2-" version ".tar.gz"))
               (sha256
                (base32
                 "1kfrc7f0ja9fdn6j1y6yir6li818npy6217hvr3wzmnmzhs8z152"))))
@@ -316,7 +318,7 @@ being around twice as fast at compression and six times faster at
 decompression.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))
-    (home-page "http://www.bzip.org/")))
+    (home-page "https://web.archive.org/web/20180801004107/http://www.bzip.org/")))
 
 (define-public lbzip2
   (package
