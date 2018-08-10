@@ -63,7 +63,15 @@
                        (file-name "inkscape-poppler-compat.patch")
                        (sha256
                         (base32
-                         "19dam5vsy571xszgjddl5g0958dmcsv0wvgxidp4bhj2lban222i")))))))
+                         "19dam5vsy571xszgjddl5g0958dmcsv0wvgxidp4bhj2lban222i")))
+                     (origin
+                       (method url-fetch)
+                       (uri (string-append "https://gitlab.com/inkscape/inkscape/commit/"
+                                           "fa1c469aa8c005e07bb8676d72af9f7c16fae3e0.diff"))
+                       (file-name "inkscape-poppler-compat2.patch")
+                       (sha256
+                        (base32
+                         "14k9yrfjz4nx3bz9dk91q74mc0i7rvl2qzkwhcy1br71yqjvngn5")))))))
     (build-system cmake-build-system)
     (inputs
      `(("aspell" ,aspell)
