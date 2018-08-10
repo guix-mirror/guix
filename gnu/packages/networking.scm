@@ -1897,23 +1897,16 @@ eight bytes) tools
 (define-public asio
   (package
     (name "asio")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/chriskohlhoff/asio.git")
-             (commit (string-join (cons name (string-split version #\.))
-                                  "-"))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/asio/asio/"
+                           version " (Stable)/" name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "04dg8kpgriay7q62mqcq2gl439k5y4mf761zghsd6wfl0farh3mx"))))
+         "0nln45662kg799ykvqx5m9z9qcsmadmgg6r5najryls7x16in2d9"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
     (inputs
      `(("boost" ,boost)
        ("openssl" ,openssl)))
@@ -1921,15 +1914,7 @@ eight bytes) tools
      `(#:configure-flags
        (list
         (string-append "--with-boost=" (assoc-ref %build-inputs "boost"))
-        (string-append "--with-openssl=" (assoc-ref %build-inputs "openssl")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'chdir-to-asio
-           (lambda _
-             (chdir "asio")))
-         (add-before 'configure 'bootstrap
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
+        (string-append "--with-openssl=" (assoc-ref %build-inputs "openssl")))))
     (home-page "https://think-async.com/Asio")
     (synopsis "C++ library for ASynchronous network I/O")
     (description "Asio is a cross-platform C++ library for network and
