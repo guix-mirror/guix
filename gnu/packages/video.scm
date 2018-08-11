@@ -258,14 +258,14 @@ television and DVD.  It is also known as AC-3.")
 (define-public libx264
   (package
     (name "libx264")
-    (version "20180219-2245")
+    (version "20180810-2245")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/pub/x264/snapshots/"
                                   "x264-snapshot-" version "-stable.tar.bz2"))
               (sha256
                (base32
-                "1x0cg8l30wp84mr7q0ddp06jclm0kjrszazrx87d4k7js3qxjy8m"))))
+                "0f25f39imas9pcqm7lnaa0shhjmf42hdx7jxzcnvxc7qsb7lh1bv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
