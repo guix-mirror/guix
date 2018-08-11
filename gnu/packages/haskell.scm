@@ -1698,6 +1698,27 @@ School of Functional Programming', 1995.  See
 @uref{https://web.cecs.pdx.edu/~mpj/pubs/springschool.html, the paper}.")
     (license license:bsd-3)))
 
+(define-public ghc-parsec-numbers
+  (package
+    (name "ghc-parsec-numbers")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "parsec-numbers/parsec-numbers-" version ".tar.gz"))
+       (sha256
+        (base32 "1gzy4v3r02kvdxvgg1nj83mmb6aph2v4ilf9c7y6nbvi2x49l0bp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-parsec" ,ghc-parsec)))
+    (home-page "http://hackage.haskell.org/package/parsec-numbers")
+    (synopsis "Utilities for parsing numbers from strings")
+    (description
+     "This package provides the number parsers without the need to use a large
+(and unportable) token parser.")
+    (license license:bsd-3)))
+
 (define-public ghc-paths
   (package
     (name "ghc-paths")
