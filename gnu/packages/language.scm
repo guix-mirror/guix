@@ -149,7 +149,7 @@ digits, is a cardinal or ordinal number.")
 (define-public perl-lingua-en-tagger
   (package
     (name "perl-lingua-en-tagger")
-    (version "0.28")
+    (version "0.29")
     (source
      (origin
        (method url-fetch)
@@ -157,7 +157,7 @@ digits, is a cardinal or ordinal number.")
                            "Lingua-EN-Tagger-" version ".tar.gz"))
        (sha256
         (base32
-         "1rm223d871s150dgnhbar71w56bim950cp45f0904w6px5fifcqa"))))
+         "0dssn101kmpkh2ik1430mj2ikk04849vbpgi60382kvh9xn795na"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-memoize-expirelru" ,perl-memoize-expirelru)
