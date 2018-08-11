@@ -505,14 +505,14 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.26")
+    (version "0.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "19g40vqj3cs94i27f66194k7d5cazrv1lx54bz9kc0qy2npxjzgz"))))
+                "0agx490q6sbmv3vfq33ys8dsrgwizj3bmha4i1pkxz5wp5q8cx3l"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
@@ -522,6 +522,7 @@ tiled on several screens.")
        ("ghc-http" ,ghc-http)
        ("ghc-iwlib" ,ghc-iwlib)
        ("ghc-parsec" ,ghc-parsec)
+       ("ghc-parsec-numbers" ,ghc-parsec-numbers)
        ("ghc-regex-compat" ,ghc-regex-compat)
        ("ghc-stm" ,ghc-stm)
        ("ghc-x11-xft" ,ghc-x11-xft)
