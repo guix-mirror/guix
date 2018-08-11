@@ -1072,19 +1072,18 @@ libproxy only have to specify which proxy to use.")
 (define-public proxychains-ng
   (package
     (name "proxychains-ng")
-    (version "4.12")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/rofl0r/" name "/releases/"
-                                  "download/v" version "/" name "-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "0kiss3ih6cwayzvqi5cx4kw4vh7r2kfxlbgk56v1f1066ncm8aj8"))))
+    (version "4.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://ftp.barfooze.de/pub/sabotage/tarballs/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0418fv8hgf43rzrxxlybg49jz2h6w8inndhb6v1184k4cwzjnl3p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
-       #:make-flags '("CC=gcc")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-configure-script
@@ -1095,6 +1094,10 @@ libproxy only have to specify which proxy to use.")
                (("\\*\\) break ;;" line)
                 (string-append "[A-Z]*) shift ;;\n"
                                line)))
+             #t))
+         (add-before 'configure 'set-up-environment
+           (lambda _
+             (setenv "CC" "gcc")
              #t)))))
     (synopsis "Redirect any TCP connection through a proxy or proxy chain")
     (description "Proxychains-ng is a preloader which hooks calls to sockets
