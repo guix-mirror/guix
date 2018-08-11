@@ -143,7 +143,7 @@ convert it to structurally valid XHTML (or HTML).")
     (description
      "Discount is a markdown implementation, written in C.  It provides a
 @command{markdown} command, and a library.")
-    (home-page "http://www.pell.portland.or.us/~orc/Code/discount/")
+    (home-page "https://www.pell.portland.or.us/~orc/Code/discount/")
     (license bsd-3)))
 
 (define-public perl-text-markdown-discount
