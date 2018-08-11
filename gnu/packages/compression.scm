@@ -430,14 +430,14 @@ format are designed to be portable across platforms.")
 (define-public python-lzo
   (package
     (name "python-lzo")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-lzo" version))
        (sha256
         (base32
-         "11p3ifg14p086byhhin6azx5svlkg8dzw2b5abixik97xd6fm81q"))))
+         "0iakqgd51n1cd7r3lpdylm2rgbmd16y74cra9kcapwg84mlf9a4p"))))
     (build-system python-build-system)
     (arguments
      `(#:test-target "check"
