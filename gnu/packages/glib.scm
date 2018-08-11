@@ -878,7 +878,7 @@ of the DBus APIs, not concerning itself yet with the GLib or QT wrappers.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("dbus-glib" ,dbus-glib)))
-    (home-page "http://search.cpan.org/~danberr/Net-DBus-GLib-0.33.0/")
+    (home-page "http://search.cpan.org/dist/Net-DBus-GLib/")
     (synopsis "Perl extension for the DBus GLib bindings")
     (description "This package provides an extension to the @code{Net::DBus}
 module allowing integration with the GLib mainloop.  To integrate with the

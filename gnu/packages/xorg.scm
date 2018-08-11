@@ -5845,8 +5845,7 @@ interface to its methods (using @code{Mouse}).")
     (description
      "X11::Protocol is a client-side interface to the X11 Protocol, allowing
 perl programs to display windows and graphics on X11 servers.")
-    (home-page
-     (string-append "https://metacpan.org/release/SMCCAM/X11-Protocol-" version))
+    (home-page "https://metacpan.org/release/X11-Protocol")
     ;; From the package README: "you can redistribute and/or modify it under
     ;; the same terms as Perl itself. (As an exception, the file
     ;; Keysyms.pm,which is derived from a file in the standard X11

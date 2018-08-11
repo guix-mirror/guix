@@ -543,8 +543,7 @@ conveniently, as well as benchmark code by allowing timings of repeated
 trials.  It is perfect for when you need more precise information about the
 running time of portions of your code than the Benchmark module will give you,
 but don't want to go all out and profile your code.")
-    (home-page (string-append "http://search.cpan.org/~dcoppit/"
-                              "Benchmark-Timer-" version "/"))
+    (home-page "http://search.cpan.org/~dcoppit/Benchmark-Timer")
     (license gpl2)))
 
 (define-public perl-bit-vector
@@ -1340,8 +1339,7 @@ arrays for their internal representation.")
      "This module provides a clone() method which makes recursive copies of
 nested hash, array, scalar and reference types, including tied variables and
 objects.")
-    (home-page (string-append "http://search.cpan.org/~garu/"
-                              "Clone-" version "/"))
+    (home-page "http://search.cpan.org/~garu/Clone")
     (license (package-license perl))))
 
 (define-public perl-clone-pp
@@ -2916,8 +2914,7 @@ input a message of arbitrary length and produces as output a
     (description
      "This package provides 'Digest::SHA1', an implementation of the NIST
 SHA-1 message digest algorithm for use by Perl programs.")
-    (home-page (string-append "http://search.cpan.org/~gaas/Digest-SHA1-"
-                              version "/SHA1.pm"))
+    (home-page "http://search.cpan.org/~gaas/Digest-SHA1")
     (license (package-license perl))))
 
 (define-public perl-dist-checkconflicts
@@ -3757,8 +3754,7 @@ a safe way.")
      "File::Which was created to be able to get the paths to executable
 programs on systems under which the `which' program wasn't implemented in the
 shell.")
-    (home-page (string-append "http://search.cpan.org/~adamk//"
-                              "File-Which-" version))
+    (home-page "http://search.cpan.org/~adamk/File-Which")
     (license (package-license perl))))
 
 (define-public perl-file-zglob
@@ -3855,8 +3851,7 @@ usage (help) messages, data validation, and a few other useful features.")
     (description
      "Getopt::Tabular is a Perl 5 module for table-driven argument parsing,
 vaguely inspired by John Ousterhout's Tk_ParseArgv.")
-    (home-page (string-append "http://search.cpan.org/~gward//"
-                              "Getopt-Tabular-" version))
+    (home-page "http://search.cpan.org/~gward/Getopt-Tabular")
     (license (package-license perl))))
 
 (define-public perl-graph
@@ -4207,7 +4202,7 @@ and busy().")
         (base32
          "18755m410yl70s17rgq3m0hyxl8r5mr47vsq1rw7141d8kc4lgra"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/~gaas/IO-String-1.08//")
+    (home-page "http://search.cpan.org/dist/IO-String")
     (synopsis "Emulate file interface for in-core strings")
     (description "IO::String is an IO::File (and IO::Handle) compatible class
 that reads or writes data from in-core strings.")
@@ -4321,8 +4316,7 @@ both supported and may be mixed.")
 stdout, and/or stderr to files and perl data structures.  It aims to satisfy
 99% of the need for using system, qx, and open3 with a simple, extremely
 Perlish API and none of the bloat and rarely used features of IPC::Run.")
-    (home-page (string-append "http://search.cpan.org/~rjbs//"
-                              "IPC-Run3-" version))
+    (home-page "http://search.cpan.org/~rjbs/IPC-Run3")
     ;; "You may use this module under the terms of the BSD, Artistic, or GPL
     ;; licenses, any version."
     (license (list bsd-3 gpl3+))))
@@ -7045,8 +7039,7 @@ applications.")
      "Probe::Perl provides methods for obtaining information about the
 currently running perl interpreter.  It originally began life as code in the
 Module::Build project, but has been externalized here for general use.")
-    (home-page (string-append "http://search.cpan.org/~kwilliams//"
-                              "Probe-Perl-" version))
+    (home-page "http://search.cpan.org/~kwilliams/Probe-Perl")
     (license (package-license perl))))
 
 (define-public perl-proc-invokeeditor
@@ -7138,8 +7131,7 @@ balanced parentheses and brackets, delimited text (with escapes), integers and
 floating-point numbers in any base (up to 36), comments in 44 languages,
 offensive language, lists of any pattern, IPv4 addresses, URIs, and Zip
 codes.")
-    (home-page (string-append "http://search.cpan.org/~abigail//"
-                              "Regexp-Common-" version))
+    (home-page "http://search.cpan.org/~abigail/Regexp-Common")
     ;; Quad-licensed: Perl Artistic, Perl Artistic 2.0, X11, and BSD.
     (license (list (package-license perl) x11 bsd-3))))
 
@@ -7878,8 +7870,7 @@ TODO: {
     (description
      "Sys::CPU is a module for counting the number of CPUs on a system, and
 determining their type and clock speed.")
-    (home-page (string-append "http://search.cpan.org/~mzsanford//"
-                              "Sys-CPU-" version))
+    (home-page "http://search.cpan.org/~mzsanford/Sys-CPU")
     (license (package-license perl))))
 
 (define-public perl-sys-hostname-long

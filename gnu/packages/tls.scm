@@ -658,7 +658,7 @@ http servers, too), an sslcat() function for writing your own clients, and
 finally access to the SSL api of the SSLeay/OpenSSL package so you can write
 servers or clients for more complicated applications.")
     (license license:perl-license)
-    (home-page "http://search.cpan.org/~mikem/Net-SSLeay-1.66/")))
+    (home-page "http://search.cpan.org/dist/Net-SSLeay")))
 
 (define-public perl-crypt-openssl-rsa
  (package

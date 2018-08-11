@@ -637,7 +637,7 @@ XML::Parser module is built on top of XML::Parser::Expat, which is a lower
 level interface to James Clark's expat library.  XML::DOM::Parser is derived
 from XML::Parser.  It parses XML strings or files and builds a data structure
 that conforms to the API of the Document Object Model.")
-    (home-page "http://search.cpan.org/~tjmather/XML-DOM-1.44/lib/XML/DOM.pm")))
+    (home-page "http://search.cpan.org/dist/XML-DOM")))
 
 (define-public perl-xml-compile-tester
   (package

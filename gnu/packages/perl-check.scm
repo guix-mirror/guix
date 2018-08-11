@@ -864,8 +864,7 @@ stored.  It automatically adds an extra test that will run when your script
 ends to check that there were no warnings.  If there were any warnings, the
 test will fail and output diagnostics of where, when and what the warning was,
 including a stack trace of what was going on when it occurred.")
-    (home-page (string-append "http://search.cpan.org/~adamk//"
-                              "Test-NoWarnings-" version))
+    (home-page "http://search.cpan.org/~adamk/Test-NoWarnings")
     (license lgpl2.1)))
 
 (define-public perl-test-number-delta
@@ -912,8 +911,7 @@ usually called epsilon.  This module provides such a function for use with
      "Test::Output provides a simple interface for testing output sent to
 STDOUT or STDERR.  A number of different utilities are included to try and be
 as flexible as possible to the tester.")
-    (home-page (string-append "http://search.cpan.org/~bdfoy//"
-                              "Test-Output-" version))
+    (home-page "http://search.cpan.org/~bdfoy/Test-Output")
     (license perl-license)))
 
 (define-public perl-test-pod
@@ -1114,8 +1112,7 @@ makes fork(2) safe to use in test cases.")
     (synopsis "Basic utilities for writing tests")
     (description
      "Test::Simple contains basic utilities for writing tests.")
-    (home-page (string-append "http://search.cpan.org/~exodist//"
-                              "Test-Simple-" version))
+    (home-page "http://search.cpan.org/~exodist/Test-Simple")
     (license perl-license)))
 
 (define-public perl-test-taint
@@ -1160,9 +1157,7 @@ easy ways to check and report on the taintedness of your data, in standard
     (description
      "Test::Tester allows testing of test modules based on Test::Builder with
 a minimum of effort.")
-    (home-page (string-append "http://search.cpan.org/~fdaly//"
-                              "Test-Tester-" version))
-    ;; "Under the same license as Perl itself"
+    (home-page "http://search.cpan.org/~fdaly/Test-Tester")
     (license perl-license)))
 
 (define-public perl-test-perltidy

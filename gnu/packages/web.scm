@@ -3688,7 +3688,7 @@ RFC 6570.")
      "This is a Perl extension interface for the libcurl file downloading
 library.")
     (license l:perl-license)
-    (home-page "http://search.cpan.org/~szbalint/WWW-Curl-4.17/lib/WWW/Curl.pm")))
+    (home-page "http://search.cpan.org/dist/WWW-Curl")))
 
 (define-public perl-www-mechanize
   (package
