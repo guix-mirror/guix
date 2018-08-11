@@ -372,11 +372,13 @@ corresponding to an @code{XML::Parser} event.")
     (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)))
     (license license:perl-license)
-    (synopsis "Perl SAX parser using XML::Parser")
+    (synopsis "Perl modules for working with XML")
     (description
-     "XML::Parser::PerlSAX is a PerlSAX parser using the XML::Parser
-module.")
-    (home-page "http://search.cpan.org/~kmacleod/libxml-perl/lib/XML/Parser/PerlSAX.pm")))
+     "libxml-perl is a collection of smaller Perl modules, scripts, and
+documents for working with XML in Perl.  libxml-perl software works in
+combination with @code{XML::Parser}, PerlSAX, @code{XML::DOM},
+@code{XML::Grove}, and others.")
+    (home-page "http://search.cpan.org/dist/libxml-perl")))
 
 (define-public perl-xml-libxml
   (package
