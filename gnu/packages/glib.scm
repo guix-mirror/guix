@@ -670,7 +670,7 @@ useful for C++.")
 (define-public perl-glib
   (package
     (name "perl-glib")
-    (version "1.326")
+    (version "1.327")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -678,7 +678,7 @@ useful for C++.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0prn9kkdpwjq9qmzqashbhk3pq4gvlrmvm3b10xf1dhc48406382"))))
+                "0n7hjhbh5xhagvb0qjwzg21j22ks0csah0chgk98g4wnfllxjl0k"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
