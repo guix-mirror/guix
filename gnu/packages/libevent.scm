@@ -181,7 +181,7 @@ resolution, asynchronous file system operations, and threading primitives.")
        ("perl-json-xs" ,perl-json-xs)
        ("perl-net-ssleay" ,perl-net-ssleay)
        ("perl-task-weaken" ,perl-task-weaken)))
-    (home-page "http://search.cpan.org/dist/AnyEvent")
+    (home-page "https://metacpan.org/release/AnyEvent")
     (synopsis
      "API for I/O, timer, signal, child process and completion events")
     (description
@@ -226,7 +226,7 @@ not rely on XS.")
        ("perl-canary-stability" ,perl-canary-stability)))
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
-    (home-page "http://search.cpan.org/dist/EV")
+    (home-page "https://metacpan.org/release/EV")
     (synopsis "Perl interface to libev")
     (description
      "This module provides an interface to @code{libev}, a high performance

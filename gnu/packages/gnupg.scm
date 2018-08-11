@@ -585,7 +585,7 @@ and signature functionality from Python programs.")
     (native-inputs
      `(("which" ,which)
        ("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/GnuPG-Interface/")
+    (home-page "https://metacpan.org/release/GnuPG-Interface")
     (synopsis "Perl interface to GnuPG")
     (description "@code{GnuPG::Interface} and its associated modules are
 designed to provide an object-oriented method for interacting with GnuPG,

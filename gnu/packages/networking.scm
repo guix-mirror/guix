@@ -893,7 +893,7 @@ private (reserved).")
                             "INSTALLDIRS=site")))
                (setenv "CONFIG_SHELL" (which "sh"))
                (zero? (apply system* "perl" args))))))))
-  (home-page "http://search.cpan.org/dist/Socket6")
+  (home-page "https://metacpan.org/release/Socket6")
   (synopsis
     "IPv6 related part of the C socket.h defines and structure manipulators for Perl")
   (description "Socket6 binds the IPv6 related part of the C socket header
@@ -920,7 +920,7 @@ definitions and structure manipulators for Perl.")
     `(("perl-module-build" ,perl-module-build)))
   (inputs `(("perl-net-dns" ,perl-net-dns)))
   (home-page
-    "http://search.cpan.org/dist/Net-DNS-Resolver-Programmable")
+    "https://metacpan.org/release/Net-DNS-Resolver-Programmable")
   (synopsis
     "Programmable DNS resolver class for offline emulation of DNS")
   (description "Net::DNS::Resolver::Programmable is a programmable DNS resolver for
@@ -954,7 +954,7 @@ offline emulation of DNS.")
                (setenv "CONFIG_SHELL" (which "sh"))
                (zero? (apply system* "perl" args))))))))
   (home-page
-    "http://search.cpan.org/dist/NetAddr-IP")
+    "https://metacpan.org/release/NetAddr-IP")
   (synopsis
     "Manages IPv4 and IPv6 addresses and subnets")
   (description "NetAddr::IP manages IPv4 and IPv6 addresses and subsets.")
@@ -979,7 +979,7 @@ offline emulation of DNS.")
     `(("perl-net-cidr-lite" ,perl-net-cidr-lite)
       ("perl-socket6" ,perl-socket6)))
   (home-page
-    "http://search.cpan.org/dist/Net-Patricia")
+    "https://metacpan.org/release/Net-Patricia")
   (synopsis
     "Patricia Trie Perl module for fast IP address lookups")
   (description
@@ -1004,7 +1004,7 @@ offline emulation of DNS.")
           "14shj73zbqmfjbp0qz1fs9j4p2dpvz5hfkm4qfdjbydflbl2b8fg"))))
   (build-system perl-build-system)
   (home-page
-    "http://search.cpan.org/dist/Net-CIDR-Lite")
+    "https://metacpan.org/release/Net-CIDR-Lite")
   (synopsis
     "Perl extension for merging IPv4 or IPv6 CIDR addresses")
   (description "Net::CIDR::Lite merges IPv4 or IPv6 CIDR addresses.")
@@ -1027,7 +1027,7 @@ offline emulation of DNS.")
         (base32
           "1fka8fr7fw6sh3xa9glhs1zjg3s2gfkhi7n7da1l2m2wblqj0c0n"))))
   (build-system perl-build-system)
-  (home-page "http://search.cpan.org/dist/Geo-IP")
+  (home-page "https://metacpan.org/release/Geo-IP")
   (synopsis
     "Look up location and network information by IP Address in Perl")
   (description "The Perl module 'Geo::IP'.  It looks up location and network
@@ -1057,7 +1057,7 @@ information by IP Address.")
   (arguments `(;; Need network socket API
                #:tests? #f))
   (home-page
-    "http://search.cpan.org/dist/IO-Socket-INET6")
+    "https://metacpan.org/release/IO-Socket-INET6")
   (synopsis
     "Perl object interface for AF_INET/AF_INET6 domain sockets")
   (description "IO::Socket::INET6 is an interface for AF_INET/AF_INET6 domain

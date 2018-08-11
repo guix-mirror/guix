@@ -1135,7 +1135,7 @@ extremely small.")
     (build-system perl-build-system)
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
-    (home-page "http://search.cpan.org/dist/DBI")
+    (home-page "https://metacpan.org/release/DBI")
     (license license:perl-license)))
 
 (define-public perl-dbix-class
@@ -1181,7 +1181,7 @@ extremely small.")
        ("perl-sub-name" ,perl-sub-name)
        ("perl-text-balanced" ,perl-text-balanced)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/DBIx-Class")
+    (home-page "https://metacpan.org/release/DBIx-Class")
     (synopsis "Extensible and flexible object <-> relational mapper")
     (description "An SQL to OO mapper with an object API inspired by
 Class::DBI (with a compatibility layer as a springboard for porting) and a
@@ -1213,7 +1213,7 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
     (propagated-inputs
      `(("perl-carp-clan" ,perl-carp-clan)
        ("perl-dbix-class" ,perl-dbix-class)))
-    (home-page "http://search.cpan.org/dist/DBIx-Class-Cursor-Cached")
+    (home-page "https://metacpan.org/release/DBIx-Class-Cursor-Cached")
     (synopsis "Cursor with built-in caching support")
     (description "DBIx::Class::Cursor::Cached provides a cursor class with
 built-in caching support.")
@@ -1236,7 +1236,7 @@ built-in caching support.")
      `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-dbix-class" ,perl-dbix-class)))
-    (home-page "http://search.cpan.org/dist/DBIx-Class-IntrospectableM2M")
+    (home-page "https://metacpan.org/release/DBIx-Class-IntrospectableM2M")
     (synopsis "Introspect many-to-many relationships")
     (description "Because the many-to-many relationships are not real
 relationships, they can not be introspected with DBIx::Class.  Many-to-many
@@ -1295,7 +1295,7 @@ introspected and examined.")
        ("perl-sub-name" ,perl-sub-name)
        ("perl-try-tiny" ,perl-try-tiny)))
     (arguments `(#:tests? #f))          ;TODO: t/20invocations.t fails
-    (home-page "http://search.cpan.org/dist/DBIx-Class-Schema-Loader")
+    (home-page "https://metacpan.org/release/DBIx-Class-Schema-Loader")
     (synopsis "Create a DBIx::Class::Schema based on a database")
     (description "DBIx::Class::Schema::Loader automates the definition of a
 DBIx::Class::Schema by scanning database table definitions and setting up the
@@ -1320,7 +1320,7 @@ columns, primary keys, unique constraints and relationships.")
     (propagated-inputs
      `(("perl-dbi" ,perl-dbi)
        ("postgresql" ,postgresql)))
-    (home-page "http://search.cpan.org/dist/DBD-Pg")
+    (home-page "https://metacpan.org/release/DBD-Pg")
     (synopsis "DBI PostgreSQL interface")
     (description "This package provides a PostgreSQL driver for the Perl5
 @dfn{Database Interface} (DBI).")
@@ -1345,7 +1345,7 @@ columns, primary keys, unique constraints and relationships.")
     (propagated-inputs
      `(("perl-dbi" ,perl-dbi)
        ("mysql" ,mysql)))
-    (home-page "http://search.cpan.org/dist/DBD-mysql")
+    (home-page "https://metacpan.org/release/DBD-mysql")
     (synopsis "DBI MySQL interface")
     (description "This package provides a MySQL driver for the Perl5
 @dfn{Database Interface} (DBI).")
@@ -1372,7 +1372,7 @@ the entire thing in the distribution.  So in order to get a fast transaction
 capable RDBMS working for your Perl project you simply have to install this
 module, and nothing else.")
     (license license:perl-license)
-    (home-page "http://search.cpan.org/~ishigaki/DBD-SQLite/lib/DBD/SQLite.pm")))
+    (home-page "https://metacpan.org/release/DBD-SQLite")))
 
 (define-public perl-sql-abstract
   (package
@@ -1397,7 +1397,7 @@ module, and nothing else.")
        ("perl-moo" ,perl-moo)
        ("perl-mro-compat" ,perl-mro-compat)
        ("perl-text-balanced" ,perl-text-balanced)))
-    (home-page "http://search.cpan.org/dist/SQL-Abstract")
+    (home-page "https://metacpan.org/release/SQL-Abstract")
     (synopsis "Generate SQL from Perl data structures")
     (description "This module was inspired by the excellent DBIx::Abstract.
 While based on the concepts used by DBIx::Abstract, the concepts used have
@@ -1427,7 +1427,7 @@ time your data changes.")
        ("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-regexp-common" ,perl-regexp-common)
        ("perl-sql-tokenizer" ,perl-sql-tokenizer)))
-    (home-page "http://search.cpan.org/dist/SQL-SplitStatement")
+    (home-page "https://metacpan.org/release/SQL-SplitStatement")
     (synopsis "Split SQL code into atomic statements")
     (description "This module tries to split any SQL code, even including
 non-standard extensions, into the atomic statements it is composed of.")
@@ -1446,7 +1446,7 @@ non-standard extensions, into the atomic statements it is composed of.")
         (base32
          "1qa2dfbzdlr5qqdam9yn78z5w3al5r8577x06qan8wv58ay6ka7s"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/SQL-Tokenizer")
+    (home-page "https://metacpan.org/release/SQL-Tokenizer")
     (synopsis "SQL tokenizer")
     (description "SQL::Tokenizer is a tokenizer for SQL queries.  It does not
 claim to be a parser or query verifier.  It just creates sane tokens from a
@@ -1689,7 +1689,7 @@ database.  Various higher level database abstractions.")
                      (substitute* "config.in"
                        (("/usr/local/BerkeleyDB") (assoc-ref inputs "bdb")))
                      #t)))))
-  (home-page "http://search.cpan.org/dist/DB_File")
+  (home-page "https://metacpan.org/release/DB_File")
   (synopsis
     "Perl5 access to Berkeley DB version 1.x")
   (description

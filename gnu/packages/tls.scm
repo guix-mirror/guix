@@ -658,7 +658,7 @@ http servers, too), an sslcat() function for writing your own clients, and
 finally access to the SSL api of the SSLeay/OpenSSL package so you can write
 servers or clients for more complicated applications.")
     (license license:perl-license)
-    (home-page "http://search.cpan.org/dist/Net-SSLeay")))
+    (home-page "https://metacpan.org/release/Net-SSLeay")))
 
 (define-public perl-crypt-openssl-rsa
  (package
@@ -683,7 +683,7 @@ servers or clients for more complicated applications.")
       ("openssl" ,openssl)))
   (arguments perl-crypt-arguments)
   (home-page
-    "http://search.cpan.org/dist/Crypt-OpenSSL-RSA")
+    "https://metacpan.org/release/Crypt-OpenSSL-RSA")
   (synopsis
     "RSA encoding and decoding, using the openSSL libraries")
   (description "Crypt::OpenSSL::RSA does RSA encoding and decoding (using the
@@ -718,7 +718,7 @@ OpenSSL libraries).")
   (inputs `(("openssl" ,openssl)))
   (arguments perl-crypt-arguments)
   (home-page
-    "http://search.cpan.org/dist/Crypt-OpenSSL-Bignum")
+    "https://metacpan.org/release/Crypt-OpenSSL-Bignum")
   (synopsis
     "OpenSSL's multiprecision integer arithmetic in Perl")
   (description "Crypt::OpenSSL::Bignum provides multiprecision integer
@@ -740,7 +740,7 @@ arithmetic in Perl.")
         (base32
          "0rvi9l4ljcbhwwvspq019nfq2h2v746dk355h2nwnlmqikiihsxa"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Crypt-OpenSSL-Guess/")
+    (home-page "https://metacpan.org/release/Crypt-OpenSSL-Guess")
     (synopsis "Guess the OpenSSL include path")
     (description
      "The Crypt::OpenSSL::Guess Perl module provides helpers to guess the
@@ -769,7 +769,7 @@ correct OpenSSL include path.  It is intended for use in your
    `(("openssl" ,openssl)))
   (arguments perl-crypt-arguments)
   (home-page
-    "http://search.cpan.org/dist/Crypt-OpenSSL-Random")
+    "https://metacpan.org/release/Crypt-OpenSSL-Random")
   (synopsis
     "OpenSSL/LibreSSL pseudo-random number generator access")
   (description "Crypt::OpenSSL::Random is a OpenSSL/LibreSSL pseudo-random

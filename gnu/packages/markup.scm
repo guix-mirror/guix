@@ -178,7 +178,7 @@ convert it to structurally valid XHTML (or HTML).")
     (inputs
      `(("discount" ,discount)))
     (home-page
-     "http://search.cpan.org/dist/Text-Markdown-Discount")
+     "https://metacpan.org/release/Text-Markdown-Discount")
     (synopsis
      "Fast function for converting Markdown to HTML using Discount")
     (description

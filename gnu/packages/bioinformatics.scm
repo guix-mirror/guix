@@ -720,7 +720,7 @@ e.g. microbiome samples, genomes, metagenomes.")
       (inputs inputs)
       (native-inputs
        `(("perl-test-most" ,perl-test-most)))
-      (home-page "http://search.cpan.org/dist/BioPerl")
+      (home-page "https://metacpan.org/release/BioPerl")
       (synopsis "Bioinformatics toolkit")
       (description
        "BioPerl is the product of a community effort to produce Perl code which

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nils Gillmann <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -43,7 +43,7 @@
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-lingua-en-words2nums" ,perl-lingua-en-words2nums)))
-    (home-page "http://search.cpan.org/dist/Lingua-EN-FindNumber")
+    (home-page "https://metacpan.org/release/Lingua-EN-FindNumber")
     (synopsis "Locate (written) numbers in English text ")
     (description "This module provides a regular expression for finding
 numbers in English text.  It also provides functions for extracting and
@@ -64,7 +64,7 @@ manipulating such numbers.")
          "0j8d1f1wvmgc11d71pc8xp8fv5a1nb2yfw1dgd19xhscn1klpvzw"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Lingua-EN-Inflect")
+    (home-page "https://metacpan.org/release/Lingua-EN-Inflect")
     (synopsis "Convert singular to plural")
     (description "Lingua::EN::Inflect provides plural inflections,
 \"a\"/\"an\" selection for English words, and manipulation of numbers as
@@ -88,7 +88,7 @@ provided.  Where appropriate, \"classical\" variants (for example: \"brother\"
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-lingua-en-inflect" ,perl-lingua-en-inflect)))
-    (home-page "http://search.cpan.org/dist/Lingua-EN-Inflect-Number")
+    (home-page "https://metacpan.org/release/Lingua-EN-Inflect-Number")
     (synopsis "Force number of words to singular or plural")
     (description "This module extends the functionality of Lingua::EN::Inflect
 with three new functions for determining plurality of a word and forcefully
@@ -116,7 +116,7 @@ converting a word to singular or plural.")
        ("perl-lingua-en-inflect-number" ,perl-lingua-en-inflect-number)
        ("perl-lingua-en-number-isordinal" ,perl-lingua-en-number-isordinal)
        ("perl-lingua-en-tagger" ,perl-lingua-en-tagger)))
-    (home-page "http://search.cpan.org/dist/Lingua-EN-Inflect-Phrase")
+    (home-page "https://metacpan.org/release/Lingua-EN-Inflect-Phrase")
     (synopsis "Inflect short English phrases")
     (description "This module attempts to pluralize or singularize short
 English phrases.")
@@ -140,7 +140,7 @@ English phrases.")
        ("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-lingua-en-findnumber" ,perl-lingua-en-findnumber)))
-    (home-page "http://search.cpan.org/dist/Lingua-EN-Number-IsOrdinal")
+    (home-page "https://metacpan.org/release/Lingua-EN-Number-IsOrdinal")
     (synopsis "Detect if English number is ordinal or cardinal")
     (description "This module will tell you if a number, either in words or as
 digits, is a cardinal or ordinal number.")
@@ -164,7 +164,7 @@ digits, is a cardinal or ordinal number.")
        ("perl-lingua-stem" ,perl-lingua-stem)
        ("perl-html-parser" ,perl-html-parser)
        ("perl-html-tagset" ,perl-html-tagset)))
-    (home-page "http://search.cpan.org/dist/Lingua-EN-Tagger")
+    (home-page "https://metacpan.org/release/Lingua-EN-Tagger")
     (synopsis "Part-of-speech tagger for English natural language processing")
     (description "This module is a probability based, corpus-trained tagger
 that assigns part-of-speech tags to English text based on a lookup dictionary
@@ -189,7 +189,7 @@ using a set of regular expressions.")
         (base32
          "118xx8qr1zbx30psv7ic55w65h15mc1vz6zicshfm96jgiwmcrb8"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Lingua-EN-Words2Nums")
+    (home-page "https://metacpan.org/release/Lingua-EN-Words2Nums")
     (synopsis "Convert English text to numbers")
     (description "This module converts English text into numbers.  It supports
 both ordinal and cardinal numbers, negative numbers, and very large numbers.")
@@ -208,7 +208,7 @@ both ordinal and cardinal numbers, negative numbers, and very large numbers.")
         (base32
          "17c48sfbgwd2ivlgf59sr6jdhwa3aim8750f8pyzz7xpi8gz0var"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Lingua-PT-Stemmer")
+    (home-page "https://metacpan.org/release/Lingua-PT-Stemmer")
     (synopsis "Portuguese language stemming")
     (description "This module implements a Portuguese stemming algorithm
 proposed in the paper A Stemming Algorithm for the Portuguese Language by
@@ -239,7 +239,7 @@ Moreira, V. and Huyck, C.")
        ("perl-snowball-norwegian" ,perl-snowball-norwegian)
        ("perl-snowball-swedish" ,perl-snowball-swedish)
        ("perl-text-german" ,perl-text-german)))
-    (home-page "http://search.cpan.org/dist/Lingua-Stem")
+    (home-page "https://metacpan.org/release/Lingua-Stem")
     (synopsis "Stemming of words in various languages")
     (description "This routine applies stemming algorithms to its parameters,
 returning the stemmed words as appropriate to the selected locale.")
@@ -258,7 +258,7 @@ returning the stemmed words as appropriate to the selected locale.")
         (base32
          "0vyrspwzaqjxm5mqshf4wvwa3938mkajd1918d9ii2l9m2rn8kwx"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Lingua-Stem-Fr")
+    (home-page "https://metacpan.org/release/Lingua-Stem-Fr")
     (synopsis "Porter's stemming algorithm for French")
     (description "This module uses a modified version of the Porter Stemming
 Algorithm to return a stemmed French word.")
@@ -277,7 +277,7 @@ Algorithm to return a stemmed French word.")
         (base32
          "1207r183s5hlh4mfwa6p46vzm0dhvrs2dnss5s41a0gyfkxp7riq"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Lingua-Stem-It")
+    (home-page "https://metacpan.org/release/Lingua-Stem-It")
     (synopsis "Porter's stemming algorithm for Italian")
     (description "This module applies the Porter Stemming Algorithm to its
 parameters, returning the stemmed Italian word.")
@@ -296,7 +296,7 @@ parameters, returning the stemmed Italian word.")
         (base32
          "0a2jmdz7jn32qj5hyiw5kbv8fvlpmws8i00a6xcbkzb48yvwww0j"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Lingua-Stem-Ru")
+    (home-page "https://metacpan.org/release/Lingua-Stem-Ru")
     (synopsis "Porter's stemming algorithm for Russian")
     (description "This module applies the Porter Stemming Algorithm to its
 parameters, returning the stemmed Russian (KOI8-R only) word.")
@@ -315,7 +315,7 @@ parameters, returning the stemmed Russian (KOI8-R only) word.")
         (base32
          "0mm0m7glm1s6i9f6a78jslw6wh573208arxhq93yriqmw17bwf9f"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Lingua-Stem-Snowball-Da")
+    (home-page "https://metacpan.org/release/Lingua-Stem-Snowball-Da")
     (synopsis "Porters stemming algorithm for Danish")
     (description "Lingua::Stem::Snowball::Da is a perl port of the danish
 stemmer at http://snowball.sourceforge.net, it was originally altered from the
@@ -336,7 +336,7 @@ Lingua::Stem::Snowball::Se.")
          "0675v45bbsh7vr7kpf36xs2q79g02iq1kmfw22h20xdk4rzqvkqx"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Snowball-Norwegian")
+    (home-page "https://metacpan.org/release/Snowball-Norwegian")
     (synopsis "Porters stemming algorithm for Norwegian")
     (description "Lingua::Stem::Snowball::No is a perl port of the norwegian
 stemmer at http://snowball.tartarus.org.")
@@ -356,7 +356,7 @@ stemmer at http://snowball.tartarus.org.")
          "0agwc12jk5kmabnpsplw3wf4ii5w1zb159cpin44x3srb0sr5apg"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Snowball-Swedish")
+    (home-page "https://metacpan.org/release/Snowball-Swedish")
     (synopsis "Porters stemming algorithm for Swedish")
     (description "Lingua::Stem::Snowball::Se is a perl port of the swedish
 stemmer at http://snowball.sourceforge.net.")
@@ -379,7 +379,7 @@ stemmer at http://snowball.sourceforge.net.")
      `(("perl-lingua-en-inflect-phrase" ,perl-lingua-en-inflect-phrase)
        ("perl-text-unidecode" ,perl-text-unidecode)
        ("perl-namespace-clean" ,perl-namespace-clean)))
-    (home-page "http://search.cpan.org/dist/String-ToIdentifier-EN")
+    (home-page "https://metacpan.org/release/String-ToIdentifier-EN")
     (synopsis "Convert strings to English program identifiers")
     (description "This module provides a utility method, \"to_identifier\" for
 converting an arbitrary string into a readable representation using the ASCII
@@ -401,7 +401,7 @@ string can be easily inferred by a human just by reading the identifier.")
         (base32
          "1p87pgap99lw0nv62i3ghvsi7yg90lhn8vsa3yqp75rd04clybcj"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Text-German")
+    (home-page "https://metacpan.org/release/Text-German")
     (synopsis "German grundform reduction")
     (description "This module is a rather incomplete implementation of work
 done by Gudrun Putze-Meier.")

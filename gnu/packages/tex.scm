@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -4094,7 +4094,7 @@ This package contains the complete TeX Live distribution.")
        ("perl-config-autoconf" ,perl-config-autoconf)
        ("perl-extutils-libbuilder" ,perl-extutils-libbuilder)
        ("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Text-BibTeX")
+    (home-page "https://metacpan.org/release/Text-BibTeX")
     (synopsis "Interface to read and parse BibTeX files")
     (description "@code{Text::BibTeX} is a Perl library for reading, parsing,
 and processing BibTeX files.  @code{Text::BibTeX} gives you access to the data

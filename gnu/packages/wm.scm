@@ -248,7 +248,7 @@ developers.")
     (propagated-inputs
      `(("perl-anyevent" ,perl-anyevent)
        ("perl-json-xs" ,perl-json-xs)))
-    (home-page "http://search.cpan.org/dist/AnyEvent-I3")
+    (home-page "https://metacpan.org/release/AnyEvent-I3")
     (synopsis
      "Communicate with the i3 window manager through perl")
     (description

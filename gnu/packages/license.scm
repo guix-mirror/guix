@@ -49,7 +49,7 @@
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-strictures" ,perl-strictures-2)))
-    (home-page "http://search.cpan.org/dist/Regexp-Pattern-License/")
+    (home-page "https://metacpan.org/release/Regexp-Pattern-License")
     (synopsis "Regular expressions for legal licenses")
     (description "Regexp::Pattern::License provides a hash of regular
 expression patterns related to legal software licenses.
@@ -75,7 +75,7 @@ Regexp::Pattern is a convention for organizing reusable regex patterns.")
      `(("perl-number-range" ,perl-number-range)))
     (propagated-inputs
      `(("perl-exporter-tiny" ,perl-exporter-tiny)))
-    (home-page "http://search.cpan.org/dist/String-Copyright/")
+    (home-page "https://metacpan.org/release/String-Copyright")
     (synopsis "Representation of text-based copyright statements")
     (description "String::Copyright Parses common styles of copyright
 statements and serializes in normalized format.")
@@ -100,7 +100,7 @@ statements and serializes in normalized format.")
     (propagated-inputs
      `(("perl-data-section" ,perl-data-section)
        ("perl-text-template" ,perl-text-template)))
-    (home-page "http://search.cpan.org/dist/Software-License/")
+    (home-page "https://metacpan.org/release/Software-License")
     (synopsis "Templated software licenses")
     (description "This package provides templated software licenses.")
     (license (package-license perl))))
@@ -153,7 +153,7 @@ statements and serializes in normalized format.")
                  `("PERL5LIB" ":"
                    prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))
                #t))))))
-    (home-page "http://search.cpan.org/dist/App-Licensecheck/")
+    (home-page "https://metacpan.org/release/App-Licensecheck")
     (synopsis "License checker for source files")
     (description "Licensecheck attempts to determine the license that applies
 to each file passed to it, by searching the start of the file for text

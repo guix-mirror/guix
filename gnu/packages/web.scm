@@ -460,7 +460,7 @@ servers that may need it).")
        ("perl-net-server" ,perl-net-server)
        ("perl-plack" ,perl-plack)
        ("perl-test-tcp" ,perl-test-tcp)))
-    (home-page "http://search.cpan.org/dist/Starman")
+    (home-page "https://metacpan.org/release/Starman")
     (synopsis "PSGI/Plack web server")
     (description "Starman is a PSGI perl web server that has unique features
 such as high performance, preforking, signal support, superdaemon awareness,
@@ -1287,7 +1287,7 @@ language known as SASS.")
     (propagated-inputs
      `(("perl-posix-strftime-compiler" ,perl-posix-strftime-compiler)))
     (arguments `(#:tests? #f))          ;TODO: Timezone test failures
-    (home-page "http://search.cpan.org/dist/Apache-LogFormat-Compiler")
+    (home-page "https://metacpan.org/release/Apache-LogFormat-Compiler")
     (synopsis "Compile a log format string to perl-code")
     (description "This module provides methods to compile a log format string
 to perl-code, for faster generation of access_log lines.")
@@ -1316,7 +1316,7 @@ to perl-code, for faster generation of access_log lines.")
     (propagated-inputs
      `(("perl-digest-hmac" ,perl-digest-hmac)
        ("perl-gssapi" ,perl-gssapi)))
-    (home-page "http://search.cpan.org/dist/Authen-SASL")
+    (home-page "https://metacpan.org/release/Authen-SASL")
     (synopsis "SASL authentication framework")
     (description "Authen::SASL provides an SASL authentication framework.")
     (license l:perl-license)))
@@ -1342,7 +1342,7 @@ to perl-code, for faster generation of access_log lines.")
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-data-visitor" ,perl-data-visitor)
        ("perl-mro-compat" ,perl-mro-compat)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Action-RenderView")
+    (home-page "https://metacpan.org/release/Catalyst-Action-RenderView")
     (synopsis "Sensible default Catalyst action")
     (description "This Catalyst action implements a sensible default end
 action, which will forward to the first available view.")
@@ -1375,7 +1375,7 @@ action, which will forward to the first available view.")
        ("perl-params-validate" ,perl-params-validate)
        ("perl-uri-find" ,perl-uri-find)
        ("perl-xml-simple" ,perl-xml-simple)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Action-REST")
+    (home-page "https://metacpan.org/release/Catalyst-Action-REST")
     (synopsis "Automated REST Method Dispatching")
     (description "This Action handles doing automatic method dispatching for
 REST requests.  It takes a normal Catalyst action, and changes the dispatch to
@@ -1413,7 +1413,7 @@ regular method.")
        ("perl-dbix-class" ,perl-dbix-class)
        ("perl-catalyst-model-dbic-schema" ,perl-catalyst-model-dbic-schema)))
     (home-page
-     "http://search.cpan.org/dist/Catalyst-Authentication-Store-DBIx-Class")
+     "https://metacpan.org/release/Catalyst-Authentication-Store-DBIx-Class")
     (synopsis "Storage class for Catalyst authentication using DBIx::Class")
     (description "The Catalyst::Authentication::Store::DBIx::Class class
 provides access to authentication information stored in a database via
@@ -1440,7 +1440,7 @@ DBIx::Class.")
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-moose" ,perl-moose)))
     (home-page
-     "http://search.cpan.org/dist/Catalyst-Component-InstancePerContext")
+     "https://metacpan.org/release/Catalyst-Component-InstancePerContext")
     (synopsis "Create only one instance of Moose component per context")
     (description "Catalyst::Component::InstancePerContext returns a new
 instance of a component on each request.")
@@ -1478,7 +1478,7 @@ instance of a component on each request.")
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-path-class" ,perl-path-class)
        ("perl-template-toolkit" ,perl-template-toolkit)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Devel")
+    (home-page "https://metacpan.org/release/Catalyst-Devel")
     (synopsis "Catalyst Development Tools")
     (description "The Catalyst-Devel distribution includes a variety of
 modules useful for the development of Catalyst applications, but not required
@@ -1508,7 +1508,7 @@ modules.")
     (propagated-inputs
      `(("perl-moose" ,perl-moose)
        ("perl-text-simpletable" ,perl-text-simpletable)))
-    (home-page "http://search.cpan.org/dist/Catalyst-DispatchType-Regex")
+    (home-page "https://metacpan.org/release/Catalyst-DispatchType-Regex")
     (synopsis "Regex DispatchType for Catalyst")
     (description "Dispatch type managing path-matching behaviour using
 regexes.  Regex dispatch types have been deprecated and removed from Catalyst
@@ -1558,7 +1558,7 @@ when the dispatch type is first seen in your application.")
      ("perl-namespace-clean" ,perl-namespace-clean)
      ("perl-tie-ixhash" ,perl-tie-ixhash)
      ("perl-try-tiny" ,perl-try-tiny)))
-  (home-page "http://search.cpan.org/dist/Catalyst-Model-DBIC-Schema")
+  (home-page "https://metacpan.org/release/Catalyst-Model-DBIC-Schema")
   (synopsis "DBIx::Class::Schema Model Class")
   (description "This is a Catalyst Model for DBIx::Class::Schema-based
 Models.")
@@ -1582,7 +1582,7 @@ Models.")
        ("perl-datetime" ,perl-datetime)
        ("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-AccessLog")
+    (home-page "https://metacpan.org/release/Catalyst-Plugin-AccessLog")
     (synopsis "Request logging from within Catalyst")
     (description "This Catalyst plugin enables you to create \"access logs\"
 from within a Catalyst application instead of requiring a webserver to do it
@@ -1617,7 +1617,7 @@ for you.  It will work even with Catalyst debug logging turned off.")
        ("perl-string-rewriteprefix" ,perl-string-rewriteprefix)
        ("perl-test-exception" ,perl-test-exception)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Authentication")
+    (home-page "https://metacpan.org/release/Catalyst-Plugin-Authentication")
     (synopsis "Infrastructure plugin for the Catalyst authentication framework")
     (description "The authentication plugin provides generic user support for
 Catalyst apps.  It is the basis for both authentication (checking the user is
@@ -1649,7 +1649,7 @@ system authorises them to do).")
        ("perl-set-object" ,perl-set-object)
        ("perl-universal-isa" ,perl-universal-isa)))
     (home-page
-     "http://search.cpan.org/dist/Catalyst-Plugin-Authorization-Roles")
+     "https://metacpan.org/release/Catalyst-Plugin-Authorization-Roles")
     (synopsis "Role-based authorization for Catalyst")
     (description "Catalyst::Plugin::Authorization::Roles provides role-based
 authorization for Catalyst based on Catalyst::Plugin::Authentication.")
@@ -1673,7 +1673,7 @@ authorization for Catalyst based on Catalyst::Plugin::Authentication.")
        ("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-gd-securityimage" ,perl-gd-securityimage)
        ("perl-http-date" ,perl-http-date)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Captcha")
+    (home-page "https://metacpan.org/release/Catalyst-Plugin-Captcha")
     (synopsis "Captchas for Catalyst")
     (description "This plugin creates and validates Captcha images for
 Catalyst.")
@@ -1701,7 +1701,7 @@ Catalyst.")
        ("perl-config-any" ,perl-config-any)
        ("perl-data-visitor" ,perl-data-visitor)
        ("perl-mro-compat" ,perl-mro-compat)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-ConfigLoader")
+    (home-page "https://metacpan.org/release/Catalyst-Plugin-ConfigLoader")
     (synopsis "Load config files of various types")
     (description "This module will attempt to load find and load configuration
 files of various types.  Currently it supports YAML, JSON, XML, INI and Perl
@@ -1734,7 +1734,7 @@ formats.")
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-object-signature" ,perl-object-signature)
        ("perl-test-www-mechanize-psgi" ,perl-test-www-mechanize-psgi)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Session")
+    (home-page "https://metacpan.org/release/Catalyst-Plugin-Session")
     (synopsis "Catalyst generic session plugin")
     (description "This plugin links the two pieces required for session
 management in web applications together: the state, and the store.")
@@ -1763,7 +1763,7 @@ management in web applications together: the state, and the store.")
        ("perl-mro-compat" ,perl-mro-compat)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
     (home-page
-     "http://search.cpan.org/dist/Catalyst-Plugin-Session-State-Cookie")
+     "https://metacpan.org/release/Catalyst-Plugin-Session-State-Cookie")
     (synopsis "Maintain session IDs using cookies")
     (description "In order for Catalyst::Plugin::Session to work, the session
 ID needs to be stored on the client, and the session data needs to be stored
@@ -1794,7 +1794,7 @@ cookie mechanism.")
        ("perl-mro-compat" ,perl-mro-compat)
        ("perl-path-class" ,perl-path-class)))
     (home-page
-     "http://search.cpan.org/dist/Catalyst-Plugin-Session-Store-FastMmap")
+     "https://metacpan.org/release/Catalyst-Plugin-Session-Store-FastMmap")
     (synopsis "FastMmap session storage backend")
     (description "Catalyst::Plugin::Session::Store::FastMmap is a fast session
 storage plugin for Catalyst that uses an mmap'ed file to act as a shared
@@ -1820,7 +1820,7 @@ memory interprocess cache.  It is based on Cache::FastMmap.")
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-devel-stacktrace" ,perl-devel-stacktrace)
        ("perl-mro-compat" ,perl-mro-compat)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-StackTrace")
+    (home-page "https://metacpan.org/release/Catalyst-Plugin-StackTrace")
     (synopsis "Stack trace on the Catalyst debug screen")
     (description "This plugin enhances the standard Catalyst debug screen by
 including a stack trace of your application up to the point where the error
@@ -1849,7 +1849,7 @@ number, file name, and code context surrounding the line number.")
        ("perl-moose" ,perl-moose)
        ("perl-moosex-types" ,perl-moosex-types)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Plugin-Static-Simple")
+    (home-page "https://metacpan.org/release/Catalyst-Plugin-Static-Simple")
     (synopsis "Simple serving of static pages")
     (description "The Static::Simple plugin is designed to make serving static
 content in your application during development quick and easy, without
@@ -1912,7 +1912,7 @@ MIME type directly to the browser, without being processed through Catalyst.")
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-uri" ,perl-uri)
        ("perl-uri-ws" ,perl-uri-ws)))
-    (home-page "http://search.cpan.org/dist/Catalyst-Runtime")
+    (home-page "https://metacpan.org/release/Catalyst-Runtime")
     (synopsis "The Catalyst Framework Runtime")
     (description "Catalyst is a modern framework for making web applications.
 It is designed to make it easy to manage the various tasks you need to do to
@@ -1944,7 +1944,7 @@ run an application on the web, either by doing them itself, or by letting you
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)
        ("perl-uri" ,perl-uri)))
     (home-page
-     "http://search.cpan.org/dist/Catalyst-TraitFor-Request-ProxyBase")
+     "https://metacpan.org/release/Catalyst-TraitFor-Request-ProxyBase")
     (synopsis "Replace request base with value passed by HTTP proxy")
     (description "This module is a Moose::Role which allows you more
 flexibility in your application's deployment configurations when deployed
@@ -1972,7 +1972,7 @@ replaced with the contents of the X-Request-Base header.")
        ("perl-test-www-mechanize-catalyst" ,perl-test-www-mechanize-catalyst)
        ("perl-text-csv" ,perl-text-csv)
        ("perl-xml-simple" ,perl-xml-simple)))
-    (home-page "http://search.cpan.org/dist/Catalyst-View-Download")
+    (home-page "https://metacpan.org/release/Catalyst-View-Download")
     (synopsis "Download data in many formats")
     (description "The purpose of this module is to provide a method for
 downloading data into many supportable formats.  For example, downloading a
@@ -1999,7 +1999,7 @@ table based report in a variety of formats (CSV, HTML, etc.).")
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-json-maybexs" ,perl-json-maybexs)
        ("perl-mro-compat" ,perl-mro-compat)))
-    (home-page "http://search.cpan.org/dist/Catalyst-View-JSON")
+    (home-page "https://metacpan.org/release/Catalyst-View-JSON")
     (synopsis "Catalyst JSON view")
     (description "Catalyst::View::JSON is a Catalyst View handler that returns
 stash data in JSON format.")
@@ -2026,7 +2026,7 @@ stash data in JSON format.")
      ("perl-path-class" ,perl-path-class)
      ("perl-template-timer" ,perl-template-timer)
      ("perl-template-toolkit" ,perl-template-toolkit)))
-  (home-page "http://search.cpan.org/dist/Catalyst-View-TT")
+  (home-page "https://metacpan.org/release/Catalyst-View-TT")
   (synopsis "Template View Class")
   (description "This module is a Catalyst view class for the Template
 Toolkit.")
@@ -2056,7 +2056,7 @@ Toolkit.")
        ("perl-moosex-traits-pluggable" ,perl-moosex-traits-pluggable)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)
        ("perl-list-moreutils" ,perl-list-moreutils)))
-    (home-page "http://search.cpan.org/dist/CatalystX-Component-Traits")
+    (home-page "https://metacpan.org/release/CatalystX-Component-Traits")
     (synopsis "Trait Loading and Resolution for Catalyst Components")
     (description "Adds a \"COMPONENT\" in Catalyst::Component method to your
 Catalyst component base class that reads the optional \"traits\" parameter
@@ -2082,7 +2082,7 @@ MooseX::Traits::Pluggable.")
      `(("perl-catalyst-runtime" ,perl-catalyst-runtime)
        ("perl-moose" ,perl-moose)
        ("perl-moosex-relatedclassroles" ,perl-moosex-relatedclassroles)))
-    (home-page "http://search.cpan.org/dist/CatalystX-RoleApplicator")
+    (home-page "https://metacpan.org/release/CatalystX-RoleApplicator")
     (synopsis "Apply roles to Catalyst classes")
     (description "CatalystX::RoleApplicator applies roles to Catalyst
 application classes.")
@@ -2110,7 +2110,7 @@ application classes.")
        ("perl-moose" ,perl-moose)
        ("perl-namespace-autoclean" ,perl-namespace-autoclean)
        ("starman" ,starman)))
-    (home-page "http://search.cpan.org/dist/CatalystX-Script-Server-Starman")
+    (home-page "https://metacpan.org/release/CatalystX-Script-Server-Starman")
     (synopsis "Catalyst development server with Starman")
     (description "This module provides a Catalyst extension to replace the
 development server with Starman.")
@@ -2135,7 +2135,7 @@ development server with Starman.")
        ("perl-test-warn" ,perl-test-warn)))
     (propagated-inputs
      `(("perl-html-parser" ,perl-html-parser)))
-    (home-page "http://search.cpan.org/dist/CGI")
+    (home-page "https://metacpan.org/release/CGI")
     (synopsis "Handle Common Gateway Interface requests and responses")
     (description "CGI.pm is a stable, complete and mature solution for
 processing and preparing HTTP requests and responses.  Major features include
@@ -2187,7 +2187,7 @@ form-based applications.")
      `(("perl-module-build" ,perl-module-build)))
     (inputs `(("perl-cgi" ,perl-cgi)))
     (home-page
-     "http://search.cpan.org/dist/CGI-Session")
+     "https://metacpan.org/release/CGI-Session")
     (synopsis
      "Persistent session data in CGI applications")
     (description
@@ -2213,7 +2213,7 @@ HTTP requests.")
        ("perl-module-build" ,perl-module-build)
        ("perl-test-exception" ,perl-test-exception)
        ("perl-test-nowarnings" ,perl-test-nowarnings)))
-    (home-page "http://search.cpan.org/dist/CGI-Simple")
+    (home-page "https://metacpan.org/release/CGI-Simple")
     (synopsis "CGI interface that is CGI.pm compliant")
     (description "CGI::Simple provides a relatively lightweight drop in
 replacement for CGI.pm.  It shares an identical OO interface to CGI.pm for
@@ -2235,7 +2235,7 @@ parameter parsing, file upload, cookie handling and header generation.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)))
-    (home-page "http://search.cpan.org/dist/CGI-Struct")
+    (home-page "https://metacpan.org/release/CGI-Struct")
     (synopsis "Build structures from CGI data")
     (description "This is a module for building structured data from CGI
 inputs, in a manner reminiscent of how PHP does.")
@@ -2259,7 +2259,7 @@ inputs, in a manner reminiscent of how PHP does.")
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-http-date" ,perl-http-date)))
-    (home-page "http://search.cpan.org/dist/DateTime-Format-HTTP")
+    (home-page "https://metacpan.org/release/DateTime-Format-HTTP")
     (synopsis "Date conversion routines")
     (description "This module provides functions that deal with the date
 formats used by the HTTP protocol.")
@@ -2280,7 +2280,7 @@ formats used by the HTTP protocol.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-libwww" ,perl-libwww)))
-    (home-page "http://search.cpan.org/dist/Digest-MD5-File")
+    (home-page "https://metacpan.org/release/Digest-MD5-File")
     (synopsis "MD5 sums for files and urls")
     (description "Digest::MD5::File is a Perl extension for getting MD5 sums
 for files and urls.")
@@ -2310,7 +2310,7 @@ Encode module to know this encoding under the name \"locale\".  It means
 bytes obtained from the environment can be converted to Unicode strings
 by calling Encode::encode(locale => $bytes) and converted back again
 with Encode::decode(locale => $string).")
-    (home-page "http://search.cpan.org/~gaas/Encode-Locale/")))
+    (home-page "https://metacpan.org/release/Encode-Locale")))
 
 (define-public perl-feed-find
   (package
@@ -2336,7 +2336,7 @@ with Encode::decode(locale => $string).")
        ("perl-html-parser" ,perl-html-parser)
        ("perl-libwww" ,perl-libwww)
        ("perl-uri" ,perl-uri)))
-    (home-page "http://search.cpan.org/dist/Feed-Find")
+    (home-page "https://metacpan.org/release/Feed-Find")
     (synopsis "Syndication feed auto-discovery")
     (description "@code{Feed::Find} implements feed auto-discovery for finding
 syndication feeds, given a URI.  It will discover the following feed formats:
@@ -2363,7 +2363,7 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom.")
     (description
      "The File::Listing module exports a single function called parse_dir(),
 which can be used to parse directory listings.")
-    (home-page "http://search.cpan.org/~gaas/File-Listing/")))
+    (home-page "https://metacpan.org/release/File-Listing")))
 
 (define-public perl-finance-quote
   (package
@@ -2392,7 +2392,7 @@ which can be used to parse directory listings.")
       ("perl-libwww" ,perl-libwww)
       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
       ("perl-uri" ,perl-uri)))
-   (home-page "http://search.cpan.org/dist/Finance-Quote")
+   (home-page "https://metacpan.org/release/Finance-Quote")
    (synopsis "Stock and mutual fund quotes")
    (description
     "Finance::Quote gets stock quotes from various internet sources, including
@@ -2416,7 +2416,7 @@ Yahoo! Finance, Fidelity Investments, and the Australian Stock Exchange.")
     (arguments
      `(#:make-maker-flags
        `(,(string-append "--gssapiimpl=" (assoc-ref %build-inputs "gssapi")))))
-    (home-page "http://search.cpan.org/dist/GSSAPI")
+    (home-page "https://metacpan.org/release/GSSAPI")
     (synopsis "Perl extension providing access to the GSSAPIv2 library")
     (description "This is a Perl extension for using GSSAPI C bindings as
 described in RFC 2744.")
@@ -2437,7 +2437,7 @@ described in RFC 2744.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-html-tree" ,perl-html-tree)))
-    (home-page "http://search.cpan.org/dist/HTML-Element-Extended")
+    (home-page "https://metacpan.org/release/HTML-Element-Extended")
     (synopsis "Manipulate tables of HTML::Element")
     (description
      "HTML::Element::Extended is a Perl extension for manipulating a table
@@ -2463,7 +2463,7 @@ composed of HTML::Element style components.")
        ("perl-http-message" ,perl-http-message)
        ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
        ("perl-uri" ,perl-uri)))
-    (home-page "http://search.cpan.org/dist/HTML-Form")
+    (home-page "https://metacpan.org/release/HTML-Form")
     (synopsis "Perl class representing an HTML form element")
     (description "Objects of the HTML::Form class represents a single HTML
 <form> ... </form> instance.")
@@ -2494,7 +2494,7 @@ composed of HTML::Element style components.")
     (inputs
      `(("perl-html-parser" ,perl-html-parser)))
     (home-page
-     "http://search.cpan.org/dist/HTML-Scrubber")
+     "https://metacpan.org/release/HTML-Scrubber")
     (synopsis
      "Perl extension for scrubbing/sanitizing html")
     (description
@@ -2518,7 +2518,7 @@ composed of HTML::Element style components.")
      `(("perl-html-parser" ,perl-html-parser)
        ("perl-html-tagset" ,perl-html-tagset)
        ("perl-libwww" ,perl-libwww)))
-    (home-page "http://search.cpan.org/dist/HTML-Lint")
+    (home-page "https://metacpan.org/release/HTML-Lint")
     (synopsis "Check for HTML errors in a string or file")
     (description "HTML::Lint is a pure-Perl HTML parser and checker for
 syntactic legitmacy.")
@@ -2540,7 +2540,7 @@ syntactic legitmacy.")
     (propagated-inputs
      `(("perl-html-element-extended" ,perl-html-element-extended)
        ("perl-html-parser" ,perl-html-parser)))
-    (home-page "http://search.cpan.org/dist/HTML-TableExtract")
+    (home-page "https://metacpan.org/release/HTML-TableExtract")
     (synopsis "Extract contents from HTML tables")
     (description
      "HTML::TableExtract is a Perl module for extracting the content contained
@@ -2567,7 +2567,7 @@ in tables within an HTML document, either as text or encoded element trees.")
      `(("perl-html-parser" ,perl-html-parser)
        ("perl-html-tagset" ,perl-html-tagset)
        ("perl-libwww" ,perl-libwww)))
-    (home-page "http://search.cpan.org/dist/HTML-Tree")
+    (home-page "https://metacpan.org/release/HTML-Tree")
     (synopsis "Work with HTML in a DOM-like tree structure")
     (description "This distribution contains a suite of modules for
 representing, creating, and extracting information from HTML syntax trees.")
@@ -2596,7 +2596,7 @@ representing, creating, and extracting information from HTML syntax trees.")
 it from plain text (alias data content) in HTML documents.  As different
 kinds of markup and text are recognized, the corresponding event handlers
 are invoked.")
-    (home-page "http://search.cpan.org/~gaas/HTML-Parser/")))
+    (home-page "https://metacpan.org/release/HTML-Parser")))
 
 (define-public perl-html-tagset
   (package
@@ -2616,7 +2616,7 @@ are invoked.")
     (description
      "The HTML::Tagset module contains several data tables useful in various
 kinds of HTML parsing operations.")
-    (home-page "http://search.cpan.org/dist/HTML-Tagset/")))
+    (home-page "https://metacpan.org/release/HTML-Tagset")))
 
 (define-public perl-html-template
   (package
@@ -2632,7 +2632,7 @@ kinds of HTML parsing operations.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cgi" ,perl-cgi)))
-    (home-page "http://search.cpan.org/dist/HTML-Template")
+    (home-page "https://metacpan.org/release/HTML-Template")
     (synopsis "HTML-like templates")
     (description
      "This module attempts to make using HTML templates simple and natural.
@@ -2662,7 +2662,7 @@ you to separate design from the data.")
     (propagated-inputs
      `(("perl-file-temp" ,perl-file-temp)
        ("perl-http-message" ,perl-http-message))) ;For HTTP::Headers
-    (home-page "http://search.cpan.org/dist/HTTP-Body")
+    (home-page "https://metacpan.org/release/HTTP-Body")
     (synopsis "HTTP Body Parser")
     (description "HTTP::Body parses chunks of HTTP POST data and supports
 application/octet-stream, application/json, application/x-www-form-urlencoded,
@@ -2690,7 +2690,7 @@ and multipart/form-data.")
     (inputs
      `(("perl-time-local" ,perl-time-local)
        ("perl-http-date" ,perl-http-date)))
-    (home-page "http://search.cpan.org/dist/HTTP-CookieJar")
+    (home-page "https://metacpan.org/release/HTTP-CookieJar")
     (synopsis "Minimalist HTTP user agent cookie jar")
     (description "This module implements a minimalist HTTP user agent cookie
 jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
@@ -2717,7 +2717,7 @@ jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
      "The HTTP::Cookies class is for objects that represent a cookie jar,
 that is, a database of all the HTTP cookies that a given LWP::UserAgent
 object knows about.")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Cookies/")))
+    (home-page "https://metacpan.org/release/GAAS/HTTP-Cookies-6.01")))
 
 (define-public perl-http-daemon
   (package
@@ -2741,7 +2741,7 @@ object knows about.")
      "Instances of the HTTP::Daemon class are HTTP/1.1 servers that listen
 on a socket for incoming requests.  The HTTP::Daemon is a subclass of
 IO::Socket::INET, so you can perform socket operations directly on it too.")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Daemon/")))
+    (home-page "https://metacpan.org/release/HTTP-Daemon")))
 
 (define-public perl-http-date
   (package
@@ -2761,7 +2761,7 @@ IO::Socket::INET, so you can perform socket operations directly on it too.")
     (description
      "The HTTP::Date module provides functions that deal with date formats
 used by the HTTP protocol (and then some more).")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Date/")))
+    (home-page "https://metacpan.org/release/HTTP-Date")))
 
 (define-public perl-http-message
   (package
@@ -2788,7 +2788,7 @@ used by the HTTP protocol (and then some more).")
     (synopsis "Perl HTTP style message")
     (description
      "An HTTP::Message object contains some headers and a content body.")
-    (home-page "http://search.cpan.org/~ether/HTTP-Message/")))
+    (home-page "https://metacpan.org/release/ETHER/HTTP-Message-6.11")))
 
 (define-public perl-http-negotiate
   (package
@@ -2814,7 +2814,7 @@ draft-ietf-http-v11-spec-00.ps chapter 12.  Content negotiation allows for
 the selection of a preferred content representation based upon attributes
 of the negotiable variants and the value of the various Accept* header
 fields in the request.")
-    (home-page "http://search.cpan.org/~gaas/HTTP-Negotiate/")))
+    (home-page "https://metacpan.org/release/HTTP-Negotiate")))
 
 (define-public perl-http-parser
   (package
@@ -2832,7 +2832,7 @@ fields in the request.")
     (propagated-inputs
      `(("perl-http-message" ,perl-http-message)
        ("perl-uri" ,perl-uri)))
-    (home-page "http://search.cpan.org/dist/HTTP-Parser")
+    (home-page "https://metacpan.org/release/HTTP-Parser")
     (synopsis "Parse HTTP/1.1 requests")
     (description "This is an HTTP request parser.  It takes chunks of text as
 received and returns a 'hint' as to what is required, or returns the
@@ -2855,7 +2855,7 @@ supported.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/HTTP-Parser-XS")
+    (home-page "https://metacpan.org/release/HTTP-Parser-XS")
     (synopsis "Fast HTTP request parser")
     (description "HTTP::Parser::XS is a fast, primitive HTTP request/response
 parser.")
@@ -2877,7 +2877,7 @@ parser.")
     (propagated-inputs
      `(("perl-class-accessor" ,perl-class-accessor)
        ("perl-http-message" ,perl-http-message)))
-    (home-page "http://search.cpan.org/dist/HTTP-Request-AsCGI")
+    (home-page "https://metacpan.org/release/HTTP-Request-AsCGI")
     (synopsis "Set up a CGI environment from an HTTP::Request")
     (description "This module provides a convenient way to set up a CGI
 environment from an HTTP::Request.")
@@ -2911,7 +2911,7 @@ environment from an HTTP::Request.")
                                (string-append (getcwd) ":"
                                               (getenv "PERL5LIB")))
                        #t)))))
-    (home-page "http://search.cpan.org/dist/HTTP-Server-Simple")
+    (home-page "https://metacpan.org/release/HTTP-Server-Simple")
     (synopsis "Lightweight HTTP server")
     (description "HTTP::Server::Simple is a simple standalone HTTP daemon with
 no non-core module dependencies.  It can be used for building a standalone
@@ -2937,7 +2937,7 @@ http-based UI to your existing tools.")
        ("perl-io-socket-ssl" ,perl-io-socket-ssl)
        ("perl-mozilla-ca" ,perl-mozilla-ca)
        ("perl-net-ssleay" ,perl-net-ssleay)))
-    (home-page "http://search.cpan.org/dist/HTTP-Tiny")
+    (home-page "https://metacpan.org/release/HTTP-Tiny")
     (synopsis "HTTP/1.1 client")
     (description "This is a very simple HTTP/1.1 client, designed for doing
 simple requests without the overhead of a large framework like LWP::UserAgent.
@@ -2963,7 +2963,7 @@ It supports proxies and redirection.  It also correctly resumes after EINTR.")
      "IO::HTML provides an easy way to open a file containing HTML while
 automatically determining its encoding.  It uses the HTML5 encoding sniffing
 algorithm specified in section 8.2.2.1 of the draft standard.")
-    (home-page "http://search.cpan.org/~cjm/IO-HTML/")))
+    (home-page "https://metacpan.org/release/IO-HTML")))
 
 (define-public perl-io-socket-ip
   (package
@@ -2979,7 +2979,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
          "15kv5g1yb4a345sk3r5wfr99f868lhfqkddzsgpqddvccfkhv58i"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/IO-Socket-IP")
+    (home-page "https://metacpan.org/release/IO-Socket-IP")
     (synopsis "Family-neutral IP socket supporting both IPv4 and IPv6")
     (description "This module provides a protocol-independent way to use IPv4
 and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
@@ -3047,7 +3047,7 @@ World-Wide Web.  The main focus of the library is to provide classes
 and functions that allow you to write WWW clients.  The library also
 contains modules that are of more general use and even classes that
 help you implement simple HTTP servers.")
-    (home-page "http://search.cpan.org/dist/libwww-perl/")))
+    (home-page "https://metacpan.org/release/libwww-perl")))
 
 (define-public perl-lwp-online
   (package
@@ -3068,7 +3068,7 @@ help you implement simple HTTP servers.")
        ("perl-uri" ,perl-uri)))
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/LWP-Online/")
+    (home-page "https://metacpan.org/release/LWP-Online")
     (synopsis "Checks whether your process has access to the web")
     (description "This module attempts to answer, as accurately as it can, one
 of the nastiest technical questions there is: am I on the internet?
@@ -3098,7 +3098,7 @@ not have DNS.  We might not have a network card at all!")
 known as MIME) types and encodings.  The mapping from file extensions to
 media types is defined by the media.types file.  If the ~/.media.types file
 exists it is used instead.")
-    (home-page "http://search.cpan.org/~gaas/LWP-MediaTypes/")))
+    (home-page "https://metacpan.org/release/LWP-MediaTypes")))
 
 (define-public perl-lwp-protocol-https
   (package
@@ -3122,7 +3122,7 @@ exists it is used instead.")
        ;; Users should instead make sure SSL_ca_path is set properly.
        ;; ("perl-mozilla-ca" ,perl-mozilla-ca)
        ("perl-net-http" ,perl-net-http)))
-    (home-page "http://search.cpan.org/dist/LWP-Protocol-https")
+    (home-page "https://metacpan.org/release/LWP-Protocol-https")
     (synopsis "HTTPS support for LWP::UserAgent")
     (description "The LWP::Protocol::https module provides support for using
 https schemed URLs with LWP.")
@@ -3143,7 +3143,7 @@ https schemed URLs with LWP.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-libwww" ,perl-libwww)))
-    (home-page "http://search.cpan.org/dist/LWP-UserAgent-Determined")
+    (home-page "https://metacpan.org/release/LWP-UserAgent-Determined")
     (synopsis "Virtual browser that retries errors")
     (description "LWP::UserAgent::Determined works just like LWP::UserAgent,
 except that when you use it to get a web page but run into a
@@ -3189,7 +3189,7 @@ and retry a few times.")
        ("perl-term-progressbar-simple" ,perl-term-progressbar-simple)
        ("perl-uri" ,perl-uri)
        ("perl-xml-libxml" ,perl-xml-libxml)))
-    (home-page "http://search.cpan.org/dist/Net-Amazon-S3")
+    (home-page "https://metacpan.org/release/Net-Amazon-S3")
     (synopsis "Perl interface to Amazon S3")
     (description "This module provides a Perlish interface to Amazon S3.")
     (license l:perl-license)))
@@ -3217,7 +3217,7 @@ and retry a few times.")
 Net::HTTP class represents a connection to an HTTP server.  The HTTP protocol
 is described in RFC 2616.  The Net::HTTP class supports HTTP/1.0 and
 HTTP/1.1.")
-    (home-page "http://search.cpan.org/dist/Net-HTTP")))
+    (home-page "https://metacpan.org/release/Net-HTTP")))
 
 (define-public perl-net-server
   (package
@@ -3232,7 +3232,7 @@ HTTP/1.1.")
         (base32
          "0gw1k9gcw7habbkxvsfa2gz34brlbwcidk6khgsf1qjm0dbccrw2"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Net-Server")
+    (home-page "https://metacpan.org/release/Net-Server")
     (synopsis "Extensible Perl server engine")
     (description "Net::Server is an extensible, generic Perl server engine.
 It attempts to be a generic server as in Net::Daemon and NetServer::Generic.
@@ -3261,7 +3261,7 @@ or to multiple server ports.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)))
-    (home-page "http://search.cpan.org/dist/Net-SMTP-SSL")
+    (home-page "https://metacpan.org/release/Net-SMTP-SSL")
     (synopsis "SSL support for Net::SMTP")
     (description "SSL support for Net::SMTP.")
     (license l:perl-license)))
@@ -3296,7 +3296,7 @@ or to multiple server ports.")
        ("perl-test-tcp" ,perl-test-tcp)
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-uri" ,perl-uri)))
-    (home-page "http://search.cpan.org/dist/Plack")
+    (home-page "https://metacpan.org/release/Plack")
     (synopsis "Perl Superglue for Web frameworks and servers (PSGI toolkit)")
     (description "Plack is a set of tools for using the PSGI stack.  It
 contains middleware components, a reference server, and utilities for Web
@@ -3323,7 +3323,7 @@ WSGI.")
        ("perl-http-message" ,perl-http-message)
        ("perl-plack" ,perl-plack)))     ;for Plack::Test
     (home-page
-     "http://search.cpan.org/dist/Plack-Middleware-FixMissingBodyInRedirect")
+     "https://metacpan.org/release/Plack-Middleware-FixMissingBodyInRedirect")
     (synopsis "Plack::Middleware which sets body for redirect response")
     (description "This module sets the body in redirect response, if it's not
 already set.")
@@ -3347,7 +3347,7 @@ already set.")
      `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-plack" ,perl-plack)))
-    (home-page "http://search.cpan.org/dist/Plack-Middleware-MethodOverride")
+    (home-page "https://metacpan.org/release/Plack-Middleware-MethodOverride")
     (synopsis "Override REST methods to Plack apps via POST")
     (description "This middleware allows for POST requests that pretend to be
 something else: by adding either a header named X-HTTP-Method-Override to the
@@ -3372,7 +3372,7 @@ can say what method it actually meant.")
     (propagated-inputs
      `(("perl-plack" ,perl-plack)))
     (home-page
-     "http://search.cpan.org/dist/Plack-Middleware-RemoveRedundantBody")
+     "https://metacpan.org/release/Plack-Middleware-RemoveRedundantBody")
     (synopsis "Plack::Middleware which removes body for HTTP response")
     (description "This module removes the body in an HTTP response if it's not
 required.")
@@ -3396,7 +3396,7 @@ required.")
      `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-plack" ,perl-plack)))
-    (home-page "http://search.cpan.org/dist/Plack-Middleware-ReverseProxy")
+    (home-page "https://metacpan.org/release/Plack-Middleware-ReverseProxy")
     (synopsis "Supports app to run as a reverse proxy backend")
     (description "Plack::Middleware::ReverseProxy resets some HTTP headers,
 which are changed by reverse-proxy.  You can specify the reverse proxy address
@@ -3418,7 +3418,7 @@ and stop fake requests using 'enable_if' directive in your app.psgi.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-plack" ,perl-plack)))
-    (home-page "http://search.cpan.org/dist/Plack-Test-ExternalServer")
+    (home-page "https://metacpan.org/release/Plack-Test-ExternalServer")
     (synopsis "Run HTTP tests on external live servers")
     (description "This module allows your to run your Plack::Test tests
 against an external server instead of just against a local application through
@@ -3441,7 +3441,7 @@ either mocked HTTP or a locally spawned server.")
     (propagated-inputs
      `(("perl-test-sharedfork" ,perl-test-sharedfork)))
     (arguments `(#:tests? #f))          ;related to signaling in t/05_sigint.t
-    (home-page "http://search.cpan.org/dist/Test-TCP")
+    (home-page "https://metacpan.org/release/Test-TCP")
     (synopsis "Testing TCP programs")
     (description "Test::TCP is test utilities for TCP/IP programs.")
     (license l:perl-license)))
@@ -3467,7 +3467,7 @@ either mocked HTTP or a locally spawned server.")
        ("perl-libwww" ,perl-libwww)
        ("perl-test-longstring" ,perl-test-longstring)
        ("perl-www-mechanize" ,perl-www-mechanize)))
-    (home-page "http://search.cpan.org/dist/Test-WWW-Mechanize")
+    (home-page "https://metacpan.org/release/Test-WWW-Mechanize")
     (synopsis "Testing-specific WWW::Mechanize subclass")
     (description "Test::WWW::Mechanize is a subclass of the Perl module
 WWW::Mechanize that incorporates features for web application testing.")
@@ -3502,7 +3502,7 @@ WWW::Mechanize that incorporates features for web application testing.")
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-test-www-mechanize" ,perl-test-www-mechanize)
        ("perl-www-mechanize" ,perl-www-mechanize)))
-    (home-page "http://search.cpan.org/dist/Test-WWW-Mechanize-Catalyst")
+    (home-page "https://metacpan.org/release/Test-WWW-Mechanize-Catalyst")
     (synopsis "Test::WWW::Mechanize for Catalyst")
     (description "The Test::WWW::Mechanize::Catalyst module meshes the
 Test::WWW:Mechanize module and the Catalyst web application framework to allow
@@ -3527,7 +3527,7 @@ testing of Catalyst applications without needing to start up a web server.")
     (propagated-inputs
      `(("perl-plack" ,perl-plack)
        ("perl-test-www-mechanize" ,perl-test-www-mechanize)))
-    (home-page "http://search.cpan.org/dist/Test-WWW-Mechanize-PSGI")
+    (home-page "https://metacpan.org/release/Test-WWW-Mechanize-PSGI")
     (synopsis "Test PSGI programs using WWW::Mechanize")
     (description "PSGI is a specification to decouple web server environments
 from web application framework code.  Test::WWW::Mechanize is a subclass of
@@ -3557,7 +3557,7 @@ applications.")
      "The URI module implements the URI class.  Objects of this class
 represent \"Uniform Resource Identifier references\" as specified in RFC 2396
 and updated by RFC 2732.")
-    (home-page "http://search.cpan.org/dist/URI/")))
+    (home-page "https://metacpan.org/release/URI")))
 
 (define-public perl-uri-fetch
   (package
@@ -3577,7 +3577,7 @@ and updated by RFC 2732.")
      `(("perl-class-errorhandler" ,perl-class-errorhandler)
        ("perl-libwww" ,perl-libwww)
        ("perl-uri" ,perl-uri)))
-    (home-page "http://search.cpan.org/dist/URI-Fetch")
+    (home-page "https://metacpan.org/release/URI-Fetch")
     (synopsis "Smart URI fetching/caching")
     (description "@code{URI::Fetch} is a smart client for fetching HTTP pages,
 notably syndication feeds (RSS, Atom, and others), in an intelligent, bandwidth-
@@ -3601,7 +3601,7 @@ and time-saving way.")
      `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-uri" ,perl-uri)))
-    (home-page "http://search.cpan.org/dist/URI-Find")
+    (home-page "https://metacpan.org/release/URI-Find")
     (synopsis "Find URIs in arbitrary text")
     (description "This module finds URIs and URLs (according to what URI.pm
 considers a URI) in plain text.  It only finds URIs which include a
@@ -3624,7 +3624,7 @@ URI::Find::Schemeless.  For a command-line interface, urifind is provided.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-uri" ,perl-uri)))
-    (home-page "http://search.cpan.org/dist/URI-ws")
+    (home-page "https://metacpan.org/release/URI-ws")
     (synopsis "WebSocket support for URI package")
     (description "With this module, the URI package provides the same set of
 methods for WebSocket URIs as it does for HTTP URIs.")
@@ -3649,7 +3649,7 @@ methods for WebSocket URIs as it does for HTTP URIs.")
        ("perl-test-pod" ,perl-test-pod)
        ("perl-module-install" ,perl-module-install)
        ("perl-json" ,perl-json)))
-    (home-page "http://search.cpan.org/dist/URI-Template")
+    (home-page "https://metacpan.org/release/URI-Template")
     (synopsis "Object for handling URI templates")
     (description "This perl module provides a wrapper around URI templates as described in
 RFC 6570.")
@@ -3688,7 +3688,7 @@ RFC 6570.")
      "This is a Perl extension interface for the libcurl file downloading
 library.")
     (license l:perl-license)
-    (home-page "http://search.cpan.org/dist/WWW-Curl")))
+    (home-page "https://metacpan.org/release/WWW-Curl")))
 
 (define-public perl-www-mechanize
   (package
@@ -3718,7 +3718,7 @@ library.")
        ("perl-libwww" ,perl-libwww)
        ("perl-test-warn" ,perl-test-warn)
        ("perl-uri" ,perl-uri)))
-    (home-page "http://search.cpan.org/dist/WWW-Mechanize")
+    (home-page "https://metacpan.org/release/WWW-Mechanize")
     (synopsis "Web browsing in a Perl object")
     (description "WWW::Mechanize is a Perl module for stateful programmatic
 web browsing, used for automating interaction with websites.")
@@ -3755,7 +3755,7 @@ web browsing, used for automating interaction with websites.")
        ("perl-uri-template" ,perl-uri-template)
        ("perl-xml-feed" ,perl-xml-feed)
        ("perl-xml-libxml" ,perl-xml-libxml)))
-    (home-page "http://search.cpan.org/dist/WWW-OpenSearch")
+    (home-page "https://metacpan.org/release/WWW-OpenSearch")
     (synopsis "Search A9 OpenSearch compatible engines")
     (description
      "@code{WWW::OpenSearch} is a module to search @url{A9's OpenSearch,
@@ -3785,7 +3785,7 @@ http://opensearch.a9.com} compatible search engines.")
 <http://www.robotstxt.org/wc/norobots.html>.  Webmasters can use the
 /robots.txt file to forbid conforming robots from accessing parts of
 their web site.")
-    (home-page "http://search.cpan.org/~gaas/WWW-RobotRules/")))
+    (home-page "https://metacpan.org/release/WWW-RobotRules")))
 
 (define-public python-feedparser
   (package
@@ -6436,7 +6436,7 @@ based on this library, allowing Perl programmers to easily validate HTML.")
        ("tidyp" ,tidyp)))
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
-    (home-page "http://search.cpan.org/dist/HTML-Tidy/")
+    (home-page "https://metacpan.org/release/HTML-Tidy")
     (synopsis "(X)HTML validation in a Perl object")
     (description "@code{HTML::Tidy} is an HTML checker in a handy dandy
 object.  It's meant as a replacement for @code{HTML::Lint}, which is written

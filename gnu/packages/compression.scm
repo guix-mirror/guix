@@ -675,7 +675,7 @@ decompression of some loosely related file formats used by Microsoft.")
          "081mpkjy688lg48997fqh3d7ja12vazmz02fw84495civg4vb4l6"))))
     (build-system perl-build-system)
     ;; TODO: Use our bzip2 package.
-    (home-page "http://search.cpan.org/dist/Compress-Raw-Bzip2")
+    (home-page "https://metacpan.org/release/Compress-Raw-Bzip2")
     (synopsis "Low-level interface to bzip2 compression library")
     (description "This module provides a Perl interface to the bzip2
 compression library.")
@@ -710,7 +710,7 @@ LIB = ~:*~a/lib
 OLD_ZLIB = False
 GZIP_OS_CODE = AUTO_DETECT"
                                  (assoc-ref inputs "zlib")))))))))
-    (home-page "http://search.cpan.org/dist/Compress-Raw-Zlib")
+    (home-page "https://metacpan.org/release/Compress-Raw-Zlib")
     (synopsis "Low-level interface to zlib compression library")
     (description "This module provides a Perl interface to the zlib
 compression library.")
@@ -732,7 +732,7 @@ compression library.")
     (propagated-inputs
      `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.081
        ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.081
-    (home-page "http://search.cpan.org/dist/IO-Compress")
+    (home-page "https://metacpan.org/release/IO-Compress")
     (synopsis "IO Interface to compressed files/buffers")
     (description "IO-Compress provides a Perl interface to allow reading and
 writing of compressed data created with the zlib and bzip2 libraries.")
@@ -1928,7 +1928,7 @@ recreates the stored directory structure by default.")
     (synopsis  "Provides an interface to Zip archive files")
     (description "The @code{Archive::Zip} module allows a Perl program to
 create, manipulate, read, and write Zip archive files.")
-    (home-page "http://search.cpan.org/dist/Archive-Zip/")
+    (home-page "https://metacpan.org/release/Archive-Zip")
     (license license:perl-license)))
 
 (define-public libzip
@@ -2004,7 +2004,7 @@ of archives.")
         (base32
          "1x15j1q6w6z8hqyqgap0lz4qbq2174wfhksy1fdd653ccbaw5jr5"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Archive-Extract/")
+    (home-page "https://metacpan.org/release/Archive-Extract")
     (synopsis "Generic archive extracting mechanism")
     (description "It allows you to extract any archive file of the type .tar,
 .tar.gz, .gz, .Z, tar.bz2, .tbz, .bz2, .zip, .xz,, .txz, .tar.xz or .lzma

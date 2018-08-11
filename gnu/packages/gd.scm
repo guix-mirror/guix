@@ -115,7 +115,7 @@ most common applications of GD involve website development.")
      `(#:make-maker-flags
        (list (string-append "--lib_jpeg_path="
                             (assoc-ref %build-inputs "libjpeg")))))
-    (home-page "http://search.cpan.org/dist/GD")
+    (home-page "https://metacpan.org/release/GD")
     (synopsis "Perl interface to the GD graphics library")
     (description "GD.pm is an autoloadable interface module for libgd, a
 popular library for creating and manipulating PNG files.  With this library
@@ -145,7 +145,7 @@ you can create PNG images on the fly or modify existing files.")
     (propagated-inputs
      `(("perl-gd" ,perl-gd)
        ("perl-image-magick" ,perl-image-magick)))
-    (home-page "http://search.cpan.org/dist/GD-SecurityImage")
+    (home-page "https://metacpan.org/release/GD-SecurityImage")
     (synopsis "Security image generator")
     (description "This module provides a basic interface to create
 security (captcha) images.  The final output is the actual graphic data, the

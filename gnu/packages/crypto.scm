@@ -523,7 +523,7 @@ attacks than alternative functions such as @code{PBKDF2} or @code{bcrypt}.")
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-nowarnings" ,perl-test-nowarnings)))
-    (home-page "http://search.cpan.org/dist/Math-Random-ISAAC-XS")
+    (home-page "https://metacpan.org/release/Math-Random-ISAAC-XS")
     (synopsis "C implementation of the ISAAC PRNG algorithm")
     (description "ISAAC (Indirection, Shift, Accumulate, Add, and Count) is a
 fast pseudo-random number generator.  It is suitable for applications where a
@@ -551,7 +551,7 @@ This package implements the same interface as @code{Math::Random::ISAAC}.")
      `(("perl-test-nowarnings" ,perl-test-nowarnings)))
     (propagated-inputs
      `(("perl-math-random-isaac-xs" ,perl-math-random-isaac-xs)))
-    (home-page "http://search.cpan.org/dist/Math-Random-ISAAC")
+    (home-page "https://metacpan.org/release/Math-Random-ISAAC")
     (synopsis "Perl interface to the ISAAC PRNG algorithm")
     (description "ISAAC (Indirection, Shift, Accumulate, Add, and Count) is a
 fast pseudo-random number generator.  It is suitable for applications where a
@@ -587,7 +587,7 @@ generator.")
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-sub-exporter" ,perl-sub-exporter)
        ("perl-type-tiny" ,perl-type-tiny)))
-    (home-page "http://search.cpan.org/dist/Crypt-Random-Source")
+    (home-page "https://metacpan.org/release/Crypt-Random-Source")
     (synopsis "Get weak or strong random data from pluggable sources")
     (description "This module provides implementations for a number of
 byte-oriented sources of random data.")
@@ -616,7 +616,7 @@ byte-oriented sources of random data.")
        ("perl-math-random-isaac" ,perl-math-random-isaac)
        ("perl-math-random-isaac-xs" ,perl-math-random-isaac-xs)
        ("perl-moo" ,perl-moo)))
-    (home-page "http://search.cpan.org/dist/Math-Random-Secure")
+    (home-page "https://metacpan.org/release/Math-Random-Secure")
     (synopsis "Cryptographically secure replacement for rand()")
     (description "This module is intended to provide a
 cryptographically-secure replacement for Perl's built-in @code{rand} function.

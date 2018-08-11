@@ -157,7 +157,7 @@ text, lines, polygons, ellipses and Bézier curves.")
             ;; so skip for now.
             (delete-file "t/mpeg/read.t")
             #t)))))
-    (home-page "http://search.cpan.org/dist/PerlMagick")
+    (home-page "https://metacpan.org/release/PerlMagick")
     (synopsis "Perl interface to ImageMagick")
     (description "This Perl extension allows the reading, manipulation and
 writing of a large number of image file formats using the ImageMagick library.

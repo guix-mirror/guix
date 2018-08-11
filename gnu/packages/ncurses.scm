@@ -285,7 +285,7 @@ curses widgets, such as dialog boxes.")
                (setenv "CURSES_MENU_LDFLAGS" (string-append "-L" lib " -lmenu"))
                (setenv "CURSES_FORM_LDFLAGS" (string-append "-L" lib " -lform"))
                #t))))))
-    (home-page "http://search.cpan.org/dist/Curses")
+    (home-page "https://metacpan.org/release/Curses")
     (synopsis "Terminal screen handling and optimization")
     (description
      "@code{Curses} is the interface between Perl and the curses library
