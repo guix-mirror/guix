@@ -2032,7 +2032,7 @@ directory full of HOWTOs.")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "6.20180626")
+    (version "6.20180807")
     (source
      (origin
        (method url-fetch)
@@ -2040,7 +2040,7 @@ directory full of HOWTOs.")
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
         (base32
-         "0vq3x9p4h3m266pcm2r3m9p51pz5z9zskh7z5nk0adh33j30xf7q"))))
+         "1wkqh1y58m0z1mf2j33qhndpxcjwv8mbv384kdk17vn0lp9zas1s"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
