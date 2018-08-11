@@ -815,6 +815,33 @@ attacking, testing, and cracking.  All tools are command-line driven, which
 allows for heavy scripting.")
     (license (list license:gpl2+ license:bsd-3))))
 
+(define-public perl-data-validate-ip
+  (package
+    (name "perl-data-validate-ip")
+    (version "0.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DR/DROLSKY/Data-Validate-IP-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1mmppyzsh1w2z2h86kvzqxy56wxgs62a3kf8nvcnz76bblir5ap1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-netaddr-ip" ,perl-netaddr-ip)))
+    (home-page "https://metacpan.org/release/Data-Validate-IP")
+    (synopsis "IPv4 and IPv6 validation methods")
+    (description
+     "This module provides several IP address validation subroutines that both
+validate and untaint their input.  This includes both basic validation
+(@code{is_ipv4()} and @code{is_ipv6()}) and special cases like checking whether
+an address belongs to a specific network or whether an address is public or
+private (reserved).")
+    (license license:perl-license)))
+
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
