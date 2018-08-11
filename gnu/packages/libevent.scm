@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -218,8 +219,8 @@ not rely on XS.")
            ;; to build. Unpack system libev here...
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir "./libev")
-             (zero? (system* "tar" "-xf" (assoc-ref inputs "libev-source")
-                             "-C" "./libev" "--strip-components=1")))))))
+             (invoke "tar" "-xf" (assoc-ref inputs "libev-source")
+                     "-C" "./libev" "--strip-components=1"))))))
     (native-inputs
      `(("libev-source" ,(package-source libev))
        ("perl-canary-stability" ,perl-canary-stability)))
