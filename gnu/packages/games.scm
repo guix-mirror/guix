@@ -5218,11 +5218,16 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
                (chdir "fortune-mod")
                #t)))
          (add-after 'install 'fix-install-directory
-           ;; Move binary from "games/" to "bin/".
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (rename-file (string-append out "/games/fortune")
-                            (string-append out "/bin/fortune"))
+             ;; Move binary from "games/" to "bin/" and remove the latter.  This
+             ;; is easier than patching CMakeLists.txt since the tests hard-code
+             ;; the location as well.
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (games (string-append out "/games")))
+               (rename-file (string-append games "/fortune")
+                            (string-append bin "/fortune"))
+               (rmdir games)
                #t))))))
     (inputs `(("recode" ,recode)))
     (native-inputs
