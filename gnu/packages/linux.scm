@@ -4092,7 +4092,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.1")
+    (version "1.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4100,7 +4100,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
                     (commit version)))
               (sha256
                (base32
-                "1qra8yzsga29bxlvq63v1db071a1xdji7i60p4kzrciidm1206js"))))
+                "0c934gxav9cgdf94li6dp0rfqmpday9d33vdn9xb2mfp4war9n4w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
