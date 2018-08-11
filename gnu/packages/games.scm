@@ -5215,7 +5215,8 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
                (copy-file cmake-rules
                           (string-append "fortune-mod/cmake/"
                                          (strip-store-file-name cmake-rules)))
-               (chdir "fortune-mod"))))
+               (chdir "fortune-mod")
+               #t)))
          (add-after 'install 'fix-install-directory
            ;; Move binary from "games/" to "bin/".
            (lambda* (#:key outputs #:allow-other-keys)
