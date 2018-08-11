@@ -1082,7 +1082,7 @@ that beneath its ruins lay buried an ancient evil.")
 (define-public angband
   (package
     (name "angband")
-    (version "4.1.2")
+    (version "4.1.3")
     (source
      (origin
        (method url-fetch)
@@ -1091,7 +1091,7 @@ that beneath its ruins lay buried an ancient evil.")
                            "/angband-" version ".tar.gz"))
        (sha256
         (base32
-         "0ahfzb66ihxvkxcbhcib816x40sdsp26b3ravr1xqp44w1whkg1h"))
+         "0vs0314lbdc6rzxn4jnb7zp6n1p1cdb8r53savadn7k9vbwc80ll"))
        (modules '((guix build utils)))
        (snippet
         ;; So, some of the sounds/graphics/tilesets are under different
@@ -1111,7 +1111,7 @@ that beneath its ruins lay buried an ancient evil.")
            #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                                 ;no check target
+     `(#:tests? #f                      ; no check target
        #:configure-flags (list (string-append "--bindir=" %output "/bin"))
        #:phases
        (modify-phases %standard-phases
