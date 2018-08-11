@@ -115,7 +115,6 @@ convert it to structurally valid XHTML (or HTML).")
              (uri (string-append
                    "http://www.pell.portland.or.us/~orc/Code/"
                    name "/" name "-" version ".tar.bz2"))
-             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "0r4gjyk1ngx47zhb25q0gkjm3bz2m5x8ngrk6rim3y1y3rricygc"))))
