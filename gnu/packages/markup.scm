@@ -109,7 +109,7 @@ convert it to structurally valid XHTML (or HTML).")
 (define-public discount
   (package
     (name "discount")
-    (version "2.2.2")
+    (version "2.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -117,7 +117,7 @@ convert it to structurally valid XHTML (or HTML).")
                    name "/" name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "0r4gjyk1ngx47zhb25q0gkjm3bz2m5x8ngrk6rim3y1y3rricygc"))))
+               "199hwajpspqil0a4y3yxsmhdp2dm73gqkzfk4mrwzsmlq8y1xzbl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
