@@ -148,7 +148,7 @@ which allows users to view a desktop computing environment.")
 (define-public spice-gtk
   (package
     (name "spice-gtk")
-    (version "0.34")
+    (version "0.35")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -156,7 +156,7 @@ which allows users to view a desktop computing environment.")
                 "spice-gtk-" version ".tar.bz2"))
               (sha256
                (base32
-                "1vknp72pl6v6nf3dphhwp29hk6gv787db2pmyg4m312z2q0hwwp9"))))
+                "11lymg467gvj5ys8k22ihnfbxjn4x34ygyzirpg2nphjwlyhgrml"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("gstreamer" ,gstreamer)
