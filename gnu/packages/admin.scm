@@ -2750,3 +2750,42 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
     (description
      "@code{pscircle} visualizes Linux processes in the form of a radial tree.")
     (license license:gpl2+)))
+
+(define-public python-pyudev
+  (package
+    (name "python-pyudev")
+    (version "0.21.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyudev" version))
+        (sha256
+          (base32
+            "0arz0dqp75sszsmgm6vhg92n1lsx91ihddx3m944f4ah0487ljq9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; Tests require /sys
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-ctypes-udev
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((eudev (assoc-ref inputs "eudev")))
+               (substitute* "src/pyudev/core.py"
+                (("'udev'")
+                 (string-append "'" eudev "/lib/libudev.so'")))
+               (substitute* "src/pyudev/_ctypeslib/utils.py"
+                ;; Use absolute paths instead of keys.
+                (("= find_library") "= "))
+               #t))))))
+    (inputs
+     `(("eudev" ,eudev)))
+    (native-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "http://pyudev.readthedocs.org/")
+    (synopsis "Python udev binding")
+    (description "This package provides @code{udev} bindings for Python.")
+    (license license:lgpl2.1)))
