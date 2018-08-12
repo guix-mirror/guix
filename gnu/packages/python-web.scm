@@ -1061,13 +1061,13 @@ facilities for defining, registering and looking up components.")
 (define-public python-ndg-httpsclient
   (package
     (name "python-ndg-httpsclient")
-    (version "0.5.0")
+    (version "0.5.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "ndg_httpsclient" version))
               (sha256
                 (base32
-                  "12q8rjvsvjphj6lvvcka2izdjr36a5lgkygajwx6p4wh0x1za2f0"))))
+                  "0412b7i1s4vj7lz9r72nmb28h9syd4q2x89bdirkkc3a6z8awbyp"))))
     (build-system python-build-system)
     (arguments
      '(;; The tests appear to require networking.
