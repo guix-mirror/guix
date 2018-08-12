@@ -1712,7 +1712,7 @@ School of Functional Programming', 1995.  See
     (build-system haskell-build-system)
     (inputs
      `(("ghc-parsec" ,ghc-parsec)))
-    (home-page "http://hackage.haskell.org/package/parsec-numbers")
+    (home-page "https://hackage.haskell.org/package/parsec-numbers")
     (synopsis "Utilities for parsing numbers from strings")
     (description
      "This package provides the number parsers without the need to use a large
