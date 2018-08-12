@@ -407,14 +407,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "4.16")
+    (version "4.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "00ss07jc7p276d83f6jpafgwyc9yiribciyqcgx9j86v49kpm5py"))))
+                "11f5503mgcwjn1q4dvhjiqwnw3zmp2gbhirjvgfr71y72ys1wsy4"))))
     (build-system gnu-build-system)
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
