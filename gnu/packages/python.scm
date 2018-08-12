@@ -5573,6 +5573,9 @@ applications.")
   (package-with-python2 python-pyzmq))
 
 (define-public python-pep8
+  ;; This package has been renamed to ‘pycodestyle’ and is no longer updated.
+  ;; Its last release (1.7.1) adds only a scary warning to this effect, breaking
+  ;; some dependents' test suites, and nothing more.
   (package
     (name "python-pep8")
     (version "1.7.0")
@@ -5584,7 +5587,7 @@ applications.")
           (base32
             "002rkl4lsn6x2mxmf8ar00l0m8i3mzrc6pnzz77blyksmpsxa4x1"))))
     (build-system python-build-system)
-    (home-page "http://pep8.readthedocs.org/")
+    (home-page "https://pep8.readthedocs.org/")
     (synopsis "Python style guide checker")
     (description
      "This tools checks Python code against some of the style conventions in
