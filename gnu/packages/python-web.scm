@@ -1350,29 +1350,23 @@ Amazon Web Services (AWS) API.")
 (define-public python-wsgiproxy2
   (package
     (name "python-wsgiproxy2")
-    (version "0.4.2")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "WSGIProxy2" version ".zip"))
+       (uri (pypi-uri "WSGIProxy2" version ".tar.gz"))
        (sha256
         (base32
-         "13kf9bdxrc95y9vriaz0viry3ah11nz4rlrykcfvb8nlqpx3dcm4"))))
+         "16532rjc94h3w74x52jfckf3yzsp8h6z34522jk4xgjy82hpnd7r"))))
     (build-system python-build-system)
-    (arguments
-     '(;; Wsgiproxy2's test suite requires Restkit, which does not yet fully
-       ;; support Python 3:
-       ;; https://github.com/benoitc/restkit/issues/140
-       #:tests? #f))
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-nose" ,python-nose)
-       ("python-coverage" ,python-coverage)))
+     `(("python-webtest" ,python-webtest)))
     (propagated-inputs
-     `(("python-six" ,python-six)
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-urllib3" ,python-urllib3)
        ("python-webob" ,python-webob)))
-    (home-page
-     "https://github.com/gawel/WSGIProxy2/")
+    (home-page "https://github.com/gawel/WSGIProxy2/")
     (synopsis "WSGI Proxy with various http client backends")
     (description "WSGI turns HTTP requests into WSGI function calls.
 WSGIProxy turns WSGI function calls into HTTP requests.
