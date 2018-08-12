@@ -1076,9 +1076,9 @@ facilities for defining, registering and looking up components.")
      `(("python-pyopenssl" ,python-pyopenssl)))
     (synopsis "HTTPS support for Python's httplib and urllib2")
     (description "This is a HTTPS client implementation for httplib and urllib2
-based on PyOpenSSL.  PyOpenSSL provides a more fully featured SSL implementation
-over the default provided with Python and importantly enables full verification
-of the SSL peer.")
+based on PyOpenSSL.  PyOpenSSL provides a more fully-featured SSL implementation
+over the default provided with Python and, importantly, enables full
+verification of the SSL peer.")
     (home-page "https://github.com/cedadev/ndg_httpsclient/")
     (license license:bsd-3)))
 
