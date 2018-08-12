@@ -1717,14 +1717,14 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.6.2")
+    (version "5.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "14ifqay54brw2b2hbmm517bxw8bs9631d7jm4g139igkxcq0m9p0"))))
+        (base32 "095zg7h7qwsc456sqgwb1lhhk29ac3mk5z9gm6xja1pl061driy3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
