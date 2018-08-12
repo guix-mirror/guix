@@ -20061,51 +20061,51 @@ Defaults to @samp{""}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-commit-graph?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-commit-graph?
 A flag which can be used to disable the global setting
 @code{enable-commit-graph?}.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-log-filecount?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-log-filecount?
 A flag which can be used to disable the global setting
 @code{enable-log-filecount?}.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-log-linecount?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-log-linecount?
 A flag which can be used to disable the global setting
 @code{enable-log-linecount?}.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-remote-branches?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-remote-branches?
 Flag which, when set to @code{#t}, will make cgit display remote
 branches in the summary and refs views.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-subject-links?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-subject-links?
 A flag which can be used to override the global setting
 @code{enable-subject-links?}.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-html-serving?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-html-serving?
 A flag which can be used to override the global setting
 @code{enable-html-serving?}.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
