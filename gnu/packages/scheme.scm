@@ -421,7 +421,8 @@ implementation techniques and as an expository tool.")
              (patches (search-patches
                        ;; See: https://github.com/racket/racket/issues/1962
                        ;; This can be removed in whatever Racket release comes after 6.12
-                       "racket-fix-xform-issue.patch"))))
+                       "racket-fix-xform-issue.patch"
+                       "racket-store-checksum-override.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
