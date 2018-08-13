@@ -634,7 +634,7 @@ See also @url{https://prosody.im/doc/modules/mod_muc}."
          (prosodyctl-bin (file-append prosody "/bin/prosodyctl"))
          (prosodyctl-action (lambda args
                               #~(lambda _
-                                  (zero? (system* #$prosodyctl-bin #$@args))))))
+                                  (invoke #$prosodyctl-bin #$@args)))))
     (list (shepherd-service
            (documentation "Run the Prosody XMPP server")
            (provision '(prosody xmpp-daemon))
