@@ -599,19 +599,33 @@ of index files."
                 <nginx-configuration>
                 (nginx file run-directory)
    (let* ((nginx-binary (file-append nginx "/sbin/nginx"))
+          (pid-file (in-vicinity run-directory "pid"))
           (nginx-action
            (lambda args
              #~(lambda _
                  (invoke #$nginx-binary "-c"
                          #$(or file
                                (default-nginx-config config))
-                         #$@args)))))
+                         #$@args)
+                 (match '#$args
+                   (("-s" . _) #t)
+                   (_
+                    (let loop ((duration 0))
+                      ;; https://bugs.launchpad.net/ubuntu/+source/nginx/+bug/1581864/comments/7
+                      (sleep duration)
+                      (if (file-exists? #$pid-file)
+                          (let ((pid (call-with-input-file #$pid-file read)))
+                            ;; it could be #<eof>
+                            (if (integer? pid) pid (loop 1)))
+                          (loop 1)))))))))
 
      ;; TODO: Add 'reload' action.
      (list (shepherd-service
             (provision '(nginx))
             (documentation "Run the nginx daemon.")
             (requirement '(user-processes loopback))
+            (modules `((ice-9 match)
+                       ,@%default-modules))
             (start (nginx-action "-p" run-directory))
             (stop (nginx-action "-s" "stop")))))))
 
