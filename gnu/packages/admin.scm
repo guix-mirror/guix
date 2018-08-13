@@ -751,27 +751,30 @@ tools: server, client, and relay agent.")
 (define-public libpcap
   (package
     (name "libpcap")
-    (version "1.8.1")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07jlhc66z76dipj4j5v3dig8x6h3k6cb36kmnmpsixf3zmlvqgb7"))))
+                "06bhydl4vr4z9c3vahl76f2j96z1fbrcl7wwismgs4sris08inrf"))))
     (build-system gnu-build-system)
-    (native-inputs `(("bison" ,bison) ("flex" ,flex)))
-    (arguments '(#:configure-flags '("--with-pcap=linux")
-                 #:tests? #f))                    ; no 'check' target
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (arguments
+     ;; There are some tests in testprogs/, but no automated test suite.
+     '(#:tests? #f))
     (home-page "https://www.tcpdump.org")
     (synopsis "Network packet capture library")
     (description
      "libpcap is an interface for user-level packet capture.  It provides a
 portable framework for low-level network monitoring.  Applications include
 network statistics collection, security monitoring, network debugging, etc.")
-
-    ;; fad-*.c and a couple other files are BSD-4, but the rest is BSD-3.
-    (license license:bsd-3)))
+    (license (list license:bsd-4        ; fad-*.c and several other source files
+                   license:bsd-3        ; pcap/, sockutils.* & others
+                   license:bsd-2))))    ; the rest
 
 (define-public tcpdump
   (package
