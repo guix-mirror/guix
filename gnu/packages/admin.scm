@@ -611,9 +611,9 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "3")
-         (bind-release-type "")         ; for patch release, use "-P"
-         (bind-release-version "")      ; for patch release, e.g. "6"
+         (bind-patch-version "4")
+         (bind-release-type "-P")         ; for patch release, use "-P"
+         (bind-release-version "1")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -626,7 +626,7 @@ connection alive.")
       (version "4.4.1")
       (source (origin
                 (method url-fetch)
-                (uri (string-append "http://ftp.isc.org/isc/dhcp/"
+                (uri (string-append "https://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
@@ -725,12 +725,12 @@ connection alive.")
                 ("bind-source-tarball"
                  ,(origin
                     (method url-fetch)
-                    (uri (string-append "http://ftp.isc.org/isc/bind9/"
+                    (uri (string-append "https://ftp.isc.org/isc/bind9/"
                                         bind-version
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1xbnb2b11274z9frc9y7nvkyxr52qx09bwb97gf9qzzcn8adx78d"))))
+                      "08zyy13b8ydfbg26b3y6mw299qs89ba90gymraqqjsgjicydrq5h"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -739,7 +739,7 @@ connection alive.")
                         ("sed" ,sed))
                       '())))
 
-      (home-page "http://www.isc.org/products/DHCP/")
+      (home-page "https://www.isc.org/products/DHCP/")
       (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
       (description
        "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
