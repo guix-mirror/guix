@@ -1005,12 +1005,13 @@ book).")
                          '("dviluatex" "dvilualatex" "luatex" "lualatex"))
                #t))
            (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (target (string-append
                                out "/share/texmf-dist/tex/latex/base"))
                       (web2c (string-append
-                              out "/share/texmf-dist/web2c")))
+                              out "/share/texmf-dist/web2c"))
+                      (support-files (assoc-ref inputs "texlive-latex-base-support-files")))
                  (mkdir-p target)
                  (mkdir-p web2c)
                  (for-each delete-file (find-files "." "\\.(log|aux)$"))
@@ -1022,6 +1023,14 @@ book).")
                  ;; doesn't have its own format file, we need to copy it.
                  (copy-file "web2c/pdfetex.fmt"
                             (string-append web2c "/pdftex.fmt"))
+                 ;; "source" is missing the support files as per doc/latex/base/manifest.txt.
+                 ;; FIXME: We are probably not packaging this right.
+                 (for-each (lambda (file)
+                             (install-file
+                              (string-append support-files "/" file)
+                              target))
+                           '("ltxguide.cls" "ltnews.cls" "minimal.cls" "idx.tex"
+                             "lablst.tex" "testpage.tex" "ltxcheck.tex"))
                  #t))))))
       (native-inputs
        `(("texlive-bin" ,texlive-bin)
@@ -1044,6 +1053,18 @@ book).")
          ("texlive-generic-config"
           ,(texlive-dir "tex/generic/config/"
                         "19vj088p4kkp6xll0141m4kl6ssgdzhs3g10i232khb07aqiag8s"))
+         ("texlive-latex-base-support-files"
+          ,(origin
+             (method svn-fetch)
+             (uri (svn-reference
+                   (url (string-append "svn://www.tug.org/texlive/tags/"
+                                       %texlive-tag "/Master/texmf-dist/"
+                                       "/tex/latex/base"))
+                   (revision %texlive-revision)))
+             (file-name (string-append name "-" version "-checkout"))
+             (sha256
+              (base32
+               "16bs9pi3nq407xhg59glklqv43v102cg3yim6k3zcri5d9nkbv3a"))))
          ("texlive-tex-plain" ,texlive-tex-plain)
          ("texlive-fonts-cm" ,texlive-fonts-cm)
          ("texlive-fonts-latex" ,texlive-fonts-latex)
