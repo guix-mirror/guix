@@ -1472,16 +1472,16 @@ reverb effects.")
 (define-public setbfree
   (package
     (name "setbfree")
-    (version "0.8.5")
+    (version "0.8.7")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/pantherb/setBfree/archive/v"
-                              version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pantherb/setBfree")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qfccny0hh9lq54272mzmxvfz2jmzcgigjkjwn6v9h6n00gi5bw4"))))
+                "0r2i8cp0gfzqp6scrxwwf7pn7lk2j9kmf8cx7bqjvgfyn251dw3j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -1996,7 +1996,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.5.8")
+    (version "1.5.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -2004,7 +2004,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "0gwsr5srzy28hwqhfzrc8pswysmyra8kbww3bxfx8bq4mdjifdj6"))))
+                "1kg7d6mnzdwzsqhrf7pmrf1hzgfpbpm5lv8xkaz32wiv391qrnxc"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -3516,7 +3516,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "2.3.1")
+    (version "2.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3525,7 +3525,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00inrw9g8g34g74bhg5gp0rr5nydhjraiyn7vpl7kaqi5yzmhawd"))
+                "0ncv0xfmq87plqa43cm0fpidlwzz1nq5s7h7139llrbc36yp3pr1"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.

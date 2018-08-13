@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -1177,7 +1177,7 @@ XML/CSS rendering engine.")
 (define-public libgsf
   (package
     (name "libgsf")
-    (version "1.14.42")
+    (version "1.14.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1185,7 +1185,7 @@ XML/CSS rendering engine.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hhdz0ymda26q6bl5ygickkgrh998lxqq4z9i8dzpcvqna3zpzr9"))))
+                "05pf3h0dha3s20ddsrljbx7m94qyiqs5igwxx1ql0vlsdlylx50j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -4008,39 +4008,26 @@ DAV, and others.")
 (define-public gusb
   (package
     (name "gusb")
-    (version "0.2.9")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/hughsie/libgusb/archive/"
-                                  "gusb_"
-                                  (string-join (string-split version #\.)
-                                               "_")
-                                  ".tar.gz"))
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1500mgpidmnjfkcz1fzqkbqv547iy1cvr8bwf3k9vqgqcjx3844n"))))
-    (build-system gnu-build-system)
+                "1wa9787ww7s1kl9jml6kiyrjgimlgagq4jmgdj7xcpsx83w10qxk"))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("glib:bin" ,glib "bin")         ; for glib-genmarshal, etc.
-       ("gobject-introspection" ,gobject-introspection)
+     `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
        ("gtk-doc" ,gtk-doc)))
     (propagated-inputs
      ;; Both of these are required by gusb.pc.
      `(("glib" ,glib)
        ("libusb" ,libusb)))
     (arguments
-     `(#:tests? #f  ; libusb fails to initialize.  Wonder what that is.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-                    (lambda _
-                      (and (zero? (system* "gtkdocize"))
-                           (zero? (system* "autoreconf" "-vif"))))))))
+     `(#:tests? #f)) ;libusb fails to initialize.  Wonder what that is.
     (home-page "https://github.com/hughsie/libgusb")
     (synopsis "GLib binding for libusb1")
     (description
@@ -4196,7 +4183,11 @@ a secret password store, an adblocker, and a modern UI.")
      ;;      subsystem
      ;;   FAIL
      '(#:tests? #f
-       #:glib-or-gtk? #t))
+       #:glib-or-gtk? #t
+       #:configure-flags
+       ;; Otherwise, the RUNPATH will lack the final 'epiphany' path component.
+       (list (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib/epiphany"))))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (native-inputs

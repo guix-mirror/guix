@@ -300,7 +300,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20180323")
+    (version "20180716")
     (source
      (origin
        (method url-fetch)
@@ -308,7 +308,7 @@ operating systems.")
                            "/archive/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "12v7zkm809cvjxfz0n7jb4qa410ns1ydyf0gjin99vbdrlj88jac"))))
+         "0072in2d6znwqq461shsaxlf40r4zr7w3j9848qvm4xlh1lq52dx"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -1206,7 +1206,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.1")
+    (version "2.3.2.1")
     (source
      (origin
        (method url-fetch)
@@ -1214,7 +1214,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "14zva4f8k64x86sm9n21cp2yvrpph6k6k52bm22a00pxjwdq50q8"))))
+                "0d2ffbicgl3wswbnyjbw6qigz7r1aqzprpchbwp5cynw122i2raa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2364,7 +2364,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.21.999")
+    (version "2.21.9999")
     (source
      (origin
        (method url-fetch)
@@ -2373,11 +2373,11 @@ operators and scripters.")
        ;; the patched version, and so do we to not break expectations.
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
        (uri (string-append "http://repo.or.cz/alpine.git/snapshot/"
-                           "349642a84039a4b026513c32a3b4f8594acd50df.tar.gz"))
+                           "d3e6f3932f2af9deca8eed09e30a55e9bd524362.tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1rkvlfk3q7h9jcvaj91pk7l087bq4b38j30060jaw21zz94b90np"))))
+         "0w4qyybfdxi29r2z3giq0by6aa6v6nrgibh1xgv4d1vwwq4hw35w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc")
@@ -2554,3 +2554,47 @@ and binaries. It supports offline reading, scoring and killfiles, yEnc, NZB,
 PGP handling, multiple servers, and secure connections.")
     ;; License of the docs: fdl-1.1; Others: gpl2.
     (license (list fdl1.1+ gpl2))))
+
+(define-public imapfilter
+  (package
+    (name "imapfilter")
+    (version "2.6.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/lefcha/imapfilter/archive/"
+                       "v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yslvwr3w5fnl06gfrp0lim8zdlasx3cvgd2fsqi0695xnb9bsms"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-include-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((pcre (assoc-ref inputs "pcre")))
+               (substitute* "src/Makefile"
+                 (("INCDIRS =")
+                  (string-append "INCDIRS ="
+                                 "-I" pcre "/include")))
+               #t))))))
+    (native-inputs
+     `(("lua" ,lua)
+       ("pcre" ,pcre)
+       ("openssl" ,openssl)))
+    (home-page "https://github.com/lefcha/imapfilter")
+    (synopsis "IMAP mail filtering utility")
+    (description "IMAPFilter is a mail filtering utility.  It connects
+to remote mail servers using IMAP, sends searching queries to the server and
+processes mailboxes based on the results.  It can be used to delete, copy,
+move, flag, etc. messages residing in mailboxes at the same or different mail
+servers.  The 4rev1 and 4 versions of IMAP are supported.")
+    (license license:expat)))

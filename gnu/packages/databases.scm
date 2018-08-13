@@ -627,7 +627,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.33")
+    (version "10.1.35")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -635,7 +635,22 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0bax748j4srsyhw5cs5jvwigndh0zwmf4r2cjvhja31ckx8jqccl"))))
+                "0k9walaglwmwdwmkq48ir17g98n83vliyyg5wck22rjgxn2xk4cy"))
+              (patches (search-patches "mariadb-gcc-ice.patch"
+                                       "mariadb-client-test-32bit.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled snappy and xz.
+                  (delete-file-recursively "storage/tokudb/PerconaFT/third_party")
+
+                  ;; Preserve CMakeLists.txt for these.
+                  (for-each (lambda (file)
+                              (unless (string-suffix? "CMakeLists.txt" file)
+                                (delete-file file)))
+                            (append (find-files "extra/yassl")
+                                    (find-files "pcre") (find-files "zlib")))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -648,6 +663,12 @@ Language.")
 
          ;; For now, disable the features that that use libarchive (xtrabackup).
          "-DWITH_LIBARCHIVE=OFF"
+
+         ;; Ensure the system libraries are used.
+         "-DWITH_JEMALLOC=yes"
+         "-DWITH_PCRE=system"
+         "-DWITH_SSL=system"
+         "-DWITH_ZLIB=system"
 
          "-DDEFAULT_CHARSET=utf8"
          "-DDEFAULT_COLLATION=utf8_general_ci"
@@ -662,26 +683,89 @@ Language.")
          "-DINSTALL_SUPPORTFILESDIR=share/mysql/support-files"
          "-DINSTALL_MYSQLSHAREDIR=share/mysql"
          "-DINSTALL_DOCDIR=share/mysql/docs"
-         "-DINSTALL_SHAREDIR=share/mysql")
+         "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle
+           (lambda _
+             ;; The bundled PCRE in MariaDB has a patch that was upstreamed
+             ;; in version 8.34.  Unfortunately the upstream patch behaves
+             ;; slightly differently and the build system fails to detect it.
+             ;; See <https://bugs.exim.org/show_bug.cgi?id=2173>.
+             ;; XXX: Consider patching PCRE instead.
+             (substitute* "cmake/pcre.cmake"
+               ((" OR NOT PCRE_STACK_SIZE_OK") ""))
 
-         ;; Apply this patch that's only needed on ARM.
-         ,@(if (and (not (%current-target-system))
-                    (string=? "armhf-linux" (%current-system)))
-               `((add-after 'unpack 'apply-patch
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((patch (assoc-ref inputs "gcc-ice-patch")))
-                       (invoke "patch" "-p1" "--force"
-                               "--input" patch)
-                       #t))))
-               '())
+             (substitute* "storage/tokudb/PerconaFT/ft/CMakeLists.txt"
+               ;; Remove dependency on these CMake targets.
+               ((" build_lzma build_snappy") ""))
 
-         (add-before
-          'configure 'pre-configure
-          (lambda _
-            (setenv "CONFIG_SHELL" (which "sh"))
-            #t))
+             (substitute* "storage/tokudb/PerconaFT/CMakeLists.txt"
+               ;; This file checks that the bundled sources are present and
+               ;; declares build procedures for them.  We don't need that.
+               (("^include\\(TokuThirdParty\\)") ""))
+
+             #t))
+         (add-after 'unpack 'adjust-tests
+           (lambda _
+             (let ((disabled-tests
+                    '(;; These fail because root@hostname == root@localhost in
+                      ;; the build environment, causing a user count mismatch.
+                      ;; See <https://jira.mariadb.org/browse/MDEV-7761>.
+                      "main.join_cache"
+                      "main.explain_non_select"
+                      "roles.acl_statistics"
+
+                      ;; FIXME: This test fails on i686:
+                      ;; -myisampack: Can't create/write to file (Errcode: 17 "File exists")
+                      ;; +myisampack: Can't create/write to file (Errcode: 17 "File exists)
+                      ;; When running "myisampack --join=foo/t3 foo/t1 foo/t2"
+                      ;; (all three tables must exist and be identical)
+                      ;; in a loop it produces the same error around 1/240 times.
+                      ;; montywi on #maria suggested removing the real_end check in
+                      ;; "strings/my_vsnprintf.c" on line 503, yet it still does not
+                      ;; reach the ending quote occasionally.  Disable it for now.
+                      "main.myisampack"
+                      ;; FIXME: This test fails on armhf-linux:
+                      "mroonga/storage.index_read_multiple_double"))
+
+                   ;; This file contains a list of known-flaky tests for this
+                   ;; release.  Append our own items.
+                   (unstable-tests (open-file "mysql-test/unstable-tests" "a")))
+               (for-each (lambda (test)
+                           (format unstable-tests "~a : ~a\n"
+                                   test "Disabled in Guix"))
+                         disabled-tests)
+               (close-port unstable-tests)
+
+               (substitute* "mysql-test/mysql-test-run.pl"
+                 (("/bin/ls") (which "ls"))
+                 (("/bin/sh") (which "sh")))
+               #t)))
+         (add-before 'configure 'disable-plugins
+           (lambda _
+             (let ((disable-plugin (lambda (name)
+                                     (call-with-output-file
+                                         (string-append "plugin/" name
+                                                        "/CMakeLists.txt")
+                                       (lambda (port)
+                                         (format port "\n")))))
+                   (disabled-plugins '(;; XXX: Causes a test failure.
+                                       "disks")))
+               (for-each disable-plugin disabled-plugins)
+               #t)))
+         (replace 'check
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (if tests?
+                 (with-directory-excursion "mysql-test"
+                   (invoke "./mtr" "--verbose"
+                           "--retry=3"
+                           "--testcase-timeout=40"
+                           "--suite-timeout=600"
+                           "--parallel" (number->string (parallel-job-count))
+                           "--skip-test-list=unstable-tests"))
+                 (format #t "test suite not run~%"))
+             #t))
          (add-after
           'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
@@ -694,14 +778,15 @@ Language.")
               (with-directory-excursion out
                 (for-each delete-file-recursively
                           '("data" "mysql-test" "sql-bench"
-                            "share/man/man1/mysql-test-run.pl.1")))
+                            "share/man/man1/mysql-test-run.pl.1"))
+                ;; Delete huge mysqltest executables.
+                (for-each delete-file (find-files "bin" "test"))
+                ;; And static libraries.
+                (for-each delete-file (find-files "lib" "\\.a$")))
               #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)
-       ,@(if (string=? "armhf-linux" (%current-system))
-             `(("gcc-ice-patch" ,(search-patch "mariadb-gcc-ice.patch")))
-             '())))
+       ("perl" ,perl)))
     (inputs
      `(("jemalloc" ,jemalloc)
        ("libaio" ,libaio)
@@ -709,7 +794,12 @@ Language.")
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
        ("pcre" ,pcre)
+       ("snappy" ,snappy)
+       ("xz" ,xz)
        ("zlib" ,zlib)))
+    ;; The test suite is very resource intensive and can take more than three
+    ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
+    (properties '((timeout . 64800)))        ;18 hours
     (home-page "https://mariadb.org/")
     (synopsis "SQL database server")
     (description
@@ -721,14 +811,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.4")
+    (version "10.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0j000bcs9w8wrllg8m7j1lxsd3n2x0yzkack5p35cmxx20iq2q0v"))))
+                "04a07jkvc5s6zgh6jr78149kcjmsxclizsqabjw44ld4j5n633kc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-uuid=e2fs")
@@ -1456,7 +1546,7 @@ valid SQL query.")
 (define-public unixodbc
   (package
    (name "unixodbc")
-   (version "2.3.4")
+   (version "2.3.6")
    (source (origin
             (method url-fetch)
             (uri
@@ -1464,7 +1554,7 @@ valid SQL query.")
               "ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-"
               version ".tar.gz"))
             (sha256
-             (base32 "0f8y88rcc2akjvjv5y66yx7k0ms9h1s0vbcfy25j93didflhj59f"))))
+             (base32 "0sads5b8cmmj526gyjba7ccknl1vbhkslfqshv1yqln08zv3gdl8"))))
    (build-system gnu-build-system)
    (synopsis "Data source abstraction library")
    (description "Unixodbc is a library providing an API with which to access

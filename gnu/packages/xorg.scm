@@ -2387,7 +2387,7 @@ XC-APPGROUP, XTEST.")
 (define-public libevdev
   (package
     (name "libevdev")
-    (version "1.5.6")
+    (version "1.5.9")
     (source
      (origin
        (method url-fetch)
@@ -2395,7 +2395,7 @@ XC-APPGROUP, XTEST.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1256ypz93039n6km4macg158fpmjgylhmcmk20pnklxicsfpxv7c"))))
+         "0xca343ff12wh6nsq76r0nbsfrm8dypjrzm4fqz9vv9v8i8kfrp1"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python)))
     (home-page "https://www.freedesktop.org/wiki/Software/libevdev/")
@@ -4566,7 +4566,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxinerama
   (package
     (name "libxinerama")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -4576,7 +4576,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1qlqfvzw45gdzk9xirgwlp2qgj0hbsyiqj8yh8zml2bk2ygnjibs"))))
+            "086p0axqj57nvkaqa6r00dnr9kyrn1m8blgf0zjy25zpxkbxn200"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
@@ -5070,7 +5070,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.20.0")
+    (version "1.20.1")
     (source
       (origin
         (method url-fetch)
@@ -5079,7 +5079,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "1rnka3sp8yg2bir0bjjhwn33jikj8qd8ckqcxrs94w05bwc7v5lx"))
+          "0679942x1ma2p30vlvqylpjc5v1ak1pgqysnqrj82nz7dzl9zjar"))
         (patches
          (list
           ;; See:
@@ -5093,8 +5093,7 @@ over Xlib, including:
             (sha256
              (base32
               "0mm70y058r8s9y9jiv7q2myv0ycnaw3iqzm7d274410s0ik38w7q"))
-            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))
-          (search-patch "xorg-server-rotate-fb.patch")))))
+            (file-name "xorg-server-use-intel-only-on-pre-gen4.diff"))))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpciaccess" ,libpciaccess)

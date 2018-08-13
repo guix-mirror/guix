@@ -46,7 +46,7 @@
 (define-public lftp
   (package
     (name "lftp")
-    (version "4.8.3")
+    (version "4.8.4")
     (source (origin
               (method url-fetch)
               ;; See https://lftp.tech/get.html for mirrors.
@@ -58,7 +58,7 @@
                                         "ftp/lftp/lftp-" version ".tar.xz")))
               (sha256
                (base32
-                "12y77jlfs4x4zvcah92mw2h2sb4j0bvbaxkh3wwsm8gs392ywyny"))))
+                "0qks22357xv9y6ripmf5j2n5svh8j5z0yniphfk89sjwkqg2gg2f"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -74,7 +74,8 @@
                      (lambda _
                        (substitute* "tests/Makefile"
                          (("(ftp-cls-l|ftp-list|http-get)\\$\\(EXEEXT\\)") "")
-                         (("lftp-https-get ") "")))))
+                         (("lftp-https-get ") ""))
+                       #t)))
        #:configure-flags
        (list (string-append "--with-readline="
                             (assoc-ref %build-inputs "readline")))))

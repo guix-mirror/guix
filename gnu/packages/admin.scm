@@ -1048,6 +1048,7 @@ commands and their arguments.")
                     version
                     ".tar.gz"))
               (patches (search-patches "wpa-supplicant-CVE-2017-13082.patch"
+                                       "wpa-supplicant-CVE-2018-14526.patch"
                                        "wpa-supplicant-fix-key-reuse.patch"
                                        "wpa-supplicant-fix-zeroed-keys.patch"
                                        "wpa-supplicant-fix-nonce-reuse.patch"

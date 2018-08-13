@@ -644,14 +644,14 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "6.0.0")
+   (version "8.1.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                 "/qpdf-" version ".tar.gz"))
             (sha256
              (base32
-              "0csj2p2gkxrc0rk8ykymlsdgfas96vzf1dip3y1x7z1q9plwgzd9"))
+              "1m3hcgip6bzjx4gd7wq1328p8zi3pq5savzncdyln6l0lcklh7vx"))
             (modules '((guix build utils)))
             (snippet
              ;; Replace shebang with the bi-lingual shell/Perl trick to remove
@@ -683,9 +683,9 @@ eval '(exit $?0)' && eval 'exec perl -wS \"$0\" ${1+\"$@\"}'
     `(("pkg-config" ,pkg-config)
       ("perl" ,perl)))
    (propagated-inputs
-    `(("pcre" ,pcre)))
-   (inputs
-    `(("zlib" ,zlib)))
+    ;; In Requires.private of libqpdf.pc.
+    `(("libjpeg-turbo" ,libjpeg-turbo)
+      ("zlib" ,zlib)))
    (synopsis "Command-line tools and library for transforming PDF files")
    (description
     "QPDF is a command-line program that does structural, content-preserving
@@ -693,7 +693,9 @@ transformations on PDF files.  It could have been called something like
 pdf-to-pdf.  It includes support for merging and splitting PDFs and to
 manipulate the list of pages in a PDF file.  It is not a PDF viewer or a
 program capable of converting PDF into other formats.")
-   (license license:clarified-artistic)
+   ;; Prior to the 7.0 release, QPDF was licensed under Artistic 2.0.
+   ;; Users can still choose to use the old license at their option.
+   (license (list license:asl2.0 license:clarified-artistic))
    (home-page "http://qpdf.sourceforge.net/")))
 
 (define-public xournal

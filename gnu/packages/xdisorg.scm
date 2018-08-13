@@ -640,7 +640,7 @@ to find buttons, etc, on the screen to click on.")
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.55")
+    (version "5.56")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://sillycycle.com/xlock/"
@@ -651,7 +651,7 @@ to find buttons, etc, on the screen to click on.")
                                        name "-" version ".tar.xz")))
              (sha256
               (base32
-               "1y3f76rq2nd10fgi2rx81aj6pijglmm661vjsxi05hpg35dzmwfl"))))
+               "1dg1n79rnswhxqz36mxnl5lp8p37i9fbibnzzyrqknmvf2s8xpd0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--enable-appdefaultdir="

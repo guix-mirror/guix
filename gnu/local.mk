@@ -649,6 +649,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/elogind-glibc-2.27.patch			\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/emacs-exec-path.patch			\
+  %D%/packages/patches/emacs-exwm-fix-fullscreen-issue.patch	\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
   %D%/packages/patches/emacs-highlight-stages-add-gexp.patch	\
@@ -803,6 +804,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
+  %D%/packages/patches/irrlicht-use-system-libs.patch		\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/jamvm-arm.patch				\
@@ -918,12 +920,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/luit-posix.patch				\
   %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
+  %D%/packages/patches/lxc-CVE-2018-6556.patch         		\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
   %D%/packages/patches/lyx-2.2.3-fix-test.patch			\
   %D%/packages/patches/mailutils-uninitialized-memory.patch	\
   %D%/packages/patches/make-glibc-compat.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mariadb-gcc-ice.patch			\
+  %D%/packages/patches/mariadb-client-test-32bit.patch		\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
   %D%/packages/patches/maxima-defsystem-mkdir.patch		\
@@ -980,7 +984,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
   %D%/packages/patches/opencascade-oce-glibc-2.26.patch		\
-  %D%/packages/patches/openblas-fix-tests-i686.patch		\
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openldap-CVE-2017-9287.patch		\
@@ -1030,7 +1033,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/plink-1.07-unclobber-i.patch		\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
-  %D%/packages/patches/polkit-drop-test.patch			\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/potrace-tests.patch			\
@@ -1042,7 +1044,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/psm-ldflags.patch			\
   %D%/packages/patches/psm-repro.patch				\
   %D%/packages/patches/pulseaudio-fix-mult-test.patch		\
-  %D%/packages/patches/pulseaudio-glibc-2.27.patch		\
   %D%/packages/patches/pulseaudio-longer-test-timeout.patch	\
   %D%/packages/patches/pybugz-encode-error.patch		\
   %D%/packages/patches/pybugz-stty.patch			\
@@ -1206,6 +1207,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
   %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
   %D%/packages/patches/wpa-supplicant-CVE-2017-13082.patch	\
+  %D%/packages/patches/wpa-supplicant-CVE-2018-14526.patch	\
   %D%/packages/patches/wpa-supplicant-fix-key-reuse.patch	\
   %D%/packages/patches/wpa-supplicant-fix-zeroed-keys.patch	\
   %D%/packages/patches/wpa-supplicant-fix-nonce-reuse.patch	\
@@ -1230,7 +1232,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
-  %D%/packages/patches/xorg-server-rotate-fb.patch		\
   %D%/packages/patches/zathura-pdf-mupdf-link-to-jpeg-libraries.patch \
   %D%/packages/patches/zathura-plugindir-environment-variable.patch	\
   %D%/packages/patches/zstd-fix-stdin-list-without-tty.patch	\

@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages check)
@@ -122,7 +124,7 @@ rates.")
 (define-public pulseaudio
   (package
     (name "pulseaudio")
-    (version "11.1")
+    (version "12.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -130,7 +132,7 @@ rates.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "17ndr6kc7hpv4ih4gygwlcpviqifbkvnk4fbwf4n25kpb991qlpj"))
+               "0ma0p8iry7fil7qb4pm2nx2pm65kq9hk9xc4r5wkf14nqbzni5l0"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
@@ -141,7 +143,6 @@ rates.")
                     (string-append "#" all "\n")))
                  #t))
              (patches (search-patches
-                       "pulseaudio-glibc-2.27.patch"
                        "pulseaudio-fix-mult-test.patch"
                        "pulseaudio-longer-test-timeout.patch"))))
     (build-system gnu-build-system)
@@ -153,13 +154,6 @@ rates.")
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
        #:phases (modify-phases %standard-phases
-                 (replace 'bootstrap
-                   ;; TODO: Remove this custom bootstrap phase when
-                   ;; pulseaudio-glibc-2.27.patch is removed.
-                   (lambda _
-                     (patch-shebang "git-version-gen")
-                     (setenv "NOCONFIGURE" "1")
-                     (invoke "bash" "bootstrap.sh")))
                  (add-before 'check 'pre-check
                    (lambda _
                      ;; 'tests/lock-autospawn-test.c' wants to create a file
@@ -174,25 +168,21 @@ rates.")
      `(("alsa-lib" ,alsa-lib)
        ("bluez" ,bluez)
        ("sbc" ,sbc)
-       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
        ("libsndfile" ,libsndfile)
-       ("libsamplerate" ,libsamplerate)
+       ("jack" ,jack-1) ; For routing the output to jack.
        ("dbus" ,dbus)
        ("glib" ,glib)
-       ("intltool" ,intltool)
-       ("m4" ,m4)
        ("libltdl" ,libltdl)
        ("fftwf" ,fftwf)
        ("avahi" ,avahi)
-       ("eudev" ,eudev)           ;for the detection of hardware audio devices
-       ("check" ,check)))
+       ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ;; TODO: Remove "autoconf", "automake", and "libtool" from
-       ;; native-inputs when pulseaudio-glibc-2.27.patch is removed.
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     `(("check" ,check)
+       ("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("m4" ,m4)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; 'libpulse*.la' contain `-lgdbm' and `-lcap', so propagate them.
      `(("libcap" ,libcap)

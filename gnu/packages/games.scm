@@ -67,11 +67,22 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
@@ -82,67 +93,56 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages less)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages music)
   #:use-module (gnu packages multiprecision)
-  #:use-module (gnu packages icu4c)
-  #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ocaml)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages textutils)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages databases)
-  #:use-module (gnu packages shells)
-  #:use-module (gnu packages sdl)
-  #:use-module (gnu packages swig)
-  #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages check)
-  #:use-module (gnu packages fonts)
-  #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages gstreamer)
-  #:use-module (gnu packages bash)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
-  #:use-module (gnu packages qt)
-  #:use-module (gnu packages compression)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages xiph)
-  #:use-module (gnu packages curl)
-  #:use-module (gnu packages lua)
-  #:use-module (gnu packages video)
-  #:use-module (gnu packages xml)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages shells)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
-  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages pcre)
-  #:use-module (gnu packages cyrus-sasl)
-  #:use-module (gnu packages messaging)
   #:use-module (gnu packages upnp)
-  #:use-module (gnu packages wxwidgets)
-  #:use-module (gnu packages bison)
-  #:use-module (gnu packages flex)
-  #:use-module (gnu packages cmake)
-  #:use-module (gnu packages gnuzilla)
-  #:use-module (gnu packages icu4c)
-  #:use-module (gnu packages networking)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages vulkan)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages messaging)
+  #:use-module (gnu packages networking)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system haskell)
@@ -1483,34 +1483,53 @@ are primarily in English, however some in other languages are provided.")
                     "/" version "/irrlicht-" version ".zip"))
               (sha256
                (base32
-                "0cz4z4dwrv5ypl19ll67wl6jjpy5k6ly4vr042w4br88qq5jhazl"))))
+                "0cz4z4dwrv5ypl19ll67wl6jjpy5k6ly4vr042w4br88qq5jhazl"))
+              (patches (search-patches "irrlicht-use-system-libs.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (for-each delete-file-recursively
+                     '("bin" ; bundled compiled Windows binaries"
+                       "source/Irrlicht/MacOSX"
+                       "source/Irrlicht/bzip2"
+                       "source/Irrlicht/jpeglib"
+                       "source/Irrlicht/libpng"
+                       "source/Irrlicht/lzma"
+                       "source/Irrlicht/zlib"))
+                  (delete-file "source/Irrlicht/glext.h")
+                  (delete-file "source/Irrlicht/glxext.h")
+                  (delete-file "source/Irrlicht/wglext.h")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-env
+         (add-after 'unpack 'chdir-to-source
+           (lambda _
+             ;; The actual source is buried a few directories deep.
+             (chdir "source/Irrlicht/")
+             #t))
+         (add-after 'chdir-to-source 'fix-build-env
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (substitute* "Makefile"
                  (("INSTALL_DIR = /usr/local/lib")
-                  (string-append "INSTALL_DIR = " out "/lib")))
+                  (string-append "INSTALL_DIR = " out "/lib"))
+                 ;; Add '-fpermissive' to the CXXFLAGS
+                 (("-Wall") "-Wall -fpermissive")) ; CImageLoaderJPG.cpp
                ;; The Makefile assumes these directories exist.
                (mkdir-p (string-append out "/lib"))
                (mkdir-p (string-append out "/include")))))
-         (replace 'unpack
-           (lambda* (#:key source #:allow-other-keys)
-             (and (zero? (system* "unzip" source))
-                  ;; The actual source is buried a few directories deep.
-                  (chdir (string-append "irrlicht-" ,version
-                                        "/source/Irrlicht/")))))
          (delete 'configure))           ; no configure script
        #:tests? #f                      ; no check target
        #:make-flags '("CC=gcc" "sharedlib")))
-    (native-inputs
-     `(("unzip" ,unzip)))
     (inputs
-     `(("mesa" ,mesa)
-       ("glu" ,glu)))
+     `(("bzip2" ,bzip2)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxxf86vm" ,libxxf86vm)
+       ("mesa" ,mesa)))
     (synopsis "3D game engine written in C++")
     (description
      "The Irrlicht Engine is a high performance realtime 3D engine written in
@@ -1578,36 +1597,28 @@ match, cannon keep, and grave-itation pit.")
     (name "minetest-data")
     (version "0.4.17")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/minetest/minetest_game/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/minetest/minetest_game")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pa9skjwbq27aky6dgr7g3mb0a7c5rpa6xmz2qh0nm618z5hgazh"))))
+                "1g8iw2pya32ifljbdx6z6rpcinmzm81i9minhi2bi1d500ailn7s"))))
     (build-system trivial-build-system)
     (native-inputs
-     `(("source" ,source)
-       ("tar" ,tar)
-       ("gzip" ,(@ (gnu packages compression) gzip))))
+     `(("source" ,source)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder (begin
                    (use-modules (guix build utils))
-                   (let ((tar (string-append (assoc-ref %build-inputs "tar")
-                                             "/bin/tar"))
-                         (install-dir (string-append
+                   (let ((install-dir (string-append
                                        %output
-                                       "/share/minetest/games/minetest_game"))
-                         (path (string-append (assoc-ref %build-inputs
-                                                         "gzip")
-                                              "/bin")))
-                     (setenv "PATH" path)
-                     (invoke tar "xvf" (assoc-ref %build-inputs "source"))
-                     (chdir (string-append "minetest_game-" ,version))
+                                       "/share/minetest/games/minetest_game")))
                      (mkdir-p install-dir)
-                     (copy-recursively "." install-dir)
+                     (copy-recursively
+                       (assoc-ref %build-inputs "source")
+                       install-dir)
                      #t))))
     (synopsis "Main game data for the Minetest game engine")
     (description
@@ -1620,20 +1631,25 @@ match, cannon keep, and grave-itation pit.")
     (name "minetest")
     (version "0.4.17.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/minetest/minetest/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/minetest/minetest")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ngb3h6hw0zbsr6isjpyp4fach0g4nbn6bxxv9g354plac6d89fd"))))
+                "19sfblgh9mchkgw32n7gdvm7a8a9jxsl9cdlgmxn9bk9m939a2sg"))
+              (modules '((guix build utils)))
+              (snippet
+                '(begin
+                   (delete-file-recursively "lib") #t))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
          (list "-DRUN_IN_PLACE=0"
                "-DENABLE_FREETYPE=1"
                "-DENABLE_GETTEXT=1"
+               "-DENABLE_SYSTEM_JSONCPP=TRUE"
                (string-append "-DIRRLICHT_INCLUDE_DIR="
                               (assoc-ref %build-inputs "irrlicht")
                               "/include/irrlicht")
@@ -1648,18 +1664,21 @@ match, cannon keep, and grave-itation pit.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("irrlicht" ,irrlicht)
-       ("libpng" ,libpng)
+     `(("curl" ,curl)
+       ("freetype" ,(@ (gnu packages fontutils) freetype))
+       ("gettext" ,gettext-minimal)
+       ("gmp" ,gmp)
+       ("irrlicht" ,irrlicht)
+       ("jsoncpp" ,jsoncpp)
        ("libjpeg" ,libjpeg)
-       ("libxxf86vm" ,libxxf86vm)
-       ("mesa" ,mesa)
+       ("libpng" ,libpng)
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
-       ("openal" ,openal)
-       ("freetype" ,(@ (gnu packages fontutils) freetype))
-       ("curl" ,curl)
+       ("libxxf86vm" ,libxxf86vm)
        ("luajit" ,luajit)
-       ("gettext" ,gettext-minimal)
+       ("mesa" ,mesa)
+       ("ncurses" ,ncurses)
+       ("openal" ,openal)
        ("sqlite" ,sqlite)))
     (propagated-inputs
      `(("minetest-data" ,minetest-data)))

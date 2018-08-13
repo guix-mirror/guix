@@ -25,6 +25,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
@@ -76,16 +77,16 @@ makes a few sacrifices to acquire fast full and incremental build times.")
 (define-public bear
   (package
     (name "bear")
-    (version "2.3.11")
+    (version "2.3.12")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rizsotto/Bear/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rizsotto/Bear")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1m0w0wqnz983l7fpp5p9pdsqr7n3ybrzp8ywjcvn0rihsrzj65j6"))))
+                "1zzz2yiiny9pm4h6ayb82xzxc2j5djcpf8va2wagcw92m7w6miqw"))))
     (build-system cmake-build-system)
     (inputs
      `(("python" ,python-wrapper)))

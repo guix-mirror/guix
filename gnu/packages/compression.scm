@@ -661,13 +661,13 @@ sfArk file format to the uncompressed sf2 format.")
   (package
     (name "libmspack")
     (home-page "https://cabextract.org.uk/libmspack/")
-    (version "0.7")
+    (version "0.7.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append home-page name "-" version "alpha.tar.gz"))
       (sha256
-       (base32 "0wi7ydq8vjiq0kfnpkj2d6vll2s49x38bywnsdqphqb0vdn53q1n"))))
+       (base32 "0zn4vwzk5ankgd0l88cipan19pzbzv0sm3fba17lvqwka3dp1acp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
@@ -1231,7 +1231,7 @@ install: libbitshuffle.so
 (define-public java-snappy
   (package
     (name "java-snappy")
-    (version "1.1.7")
+    (version "1.1.7.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/xerial/snappy-java/archive/"
@@ -1239,7 +1239,7 @@ install: libbitshuffle.so
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0q4kxz2n97czf6g5gzq0d8yz22cgiaj7wp51rzsswh3bi99bpgg5"))))
+                "1p557vdv006ysgxbpp83krmq0066k46108vyiyka69w8i4i8rbbm"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "snappy.jar"
@@ -1313,8 +1313,8 @@ install: libbitshuffle.so
        ("perl" ,perl)))
     (home-page "https://github.com/xerial/snappy-java")
     (synopsis "Compression/decompression algorithm in Java")
-    (description "Snappy-java is a Java port of the snappy, a fast C++
-compresser/decompresser.")
+    (description "Snappy-java is a Java port of snappy, a fast C++
+compressor/decompressor.")
     (license license:asl2.0)))
 
 (define-public java-snappy-1

@@ -11141,7 +11141,7 @@ This is the type for statically-configured network interfaces.
 @end defvr
 
 @deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
-       [#:netmask #f] [#:gateway #f] [#:name-servers @code{'()}]
+       [#:netmask #f] [#:gateway #f] [#:name-servers @code{'()}] @
        [#:requirement @code{'(udev)}]
 Return a service that starts @var{interface} with address @var{ip}.  If
 @var{netmask} is true, use it as the network mask.  If @var{gateway} is true,

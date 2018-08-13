@@ -173,7 +173,7 @@ to the default GNU unpack strategy."
 
 (define* (generate-jar-indices #:key outputs #:allow-other-keys)
   "Generate file \"META-INF/INDEX.LIST\".  This file does not use word wraps
-and is preferred over \"META-INF/MAINFEST.MF\", which does use word wraps,
+and is preferred over \"META-INF/MANIFEST.MF\", which does use word wraps,
 by Java when resolving dependencies.  So we make sure to create it so that
 grafting works - and so that the garbage collector doesn't collect
 dependencies of this jar file."
@@ -245,7 +245,9 @@ repack them.  This is necessary to ensure that archives are reproducible."
     (replace 'build build)
     (replace 'check check)
     (replace 'install install)
-    (add-after 'install 'generate-jar-indices generate-jar-indices)
+    (add-after 'install 'reorder-jar-content
+               strip-jar-timestamps)
+    (add-after 'reorder-jar-content 'generate-jar-indices generate-jar-indices)
     (add-after 'generate-jar-indices 'strip-jar-timestamps
                strip-jar-timestamps)))
 

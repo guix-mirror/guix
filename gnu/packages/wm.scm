@@ -455,7 +455,7 @@ desktop environment.")
 (define-public xmonad
   (package
     (name "xmonad")
-    (version "0.13")
+    (version "0.14")
     (synopsis "Tiling window manager")
     (source (origin
               (method url-fetch)
@@ -463,12 +463,13 @@ desktop environment.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jh3lcs20qpna36fa5a0r174xqrsxhj10x1rm5vwf64zariipy7r"))))
+                "0lq3k0ap7jxrrswpd954mqa6h8diccbif5srcgbmr39y6y8x0mm4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-mtl"                   ,ghc-mtl)
        ("ghc-quickcheck"            ,ghc-quickcheck)
+       ("ghc-semigroups"            ,ghc-semigroups)
        ("ghc-setlocale"             ,ghc-setlocale)
        ("ghc-utf8-string"           ,ghc-utf8-string)
        ("ghc-x11"                   ,ghc-x11)))
@@ -489,7 +490,7 @@ desktop environment.")
                     Comment=~a~@
                     Exec=~a/bin/xmonad~@
                     Type=Application~%" ,name ,synopsis %output)))))))))
-    (home-page "http://xmonad.org")
+    (home-page "https://xmonad.org")
     (description
      "Xmonad is a tiling window manager for X.  Windows are arranged
 automatically to tile the screen without gaps or overlap, maximising screen
@@ -547,7 +548,7 @@ Haskell, no knowledge of the language is required to install and use it.")
 (define-public ghc-xmonad-contrib
   (package
     (name "ghc-xmonad-contrib")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -555,7 +556,7 @@ Haskell, no knowledge of the language is required to install and use it.")
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
         (base32
-         "0vj72jhfng6y7hv5frx2v99jvl3jn9rbpk2j7xw9vydiwmzq4q57"))))
+         "1660w3xhbfrlq8b8s1rviq2mcn1vyqpypli4023gqxwry52brk6y"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-mtl" ,ghc-mtl)
@@ -566,7 +567,7 @@ Haskell, no knowledge of the language is required to install and use it.")
        ("ghc-x11" ,ghc-x11)
        ("ghc-x11-xft" ,ghc-x11-xft)
        ("xmonad" ,xmonad)))
-    (home-page "http://xmonad.org")
+    (home-page "https://xmonad.org")
     (synopsis "Third party extensions for xmonad")
     (description
      "Third party tiling algorithms, configurations, and scripts to Xmonad, a

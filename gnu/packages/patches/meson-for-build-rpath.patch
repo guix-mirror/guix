@@ -2,8 +2,7 @@ This patch removes a part of meson that clears the rpath upon installation.
 This will only be applied to a special version of meson, used for the
 meson-build-system.
 
-Patch for Meson 0.42.0 by Peter Mikkelsen <petermikkelsen10@gmail.com>
-Adjusted for Meson 0.47.1 by Ricardo Wurmus <rekado@elephly.net>
+Original patch for Meson 0.42.0 by Peter Mikkelsen <petermikkelsen10@gmail.com>
 
 --- meson-0.47.1/mesonbuild/minstall.py.old	2018-08-10 11:01:27.812327013 +0200
 +++ meson-0.47.1/mesonbuild/minstall.py	2018-08-10 11:01:51.940368505 +0200
