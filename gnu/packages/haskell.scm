@@ -1790,7 +1790,7 @@ environment variables.")
 (define-public ghc-setlocale
   (package
     (name "ghc-setlocale")
-    (version "1.0.0.4")
+    (version "1.0.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1798,7 +1798,7 @@ environment variables.")
                     version "/setlocale-" version ".tar.gz"))
               (sha256
                (base32
-                "1sd73zgpijr9xjdj5p562cmlcxmx5iff5k8xh9b6rpcgrgnnlf9j"))))
+                "1rl8qb8vzv8fdbczy2dxwgn4cb68lfrjdxf2w8nn9wy1acqzcyjq"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/setlocale")
     (synopsis "Haskell bindings to setlocale")
