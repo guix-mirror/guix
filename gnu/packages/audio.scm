@@ -2736,7 +2736,7 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -2744,10 +2744,10 @@ interface.")
                            "/qsynth-" version ".tar.gz"))
        (sha256
         (base32
-         "0kpk1rnhbifbvm4xvw8i0d4ksk78pf505qvg08k89kqkg32494ap"))))
+         "1rfkaxq1pyc4hv3l0i6wicianbcbm1wp53kh9i5d4jsljgisd1dv"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" phase
+     `(#:tests? #f                      ; no "check" phase
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (native-inputs
