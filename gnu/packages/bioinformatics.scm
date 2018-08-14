@@ -13345,3 +13345,64 @@ can be calculated, and a number of descriptive plots easily generated.")
       (description "This package provides an R interface to access, create,
 and modify loom files.  loomR aims to be completely compatible with loompy.")
       (license license:gpl3))))
+
+(define-public gffread
+  ;; We cannot use the tagged release because it is not in sync with gclib.
+  ;; See https://github.com/gpertea/gffread/issues/26
+  (let ((commit "ba7535fcb3cea55a6e5a491d916e93b454e87fd0")
+        (revision "1"))
+    (package
+      (name "gffread")
+      (version (git-version "0.9.12" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gpertea/gffread.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1dl2nbcg96lxpd0drg48ssa8343nf7pw9s9mkrc4mjjmfwsin3ki"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no check target
+         #:make-flags
+         (list "GCLDIR=gclib")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'copy-gclib-source
+             (lambda* (#:key inputs #:allow-other-keys)
+               (mkdir-p "gclib")
+               (copy-recursively (assoc-ref inputs "gclib-source") "gclib")
+               #t))
+           ;; There is no install target
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "gffread" bin))
+               #t)))))
+      (native-inputs
+       `(("gclib-source"
+          ,(let ((version "0.10.3")
+                 (commit "54917d0849c1e83cfb057b5f712e5cb6a35d948f")
+                 (revision "1"))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/gpertea/gclib.git")
+                     (commit commit)))
+               (file-name (git-file-name "gclib" version))
+               (sha256
+                (base32
+                 "0b51lc0b8syrv7186fd7n8f15rwnf264qgfmm2palrwks1px24mr")))))))
+      (home-page "https://github.com/gpertea/gffread/")
+      (synopsis "Parse and convert GFF/GTF files")
+      (description
+       "This package provides a GFF/GTF file parsing utility providing format
+conversions, region filtering, FASTA sequence extraction and more.")
+      ;; gffread is under Expat, but gclib is under Artistic 2.0
+      (license (list license:expat
+                     license:artistic2.0)))))
