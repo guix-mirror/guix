@@ -1432,6 +1432,9 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3packages"
+       ;; build-targets must be specified manually since they are in
+       ;; sub-directories.
+       #:build-targets '("l3keys2e.ins" "xparse.ins" "xfrac.ins" "xfp.ins" "xtemplate.ins")
        #:phases
        (modify-phases %standard-phases
          ;; All package sources are in sub-directories, so we need to add them
@@ -1444,8 +1447,12 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
                                       cwd "/xparse:"
                                       cwd "/xfrac:"
                                       cwd "/xfp:"
-                                      cwd "/xtemplate")))
-             #t)))))
+                                      cwd "/xtemplate"
+                                      ;; The terminating ":" is required to include the
+                                      ;; l3kernel input as well.
+                                      ":")))
+             #t)))
+       ))
     (inputs
      `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
     (home-page "https://www.ctan.org/pkg/l3packages")
