@@ -412,8 +412,8 @@ mapping from string keys to string values.")
      `(("libevent" ,libevent)
        ("cyrus-sasl" ,cyrus-sasl)))
     (home-page "https://memcached.org/")
-    (synopsis "In memory caching service")
-    (description "Memcached is a in memory key value store.  It has a small
+    (synopsis "In-memory caching service")
+    (description "Memcached is an in-memory key-value store.  It has a small
 and generic API, and was originally intended for use with dynamic web
 applications.")
     (license license:bsd-3)))
