@@ -404,13 +404,35 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17.15")
-(define %linux-libre-hash "0c44lcciildb1alg3yb4bb6p763p6zlr5srknayydcm6h4l35wq6")
+(define %linux-libre-version "4.18.1")
+(define %linux-libre-hash "0kj3z9c3sa1njdf0yysscvcgbm0l4sqnclm5fby2nf034zmc6kpx")
+
+(define %linux-libre-patches
+  (list %boot-logo-patch
+        (origin
+          (method url-fetch)
+          (uri (string-append
+                "https://salsa.debian.org/kernel-team/linux"
+                "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
+                "/debian/patches/bugfix/arm/"
+                "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
+          (file-name "linux-libre-4.18-arm-export-__sync_icache_dcache.patch")
+          (sha256
+           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))
+        (origin
+          (method url-fetch)
+          (uri (string-append
+                "https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git"
+                "/patch/?id=c5157101e7793b42a56e07368c7f4cb73fb58008"))
+          (file-name "linux-libre-4.18-arm64-export-__sync_icache_dcache.patch")
+          (sha256
+           (base32 "0q13arsi8al3l3yq6d76z4h8n45wlpkjyxlrgn1sqbx5xjksycyz")))))
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %linux-compatible-systems
+                    #:patches %linux-libre-patches
                     #:configuration-file kernel-config))
 
 (define %linux-libre-4.14-version "4.14.63")
