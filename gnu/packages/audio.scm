@@ -149,7 +149,7 @@ Filter) modules follow the convention of 1V / Octave.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://aubio.org/pub/aubio-" version ".tar.bz2"))
+                   "https://aubio.org/pub/aubio-" version ".tar.bz2"))
              (sha256
               (base32
                "1yvwskahx1bf3x2fvi6cwah1ay11iarh79fjlqz8s887y3hkpixx"))))
@@ -173,7 +173,7 @@ Filter) modules follow the convention of 1V / Octave.")
        ("fftwf" ,fftwf)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://aubio.org/")
+    (home-page "https://aubio.org/")
     (synopsis "Library for audio labelling")
     (description
      "aubio is a tool designed for the extraction of annotations from audio
