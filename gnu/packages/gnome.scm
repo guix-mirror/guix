@@ -5305,6 +5305,7 @@ libxml2.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "gdm-CVE-2018-14424.patch"))
               (sha256
                (base32
                 "0mxdal6hh345xk2xqmw5192jgpprkbcv1d4bwmnl4arcc00cpp8p"))))
