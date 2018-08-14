@@ -238,7 +238,8 @@ score, keyboard, guitar, drum and controller views.")
                       "tinysvcmdns"))
                     #t))
                 (patches (search-patches "clementine-use-openssl.patch"
-                                         "clementine-remove-crypto++-dependency.patch"))))
+                                         "clementine-remove-crypto++-dependency.patch"
+                                         "clementine-fix-sqlite.patch"))))
       (build-system cmake-build-system)
       (arguments
        '(#:test-target "clementine_test"
@@ -281,7 +282,7 @@ score, keyboard, guitar, drum and controller views.")
          ("pulseaudio" ,pulseaudio)
          ("qtbase" ,qtbase)
          ("qtx11extras" ,qtx11extras)
-         ("sqlite" ,sqlite-with-fts3)
+         ("sqlite" ,sqlite)
          ("sparsehash" ,sparsehash)
          ("taglib" ,taglib)))
       (home-page "http://clementine-player.org")

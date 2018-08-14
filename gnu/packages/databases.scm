@@ -27,7 +27,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
@@ -1068,20 +1068,6 @@ is in the public domain.")
      (substitute-keyword-arguments (package-arguments sqlite)
        ((#:configure-flags flags)
         `(cons "--enable-fts5" ,flags))))))
-
-;; This is used by Clementine.
-(define-public sqlite-with-fts3
-  (package (inherit sqlite)
-    (name "sqlite-with-fts3")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                              "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                              "-DSQLITE_ENABLE_DBSTAT_VTAB "
-                              "-DSQLITE_ENABLE_FTS3 "
-                              "-DSQLITE_ENABLE_FTS3_PARENTHESIS "
-                              "-DSQLITE_ENABLE_FTS3_TOKENIZER")))))))
 
 (define-public tdb
   (package
