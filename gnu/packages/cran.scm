@@ -4636,3 +4636,29 @@ dictionaries in Python but with a purposefully R flavor.  For objects of
 appreciable size, access using hashes outperforms native named lists and
 vectors.")
     (license license:gpl2+)))
+
+(define-public r-orddom
+  (package
+    (name "r-orddom")
+    (version "3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "orddom" version))
+       (sha256
+        (base32
+         "165axs15fvwhrp89xd87l81q3h2qjll1vrwcsap645cwvb85nwsh"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-psych" ,r-psych)))
+    (home-page "https://cran.r-project.org/web/packages/orddom/")
+    (synopsis "Ordinal dominance statistics")
+    (description
+     "This package provides tools to compute ordinal, statistics and effect
+sizes as an alternative to mean comparison: Cliff's delta or success rate
+difference (SRD), Vargha and Delaney's A or the Area Under a Receiver
+Operating Characteristic Curve (AUC), the discrete type of McGraw & Wong's
+Common Language Effect Size (CLES) or Grissom & Kim's Probability of
+Superiority (PS), and the Number needed to treat (NNT) effect size.  Moreover,
+comparisons to Cohen's d are offered based on Huberty & Lowman's Percentage of
+Group (Non-)Overlap considerations.")
+    (license license:gpl2)))
