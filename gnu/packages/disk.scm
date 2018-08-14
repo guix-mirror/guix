@@ -395,7 +395,7 @@ systems.  Output format is completely customizable.")
 (define-public f3
   (package
     (name "f3")
-    (version "6.0")
+    (version "7.1")
     (source
      (origin
       (method git-fetch)
@@ -405,25 +405,21 @@ systems.  Output format is completely customizable.")
       (file-name (git-file-name name version))
       (sha256
        (base32
-        "1azi10ba0h9z7m0gmfnyymmfqb8380k9za8hn1rrw1s442hzgnz2"))))
+        "0zglsmz683jg7f9wc6vmgljyg9w87pbnjw5x4w6x02w8233zvjqf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no check target
+     '(#:tests? #f                      ; no check target
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'build 'fix-makefile
-           (lambda _
-             (substitute* "Makefile"
-               ;; Install without setting owner and group
-               (("\\$\\(INSTALL\\) -oroot -groot ") "$(INSTALL) ")
-               ;; also build and install experimental tools
-               (("^all: ") "all: $(EXPERIMENTAL_TARGETS) ")
-               (("^install: ") "install-all: ")
-               (("^install-experimental: ") "install: install-all "))
-             #t)))))
+         (delete 'configure)            ; no configure script
+         (add-after 'build 'build-extra
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "extra" make-flags)))
+         (add-after 'build 'install-extra
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "install-extra" make-flags))))))
     (inputs
      `(("eudev" ,eudev)
        ("parted" ,parted)))
