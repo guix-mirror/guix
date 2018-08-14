@@ -1968,16 +1968,16 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.46")
+    (version "4.47")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0cskiqywiqkw44zdg4q78bjns6jjp1dz5lzdxrhpnpldc6075irw"))))
+        (base32 "0zlapxlzjizwzwa8xwrwibhcbkh0wx7n74gvjpp6wlwq7cgiq0xm"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; Obscure test failures.
+     `(#:tests? #f                      ; obscure test failures.
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
