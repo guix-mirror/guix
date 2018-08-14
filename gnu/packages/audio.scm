@@ -145,24 +145,26 @@ Filter) modules follow the convention of 1V / Octave.")
 (define-public aubio
   (package
     (name "aubio")
-    (version "0.4.1")
+    (version "0.4.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "http://aubio.org/pub/aubio-" version ".tar.bz2"))
              (sha256
               (base32
-               "15f6nf76y7iyl2kl4ny7ky0zpxfxr8j3902afvd6ydnnkh5dzmr5"))))
+               "1yvwskahx1bf3x2fvi6cwah1ay11iarh79fjlqz8s887y3hkpixx"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
        #:configure-flags
-       '("--enable-fftw3f"
-         "--enable-jack"
-         "--enable-sndfile"
-         "--enable-samplerate"
-         ;; enable compilation with avcodec once available
-         "--disable-avcodec")
+       (list
+        (string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out") "/lib")
+        "--enable-fftw3f"
+        "--enable-jack"
+        "--enable-sndfile"
+        "--enable-samplerate"
+        ;; TODO: enable compilation with avcodec once available.
+        "--disable-avcodec")
        #:python ,python-2))
     (inputs
      `(("jack" ,jack-1)
