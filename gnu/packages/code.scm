@@ -266,7 +266,7 @@ cloc can handle a greater variety of programming languages.")
 (define-public the-silver-searcher
   (package
     (name "the-silver-searcher")
-    (version "2.1.0")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -274,7 +274,7 @@ cloc can handle a greater variety of programming languages.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1m0mih1x4jpswc8ganhqh0gmwbmd2hzmz7402mxfh19s3kcjnrfl"))))
+                "0w1icjqd8hd45rn1y6nbfznk1a6ip54whwbfbhxp7ws2hn3ilqnr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
