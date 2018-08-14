@@ -2921,7 +2921,7 @@ http-based UI to your existing tools.")
 (define-public perl-http-tiny
   (package
     (name "perl-http-tiny")
-    (version "0.070")
+    (version "0.076")
     (source
      (origin
        (method url-fetch)
@@ -2929,7 +2929,7 @@ http-based UI to your existing tools.")
                            "HTTP-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "0cvp5yqrni6qydpsa8fpkbm82zfwmy9js8jsvyj8gs3dx78qbwvl"))))
+         "11wkxxqj3ff84rgj9q2gzkdgscwp3fzj205846k9ycqinlpsmgfx"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-http-cookiejar" ,perl-http-cookiejar)
