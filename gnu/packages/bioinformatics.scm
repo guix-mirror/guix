@@ -13275,6 +13275,48 @@ cases include:
 @end enumerate\n")
     (license license:expat)))
 
+(define-public r-circus
+  (package
+    (name "r-circus")
+    (version "0.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/BIMSBbioinfo/ciRcus.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0jhjn3ilb057hbf6yzrihj13ifxxs32y7nkby8l3lkm28dg4p97h"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationhub" ,r-annotationhub)
+       ("r-biomart" ,r-biomart)
+       ("r-data-table" ,r-data-table)
+       ("r-dbi" ,r-dbi)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hash" ,r-hash)
+       ("r-iranges" ,r-iranges)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rmysql" ,r-rmysql)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-stringr" ,r-stringr)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/BIMSBbioinfo/ciRcus")
+    (synopsis "Annotation, analysis and visualization of circRNA data")
+    (description "Circus is an R package for annotation, analysis and
+visualization of circRNA data.  Users can annotate their circRNA candidates
+with host genes, gene featrues they are spliced from, and discriminate between
+known and yet unknown splice junctions.  Circular-to-linear ratios of circRNAs
+can be calculated, and a number of descriptive plots easily generated.")
+    (license license:artistic2.0)))
+
 (define-public r-loomr
   (let ((commit "df0144bd2bbceca6fadef9edc1bbc5ca672d4739")
         (revision "1"))
