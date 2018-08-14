@@ -398,13 +398,14 @@ systems.  Output format is completely customizable.")
     (version "6.0")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/AltraMayor/f3/archive/"
-                          "v" version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/AltraMayor/f3.git")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
       (sha256
        (base32
-        "1mgbzc1swvgil45md1336j0aqkmkhwmpxical0ln5g09b2qxsanp"))))
+        "1azi10ba0h9z7m0gmfnyymmfqb8380k9za8hn1rrw1s442hzgnz2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no check target
