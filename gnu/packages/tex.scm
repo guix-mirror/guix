@@ -4426,3 +4426,48 @@ supports the efficient H.264 codec for video compression.
 The package is based on the RichMedia Annotation, an Adobe addition to the PDF
 specification.  It replaces the now obsolete @code{movie15} package.")
     (license license:lppl)))
+
+(define-public texlive-latex-ocgx2
+  (package
+    (name "texlive-latex-ocgx2")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/ocgx2"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "12kkl7n534j0p4frwyrlw22dc3ik50kxv97cxp4xpmji13m0hxpf"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/ogcx2")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/ocgx2")
+    (synopsis "Provide OCG (Optional Content Groups) support within a PDF document")
+    (description
+     "This package provides OCG (Optional Content Groups) support within a PDF
+document.
+
+It re-implements the functionality of the @code{ocg}, @code{ocgx}, and
+@code{ocg-p} packages and adds support for all known engines and back-ends
+including:
+
+@itemize
+@item LaTeX → dvips → @code{ps2pdf}/Distiller
+@item (Xe)LaTeX(x) → @code{dvipdfmx}
+@item pdfLaTeX and LuaLaTeX .
+@end itemize
+
+It also ensures compatibility with the @code{media9} and @code{animate} packages.")
+    (license license:lppl)))
