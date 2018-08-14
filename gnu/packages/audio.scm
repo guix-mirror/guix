@@ -2284,14 +2284,14 @@ input/output.")
 (define-public sratom
   (package
     (name "sratom")
-    (version "0.6.0")
+    (version "0.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/sratom-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0hrxd9i66s06bpn6i3s9ka95134g3sm8yscmif7qgdzhyjqw42j4"))))
+               "0lz883ravxjf7r9wwbx2gx9m8vhyiavxrl9jdxfppjxnsralll8a"))))
     (build-system waf-build-system)
     (arguments `(#:tests? #f)) ; no check target
     (inputs
