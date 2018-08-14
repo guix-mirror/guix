@@ -1708,17 +1708,17 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.2")
+    (version "0.24.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "08m5a372pr1l7aii9s3pic5nm68gynx1n1bc7bnlswziq6qnbv7p"))))
+               "0f24cd7wkk5l969857g2ydz2kjjrkvvddg1g87xzzs78lsvq8fy3"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-before
@@ -1728,7 +1728,7 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
                     (string-append "-Wl,-rpath="
                                    (assoc-ref outputs "out") "/lib"))
             #t)))))
-    ;; required by lilv-0.pc
+    ;; Required by lilv-0.pc.
     (propagated-inputs
      `(("serd" ,serd)
        ("sord" ,sord)
