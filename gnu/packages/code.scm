@@ -270,7 +270,7 @@ cloc can handle a greater variety of programming languages.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://geoff.greer.fm/ag/releases/the_silver_searcher-"
+                    "https://geoff.greer.fm/ag/releases/the_silver_searcher-"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -282,7 +282,7 @@ cloc can handle a greater variety of programming languages.")
      `(("pcre" ,pcre)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (home-page "http://geoff.greer.fm/ag/")
+    (home-page "https://geoff.greer.fm/ag/")
     (synopsis "Fast code searching tool")
     (description
      "The Silver Searcher (@command{ag}) is a tool for quickly searching large
