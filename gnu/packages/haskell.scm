@@ -9964,4 +9964,35 @@ replay capababilities, implementing fast parser monads, designing monadic
 DSLs, etc.")
     (license license:bsd-3)))
 
+(define-public ghc-gtk2hs-buildtools
+  (package
+    (name "ghc-gtk2hs-buildtools")
+    (version "0.13.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "gtk2hs-buildtools/gtk2hs-buildtools-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0yg6xmylgpylmnh5g33qwwn5x9bqckdvvv4czqzd9vrr12lnnghg"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-random" ,ghc-random)
+       ("ghc-hashtables" ,ghc-hashtables)))
+    (native-inputs
+     `(("ghc-alex" ,ghc-alex)
+       ("ghc-happy" ,ghc-happy)))
+    (home-page "http://projects.haskell.org/gtk2hs/")
+    (synopsis "Tools to build the Gtk2Hs suite of user interface libraries")
+    (description
+     "This package provides a set of helper programs necessary to build the
+Gtk2Hs suite of libraries. These tools include a modified c2hs binding tool
+that is used to generate FFI declarations, a tool to build a type hierarchy
+that mirrors the C type hierarchy of GObjects found in glib, and a generator
+for signal declarations that are used to call back from C to Haskell. These
+tools are not needed to actually run Gtk2Hs programs.")
+    (license license:gpl2)))
+
 ;;; haskell.scm ends here
