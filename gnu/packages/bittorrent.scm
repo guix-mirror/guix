@@ -179,39 +179,35 @@ XML-RPC over SCGI.")
     (license l:gpl2+)))
 
 (define-public tremc
-  (let ((commit "e06d08d8d76aa0559593ffc1188f4a90100cdbdb")
-        (revision "2"))
-    (package
-      (name "tremc")
-      (version (git-version "0.9.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/louipc/tremc.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "17rf74sajcn5fl718rgl2qk5mw5yz9hrh58hbcg4p55wrazzrm1i"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f ; no test suite
-         #:make-flags
-         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-         #:phases
-         (modify-phases %standard-phases
-           ;; The software is just a Python script that must be copied into
-           ;; place.
-           (delete 'configure)
-           (delete 'build))))
-      (inputs
-       `(("python" ,python)))
-      (synopsis "Console client for the Transmission BitTorrent daemon")
-      (description "Tremc is a console client, with a curses interface, for the
+  (package
+    (name "tremc")
+    (version "0.9.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/louipc/tremc.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1yhwvlcyv1s830p5a7q5x3mkb3mbvr5cn5nh7y62l5b6iyyynlvm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; The software is just a Python script that must be copied into place.
+         (delete 'configure)
+         (delete 'build))))
+    (inputs
+     `(("python" ,python)))
+    (synopsis "Console client for the Transmission BitTorrent daemon")
+    (description "Tremc is a console client, with a curses interface, for the
 Transmission BitTorrent daemon.")
-      (home-page "https://github.com/louipc/tremc")
-      (license l:gpl3+))))
+    (home-page "https://github.com/louipc/tremc")
+    (license l:gpl3+)))
 
 (define-public transmission-remote-cli
   (package
