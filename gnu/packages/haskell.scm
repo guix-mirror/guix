@@ -8913,7 +8913,7 @@ data structures as non-empty.")
 (define-public ghc-conduit-combinators
   (package
     (name "ghc-conduit-combinators")
-    (version "1.1.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -8922,7 +8922,7 @@ data structures as non-empty.")
                            "conduit-combinators-" version ".tar.gz"))
        (sha256
         (base32
-         "0609miq03lq9visfb2dqqsxghmvgzm24pq39mqby1jnnah6yh8m0"))))
+         "1lz70vwp4y4lpsivxl0cshq7aq3968rh48r6rjvpyaj2l0bdj5wp"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-conduit" ,ghc-conduit)
               ("ghc-conduit-extra" ,ghc-conduit-extra)
