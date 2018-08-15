@@ -603,19 +603,21 @@ using Template Haskell")
 (define-public ghc-hunit
   (package
     (name "ghc-hunit")
-    (version "1.3.1.2")
+    (version "1.6.0.0")
     (outputs '("out" "doc"))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/HUnit/HUnit-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/HUnit/"
+                           "HUnit-" version ".tar.gz"))
        (sha256
         (base32
-         "10akdh4fl615rrshxi3m5gf414il1q42z4zqyb6q4jasmscvzpms"))))
+         "1pnhwqq5v8h48gbp3ibv3skfj25mf4zs5svxcavq93p9cswycj3l"))))
     (build-system haskell-build-system)
+    (inputs
+     ;; We cannot use ghc-call-stack there, because it depends on
+     ;; ghc-nanospec, which depends on ghc-hunit.
+     `(("ghc-call-stack" ,ghc-call-stack-boot)))
     (home-page "http://hunit.sourceforge.net/")
     (synopsis "Unit testing framework for Haskell")
     (description
