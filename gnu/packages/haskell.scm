@@ -9938,4 +9938,30 @@ search for all keys containing a point or overlapping an interval.  See the
 example code on the home page for a quick introduction.")
     (license license:bsd-3)))
 
+(define-public ghc-operational
+  (package
+    (name "ghc-operational")
+    (version "0.2.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/operational/"
+                           "operational-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x2abg2q9d26h1vzj40r6k7k3gqgappbs4g9d853vvg77837km4i"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-random" ,ghc-random)))
+    (home-page "http://wiki.haskell.org/Operational")
+    (synopsis "Implementation of difficult monads made easy with operational semantics")
+    (description
+     "This library makes it easy to implement monads with tricky control
+flow. This is useful for: writing web applications in a sequential style,
+programming games with a uniform interface for human and AI players and easy
+replay capababilities, implementing fast parser monads, designing monadic
+DSLs, etc.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
