@@ -799,14 +799,14 @@ the LZ4 frame format.")
 (define-public python-lzstring
   (package
     (name "python-lzstring")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "lzstring" version))
        (sha256
         (base32
-         "1d3ck454y41mii0gcjabpmp2skb7n0f9zk232gycqdv8z2jxakfm"))))
+         "18ly9pppy2yspxzw7k1b23wk77k7m44rz2g0271bqgqrk3jn3yhs"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-future" ,python-future)))
