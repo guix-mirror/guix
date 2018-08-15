@@ -707,17 +707,15 @@ used to test the in-development version of Hspec.")
 (define-public ghc-hspec
   (package
     (name "ghc-hspec")
-    (version "2.2.4")
+    (version "2.5.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec/hspec-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/hspec/"
+                           "hspec-" version ".tar.gz"))
        (sha256
         (base32
-         "1cf90gqvg1iknja6ymxqxyabpahcxni3blqllh81ywbir3whljvj"))))
+         "1yv4k5b5kkig2q3waj28587sq28wms7wfav5a3lq4dra6jybimfm"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hspec-core" ,ghc-hspec-core)
