@@ -626,21 +626,20 @@ JUnit tool for Java.")
 (define-public hspec-discover
   (package
     (name "hspec-discover")
-    (version "2.2.4")
+    (version "2.5.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec-discover/hspec-discover-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hspec-discover/hspec-discover-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "1bz7wb8v0bx1amiz4bpj34xq97d1ia29n3f654wcrh6lacydp3dv"))))
+         "04aidzi91ccr9bygmfkjzshz34z9vh8wvqj4zinx2clxq6r7gqfz"))))
     (build-system haskell-build-system)
-    (arguments `(#:haddock? #f)) ; Haddock phase fails because there are no
-                                 ; documentation files.
-    (inputs `(("ghc-hspec-meta" ,ghc-hspec-meta)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec-meta" ,ghc-hspec-meta)))
     (home-page "https://hspec.github.io/")
     (synopsis "Automatically discover and run Hspec tests")
     (description "hspec-discover is a tool which automatically discovers and
