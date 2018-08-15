@@ -2789,3 +2789,42 @@ support forum.  It runs with the @code{/exec} command in most IRC clients.")
     (synopsis "Python udev binding")
     (description "This package provides @code{udev} bindings for Python.")
     (license license:lgpl2.1)))
+
+(define-public solaar
+  (package
+    (name "solaar")
+    (version "0.9.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pwr/Solaar.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "085mfa13dap3wqik1dqlad0d7kff4rv7j4ljh99c7l8nhczkqgwm"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-prefix-detection
+           (lambda _
+             (substitute* "setup.py"
+              (("'--prefix' in sys\\.argv")
+               "len([x.startswith('--prefix=') for x in sys.argv]) > 0"))
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "python" "setup.py" "build")))
+         (add-before 'check 'setenv-PATH
+           (lambda _
+             (setenv "PYTHONPATH" (string-append "lib:" (getenv "PYTHONPATH")))
+             #t)))))
+    (propagated-inputs
+     `(("python-pygobject" ,python-pygobject)
+       ("python-pyudev" ,python-pyudev)))
+    (home-page "https://smxi.org/docs/inxi.htm")
+    (synopsis "Linux devices manager for the Logitech Unifying Receiver")
+    (description "This package provides tools to manage clients of the
+Logitech Unifying Receiver.")
+    (license license:gpl2)))
