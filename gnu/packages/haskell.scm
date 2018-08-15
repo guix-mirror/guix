@@ -5107,7 +5107,7 @@ and bytestrings.")
 (define-public ghc-pandoc-types
   (package
     (name "ghc-pandoc-types")
-    (version "1.17.3.1")
+    (version "1.17.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5115,7 +5115,7 @@ and bytestrings.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dhp5bcjl6605n2chiab5rp51zir3671gxkmwy34znh0s3vp85jb"))))
+                "1q6v2bynij724fv347mhqxdscwifzrx5jb9mq80608qf638fn717"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags (list "--allow-newer=QuickCheck")))
