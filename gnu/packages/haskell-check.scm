@@ -649,23 +649,22 @@ runs Hspec tests.")
 (define-public ghc-hspec-core
   (package
     (name "ghc-hspec-core")
-    (version "2.2.4")
+    (version "2.5.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec-core/hspec-core-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/hspec-core/"
+                           "hspec-core-" version ".tar.gz"))
        (sha256
         (base32
-         "0x845ngfl6vf65fnpb5mm3wj0ql45pz11bnm0x4gxc4ybd9c52ij"))))
+         "1vfrqlpn32s9wiykmkxbnrnd5p56yznw20pf8fwzw78ar4wpz55x"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (inputs
      `(("ghc-setenv" ,ghc-setenv)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-async" ,ghc-async)
+       ("ghc-clock" ,ghc-clock)
        ("ghc-quickcheck-io" ,ghc-quickcheck-io)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)
