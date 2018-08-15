@@ -218,7 +218,7 @@ clock synchronization.")))
 (define-public s6-rc
   (package
    (name "s6-rc")
-   (version "0.4.0.1")
+   (version "0.4.1.0")
    (source
     (origin
      (method url-fetch)
@@ -226,7 +226,7 @@ clock synchronization.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "0p4yczbib626kygr3pdvvay0xwyha92rjnhn79cbx18ywc2n4jsb"))))
+       "1xl37xi509pcm5chcvn8l7gb952sr5mkpxhpkbsxhsllj791bfa2"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)
               ("execline" ,execline)
@@ -245,7 +245,7 @@ clock synchronization.")))
                           (string-append "--with-sysdeps="
                                          (assoc-ref %build-inputs "skalibs")
                                          "/lib/skalibs/sysdeps"))
-       #:tests? #f))
+       #:tests? #f))                    ; no tests exist
     (home-page "https://skarnet.org/software/s6-rc")
     (license isc)
     (synopsis "Service manager for s6-based systems")
