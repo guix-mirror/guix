@@ -144,7 +144,7 @@ functionality with a very small amount of code.")))
 (define-public s6-dns
   (package
    (name "s6-dns")
-   (version "2.3.0.0")
+   (version "2.3.0.1")
    (source
     (origin
      (method url-fetch)
@@ -152,7 +152,7 @@ functionality with a very small amount of code.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "0h47ldxvh9cny91r0pjxq7zr5iqpqf1j50p3ip42f6bl90z5ha58"))))
+       "16ymalc4yxbwc0kapwmissxlw2bdk4sx3b33zp1gwx3n6hkcgh8c"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -163,7 +163,7 @@ functionality with a very small amount of code.")))
                           (string-append "--with-sysdeps="
                                          (assoc-ref %build-inputs "skalibs")
                                          "/lib/skalibs/sysdeps"))
-       #:tests? #f))
+       #:tests? #f))                    ; no tests exist
     (home-page "https://skarnet.org/software/s6-dns")
     (license isc)
     (synopsis "Suite of DNS client programs")
