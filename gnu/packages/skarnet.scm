@@ -320,13 +320,13 @@ systems and other constrained environments, but they work everywhere.")))
     (license isc)
     (synopsis "Minimalistic tools to create an s6-based init system on Linux")
     (description
-     " s6-linux-init is a set of minimalistic tools to create a s6-based init
+     "s6-linux-init is a set of minimalistic tools to create a s6-based init
 system, including an @command{/sbin/init} binary, on a Linux kernel.
 
 It is meant to automate creation of scripts revolving around the use of other
 skarnet.org tools, especially s6, in order to provide a complete booting
 environment with integrated supervision and logging without having to hand-craft
-all the details. ")))
+all the details.")))
 
 (define-public s6-linux-utils
   (package
