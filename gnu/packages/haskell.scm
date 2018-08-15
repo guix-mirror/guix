@@ -481,6 +481,33 @@ pure @code{Either} value.  This means that you need not remember which specific
 function performs the conversion you desire.")
     (license license:bsd-3)))
 
+(define-public ghc-double-conversion
+  (package
+    (name "ghc-double-conversion")
+    (version "2.0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "double-conversion/double-conversion-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0sx2kc1gw72mjvd8vph8bbjw5whfxfv92rsdhjg1c0al75rf3ka4"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/bos/double-conversion")
+    (synopsis "Fast conversion between double precision floating point and text")
+    (description
+     "This package provides a library that performs fast, accurate conversion
+between double precision floating point and text.")
+    (license license:bsd-3)))
+
 (define-public ghc-libxml
   (package
     (name "ghc-libxml")
