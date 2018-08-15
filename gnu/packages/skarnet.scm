@@ -62,7 +62,7 @@ and file system operations.  It is used by all skarnet.org software.")
 (define-public execline
   (package
     (name "execline")
-    (version "2.3.0.4")
+    (version "2.5.0.1")
     (source
      (origin
       (method url-fetch)
@@ -70,7 +70,7 @@ and file system operations.  It is used by all skarnet.org software.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0jx60wjz3yj3r1wircbvd15in275pi7ggw69pbs9djhcyb48zfz4"))))
+        "0j8hwdw8wn0rv8njdza8fbgmvyjg7hqp3qlbw00i7fwskr7d21wd"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -89,7 +89,7 @@ and file system operations.  It is used by all skarnet.org software.")
                            (bin (string-append out "/bin")))
                       (wrap-program (string-append bin "/execlineb")
                         `("PATH" ":" prefix (,bin)))))))
-       #:tests? #f)) ; No tests exist.
+       #:tests? #f))                    ; no tests exist
     (home-page "https://skarnet.org/software/execline/")
     (license isc)
     (synopsis "Non-interactive shell-like language with minimal overhead")
