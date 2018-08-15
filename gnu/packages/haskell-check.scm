@@ -736,7 +736,7 @@ Haskell, inspired by the Ruby library RSpec.")
 (define-public ghc-hspec-contrib
   (package
     (name "ghc-hspec-contrib")
-    (version "0.3.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -744,7 +744,7 @@ Haskell, inspired by the Ruby library RSpec.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "006syw8xagfhsx06ws9ywig1qx5lk4cgl7sq6pbid1s64c72mxn4"))))
+                "13579xdqwbsy8k0vxdcvgy932d4p76mij1rzkzbpqbspfn7399yv"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hspec-core" ,ghc-hspec-core)
