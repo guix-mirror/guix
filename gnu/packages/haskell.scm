@@ -9849,4 +9849,31 @@ disk space usage.")
     (description "This package provides a library implementing the XDG Base Directory spec.")
     (license license:bsd-3)))
 
+(define-public ghc-errorcall-eq-instance
+  (package
+    (name "ghc-errorcall-eq-instance")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "errorcall-eq-instance/errorcall-eq-instance-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0hqw82m8bbrxy5vgdwb83bhzdx070ibqrm9rshyja7cb808ahijm"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-orphans" ,ghc-base-orphans)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "http://hackage.haskell.org/package/errorcall-eq-instance")
+    (synopsis "Orphan Eq instance for ErrorCall")
+    (description
+     "Prior to @code{base-4.7.0.0} there was no @code{Eq} instance for @code{ErrorCall}.
+This package provides an orphan instance.")
+    (license license:expat)))
+
 ;;; haskell.scm ends here
