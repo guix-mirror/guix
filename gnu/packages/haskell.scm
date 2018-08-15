@@ -6234,7 +6234,7 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
 (define-public ghc-pandoc
   (package
     (name "ghc-pandoc")
-    (version "2.0.6")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -6242,7 +6242,7 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1vhj6splykksb1mkxv5cs0361nj12qn23a3y1i8j5dc637lkdwpj"))))
+         "1dqin92w513l7whg5wdgrngnxsj5mb8gppfvn7kjgyv2pdgpy0zy"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
