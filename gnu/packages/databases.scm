@@ -555,11 +555,11 @@ RDBMS systems (which are deep in functionality).")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
-                          "http://dev.mysql.com/get/Downloads/MySQL-"
+                          "https://dev.mysql.com/get/Downloads/MySQL-"
                           (version-major+minor version) "/"
                           name "-" version ".tar.gz")
                         (string-append
-                          "http://downloads.mysql.com/archives/get/file/"
+                          "https://downloads.mysql.com/archives/get/file/"
                           name "-" version ".tar.gz")))
              (sha256
               (base32
@@ -616,7 +616,7 @@ RDBMS systems (which are deep in functionality).")
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
-    (home-page "http://www.mysql.com/")
+    (home-page "https://www.mysql.com/")
     (synopsis "Fast, easy to use, and popular database")
     (description
      "MySQL is a fast, reliable, and easy to use relational database
