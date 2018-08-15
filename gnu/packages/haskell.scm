@@ -4455,6 +4455,14 @@ forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
 call stacks with different versions of the compiler.")
     (license license:expat)))
 
+;; This is used as an input to ghc-hunit.  We cannot use ghc-call-stack there,
+;; because it depends on ghc-nanospec, which depends on ghc-hunit.
+(define-public ghc-call-stack-boot
+  (package
+    (inherit ghc-call-stack)
+    (arguments '(#:tests? #f))
+    (inputs '())))
+
 (define-public ghc-statevar
   (package
     (name "ghc-statevar")
