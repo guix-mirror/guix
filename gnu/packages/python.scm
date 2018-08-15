@@ -8042,14 +8042,14 @@ alternative when librabbitmq is not available.")
 (define-public python-txamqp
   (package
     (name "python-txamqp")
-    (version "0.8.0")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "txAMQP" version))
        (sha256
         (base32
-         "1r43a66dd547mz40ikymm8y3d480cidy560fj81qc0jk4lncgmmr"))))
+         "0jd9864k3csc06kipiwzjlk9mq4054s8kzk5q1cfnxj8572s4iv4"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
