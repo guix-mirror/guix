@@ -8625,7 +8625,7 @@ more information.
 
 @subsubsection Networking
 
-Run the following command see what your network interfaces are called:
+Run the following command to see what your network interfaces are called:
 
 @example
 ifconfig -a
