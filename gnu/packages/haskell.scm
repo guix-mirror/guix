@@ -9995,4 +9995,32 @@ for signal declarations that are used to call back from C to Haskell. These
 tools are not needed to actually run Gtk2Hs programs.")
     (license license:gpl2)))
 
+(define-public ghc-chart
+  (package
+    (name "ghc-chart")
+    (version "1.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/Chart/"
+                           "Chart-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13s64fhb2pmkdmx5bkgbgcn25qjihs364fvr47a1dw25f804kiy1"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-colour" ,ghc-colour)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-operational" ,ghc-operational)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/timbod7/haskell-chart/wiki")
+    (synopsis "Library for generating 2D charts and plots")
+    (description
+     "This package provides a library for generating 2D charts and plots, with
+backends provided by the @code{Cairo} and @code{Diagrams} libraries.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
