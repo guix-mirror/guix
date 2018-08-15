@@ -8892,8 +8892,8 @@ path is actually mounted.
 @item
 Be sure that your file system labels match the value of their respective
 @code{device} fields in your @code{file-system} configuration, assuming
-your @code{file-system} configuration sets the value of @code{title} to
-@code{'label}.
+your @code{file-system} configuration uses the @code{file-system-label}
+procedure in its @code{device} field.
 
 @item
 If there are encrypted or RAID partitions, make sure to add a
