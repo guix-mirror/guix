@@ -6404,6 +6404,36 @@ dependency that depends on a large C library, and @code{rfc5051} might be
 better for some purposes.")
     (license license:bsd-3)))
 
+(define-public ghc-typed-process
+  (package
+    (name "ghc-typed-process")
+    (version "0.2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "typed-process/typed-process-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0c6gvgvjyncbni9a5bvpbglknd4yclr3d3hfg9bhgahmkj40dva2"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-stm" ,ghc-stm)))
+    (native-inputs
+     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-temporary" ,ghc-temporary)))
+    (home-page "https://haskell-lang.org/library/typed-process")
+    (synopsis "Run external processes with strong typing of streams")
+    (description
+     "This library provides the ability to launch and interact with external
+processes.  It wraps around the @code{process} library, and intends to improve
+upon it.")
+    (license license:expat)))
+
 (define-public ghc-conduit-extra
   (package
     (name "ghc-conduit-extra")
