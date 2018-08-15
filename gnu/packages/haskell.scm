@@ -5248,14 +5248,14 @@ building up, manipulating and serialising @code{Pandoc} structures.")
 (define-public ghc-texmath
   (package
     (name "ghc-texmath")
-    (version "0.10.1.1")
+    (version "0.11.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "texmath/texmath-" version ".tar.gz"))
               (sha256
                (base32
-                "0q2fld5mdcd6j1n3rrg3bjpndbgbn17cwg0xbnvscrpa0s767jaj"))))
+                "11dc09hfnyfsz20ch2c867w0zdgjkzq41506lm61i3dk87ngdisf"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-syb" ,ghc-syb)
