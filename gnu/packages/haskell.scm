@@ -5148,6 +5148,9 @@ building up, manipulating and serialising @code{Pandoc} structures.")
               (sha256
                (base32
                 "1csipjdq00iiq77k2wlrg4i7afrzlh8nl585q785xzw7nn45b0n8"))))
+    (arguments
+     `(#:configure-flags (list "--allow-newer=QuickCheck"
+                               "--allow-newer=HUnit")))
     (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-aeson" ,ghc-aeson-for-pandoc-1)
