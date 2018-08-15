@@ -260,7 +260,7 @@ environment.")))
 (define-public s6-portable-utils
   (package
    (name "s6-portable-utils")
-   (version "2.2.1.1")
+   (version "2.2.1.2")
    (source
     (origin
      (method url-fetch)
@@ -269,7 +269,7 @@ environment.")))
            version ".tar.gz"))
      (sha256
       (base32
-       "0ca5iiq3n6isj64jb81xpwjzjx1q8jg145nnnn91ra2qqk93kqka"))))
+       "0if77z07rfygd1yk9d2abxkdbx3dg52vcjhb20isb8kvqxhkg8ih"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -280,7 +280,7 @@ environment.")))
                           (string-append "--with-sysdeps="
                                          (assoc-ref %build-inputs "skalibs")
                                          "/lib/skalibs/sysdeps"))
-       #:tests? #f))
+       #:tests? #f))                    ; no tests exist
     (home-page "https://skarnet.org/software/s6-portable-utils")
     (license isc)
     (synopsis "Tiny command-line Unix utilities")
