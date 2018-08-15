@@ -33,7 +33,7 @@
 (define-public perl-regexp-pattern-license
   (package
     (name "perl-regexp-pattern-license")
-    (version "3.1.0")
+    (version "3.1.92")
     (source
      (origin
        (method url-fetch)
@@ -42,13 +42,14 @@
              "v" version ".tar.gz"))
        (sha256
         (base32
-         "1479ismcgq1mx712yhw0qswb4z75spc81f9k621vfpkji0smpyk2"))))
+         "0gxv8wpvlllmvhkpixv5x23ywn1s6zs7ypcs38s7nfh4phamyixh"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-regexp-pattern" ,perl-regexp-pattern)
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
-     `(("perl-strictures" ,perl-strictures-2)))
+     `(("perl-strictures" ,perl-strictures-2)
+       ("perl-try-tiny" ,perl-try-tiny)))
     (home-page "https://metacpan.org/release/Regexp-Pattern-License")
     (synopsis "Regular expressions for legal licenses")
     (description "Regexp::Pattern::License provides a hash of regular
@@ -108,7 +109,7 @@ statements and serializes in normalized format.")
 (define-public licensecheck
   (package
     (name "licensecheck")
-    (version "3.0.34")
+    (version "3.0.36")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -116,7 +117,7 @@ statements and serializes in normalized format.")
                     "v" version ".tar.gz"))
               (sha256
                (base32
-                "0k0acybgibdqg1h6xqnba1jb0spmw7hpq0jbrs7n7gfj22wkz0vd"))))
+                "0y14ppq6f9hc0rc0syhfgms1r7fd51vpgfx5va6b2v84y8anb6g1"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-regexp-pattern" ,perl-regexp-pattern)
