@@ -1262,27 +1262,32 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.43")
+    (version "1.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/"
                                   name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17xp5q4cxmd6z0ii1fdr4j1djb9mz1qv7hzr6fawdapjzahi65m3"))))
+                "1l7hlys4vw4zk4ikdjiig5vzgv5dv48mbm8bdqgvgkyyxb2j0dm0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-before 'check 'fix-setpython-PATH
+           (lambda _
+             ;; The Makefile does try to add the current working directory to
+             ;; $PATH, but this fails for some reason in 1.44.  Hack around it.
+             (substitute* "tests/Makefile"
+               (("setpython" command)
+                (string-append "./" command)))
+             #t))
          (add-after 'unpack 'remove-optimizations
            (lambda _
              ;; Don't optimize for a specific processor architecture.
              (substitute* "Makefile"
                (("CFLAGS \\+= -march=native") ""))
-             ;; This code runs with Python2 or Python3
-             (substitute* "cvsreduce"
-               (("python3") "python"))
              #t)))
        #:parallel-build? #f ; parallel a2x commands fail spectacularly
        #:make-flags
