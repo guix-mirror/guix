@@ -9915,4 +9915,27 @@ programmers.  It is written in pure Haskell and thus should be extremely
 portable and easy to use.")
     (license license:bsd-3)))
 
+(define-public ghc-intervalmap
+  (package
+    (name "ghc-intervalmap")
+    (version "0.6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/IntervalMap/"
+                           "IntervalMap-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06hin9wf1by8aqa7820fsi2339bh82184frkwz3jsb9sqa0hszcg"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://www.chr-breitkopf.de/comp/IntervalMap")
+    (synopsis "Containers for intervals, with efficient search")
+    (description
+     "This package provides ordered containers of intervals, with efficient
+search for all keys containing a point or overlapping an interval.  See the
+example code on the home page for a quick introduction.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
