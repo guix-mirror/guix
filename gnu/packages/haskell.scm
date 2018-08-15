@@ -5640,22 +5640,27 @@ template-haskell abstract syntax.")
 (define-public ghc-conduit
   (package
     (name "ghc-conduit")
-    (version "1.2.12.1")
+    (version "1.3.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "conduit/conduit-" version ".tar.gz"))
               (sha256
                (base32
-                "0zl6gflh7y36y2vypjhqx13nhkk5y3h12c1zj7kjfclrmwnvnwh0"))))
+                "1sangm0qqi9dzlq95746a3kl14k8b09592a423shxjf2a0b1yx5v"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-exceptions" ,ghc-exceptions)
        ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-mono-traversable" ,ghc-mono-traversable)
        ("ghc-mmorph" ,ghc-mmorph)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-silently" ,ghc-silently)
        ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-unliftio" ,ghc-unliftio)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)
+       ("ghc-vector" ,ghc-vector)
        ("ghc-void" ,ghc-void)))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
