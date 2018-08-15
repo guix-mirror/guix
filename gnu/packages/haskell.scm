@@ -9876,4 +9876,43 @@ disk space usage.")
 This package provides an orphan instance.")
     (license license:expat)))
 
+(define-public ghc-missingh
+  (package
+    (name "ghc-missingh")
+    (version "1.4.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/MissingH/"
+                           "MissingH-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wcvgrmav480w7nf4bl14yi0jq2yzanysxwzwas9hpb28vyjlgr8"))))
+    (build-system haskell-build-system)
+    ;; Tests require the unmaintained testpack package, which depends on the
+    ;; outdated QuickCheck version 2.7, which can no longer be built with
+    ;; recent versions of GHC and Haskell libraries.
+    (arguments '(#:tests? #f))
+    (inputs
+     `(("ghc-network" ,ghc-network)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-regex-compat" ,ghc-regex-compat)
+       ("ghc-hslogger" ,ghc-hslogger)
+       ("ghc-random" ,ghc-random)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-old-locale" ,ghc-old-locale)))
+    (native-inputs
+     `(("ghc-errorcall-eq-instance" ,ghc-errorcall-eq-instance)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://software.complete.org/missingh")
+    (synopsis "Large utility library")
+    (description
+     "MissingH is a library of all sorts of utility functions for Haskell
+programmers.  It is written in pure Haskell and thus should be extremely
+portable and easy to use.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
