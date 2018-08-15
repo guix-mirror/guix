@@ -355,17 +355,17 @@ numbers.")
 (define-public ocaml-gsl
   (package
     (name "ocaml-gsl")
-    (version "1.19.3")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append
-         "https://github.com/mmottl/gsl-ocaml/releases/download/v"
-         version"/gsl-ocaml-" version ".tar.gz"))
+         "https://github.com/mmottl/gsl-ocaml/releases/download/"
+         version "/gsl-" version ".tbz"))
        (sha256
         (base32
-         "0nzp43hp8pbjqkrxnwp5lgjrabxayf61h18fjaydi0s5faq6f3xh"))))
+         "17vcswipliq1b2idbzx1z95kskn1a4q4s5v04igilg0f7lnkaarb"))))
     (build-system ocaml-build-system)
     (inputs
      `(("gsl" ,gsl)))
