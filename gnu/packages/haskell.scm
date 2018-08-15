@@ -8731,7 +8731,8 @@ functions.")
          "09xhk42yhxvqmka0iqrv3338asncz8cap3j0ic0ps896f2581b6z"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
+     `(#:configure-flags (list "--allow-newer=QuickCheck"
+                               "--allow-newer=HUnit")))
     (inputs `(("ghc-cryptohash-sha1" ,ghc-cryptohash-sha1)
               ("ghc-cryptohash-md5" ,ghc-cryptohash-md5)
               ("ghc-entropy" ,ghc-entropy)
