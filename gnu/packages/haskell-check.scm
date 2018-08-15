@@ -679,17 +679,15 @@ be used to extend Hspec's functionality.")
 (define-public ghc-hspec-meta
   (package
     (name "ghc-hspec-meta")
-    (version "2.2.1")
+    (version "2.4.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec-meta/hspec-meta-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/hspec-meta/"
+                           "hspec-meta-" version ".tar.gz"))
        (sha256
         (base32
-         "1m1pkrxiglxzwv8gdj5jr1bdbhxvvg6sbl9m61w4565d7k1m8yxa"))))
+         "0qmvk01n79j6skn79r6zalg2pd0x0nqqn9qn8mhg0pgyzcdnfc9b"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
