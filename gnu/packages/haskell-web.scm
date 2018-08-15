@@ -118,17 +118,15 @@ requests, and the library is intended for implementing Ajax APIs.")
 (define-public ghc-http-types
   (package
     (name "ghc-http-types")
-    (version "0.11")
+    (version "0.12.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/http-types/http-types-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/http-types/"
+                           "http-types-" version ".tar.gz"))
        (sha256
         (base32
-         "08w30rf1i7kbh2j1iajqmj6yhhmglnb8kjggc8kdni3xahhrgcss"))))
+         "1wv9k6nlvkdsxwlr7gaynphvzmvi5211gvwq96mbcxgk51a739rz"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-doctest" ,ghc-doctest)
