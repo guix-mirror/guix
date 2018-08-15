@@ -147,29 +147,36 @@ both client and server code).")
 (define-public ghc-http
   (package
     (name "ghc-http")
-    (version "4000.3.3")
+    (version "4000.3.12")
     (outputs '("out" "doc"))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/HTTP/HTTP-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/HTTP/"
+                           "HTTP-" version ".tar.gz"))
        (sha256
         (base32
-         "1wlvvqcxsnd2is3khsla0vd8i9cy12v1pg6d6i13ihcd131a7bdv"))))
+         "140r6qy1ay25piv0z3hih11zhigyi08nkwc32097j43pjff6mzx3"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)))
+     `(("ghc-httpd-shed" ,ghc-httpd-shed)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
     (inputs
-     `(("ghc-old-time" ,ghc-old-time)
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-old-time" ,ghc-old-time)
        ("ghc-parsec" ,ghc-parsec)
+       ("ghc-puremd5" ,ghc-puremd5)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-network" ,ghc-network)
-       ("ghc-network-uri" ,ghc-network-uri)))
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-split" ,ghc-split)))
     (arguments
-     `(#:tests? #f))  ; FIXME: currently missing libraries used for tests.
+     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
     (home-page "https://github.com/haskell/HTTP")
     (synopsis "Library for client-side HTTP")
     (description
