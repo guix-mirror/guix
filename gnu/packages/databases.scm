@@ -548,6 +548,22 @@ RDBMS systems (which are deep in functionality).")
                    ;; Some parts are licensed under the Apache License
                    license:asl2.0))))
 
+(define boost-for-mysql
+  (package
+    (inherit boost)
+    (version "1.59.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/boost/boost/" version "/boost_"
+                    (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "1jj1aai5rdmd72g90a3pd8sw9vi32zad46xv5av8fhnr48ir6ykj"))))))
+
+;; XXX When updating, check whether boost-for-mysql is still needed.
+;; It might suffice to patch ‘cmake/boost.cmake’ as done in the past.
 (define-public mysql
   (package
     (name "mysql")
@@ -589,15 +605,6 @@ RDBMS systems (which are deep in functionality).")
          "-DINSTALL_SQLBENCHDIR=")
        #:phases (modify-phases %standard-phases
                   (add-after
-                   'unpack 'patch-boost-version
-                   (lambda _
-                     ;; Mysql wants boost-1.59.0 specifically
-                     (substitute* "cmake/boost.cmake"
-                       (("59")
-                        ,(match (string-split (package-version boost) #\.)
-                           ((_ minor . _) minor))))
-                     #t))
-                  (add-after
                    'install 'remove-extra-binaries
                    (lambda* (#:key outputs #:allow-other-keys)
                      (let ((out (assoc-ref outputs "out")))
@@ -611,7 +618,7 @@ RDBMS systems (which are deep in functionality).")
      `(("bison" ,bison)
        ("perl" ,perl)))
     (inputs
-     `(("boost" ,boost)
+     `(("boost" ,boost-for-mysql)
        ("libaio" ,libaio)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
