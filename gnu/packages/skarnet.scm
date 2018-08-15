@@ -174,7 +174,7 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
 (define-public s6-networking
   (package
    (name "s6-networking")
-   (version "2.3.0.2")
+   (version "2.3.0.3")
    (source
     (origin
      (method url-fetch)
@@ -182,7 +182,7 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "06j8fpldn187cmbjqp191hd65ka3ys19vj3jm3kcvkmvd9snh6fq"))))
+       "1kfjl7da6wkmyq1mvq9irkbzk2wbi0axjfbcw5cym5y11mqswsjs"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)
               ("execline" ,execline)
@@ -205,7 +205,7 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
                           (string-append "--with-sysdeps="
                                          (assoc-ref %build-inputs "skalibs")
                                          "/lib/skalibs/sysdeps"))
-       #:tests? #f))
+       #:tests? #f))                    ; no tests exist
     (home-page "https://skarnet.org/software/s6-networking")
     (license isc)
     (synopsis "Suite of network utilities for Unix systems")
