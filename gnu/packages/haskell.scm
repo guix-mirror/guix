@@ -3480,17 +3480,16 @@ instances of the @code{Pretty} class.")
 (define-public ghc-ansi-wl-pprint
   (package
     (name "ghc-ansi-wl-pprint")
-    (version "0.6.7.3")
+    (version "0.6.8.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/ansi-wl-pprint/ansi-wl-pprint-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "ansi-wl-pprint/ansi-wl-pprint-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "025pyphsjf0dnbrmj5nscbi6gzyigwgp3ifxb3psn7kji6mfr29p"))))
+         "0gnb4mkqryv08vncxnj0bzwcnd749613yw3cxfzw6y3nsldp4c56"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)))
