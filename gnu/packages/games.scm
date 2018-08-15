@@ -199,7 +199,8 @@ settings to tweak as well.")
       (build-system gnu-build-system)
       (arguments
        '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                            "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1")
+                            "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1"
+                            "LOCALIZE=1" "LANGUAGES=all")
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
