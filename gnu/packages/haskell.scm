@@ -8878,7 +8878,7 @@ and are often as efficient as hand-written folds.")
 (define-public ghc-mono-traversable
   (package
     (name "ghc-mono-traversable")
-    (version "1.0.2.1")
+    (version "1.0.9.0")
     (source
      (origin
        (method url-fetch)
@@ -8887,7 +8887,7 @@ and are often as efficient as hand-written folds.")
                            "mono-traversable-" version ".tar.gz"))
        (sha256
         (base32
-         "0smirpwika7d5a98h20jr9jqg41n7vqfy7k31crmn449qfig9ljf"))))
+         "0180ks0dyvpk1r20w5jw2w2n79mjnk69n9vhspaxzlyxqgim5psa"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
               ("ghc-hashable" ,ghc-hashable)
