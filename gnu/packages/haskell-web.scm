@@ -737,7 +737,8 @@ Strict, Transitional and Frameset variants.")
          "0r0acv47nh75bmf7kjyfvhcwz8f02rn9x0a1l80pzgyczfrsmkmf"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
+     `(#:configure-flags (list "--allow-newer=QuickCheck"
+                               "--allow-newer=HUnit")))
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)
