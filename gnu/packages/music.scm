@@ -272,6 +272,8 @@ score, keyboard, guitar, drum and controller views.")
          ("glu" ,glu)
          ("gstreamer" ,gstreamer)
          ("gst-plugins-base" ,gst-plugins-base)
+         ("gst-plugins-good" ,gst-plugins-good)
+         ("gst-libav" ,gst-libav)
          ("libcdio" ,libcdio)
          ("libmygpo-qt" ,libmygpo-qt)
          ;; TODO: Package libgpod.
