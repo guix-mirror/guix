@@ -91,6 +91,30 @@ for screen-scraping.")
     (description "HTTP cookie parsing and rendering library for Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-httpd-shed
+  (package
+    (name "ghc-httpd-shed")
+    (version "0.4.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/httpd-shed/"
+                           "httpd-shed-" version ".tar.gz"))
+       (sha256
+        (base32
+         "064jy1mqhnf1hvq6s04wlhmp916rd522x58djb9qixv13vc8gzxh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-network" ,ghc-network)))
+    (home-page "https://hackage.haskell.org/package/httpd-shed")
+    (synopsis "Simple web-server with an interact style API")
+    (description
+     "This web server promotes a function from @code{Request} to @code{IO
+Response} into a local web server.  The user can decide how to interpret the
+requests, and the library is intended for implementing Ajax APIs.")
+    (license license:bsd-3)))
+
 (define-public ghc-http-types
   (package
     (name "ghc-http-types")
