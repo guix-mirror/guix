@@ -205,6 +205,8 @@ XML-RPC over SCGI.")
            ;; place.
            (delete 'configure)
            (delete 'build))))
+      (inputs
+       `(("python" ,python)))
       (synopsis "Console client for the Transmission BitTorrent daemon")
       (description "Tremc is a console client, with a curses interface, for the
 Transmission BitTorrent daemon.")
