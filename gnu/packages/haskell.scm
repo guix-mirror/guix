@@ -1121,17 +1121,15 @@ unwanted suggestions, and to add your own custom suggestions.")
 (define-public ghc-resourcet
   (package
     (name "ghc-resourcet")
-    (version "1.1.7.5")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/resourcet/resourcet-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/resourcet/"
+                           "resourcet-" version ".tar.gz"))
        (sha256
         (base32
-         "0nj0gwfd05divpdn7m47gy6bpcrwn3zk81gc303k0smrbqi0xlq5"))))
+         "0rzjzh34s36ssign7akqjnwnjxf11c3511wk7ky0xxy0dqmc2rg7"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-transformers-base" ,ghc-transformers-base)
@@ -1139,7 +1137,8 @@ unwanted suggestions, and to add your own custom suggestions.")
        ("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-mmorph" ,ghc-mmorph)
-       ("ghc-exceptions" ,ghc-exceptions)))
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)))
     (native-inputs
      `(("ghc-lifted-base" ,ghc-lifted-base)
        ("ghc-hspec" ,ghc-hspec)))
