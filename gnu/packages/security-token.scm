@@ -45,6 +45,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages tex)
@@ -273,7 +274,7 @@ authentication, encryption and digital signatures.  OpenSC implements the PKCS
 (define-public yubico-piv-tool
   (package
     (name "yubico-piv-tool")
-    (version "1.5.0")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -281,15 +282,17 @@ authentication, encryption and digital signatures.  OpenSC implements the PKCS
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1axa0lnky5gsc8yack6mpfbjh49z0czr1cv52gbgjnx2kcbpb0y1"))))
+                "1p0df35qfm2xch64hc1x6k4gpgfl4hiqph5ai30bq8w7yxa3lvfc"))))
     (build-system gnu-build-system)
     (inputs
-     `(("perl" ,perl)
+     `(("gengetopt" ,gengetopt)
+       ("perl" ,perl)
        ("pcsc-lite" ,pcsc-lite)
        ("openssl" ,openssl)))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
+       ("help2man" ,help2man)
        ("check" ,check)
        ("texlive-bin" ,texlive-bin)
        ("pkg-config" ,pkg-config)))
