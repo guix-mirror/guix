@@ -8307,6 +8307,17 @@ between 2 and 3 times faster than the Mersenne Twister.")
         (base32
          "0w4hf598lpxfg58rnimcqxrbnpqq2jmpjx82qa5md3q6r90hlipd"))))
     (build-system haskell-build-system)
+    ;; The limits have been adjusted in a revision of the cabal file.
+    (arguments
+     '(#:configure-flags (list "--allow-newer=vector")
+       #:phases
+       (modify-phases %standard-phases
+         ;; The tests cannot be built due to type errors.
+         (add-after 'unpack 'do-not-build-quickcheck-tests
+           (lambda _
+             (substitute* "vector-algorithms.cabal"
+               (("\\!flag\\(properties\\)") "True"))
+             #t)))))
     (inputs
      `(("ghc-vector" ,ghc-vector)
        ("ghc-mtl" ,ghc-mtl)
