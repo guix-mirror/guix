@@ -186,7 +186,7 @@ XML-RPC over SCGI.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/louipc/tremc.git")
+             (url "https://github.com/tremc/tremc.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
@@ -206,7 +206,7 @@ XML-RPC over SCGI.")
     (synopsis "Console client for the Transmission BitTorrent daemon")
     (description "Tremc is a console client, with a curses interface, for the
 Transmission BitTorrent daemon.")
-    (home-page "https://github.com/louipc/tremc")
+    (home-page "https://github.com/tremc/tremc")
     (license l:gpl3+)))
 
 (define-public transmission-remote-cli
