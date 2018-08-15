@@ -331,7 +331,7 @@ all the details.")))
 (define-public s6-linux-utils
   (package
    (name "s6-linux-utils")
-   (version "2.4.0.2")
+   (version "2.5.0.0")
    (source
     (origin
      (method url-fetch)
@@ -340,7 +340,7 @@ all the details.")))
            version ".tar.gz"))
      (sha256
       (base32
-       "0245rmk7wfyyfsi4g7f0niprwlvqlwkbyjxflb8kkbvhwfdavqip"))))
+       "04q2z71dkzahd2ppga2zikclz2qk014c23gm7rigqxjc8rs1amvq"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -351,7 +351,7 @@ all the details.")))
                           (string-append "--with-sysdeps="
                                          (assoc-ref %build-inputs "skalibs")
                                          "/lib/skalibs/sysdeps"))
-       #:tests? #f))
+       #:tests? #f))                    ; no tests exist
     (home-page "https://skarnet.org/software/s6-linux-utils")
     (license isc)
     (synopsis "Set of minimalistic Linux-specific system utilities")
