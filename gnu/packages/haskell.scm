@@ -453,6 +453,34 @@ interactive environment for the functional language Haskell.")
 determine the hostname.")
     (license license:bsd-3)))
 
+(define-public ghc-convertible
+  (package
+    (name "ghc-convertible")
+    (version "1.1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/convertible/"
+                           "convertible-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0v18ap1mccnndgxmbfgyjdicg8jlss01bd5fq8a576dr0h4sgyg9"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-old-time" ,ghc-old-time)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-text" ,ghc-text)))
+    (home-page "https://hackage.haskell.org/package/convertible")
+    (synopsis "Typeclasses and instances for converting between types")
+    (description
+     "This package provides a typeclass with a single function that is
+designed to help convert between different types: numeric values, dates and
+times, and the like.  The conversions perform bounds checking and return a
+pure @code{Either} value.  This means that you need not remember which specific
+function performs the conversion you desire.")
+    (license license:bsd-3)))
+
 (define-public ghc-libxml
   (package
     (name "ghc-libxml")
