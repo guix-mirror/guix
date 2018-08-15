@@ -6437,7 +6437,7 @@ upon it.")
 (define-public ghc-conduit-extra
   (package
     (name "ghc-conduit-extra")
-    (version "1.1.14")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
@@ -6446,7 +6446,7 @@ upon it.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1ij3qcfk7q90fl6gklpy2k5ka9jgzrvs8frq0gy7gdcgyaabqfkg"))))
+         "1bi2b6kdzy5f9glq46jzsk02has95jkxqz0cchpbmnakzhjwjh9c"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
@@ -6454,6 +6454,7 @@ upon it.")
        ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-text" ,ghc-text)
        ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-typed-process" ,ghc-typed-process)
        ("ghc-async" ,ghc-async)
        ("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-blaze-builder" ,ghc-blaze-builder)
