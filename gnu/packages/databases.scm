@@ -567,7 +567,7 @@ RDBMS systems (which are deep in functionality).")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.21")
+    (version "5.7.23")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -579,7 +579,7 @@ RDBMS systems (which are deep in functionality).")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "1dq9bgnajf7cq3mrjkwv6w5nwslhs26lkrw56i7w4fbsq9wm087s"))))
+               "0rbc3xsc11lq2dm0ip6gxa16c06hi74scb97x5cw7yhbabaz4c07"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
