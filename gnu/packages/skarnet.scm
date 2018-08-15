@@ -29,7 +29,7 @@
 (define-public skalibs
   (package
     (name "skalibs")
-    (version "2.6.4.0")
+    (version "2.7.0.0")
     (source
      (origin
       (method url-fetch)
@@ -37,10 +37,10 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1iywavxaw398ifc35xda27cb8hx14viy3kqrzby8fqysx3qp7b1h"))))
+        "0mnprdf4w4ami0db22rwd111m037cdmn2p8xa4i8cbwxcrv4sjcn"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests exist
+     '(#:tests? #f                      ; no tests exist
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'reproducible
                     (lambda _
