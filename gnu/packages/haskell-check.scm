@@ -762,18 +762,19 @@ Haskell, inspired by the Ruby library RSpec.")
 (define-public ghc-hspec-expectations
   (package
     (name "ghc-hspec-expectations")
-    (version "0.7.2")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec-expectations/hspec-expectations-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hspec-expectations/hspec-expectations-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "1w56jiqfyl237sr207gh3b0l8sr9layy0mdsgd5wknzb49mif6ip"))))
+         "1vxl9zazbaapijr6zmcj72j9wf7ka1pirrjbwddwwddg3zm0g5l1"))))
     (build-system haskell-build-system)
+    ;; Tests depend on ghc-nanospec.
+    (arguments '(#:tests? #f))
     (inputs `(("ghc-hunit" ,ghc-hunit)))
     (home-page "https://github.com/sol/hspec-expectations")
     (synopsis "Catchy combinators for HUnit")
