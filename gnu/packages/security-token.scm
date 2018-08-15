@@ -219,7 +219,7 @@ website for more information about Yubico and the YubiKey.")
 (define-public opensc
   (package
     (name "opensc")
-    (version "0.17.0")
+    (version "0.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -227,7 +227,7 @@ website for more information about Yubico and the YubiKey.")
                     version "/opensc-" version ".tar.gz"))
               (sha256
                (base32
-                "0043jh5g7q2lyd5vnb0akwb5y349isx7vbm9wqhlgav7d20wcwxy"))))
+                "0mrpik6ifzh27ws7h0viv8nwgcdj3fp5whaldmj0zhfi1l1zzh4v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -244,7 +244,13 @@ website for more information about Yubico and the YubiKey.")
                  (("DEFAULT_PCSC_PROVIDER=\"libpcsclite\\.so\\.1\"")
                   (string-append
                    "DEFAULT_PCSC_PROVIDER=\"" libpcsclite "\"")))
-               #t))))))
+               #t)))
+         (add-before 'check 'disable-broken-test
+           (lambda _
+             ;; XXX: This test is fixed in git, remove this phase for >= 0.19.
+             (substitute* "doc/tools/Makefile"
+               (("TESTS = test-manpage.sh") "TESTS = "))
+             #t)))))
     (inputs
      `(("readline" ,readline)
        ("openssl" ,openssl)
