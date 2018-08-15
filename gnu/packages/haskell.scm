@@ -1413,20 +1413,20 @@ version 1.3).")
 (define-public ghc-streaming-commons
   (package
     (name "ghc-streaming-commons")
-    (version "0.1.16")
+    (version "0.2.1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/streaming-commons/streaming-commons-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "streaming-commons/streaming-commons-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "0vhhm0z88b1r6s50bskdfh73acwfypm614nycmi9jwiyh84zbz8p"))))
+         "13fn6qmpiggwpn8lczyydgp77cyzfypwds7wxskrwir4i5cgxlfq"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+     `(("ghc-async" ,ghc-async)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-network" ,ghc-network)
        ("ghc-random" ,ghc-random)
        ("ghc-stm" ,ghc-stm)
