@@ -2587,6 +2587,41 @@ Haskell library @code{regex-base}.")
      "This provides an extra text interface for regex-tdfa.")
     (license license:bsd-3)))
 
+(define-public ghc-regex
+  (package
+    (name "ghc-regex")
+    (version "1.0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/regex/"
+                           "regex-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1sjkpkgv4phy5b5v2lr89x4vx4dh44pj0sbvlsp6n86w9v6v4jwb"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-regex-base" ,ghc-regex-base)
+       ("ghc-regex-pcre-builtin" ,ghc-regex-pcre-builtin)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)
+       ("ghc-regex-tdfa-text" ,ghc-regex-tdfa-text)
+       ("ghc-text" ,ghc-text)
+       ("ghc-time-locale-compat" ,ghc-time-locale-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (home-page "http://regex.uk")
+    (synopsis "Toolkit for regex-base")
+    (description
+     "This package provides a regular expression toolkit for @code{regex-base}
+with compile-time checking of regular expression syntax, data types for
+matches and captures, a text replacement toolkit, portable options, high-level
+AWK-like tools for building text processing apps, regular expression macros
+with parsers and test bench, comprehensive documentation, tutorials and
+copious examples.")
+    (license license:bsd-3)))
+
 (define-public ghc-parsers
   (package
     (name "ghc-parsers")
