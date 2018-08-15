@@ -105,7 +105,7 @@ complexity.")))
 (define-public s6
   (package
    (name "s6")
-   (version "2.7.0.0")
+   (version "2.7.2.0")
    (source
     (origin
      (method url-fetch)
@@ -113,7 +113,7 @@ complexity.")))
                          version ".tar.gz"))
      (sha256
       (base32
-       "04vfviw00zvvb1mdpl78zdgzd7j491f1lahhqrkkq9vk5kwcn5v6"))))
+       "02canrzmhr66gi16ldyylk378jlmyfl73vn72ayr12h2wyxgqm5g"))))
    (build-system gnu-build-system)
    (inputs `(("skalibs" ,skalibs)
              ("execline" ,execline)))
@@ -128,7 +128,7 @@ complexity.")))
                         (string-append "--with-sysdeps="
                                        (assoc-ref %build-inputs "skalibs")
                                        "/lib/skalibs/sysdeps"))
-      #:tests? #f))
+      #:tests? #f))                    ; no tests exist
    (home-page "https://skarnet.org/software/s6")
    (license isc)
    (synopsis "Small suite of programs for process supervision")
