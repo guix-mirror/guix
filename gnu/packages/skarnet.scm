@@ -293,7 +293,7 @@ systems and other constrained environments, but they work everywhere.")))
 (define-public s6-linux-init
   (package
    (name "s6-linux-init")
-   (version "0.3.1.1")
+   (version "0.4.0.0")
    (source
     (origin
      (method url-fetch)
@@ -302,7 +302,7 @@ systems and other constrained environments, but they work everywhere.")))
            version ".tar.gz"))
      (sha256
       (base32
-       "0yfxrjqlbb6kac4gcn78phxbwp5sj9jmc1vxpsrbql62mfjyiqly"))))
+       "0zpd6n30cf8847240f658gw40sh64lm1mbaxr19q6rryvs5rpb6l"))))
     (build-system gnu-build-system)
     (inputs
      `(("skalibs" ,skalibs)))
@@ -315,7 +315,7 @@ systems and other constrained environments, but they work everywhere.")))
         (string-append "--with-sysdeps="
                        (assoc-ref %build-inputs "skalibs")
                        "/lib/skalibs/sysdeps"))
-       #:tests? #f))
+       #:tests? #f))                    ; no tests exist
     (home-page "https://skarnet.org/software/s6-linux-init")
     (license isc)
     (synopsis "Minimalistic tools to create an s6-based init system on Linux")
