@@ -36,17 +36,15 @@
 (define-public ghc-tagsoup
   (package
     (name "ghc-tagsoup")
-    (version "0.14.3")
+    (version "0.14.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/tagsoup/tagsoup-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/tagsoup/"
+                           "tagsoup-" version ".tar.gz"))
        (sha256
         (base32
-         "00j2rm2sx0syn16kg2402fz4k8yqfl9knmi367jsiycds1q9zzf9"))))
+         "1yv3dbyb0i1yqm796jgc4jj5kxkla1sxb3b2klw5ks182kdx8kjb"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-text" ,ghc-text)))
     (native-inputs
