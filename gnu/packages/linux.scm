@@ -2996,8 +2996,9 @@ arrays when needed.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; No tests.
-       #:make-flags (list (string-append "DESTDIR="
+     '(#:tests? #f                      ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
                           "SYSTEMDPATH=lib"
                           (string-append "LDFLAGS=-Wl,-rpath="
@@ -3020,11 +3021,7 @@ arrays when needed.")
                  (("/usr/include/libudev.h")
                   (string-append udev "/include/libudev.h")))
                #t)))
-         (delete 'configure)
-         (add-before 'build 'set-CC
-           (lambda _
-             (setenv "CC" "gcc")
-             #t)))))
+         (delete 'configure))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
