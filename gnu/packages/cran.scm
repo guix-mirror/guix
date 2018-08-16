@@ -4767,27 +4767,6 @@ approach is the identification of genomic regions, genes, or gene sets
 containing one or more SNPs that evolved under directional selection.")
     (license license:gpl2)))
 
-(define-public r-hash
-  (package
-    (name "r-hash")
-    (version "2.2.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "hash" version))
-       (sha256
-        (base32
-         "0mkx59bmni3b283znvbndnkbar85fzavzdfgmwrhskidsqcz34yz"))))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/hash/")
-    (synopsis "Implementation of hash/associated arrays/dictionaries")
-    (description
-     "This package implements a data structure similar to hashes in Perl and
-dictionaries in Python but with a purposefully R flavor.  For objects of
-appreciable size, access using hashes outperforms native named lists and
-vectors.")
-    (license license:gpl2+)))
-
 (define-public r-proc
   (package
     (name "r-proc")
