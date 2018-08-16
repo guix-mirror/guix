@@ -404,8 +404,8 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17.13")
-(define %linux-libre-hash "07z4yisl4krz1ja6123xp32g00nx6ajsc9x1lywmmpvvjilsz4ax")
+(define %linux-libre-version "4.17.14")
+(define %linux-libre-hash "11yf4s3cq6a9z3sl38kr4li75mhqfnmgwayi1mcaac8hr6ylksss")
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
@@ -413,8 +413,8 @@ It has been modified to remove all non-free binary blobs.")
                     %linux-compatible-systems
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.61")
-(define %linux-libre-4.14-hash "0jr0qi3473fn32cyisp3baf68sfr6vir5ydaphmqmz379ymxxm0z")
+(define %linux-libre-4.14-version "4.14.62")
+(define %linux-libre-4.14-hash "0gpcdimig6d833dgxmj1i21dg8n12g4q38n0dq5j5x215w6rxy65")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -423,14 +423,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.118"
-                    "0zh9l0r828jjbmmqp0hwkjm34ly8kqhfddlyigmliz0j39dg0137"
+  (make-linux-libre "4.9.119"
+                    "1wqy9163w9srf614p57c3m7h8a2lbwv7f21m4cym397paqfkh4z4"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.146"
-                    "1gpshdkn2rfg8kkf2qb2z30yk1lgzndk0fn1bvnrmfmx7swc45w8"
+  (make-linux-libre "4.4.147"
+                    "0b9pr7qwa5ksj0bk5yh6hcxrjkv41ji0x29hscravmj4ckkxg0l6"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -1199,7 +1199,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.17.0")
+    (version "4.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1207,7 +1207,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0vmynikcamfhakvwyk5dsffy0ymgi5mdqiwybdvqfn1ijaq93abg"))))
+                "0ida5njr9nacg6ym3rjvl3cc9czw0hn4akhzbqf8f4zmjl6cgrm9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -2725,14 +2725,14 @@ about ACPI devices.")
 (define-public acpid
   (package
     (name "acpid")
-    (version "2.0.28")
+    (version "2.0.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/acpid2/acpid-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "043igasvp1l6nv5rzh4sksmymay2qn20anl4zm4zvwnkn1a3l34q"))))
+                "1jzl7hiaspr5xkmsrbl69bib8cs3dp6bq5ix58fbskpnsdi7pdr8"))))
     (build-system gnu-build-system)
     (home-page "https://sourceforge.net/projects/acpid2/")
     (synopsis "Daemon for delivering ACPI events to user-space programs")
@@ -4092,7 +4092,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.1")
+    (version "1.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4100,7 +4100,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
                     (commit version)))
               (sha256
                (base32
-                "1qra8yzsga29bxlvq63v1db071a1xdji7i60p4kzrciidm1206js"))))
+                "0c934gxav9cgdf94li6dp0rfqmpday9d33vdn9xb2mfp4war9n4w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests

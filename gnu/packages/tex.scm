@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -1432,6 +1432,9 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3packages"
+       ;; build-targets must be specified manually since they are in
+       ;; sub-directories.
+       #:build-targets '("l3keys2e.ins" "xparse.ins" "xfrac.ins" "xfp.ins" "xtemplate.ins")
        #:phases
        (modify-phases %standard-phases
          ;; All package sources are in sub-directories, so we need to add them
@@ -1444,8 +1447,12 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
                                       cwd "/xparse:"
                                       cwd "/xfrac:"
                                       cwd "/xfp:"
-                                      cwd "/xtemplate")))
-             #t)))))
+                                      cwd "/xtemplate"
+                                      ;; The terminating ":" is required to include the
+                                      ;; l3kernel input as well.
+                                      ":")))
+             #t)))
+       ))
     (inputs
      `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)))
     (home-page "https://www.ctan.org/pkg/l3packages")
@@ -4094,7 +4101,7 @@ This package contains the complete TeX Live distribution.")
        ("perl-config-autoconf" ,perl-config-autoconf)
        ("perl-extutils-libbuilder" ,perl-extutils-libbuilder)
        ("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Text-BibTeX")
+    (home-page "https://metacpan.org/release/Text-BibTeX")
     (synopsis "Interface to read and parse BibTeX files")
     (description "@code{Text::BibTeX} is a Perl library for reading, parsing,
 and processing BibTeX files.  @code{Text::BibTeX} gives you access to the data

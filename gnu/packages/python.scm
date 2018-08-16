@@ -5591,6 +5591,9 @@ applications.")
   (package-with-python2 python-pyzmq))
 
 (define-public python-pep8
+  ;; This package has been renamed to ‘pycodestyle’ and is no longer updated.
+  ;; Its last release (1.7.1) adds only a scary warning to this effect, breaking
+  ;; some dependents' test suites, and nothing more.
   (package
     (name "python-pep8")
     (version "1.7.0")
@@ -5602,7 +5605,7 @@ applications.")
           (base32
             "002rkl4lsn6x2mxmf8ar00l0m8i3mzrc6pnzz77blyksmpsxa4x1"))))
     (build-system python-build-system)
-    (home-page "http://pep8.readthedocs.org/")
+    (home-page "https://pep8.readthedocs.org/")
     (synopsis "Python style guide checker")
     (description
      "This tools checks Python code against some of the style conventions in
@@ -7239,6 +7242,25 @@ be set via config files and/or environment variables.")
 (define-public python2-configargparse
   (package-with-python2 python-configargparse))
 
+(define-public python-argparse-manpage
+  (package
+    (name "python-argparse-manpage")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "argparse-manpage" version))
+       (sha256
+        (base32
+         "0blh31zns68anina9lba5wh81d1414s97p60zw5l0d0shhh0wj5p"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/praiskup/argparse-manpage")
+    (synopsis "Build manual page from Python's ArgumentParser object")
+    (description
+     "This package provides tools to build manual pages from Python's
+@code{ArgumentParser} object.")
+    (license license:asl2.0)))
+
 (define-public python-contextlib2
   (package
     (name "python-contextlib2")
@@ -8057,14 +8079,14 @@ alternative when librabbitmq is not available.")
 (define-public python-txamqp
   (package
     (name "python-txamqp")
-    (version "0.8.0")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "txAMQP" version))
        (sha256
         (base32
-         "1r43a66dd547mz40ikymm8y3d480cidy560fj81qc0jk4lncgmmr"))))
+         "0jd9864k3csc06kipiwzjlk9mq4054s8kzk5q1cfnxj8572s4iv4"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)

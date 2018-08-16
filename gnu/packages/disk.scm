@@ -395,34 +395,31 @@ systems.  Output format is completely customizable.")
 (define-public f3
   (package
     (name "f3")
-    (version "6.0")
+    (version "7.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/AltraMayor/f3/archive/"
-                          "v" version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/AltraMayor/f3.git")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
       (sha256
        (base32
-        "1mgbzc1swvgil45md1336j0aqkmkhwmpxical0ln5g09b2qxsanp"))))
+        "0zglsmz683jg7f9wc6vmgljyg9w87pbnjw5x4w6x02w8233zvjqf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no check target
+     '(#:tests? #f                      ; no check target
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-before 'build 'fix-makefile
-           (lambda _
-             (substitute* "Makefile"
-               ;; Install without setting owner and group
-               (("\\$\\(INSTALL\\) -oroot -groot ") "$(INSTALL) ")
-               ;; also build and install experimental tools
-               (("^all: ") "all: $(EXPERIMENTAL_TARGETS) ")
-               (("^install: ") "install-all: ")
-               (("^install-experimental: ") "install: install-all "))
-             #t)))))
+         (delete 'configure)            ; no configure script
+         (add-after 'build 'build-extra
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "extra" make-flags)))
+         (add-after 'build 'install-extra
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "install-extra" make-flags))))))
     (inputs
      `(("eudev" ,eudev)
        ("parted" ,parted)))

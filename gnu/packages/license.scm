@@ -33,7 +33,7 @@
 (define-public perl-regexp-pattern-license
   (package
     (name "perl-regexp-pattern-license")
-    (version "3.1.0")
+    (version "3.1.92")
     (source
      (origin
        (method url-fetch)
@@ -42,14 +42,15 @@
              "v" version ".tar.gz"))
        (sha256
         (base32
-         "1479ismcgq1mx712yhw0qswb4z75spc81f9k621vfpkji0smpyk2"))))
+         "0gxv8wpvlllmvhkpixv5x23ywn1s6zs7ypcs38s7nfh4phamyixh"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-regexp-pattern" ,perl-regexp-pattern)
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
-     `(("perl-strictures" ,perl-strictures-2)))
-    (home-page "http://search.cpan.org/dist/Regexp-Pattern-License/")
+     `(("perl-strictures" ,perl-strictures-2)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "https://metacpan.org/release/Regexp-Pattern-License")
     (synopsis "Regular expressions for legal licenses")
     (description "Regexp::Pattern::License provides a hash of regular
 expression patterns related to legal software licenses.
@@ -75,7 +76,7 @@ Regexp::Pattern is a convention for organizing reusable regex patterns.")
      `(("perl-number-range" ,perl-number-range)))
     (propagated-inputs
      `(("perl-exporter-tiny" ,perl-exporter-tiny)))
-    (home-page "http://search.cpan.org/dist/String-Copyright/")
+    (home-page "https://metacpan.org/release/String-Copyright")
     (synopsis "Representation of text-based copyright statements")
     (description "String::Copyright Parses common styles of copyright
 statements and serializes in normalized format.")
@@ -100,7 +101,7 @@ statements and serializes in normalized format.")
     (propagated-inputs
      `(("perl-data-section" ,perl-data-section)
        ("perl-text-template" ,perl-text-template)))
-    (home-page "http://search.cpan.org/dist/Software-License/")
+    (home-page "https://metacpan.org/release/Software-License")
     (synopsis "Templated software licenses")
     (description "This package provides templated software licenses.")
     (license (package-license perl))))
@@ -108,7 +109,7 @@ statements and serializes in normalized format.")
 (define-public licensecheck
   (package
     (name "licensecheck")
-    (version "3.0.34")
+    (version "3.0.36")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -116,7 +117,7 @@ statements and serializes in normalized format.")
                     "v" version ".tar.gz"))
               (sha256
                (base32
-                "0k0acybgibdqg1h6xqnba1jb0spmw7hpq0jbrs7n7gfj22wkz0vd"))))
+                "0y14ppq6f9hc0rc0syhfgms1r7fd51vpgfx5va6b2v84y8anb6g1"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-regexp-pattern" ,perl-regexp-pattern)
@@ -153,7 +154,7 @@ statements and serializes in normalized format.")
                  `("PERL5LIB" ":"
                    prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))
                #t))))))
-    (home-page "http://search.cpan.org/dist/App-Licensecheck/")
+    (home-page "https://metacpan.org/release/App-Licensecheck")
     (synopsis "License checker for source files")
     (description "Licensecheck attempts to determine the license that applies
 to each file passed to it, by searching the start of the file for text

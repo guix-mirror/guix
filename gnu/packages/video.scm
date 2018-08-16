@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -257,14 +258,14 @@ television and DVD.  It is also known as AC-3.")
 (define-public libx264
   (package
     (name "libx264")
-    (version "20180219-2245")
+    (version "20180810-2245")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/pub/x264/snapshots/"
                                   "x264-snapshot-" version "-stable.tar.bz2"))
               (sha256
                (base32
-                "1x0cg8l30wp84mr7q0ddp06jclm0kjrszazrx87d4k7js3qxjy8m"))))
+                "0f25f39imas9pcqm7lnaa0shhjmf42hdx7jxzcnvxc7qsb7lh1bv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -849,6 +850,17 @@ thumbnailer uses ffmpeg to decode frames from the video files, so supported
 videoformats depend on the configuration flags of ffmpeg.")
     (license license:gpl2+)))
 
+;; Fix build with newer x264.
+(define %vlc-libx264-compat.patch
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://git.videolan.org/?p=vlc.git;a=patch;h="
+                        "a8953ba707cca1f2de372ca24513296bcfcdaaa8"))
+    (file-name "vlc-libx264-compat.patch")
+    (sha256
+     (base32
+      "04igckbdp3sbp8vh0ihmhcf3yjyyk9r3cd5dm9mn9j6vipi1dg3g"))))
+
 (define-public vlc
   (package
     (name "vlc")
@@ -859,6 +871,7 @@ videoformats depend on the configuration flags of ffmpeg.")
                    "https://download.videolan.org/pub/videolan/vlc/"
                    (car (string-split version #\-))
                    "/vlc-" version ".tar.xz"))
+             (patches (list %vlc-libx264-compat.patch))
              (sha256
               (base32
                "1p7qvdvg9w4lz8vckzhn6bswfkq3qw7fqkgvwjcskdgc266xx7dw"))))
@@ -2738,21 +2751,24 @@ programmers to access a standard API to open and decompress media files.")
                      name "-" version ".tar.xz"))
               (sha256
                (base32
-                "11b83qazc8h0iidyj1rprnnjdivj1lpphvpa08y53n42bfa36pn5"))))
+                "11b83qazc8h0iidyj1rprnnjdivj1lpphvpa08y53n42bfa36pn5"))
+              (patches (search-patches "aegisub-icu59-include-unistr.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--disable-update-checker"
              "--without-portaudio"
              "--without-openal"
-             "--without-oss")
+             "--without-oss"
+             "CXXFLAGS=-DU_USING_ICU_NAMESPACE=1")
        ;; tests require busted, a lua package we don't have yet
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-ldflags
            (lambda _
-             (setenv "LDFLAGS" "-pthread"))))))
+             (setenv "LDFLAGS" "-pthread")
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("desktop-file-utils" ,desktop-file-utils)

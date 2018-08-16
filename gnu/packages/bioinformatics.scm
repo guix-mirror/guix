@@ -720,7 +720,7 @@ e.g. microbiome samples, genomes, metagenomes.")
       (inputs inputs)
       (native-inputs
        `(("perl-test-most" ,perl-test-most)))
-      (home-page "http://search.cpan.org/dist/BioPerl")
+      (home-page "https://metacpan.org/release/BioPerl")
       (synopsis "Bioinformatics toolkit")
       (description
        "BioPerl is the product of a community effort to produce Perl code which
@@ -13275,6 +13275,48 @@ cases include:
 @end enumerate\n")
     (license license:expat)))
 
+(define-public r-circus
+  (package
+    (name "r-circus")
+    (version "0.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/BIMSBbioinfo/ciRcus.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0jhjn3ilb057hbf6yzrihj13ifxxs32y7nkby8l3lkm28dg4p97h"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationhub" ,r-annotationhub)
+       ("r-biomart" ,r-biomart)
+       ("r-data-table" ,r-data-table)
+       ("r-dbi" ,r-dbi)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hash" ,r-hash)
+       ("r-iranges" ,r-iranges)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-rmysql" ,r-rmysql)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-stringr" ,r-stringr)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/BIMSBbioinfo/ciRcus")
+    (synopsis "Annotation, analysis and visualization of circRNA data")
+    (description "Circus is an R package for annotation, analysis and
+visualization of circRNA data.  Users can annotate their circRNA candidates
+with host genes, gene featrues they are spliced from, and discriminate between
+known and yet unknown splice junctions.  Circular-to-linear ratios of circRNAs
+can be calculated, and a number of descriptive plots easily generated.")
+    (license license:artistic2.0)))
+
 (define-public r-loomr
   (let ((commit "df0144bd2bbceca6fadef9edc1bbc5ca672d4739")
         (revision "1"))
@@ -13303,3 +13345,64 @@ cases include:
       (description "This package provides an R interface to access, create,
 and modify loom files.  loomR aims to be completely compatible with loompy.")
       (license license:gpl3))))
+
+(define-public gffread
+  ;; We cannot use the tagged release because it is not in sync with gclib.
+  ;; See https://github.com/gpertea/gffread/issues/26
+  (let ((commit "ba7535fcb3cea55a6e5a491d916e93b454e87fd0")
+        (revision "1"))
+    (package
+      (name "gffread")
+      (version (git-version "0.9.12" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gpertea/gffread.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1dl2nbcg96lxpd0drg48ssa8343nf7pw9s9mkrc4mjjmfwsin3ki"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no check target
+         #:make-flags
+         (list "GCLDIR=gclib")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'copy-gclib-source
+             (lambda* (#:key inputs #:allow-other-keys)
+               (mkdir-p "gclib")
+               (copy-recursively (assoc-ref inputs "gclib-source") "gclib")
+               #t))
+           ;; There is no install target
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "gffread" bin))
+               #t)))))
+      (native-inputs
+       `(("gclib-source"
+          ,(let ((version "0.10.3")
+                 (commit "54917d0849c1e83cfb057b5f712e5cb6a35d948f")
+                 (revision "1"))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/gpertea/gclib.git")
+                     (commit commit)))
+               (file-name (git-file-name "gclib" version))
+               (sha256
+                (base32
+                 "0b51lc0b8syrv7186fd7n8f15rwnf264qgfmm2palrwks1px24mr")))))))
+      (home-page "https://github.com/gpertea/gffread/")
+      (synopsis "Parse and convert GFF/GTF files")
+      (description
+       "This package provides a GFF/GTF file parsing utility providing format
+conversions, region filtering, FASTA sequence extraction and more.")
+      ;; gffread is under Expat, but gclib is under Artistic 2.0
+      (license (list license:expat
+                     license:artistic2.0)))))

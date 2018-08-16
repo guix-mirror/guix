@@ -166,14 +166,14 @@ performance measurement opportunites across the hardware and software stack.")
              #t)))))
     (home-page "http://www.vi-hps.org/projects/score-p/")
     (synopsis "Open Trace Format 2 library")
-    (description "The Open Trace Format 2 (OTF2) is a scalable, memory
-efficient event trace data format plus support library.")
+    (description "The Open Trace Format 2 (@dfn{OTF2}) is a scalable,
+memory-efficient event trace data format plus support library.")
     (license license:bsd-3)))
 
 (define-public opari2
   (package
     (name "opari2")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
       (method url-fetch)
@@ -182,20 +182,11 @@ efficient event trace data format plus support library.")
                   (minor (cadr parts)))
              (string-append "http://www.vi-hps.org/upload/packages/opari2/opari2-"
                             version ".tar.gz")))
-      (sha256 (base32 "1ph8l5c646bm9l5vcn8rrbjvkyi7y8yvn2ny95r6kmlzs766g3q8"))))
+      (sha256 (base32 "0v785mhw9azj3ln5v7akj5b1cxvzfkxz8kj565pfwllir7xzqbky"))))
     (build-system gnu-build-system)
     (inputs `(("gfortran" ,gfortran)))
     (native-inputs `(("gawk" ,gawk)     ;for tests
                      ("which" ,which)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'licence
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((doc (string-append (assoc-ref outputs "out")
-                                       "/share/doc/opari2")))
-               (install-file "COPYING" doc)
-               #t))))))
     (home-page "http://www.vi-hps.org/projects/score-p")
     (synopsis "OpenMP runtime performance measurement instrumenter")
     (description "OPARI2 is a source-to-source instrumentation tool for OpenMP

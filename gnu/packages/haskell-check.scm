@@ -530,6 +530,9 @@ reporting and test statistics output.")
         (base32
          "1y0b6vg8nfm43v90lxxcydhi6qlxhfy4vpxbzm5ic2w55bh8xjwm"))))
     (build-system haskell-build-system)
+    ;; The official revision of the cabal file allows for HUnit lower than 1.7
+    (arguments
+     `(#:configure-flags (list "--allow-newer=HUnit")))
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-hunit" ,ghc-hunit)
@@ -603,19 +606,21 @@ using Template Haskell")
 (define-public ghc-hunit
   (package
     (name "ghc-hunit")
-    (version "1.3.1.2")
+    (version "1.6.0.0")
     (outputs '("out" "doc"))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/HUnit/HUnit-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/HUnit/"
+                           "HUnit-" version ".tar.gz"))
        (sha256
         (base32
-         "10akdh4fl615rrshxi3m5gf414il1q42z4zqyb6q4jasmscvzpms"))))
+         "1pnhwqq5v8h48gbp3ibv3skfj25mf4zs5svxcavq93p9cswycj3l"))))
     (build-system haskell-build-system)
+    (inputs
+     ;; We cannot use ghc-call-stack there, because it depends on
+     ;; ghc-nanospec, which depends on ghc-hunit.
+     `(("ghc-call-stack" ,ghc-call-stack-boot)))
     (home-page "http://hunit.sourceforge.net/")
     (synopsis "Unit testing framework for Haskell")
     (description
@@ -626,21 +631,20 @@ JUnit tool for Java.")
 (define-public hspec-discover
   (package
     (name "hspec-discover")
-    (version "2.2.4")
+    (version "2.5.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec-discover/hspec-discover-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hspec-discover/hspec-discover-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "1bz7wb8v0bx1amiz4bpj34xq97d1ia29n3f654wcrh6lacydp3dv"))))
+         "04aidzi91ccr9bygmfkjzshz34z9vh8wvqj4zinx2clxq6r7gqfz"))))
     (build-system haskell-build-system)
-    (arguments `(#:haddock? #f)) ; Haddock phase fails because there are no
-                                 ; documentation files.
-    (inputs `(("ghc-hspec-meta" ,ghc-hspec-meta)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec-meta" ,ghc-hspec-meta)))
     (home-page "https://hspec.github.io/")
     (synopsis "Automatically discover and run Hspec tests")
     (description "hspec-discover is a tool which automatically discovers and
@@ -650,23 +654,22 @@ runs Hspec tests.")
 (define-public ghc-hspec-core
   (package
     (name "ghc-hspec-core")
-    (version "2.2.4")
+    (version "2.5.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec-core/hspec-core-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/hspec-core/"
+                           "hspec-core-" version ".tar.gz"))
        (sha256
         (base32
-         "0x845ngfl6vf65fnpb5mm3wj0ql45pz11bnm0x4gxc4ybd9c52ij"))))
+         "1vfrqlpn32s9wiykmkxbnrnd5p56yznw20pf8fwzw78ar4wpz55x"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (inputs
      `(("ghc-setenv" ,ghc-setenv)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-async" ,ghc-async)
+       ("ghc-clock" ,ghc-clock)
        ("ghc-quickcheck-io" ,ghc-quickcheck-io)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)
@@ -681,17 +684,15 @@ be used to extend Hspec's functionality.")
 (define-public ghc-hspec-meta
   (package
     (name "ghc-hspec-meta")
-    (version "2.2.1")
+    (version "2.4.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec-meta/hspec-meta-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/hspec-meta/"
+                           "hspec-meta-" version ".tar.gz"))
        (sha256
         (base32
-         "1m1pkrxiglxzwv8gdj5jr1bdbhxvvg6sbl9m61w4565d7k1m8yxa"))))
+         "0qmvk01n79j6skn79r6zalg2pd0x0nqqn9qn8mhg0pgyzcdnfc9b"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
@@ -711,17 +712,15 @@ used to test the in-development version of Hspec.")
 (define-public ghc-hspec
   (package
     (name "ghc-hspec")
-    (version "2.2.4")
+    (version "2.5.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec/hspec-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/hspec/"
+                           "hspec-" version ".tar.gz"))
        (sha256
         (base32
-         "1cf90gqvg1iknja6ymxqxyabpahcxni3blqllh81ywbir3whljvj"))))
+         "1yv4k5b5kkig2q3waj28587sq28wms7wfav5a3lq4dra6jybimfm"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hspec-core" ,ghc-hspec-core)
@@ -740,7 +739,7 @@ Haskell, inspired by the Ruby library RSpec.")
 (define-public ghc-hspec-contrib
   (package
     (name "ghc-hspec-contrib")
-    (version "0.3.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -748,7 +747,7 @@ Haskell, inspired by the Ruby library RSpec.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "006syw8xagfhsx06ws9ywig1qx5lk4cgl7sq6pbid1s64c72mxn4"))))
+                "13579xdqwbsy8k0vxdcvgy932d4p76mij1rzkzbpqbspfn7399yv"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hspec-core" ,ghc-hspec-core)
@@ -766,18 +765,19 @@ Haskell, inspired by the Ruby library RSpec.")
 (define-public ghc-hspec-expectations
   (package
     (name "ghc-hspec-expectations")
-    (version "0.7.2")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/hspec-expectations/hspec-expectations-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hspec-expectations/hspec-expectations-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "1w56jiqfyl237sr207gh3b0l8sr9layy0mdsgd5wknzb49mif6ip"))))
+         "1vxl9zazbaapijr6zmcj72j9wf7ka1pirrjbwddwwddg3zm0g5l1"))))
     (build-system haskell-build-system)
+    ;; Tests depend on ghc-nanospec.
+    (arguments '(#:tests? #f))
     (inputs `(("ghc-hunit" ,ghc-hunit)))
     (home-page "https://github.com/sol/hspec-expectations")
     (synopsis "Catchy combinators for HUnit")

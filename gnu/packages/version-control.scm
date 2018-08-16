@@ -754,13 +754,13 @@ allowing to handle large objects with a small memory footprint.")
 (define-public python-gitpython
   (package
     (name "python-gitpython")
-    (version "2.1.10")
+    (version "2.1.11")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "GitPython" version))
               (sha256
                (base32
-                "00bk48s5szh296r7zyvdpv3sd7q9j2cb9sqdc9diwcjayrf082xn"))))
+                "1a357c28dnhgvq3saia7v29r71ynp48l2qp5xsmnc4vgzmdxqdw2"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;XXX: Tests can only be run within the GitPython repository.
@@ -1131,7 +1131,7 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.10.0")
+    (version "1.10.2")
     (source (origin
              (method url-fetch)
              (uri
@@ -1142,7 +1142,7 @@ following features:
                                 "subversion-" version ".tar.bz2")))
              (sha256
               (base32
-               "115mlvmf663w16mc3xyypnaizq401vbypc56hl2ylzc3pcx3zwic"))))
+               "127dysfc31q4dhbbxaznh9kqixy9jd44kgwji2gdwj6rb2lf6dav"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1262,27 +1262,32 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.43")
+    (version "1.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/"
                                   name "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "17xp5q4cxmd6z0ii1fdr4j1djb9mz1qv7hzr6fawdapjzahi65m3"))))
+                "1l7hlys4vw4zk4ikdjiig5vzgv5dv48mbm8bdqgvgkyyxb2j0dm0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-before 'check 'fix-setpython-PATH
+           (lambda _
+             ;; The Makefile does try to add the current working directory to
+             ;; $PATH, but this fails for some reason in 1.44.  Hack around it.
+             (substitute* "tests/Makefile"
+               (("setpython" command)
+                (string-append "./" command)))
+             #t))
          (add-after 'unpack 'remove-optimizations
            (lambda _
              ;; Don't optimize for a specific processor architecture.
              (substitute* "Makefile"
                (("CFLAGS \\+= -march=native") ""))
-             ;; This code runs with Python2 or Python3
-             (substitute* "cvsreduce"
-               (("python3") "python"))
              #t)))
        #:parallel-build? #f ; parallel a2x commands fail spectacularly
        #:make-flags
@@ -2032,7 +2037,7 @@ directory full of HOWTOs.")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "6.20180626")
+    (version "6.20180807")
     (source
      (origin
        (method url-fetch)
@@ -2040,7 +2045,7 @@ directory full of HOWTOs.")
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
         (base32
-         "0vq3x9p4h3m266pcm2r3m9p51pz5z9zskh7z5nk0adh33j30xf7q"))))
+         "1wkqh1y58m0z1mf2j33qhndpxcjwv8mbv384kdk17vn0lp9zas1s"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags

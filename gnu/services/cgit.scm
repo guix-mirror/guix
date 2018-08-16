@@ -149,6 +149,7 @@
 
 (define (serialize-repo-boolean field-name val)
   (serialize-repo-integer field-name (if val 1 0)))
+(define-maybe repo-boolean)
 
 (define repo-list? list?)
 
@@ -239,27 +240,27 @@ is no suitable HEAD.")
    (repo-file-object "")
    "Override the default @code{email-filter}.")
   (enable-commit-graph?
-   (repo-boolean #f)
+   (maybe-repo-boolean 'disabled)
    "A flag which can be used to disable the global setting
 @code{enable-commit-graph?}.")
   (enable-log-filecount?
-   (repo-boolean #f)
+   (maybe-repo-boolean 'disabled)
    "A flag which can be used to disable the global setting
 @code{enable-log-filecount?}.")
   (enable-log-linecount?
-   (repo-boolean #f)
+   (maybe-repo-boolean 'disabled)
    "A flag which can be used to disable the global setting
 @code{enable-log-linecount?}.")
   (enable-remote-branches?
-   (repo-boolean #f)
+   (maybe-repo-boolean 'disabled)
    "Flag which, when set to @code{#t}, will make cgit display remote
 branches in the summary and refs views.")
   (enable-subject-links?
-   (repo-boolean #f)
+   (maybe-repo-boolean 'disabled)
    "A flag which can be used to override the global setting
 @code{enable-subject-links?}.")
   (enable-html-serving?
-   (repo-boolean #f)
+   (maybe-repo-boolean 'disabled)
    "A flag which can be used to override the global setting
 @code{enable-html-serving?}.")
   (hide?

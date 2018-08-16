@@ -45,6 +45,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
@@ -107,7 +108,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "ftp://ftp.isc.org/isc/bind9/" version "/" name "-"
+                    "https://ftp.isc.org/isc/bind9/" version "/" name "-"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -583,14 +584,14 @@ synthesis, and on-the-fly re-configuration.")
 (define-public ddclient
   (package
     (name "ddclient")
-    (version "3.8.3")
+    (version "3.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/ddclient/ddclient/ddclient-"
                                   version "/ddclient-" version ".tar.gz"))
               (sha256
                (base32
-                "1j8zdn7fy7i0bjk3jf0hxnbnshc2yf054vxq64imxdpfd7n5zgfy"))))
+                "0fwyhab8yga2yi1kdfkbqxa83wxhwpagmj1w1mwkg2iffh1fjjlw"))))
     (build-system trivial-build-system) ; no Makefile.PL
     (native-inputs
      `(("bash" ,bash)
@@ -598,10 +599,11 @@ synthesis, and on-the-fly re-configuration.")
        ("perl" ,perl)
        ("tar" ,tar)))
     (inputs
-     `(("net-tools" ,net-tools)
-       ("inetutils" ,inetutils) ;logger
-       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
-       ("perl-digest-sha1" ,perl-digest-sha1)))
+     `(("inetutils" ,inetutils)         ; logger
+       ("net-tools" ,net-tools)
+       ("perl-data-validate-ip" ,perl-data-validate-ip)
+       ("perl-digest-sha1" ,perl-digest-sha1)
+       ("perl-io-socket-ssl" ,perl-io-socket-ssl)))
     (arguments
      `(#:modules ((guix build utils)
                   (ice-9 match)

@@ -124,7 +124,7 @@ internal RPC protocols and file formats.")
 (define-public protobuf-c
   (package
     (name "protobuf-c")
-    (version "1.3.0")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/protobuf-c/protobuf-c/"
@@ -132,7 +132,7 @@ internal RPC protocols and file formats.")
                                   "/protobuf-c-" version ".tar.gz"))
               (sha256
                (base32
-                "18aj4xfv26zjmj44zbb01wk90jl7y4aj5xvbzz4gg748kdxavjax"))))
+                "0rr2kn7804cvhdm6lzz04gz76vy0fzj15dijbr17nv8x34x2sisi"))))
     (build-system gnu-build-system)
     (inputs `(("protobuf" ,protobuf)))
     (native-inputs `(("pkg-config" ,pkg-config)))

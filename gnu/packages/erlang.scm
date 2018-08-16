@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright (C) 2018 Nils Gillmann <ng0@n0.is>
+;;; Copyright © 2018 Nils Gillmann <ng0@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -38,18 +39,19 @@
 (define-public erlang
   (package
     (name "erlang")
-    (version "21.0")
+    (version "21.0.5")
     (source (origin
-              (method url-fetch)
+              (method git-fetch)
               ;; The tarball from http://erlang.org/download contains many
               ;; pre-compiled files, so we use this snapshot of the source
               ;; repository.
-              (uri (string-append "https://github.com/erlang/otp/archive/OTP-"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (git-reference
+                    (url "https://github.com/erlang/otp.git")
+                    (commit (string-append "OTP-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gv43lra4870xns8b0yjzbq78afzvz9gk6y3q3fa4y4sqcrqwbas"))
+                "0gv83i5ybj1z3ykbbldjzf7dbfjszp84c0yzrpshj611b9wp0176"))
               (patches (search-patches "erlang-man-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs

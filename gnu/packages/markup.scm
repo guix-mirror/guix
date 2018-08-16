@@ -109,16 +109,15 @@ convert it to structurally valid XHTML (or HTML).")
 (define-public discount
   (package
     (name "discount")
-    (version "2.2.2")
+    (version "2.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "http://www.pell.portland.or.us/~orc/Code/"
                    name "/" name "-" version ".tar.bz2"))
-             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0r4gjyk1ngx47zhb25q0gkjm3bz2m5x8ngrk6rim3y1y3rricygc"))))
+               "199hwajpspqil0a4y3yxsmhdp2dm73gqkzfk4mrwzsmlq8y1xzbl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -144,7 +143,7 @@ convert it to structurally valid XHTML (or HTML).")
     (description
      "Discount is a markdown implementation, written in C.  It provides a
 @command{markdown} command, and a library.")
-    (home-page "http://www.pell.portland.or.us/~orc/Code/discount/")
+    (home-page "https://www.pell.portland.or.us/~orc/Code/discount/")
     (license bsd-3)))
 
 (define-public perl-text-markdown-discount
@@ -178,7 +177,7 @@ convert it to structurally valid XHTML (or HTML).")
     (inputs
      `(("discount" ,discount)))
     (home-page
-     "http://search.cpan.org/dist/Text-Markdown-Discount")
+     "https://metacpan.org/release/Text-Markdown-Discount")
     (synopsis
      "Fast function for converting Markdown to HTML using Discount")
     (description

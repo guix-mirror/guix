@@ -4615,3 +4615,235 @@ matches version and feature constraints.")
 write shebang scripts that gracefully accept positional and optional arguments
 and automatically generate usage notices.")
     (license license:gpl2+)))
+
+(define-public r-hash
+  (package
+    (name "r-hash")
+    (version "2.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hash" version))
+       (sha256
+        (base32
+         "0mkx59bmni3b283znvbndnkbar85fzavzdfgmwrhskidsqcz34yz"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/hash/")
+    (synopsis "Implementation of hash/associated arrays/dictionaries")
+    (description
+     "This package implements a data structure similar to hashes in Perl and
+dictionaries in Python but with a purposefully R flavor.  For objects of
+appreciable size, access using hashes outperforms native named lists and
+vectors.")
+    (license license:gpl2+)))
+
+(define-public r-orddom
+  (package
+    (name "r-orddom")
+    (version "3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "orddom" version))
+       (sha256
+        (base32
+         "165axs15fvwhrp89xd87l81q3h2qjll1vrwcsap645cwvb85nwsh"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-psych" ,r-psych)))
+    (home-page "https://cran.r-project.org/web/packages/orddom/")
+    (synopsis "Ordinal dominance statistics")
+    (description
+     "This package provides tools to compute ordinal, statistics and effect
+sizes as an alternative to mean comparison: Cliff's delta or success rate
+difference (SRD), Vargha and Delaney's A or the Area Under a Receiver
+Operating Characteristic Curve (AUC), the discrete type of McGraw & Wong's
+Common Language Effect Size (CLES) or Grissom & Kim's Probability of
+Superiority (PS), and the Number needed to treat (NNT) effect size.  Moreover,
+comparisons to Cohen's d are offered based on Huberty & Lowman's Percentage of
+Group (Non-)Overlap considerations.")
+    (license license:gpl2)))
+
+(define-public r-doby
+  (package
+    (name "r-doby")
+    (version "4.6-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "doBy" version))
+       (sha256
+        (base32
+         "1y02awzid23bxz8hx6j8pxd6i7jaq8pdw3k60rag8y6m69incrw5"))))
+    (properties `((upstream-name . "doBy")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-plyr" ,r-plyr)))
+    (home-page "http://people.math.aau.dk/~sorenh/software/doBy/")
+    (synopsis "Groupwise statistics, LSmeans, linear contrasts, and utilities")
+    (description
+     "This package contains:
+
+@itemize
+@item facilities for working with grouped data: @code{do}
+  something to data stratified @code{by} some variables.
+@item implementations of least-squares means, general linear contrasts, and
+@item miscellaneous other utilities.
+@end itemize\n")
+    (license license:gpl2+)))
+
+(define-public r-refgenome
+  (package
+    (name "r-refgenome")
+    (version "1.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "refGenome" version))
+       (sha256
+        (base32
+         "15p0ra2p1pwhy5ixbhsz1g79c5sc2aap4i4c8kil0m2syg9y45sn"))))
+    (properties `((upstream-name . "refGenome")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dbi" ,r-dbi)
+       ("r-doby" ,r-doby)
+       ("r-rsqlite" ,r-rsqlite)))
+    (home-page "https://cran.r-project.org/web/packages/refGenome/")
+    (synopsis
+     "Gene and splice site annotation using annotation data from Ensembl and UCSC")
+    (description
+     "This package contains functionality for importing and managing of
+downloaded genome annotation data from the Ensembl genome browser (European
+Bioinformatics Institute) and from the UCSC genome browser (University of
+California, Santa Cruz) and annotation routines for genomic positions and
+splice site positions.")
+    (license license:gpl2)))
+
+(define-public r-basix
+  (package
+    (name "r-basix")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BASIX" version))
+       (sha256
+        (base32
+         "18dkvv1iwskfnlpl6xridcgqpalbbpm2616mvc3hfrc0b26v01id"))))
+    (properties `((upstream-name . "BASIX")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/BASIX/")
+    (synopsis "Efficient C/C++ toolset for R")
+    (description
+     "BASIX provides some efficient C/C++ implementations of native R
+procedures to speed up calculations in R.")
+    (license license:gpl2)))
+
+(define-public r-blockfest
+  (package
+    (name "r-blockfest")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "BlockFeST" version))
+       (sha256
+        (base32
+         "0hj7a5as7nxbgjac7lbj6qfwffx3g8x8phpf9a55f1c9cdzi73a5"))))
+    (properties `((upstream-name . "BlockFeST")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-basix" ,r-basix)))
+    (home-page "https://cran.r-project.org/web/packages/BlockFeST/")
+    (synopsis "Bayesian calculation of region-specific fixation index")
+    (description
+     "This package provides an R implementation of an extension of the
+BayeScan software for codominant markers, adding the option to group
+individual SNPs into pre-defined blocks.  A typical application of this new
+approach is the identification of genomic regions, genes, or gene sets
+containing one or more SNPs that evolved under directional selection.")
+    (license license:gpl2)))
+
+(define-public r-hash
+  (package
+    (name "r-hash")
+    (version "2.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hash" version))
+       (sha256
+        (base32
+         "0mkx59bmni3b283znvbndnkbar85fzavzdfgmwrhskidsqcz34yz"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/hash/")
+    (synopsis "Implementation of hash/associated arrays/dictionaries")
+    (description
+     "This package implements a data structure similar to hashes in Perl and
+dictionaries in Python but with a purposefully R flavor.  For objects of
+appreciable size, access using hashes outperforms native named lists and
+vectors.")
+    (license license:gpl2+)))
+
+(define-public r-proc
+  (package
+    (name "r-proc")
+    (version "1.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pROC" version))
+       (sha256
+        (base32
+         "05ad69a6fxy9k903cw3h4q59ch2jv6qfg9yjdbw3cgiiazcafrlj"))))
+    (properties `((upstream-name . "pROC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-plyr" ,r-plyr)
+       ("r-rcpp" ,r-rcpp)))
+    (home-page "http://expasy.org/tools/pROC/")
+    (synopsis "Display and analyze ROC curves")
+    (description
+     "This package provides tools for visualizing, smoothing and comparing
+receiver operating characteristic (ROC curves).  The area under the
+curve (AUC) can be compared with statistical tests based on U-statistics or
+bootstrap.  Confidence intervals can be computed for (p)AUC or ROC curves.")
+    (license license:gpl3+)))
+
+(define-public r-rootsolve
+  (package
+    (name "r-rootsolve")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rootSolve" version))
+       (sha256
+        (base32
+         "08ic6ggcc5dw4nv9xsqkm3vnvswmxyhnqnv1rdjv1h2gy1ivpcq8"))))
+    (properties `((upstream-name . "rootSolve")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/rootSolve/")
+    (synopsis "Tools for the analysis of ordinary differential equations")
+    (description
+     "This package provides routines to find the root of nonlinear functions,
+and to perform steady-state and equilibrium analysis of @dfn{ordinary
+differential equations} (ODE).  It includes routines that:
+
+@enumerate
+@item generate gradient and jacobian matrices (full and banded),
+@item find roots of non-linear equations by the Newton-Raphson method,
+@item estimate steady-state conditions of a system of (differential) equations
+  in full, banded or sparse form, using the Newton-Raphson method, or by
+  dynamically running,
+@item solve the steady-state conditions for uni- and multicomponent 1-D, 2-D,
+  and 3-D partial differential equations, that have been converted to ordinary
+  differential equations by numerical differencing (using the method-of-lines
+  approach).
+@end enumerate\n")
+    (license license:gpl2+)))

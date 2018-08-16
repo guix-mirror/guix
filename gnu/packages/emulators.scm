@@ -1175,7 +1175,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.199")
+    (version "0.200")
     (source
      (origin
        (method git-fetch)
@@ -1185,7 +1185,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0rb2k6dxss36jjalbpvj2xsqdwqyqy89qab7jpv8ig1y08dpg36n"))
+         "0ddw8635hdm21lgpf13k1vhfywy3460rwciv93vrqmpkq2dvpmib"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1211,6 +1211,17 @@ play them on systems for which they were never designed!")
        #:tests? #f                      ;no test in regular release
        #:phases
        (modify-phases %standard-phases
+         ;; Add missing include lines for "fmin" and "ceil" functions.
+         ;; Reported upstream.  Will be fixed in 0.201.
+         (add-after 'unpack 'add-missing-include
+           (lambda _
+             (substitute* "src/devices/cpu/mips/mips3.cpp"
+               (("#include \"ps2vu.h\"" all)
+                (string-append all "\n#include <cmath>")))
+             (substitute* "src/devices/cpu/mips/ps2vif1.cpp"
+               (("#include \"ps2vif1.h\"" all)
+                (string-append all "\n#include <cmath>")))
+             #t))
          (delete 'configure)
          (add-after 'build 'build-documentation
            (lambda _ (invoke "make" "-C" "docs" "man" "info")))

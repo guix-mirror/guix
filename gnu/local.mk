@@ -68,6 +68,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/attr.scm				\
   %D%/packages/audio.scm			\
   %D%/packages/augeas.scm			\
+  %D%/packages/authentication.scm		\
   %D%/packages/autogen.scm			\
   %D%/packages/autotools.scm			\
   %D%/packages/avahi.scm			\
@@ -485,6 +486,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/monitoring.scm			\
   %D%/services/networking.scm			\
   %D%/services/nfs.scm			\
+  %D%/services/security-token.scm		\
   %D%/services/shepherd.scm			\
   %D%/services/sound.scm			\
   %D%/services/herd.scm				\
@@ -539,6 +541,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/messaging.scm			\
   %D%/tests/networking.scm			\
   %D%/tests/rsync.scm				\
+  %D%/tests/security-token.scm			\
   %D%/tests/ssh.scm				\
   %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
@@ -565,6 +568,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegis-perl-tempdir2.patch           	\
   %D%/packages/patches/aegis-test-fixup-1.patch            	\
   %D%/packages/patches/aegis-test-fixup-2.patch            	\
+  %D%/packages/patches/aegisub-icu59-include-unistr.patch	\
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/ansible-wrap-program-hack.patch		\
@@ -609,6 +613,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
   %D%/packages/patches/classpath-aarch64-support.patch		\
+  %D%/packages/patches/clementine-fix-sqlite.patch		\
   %D%/packages/patches/clementine-remove-crypto++-dependency.patch	\
   %D%/packages/patches/clementine-use-openssl.patch		\
   %D%/packages/patches/clisp-glibc-2.26.patch			\
@@ -712,6 +717,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-CVE-2018-5711.patch			\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-freetype-test-failure.patch		\
+  %D%/packages/patches/gdm-CVE-2018-14424.patch			\
   %D%/packages/patches/gemma-intel-compat.patch			\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch \
@@ -996,8 +1002,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.0.2-CVE-2018-0495.patch	\
   %D%/packages/patches/openssl-1.0.2-CVE-2018-0732.patch	\
-  %D%/packages/patches/openssl-1.1.0-CVE-2018-0495.patch	\
-  %D%/packages/patches/openssl-1.1.0-CVE-2018-0732.patch	\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
@@ -1092,7 +1096,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
-  %D%/packages/patches/qemu-CVE-2018-11806.patch 		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
   %D%/packages/patches/qtoctave-qt-5.11-fix.patch		\
@@ -1161,7 +1164,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/tipp10-fix-compiling.patch		\
   %D%/packages/patches/tipp10-remove-license-code.patch		\
   %D%/packages/patches/tk-find-library.patch			\
-  %D%/packages/patches/translate-shell-fix-curl-tests.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\

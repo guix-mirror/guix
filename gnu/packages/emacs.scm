@@ -10025,8 +10025,8 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-racket-mode
-  (let ((commit "48f0cb99d3b2ca6066249546d2063d85437251c1")
-        (revision "1"))
+  (let ((commit "1b78827d310b6d655782b7bba0f2360c9ef34ff6")
+        (revision "2"))
     (package
       (name "emacs-racket-mode")
       (version (string-append "0.0.2" "-" revision "."
@@ -10040,7 +10040,7 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0fxky8xj639bjhiab9way9daqda22301b7w85vm4b4ydgjgnc59x"))))
+           "04mzxcg32av8p6v0pqb0si6qk5qxbrbllx6m3j16fp32bdz71sps"))))
       (build-system emacs-build-system)
       (arguments
        `(#:include '("\\.el$" "\\.rkt$")))
@@ -10197,10 +10197,10 @@ keep Parens and Indentation inline with one another.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-eww
-  (let ((commit "1a09f11b2376dec8237df40140f056be8a256ef0"))
+  (let ((commit "9d36acc433bcf689598b1b4d7d47c9aeb84d6b44"))
     (package
       (name "emacs-helm-eww")
-      (version (git-version "0.1" "2" commit))
+      (version (git-version "0.1" "3" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -10209,7 +10209,7 @@ keep Parens and Indentation inline with one another.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1kqdjhz2xiqw3bxjhfl9namhqrkbc2x70gcv6ljljya5hbkm62sm"))))
+                  "06gnf84gx6qbhcw1h5jhjnvcdxkdpv0npm53x3pgqybbll5rn5dy"))))
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)))
       (build-system emacs-build-system)

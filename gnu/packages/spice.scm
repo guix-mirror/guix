@@ -148,7 +148,7 @@ which allows users to view a desktop computing environment.")
 (define-public spice-gtk
   (package
     (name "spice-gtk")
-    (version "0.34")
+    (version "0.35")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -156,7 +156,7 @@ which allows users to view a desktop computing environment.")
                 "spice-gtk-" version ".tar.bz2"))
               (sha256
                (base32
-                "1vknp72pl6v6nf3dphhwp29hk6gv787db2pmyg4m312z2q0hwwp9"))))
+                "11lymg467gvj5ys8k22ihnfbxjn4x34ygyzirpg2nphjwlyhgrml"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("gstreamer" ,gstreamer)
@@ -302,7 +302,7 @@ resolution scaling on graphical console window resize.")
 (define-public virt-viewer
   (package
     (name "virt-viewer")
-    (version "6.0")
+    (version "7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -310,7 +310,7 @@ resolution scaling on graphical console window resize.")
                 "virt-viewer-" version ".tar.gz"))
               (sha256
                (base32
-                "1chqrf658niivzfh85cbwkbv9vyg8sv1mv3i31vawkfsfdvvsdwh"))))
+                "00y9vi69sja4pkrfnvrkwsscm41bqrjzvp8aijb20pvg6ymczhj7"))))
     (build-system gnu-build-system)
     (inputs
       `(("gtk+" ,gtk+)

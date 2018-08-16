@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -238,7 +238,8 @@ score, keyboard, guitar, drum and controller views.")
                       "tinysvcmdns"))
                     #t))
                 (patches (search-patches "clementine-use-openssl.patch"
-                                         "clementine-remove-crypto++-dependency.patch"))))
+                                         "clementine-remove-crypto++-dependency.patch"
+                                         "clementine-fix-sqlite.patch"))))
       (build-system cmake-build-system)
       (arguments
        '(#:test-target "clementine_test"
@@ -271,6 +272,8 @@ score, keyboard, guitar, drum and controller views.")
          ("glu" ,glu)
          ("gstreamer" ,gstreamer)
          ("gst-plugins-base" ,gst-plugins-base)
+         ("gst-plugins-good" ,gst-plugins-good)
+         ("gst-libav" ,gst-libav)
          ("libcdio" ,libcdio)
          ("libmygpo-qt" ,libmygpo-qt)
          ;; TODO: Package libgpod.
@@ -281,8 +284,7 @@ score, keyboard, guitar, drum and controller views.")
          ("pulseaudio" ,pulseaudio)
          ("qtbase" ,qtbase)
          ("qtx11extras" ,qtx11extras)
-         ("qtwebkit" ,qtwebkit)
-         ("sqlite" ,sqlite-with-fts3)
+         ("sqlite" ,sqlite)
          ("sparsehash" ,sparsehash)
          ("taglib" ,taglib)))
       (home-page "http://clementine-player.org")
@@ -4220,3 +4222,39 @@ discard.
 discard bad quality ones.
 @end itemize\n")
       (license license:expat))))
+
+(define-public lpd8editor
+  (package
+    (name "lpd8editor")
+    (version "0.0.12")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/charlesfleche/lpd8editor.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1v3fz8h1zs7kkl80faah79pp6yqwz0j7bkv3dbmh2hp42zbfiz1q"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'setenv
+           (lambda _
+             (setenv "INSTALL_PREFIX"
+                     (assoc-ref %outputs "out"))))
+         (delete 'configure) ; no configure script
+         (add-before 'build 'qmake
+           (lambda _ (invoke "qmake"))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (synopsis "Graphical editor for the Akai LPD8 MIDI controller")
+    (description "lpd8editor is a graphical patch editor for the Akai LPD8 MIDI
+controller.")
+    (home-page "https://github.com/charlesfleche/lpd8editor")
+    (license license:expat)))

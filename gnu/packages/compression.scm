@@ -237,8 +237,10 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
     (version "1.0.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.bzip.org/" version "/bzip2-"
-                                  version ".tar.gz"))
+              ;; XXX The bzip.org domain was allowed to expire.
+              (uri (string-append "https://web.archive.org/web/20180624184806/"
+                                  "http://www.bzip.org/"
+                                  version "/bzip2-" version ".tar.gz"))
               (sha256
                (base32
                 "1kfrc7f0ja9fdn6j1y6yir6li818npy6217hvr3wzmnmzhs8z152"))))
@@ -316,7 +318,7 @@ being around twice as fast at compression and six times faster at
 decompression.")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))
-    (home-page "http://www.bzip.org/")))
+    (home-page "https://web.archive.org/web/20180801004107/http://www.bzip.org/")))
 
 (define-public lbzip2
   (package
@@ -428,14 +430,14 @@ format are designed to be portable across platforms.")
 (define-public python-lzo
   (package
     (name "python-lzo")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-lzo" version))
        (sha256
         (base32
-         "11p3ifg14p086byhhin6azx5svlkg8dzw2b5abixik97xd6fm81q"))))
+         "0iakqgd51n1cd7r3lpdylm2rgbmd16y74cra9kcapwg84mlf9a4p"))))
     (build-system python-build-system)
     (arguments
      `(#:test-target "check"
@@ -673,7 +675,7 @@ decompression of some loosely related file formats used by Microsoft.")
          "081mpkjy688lg48997fqh3d7ja12vazmz02fw84495civg4vb4l6"))))
     (build-system perl-build-system)
     ;; TODO: Use our bzip2 package.
-    (home-page "http://search.cpan.org/dist/Compress-Raw-Bzip2")
+    (home-page "https://metacpan.org/release/Compress-Raw-Bzip2")
     (synopsis "Low-level interface to bzip2 compression library")
     (description "This module provides a Perl interface to the bzip2
 compression library.")
@@ -708,7 +710,7 @@ LIB = ~:*~a/lib
 OLD_ZLIB = False
 GZIP_OS_CODE = AUTO_DETECT"
                                  (assoc-ref inputs "zlib")))))))))
-    (home-page "http://search.cpan.org/dist/Compress-Raw-Zlib")
+    (home-page "https://metacpan.org/release/Compress-Raw-Zlib")
     (synopsis "Low-level interface to zlib compression library")
     (description "This module provides a Perl interface to the zlib
 compression library.")
@@ -730,7 +732,7 @@ compression library.")
     (propagated-inputs
      `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.081
        ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.081
-    (home-page "http://search.cpan.org/dist/IO-Compress")
+    (home-page "https://metacpan.org/release/IO-Compress")
     (synopsis "IO Interface to compressed files/buffers")
     (description "IO-Compress provides a Perl interface to allow reading and
 writing of compressed data created with the zlib and bzip2 libraries.")
@@ -797,14 +799,14 @@ the LZ4 frame format.")
 (define-public python-lzstring
   (package
     (name "python-lzstring")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "lzstring" version))
        (sha256
         (base32
-         "1d3ck454y41mii0gcjabpmp2skb7n0f9zk232gycqdv8z2jxakfm"))))
+         "18ly9pppy2yspxzw7k1b23wk77k7m44rz2g0271bqgqrk3jn3yhs"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-future" ,python-future)))
@@ -1926,7 +1928,7 @@ recreates the stored directory structure by default.")
     (synopsis  "Provides an interface to Zip archive files")
     (description "The @code{Archive::Zip} module allows a Perl program to
 create, manipulate, read, and write Zip archive files.")
-    (home-page "http://search.cpan.org/dist/Archive-Zip/")
+    (home-page "https://metacpan.org/release/Archive-Zip")
     (license license:perl-license)))
 
 (define-public libzip
@@ -2002,7 +2004,7 @@ of archives.")
         (base32
          "1x15j1q6w6z8hqyqgap0lz4qbq2174wfhksy1fdd653ccbaw5jr5"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Archive-Extract/")
+    (home-page "https://metacpan.org/release/Archive-Extract")
     (synopsis "Generic archive extracting mechanism")
     (description "It allows you to extract any archive file of the type .tar,
 .tar.gz, .gz, .Z, tar.bz2, .tbz, .bz2, .zip, .xz,, .txz, .tar.xz or .lzma

@@ -27,7 +27,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
@@ -398,7 +398,7 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.8")
+    (version "1.5.10")
     (source
      (origin
        (method url-fetch)
@@ -406,14 +406,14 @@ mapping from string keys to string values.")
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
         (base32
-         "1ppnhsqv9047vm0rrmqla56y972f8qqjdb780iz6v922jjcc723k"))))
+         "0jqw3z0408yx0lzc6ykn4d29n02dk31kqnmq9b3ldmcnpl6hck29"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
        ("cyrus-sasl" ,cyrus-sasl)))
     (home-page "https://memcached.org/")
-    (synopsis "In memory caching service")
-    (description "Memcached is a in memory key value store.  It has a small
+    (synopsis "In-memory caching service")
+    (description "Memcached is an in-memory key-value store.  It has a small
 and generic API, and was originally intended for use with dynamic web
 applications.")
     (license license:bsd-3)))
@@ -555,11 +555,11 @@ RDBMS systems (which are deep in functionality).")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
-                          "http://dev.mysql.com/get/Downloads/MySQL-"
+                          "https://dev.mysql.com/get/Downloads/MySQL-"
                           (version-major+minor version) "/"
                           name "-" version ".tar.gz")
                         (string-append
-                          "http://downloads.mysql.com/archives/get/file/"
+                          "https://downloads.mysql.com/archives/get/file/"
                           name "-" version ".tar.gz")))
              (sha256
               (base32
@@ -616,7 +616,7 @@ RDBMS systems (which are deep in functionality).")
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
-    (home-page "http://www.mysql.com/")
+    (home-page "https://www.mysql.com/")
     (synopsis "Fast, easy to use, and popular database")
     (description
      "MySQL is a fast, reliable, and easy to use relational database
@@ -1159,20 +1159,6 @@ is in the public domain.")
        ((#:configure-flags flags)
         `(cons "--enable-fts5" ,flags))))))
 
-;; This is used by Clementine.
-(define-public sqlite-with-fts3
-  (package (inherit sqlite)
-    (name "sqlite-with-fts3")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                              "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                              "-DSQLITE_ENABLE_DBSTAT_VTAB "
-                              "-DSQLITE_ENABLE_FTS3 "
-                              "-DSQLITE_ENABLE_FTS3_PARENTHESIS "
-                              "-DSQLITE_ENABLE_FTS3_TOKENIZER")))))))
-
 (define-public tdb
   (package
     (name "tdb")
@@ -1225,7 +1211,7 @@ extremely small.")
     (build-system perl-build-system)
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
-    (home-page "http://search.cpan.org/dist/DBI")
+    (home-page "https://metacpan.org/release/DBI")
     (license license:perl-license)))
 
 (define-public perl-dbix-class
@@ -1271,7 +1257,7 @@ extremely small.")
        ("perl-sub-name" ,perl-sub-name)
        ("perl-text-balanced" ,perl-text-balanced)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/DBIx-Class")
+    (home-page "https://metacpan.org/release/DBIx-Class")
     (synopsis "Extensible and flexible object <-> relational mapper")
     (description "An SQL to OO mapper with an object API inspired by
 Class::DBI (with a compatibility layer as a springboard for porting) and a
@@ -1303,7 +1289,7 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
     (propagated-inputs
      `(("perl-carp-clan" ,perl-carp-clan)
        ("perl-dbix-class" ,perl-dbix-class)))
-    (home-page "http://search.cpan.org/dist/DBIx-Class-Cursor-Cached")
+    (home-page "https://metacpan.org/release/DBIx-Class-Cursor-Cached")
     (synopsis "Cursor with built-in caching support")
     (description "DBIx::Class::Cursor::Cached provides a cursor class with
 built-in caching support.")
@@ -1326,7 +1312,7 @@ built-in caching support.")
      `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-dbix-class" ,perl-dbix-class)))
-    (home-page "http://search.cpan.org/dist/DBIx-Class-IntrospectableM2M")
+    (home-page "https://metacpan.org/release/DBIx-Class-IntrospectableM2M")
     (synopsis "Introspect many-to-many relationships")
     (description "Because the many-to-many relationships are not real
 relationships, they can not be introspected with DBIx::Class.  Many-to-many
@@ -1385,7 +1371,7 @@ introspected and examined.")
        ("perl-sub-name" ,perl-sub-name)
        ("perl-try-tiny" ,perl-try-tiny)))
     (arguments `(#:tests? #f))          ;TODO: t/20invocations.t fails
-    (home-page "http://search.cpan.org/dist/DBIx-Class-Schema-Loader")
+    (home-page "https://metacpan.org/release/DBIx-Class-Schema-Loader")
     (synopsis "Create a DBIx::Class::Schema based on a database")
     (description "DBIx::Class::Schema::Loader automates the definition of a
 DBIx::Class::Schema by scanning database table definitions and setting up the
@@ -1410,7 +1396,7 @@ columns, primary keys, unique constraints and relationships.")
     (propagated-inputs
      `(("perl-dbi" ,perl-dbi)
        ("postgresql" ,postgresql)))
-    (home-page "http://search.cpan.org/dist/DBD-Pg")
+    (home-page "https://metacpan.org/release/DBD-Pg")
     (synopsis "DBI PostgreSQL interface")
     (description "This package provides a PostgreSQL driver for the Perl5
 @dfn{Database Interface} (DBI).")
@@ -1435,7 +1421,7 @@ columns, primary keys, unique constraints and relationships.")
     (propagated-inputs
      `(("perl-dbi" ,perl-dbi)
        ("mysql" ,mysql)))
-    (home-page "http://search.cpan.org/dist/DBD-mysql")
+    (home-page "https://metacpan.org/release/DBD-mysql")
     (synopsis "DBI MySQL interface")
     (description "This package provides a MySQL driver for the Perl5
 @dfn{Database Interface} (DBI).")
@@ -1462,7 +1448,7 @@ the entire thing in the distribution.  So in order to get a fast transaction
 capable RDBMS working for your Perl project you simply have to install this
 module, and nothing else.")
     (license license:perl-license)
-    (home-page "http://search.cpan.org/~ishigaki/DBD-SQLite/lib/DBD/SQLite.pm")))
+    (home-page "https://metacpan.org/release/DBD-SQLite")))
 
 (define-public perl-sql-abstract
   (package
@@ -1487,7 +1473,7 @@ module, and nothing else.")
        ("perl-moo" ,perl-moo)
        ("perl-mro-compat" ,perl-mro-compat)
        ("perl-text-balanced" ,perl-text-balanced)))
-    (home-page "http://search.cpan.org/dist/SQL-Abstract")
+    (home-page "https://metacpan.org/release/SQL-Abstract")
     (synopsis "Generate SQL from Perl data structures")
     (description "This module was inspired by the excellent DBIx::Abstract.
 While based on the concepts used by DBIx::Abstract, the concepts used have
@@ -1517,7 +1503,7 @@ time your data changes.")
        ("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-regexp-common" ,perl-regexp-common)
        ("perl-sql-tokenizer" ,perl-sql-tokenizer)))
-    (home-page "http://search.cpan.org/dist/SQL-SplitStatement")
+    (home-page "https://metacpan.org/release/SQL-SplitStatement")
     (synopsis "Split SQL code into atomic statements")
     (description "This module tries to split any SQL code, even including
 non-standard extensions, into the atomic statements it is composed of.")
@@ -1536,7 +1522,7 @@ non-standard extensions, into the atomic statements it is composed of.")
         (base32
          "1qa2dfbzdlr5qqdam9yn78z5w3al5r8577x06qan8wv58ay6ka7s"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/SQL-Tokenizer")
+    (home-page "https://metacpan.org/release/SQL-Tokenizer")
     (synopsis "SQL tokenizer")
     (description "SQL::Tokenizer is a tokenizer for SQL queries.  It does not
 claim to be a parser or query verifier.  It just creates sane tokens from a
@@ -1757,7 +1743,7 @@ database.  Various higher level database abstractions.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.841")
+  (version "1.842")
   (source
     (origin
       (method url-fetch)
@@ -1767,7 +1753,7 @@ database.  Various higher level database abstractions.")
              ".tar.gz"))
       (sha256
         (base32
-          "11fks42kgscpia0mxx4lc9krm7q4gv6w7m5h3m2jr3dl7viv36hn"))))
+          "0w2d99vs9qarng2f9fpg3gchfdzy6an13507jhclcl8wv183h5hg"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
@@ -1779,7 +1765,7 @@ database.  Various higher level database abstractions.")
                      (substitute* "config.in"
                        (("/usr/local/BerkeleyDB") (assoc-ref inputs "bdb")))
                      #t)))))
-  (home-page "http://search.cpan.org/dist/DB_File")
+  (home-page "https://metacpan.org/release/DB_File")
   (synopsis
     "Perl5 access to Berkeley DB version 1.x")
   (description

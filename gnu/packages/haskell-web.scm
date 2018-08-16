@@ -36,17 +36,15 @@
 (define-public ghc-tagsoup
   (package
     (name "ghc-tagsoup")
-    (version "0.14.3")
+    (version "0.14.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/tagsoup/tagsoup-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/tagsoup/"
+                           "tagsoup-" version ".tar.gz"))
        (sha256
         (base32
-         "00j2rm2sx0syn16kg2402fz4k8yqfl9knmi367jsiycds1q9zzf9"))))
+         "1yv3dbyb0i1yqm796jgc4jj5kxkla1sxb3b2klw5ks182kdx8kjb"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-text" ,ghc-text)))
     (native-inputs
@@ -93,20 +91,42 @@ for screen-scraping.")
     (description "HTTP cookie parsing and rendering library for Haskell.")
     (license license:bsd-3)))
 
-(define-public ghc-http-types
+(define-public ghc-httpd-shed
   (package
-    (name "ghc-http-types")
-    (version "0.11")
+    (name "ghc-httpd-shed")
+    (version "0.4.0.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/http-types/http-types-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/httpd-shed/"
+                           "httpd-shed-" version ".tar.gz"))
        (sha256
         (base32
-         "08w30rf1i7kbh2j1iajqmj6yhhmglnb8kjggc8kdni3xahhrgcss"))))
+         "064jy1mqhnf1hvq6s04wlhmp916rd522x58djb9qixv13vc8gzxh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-network" ,ghc-network)))
+    (home-page "https://hackage.haskell.org/package/httpd-shed")
+    (synopsis "Simple web-server with an interact style API")
+    (description
+     "This web server promotes a function from @code{Request} to @code{IO
+Response} into a local web server.  The user can decide how to interpret the
+requests, and the library is intended for implementing Ajax APIs.")
+    (license license:bsd-3)))
+
+(define-public ghc-http-types
+  (package
+    (name "ghc-http-types")
+    (version "0.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/http-types/"
+                           "http-types-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wv9k6nlvkdsxwlr7gaynphvzmvi5211gvwq96mbcxgk51a739rz"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-doctest" ,ghc-doctest)
@@ -127,29 +147,36 @@ both client and server code).")
 (define-public ghc-http
   (package
     (name "ghc-http")
-    (version "4000.3.3")
+    (version "4000.3.12")
     (outputs '("out" "doc"))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/HTTP/HTTP-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/HTTP/"
+                           "HTTP-" version ".tar.gz"))
        (sha256
         (base32
-         "1wlvvqcxsnd2is3khsla0vd8i9cy12v1pg6d6i13ihcd131a7bdv"))))
+         "140r6qy1ay25piv0z3hih11zhigyi08nkwc32097j43pjff6mzx3"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)))
+     `(("ghc-httpd-shed" ,ghc-httpd-shed)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
     (inputs
-     `(("ghc-old-time" ,ghc-old-time)
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-old-time" ,ghc-old-time)
        ("ghc-parsec" ,ghc-parsec)
+       ("ghc-puremd5" ,ghc-puremd5)
        ("ghc-mtl" ,ghc-mtl)
        ("ghc-network" ,ghc-network)
-       ("ghc-network-uri" ,ghc-network-uri)))
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-split" ,ghc-split)))
     (arguments
-     `(#:tests? #f))  ; FIXME: currently missing libraries used for tests.
+     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
     (home-page "https://github.com/haskell/HTTP")
     (synopsis "Library for client-side HTTP")
     (description
@@ -161,7 +188,7 @@ responses coming back.")
 (define-public ghc-http-client
   (package
     (name "ghc-http-client")
-    (version "0.5.7.1")
+    (version "0.5.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -169,27 +196,28 @@ responses coming back.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19cvnnfcjj2m3pgs6ivyjs21rw9wx5ynarh6hvb27a76cscai2fy"))))
+                "0szwbgvkkdz56lgi91armkagmb7nnfwbpp4j7cm9zhmffv3ba8g1"))))
     (build-system haskell-build-system)
     ;; Tests require access to the web.
     (arguments `(#:tests? #f))
     (inputs
-     `(("ghc-text" ,ghc-text)
-       ("ghc-http-types" ,ghc-http-types)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-data-default-class" ,ghc-data-default-class)
-       ("ghc-network" ,ghc-network)
-       ("ghc-streaming-commons" ,ghc-streaming-commons)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
+     `(("ghc-async" ,ghc-async)
        ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-cookie" ,ghc-cookie)
+       ("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-random" ,ghc-random)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-memory" ,ghc-memory)
        ("ghc-mime-types" ,ghc-mime-types)
-       ("ghc-network-uri" ,ghc-network-uri)
        ("ghc-monad-control" ,ghc-monad-control)
-       ("ghc-zlib" ,ghc-zlib)
-       ("ghc-async" ,ghc-async)))
+       ("ghc-network" ,ghc-network)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-random" ,ghc-random)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-text" ,ghc-text)
+       ("ghc-zlib" ,ghc-zlib)))
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)))
     (home-page "https://github.com/snoyberg/http-client")
@@ -297,15 +325,16 @@ and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
 (define-public ghc-http-conduit
   (package
     (name  "ghc-http-conduit")
-    (version "2.2.4")
+    (version "2.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "http-conduit-" version "/" "http-conduit-"
                            version ".tar.gz"))
-       (sha256 (base32
-                "1wcl3lpg4v1ylq9j77j9fmf6l9qbmp8dmj3a9829q19q6bbgza7l"))))
+       (sha256
+        (base32
+         "1iay4hr0mj8brkxvgkv1liqa8irl9axfc3qhn8qsvcyq4n1l95km"))))
     (build-system haskell-build-system)
     ;; FIXME: `httpLbs TLS` in test-suite `test` fails with
     ;; ConnectionFailure getProtocolByName: does not exist (no such protocol
@@ -322,7 +351,8 @@ and HPACK.  Currently HTTP/2 16 framing and HPACK 10 is supported.")
        ("ghc-http-client-tls" ,ghc-http-client-tls)
        ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-mtl" ,ghc-mtl)
-       ("ghc-exceptions" ,ghc-exceptions)))
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-unliftio" ,ghc-unliftio)))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-hspec" ,ghc-hspec)
@@ -714,7 +744,8 @@ Strict, Transitional and Frameset variants.")
          "0r0acv47nh75bmf7kjyfvhcwz8f02rn9x0a1l80pzgyczfrsmkmf"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
+     `(#:configure-flags (list "--allow-newer=QuickCheck"
+                               "--allow-newer=HUnit")))
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)

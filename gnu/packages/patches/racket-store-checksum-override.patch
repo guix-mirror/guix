@@ -1,0 +1,42 @@
+Racket uses checksums to test if it needs to recompile its source
+files to bytecode.  If Racket is updated by grafting, the source and
+bytecode files get updated, but the checksum stays the same.  Since
+the checksum no longer matches the source file, Racket tries to
+regenerate the bytecode and write it to the store, causing errors
+because the store is immutable.  This patch makes Racket ignore
+checksums for files in the store.
+
+See <https://debbugs.gnu.org/30680> for details.
+
+diff -ruN racket-6.12/collects/compiler/cm.rkt racket-6.12-patched/collects/compiler/cm.rkt
+--- racket-6.12/collects/compiler/cm.rkt	1969-12-31 19:00:00.000000000 -0500
++++ racket-6.12-patched/collects/compiler/cm.rkt	2018-08-12 06:36:46.061142149 -0400
+@@ -7,6 +7,7 @@
+          racket/list
+          racket/path
+          racket/promise
++         racket/string
+          openssl/sha1
+          racket/place
+          setup/collects
+@@ -627,6 +628,10 @@
+       #f
+       (list src-hash recorded-hash)))
+ 
++(define (store-reference? path)
++  (let ([store-prefix (or (getenv "NIX_STORE") "/gnu/store")])
++    (string-prefix? (path->string path) store-prefix)))
++
+ (define (rkt->ss p)
+   (if (path-has-extension? p #".rkt")
+       (path-replace-extension p #".ss")
+@@ -679,7 +684,8 @@
+               (trace-printf "newer src... ~a > ~a" path-time path-zo-time)
+               ;; If `sha1-only?', then `maybe-compile-zo' returns a #f or thunk:
+               (maybe-compile-zo sha1-only? deps path->mode roots path orig-path read-src-syntax up-to-date collection-cache new-seen)]
+-             [(different-source-sha1-and-dep-recorded path deps)
++             [(and (not (store-reference? path))
++                   (different-source-sha1-and-dep-recorded path deps))
+               => (lambda (difference)
+                    (trace-printf "different src hash... ~a" difference)
+                    ;; If `sha1-only?', then `maybe-compile-zo' returns a #f or thunk:

@@ -1179,7 +1179,7 @@ manually by a user.")
        ("xdg-user-dirs" ,xdg-user-dirs)))
     (propagated-inputs
      `(("perl-ipc-system-simple" ,perl-ipc-system-simple)))
-    (home-page "http://search.cpan.org/dist/File-BaseDir/")
+    (home-page "https://metacpan.org/release/File-BaseDir")
     (synopsis "Use the Freedesktop.org base directory specification")
     (description
      "@code{File::Basedir} can be used to find directories and files as
@@ -1207,7 +1207,7 @@ application data and cache data.")
     (propagated-inputs
      `(("perl-file-basedir" ,perl-file-basedir)
        ("perl-uri" ,perl-uri)))
-    (home-page "http://search.cpan.org/~michielb/File-DesktopEntry/")
+    (home-page "https://metacpan.org/release/File-DesktopEntry")
     (synopsis "Handle @file{.desktop} files")
     (description
      "@code{File::DesktopEntry} parses @file{.desktop} files defined by the
@@ -1218,7 +1218,7 @@ applications define in those files.")
 (define-public perl-file-mimeinfo
   (package
     (name "perl-file-mimeinfo")
-    (version "0.28")
+    (version "0.29")
     (source
      (origin
        (method url-fetch)
@@ -1226,7 +1226,7 @@ applications define in those files.")
                            "File-MimeInfo-" version ".tar.gz"))
        (sha256
         (base32
-         "1ipbh63bkh1r2gy5g7q4bzhki8j29mm1jkhbv60p9vwsdys5s91a"))))
+         "1sh8r6vczyz08zm8vfsjmkg6a165wch54akjdrd1vbifcmwjg5pi"))))
     (build-system perl-build-system)
     ;; If the tests are fixed, add perl-test-pod, perl-test-pod-coverage, and
     ;; perl-test-tiny as native-inputs.
@@ -1249,7 +1249,7 @@ applications define in those files.")
                                                 "/lib/perl5/site_perl")))))
                          '("mimeopen" "mimetype")))
              #t)))))
-    (home-page "http://search.cpan.org/dist/File-MimeInfo/")
+    (home-page "https://metacpan.org/release/File-MimeInfo")
     (synopsis "Determine file type from the file name")
     (description
      "@code{File::Mimeinfo} can be used to determine the MIME type of a file.

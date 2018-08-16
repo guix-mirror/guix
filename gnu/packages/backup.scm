@@ -484,13 +484,14 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.6")
+    (version "1.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
        (sha256
-        (base32 "0c09j46fi8i7klas0bh82a4whlwnajshk0izkgax6fjxr1sf9lm1"))
+        (base32
+         "1p3zia62vyg9vadkdjzzkzbj4dmgijr7ix5lmhfbxpwy5q9imdgp"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -848,7 +849,7 @@ is like a time machine for your data. ")
 (define-public restic
   (package
     (name "restic")
-    (version "0.9.1")
+    (version "0.9.2")
     ;; TODO Try packaging the bundled / vendored dependencies in the 'vendor/'
     ;; directory.
     (source (origin
@@ -859,7 +860,7 @@ is like a time machine for your data. ")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15f0rsm2lxk4lmn4773q28g49p68pqyyx0ccp7r556asan73p79m"))))
+                "15bwkydxcg4xhrnqxvxji8wacrsndb1a6frj98wggfaijqzfx3lg"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/restic/restic"

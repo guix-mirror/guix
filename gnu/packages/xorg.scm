@@ -5725,7 +5725,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "333")
+    (version "335")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -5735,7 +5735,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
                                    name "-" version ".tgz")))
               (sha256
                (base32
-                "0y7gl26mxw6kwqx9j9mi6lx1lp1v3nrlga19ddn07j2m9q0l479g"))))
+                "15nbgys4s2idhx6jzzc24g9bb1s6yps5fyg2bafvs0gkkcm1ggz0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -5845,8 +5845,7 @@ interface to its methods (using @code{Mouse}).")
     (description
      "X11::Protocol is a client-side interface to the X11 Protocol, allowing
 perl programs to display windows and graphics on X11 servers.")
-    (home-page
-     (string-append "https://metacpan.org/release/SMCCAM/X11-Protocol-" version))
+    (home-page "https://metacpan.org/release/X11-Protocol")
     ;; From the package README: "you can redistribute and/or modify it under
     ;; the same terms as Perl itself. (As an exception, the file
     ;; Keysyms.pm,which is derived from a file in the standard X11

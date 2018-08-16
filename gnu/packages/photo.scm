@@ -216,7 +216,7 @@ MTP, and much more.")
                     (lib (dirname (dirname (car pm)))))
                (wrap-program (string-append out "/bin/exiftool")
                              `("PERL5LIB" prefix (,lib)))))))))
-    (home-page "http://search.cpan.org/dist/Image-ExifTool")
+    (home-page "https://metacpan.org/release/Image-ExifTool")
     (synopsis "Program and Perl library to manipulate EXIF and other metadata")
     (description "This package provides the @code{exiftool} command and the
 @code{Image::ExifTool} Perl library to manipulate EXIF tags of digital images
