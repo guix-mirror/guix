@@ -2181,6 +2181,9 @@ and web services platform functionality.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("mariadb" ,mariadb)
+       ;; FIXME: This should be propagated from MariaDB, but add it here
+       ;; for now to prevent a large rebuild.
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-dbi" ,r-dbi)))
