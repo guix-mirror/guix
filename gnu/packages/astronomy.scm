@@ -166,7 +166,7 @@ programs for the manipulation and analysis of astronomical data.")
                       (setenv "QT_QPA_PLATFORM" "offscreen")
                       (setenv "HOME" "/tmp")
                       #t)))))
-    (home-page "http://stellarium.org/")
+    (home-page "https://stellarium.org/")
     (synopsis "3D sky viewer")
     (description "Stellarium is a planetarium.  It shows a realistic sky in
 3D, just like what you see with the naked eye, binoculars, or a telescope.  It
