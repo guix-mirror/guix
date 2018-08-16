@@ -649,14 +649,14 @@ Shell (pdksh).")
 (define-public oil-shell
   (package
     (name "oil-shell")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.oilshell.org/download/oil-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ca68n46mhibarpfinqfkim6p3xmbz5rrpl4qr3sj9y0q6wm7sa2"))))
+                "03zc7rhhpl0cybng2i3c33pky1knsnyvn526bn91hg6w4znvn66w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; the tests are not distributed in the tarballs
