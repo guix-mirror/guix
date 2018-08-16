@@ -738,7 +738,7 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.43.6")
+    (version "1.44.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -747,8 +747,7 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "00ilv65dzcgiap435j89xk86shf7rrav3wsik7cahy789qijdcn9"))
-             (patches (search-patches "e2fsprogs-glibc-2.27.patch"))))
+               "1djb9qnid1j0vvna2bhq4jsz2ig1xckbx7h4d86cr0gl61yrz2ax"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -862,14 +861,16 @@ from the e2fsprogs package.  It is meant to be used in initrds.")
   (package
     (name "extundelete")
     (version "0.2.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/extundelete/"
-                                  "extundelete/" version "/extundelete-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "1x0r7ylxlp9lbj3d7sqf6j2a222dwy2nfpff05jd6mkh4ihxvyd1"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/extundelete/"
+                           "extundelete/" version "/extundelete-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "1x0r7ylxlp9lbj3d7sqf6j2a222dwy2nfpff05jd6mkh4ihxvyd1"))
+       (patches (search-patches "extundelete-e2fsprogs-1.44.patch"))))
     (build-system gnu-build-system)
     (inputs `(("e2fsprogs" ,e2fsprogs)))
     (home-page "http://extundelete.sourceforge.net/")
