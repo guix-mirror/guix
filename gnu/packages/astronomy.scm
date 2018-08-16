@@ -135,7 +135,6 @@ programs for the manipulation and analysis of astronomical data.")
              (uri (string-append "https://github.com/Stellarium/" name
                                  "/releases/download/v" version
                                  "/" name "-" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "0vjkwrjy22b4wdjkafm63pmb0fck14ffnylpq8xr91ywycw4blrq"))))
