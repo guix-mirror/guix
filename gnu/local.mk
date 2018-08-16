@@ -1097,7 +1097,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
-  %D%/packages/patches/qtoctave-qt-5.11-fix.patch		\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\

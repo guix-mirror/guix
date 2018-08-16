@@ -1350,12 +1350,12 @@ can solve two kinds of problems:
 @end enumerate\n")
     (license license:bsd-3)))
 
-;; For a fully featured Octave, users  are strongly recommended also to install
+;; For a fully featured Octave, users are strongly recommended also to install
 ;; the following packages: less, ghostscript, gnuplot.
 (define-public octave
   (package
     (name "octave")
-    (version "4.4.0")
+    (version "4.4.1")
     (source
      (origin
       (method url-fetch)
@@ -1363,7 +1363,7 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "0nm766737gbkq9wqry54a026k3dg7rb1065kngfpwgjz8b544xbp"))))
+        "0jsdgizlv02an2ppfjwk5qf209zpwi3317yb7jvlsjzxnir3lvhy"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
@@ -1433,10 +1433,7 @@ script files.")
   (package (inherit octave)
     (name "qtoctave")
     (source (origin
-              (inherit (package-source octave))
-              (patches (append (origin-patches (package-source octave))
-                               (search-patches
-                                "qtoctave-qt-5.11-fix.patch")))))
+              (inherit (package-source octave))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("qt" ,qtbase)
