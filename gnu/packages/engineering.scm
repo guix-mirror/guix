@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -680,24 +681,19 @@ language.")
 (define-public ao
   (deprecated-package "ao-cad" libfive))
 
-;; We use kicad from a git commit, because support for boost 1.61.0 has been
-;; recently added.
 (define-public kicad
-  (let ((commit "5f4599fb56da4dd748845ab10abec02961d477f3")
-        (revision "2"))
     (package
       (name "kicad")
-      (version (string-append "4.0-" revision "."
-                              (string-take commit 7)))
+      (version "5.0.0")
       (source
        (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://git.launchpad.net/kicad")
-               (commit commit)))
+         (method url-fetch)
+         (file-name (string-append name "-" version ".tar.xz"))
+         (uri (string-append
+                "https://launchpad.net/kicad/5.0/" version "/+download/" name
+                "-" version ".tar.xz"))
          (sha256
-          (base32 "1833pln2975gmc5s18xf7s8m9vg834lmxxdjk0wlk3lq7bvjjnff"))
-         (file-name (string-append name "-" version "-checkout"))))
+          (base32 "17nqjszyvd25wi6550j981whlnb1wxzmlanljdjihiki53j84x9p"))))
       (build-system cmake-build-system)
       (arguments
        `(#:out-of-source? #t
@@ -706,8 +702,6 @@ language.")
          #:configure-flags
          (list "-DKICAD_STABLE_VERSION=ON"
                "-DKICAD_REPO_NAME=stable"
-               ,(string-append "-DKICAD_BUILD_VERSION=4.0-"
-                               (string-take commit 7))
                "-DKICAD_SKIP_BOOST=ON"; Use our system's boost library.
                "-DKICAD_SCRIPTING=ON"
                "-DKICAD_SCRIPTING_MODULES=ON"
@@ -754,6 +748,7 @@ language.")
          ("libngspice" ,libngspice)
          ("libsm" ,libsm)
          ("mesa" ,mesa)
+         ("opencascade-oce" ,opencascade-oce)
          ("openssl" ,openssl)
          ("python" ,python-2)
          ("wxwidgets" ,wxwidgets-gtk2)
@@ -764,7 +759,7 @@ language.")
 boards and electrical circuits.  The software has a number of programs that
 perform specific functions, for example, pcbnew (Editing PCB), eeschema (editing
 electrical diagrams), gerbview (viewing Gerber files) and others.")
-      (license license:gpl3+))))
+      (license license:gpl3+)))
 
 (define-public kicad-library
   (let ((version "4.0.7"))
