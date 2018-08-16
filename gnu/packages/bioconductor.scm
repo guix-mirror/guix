@@ -28,6 +28,7 @@
   #:use-module (gnu packages cran)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages graph)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages web))
 
@@ -802,3 +803,39 @@ information.")
 @dfn{Reproducibility-Optimized Test Statistic} (ROTS) for differential testing
 in omics data.")
     (license license:gpl2+)))
+
+(define-public r-inspect
+  (package
+    (name "r-inspect")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "INSPEcT" version))
+       (sha256
+        (base32
+         "1gk0pwyimkswrvgb2xr3c2zy4myi448a2shr5ap65rq9pcpp0l8p"))))
+    (properties `((upstream-name . "INSPEcT")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-desolve" ,r-desolve)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-proc" ,r-proc)
+       ("r-rootsolve" ,r-rootsolve)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/INSPEcT")
+    (synopsis "Analysis of 4sU-seq and RNA-seq time-course data")
+    (description
+     "INSPEcT (INference of Synthesis, Processing and dEgradation rates in
+Time-Course experiments) analyses 4sU-seq and RNA-seq time-course data in
+order to evaluate synthesis, processing and degradation rates and assess via
+modeling the rates that determines changes in mature mRNA levels.")
+    (license license:gpl2)))
