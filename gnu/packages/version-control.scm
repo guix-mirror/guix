@@ -1340,7 +1340,7 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
 (define-public diffstat
   (package
     (name "diffstat")
-    (version "1.61")
+    (version "1.62")
     (source (origin
               (method url-fetch)
               (uri
@@ -1351,7 +1351,7 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
                                 name "-" version ".tgz")))
               (sha256
                (base32
-                "1vjmda2zfjxg0qkaj8hfqa8g6bfwnn1ja8696rxrjgqq4w69wd95"))))
+                "07sr482y6iw7n7ddkba0w51kbjc99snvnijkn5ba2xzd8hv1h2bz"))))
     (build-system gnu-build-system)
     (home-page "https://invisible-island.net/diffstat/")
     (synopsis "Make histograms from the output of @command{diff}")
