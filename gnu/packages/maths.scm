@@ -511,14 +511,8 @@ large scale eigenvalue problems.")
         ''("--enable-mpi"))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
-           (add-before 'check 'set-test-environment
-             (lambda _
-               ;; By default, running the test suite would fail because 'ssh'
-               ;; could not be found in $PATH.  Define this variable to
-               ;; placate Open MPI without adding a dependency on OpenSSH (the
-               ;; agent isn't used anyway.)
-               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-               #t))))))
+           (add-before 'check 'mpi-setup
+             ,%openmpi-setup)))))
     (synopsis "Fortran subroutines for solving eigenvalue problems with MPI")))
 
 (define-public lapack
@@ -579,14 +573,8 @@ problems in numerical linear algebra.")
     (arguments
      `(#:configure-flags `("-DBUILD_SHARED_LIBS:BOOL=YES")
        #:phases (modify-phases %standard-phases
-                  (add-before 'check 'set-test-environment
-                    (lambda _
-                      ;; By default, running the test suite would fail because
-                      ;; 'ssh' could not be found in $PATH.  Define this
-                      ;; variable to placate Open MPI without adding a
-                      ;; dependency on OpenSSH (the agent isn't used anyway.)
-                      (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-                      #t)))))
+                  (add-before 'check 'mpi-setup
+		    ,%openmpi-setup))))
     (home-page "http://www.netlib.org/scalapack/")
     (synopsis "Library for scalable numerical linear algebra")
     (description
@@ -1717,14 +1705,8 @@ scientific applications modeled by partial differential equations.")
            ,@(delete "--with-mpi=0" ,cf)))
        ((#:phases phases)
         `(modify-phases ,phases
-           (add-before 'check 'set-test-environment
-             (lambda _
-               ;; By default, running the test suite would fail because 'ssh'
-               ;; could not be found in $PATH.  Define this variable to
-               ;; placate Open MPI without adding a dependency on OpenSSH (the
-               ;; agent isn't used anyway.)
-               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-               #t))))))
+           (add-before 'check 'mpi-setup
+             ,%openmpi-setup)))))
     (synopsis "Library to solve PDEs (with MPI support)")))
 
 (define-public petsc-complex-openmpi
@@ -1855,14 +1837,8 @@ arising after the discretization of partial differential equations.")
      (substitute-keyword-arguments (package-arguments slepc)
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
-           (add-before 'check 'set-test-environment
-             (lambda _
-               ;; By default, running the test suite would fail because 'ssh'
-               ;; could not be found in $PATH.  Define this variable to
-               ;; placate Open MPI without adding a dependency on OpenSSH (the
-               ;; agent isn't used anyway.)
-               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-               #t))))))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)))))
     (inputs
      `(("mpi" ,openmpi)
        ("arpack" ,arpack-ng-openmpi)
@@ -2032,14 +2008,8 @@ sparse system of linear equations A x = b using Guassian elimination.")
      (substitute-keyword-arguments (package-arguments mumps)
        ((#:phases phases)
         `(modify-phases ,phases
-           (add-before 'check 'set-test-environment
-             (lambda _
-               ;; By default, running the test suite would fail because 'ssh'
-               ;; could not be found in $PATH.  Define this variable to
-               ;; placate Open MPI without adding a dependency on OpenSSH (the
-               ;; agent isn't used anyway.)
-               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-               #t))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)
            (replace 'check
              (lambda _
                ((assoc-ref ,phases 'check)
@@ -2285,13 +2255,10 @@ CDEFS       = -DAdd_"
                                         "/" dir)))
               '("lib" "include"))
              #t))
+	 (add-before 'check 'mpi-setup
+	   ,%openmpi-setup)
          (replace 'check
            (lambda _
-             ;; By default, running the test suite would fail because 'ssh'
-             ;; could not be found in $PATH.  Define this variable to placate
-             ;; Open MPI without adding a dependency on OpenSSH (the agent
-             ;; isn't used anyway.)
-             (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
              (with-directory-excursion "EXAMPLE"
                (invoke "mpirun" "-n" "2"
                        "./pddrive" "-r" "1" "-c" "2" "g20.rua")
@@ -2384,15 +2351,8 @@ YACC = bison -pscotchyy -y -b y
                           ;; "SCOTCH_PTHREAD_NUMBER=2"
                           "restrict=__restrict"))))
             #t))
-         (add-after
-          'build 'build-esmumps
+         (add-after 'build 'build-esmumps
           (lambda _
-            ;; By default, running the test suite would fail because 'ssh'
-            ;; could not be found in $PATH.  Define this variable to placate
-            ;; Open MPI without adding a dependency on OpenSSH (the agent
-            ;; isn't used anyway.)
-            (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-
             (invoke "make"
                     (format #f "-j~a" (parallel-job-count))
                     "esmumps")))
@@ -2575,14 +2535,8 @@ schemes.")
                                            (assoc-ref %build-inputs "lapack")
                                            " -llapack"))
        #:phases (modify-phases %standard-phases
-                  (add-before 'check 'set-test-environment
-                    (lambda _
-                      ;; By default, running the test suite would fail because
-                      ;; 'ssh' could not be found in $PATH.  Define this
-                      ;; variable to placate Open MPI without adding a
-                      ;; dependency on OpenSSH (the agent isn't used anyway.)
-                      (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-                      #t)))))
+                  (add-before 'check 'mpi-setup
+		    ,%openmpi-setup))))
     (home-page "http://www.p4est.org")
     (synopsis "Adaptive mesh refinement on forests of octrees")
     (description
@@ -3649,14 +3603,8 @@ problems.")
            ,@(delete "--without-MPI" ,flags)))
        ((#:phases phases)
         `(modify-phases ,phases
-           (add-before 'check 'set-test-environment
-             (lambda _
-               ;; By default, running the test suite would fail because 'ssh'
-               ;; could not be found in $PATH.  Define this variable to
-               ;; placate Open MPI without adding a dependency on OpenSSH (the
-               ;; agent isn't used anyway.)
-               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-               #t))))))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)))))
     (synopsis "Parallel solvers and preconditioners for linear equations")
     (description
      "HYPRE is a software library of high performance preconditioners and
@@ -3939,6 +3887,8 @@ exclusion algorithms are typical examples of such systems.")
                            "-DCMAKE_INSTALL_LIBDIR=lib"
                            "-DGFORTRAN_LIB=gfortran")
        #:phases (modify-phases %standard-phases
+		  (add-before 'check 'mpi-setup
+		    ,%openmpi-setup)
                   (add-before 'check 'setup-tests
                     (lambda _
                       ;; Parallelism is done at the MPI layer.
@@ -4123,16 +4073,6 @@ easily be incorporated into existing simulation codes.")
                 ,flags))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
-           (add-before 'check 'set-test-environment
-             (lambda _
-               ;; By default, running the test suite would fail because 'ssh'
-               ;; could not be found in $PATH.  Define this variable to
-               ;; placate Open MPI without adding a dependency on OpenSSH (the
-               ;; agent isn't used anyway.)
-               (setenv "OMPI_MCA_plm_rsh_agent" (which "cat"))
-               ;; Allow oversubscription in case there are less
-               ;; physical cores available in the build environment
-               ;; than SUNDIALS wants while testing.
-               (setenv "OMPI_MCA_rmaps_base_oversubscribe" "yes")
-               #t))))))
+           (add-before 'check 'mpi-setup
+	     ,%openmpi-setup)))))
     (synopsis "SUNDIALS with OpenMPI support")))
