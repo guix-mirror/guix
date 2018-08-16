@@ -850,6 +850,17 @@ thumbnailer uses ffmpeg to decode frames from the video files, so supported
 videoformats depend on the configuration flags of ffmpeg.")
     (license license:gpl2+)))
 
+;; Fix build with newer x264.
+(define %vlc-libx264-compat.patch
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://git.videolan.org/?p=vlc.git;a=patch;h="
+                        "a8953ba707cca1f2de372ca24513296bcfcdaaa8"))
+    (file-name "vlc-libx264-compat.patch")
+    (sha256
+     (base32
+      "04igckbdp3sbp8vh0ihmhcf3yjyyk9r3cd5dm9mn9j6vipi1dg3g"))))
+
 (define-public vlc
   (package
     (name "vlc")
@@ -860,6 +871,7 @@ videoformats depend on the configuration flags of ffmpeg.")
                    "https://download.videolan.org/pub/videolan/vlc/"
                    (car (string-split version #\-))
                    "/vlc-" version ".tar.xz"))
+             (patches (list %vlc-libx264-compat.patch))
              (sha256
               (base32
                "1p7qvdvg9w4lz8vckzhn6bswfkq3qw7fqkgvwjcskdgc266xx7dw"))))
