@@ -393,9 +393,7 @@ manager for the current system.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/pyxdg/pyxdg-"
-             version ".tar.gz"))
+       (uri (pypi-uri "pyxdg" version))
        (sha256
         (base32
          "179767h8m634ydlm4v8lnz01ba42gckfp684id764zaip7h87s41"))))
