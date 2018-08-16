@@ -2267,21 +2267,21 @@ With sedsed you can master any sed script.  No more secrets, no more hidden
 buffers.")
     (license license:expat)))
 
-(define-public intel-gpu-tools
+(define-public igt-gpu-tools
   (package
-    (name "intel-gpu-tools")
-    (version "1.22")
+    (name "igt-gpu-tools")
+    (version "1.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
                                   "intel-gpu-tools/snapshot/"
-                                  "intel-gpu-tools-" version ".tar.gz"))
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jx5w5fr6jp67rcrlp5v79cn8kp9n0wgd5pbfgzamlah5cx6j3yd"))))
+                "0vzv2i4jfv2pkbqby5k3ap9pzidkmajwqmg3s7wnv8i1h33775iq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; many of the tests try to load kernel modules
+     `(#:tests? #f              ; many of the tests try to load kernel modules
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
@@ -2299,7 +2299,8 @@ buffers.")
        ("cairo" ,cairo)
        ("libunwind" ,libunwind)
        ("libxrandr" ,libxrandr)
-       ("glib" ,glib)))
+       ("glib" ,glib)
+       ("openssl" ,openssl)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2307,16 +2308,19 @@ buffers.")
        ("pkg-config" ,pkg-config)))
     (home-page "https://cgit.freedesktop.org/xorg/app/intel-gpu-tools/")
     (synopsis "Tools for development and testing of the Intel DRM driver")
-    (description "Intel GPU Tools is a collection of tools for development and
+    (description "IGT GPU Tools is a collection of tools for development and
 testing of the Intel DRM driver.  There are many macro-level test suites that
 get used against the driver, including xtest, rendercheck, piglit, and
 oglconform, but failures from those can be difficult to track down to kernel
 changes, and many require complicated build procedures or specific testing
-environments to get useful results.  Therefore, Intel GPU Tools includes
+environments to get useful results.  Therefore, IGT GPU Tools includes
 low-level tools and tests specifically for development and testing of the
 Intel DRM Driver.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:expat)))
+
+(define-public intel-gpu-tools
+  (deprecated-package "intel-gpu-tools" igt-gpu-tools))
 
 (define-public fabric
   (package
