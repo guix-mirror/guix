@@ -3977,7 +3977,7 @@ under OpenGL graphics workloads.")
 (define-public efivar
   (package
     (name "efivar")
-    (version "36")
+    (version "35")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rhboot/" name
@@ -3985,7 +3985,7 @@ under OpenGL graphics workloads.")
                                   "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0cqdikspdmj7imc646q0k7hhw10r8spxa22zm1w0ji49131crgwl"))))
+                "153k2ifyl4giz5fkryxhz8z621diqjy7v25hfga4z94rs32ks0qy"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Tests require a UEFI system and is not detected in the chroot.
@@ -3996,7 +3996,7 @@ under OpenGL graphics workloads.")
                           (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))         ; no configure script
+         (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
