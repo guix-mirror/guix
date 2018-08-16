@@ -24,6 +24,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -40,16 +41,17 @@
     (name "erlang")
     (version "21.0")
     (source (origin
-              (method url-fetch)
+              (method git-fetch)
               ;; The tarball from http://erlang.org/download contains many
               ;; pre-compiled files, so we use this snapshot of the source
               ;; repository.
-              (uri (string-append "https://github.com/erlang/otp/archive/OTP-"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (git-reference
+                    (url "https://github.com/erlang/otp.git")
+                    (commit (string-append "OTP-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gv43lra4870xns8b0yjzbq78afzvz9gk6y3q3fa4y4sqcrqwbas"))
+                "195xq8bmmk0m6f5nkss2gkksyyph3z4wggn8abyicykpc8sdw83d"))
               (patches (search-patches "erlang-man-path.patch"))))
     (build-system gnu-build-system)
     (native-inputs
