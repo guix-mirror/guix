@@ -2687,13 +2687,13 @@ and draw tables.")
 (define-public r-pkgconfig
   (package
     (name "r-pkgconfig")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "pkgconfig" version))
               (sha256
                (base32
-                "0h2sp93fqqjbfqgq82a3i94ybnndx6ghaal8pbf99firnsjb40mb"))))
+                "1jk9ip549xphb3anfixqv1yx5kidnndqgy9v3qjpmgmds5a7g695"))))
     (build-system r-build-system)
     (home-page "https://github.com/gaborcsardi/pkgconfig")
     (synopsis "Private configuration for R packages")
