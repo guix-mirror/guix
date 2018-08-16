@@ -3983,7 +3983,7 @@ under OpenGL graphics workloads.")
     (version "35")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/rhinstaller/" name
+              (uri (string-append "https://github.com/rhboot/" name
                                   "/releases/download/" version "/" name
                                   "-" version ".tar.bz2"))
               (sha256
@@ -4004,7 +4004,7 @@ under OpenGL graphics workloads.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("popt" ,popt)))
-    (home-page "https://github.com/rhinstaller/efivar")
+    (home-page "https://github.com/rhboot/efivar")
     (synopsis "Tool and library to manipulate EFI variables")
     (description "This package provides a library and a command line
 interface to the variable facility of UEFI boot firmware.")
