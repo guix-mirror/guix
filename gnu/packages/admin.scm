@@ -2400,43 +2400,29 @@ you are running, what theme or icon set you are using, etc.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "1.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jarun/nnn/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0z3lqbfx3y1caxvn7yq90b7whwyq2y32zf8kyd976ilbxpxnxqpv"))))
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
+                           version "/" name "-v" version ".tar.gz"))
+       (sha256
+        (base32 "1d6z12y4rlg4dzhpm30irpq2ak8hjh5zykkp2n7vxnz5m4ki89zp"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)
-              ("readline" ,readline)))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:phases
-       ;; We do not provide `ncurses.h' within an `ncursesw'
-       ;; sub-directory, so patch the source accordingly.  See
-       ;; <http://bugs.gnu.org/19018>.
-       ;; Thanks to gtypist maintainer.
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-curses-lib
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "Makefile"
-                 (("-lncursesw")
-                  "-lncurses"))
-               (substitute* "nnn.c"
-                 (("ncursesw\\/curses.h")
-                  "ncurses.h")))
-             #t))
-         (delete 'configure))
+         (delete 'configure))           ; no configure script
        #:make-flags
        (list
         (string-append "PREFIX="
                        (assoc-ref %outputs "out"))
-        (string-append "-Wl,-rpath="
-                       %output "/lib")
         "CC=gcc")))
     (home-page "https://github.com/jarun/nnn")
     (synopsis "Terminal file browser")
