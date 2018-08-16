@@ -4813,3 +4813,37 @@ receiver operating characteristic (ROC curves).  The area under the
 curve (AUC) can be compared with statistical tests based on U-statistics or
 bootstrap.  Confidence intervals can be computed for (p)AUC or ROC curves.")
     (license license:gpl3+)))
+
+(define-public r-rootsolve
+  (package
+    (name "r-rootsolve")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rootSolve" version))
+       (sha256
+        (base32
+         "08ic6ggcc5dw4nv9xsqkm3vnvswmxyhnqnv1rdjv1h2gy1ivpcq8"))))
+    (properties `((upstream-name . "rootSolve")))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/rootSolve/")
+    (synopsis "Tools for the analysis of ordinary differential equations")
+    (description
+     "This package provides routines to find the root of nonlinear functions,
+and to perform steady-state and equilibrium analysis of @dfn{ordinary
+differential equations} (ODE).  It includes routines that:
+
+@enumerate
+@item generate gradient and jacobian matrices (full and banded),
+@item find roots of non-linear equations by the Newton-Raphson method,
+@item estimate steady-state conditions of a system of (differential) equations
+  in full, banded or sparse form, using the Newton-Raphson method, or by
+  dynamically running,
+@item solve the steady-state conditions for uni- and multicomponent 1-D, 2-D,
+  and 3-D partial differential equations, that have been converted to ordinary
+  differential equations by numerical differencing (using the method-of-lines
+  approach).
+@end enumerate\n")
+    (license license:gpl2+)))
