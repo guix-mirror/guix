@@ -3240,7 +3240,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.15.1")
+    (version "4.17.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3248,8 +3248,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "15izak6jg6pqr6ha9447cdrdj9k6kfiarvwlrj53cpvrsv02l437"))
-              (patches (search-patches "btrfs-progs-e-value-block.patch"))))
+                "0x6d53fbrcmzvhv461575fzsv3373427p4srz646w2wcagqk82xz"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -3285,6 +3284,7 @@ and copy/paste text in the console and in xterm.")
               ("zstd" ,zstd)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("asciidoc" ,asciidoc)
+                     ("python" ,python)
                      ("xmlto" ,xmlto)
                      ;; For building documentation.
                      ("libxml2" ,libxml2)
