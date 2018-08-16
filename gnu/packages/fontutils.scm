@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -155,25 +155,25 @@ Converts WOFF fonts to OpenType fonts
 (define-public ttf2eot
   (package
     (name "ttf2eot")
-    (version "0.0.2-2")
+    (version "0.0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://storage.googleapis.com/"
-                           "google-code-archive-downloads/v2/"
-                           "code.google.com/ttf2eot/"
-                           "ttf2eot-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wget/ttf2eot.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1f4dzzmhn0208dvbm3ia5ar6ls9apwc6ampy5blmfxkigi6z0g02"))
+         "0l2yh2ialx7135pjzhjs204kk3br7zxjr09zwaia493by2adzigr"))
        (patches (list (search-patch "ttf2eot-cstddef.patch")))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ;no tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ;no configuration
-         (replace 'install
+         (delete 'configure)            ; no configuration
+         (replace 'install              ; no install target
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
@@ -188,7 +188,7 @@ TTF (TrueType/OpenType Font) files.")
     ;; 2/LGPL 2.1", the single derived source file includes only BSD in its
     ;; license header, and the wrapper source contains no license header.
     (license license:bsd-2)
-    (home-page "https://code.google.com/archive/p/ttf2eot/")))
+    (home-page "https://github.com/wget/ttf2eot")))
 
 (define-public woff2
   (let ((commit "4e698b8c6c5e070d53c340db9ddf160e21070ede")
