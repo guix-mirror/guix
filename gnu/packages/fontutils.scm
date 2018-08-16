@@ -177,7 +177,8 @@ Converts WOFF fonts to OpenType fonts
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin")))
-               (install-file "ttf2eot" bin)))))))
+               (install-file "ttf2eot" bin)
+               #t))))))
     (synopsis "Convert from TrueType to Embeddable Open Type")
     (description
      "This package contains a commandline wrapper around OpenTypeUtilities.cpp
