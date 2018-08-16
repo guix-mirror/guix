@@ -9271,8 +9271,8 @@ generations available on disk.  It is also possible to roll back the
 system via the commands @command{guix system roll-back} and
 @command{guix system switch-generation}.
 
-Although the command @command{guix system reconfigure} will not modify
-previous generations, must take care when the current generation is not
+Although the @command{guix system reconfigure} command will not modify
+previous generations, you must take care when the current generation is not
 the latest (e.g., after invoking @command{guix system roll-back}), since
 the operation might overwrite a later generation (@pxref{Invoking guix
 system}).
