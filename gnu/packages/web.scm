@@ -5065,6 +5065,32 @@ configuration language.")
                    l:public-domain   ;bin/varnishncsa/as64.c, include/miniobj.h
                    l:bsd-3))))       ;include/vqueue.h, lib/libvarnishcompat/daemon.c
 
+(define-public varnish-modules
+  (package
+    (name "varnish-modules")
+    (home-page "https://github.com/varnish/varnish-modules")
+    (version "0.15.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.varnish-software.com"
+                                  "/varnish-modules/varnish-modules-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "09li9lqa1kb275w1rby2zldyg8r9cfcl4qyv53qyd9xbzilrz751"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python)
+       ("varnish" ,varnish)))
+    (synopsis "Collection of Varnish modules")
+    (description
+     "This package provides a collection of modules (@dfn{vmods}) for the Varnish
+cache server, extending the @dfn{Varnish Configuration Language} (VCL) with
+additional capabilities.")
+    (license l:bsd-2)))
+
 (define-public xinetd
   (package
     (name "xinetd")
