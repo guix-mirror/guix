@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,7 +104,14 @@
             wpa-supplicant-service-type
 
             openvswitch-service-type
-            openvswitch-configuration))
+            openvswitch-configuration
+
+            iptables-configuration
+            iptables-configuration?
+            iptables-configuration-iptables
+            iptables-configuration-ipv4-rules
+            iptables-configuration-ipv6-rules
+            iptables-service-type))
 
 ;;; Commentary:
 ;;;
@@ -1107,5 +1115,51 @@ networking."))))
     "Run @uref{http://www.openvswitch.org, Open vSwitch}, a multilayer virtual
 switch designed to enable massive network automation through programmatic
 extension.")))
+
+;;;
+;;; iptables
+;;;
+
+(define %iptables-accept-all-rules
+  (plain-file "iptables-accept-all.rules"
+              "*filter
+:INPUT ACCEPT
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+COMMIT
+"))
+
+(define-record-type* <iptables-configuration>
+  iptables-configuration make-iptables-configuration iptables-configuration?
+  (iptables iptables-configuration-iptables
+            (default iptables))
+  (ipv4-rules iptables-configuration-ipv4-rules
+              (default %iptables-accept-all-rules))
+  (ipv6-rules iptables-configuration-ipv6-rules
+              (default %iptables-accept-all-rules)))
+
+(define iptables-shepherd-service
+  (match-lambda
+    (($ <iptables-configuration> iptables ipv4-rules ipv6-rules)
+     (let ((iptables-restore (file-append iptables "/sbin/iptables-restore"))
+           (ip6tables-restore (file-append iptables "/sbin/ip6tables-restore")))
+       (shepherd-service
+        (documentation "Packet filtering framework")
+        (provision '(iptables))
+        (start #~(lambda _
+                   (invoke #$iptables-restore #$ipv4-rules)
+                   (invoke #$ip6tables-restore #$ipv6-rules)))
+        (stop #~(lambda _
+                  (invoke #$iptables-restore #$%iptables-accept-all-rules)
+                  (invoke #$ip6tables-restore #$%iptables-accept-all-rules))))))))
+
+(define iptables-service-type
+  (service-type
+   (name 'iptables)
+   (description
+    "Run @command{iptables-restore}, setting up the specified rules.")
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             (compose list iptables-shepherd-service))))))
 
 ;;; networking.scm ends here

@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,9 +30,11 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages networking)
   #:use-module (gnu services shepherd)
-  #:export (%test-inetd %test-openvswitch %test-dhcpd %test-tor))
+  #:use-module (ice-9 match)
+  #:export (%test-inetd %test-openvswitch %test-dhcpd %test-tor %test-iptables))
 
 (define %inetd-os
   ;; Operating system with 2 inetd services.
@@ -434,3 +437,127 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
    (name "tor")
    (description "Test a running Tor daemon configuration.")
    (value (run-tor-test))))
+
+(define* (run-iptables-test)
+  "Run tests of 'iptables-service-type'."
+  (define iptables-rules
+    "*filter
+:INPUT ACCEPT
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+-A INPUT -p tcp -m tcp --dport 7 -j REJECT --reject-with icmp-port-unreachable
+COMMIT
+")
+
+  (define ip6tables-rules
+    "*filter
+:INPUT ACCEPT
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+-A INPUT -p tcp -m tcp --dport 7 -j REJECT --reject-with icmp6-port-unreachable
+COMMIT
+")
+
+  (define inetd-echo-port 7)
+
+  (define os
+    (marionette-operating-system
+     (simple-operating-system
+      (dhcp-client-service)
+      (service inetd-service-type
+               (inetd-configuration
+                (entries (list
+                          (inetd-entry
+                           (name "echo")
+                           (socket-type 'stream)
+                           (protocol "tcp")
+                           (wait? #f)
+                           (user "root"))))))
+      (service iptables-service-type
+               (iptables-configuration
+                (ipv4-rules (plain-file "iptables.rules" iptables-rules))
+                (ipv6-rules (plain-file "ip6tables.rules" ip6tables-rules)))))
+     #:imported-modules '((gnu services herd))
+     #:requirements '(inetd iptables)))
+
+  (define test
+    (with-imported-modules '((gnu build marionette))
+      #~(begin
+          (use-modules (srfi srfi-64)
+                       (gnu build marionette))
+          (define marionette
+            (make-marionette (list #$(virtual-machine os))))
+
+          (define (dump-iptables iptables-save marionette)
+            (marionette-eval
+             `(begin
+                (use-modules (ice-9 popen)
+                             (ice-9 rdelim)
+                             (ice-9 regex))
+                (call-with-output-string
+                  (lambda (out)
+                    (call-with-port
+                     (open-pipe* OPEN_READ ,iptables-save)
+                     (lambda (in)
+                       (let loop ((line (read-line in)))
+                         ;; iptables-save does not output rules in the exact
+                         ;; same format we loaded using iptables-restore. It
+                         ;; adds comments, packet counters, etc. We remove
+                         ;; these additions.
+                         (unless (eof-object? line)
+                           (cond
+                            ;; Remove comments
+                            ((string-match "^#" line) #t)
+                            ;; Remove packet counters
+                            ((string-match "^:([A-Z]*) ([A-Z]*) .*" line)
+                             => (lambda (match-record)
+                                  (format out ":~a ~a~%"
+                                          (match:substring match-record 1)
+                                          (match:substring match-record 2))))
+                            ;; Pass other lines without modification
+                            (else (display line out)
+                                  (newline out)))
+                           (loop (read-line in)))))))))
+             marionette))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "iptables")
+
+          (test-equal "iptables-save dumps the same rules that were loaded"
+            (dump-iptables #$(file-append iptables "/sbin/iptables-save")
+                           marionette)
+            #$iptables-rules)
+
+          (test-equal "ip6tables-save dumps the same rules that were loaded"
+            (dump-iptables #$(file-append iptables "/sbin/ip6tables-save")
+                           marionette)
+            #$ip6tables-rules)
+
+          (test-error "iptables firewall blocks access to inetd echo service"
+                      'misc-error
+                      (wait-for-tcp-port inetd-echo-port marionette #:timeout 5))
+
+          ;; TODO: This test freezes up at the login prompt without any
+          ;; relevant messages on the console. Perhaps it is waiting for some
+          ;; timeout. Find and fix this issue.
+          ;; (test-assert "inetd echo service is accessible after iptables firewall is stopped"
+          ;;   (begin
+          ;;     (marionette-eval
+          ;;      '(begin
+          ;;         (use-modules (gnu services herd))
+          ;;         (stop-service 'iptables))
+          ;;      marionette)
+          ;;     (wait-for-tcp-port inetd-echo-port marionette #:timeout 5)))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
+
+  (gexp->derivation "iptables" test))
+
+(define %test-iptables
+  (system-test
+   (name "iptables")
+   (description "Test a running iptables daemon.")
+   (value (run-iptables-test))))
