@@ -664,7 +664,7 @@ graphical user interfaces.  Offering a complete set of widgets, GTK+ is
 suitable for projects ranging from small one-off tools to complete
 application suites.")
    (license license:lgpl2.0+)
-   (home-page "http://www.gtk.org/")))
+   (home-page "https://www.gtk.org/")))
 
 (define-public gtk+
   (package (inherit gtk+-2)
@@ -1492,7 +1492,7 @@ information.")
        ("source-highlight" ,source-highlight)
        ("glib" ,glib)
        ("python-six" ,python-six)))
-    (home-page "http://www.gtk.org/gtk-doc/")
+    (home-page "https://www.gtk.org/gtk-doc/")
     (synopsis "Documentation generator from C source code")
     (description
      "GTK-Doc generates API documentation from comments added to C code.  It is

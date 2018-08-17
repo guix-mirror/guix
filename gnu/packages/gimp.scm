@@ -54,7 +54,7 @@
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
                                         (version-major+minor version)
                                         "/babl-" version ".tar.bz2")
-                         (string-append "http://ftp.gtk.org/pub/babl/"
+                         (string-append "https://ftp.gtk.org/pub/babl/"
                                         (version-major+minor version)
                                         "/babl-" version ".tar.bz2")
                          (string-append "ftp://ftp.gtk.org/pub/babl/"

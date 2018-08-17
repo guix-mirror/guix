@@ -2444,7 +2444,7 @@ library.")
      `(("glib"    ,glib)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)))
-    (home-page "http://www.gtk.org/")
+    (home-page "https://www.gtk.org/")
     (synopsis "RESTful web api query library")
     (description
      "This library was designed to make it easier to access web services that
