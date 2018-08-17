@@ -1015,7 +1015,7 @@ compresses it.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.claws-mail.org/releases/" name "-" version
+                    "https://www.claws-mail.org/releases/" name "-" version
                     ".tar.xz"))
               (sha256
                (base32
@@ -1065,7 +1065,7 @@ appearance and interface are designed to be familiar to new users coming from
 other popular email clients, as well as experienced users.  Almost all commands
 are accessible with the keyboard.  Plus, Claws-Mail is extensible via addons
 which can add many functionalities to the base client.")
-    (home-page "http://www.claws-mail.org/")
+    (home-page "https://www.claws-mail.org/")
     (license gpl3+))) ; most files are actually public domain or x11
 
 (define-public msmtp
