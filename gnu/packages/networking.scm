@@ -766,7 +766,7 @@ live network and disk I/O bandwidth monitor.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://download.aircrack-ng.org/aircrack-ng-"
+       (uri (string-append "https://download.aircrack-ng.org/aircrack-ng-"
                            version ".tar.gz"))
        (sha256
         (base32
@@ -807,7 +807,7 @@ live network and disk I/O bandwidth monitor.")
                           (("\\$\\(ethtool")
                            (string-append "$(" ethtool)))
                         #t))))))
-    (home-page "http://www.aircrack-ng.org")
+    (home-page "https://www.aircrack-ng.org")
     (synopsis "Assess WiFi network security")
     (description
      "Aircrack-ng is a complete suite of tools to assess WiFi network
