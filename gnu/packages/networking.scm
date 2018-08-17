@@ -762,7 +762,7 @@ live network and disk I/O bandwidth monitor.")
 (define-public aircrack-ng
   (package
     (name "aircrack-ng")
-    (version "1.2-rc4")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -770,42 +770,48 @@ live network and disk I/O bandwidth monitor.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0dpzx9kddxpgzmgvdpl3rxn0jdaqhm5wxxndp1xd7d75mmmc2fnr"))))
+         "1jl30d0kibc82447fr3lgw75arik0l9729k94z76l7vl51y8mq4a"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
     (inputs
      `(("libgcrypt" ,libgcrypt)
        ("libnl" ,libnl)
+       ("libpcap" ,libpcap)
        ("ethtool" ,ethtool)
        ("pcre" ,pcre)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (arguments
-     `(#:make-flags `("sqlite=true"
-                      "gcrypt=true"
-                      "libnl=true"
-                      "pcre=true"
-                      "experimental=true" ;build wesside-ng, etc.
-                      "AVX2FLAG=N" "AVX1FLAG=N"
-                      ,,@(match (%current-system)
-                           ((or "x86_64-linux" "i686-linux")
-                            `("SSEFLAG=Y"))
-                           (_
-                            `("NEWSSE=false")))
-                      ,(string-append "prefix=" %output))
+     `(#:configure-flags
+       (list "--with-experimental=yes"  ; build wesside-ng, etc.
+             "--with-gcrypt")           ; openssl's the default
        #:phases (modify-phases %standard-phases
-                  (delete 'configure)   ;no configure phase
+                  (add-before 'bootstrap 'patch-evalrev
+                    (lambda _
+                      ;; Called by ./autogen.sh below, before the default
+                      ;; ‘patch-shebangs’ phase has had a chance to run.
+                      (substitute* "evalrev"
+                        (("/bin/sh")
+                         (which "sh")))
+                      #t))
+                  (replace 'bootstrap
+                    (lambda _
+                      ;; Patch shebangs in generated files before running
+                      ;; ./configure.
+                      (setenv "NOCONFIGURE" "please")
+                      (invoke "bash" "./autogen.sh")))
                   (add-after 'build 'absolutize-tools
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((ethtool (string-append (assoc-ref inputs "ethtool")
                                                     "/sbin/ethtool")))
                         (substitute* "scripts/airmon-ng"
-                          (("\\[ ! -x \"\\$\\(command -v ethtool 2>&1)\" \\]")
-                           (string-append "! " ethtool " --version "
-                                          ">/dev/null 2>&1"))
-                          (("\\$\\(ethtool")
-                           (string-append "$(" ethtool)))
+                          (("ethtool ")
+                           (string-append ethtool " ")))
                         #t))))))
     (home-page "https://www.aircrack-ng.org")
     (synopsis "Assess WiFi network security")
