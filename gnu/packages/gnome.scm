@@ -7034,16 +7034,16 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "0.9.306")
+    (version "0.9.521")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://gitlab.gnome.org/gnumdk/lollypop/uploads/"
-                           "b769805b7063ef9807e4e832e7e87ad2/"
+       (uri (string-append "https://gitlab.gnome.org/World/lollypop/uploads/"
+                           "e4df2ed75c5ed71d64afcc668e579b2a/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0c49v6793bywvh295xbii9yq21hh3qpmxwbgp9i71kj6r9grvhan"))))
+         "0knsqh24siyw98vmiq6b1hzq4y4cazs9f1hq1js9c96hqqj9rvdx"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -7086,7 +7086,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ;; the others are required to play streaming.
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-ugly" ,gst-plugins-ugly)))
-    (home-page "https://gnumdk.github.io/lollypop-web")
+    (home-page "https://wiki.gnome.org/Apps/Lollypop")
     (synopsis "GNOME music playing application")
     (description
      "Lollypop is a music player designed to play well with GNOME desktop.
