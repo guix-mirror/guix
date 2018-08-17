@@ -261,17 +261,17 @@ wrapper for accessing libusb-1.0.")
 (define-public python-pyusb
   (package
     (name "python-pyusb")
-    (version "1.0.0")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "PyUSB" version))
+       (uri (pypi-uri "pyusb" version))
        (sha256
         (base32
-         "0s2k4z06fapd5vp1gnrlf8a9sjpc03p9974lzw5k6ky39akzyd2v"))))
+         "0qkk2jn270jwwl1x26hmdhb14m9kkbrzzwzizdjcl1a29b6756sf"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f  ;no tests
+     `(#:tests? #f                      ; no tests
        #:modules ((srfi srfi-1)
                   (srfi srfi-26)
                   (guix build utils)
@@ -291,7 +291,7 @@ wrapper for accessing libusb-1.0.")
              #t)))))
     (inputs
      `(("libusb" ,libusb)))
-    (home-page "http://walac.github.io/pyusb/")
+    (home-page "https://pyusb.github.io/pyusb/")
     (synopsis "Python bindings to the libusb library")
     (description
      "PyUSB aims to be an easy to use Python module to access USB devices.")
