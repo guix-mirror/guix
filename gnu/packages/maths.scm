@@ -436,7 +436,7 @@ integer programming problems and computes Markov bases for statistics.")
 (define-public cddlib
   (package
     (name "cddlib")
-    (version "0.94h")
+    (version "0.94i")
     (source
      (origin
       (method url-fetch)
@@ -444,7 +444,7 @@ integer programming problems and computes Markov bases for statistics.")
                           (string-delete #\. version) ".tar.gz"))
       (sha256
        (base32
-        "1dasasscwfg793q8fwzgwf64xwj7w62yfvszpr8x8g38jka08vgy"))))
+        "00zdgiqb91vx6gd2103h3ijij0llspsxc6zz3iw2bll39fvkl4xq"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
