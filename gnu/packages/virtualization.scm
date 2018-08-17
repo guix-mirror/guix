@@ -340,16 +340,15 @@ all common programming languages.  Vala bindings are also provided.")
 (define-public lxc
   (package
     (name "lxc")
-    (version "3.0.1")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://linuxcontainers.org/downloads/lxc/lxc-"
                     version ".tar.gz"))
-              (patches (search-patches "lxc-CVE-2018-6556.patch"))
               (sha256
                (base32
-                "1nyml98k28sc5sda0260cmby4irkpnhpwgmx4yhqy10wpr4nr625"))))
+                "0p1gy553cm4mhwxi85fl6qiwz61rjmvysm8c8pd20qh62xxi3dva"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
