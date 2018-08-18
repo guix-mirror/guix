@@ -399,15 +399,21 @@ matrices, and polynomials over the integers and over finite fields.")
 (define-public singular
   (package
    (name "singular")
-   (version "4.0.3")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "http://www.mathematik.uni-kl.de/ftp/pub/"
-                                "Math/Singular/SOURCES/"
-                                (string-join (string-split version #\.) "-")
-                                "/singular-" version ".tar.gz"))
-            (sha256 (base32
-                     "0viidy2fz62rln9p0s9qfs7fnm55c6fw1agydd1py26gxylp1ksc"))))
+   (version "4.1.1p3")
+   (source
+    (origin
+      (method url-fetch)
+      (uri
+       (string-append "http://www.mathematik.uni-kl.de/ftp/pub/Math/"
+                      "Singular/SOURCES/"
+                      (string-join
+                       (string-split
+                        (string-trim-right version #\p
+                                           0 (1- (string-length version)))
+                        #\.) "-")
+                      "/singular-" version ".tar.gz"))
+             (sha256 (base32
+                      "1qqj9bm9pkzm0iyycpvm8x6s79wws3nq60lz25h8x1q61h3426sm"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("doxygen" ,doxygen)
