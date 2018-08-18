@@ -957,7 +957,9 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
            (lambda _
              (substitute* "strace.c"
                (("/bin/sh") (which "sh")))
-             #t)))))
+             #t)))
+       ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.
+       #:parallel-tests? #f))           ; undeterministic failures
     (native-inputs `(("perl" ,perl)))
     (synopsis "System call tracer for Linux")
     (description
