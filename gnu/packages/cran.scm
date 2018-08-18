@@ -2477,18 +2477,19 @@ constants, and control debugging of packages via environment variables.")
 (define-public r-processx
   (package
     (name "r-processx")
-    (version "3.1.0")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "processx" version))
        (sha256
         (base32
-         "0wjr3cqwvnjxbvln25szffmkns5w0xysivdjr6chxap4nh515b0i"))))
+         "1pzx4ap4xa07gf9zkd6hacdsnb9sp3kb60a7v7ljl0ywrcpn1fn4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-crayon" ,r-crayon)
+       ("r-ps" ,r-ps)
        ("r-r6" ,r-r6)
        ("r-testthat" ,r-testthat)))
     (home-page "https://github.com/r-lib/processx3")
