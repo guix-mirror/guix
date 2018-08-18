@@ -461,6 +461,24 @@ print, summary, plot, update, etc.
 @end itemize\n")
     (license license:gpl2)))
 
+(define-public r-ps
+  (package
+    (name "r-ps")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ps" version))
+       (sha256
+        (base32 "1zm9qkyvy1fvcjvmgw51iqw8x1xzkpy7rx7xnchwfj0xpzal0ljx"))))
+    (build-system r-build-system)
+    (home-page "http://ps.r-lib.org")
+    (synopsis "List, query, and manipulate system processes")
+    (description
+     "The ps package implements an API to list, query, and manipulate system
+processes.  Most of its code is based on the @code{psutil} Python package.")
+    (license license:bsd-3)))
+
 (define-public r-rcpp
   (package
     (name "r-rcpp")
