@@ -756,16 +756,16 @@ features, and more.")
 (define-public xtensor
   (package
     (name "xtensor")
-    (version "0.15.9")
+    (version "0.17.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/QuantStack/xtensor/archive/"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/QuantStack/xtensor.git")
+                    (commit version)))
               (sha256
                (base32
-                "0mlsw4p1w5mh7pscddfdamz27zq3wml5qla3vbzgvif34vsqc8ra"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0w40v5lp0hp8ihf8nnvak373sb5xx0768pxgiqh3nzn57wf8px4r"))
+              (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
      `(("googletest" ,googletest)
