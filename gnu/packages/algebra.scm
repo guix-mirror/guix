@@ -740,11 +740,11 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
 			(setenv "EIGEN_SEED" "1") ;for reproducibility
                         ;; First build the tests, in parallel.  See
                         ;; <http://eigen.tuxfamily.org/index.php?title=Tests>.
-                        (and (zero? (system* "make" "buildtests" dash-j))
+                        (invoke "make" "buildtests" dash-j)
 
-                             ;; Then run 'CTest' with -V so we get more
-                             ;; details upon failure.
-                             (zero? (system* "ctest" "-V" dash-j)))))))))
+                        ;; Then run 'CTest' with -V so we get more
+                        ;; details upon failure.
+                        (invoke "ctest" "-V" dash-j)))))))
     (home-page "https://eigen.tuxfamily.org")
     (synopsis "C++ template library for linear algebra")
     (description
