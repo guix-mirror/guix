@@ -5305,7 +5305,7 @@ from Moose::Conflicts and moose-outdated.")
 (define-public perl-module-scandeps
   (package
     (name "perl-module-scandeps")
-    (version "1.24")
+    (version "1.25")
     (source
      (origin
        (method url-fetch)
@@ -5313,7 +5313,7 @@ from Moose::Conflicts and moose-outdated.")
                            "Module-ScanDeps-" version ".tar.gz"))
        (sha256
         (base32
-         "0s6cj90ckhy351gql52ksh4ms1x8piv26iadl09fcpzkx7j0srw9"))))
+         "13280nq0d6zc58mcz3kvs2m85a741czq0fabk69ks1nr4j1w2nl4"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)))
