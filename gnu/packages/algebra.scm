@@ -697,16 +697,15 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.3.4")
+    (version "3.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "19m4406jvqnwh7kpcvx1lfx2vdc5zwia5q9ayv89bimg1gmln9fx"))
+                "1qh3yrwn78ms5yhwbpl5wvblk4gbz02cacdygxylr7i9xbrvylkk"))
               (file-name (string-append name "-" version ".tar.bz2"))
-	      (patches (search-patches "eigen-arm-neon-fixes.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; There are 3 test failures in the "unsupported" directory,
@@ -716,16 +715,6 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
                   (substitute* "unsupported/CMakeLists.txt"
                     (("add_subdirectory\\(test.*")
                      "# Do not build the tests for unsupported features.\n"))
-		  (substitute* "CMakeLists.txt"
-                    ;; Work around
-                    ;; <http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1114>.
-                    (("\"include/eigen3\"")
-                     "\"${CMAKE_INSTALL_PREFIX}/include/eigen3\""))
-		  (substitute* "test/bdcsvd.cpp"
-                    ;; See
-                    ;; https://bitbucket.org/eigen/eigen/commits/ea8c22ce6920e982d15245ee41d0531a46a28e5d
-                    ((".*svd_preallocate[^\n]*" &)
-                     (string-append "//" & " // Not supported by BDCSVD")))
                   #t))))
     (build-system cmake-build-system)
     (arguments
