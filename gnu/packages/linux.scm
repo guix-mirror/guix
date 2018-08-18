@@ -407,32 +407,50 @@ It has been modified to remove all non-free binary blobs.")
 (define %linux-libre-version "4.18.2")
 (define %linux-libre-hash "0kfbzwp56yf7lb884jcdwx5cia73k5ks3nzxb306lj4s249qkn17")
 
+;; This is the sole patch from versions 4.4.150, 4.9.122, 4.14.65, and 4.18.3.
+;; We apply it manually for now since these linux-libre versions have not yet
+;; been released.
+(define %linux-libre-exempt-zeroed-PTEs-from-inversion-patch
+  (origin
+    (method url-fetch)
+    (uri (string-append
+          "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
+          "/patch/?id=8f7b7e0bd3c6dd83c2795a25985bc60cfd3bdac1"))
+    (file-name "linux-libre-exempt-zeroed-PTEs-from-inversion.patch")
+    (sha256
+     (base32 "0vlpcgqhmlxnb6wpi7fpyqfdgskpza5fhlx8j5scdipj6cm1107l"))))
+
 (define %linux-libre-patches
   (list %boot-logo-patch
-        (origin
-          (method url-fetch)
-          (uri (string-append
-                "https://salsa.debian.org/kernel-team/linux"
-                "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
-                "/debian/patches/bugfix/arm/"
-                "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
-          (file-name "linux-libre-4.18-arm-export-__sync_icache_dcache.patch")
-          (sha256
-           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))
-        (origin
-          (method url-fetch)
-          (uri (string-append
-                "https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git"
-                "/patch/?id=c5157101e7793b42a56e07368c7f4cb73fb58008"))
-          (file-name "linux-libre-4.18-arm64-export-__sync_icache_dcache.patch")
-          (sha256
-           (base32 "0q13arsi8al3l3yq6d76z4h8n45wlpkjyxlrgn1sqbx5xjksycyz")))))
+        %linux-libre-exempt-zeroed-PTEs-from-inversion-patch))
+
+(define %linux-libre-4.18-patches
+  (append
+   %linux-libre-patches
+   (list (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://salsa.debian.org/kernel-team/linux"
+                 "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
+                 "/debian/patches/bugfix/arm/"
+                 "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
+           (file-name "linux-libre-4.18-arm-export-__sync_icache_dcache.patch")
+           (sha256
+            (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git"
+                 "/patch/?id=c5157101e7793b42a56e07368c7f4cb73fb58008"))
+           (file-name "linux-libre-4.18-arm64-export-__sync_icache_dcache.patch")
+           (sha256
+            (base32 "0q13arsi8al3l3yq6d76z4h8n45wlpkjyxlrgn1sqbx5xjksycyz"))))))
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %linux-compatible-systems
-                    #:patches %linux-libre-patches
+                    #:patches %linux-libre-4.18-patches
                     #:configuration-file kernel-config))
 
 (define %linux-libre-4.14-version "4.14.64")
@@ -442,24 +460,28 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-4.14-version
                     %linux-libre-4.14-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux")
+                    #:patches %linux-libre-patches
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
   (make-linux-libre "4.9.121"
                     "00vrx2rq1fcyg6fbknb92jh3ip6771zjg7g151drrhc16h4xvi9l"
                     %intel-compatible-systems
+                    #:patches %linux-libre-patches
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
   (make-linux-libre "4.4.149"
                     "12xf9mk8scajjal6dijs1l95s1cmkfwfc2mlbrra4lvy4cdg5fds"
                     %intel-compatible-systems
+                    #:patches %linux-libre-patches
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
+                    #:patches %linux-libre-4.18-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -467,6 +489,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-4.14-version
                     %linux-libre-4.14-hash
                     '("armhf-linux")
+                    #:patches %linux-libre-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -474,6 +497,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
+                    #:patches %linux-libre-4.18-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
@@ -481,6 +505,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-4.14-version
                     %linux-libre-4.14-hash
                     '("armhf-linux")
+                    #:patches %linux-libre-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
