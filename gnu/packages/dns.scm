@@ -543,7 +543,7 @@ Extensions} (DNSSEC).")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/knot"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
                     (etc (string-append doc "/examples/etc")))
                (invoke "make"
                        (string-append "config_dir=" etc)
