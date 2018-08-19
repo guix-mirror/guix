@@ -792,11 +792,13 @@ Language.")
        ("libaio" ,libaio)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
-       ("openssl" ,openssl)
        ("pcre" ,pcre)
        ("snappy" ,snappy)
        ("xz" ,xz)
        ("zlib" ,zlib)))
+    (propagated-inputs
+     ;; mariadb.pc says -lssl -lcrypto, so propagate it.
+     `(("openssl" ,openssl)))
     ;; The test suite is very resource intensive and can take more than three
     ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
     (properties '((timeout . 64800)))        ;18 hours
@@ -2167,9 +2169,6 @@ and web services platform functionality.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("mariadb" ,mariadb)
-       ;; FIXME: This should be propagated from MariaDB, but add it here
-       ;; for now to prevent a large rebuild.
-       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-dbi" ,r-dbi)))
