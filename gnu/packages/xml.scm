@@ -64,14 +64,14 @@
 (define-public expat
   (package
     (name "expat")
-    (version "2.2.5")
+    (version "2.2.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/expat/expat/"
                                  version "/expat-" version ".tar.bz2"))
              (sha256
               (base32
-               "1xpd78sp7m34jqrw5x13bz7kgz0n6aj15wn4zj4gfx3ypbpk5p6r"))))
+               "1wl1x93b5w457ddsdgj0lh7yjq4q6l7wfbgwhagkc8fm2qkkrd0p"))))
     (build-system gnu-build-system)
     (home-page "https://libexpat.github.io/")
     (synopsis "Stream-oriented XML parser library written in C")
