@@ -456,7 +456,7 @@ rsnapshot uses hard links to deduplicate identical files.")
     (build-system gnu-build-system)
     (native-inputs
      `(("guile" ,guile-2.0)
-       ("gperf" ,gperf)
+       ("gperf" ,gperf-3.0)                  ;see <https://bugs.gnu.org/32382>
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.0)
