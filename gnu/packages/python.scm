@@ -8389,6 +8389,15 @@ ambiguities (forward vs. backward slashes, etc.).
 @end enumerate")
     (license license:expat)))
 
+(define-public python2-pathlib2-bootstrap
+  (hidden-package
+   (package
+     (inherit python2-pathlib2)
+     (name "python2-pathlib2-bootstrap")
+     (propagated-inputs
+      `(("python2-scandir" ,python2-scandir)
+        ("python2-six" ,python2-six-bootstrap))))))
+
 (define-public python-jellyfish
   (package
     (name "python-jellyfish")

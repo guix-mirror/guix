@@ -619,14 +619,14 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "3.6.4")
+    (version "3.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "0h85kzdi5pfkz9v0z8xyrsj1rvnmyyjpng7cran28jmnc41w27il"))))
+         "00jv750alrj62r586hcmvpqlmkqszqfm1x7n6qnqacjmmlis2n9l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -673,6 +673,7 @@ and many external plugins.")
       (inherit pytest)
       (propagated-inputs
        `(("python2-funcsigs" ,python2-funcsigs)
+         ("python2-pathlib2" ,python2-pathlib2)
          ,@(package-propagated-inputs pytest))))))
 
 (define-public python-pytest-bootstrap
@@ -689,6 +690,7 @@ and many external plugins.")
     (package (inherit pytest)
              (propagated-inputs
               `(("python2-funcsigs" ,python2-funcsigs-bootstrap)
+                ("python2-pathlib2" ,python2-pathlib2-bootstrap)
                 ,@(package-propagated-inputs pytest))))))
 
 (define-public python-pytest-cov
