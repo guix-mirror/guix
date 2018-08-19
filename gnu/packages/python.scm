@@ -1765,7 +1765,7 @@ matching them against a list of media-ranges.")
      ;; Expected '/tmp/guix-build-python-py-1.4.31.drv-0/py-1.4.31/py'.
      ;; Is this module globally installed?"
      '(#:tests? #f))
-    (home-page "http://pylib.readthedocs.io/")
+    (home-page "https://pylib.readthedocs.io/")
     (synopsis "Python library for parsing, I/O, instrospection, and logging")
     (description
      "Py is a Python library for file name parsing, .ini file parsing, I/O,
