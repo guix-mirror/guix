@@ -13362,14 +13362,14 @@ file system events on Linux.")
 (define-public python-more-itertools
   (package
     (name "python-more-itertools")
-    (version "4.2.0")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "more-itertools" version))
        (sha256
         (base32
-         "1s6qhl7a7jy8gqw8p545rxfp7rwz1hmjr9p6prk93zbv6f9rhsrb"))))
+         "17h3na0rdh8xq30w4b9pizgkdxmm51896bxw600x84jflg9vaxn4"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six-bootstrap)))
