@@ -560,7 +560,7 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libva
   (package
     (name "libva")
-    (version "2.1.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
@@ -572,7 +572,7 @@ libebml is a C++ library to read and write EBML files.")
              (string-append "https://www.freedesktop.org/software/vaapi/releases/"
                             "libva/libva-" version "/libva-" version ".tar.bz2")))
        (sha256
-        (base32 "03sb1b3fxw8myf9kz6rxw5f3v1p0vfmk34779qx0q8fk24x9bypk"))))
+        (base32 "1wjfrs261fp9wkhgpmrlz5smnhxrmsk31way646x6i2mg16a0v3g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

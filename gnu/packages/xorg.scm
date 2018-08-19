@@ -2387,7 +2387,7 @@ XC-APPGROUP, XTEST.")
 (define-public libevdev
   (package
     (name "libevdev")
-    (version "1.5.6")
+    (version "1.5.9")
     (source
      (origin
        (method url-fetch)
@@ -2395,7 +2395,7 @@ XC-APPGROUP, XTEST.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1256ypz93039n6km4macg158fpmjgylhmcmk20pnklxicsfpxv7c"))))
+         "0xca343ff12wh6nsq76r0nbsfrm8dypjrzm4fqz9vv9v8i8kfrp1"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python)))
     (home-page "https://www.freedesktop.org/wiki/Software/libevdev/")
@@ -4566,7 +4566,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxinerama
   (package
     (name "libxinerama")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -4576,7 +4576,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1qlqfvzw45gdzk9xirgwlp2qgj0hbsyiqj8yh8zml2bk2ygnjibs"))))
+            "086p0axqj57nvkaqa6r00dnr9kyrn1m8blgf0zjy25zpxkbxn200"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))

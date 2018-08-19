@@ -58,12 +58,6 @@
   (let ((module (resolve-interface '(gnu packages build-tools))))
     (module-ref module 'meson-for-build)))
 
-(define (default-patchelf)
-  "Return the default patchelf package."
-  ;; Lazily resolve the binding to avoid a circular dependency.
-  (let ((module (resolve-interface '(gnu packages elf))))
-    (module-ref module 'patchelf)))
-
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
                 (meson (default-meson))
@@ -81,15 +75,6 @@
          (system system)
          (build-inputs `(("meson" ,meson)
                          ("ninja" ,ninja)
-                         ;; XXX PatchELF fails to build on armhf, so we skip
-                         ;; the 'fix-runpath' phase there for now.  It is used
-                         ;; to avoid superfluous entries in RUNPATH as described
-                         ;; in <https://bugs.gnu.org/28444#46>, so armhf may now
-                         ;; have different runtime dependencies from other arches.
-                         ,@(if (not (string-prefix? "arm" (or (%current-target-system)
-                                                              (%current-system))))
-                               `(("patchelf" ,(default-patchelf)))
-                               '())
                          ,@native-inputs))
          (host-inputs `(,@(if source
                               `(("source" ,source))
@@ -147,10 +132,7 @@ has a 'meson.build' file."
                     #:inputs %build-inputs
                     #:search-paths ',(map search-path-specification->sexp
                                           search-paths)
-                    #:phases
-                    (if (string-prefix? "arm" ,system)
-                        (modify-phases build-phases (delete 'fix-runpath))
-                        build-phases)
+                    #:phases build-phases
                     #:configure-flags ,configure-flags
                     #:build-type ,build-type
                     #:tests? ,tests?

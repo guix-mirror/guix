@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -1176,7 +1176,7 @@ XML/CSS rendering engine.")
 (define-public libgsf
   (package
     (name "libgsf")
-    (version "1.14.42")
+    (version "1.14.43")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1184,7 +1184,7 @@ XML/CSS rendering engine.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hhdz0ymda26q6bl5ygickkgrh998lxqq4z9i8dzpcvqna3zpzr9"))))
+                "05pf3h0dha3s20ddsrljbx7m94qyiqs5igwxx1ql0vlsdlylx50j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -4177,7 +4177,11 @@ a secret password store, an adblocker, and a modern UI.")
      ;;      subsystem
      ;;   FAIL
      '(#:tests? #f
-       #:glib-or-gtk? #t))
+       #:glib-or-gtk? #t
+       #:configure-flags
+       ;; Otherwise, the RUNPATH will lack the final 'epiphany' path component.
+       (list (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib/epiphany"))))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (native-inputs

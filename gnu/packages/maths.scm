@@ -276,22 +276,20 @@ enough to be used effectively as a scientific calculator.")
 (define-public double-conversion
   (package
     (name "double-conversion")
-    (version "1.1.5")
+    (version "3.0.0")
+    (home-page "https://github.com/google/double-conversion")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/floitsch/double-conversion/archive/v"
-                    version ".tar.gz"))
+              (uri (string-append home-page "/archive/v" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0cnr8xhyjfxijay8ymkqcph3672wp2lj23qhdmr3m4kia5kpdf83"))))
+                "059r1czs28ljjd388pn6l3njg1ghbf1cv3q9nkxv3dj2a8siabqm"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"
        #:configure-flags '("-DBUILD_SHARED_LIBS=ON"
                            "-DBUILD_TESTING=ON")))
-    (home-page "https://github.com/floitsch/double-conversion")
     (synopsis "Conversion routines for IEEE doubles")
     (description
      "The double-conversion library provides binary-decimal and decimal-binary
@@ -2827,7 +2825,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
@@ -2836,7 +2834,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "14a9vyvp2k5zpd0axbnqk0d3khc1v3cck10nb5fj7d2sgn8490ky"))))
+         "0b20km2jv7m6qiylrlvhq2vnmkmilb633mr8rhqmgbn1wqrp58jq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -2875,16 +2873,6 @@ parts of it.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         ;; Conditionally apply a patch on i686 to avoid rebuilding
-         ;; all architectures.  FIXME: This should be moved to the
-         ;; (source (patches ...)) field in the next rebuild cycle.
-         ,@(if (string-prefix? "i686" (or (%current-target-system)
-                                          (%current-system)))
-               `((add-after 'unpack 'fix-tests
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (invoke "patch" "-p1"
-                             "--input" (assoc-ref inputs "i686-fix-tests.patch")))))
-               '())
          (add-before 'build 'set-extralib
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Get libgfortran found when building in utest.
@@ -2896,11 +2884,6 @@ parts of it.")
      `(("fortran-lib" ,gfortran "lib")))
     (native-inputs
      `(("cunit" ,cunit)
-       ,@(if (string-prefix? "i686" (or (%current-target-system)
-                                        (%current-system)))
-             `(("i686-fix-tests.patch"
-                ,(search-patch "openblas-fix-tests-i686.patch")))
-             '())
        ("fortran" ,gfortran)
        ("perl" ,perl)))
     (home-page "http://www.openblas.net/")

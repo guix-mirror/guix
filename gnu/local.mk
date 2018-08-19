@@ -934,6 +934,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/make-glibc-compat.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
   %D%/packages/patches/mariadb-gcc-ice.patch			\
+  %D%/packages/patches/mariadb-client-test-32bit.patch		\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
   %D%/packages/patches/maxima-defsystem-mkdir.patch		\
@@ -990,7 +991,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ola-readdir-r.patch			\
   %D%/packages/patches/openbabel-fix-crash-on-nwchem-output.patch	\
   %D%/packages/patches/opencascade-oce-glibc-2.26.patch		\
-  %D%/packages/patches/openblas-fix-tests-i686.patch		\
   %D%/packages/patches/openexr-missing-samples.patch		\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openldap-CVE-2017-9287.patch		\
@@ -1051,7 +1051,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/psm-ldflags.patch			\
   %D%/packages/patches/psm-repro.patch				\
   %D%/packages/patches/pulseaudio-fix-mult-test.patch		\
-  %D%/packages/patches/pulseaudio-glibc-2.27.patch		\
   %D%/packages/patches/pulseaudio-longer-test-timeout.patch	\
   %D%/packages/patches/pybugz-encode-error.patch		\
   %D%/packages/patches/pybugz-stty.patch			\
