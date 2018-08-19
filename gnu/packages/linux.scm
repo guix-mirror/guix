@@ -404,10 +404,10 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.18.2")
-(define %linux-libre-hash "0kfbzwp56yf7lb884jcdwx5cia73k5ks3nzxb306lj4s249qkn17")
+(define %linux-libre-version "4.18.3")
+(define %linux-libre-hash "0z7nnkmk5d2npilviqxa0m6nn30f5arhviysby78kkb3j2isx9jx")
 
-(define %linux-libre-patches
+(define %linux-libre-4.18-patches
   (list %boot-logo-patch
         (origin
           (method url-fetch)
@@ -432,7 +432,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %linux-compatible-systems
-                    #:patches %linux-libre-patches
+                    #:patches %linux-libre-4.18-patches
                     #:configuration-file kernel-config))
 
 (define %linux-libre-4.14-version "4.14.65")
@@ -460,6 +460,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
+                    #:patches %linux-libre-4.18-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -474,6 +475,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
+                    #:patches %linux-libre-4.18-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
