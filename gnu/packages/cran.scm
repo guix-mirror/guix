@@ -1951,14 +1951,14 @@ clustered data.")
 (define-public r-mitml
   (package
     (name "r-mitml")
-    (version "0.3-5")
+    (version "0.3-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mitml" version))
        (sha256
         (base32
-         "1s888r9y2ri39b48h1iypps6lddqkqv3g31l2sjmi2pvyccfpkwb"))))
+         "1pkqv4qazih3byws5z6629pp232n8ra56lip7502727b0b4bsndw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-haven" ,r-haven)
