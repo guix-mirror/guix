@@ -1953,14 +1953,14 @@ for ODBC.")
 (define-public python-pyodbc
   (package
     (name "python-pyodbc")
-    (version "4.0.21")
+    (version "4.0.24")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyodbc" version))
        (sha256
         (base32
-         "0a83zwz3h1agshnsc6r7al6q83222w8601gpzzzjvjz5m56ghmcn"))
+         "1m311vi7vpay1j7rkq71fpsk0gb7454k4lldk5b63hyy6yvsn9j3"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
