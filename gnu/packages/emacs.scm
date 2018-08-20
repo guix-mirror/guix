@@ -1878,14 +1878,14 @@ Stack Overflow, Super User, and other StackExchange sites.")
     (name "emacs-f")
     (version "0.19.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rejeep/f.el/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rejeep/f.el.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "05195n80ywa68qykxn7dza6qd59rhakvlzhaa9l6mcpmjf9l9grs"))))
+                "1j6gc2pp5w3iwyjm4h3d0ahzs0ac3pah8lzfhpg4nkibl0nc1bcg"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
