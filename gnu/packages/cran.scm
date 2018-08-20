@@ -2629,14 +2629,14 @@ iVAT).")
 (define-public r-xfun
   (package
     (name "r-xfun")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xfun" version))
        (sha256
         (base32
-         "0zl22fcw90kdvzkjyf6vbmdmn9rz3bl51522fasvmykypffyng4a"))))
+         "1r11dd49ngmjgbjdv28a9c1jp8cg1l50x0acbsamzz576p8i2wl9"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/xfun")
     (synopsis "Miscellaneous functions")
