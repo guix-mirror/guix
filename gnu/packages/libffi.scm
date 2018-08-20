@@ -50,7 +50,10 @@
               (patches (search-patches "libffi-3.2.1-complex-alpha.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(;; Prevent the build system from passing -march and -mtune to the
+       ;; compiler.  See "ax_cc_maxopt.m4" and "ax_gcc_archflag.m4".
+       #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'post-install
            (lambda* (#:key outputs #:allow-other-keys)
