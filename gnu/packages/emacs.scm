@@ -1876,7 +1876,7 @@ Stack Overflow, Super User, and other StackExchange sites.")
 (define-public emacs-f
   (package
     (name "emacs-f")
-    (version "0.19.0")
+    (version "0.20.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1885,7 +1885,7 @@ Stack Overflow, Super User, and other StackExchange sites.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1j6gc2pp5w3iwyjm4h3d0ahzs0ac3pah8lzfhpg4nkibl0nc1bcg"))))
+                "1a47xk3yp1rp17fqg7ldl3d3fb888h0fz3sysqfdz1bfdgs8a9bk"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
