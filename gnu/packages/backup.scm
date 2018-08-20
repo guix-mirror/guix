@@ -740,12 +740,15 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
        ("python2-pep8" ,python2-pep8)
        ("python2-pylint" ,python2-pylint)))
     (home-page "https://obnam.org/")
-    (synopsis "Easy and secure backup program")
-    (description "Obnam is an easy, secure backup program.  Features
-include snapshot backups, data de-duplication and encrypted backups
-using GnuPG.  Backups can be stored on local hard disks, or online via
-the SSH SFTP protocol.  The backup server, if used, does not require
-any special software, on top of SSH.")
+    (synopsis "Retired backup program")
+    (description
+     "Warning: @uref{https://blog.liw.fi/posts/2017/08/13/retiring_obnam/,
+the Obnam project is retired}.  You should use another backup solution instead.
+
+Obnam was an easy, secure backup program.  Features included snapshot backups,
+data de-duplication and encrypted backups using GnuPG.  Backups can be stored on
+local hard disks, or online via the SSH SFTP protocol.  The backup server, if
+used, does not require any special software, on top of SSH.")
     (license license:gpl3+)))
 
 (define-public dirvish
