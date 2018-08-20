@@ -130,9 +130,12 @@ buffers.")
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML
     (arguments
-     '(#:configure-flags (list (string-append "--with-html-dir="
-                                              (assoc-ref %outputs "doc")
-                                              "/share/gtk-doc/html"))
+     '(#:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html")
+             ;; ./configure requests not to annoy upstream with packaging bugs.
+             "--with-bug-report-url=https://bugs.gnu.org/guix")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-sitecustomize.py
