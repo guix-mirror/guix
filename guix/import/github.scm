@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -132,7 +132,12 @@ the package e.g. 'bedtools2'.  Return #f if there is no releases"
          (json (json-fetch
                 (if token
                     (string-append api-url "?access_token=" token)
-                    api-url))))
+                    api-url)
+                #:headers
+                ;; Ask for version 3 of the API as suggested at
+                ;; <https://developer.github.com/v3/>.
+                `((Accept . "application/vnd.github.v3+json")
+                  (user-agent . "GNU Guile")))))
     (if (eq? json #f)
         (if token
             (error "Error downloading release information through the GitHub
