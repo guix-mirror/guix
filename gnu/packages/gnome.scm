@@ -6708,7 +6708,7 @@ is suitable as a default application in a Desktop environment.")
 (define-public xpad
   (package
     (name "xpad")
-    (version "5.0.0")
+    (version "5.1.0")
     (source
      (origin
        (method url-fetch)
@@ -6717,14 +6717,8 @@ is suitable as a default application in a Desktop environment.")
                            name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "02yikxg6z9bwla09ka001ppjlpbv5kbza3za9asazm5aiz376mkb"))))
+         "0l0g5x8g6dwhf5ksnqqrjjsycy57kcvdslkmsr6bl3vrsjd7qml3"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'run-autogen
-           (lambda _
-             (system* "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
