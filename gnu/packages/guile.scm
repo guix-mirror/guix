@@ -1241,31 +1241,20 @@ above command-line parameters.")
 (define-public guile-redis
   (package
     (name "guile-redis")
-    (version "0.1.0")
+    (version "1.0.0")
+    (home-page "https://github.com/aconchillo/guile-redis")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/guile-redis/guile-redis-"
-                                  version ".tar.gz"))
+              (uri (string-append home-page "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "0vx6if6b4r3kwx64vzbs6vpc0cpcr85x11w9vkzq27gw8n7isv56"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Make sure everything goes under .../site/X.Y, like Guile's
-               ;; search paths expects.
-               '(begin
-                  (substitute* "configure"
-                    (("ac_subst_vars='")
-                     "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
-                  (substitute* '("Makefile.in"
-                                 "redis/Makefile.in"
-                                 "redis/commands/Makefile.in")
-                    (("moddir =.*/share/guile/site" all)
-                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
-                  #t))))
+                "1dp5fmqvma59pvp1nfpq6hqgbmjici8sd1y8llahl87fynw1dvr9"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("guile" ,guile-2.2)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("guile" ,guile-2.2)))
     (home-page "https://savannah.nongnu.org/projects/guile-redis/")
     (synopsis "Redis client library for Guile")
     (description "Guile-redis provides a Scheme interface to the Redis
