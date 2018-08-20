@@ -2534,14 +2534,14 @@ database).")
 (define-public python-mysqlclient
   (package
     (name "python-mysqlclient")
-    (version "1.3.10")
+    (version "1.3.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mysqlclient" version))
        (sha256
         (base32
-         "0qkj570x4rbsblji6frvsvp2v1ap32dqzj1lq62zp9515ffsyaj5"))))
+         "0kv4a1icwdav8jpl7qvnr931lw5h3v22ids6lwq6qpi1hjzf33pz"))))
     (build-system python-build-system)
     (native-inputs
      `(("mariadb" ,mariadb)
