@@ -187,7 +187,9 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
                (wrap-program (string-append luakit "/bin/luakit")
                  `("LUA_CPATH" prefix
                    (,(string-append lua5.1-filesystem
-                                    "/lib/lua/5.1/?.so;;"))))
+                                    "/lib/lua/5.1/?.so;;")))
+                 `("XDG_CONFIG_DIRS" prefix
+                   (,(string-append luakit "/etc/xdg/"))))
                #t))))))
     (synopsis "Fast, lightweight, and simple browser based on WebKit")
     (description "Luakit is a fast, lightweight, and simple to use
