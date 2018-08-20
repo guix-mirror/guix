@@ -4919,14 +4919,14 @@ implementation of D-Bus.")
 (define-public python-lxml
   (package
     (name "python-lxml")
-    (version "3.8.0")
+    (version "4.2.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lxml" version))
         (sha256
          (base32
-          "15nvf6n285n282682qyw3wihsncb0x5amdhyi4b83bfa2nz74vvk"))))
+          "1jk336k0kw616gfhqk1wwxsjjwz0flld0n294lz8kxch610bxbz2"))))
     (build-system python-build-system)
     (inputs
       `(("libxml2" ,libxml2)
