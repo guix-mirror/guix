@@ -13979,3 +13979,29 @@ Numba works by generating optimized machine code using the LLVM compiler
 infrastructure at import time, runtime, or statically (using the included pycc
 tool).")
     (license license:bsd-3)))
+
+(define-public python-anndata
+  (package
+    (name "python-anndata")
+    (version "0.6.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "anndata" version))
+       (sha256
+        (base32
+         "1fh461xyyc7pcrjfgd013bdc2alf53r46ss3gfw3431mbb1gappi"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-h5py" ,python-h5py)
+       ("python-natsort" ,python-natsort)
+       ("python-pandas" ,python-pandas)
+       ("python-scipy" ,python-scipy)))
+    (home-page "https://github.com/theislab/anndata")
+    (synopsis "Annotated data for data analysis pipelines")
+    (description "Anndata is a package for simple (functional) high-level APIs
+for data analysis pipelines.  In this context, it provides an efficient,
+scalable way of keeping track of data together with learned annotations and
+reduces the code overhead typically encountered when using a mostly
+object-oriented library such as @code{scikit-learn}.")
+    (license license:bsd-3)))
