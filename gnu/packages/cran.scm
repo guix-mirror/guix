@@ -2712,15 +2712,17 @@ terminals.")
 (define-public r-tinytex
   (package
     (name "r-tinytex")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tinytex" version))
        (sha256
         (base32
-         "1pg4jfyvandjwz3lmr38pbqi9d045iwkk3xklhsfhhxq6aviq9p7"))))
+         "16y9dldaff2kx1fkm92p7zlph0dcrdmlmavpdgf5y9jbhmc8g83f"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-xfun" ,r-xfun)))
     (home-page "https://github.com/yihui/tinytex")
     (synopsis "Helper functions for TeX Live and compiling LaTeX documents")
     (description
