@@ -2120,7 +2120,7 @@ implementation for Python.")
 (define-public virtuoso-ose
   (package
     (name "virtuoso-ose")
-    (version "7.2.4.2")
+    (version "7.2.5")
     (source
      (origin
        (method url-fetch)
@@ -2128,7 +2128,7 @@ implementation for Python.")
              "https://github.com/openlink/virtuoso-opensource/releases/"
              "download/v" version "/virtuoso-opensource-" version ".tar.gz"))
        (sha256
-        (base32 "12dqam1gc1v93l0bj0vlpvjqppki6y1hqrlznywxnw0rrz9pb002"))))
+        (base32 "0r1xakclkfi69pzh8z2k16z3x0m49pxp764icj0ad4w4bb97fr42"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Tests require a network connection.
