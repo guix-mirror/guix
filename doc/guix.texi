@@ -170,7 +170,7 @@ Programming Interface
 
 Defining Packages
 
-* package Reference ::          The package data type.
+* package Reference::           The package data type.
 * origin Reference::            The origin data type.
 
 Utilities
@@ -3522,7 +3522,7 @@ when @var{cut?} returns true for a given package.
 @end deffn
 
 @menu
-* package Reference ::          The package data type.
+* package Reference::           The package data type.
 * origin Reference::            The origin data type.
 @end menu
 
