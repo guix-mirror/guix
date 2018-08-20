@@ -1905,14 +1905,14 @@ or between integer vectors representing generic sequences.")
 (define-public r-jomo
   (package
     (name "r-jomo")
-    (version "2.6-2")
+    (version "2.6-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "jomo" version))
        (sha256
         (base32
-         "0zyqwa2y08asj9xqwnngh6da1b9cqcx8pzc9cxwrmgnxd5nnsjb7"))))
+         "14s8q0j5zgl1g1pfxg3a4y1jzvs0wl61ir4992wsj7safskj7zvi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lme4" ,r-lme4)
