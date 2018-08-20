@@ -3,12 +3,23 @@
 #+STARTUP: content hidestars
 
 Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
   notice and this notice are preserved.
 
 Please send Guix bug reports to bug-guix@gnu.org.
+
+* Changes since 0.15.0
+
+** Package management
+
+*** ‘guix import pypi’ has a new ‘--recursive’ option
+*** ‘guix import hackage’ has a new ‘--recursive’ option
+*** ‘guix import stackage’ has a new ‘--recursive’ option
+The short option for ‘--lts-version’ is now ‘-l’ (used to be ‘-r’).
+
 
 * Changes in 0.15.0 (since 0.14.0)
 
