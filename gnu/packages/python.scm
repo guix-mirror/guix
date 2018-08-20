@@ -3946,7 +3946,7 @@ services for your Python modules and applications.")
 (define-public python-olefile
   (package
     (name "python-olefile")
-    (version "0.44")
+    (version "0.45.1")
     (source
      (origin
        (method url-fetch)
@@ -3955,7 +3955,7 @@ services for your Python modules and applications.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1wmxbrhyqjry2000zx0zdhqdqxhgi06nz7sbzjlh222q2zjv1gpj"))))
+         "18ai19zwagm6nli14k8bii31ipbab2rp7plrvsm6gmfql551a8ai"))))
     (build-system python-build-system)
     (home-page
      "https://www.decalage.info/python/olefileio")
