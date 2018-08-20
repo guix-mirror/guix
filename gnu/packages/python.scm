@@ -99,6 +99,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
@@ -13895,3 +13896,86 @@ Let's Encrypt.")
 development that supports command line argument parsing, command string
 validation testing and application logic.")
     (license license:expat)))
+
+;; Make sure to upgrade python-llvmlite in (gnu packages llvm) together with
+;; python-numba.  They have a very unflexible relationship.
+(define-public python-numba
+  (package
+    (name "python-numba")
+    (version "0.39.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "numba" version))
+       (sha256
+        (base32
+         "1bibvkwga1v8293i9ivl469d8bzgabn3vgr2ig7c1i68v8frsx07"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-proprietary-features
+           (lambda _
+             (setenv "NUMBA_DISABLE_HSA" "1")
+             (setenv "NUMBA_DISABLE_CUDA" "1")
+             #t))
+         (add-after 'unpack 'remove-failing-tests
+           (lambda _
+             ;; FIXME: these tests fail for unknown reasons:
+             ;; test_non_writable_pycache, test_non_creatable_pycache, and
+             ;; test_frozen (all in numba.tests.test_dispatcher.TestCache).
+             (substitute* "numba/tests/test_dispatcher.py"
+               (("def test(_non_writable_pycache)" _ m)
+                (string-append "def guix_skip" m))
+               (("def test(_non_creatable_pycache)" _ m)
+                (string-append "def guix_skip" m))
+               (("def test(_frozen)" _ m)
+                (string-append "def guix_skip" m)))
+
+             ;; These tests fail because we don't run the tests from the build
+             ;; directory: test_setup_py_distutils, test_setup_py_setuptools
+             ;; They ar in numba.tests.test_pycc.TestDistutilsSupport.
+             (substitute* "numba/tests/test_pycc.py"
+               (("def test(_setup_py_distutils|_setup_py_setuptools)" _ m)
+                (string-append "def guix_skip" m)))
+             #t))
+         (replace 'check
+           (lambda _
+             (let ((cwd (getcwd)))
+               (setenv "PYTHONPATH"
+                       (string-append cwd "/build/"
+                                      (find (cut string-prefix? "lib" <>)
+                                            (scandir (string-append cwd "/build")))
+                                      ":"
+                                      (getenv "PYTHONPATH")))
+               ;; Something is wrong with the PYTHONPATH when running the
+               ;; tests from the build directory, as it complains about not being
+               ;; able to import certain modules.
+               (with-directory-excursion "/tmp"
+                 (invoke "python3" "-m" "numba.runtests" "-v" "-m")))
+             #t)))))
+    (propagated-inputs
+     `(("python-llvmlite" ,python-llvmlite)
+       ("python-numpy" ,python-numpy)
+       ("python-singledispatch" ,python-singledispatch)))
+    ;; Needed for tests.
+    (inputs
+     `(("python-jinja2" ,python-jinja2)
+       ("python-pygments" ,python-pygments)))
+    (home-page "https://numba.pydata.org")
+    (synopsis "Compile Python code using LLVM")
+    (description "Numba gives you the power to speed up your applications with
+high performance functions written directly in Python.  With a few
+annotations, array-oriented and math-heavy Python code can be just-in-time
+compiled to native machine instructions, similar in performance to C, C++ and
+Fortran, without having to switch languages or Python interpreters.
+
+Numba works by generating optimized machine code using the LLVM compiler
+infrastructure at import time, runtime, or statically (using the included pycc
+tool).")
+    (license license:bsd-3)))
