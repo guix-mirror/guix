@@ -6699,9 +6699,14 @@ Specific command-line options are:
 @itemx -t
 Do not include dependencies required only by the test suites.
 @item --lts-version=@var{version}
-@itemx -r @var{version}
+@itemx -l @var{version}
 @var{version} is the desired LTS release version.  If omitted the latest
 release is used.
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
 @end table
 
 The command below imports metadata for the @code{HTTP} Haskell package
