@@ -120,26 +120,52 @@ repository separated by a forward slash, from a string URL of the form
   ;; limit, or #f.
   (make-parameter (getenv "GUIX_GITHUB_TOKEN")))
 
+(define (fetch-releases-or-tags url)
+  "Fetch the list of \"releases\" or, if it's empty, the list of tags for the
+repository at URL.  Return the corresponding JSON dictionaries (hash tables),
+or #f if the information could not be retrieved.
+
+We look at both /releases and /tags because the \"release\" feature of GitHub
+is little used; often, people simply provide a tag.  What's confusing is that
+tags show up in the \"Releases\" tab of the web UI.  For instance,
+'https://github.com/aconchillo/guile-json/releases' shows a number of
+\"releases\" (really: tags), whereas
+'https://api.github.com/repos/aconchillo/guile-json/releases' returns the
+empty list."
+  (define release-url
+    (string-append "https://api.github.com/repos/"
+                   (github-user-slash-repository url)
+                   "/releases"))
+  (define tag-url
+    (string-append "https://api.github.com/repos/"
+                   (github-user-slash-repository url)
+                   "/tags"))
+
+  (define headers
+    ;; Ask for version 3 of the API as suggested at
+    ;; <https://developer.github.com/v3/>.
+    `((Accept . "application/vnd.github.v3+json")
+      (user-agent . "GNU Guile")))
+
+  (define (decorate url)
+    (if (%github-token)
+        (string-append url "?access_token=" (%github-token))
+        url))
+
+  (match (json-fetch (decorate release-url) #:headers headers)
+    (()
+     ;; We got the empty list, presumably because the user didn't use GitHub's
+     ;; "release" mechanism, but hopefully they did use Git tags.
+     (json-fetch (decorate tag-url) #:headers headers))
+    (x x)))
+
 (define (latest-released-version url package-name)
   "Return a string of the newest released version name given a string URL like
 'https://github.com/arq5x/bedtools2/archive/v2.24.0.tar.gz' and the name of
 the package e.g. 'bedtools2'.  Return #f if there is no releases"
-  (let* ((token (%github-token))
-         (api-url (string-append
-                   "https://api.github.com/repos/"
-                   (github-user-slash-repository url)
-                   "/releases"))
-         (json (json-fetch
-                (if token
-                    (string-append api-url "?access_token=" token)
-                    api-url)
-                #:headers
-                ;; Ask for version 3 of the API as suggested at
-                ;; <https://developer.github.com/v3/>.
-                `((Accept . "application/vnd.github.v3+json")
-                  (user-agent . "GNU Guile")))))
+  (let* ((json (fetch-releases-or-tags url)))
     (if (eq? json #f)
-        (if token
+        (if (%github-token)
             (error "Error downloading release information through the GitHub
 API when using a GitHub token")
             (error "Error downloading release information through the GitHub
@@ -159,7 +185,8 @@ https://github.com/settings/tokens"))
             (()                       ;empty release list
              #f)
             ((release . rest)         ;one or more releases
-             (let ((tag (hash-ref release "tag_name"))
+             (let ((tag (or (hash-ref release "tag_name") ;a "release"
+                            (hash-ref release "name")))   ;a tag
                    (name-length (string-length package-name)))
                ;; some tags include the name of the package e.g. "fdupes-1.51"
                ;; so remove these
