@@ -172,19 +172,19 @@ API when using a GitHub token")
 API. This may be fixed by using an access token and setting the environment
 variable GUIX_GITHUB_TOKEN, for instance one procured from
 https://github.com/settings/tokens"))
-        (let ((proper-releases
-               (filter
-                (lambda (x)
-                  ;; example pre-release:
-                  ;; https://github.com/wwood/OrfM/releases/tag/v0.5.1
-                  ;; or an all-prerelease set
-                  ;; https://github.com/powertab/powertabeditor/releases
-                  (not (hash-ref x "prerelease")))
-                json)))
-          (match proper-releases
-            (()                       ;empty release list
+        (let loop ((releases
+                    (filter
+                     (lambda (x)
+                       ;; example pre-release:
+                       ;; https://github.com/wwood/OrfM/releases/tag/v0.5.1
+                       ;; or an all-prerelease set
+                       ;; https://github.com/powertab/powertabeditor/releases
+                       (not (hash-ref x "prerelease")))
+                     json)))
+          (match releases
+            (()                                   ;empty release list
              #f)
-            ((release . rest)         ;one or more releases
+            ((release . rest)                     ;one or more releases
              (let ((tag (or (hash-ref release "tag_name") ;a "release"
                             (hash-ref release "name")))   ;a tag
                    (name-length (string-length package-name)))
@@ -196,8 +196,16 @@ https://github.com/settings/tokens"))
                    (substring tag (+ name-length 1))
                    ;; some tags start with a "v" e.g. "v0.25.0"
                    ;; where some are just the version number
-                   (if (eq? (string-ref tag 0) #\v)
-                       (substring tag 1) tag)))))))))
+                   (if (string-prefix? "v" tag)
+                       (substring tag 1)
+
+                       ;; Finally, reject tags that don't start with a digit:
+                       ;; they may not represent a release.
+                       (if (and (not (string-null? tag))
+                                (char-set-contains? char-set:digit
+                                                    (string-ref tag 0)))
+                           tag
+                           (loop rest)))))))))))
 
 (define (latest-release pkg)
   "Return an <upstream-source> for the latest release of PKG."
