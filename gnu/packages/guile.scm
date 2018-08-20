@@ -906,7 +906,7 @@ for Guile\".")
 (define-public guile-json
   (package
     (name "guile-json")
-    (version "1.0.1")
+    (version "1.1.1")
     (home-page "https://github.com/aconchillo/guile-json")
     (source (origin
               (method url-fetch)
@@ -915,23 +915,11 @@ for Guile\".")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "16155dv30rhagz6dwv7xc87l386i8v0f1kgydqa2ajr166fi9qhr"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Make sure everything goes under .../site/X.Y, like Guile's
-               ;; search paths expects.
-               '(begin
-                  (substitute* "configure.ac"
-                    (("GUILE_PROGS")
-                     (string-append "GUILE_PROGS\n"
-                                    "AC_SUBST([GUILE_EFFECTIVE_VERSION])\n")))
-                  (substitute* '("Makefile.am" "json/Makefile.am")
-                    (("moddir[[:blank:]]*=.*/share/guile/site" all)
-                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
-                  #t))))
+                "12jqkn9qgwdlxbasy2n25a2a7apf30dww1nnxqfam5735k3jdngv"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
+                     ("pkg-config" ,pkg-config)
                      ("guile" ,guile-2.2)))
     (inputs `(("guile" ,guile-2.2)))
     (synopsis "JSON module for Guile")
