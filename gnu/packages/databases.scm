@@ -2267,7 +2267,7 @@ Database API 2.0T.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _ (zero? (system* "py.test")))))))
+           (lambda _ (invoke "py.test"))))))
     (home-page "http://www.sqlalchemy.org")
     (synopsis "Database abstraction library")
     (description
