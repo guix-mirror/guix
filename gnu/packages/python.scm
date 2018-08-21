@@ -2193,7 +2193,7 @@ object.")
 (define-public python-markupsafe
   (package
     (name "python-markupsafe")
-    (version "0.23")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
@@ -2202,7 +2202,7 @@ object.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1hvip33wva3fnmvfp9x5klqri7hpl1hkgqmjbss18nmrb7zimv54"))))
+         "0rdn1s8x9ni7ss8rfiacj7x1085lx8mh2zdwqslnw8xc3l4nkgm6"))))
     (build-system python-build-system)
     (home-page "https://github.com/mitsuhiko/markupsafe")
     (synopsis "XML/HTML/XHTML markup safe string implementation for Python")
