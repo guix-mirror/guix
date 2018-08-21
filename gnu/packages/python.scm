@@ -3669,14 +3669,14 @@ operators such as union, intersection, and difference.")
 (define-public python-rpy2
   (package
     (name "python-rpy2")
-    (version "2.9.0")
+    (version "2.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rpy2" version))
        (sha256
         (base32
-         "0bqihjrdqwj5r1h86shvfb1p5hfr4a6klv1v54bzfr9r144w3rni"))))
+         "0bl1d2qhavmlrvalir9hmkjh74w21vzkvc2sg3cbb162s10zfmxy"))))
     (build-system python-build-system)
     (arguments
      '(#:modules ((ice-9 ftw)
@@ -3686,14 +3686,6 @@ operators such as union, intersection, and difference.")
                   (guix build python-build-system))
        #:phases
        (modify-phases %standard-phases
-         ;; Without this phase the test loader cannot find the directories, in
-         ;; which it is supposed to look for test files.
-         (add-after 'unpack 'fix-tests
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "rpy/tests.py"
-               (("loader.discover\\(")
-                "loader.discover(rpy_root + '/' +"))
-             #t))
          (replace 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((cwd (getcwd)))
@@ -3703,8 +3695,7 @@ operators such as union, intersection, and difference.")
                                             (scandir (string-append cwd "/build")))
                                       ":"
                                       (getenv "PYTHONPATH"))))
-             ;; FIXME: Even when all tests pass, the check phase will fail.
-             (system* "python" "-m" "rpy2.tests" "-v"))))))
+             (invoke "python" "-m" "rpy2.tests" "-v"))))))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-jinja2" ,python-jinja2)
