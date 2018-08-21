@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -27,7 +27,8 @@
   #:use-module (srfi srfi-1)   ; list library
   #:use-module (srfi srfi-26)  ; cut and cute
   #:export (replace-store-references
-            rewrite-directory))
+            rewrite-directory
+            graft))
 
 ;;; Commentary:
 ;;;
@@ -320,5 +321,21 @@ file name pairs."
                   (find-files directory (const #t)
                               #:directories? #t))
   (rename-matching-files output mapping))
+
+(define* (graft old-outputs new-outputs mapping
+                #:key (log-port (current-output-port)))
+  "Apply the grafts described by MAPPING on OLD-OUTPUTS, leading to
+NEW-OUTPUTS.  MAPPING must be a list of file name pairs; OLD-OUTPUTS and
+NEW-OUTPUTS are lists of output name/file name pairs."
+  (for-each (lambda (input output)
+              (format log-port "grafting '~a' -> '~a'...~%" input output)
+              (force-output)
+              (rewrite-directory input output mapping))
+            (match old-outputs
+              (((names . files) ...)
+               files))
+            (match new-outputs
+              (((names . files) ...)
+               files))))
 
 ;;; graft.scm ends here
