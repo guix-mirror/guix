@@ -2404,6 +2404,9 @@ Sphinx documentation into your web application.  It provides tools to
 integrate Sphinx documents in web templates and to handle searches.")
     (license license:bsd-3)))
 
+(define-public python2-sphinxcontrib-websupport
+  (package-with-python2 python-sphinxcontrib-websupport))
+
 (define-public python-sphinx
   (package
     (name "python-sphinx")
