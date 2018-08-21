@@ -2223,14 +2223,14 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "2.9.6")
+    (version "2.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "1zzrkywhziqffrzks14kzixz7nd4yh2vc0fb04a68vfd2ai03anx"))))
+         "190l36hfw3wb2n3n68yacjabxyb1pnxwn7vjx96cmjj002xy2jzq"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
