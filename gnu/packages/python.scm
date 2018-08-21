@@ -617,14 +617,14 @@ by @code{binstar}, @code{binstar-build} and @code{chalmers}.")
 (define-public python-babel
   (package
     (name "python-babel")
-    (version "2.3.4")
+    (version "2.6.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "Babel" version))
       (sha256
        (base32
-        "0x98qqqw35xllpcama013a9788ly84z8dm1w2wwfpxh2710c8df5"))))
+        "08rxmbx2s4irp0w0gmn498vns5xy0fagm0fg33xa772jiks51flc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pytz" ,python-pytz)))
