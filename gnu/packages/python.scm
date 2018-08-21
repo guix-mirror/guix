@@ -3722,7 +3722,7 @@ operators such as union, intersection, and difference.")
        ("python-numpy" ,python-numpy)))
     (native-inputs
      `(("zlib" ,zlib)))
-    (home-page "http://rpy.sourceforge.net/")
+    (home-page "https://rpy2.bitbucket.io/")
     (synopsis "Python interface to the R language")
     (description "rpy2 is a redesign and rewrite of rpy.  It is providing a
 low-level interface to R from Python, a proposed high-level interface,
