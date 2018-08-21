@@ -171,6 +171,7 @@ MODULES =					\
   guix/build/svn.scm				\
   guix/build/syscalls.scm                       \
   guix/build/gremlin.scm			\
+  guix/build/debug-link.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/java-utils.scm			\
   guix/build/lisp-utils.scm			\
@@ -363,6 +364,7 @@ SCM_TESTS =					\
   tests/syscalls.scm				\
   tests/inferior.scm				\
   tests/gremlin.scm				\
+  tests/debug-link.scm				\
   tests/bournish.scm				\
   tests/lint.scm				\
   tests/publish.scm				\

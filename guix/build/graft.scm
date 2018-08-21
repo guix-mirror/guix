@@ -19,6 +19,7 @@
 
 (define-module (guix build graft)
   #:use-module (guix build utils)
+  #:use-module (guix build debug-link)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
@@ -322,8 +323,13 @@ file name pairs."
                               #:directories? #t))
   (rename-matching-files output mapping))
 
+(define %graft-hooks
+  ;; Default list of hooks run after grafting.
+  (list graft-debug-links))
+
 (define* (graft old-outputs new-outputs mapping
-                #:key (log-port (current-output-port)))
+                #:key (log-port (current-output-port))
+                (hooks %graft-hooks))
   "Apply the grafts described by MAPPING on OLD-OUTPUTS, leading to
 NEW-OUTPUTS.  MAPPING must be a list of file name pairs; OLD-OUTPUTS and
 NEW-OUTPUTS are lists of output name/file name pairs."
@@ -336,6 +342,10 @@ NEW-OUTPUTS are lists of output name/file name pairs."
                files))
             (match new-outputs
               (((names . files) ...)
-               files))))
+               files)))
+  (for-each (lambda (hook)
+              (hook old-outputs new-outputs mapping
+                    #:log-port log-port))
+            hooks))
 
 ;;; graft.scm ends here

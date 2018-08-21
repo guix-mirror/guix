@@ -130,7 +130,9 @@ are not recursively applied to dependencies of DRV."
                                      #:system system
                                      #:guile-for-build guile
                                      #:modules '((guix build graft)
-                                                 (guix build utils))
+                                                 (guix build utils)
+                                                 (guix build debug-link)
+                                                 (guix elf))
                                      #:inputs `(,@(map (lambda (out)
                                                          `("x" ,drv ,out))
                                                        outputs)
