@@ -626,9 +626,15 @@ by @code{binstar}, @code{binstar-build} and @code{chalmers}.")
        (base32
         "08rxmbx2s4irp0w0gmn498vns5xy0fagm0fg33xa772jiks51flc"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-freezegun" ,python-freezegun)
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-pytz" ,python-pytz)))
-    (arguments `(#:tests? #f)) ; no test target
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _ (invoke "pytest" "-vv"))))))
     (home-page "http://babel.pocoo.org/")
     (synopsis
      "Tools for internationalizing Python applications")
