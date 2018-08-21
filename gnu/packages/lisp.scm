@@ -1526,3 +1526,34 @@ based on a subset of MDL.  Confusion is a MDL interpreter that works just well
 enough to play the original mainframe Zork all the way through.")
       (home-page "http://www.russotto.net/git/mrussotto/confusion/src/master/src/README")
       (license license:gpl3+))))
+
+(define-public sbcl-cl-strings
+  (let ((revision "1")
+        (commit "c5c5cbafbf3e6181d03c354d66e41a4f063f00ae"))
+    (package
+      (name "sbcl-cl-strings")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/diogoalexandrefranco/cl-strings")
+               (commit commit)))
+         (sha256
+          (base32
+           "00754mfaqallj480lwd346nkfb6ra8pa8xcxcylf4baqn604zlmv"))
+         (file-name (string-append "cl-strings-" version "-checkout"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Portable, dependency-free set of utilities to manipulate strings in Common Lisp")
+      (description
+       "@command{cl-strings} is a small, portable, dependency-free set of
+utilities that make it even easier to manipulate text in Common Lisp.  It has
+100% test coverage and works at least on sbcl, ecl, ccl, abcl and clisp.")
+      (home-page "https://github.com/diogoalexandrefranco/cl-strings")
+      (license license:expat))))
+
+(define-public cl-strings
+  (sbcl-package->cl-source-package sbcl-cl-strings))
+
+(define-public ecl-cl-strings
+  (sbcl-package->ecl-package sbcl-cl-strings))
