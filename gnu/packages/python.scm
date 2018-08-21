@@ -2394,18 +2394,9 @@ reStructuredText.")
                (base32
                 "1f9f0wjpi9nhikbyaz6d19s7qvzdf1nq2g5dsh640fma4q9rd1bs"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-xapian-bindings" ,python-xapian-bindings)))
-    ;; Needed for running the test suite
-    (native-inputs
-     `(("python-six" ,python-six)
-       ("python-jinja2" ,python-jinja2)
-       ("python-docutils" ,python-docutils)
-       ("python-sphinx" ,python-sphinx)
-       ("python-sqlalchemy" ,python-sqlalchemy)
-       ("python-whoosh" ,python-whoosh)))
+    (arguments
+     ;; FIXME: Tests depend on Sphinx, which depends on this.
+     `(#:tests? #f))
     (home-page "http://sphinx-doc.org/")
     (synopsis "Sphinx API for web applications")
     (description "This package provides a Python API to easily integrate
