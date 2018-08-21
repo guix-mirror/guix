@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,8 +27,8 @@
   #:use-module (ice-9 match))
 
 (define %guile-executable
-  (match (command-line)
-    ((program . _)
+  (match (false-if-exception (readlink "/proc/self/exe"))
+    ((? string? program)
      (and (file-exists? program) (elf-file? program)
           program))
     (_
