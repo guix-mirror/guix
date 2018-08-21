@@ -10354,19 +10354,15 @@ useful as a validator for JSON data.")
 (define-public python-imagesize
   (package
     (name "python-imagesize")
-    (version "0.7.1")
+    (version "1.0.0")
     (source
       (origin
       (method url-fetch)
       (uri (pypi-uri "imagesize" version))
       (sha256
         (base32
-          "0qk07k0z4241lkzzjji7z4da04pcvg7bfc4xz1934zlqhwmwdcha"))))
+          "05b3p62r7rbcvvbk5vknr3bhcq9b2airysn6ric534mng136wcjv"))))
     (build-system python-build-system)
-    (arguments
-     '(;; Test files are not distributed on PyPi:
-       ;; https://github.com/shibukawa/imagesize_py/issues/7
-       #:tests? #f))
     (home-page "https://github.com/shibukawa/imagesize_py")
     (synopsis "Gets image size of files in variaous formats in Python")
     (description
