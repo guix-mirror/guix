@@ -642,7 +642,8 @@ standard library.")
                 (string-append "@pytest.mark.skip"
                                "(reason=\"Assumes that /usr exists.\")\n    "
                                line)))
-             #t)))))
+             #t))
+         (replace 'check (lambda _ (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-attrs" ,python-attrs-bootstrap)
@@ -656,6 +657,7 @@ standard library.")
        ("python-hypothesis" ,python-hypothesis)
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest-bootstrap)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "http://pytest.org")
     (synopsis "Python testing library")
