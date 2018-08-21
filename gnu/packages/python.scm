@@ -2410,57 +2410,15 @@ integrate Sphinx documents in web templates and to handle searches.")
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "1.5.1")
+    (version "1.7.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "1i8p9idnli4gr0y4x67yakbdk5w6a0xjzhrg6bg51y9d1fi7fslf"))))
+         "0pkkbfj7cl157q550gcs45am5y78ps0h7q6455d64s1zmw01jlvi"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             ;; Requires Internet access.
-             (delete-file "tests/test_build_linkcheck.py")
-             (zero? (system* "make" "test")))))))
-    (propagated-inputs
-     `(("python-imagesize" ,python-imagesize)
-       ("python-sphinx-alabaster-theme"
-        ,python-sphinx-alabaster-theme)
-       ("python-babel" ,python-babel)
-       ("python-snowballstemmer" ,python-snowballstemmer)
-       ("python-docutils" ,python-docutils)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pygments" ,python-pygments)
-       ("python-requests" ,python-requests)
-       ("python-six" ,python-six)))
-    (native-inputs
-     `(("graphviz" ,graphviz)
-       ("python-html5lib" ,python-html5lib)
-       ("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
-    (home-page "http://sphinx-doc.org/")
-    (synopsis "Python documentation generator")
-    (description "Sphinx is a tool that makes it easy to create documentation
-for Python projects or other documents consisting of multiple reStructuredText
-sources.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-sphinx))))))
-
-(define-public python-sphinx-1.6
-  (package (inherit python-sphinx)
-    (name "python-sphinx")
-    (version "1.6.4")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "Sphinx" version))
-              (sha256
-               (base32
-                "0gjakw9fv5pwqb5yyclxycs36sapxizk1vx6mkcdizmzgzcfy0gi"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2471,41 +2429,39 @@ sources.")
              (substitute* "tests/test_build_latex.py"
                (("@pytest.mark.sphinx\\('latex', testroot='images'\\)")
                 "@pytest.mark.skip()"))
-             (zero? (system* "make" "test")))))))
+             (when (which "python")
+               ;; XXX: These tests are broken when using Python2:
+               ;; <https://github.com/sphinx-doc/sphinx/issues/4710>.
+               (delete-file "tests/test_api_translator.py")
+               (delete-file "tests/test_setup_command.py"))
+             (invoke "make" "test"))))))
     (propagated-inputs
-     `(("python-sphinxcontrib-websupport" ,python-sphinxcontrib-websupport)
-       ,@(package-propagated-inputs python-sphinx)))
+     `(("python-imagesize" ,python-imagesize)
+       ("python-sphinx-alabaster-theme"
+        ,python-sphinx-alabaster-theme)
+       ("python-babel" ,python-babel)
+       ("python-snowballstemmer" ,python-snowballstemmer)
+       ("python-docutils" ,python-docutils)
+       ("python-jinja2" ,python-jinja2)
+       ("python-packaging" ,python-packaging)
+       ("python-pygments" ,python-pygments)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-sphinxcontrib-websupport" ,python-sphinxcontrib-websupport)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("imagemagick" ,imagemagick) ; for "convert"
-       ,@(package-native-inputs python-sphinx)))
-    (properties `((python2-variant . ,(delay python2-sphinx-1.6))))))
-
-(define-public python2-sphinx-1.6
-  (let ((base (package-with-python2 (strip-python2-variant python-sphinx-1.6))))
-    (package
-      (inherit base)
-      (propagated-inputs
-       `(("python2-typing" ,python2-typing)
-         ,@(package-propagated-inputs base)))
-      (native-inputs `(("python2-enum34" ,python2-enum34)
-                       ,@(package-native-inputs base))))))
-
-(define-public python-sphinx-1.5.3
-  (package
-    (inherit python-sphinx)
-    (name "python-sphinx")
-    (version "1.5.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "Sphinx" version))
-       (sha256
-        (base32
-         "0kw1axswbvaavr8ggyf4qr6hnisnrzlbkkcdada69vk1x9xjassg"))))
-    (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ,@(package-native-inputs python-sphinx)))))
+     `(("graphviz" ,graphviz)
+       ("imagemagick" ,imagemagick)                    ;for "convert"
+       ("python-html5lib" ,python-html5lib)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)))
+    (home-page "http://sphinx-doc.org/")
+    (synopsis "Python documentation generator")
+    (description "Sphinx is a tool that makes it easy to create documentation
+for Python projects or other documents consisting of multiple reStructuredText
+sources.")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-sphinx))))))
 
 (define-public python2-sphinx
   (let ((base (package-with-python2 (strip-python2-variant python-sphinx))))
@@ -2515,6 +2471,7 @@ sources.")
                        ("python2-enum34" ,python2-enum34)
                        ,@(package-native-inputs base)))
       (propagated-inputs `(("python2-pytz" ,python2-pytz)
+                           ("python2-typing" ,python2-typing)
                        ,@(package-propagated-inputs base))))))
 
 (define-public python-sphinx-gallery
@@ -3502,7 +3459,7 @@ toolkits.")
     (native-inputs
      `(("python-matplotlib" ,python-matplotlib)
        ("python-colorspacious" ,python-colorspacious)
-       ("python-sphinx" ,python-sphinx-1.6)
+       ("python-sphinx" ,python-sphinx)
        ("python-sphinx-gallery" ,python-sphinx-gallery)
        ("python-numpydoc" ,python-numpydoc)
        ("python-ipython" ,python-ipython)
