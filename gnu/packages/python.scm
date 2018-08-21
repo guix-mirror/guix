@@ -11568,14 +11568,14 @@ several utilities, as well as an API for building localization tools.")
 (define-public python-packaging
   (package
     (name "python-packaging")
-    (version "16.8")
+    (version "17.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "packaging" version))
         (sha256
          (base32
-          "17k1xbjshackwvbsnxqixbph8rbqhz4bf4g3al5xyzhavxgq6l2x"))))
+          "0nrpayk8kij1zm9sjnk38ldz3a6705ggvw8ljylqbrb4vmqbf6gh"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pretend" ,python-pretend)
