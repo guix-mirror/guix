@@ -3222,25 +3222,14 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python-numpydoc
   (package
     (name "python-numpydoc")
-    (version "0.5")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/n/numpydoc/numpydoc-"
-             version ".tar.gz"))
+       (uri (pypi-uri "numpydoc" version))
        (sha256
         (base32
-         "0d4dnifaxkll50jx6czj05y8cb4ny60njd2wz299sj2jxfy51w4k"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Drop a test requiring matplotlib, which we cannot add as an
-           ;; input since it would create a circular dependency: Extend the
-           ;; test for Python 3, where it is already dropped, to Python 2.
-           (substitute* "numpydoc/tests/test_plot_directive.py"
-             (("3") "2"))
-           #t))))
+         "1zazxg3m8j4fksv3f7v7vpf4bj9qb1vj3r326am0vdip141vzx31"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-sphinx" ,python-sphinx)))
