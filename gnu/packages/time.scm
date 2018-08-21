@@ -88,17 +88,15 @@ to a file.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2017.3")
+    (version "2018.5")
     (source
      (origin
       (method url-fetch)
-      (uri (pypi-uri "pytz" version ".zip"))
+      (uri (pypi-uri "pytz" version ".tar.gz"))
       (sha256
        (base32
-        "1dw5l527vcafvdqq4wadwl7ikhb2sssz0v0cssibh8890kyczr7s"))))
+        "0xzj5gkpdn2da8m6j47chlp6zrzcypv9m0fjv4236q3jw4fyzfgz"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("unzip" ,unzip)))
     (home-page "http://pythonhosted.org/pytz")
     (synopsis "Python timezone library")
     (description "This library brings the Olson tz database into Python.  It
