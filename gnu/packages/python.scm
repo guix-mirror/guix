@@ -10364,7 +10364,7 @@ useful as a validator for JSON data.")
           "05b3p62r7rbcvvbk5vknr3bhcq9b2airysn6ric534mng136wcjv"))))
     (build-system python-build-system)
     (home-page "https://github.com/shibukawa/imagesize_py")
-    (synopsis "Gets image size of files in variaous formats in Python")
+    (synopsis "Gets image size of files in various formats in Python")
     (description
       "This package allows determination of image size from
 PNG, JPEG, JPEG2000 and GIF files in pure Python.")
