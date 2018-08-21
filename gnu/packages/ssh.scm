@@ -254,7 +254,10 @@ Additionally, various channel-specific options can be negotiated.")
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     '(;; It makes no sense to build libguile-ssh.a.
+       #:configure-flags '("--disable-static")
+
+       #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'autoreconf
                     (lambda* (#:key inputs #:allow-other-keys)
                       (invoke "autoreconf" "-vfi")))
