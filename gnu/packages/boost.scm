@@ -43,7 +43,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.67.0")
+    (version "1.68.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -52,7 +52,7 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "1fmdlmkzsrd46wwk834jsi2ypxj68w2by0rfcg2pzrafk5rck116"))
+                "1dyqsr9yb01y0nnjdq9b8q5s2kvhxbayk34832k5cpzn7jy30qbz"))
               (patches (search-patches "boost-fix-icu-build.patch"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)
@@ -78,7 +78,6 @@
                    (out (assoc-ref outputs "out")))
                (substitute* '("libs/config/configure"
                               "libs/spirit/classic/phoenix/test/runtest.sh"
-                              "tools/build/doc/bjam.qbk"
                               "tools/build/src/engine/execunix.c"
                               "tools/build/src/engine/Jambase"
                               "tools/build/src/engine/jambase.c")
