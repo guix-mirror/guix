@@ -2582,7 +2582,7 @@ Tracker 3 S3M and Impulse Tracker IT files.")
 (define-public soundtouch
   (package
     (name "soundtouch")
-    (version "1.8.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
@@ -2590,7 +2590,8 @@ Tracker 3 S3M and Impulse Tracker IT files.")
         (string-append
          "http://www.surina.net/soundtouch/soundtouch-" version ".tar.gz"))
        (sha256
-        (base32 "0sqn3wk4qz20vf0vz853l6dl1gnj1yhqxfwxqsc5lp529kbn2h9x"))))
+        (base32
+         "09cxr02mfyj2bg731bj0i9hh565x8l9p91aclxs8wpqv8b8zf96j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
