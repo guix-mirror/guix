@@ -100,7 +100,18 @@
                     make-flags)))
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "./b2" "install" make-flags))))))
+             (apply invoke "./b2" "install" make-flags)))
+         (add-after 'install 'provide-libboost_python
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Boost can build support for both Python 2 and Python 3 since
+               ;; version 1.67.0, and suffixes each library with the Python
+               ;; version.  Many consumers only check for libboost_python
+               ;; however, so we provide it here as suggested in
+               ;; <https://github.com/boostorg/python/issues/203>.
+               (with-directory-excursion (string-append out "/lib")
+                 (symlink "libboost_python27.so" "libboost_python.so"))
+               #t))))))
 
     (home-page "https://www.boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
