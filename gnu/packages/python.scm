@@ -8667,14 +8667,14 @@ CloudFront content delivery network.")
 (define-public python-pkgconfig
   (package
     (name "python-pkgconfig")
-    (version "1.1.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pkgconfig" version))
         (sha256
           (base32
-            "1pw0kmvc57sjmaxi6c54fqsnihqj6hvhc9y1vaz36axafzqam7bh"))))
+            "107x2wmchlch8saixb488cgjz9n6inl38wi7nxkb942rbaapxiqb"))))
     (build-system python-build-system)
     (native-inputs
       `(("python-nose" ,python-nose)))
