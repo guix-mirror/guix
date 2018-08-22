@@ -641,7 +641,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
-  %D%/packages/patches/doxygen-gcc-ice.patch			\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
   %D%/packages/patches/eigen-arm-neon-fixes.patch		\
@@ -927,7 +926,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mailutils-uninitialized-memory.patch	\
   %D%/packages/patches/make-glibc-compat.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
-  %D%/packages/patches/mariadb-gcc-ice.patch			\
   %D%/packages/patches/mariadb-client-test-32bit.patch		\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
@@ -1008,7 +1006,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   %D%/packages/patches/patch-hurd-path-max.patch		\
-  %D%/packages/patches/perf-gcc-ice.patch			\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-dbd-mysql-CVE-2017-10788.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\

@@ -139,23 +139,10 @@ markup) can be customized and extended by the user.")
        ("libxml2" ,libxml2) ; provides xmllint for the tests
        ("python" ,python-2))) ; for creating the documentation
     (inputs
-     `(("bash" ,bash-minimal)
-       ,@(if (string-prefix? "armhf-" (%current-system))
-             `(("gcc-ice-patch" ,@(search-patches "doxygen-gcc-ice.patch")))
-             '())))
+     `(("bash" ,bash-minimal)))
     (arguments
      `(#:test-target "tests"
        #:phases (modify-phases %standard-phases
-                  ;; Work around an ICE that shows up on native compiles for
-                  ;; armhf-linux.
-                  ,@(if (string-prefix? "armhf-" (%current-system))
-                        `((add-after 'unpack 'apply-gcc-patch
-                            (lambda* (#:key inputs #:allow-other-keys)
-                              (let ((patch (assoc-ref inputs "gcc-ice-patch")))
-                                (invoke "patch" "-p1" "--force"
-                                        "--input" patch)))))
-                        '())
-
                   (add-before 'configure 'patch-sh
                               (lambda* (#:key inputs #:allow-other-keys)
                                 (substitute* "src/portable.cpp"

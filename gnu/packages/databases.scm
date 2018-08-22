@@ -636,8 +636,7 @@ Language.")
               (sha256
                (base32
                 "0k9walaglwmwdwmkq48ir17g98n83vliyyg5wck22rjgxn2xk4cy"))
-              (patches (search-patches "mariadb-gcc-ice.patch"
-                                       "mariadb-client-test-32bit.patch"))
+              (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin

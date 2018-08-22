@@ -2508,9 +2508,7 @@ in a digital read-out.")
   (package
     (name "perf")
     (version (package-version linux-libre))
-    (source (origin
-              (inherit (package-source linux-libre))
-              (patches (search-patches "perf-gcc-ice.patch"))))
+    (source (package-source linux-libre))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
