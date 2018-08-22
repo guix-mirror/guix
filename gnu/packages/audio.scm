@@ -2589,6 +2589,8 @@ Tracker 3 S3M and Impulse Tracker IT files.")
        (uri
         (string-append
          "http://www.surina.net/soundtouch/soundtouch-" version ".tar.gz"))
+       (patches (search-patches "soundtouch-CVE-2018-14044-14045.patch"
+                                "soundtouch-CVE-2018-1000223.patch"))
        (sha256
         (base32
          "09cxr02mfyj2bg731bj0i9hh565x8l9p91aclxs8wpqv8b8zf96j"))))
