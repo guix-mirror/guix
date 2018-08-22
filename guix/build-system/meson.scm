@@ -41,7 +41,6 @@
 (define %meson-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build meson-build-system)
-    (guix build rpath)
     ;; The modules from glib-or-gtk contains the modules from gnu-build-system,
     ;; so there is no need to import that too.
     ,@%glib-or-gtk-build-system-modules))
