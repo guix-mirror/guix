@@ -1011,15 +1011,15 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.16.0")
+    (version "3.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.claws-mail.org/releases/" name "-" version
+                    "https://www.claws-mail.org/releases/" name "-" version
                     ".tar.xz"))
               (sha256
                (base32
-                "1awpr3s7n8bq8p3w10a4j6lg5bizjxyiqp4rqzc2j8cn7lyi64n2"))))
+                "119y6q9p8zwm2xqlbkgqd119a529kjqlyldmb4h940z6c2qyjhqm"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -1065,7 +1065,7 @@ appearance and interface are designed to be familiar to new users coming from
 other popular email clients, as well as experienced users.  Almost all commands
 are accessible with the keyboard.  Plus, Claws-Mail is extensible via addons
 which can add many functionalities to the base client.")
-    (home-page "http://www.claws-mail.org/")
+    (home-page "https://www.claws-mail.org/")
     (license gpl3+))) ; most files are actually public domain or x11
 
 (define-public msmtp

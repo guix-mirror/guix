@@ -87,7 +87,10 @@ equivalent.  Return #f if the inferior could not be launched."
   (define pipe
     (inferior-pipe directory command))
 
-  (setvbuf pipe _IOLBF)
+  (cond-expand
+    ((and guile-2 (not guile-2.2)) #t)
+    (else (setvbuf pipe 'line)))
+
   (match (read pipe)
     (('repl-version 0 rest ...)
      (let ((result (inferior 'pipe pipe (cons 0 rest))))

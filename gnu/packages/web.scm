@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
@@ -110,6 +110,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
@@ -4995,6 +4996,100 @@ programs' code.  Its architecture is optimized for security, portability, and
 scalability (including load-balancing), making it suitable for large
 deployments.")
   (license l:gpl2+)))
+
+(define-public varnish
+  (package
+    (name "varnish")
+    (home-page "https://varnish-cache.org/")
+    (version "6.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
+              (sha256
+               (base32
+                "1vhbdch33m6ig4ijy57zvrramhs9n7cba85wd8rizgxjjnf87cn7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
+                               ;; Use absolute path of GCC so it's found at runtime.
+                               (string-append "PTHREAD_CC="
+                                              (assoc-ref %build-inputs "gcc")
+                                              "/bin/gcc")
+                               "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (substitute* '("bin/varnishtest/vtc_varnish.c"
+                            "bin/varnishtest/vtc_process.c"
+                            "bin/varnishd/mgt/mgt_vcc.c")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-before 'install 'patch-Makefile
+           (lambda _
+             (substitute* "Makefile"
+               ;; Do not create /var/varnish during install.
+               (("^install-data-am: install-data-local") "install-data-am: "))
+             #t))
+         (add-after 'install 'wrap-varnishd
+           ;; Varnish uses GCC to compile VCL, so wrap it with required GCC
+           ;; environment variables to avoid propagating them to profiles.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (varnishd (string-append out "/sbin/varnishd"))
+                    (PATH (string-append (assoc-ref inputs "binutils") "/bin"))
+                    (LIBRARY_PATH (string-append (assoc-ref inputs "libc") "/lib")))
+               (wrap-program varnishd
+                 ;; Add binutils to PATH so gcc finds the 'as' executable.
+                 `("PATH" ":" prefix (,PATH))
+                 ;; Make sure 'crti.o' et.al is found.
+                 `("LIBRARY_PATH" ":" prefix (,LIBRARY_PATH)))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("rst2man" ,python-docutils)))
+    (inputs
+     `(("jemalloc" ,jemalloc)
+       ("ncurses" ,ncurses)
+       ("pcre" ,pcre)
+       ("python" ,python-wrapper)
+       ("readline" ,readline)))
+    (synopsis "Web application accelerator")
+    (description
+     "Varnish is a high-performance HTTP accelerator.  It acts as a caching
+reverse proxy and load balancer.  You install it in front of any server that
+speaks HTTP and configure it to cache the contents through an extensive
+configuration language.")
+    (license (list l:bsd-2           ;main distribution
+                   l:zlib            ;lib/libvgz/*
+                   l:public-domain   ;bin/varnishncsa/as64.c, include/miniobj.h
+                   l:bsd-3))))       ;include/vqueue.h, lib/libvarnishcompat/daemon.c
+
+(define-public varnish-modules
+  (package
+    (name "varnish-modules")
+    (home-page "https://github.com/varnish/varnish-modules")
+    (version "0.15.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.varnish-software.com"
+                                  "/varnish-modules/varnish-modules-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "09li9lqa1kb275w1rby2zldyg8r9cfcl4qyv53qyd9xbzilrz751"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python)
+       ("varnish" ,varnish)))
+    (synopsis "Collection of Varnish modules")
+    (description
+     "This package provides a collection of modules (@dfn{vmods}) for the Varnish
+cache server, extending the @dfn{Varnish Configuration Language} (VCL) with
+additional capabilities.")
+    (license l:bsd-2)))
 
 (define-public xinetd
   (package

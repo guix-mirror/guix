@@ -963,7 +963,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.23")
+    (version "1.8.24")
     (source (origin
               (method url-fetch)
               (uri
@@ -973,7 +973,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0yg62wq8rcrbr7qvh3wgfg2g4bwanbi50cr2lf2cfyy8dydx4qyq"))
+                "1s2v49n905wf3phmdnaa6v1dwck2lrcin0flg85z7klf35x5b25l"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -983,7 +983,7 @@ system administrator.")
     (arguments
      `(#:configure-flags
        (list "--with-logpath=/var/log/sudo.log"
-             "--with-rundir=/var/run/sudo"    ;must be cleaned up at boot time
+             "--with-rundir=/var/run/sudo" ; must be cleaned up at boot time
              "--with-vardir=/var/db/sudo"
              "--with-iologdir=/var/log/sudo-io"
 

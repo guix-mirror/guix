@@ -20,6 +20,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages security-token)
   #:use-module (gnu system shadow)
   #:use-module (guix gexp)
@@ -62,14 +63,22 @@
 (define pcscd-activation
   (match-lambda
     (($ <pcscd-configuration> pcsc-lite usb-drivers)
-     #~(begin
-         (use-modules (guix build utils))
-         (mkdir-p "/var/lib")
-         (symlink #$(directory-union
-                     "pcsc"
-                     (map (cut file-append <> "/pcsc")
-                          usb-drivers))
-                  "/var/lib/pcsc")))))
+     (with-imported-modules (source-module-closure
+                             '((guix build utils)))
+       #~(begin
+           (use-modules (guix build utils))
+           ;; XXX: We can't use (guix utils) because it requires a
+           ;; dynamically-linked Guile, hence the duplicate switch-symlinks.
+           (define (switch-symlinks link target)
+             (let ((pivot (string-append link ".new")))
+               (symlink target pivot)
+               (rename-file pivot link)))
+           (mkdir-p "/var/lib")
+           (switch-symlinks "/var/lib/pcsc"
+                            #$(directory-union
+                               "pcsc"
+                               (map (cut file-append <> "/pcsc")
+                                    usb-drivers))))))))
 
 (define pcscd-service-type
   (service-type

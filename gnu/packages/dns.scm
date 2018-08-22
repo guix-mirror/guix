@@ -498,14 +498,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.6.7")
+    (version "2.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hr2m664ckjicv3pq2lk16m61pscknywxv2ydnrzfqf10m5h0ahw"))
+                "108k6x3hjsnyf06pv5rlxqhynjbbz13pzwax1mqff3hgv85f4skx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -526,40 +526,29 @@ Extensions} (DNSSEC).")
        ("liburcu" ,liburcu)
        ("lmdb" ,lmdb)
        ("ncurses" ,ncurses)
-       ("nettle" ,nettle)
-       ("protobuf-c" ,protobuf-c)
-
-       ;; For ‘pykeymgr’, needed to migrate keys from versions <= 2.4.
-       ("python" ,python-2)
-       ("python-lmdb" ,python2-lmdb)))
+       ("protobuf-c" ,protobuf-c)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-directory-pre-creation
            (lambda _
              ;; Don't install empty directories like ‘/etc’ outside the store.
+             ;; This is needed even when using ‘make config_dir=... install’.
              (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/knot"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
                     (etc (string-append doc "/examples/etc")))
                (invoke "make"
                        (string-append "config_dir=" etc)
-                       "install"))))
-         (add-after 'install 'wrap-python-scripts
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (path (getenv "PYTHONPATH")))
-               (wrap-program (string-append out "/sbin/pykeymgr")
-                 `("PYTHONPATH" ":" prefix (,path))))
-             #t)))
+                       "install")))))
        #:configure-flags
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
-             "--with-module-rosedb=yes" ; serve static records from a database
-             "--with-module-dnstap=yes" ; allow detailed query logging
+             "--enable-dnstap"          ; let tools read/write capture files
+             "--with-module-dnstap=yes" ; detailed query capturing & logging
              (string-append "--with-bash-completions="
                             (assoc-ref %outputs "out")
                             "/etc/bash_completion.d"))))

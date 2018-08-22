@@ -84,6 +84,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
@@ -548,10 +549,26 @@ RDBMS systems (which are deep in functionality).")
                    ;; Some parts are licensed under the Apache License
                    license:asl2.0))))
 
+(define boost-for-mysql
+  (package
+    (inherit boost)
+    (version "1.59.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/boost/boost/" version "/boost_"
+                    (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "1jj1aai5rdmd72g90a3pd8sw9vi32zad46xv5av8fhnr48ir6ykj"))))))
+
+;; XXX When updating, check whether boost-for-mysql is still needed.
+;; It might suffice to patch ‘cmake/boost.cmake’ as done in the past.
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.21")
+    (version "5.7.23")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -563,7 +580,7 @@ RDBMS systems (which are deep in functionality).")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "1dq9bgnajf7cq3mrjkwv6w5nwslhs26lkrw56i7w4fbsq9wm087s"))))
+               "0rbc3xsc11lq2dm0ip6gxa16c06hi74scb97x5cw7yhbabaz4c07"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -589,15 +606,6 @@ RDBMS systems (which are deep in functionality).")
          "-DINSTALL_SQLBENCHDIR=")
        #:phases (modify-phases %standard-phases
                   (add-after
-                   'unpack 'patch-boost-version
-                   (lambda _
-                     ;; Mysql wants boost-1.59.0 specifically
-                     (substitute* "cmake/boost.cmake"
-                       (("59")
-                        ,(match (string-split (package-version boost) #\.)
-                           ((_ minor . _) minor))))
-                     #t))
-                  (add-after
                    'install 'remove-extra-binaries
                    (lambda* (#:key outputs #:allow-other-keys)
                      (let ((out (assoc-ref outputs "out")))
@@ -611,7 +619,7 @@ RDBMS systems (which are deep in functionality).")
      `(("bison" ,bison)
        ("perl" ,perl)))
     (inputs
-     `(("boost" ,boost)
+     `(("boost" ,boost-for-mysql)
        ("libaio" ,libaio)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
@@ -867,6 +875,34 @@ pictures, sounds, or video.")
                (base32
                 "0biy8j69dbvdmrag55pdszpc0702agzqhhcwdx21xp02mzim4ydr"))))))
 
+(define-public python-pymysql
+  (package
+    (name "python-pymysql")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyMySQL" version))
+       (sha256
+        (base32
+         "0gvi63f1zq1bbd30x28kqyx351hal1yc323ckp0mihainb5n1iwy"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-unittest2" ,python-unittest2)))
+    (inputs
+     `(("python-cryptography" ,python-cryptography)))
+    (arguments
+     `(#:tests? #f))                    ; tests expect a running MySQL
+    (home-page "https://github.com/PyMySQL/PyMySQL/")
+    (synopsis "Pure-Python MySQL driver")
+    (description
+     "PyMySQL is a pure-Python MySQL client library, based on PEP 249.
+Most public APIs are compatible with @command{mysqlclient} and MySQLdb.")
+    (license license:expat)))
+
+(define-public python2-pymysql
+  (package-with-python2 python-pymysql))
+
 (define-public qdbm
   (package
     (name "qdbm")
@@ -1112,6 +1148,37 @@ for example from a shell script.")
     ;; Some files (like scan-sparql.c) contain a GPLv3+ license header, while
     ;; others (like sparql-query.c) contain a GPLv2+ license header.
     (license (list license:gpl3+))))
+
+(define-public sqlcrush
+  ;; Unfortunately, there is no proper upstream release and may never be.
+  (let ((commit "b5f6868f189566a26eecc78d0f0659813c1aa98a")
+        (revision "1"))
+    (package
+      (name "sqlcrush")
+      (version (git-version "0.1.5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/coffeeandscripts/sqlcrush.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0x3wy40r93p0jv3nbwj9a77wa4ff697d13r0wffmm7q9h3mzsww8"))))
+      (build-system python-build-system)
+      (inputs
+       `(("python-cryptography" ,python-cryptography)
+         ("python-psycopg2" ,python-psycopg2)
+         ("python-pymysql" ,python-pymysql)
+         ("python-sqlalchemy" ,python-sqlalchemy)))
+      (home-page "https://github.com/coffeeandscripts/sqlcrush")
+      (synopsis "Text console-based database viewer and editor")
+      (description
+       "SQLcrush lets you view and edit a database directly from the text
+console through an ncurses interface.  You can explore each table's structure,
+browse and edit the contents, add and delete entries, all while tracking your
+changes.")
+      (license license:gpl3+)))) ; no headers, see README.md
 
 (define-public sqlite
   (package
@@ -1432,7 +1499,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
-    (version "1.54")
+    (version "1.58")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1440,7 +1507,7 @@ columns, primary keys, unique constraints and relationships.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0sbj9lx9syzpknvjv8cz9jndg32qz775vy2prgq305npv3dsca9r"))))
+                "0fqx386jgs9mmrknr7smmzapf07izgivza7x08lfm39ks2cxs83i"))))
     (build-system perl-build-system)
     (inputs `(("sqlite" ,sqlite)))
     (propagated-inputs `(("perl-dbi" ,perl-dbi)))
@@ -1955,14 +2022,14 @@ for ODBC.")
 (define-public python-pyodbc
   (package
     (name "python-pyodbc")
-    (version "4.0.21")
+    (version "4.0.24")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyodbc" version))
        (sha256
         (base32
-         "0a83zwz3h1agshnsc6r7al6q83222w8601gpzzzjvjz5m56ghmcn"))
+         "1m311vi7vpay1j7rkq71fpsk0gb7454k4lldk5b63hyy6yvsn9j3"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
@@ -2122,7 +2189,7 @@ implementation for Python.")
 (define-public virtuoso-ose
   (package
     (name "virtuoso-ose")
-    (version "7.2.4.2")
+    (version "7.2.5")
     (source
      (origin
        (method url-fetch)
@@ -2130,7 +2197,7 @@ implementation for Python.")
              "https://github.com/openlink/virtuoso-opensource/releases/"
              "download/v" version "/virtuoso-opensource-" version ".tar.gz"))
        (sha256
-        (base32 "12dqam1gc1v93l0bj0vlpvjqppki6y1hqrlznywxnw0rrz9pb002"))))
+        (base32 "0r1xakclkfi69pzh8z2k16z3x0m49pxp764icj0ad4w4bb97fr42"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Tests require a network connection.
@@ -2533,14 +2600,14 @@ database).")
 (define-public python-mysqlclient
   (package
     (name "python-mysqlclient")
-    (version "1.3.10")
+    (version "1.3.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mysqlclient" version))
        (sha256
         (base32
-         "0qkj570x4rbsblji6frvsvp2v1ap32dqzj1lq62zp9515ffsyaj5"))))
+         "0kv4a1icwdav8jpl7qvnr931lw5h3v22ids6lwq6qpi1hjzf33pz"))))
     (build-system python-build-system)
     (native-inputs
      `(("mariadb" ,mariadb)

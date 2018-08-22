@@ -461,6 +461,24 @@ print, summary, plot, update, etc.
 @end itemize\n")
     (license license:gpl2)))
 
+(define-public r-ps
+  (package
+    (name "r-ps")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ps" version))
+       (sha256
+        (base32 "1zm9qkyvy1fvcjvmgw51iqw8x1xzkpy7rx7xnchwfj0xpzal0ljx"))))
+    (build-system r-build-system)
+    (home-page "http://ps.r-lib.org")
+    (synopsis "List, query, and manipulate system processes")
+    (description
+     "The ps package implements an API to list, query, and manipulate system
+processes.  Most of its code is based on the @code{psutil} Python package.")
+    (license license:bsd-3)))
+
 (define-public r-rcpp
   (package
     (name "r-rcpp")
@@ -1276,14 +1294,14 @@ data).  Weighted versions of MLE, MME and QME are available.")
 (define-public r-energy
   (package
     (name "r-energy")
-    (version "1.7-4")
+    (version "1.7-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "energy" version))
        (sha256
         (base32
-         "12skvlridfq4jd5mh0yxl79ps0zi2xnlh4hsdgxad0gm7qky8awd"))))
+         "15k9dg0a82cs9ypm0wpcsff3il1hzhnnv86dv5ngby1r144czhi4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
@@ -1411,14 +1429,14 @@ available in a vignette.")
 (define-public r-lava
   (package
     (name "r-lava")
-    (version "1.6.2")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lava" version))
        (sha256
         (base32
-         "1r47pps39cgvxhg1s0bqknf4jl91pbb0c76q5icxivhwb172fqcm"))))
+         "0cayjspry3r2lcbvl77v5v52b2zarri3b8xsf87pw5a3jn9anxcf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-numderiv" ,r-numderiv)
@@ -1887,14 +1905,14 @@ or between integer vectors representing generic sequences.")
 (define-public r-jomo
   (package
     (name "r-jomo")
-    (version "2.6-2")
+    (version "2.6-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "jomo" version))
        (sha256
         (base32
-         "0zyqwa2y08asj9xqwnngh6da1b9cqcx8pzc9cxwrmgnxd5nnsjb7"))))
+         "14s8q0j5zgl1g1pfxg3a4y1jzvs0wl61ir4992wsj7safskj7zvi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lme4" ,r-lme4)
@@ -1933,14 +1951,14 @@ clustered data.")
 (define-public r-mitml
   (package
     (name "r-mitml")
-    (version "0.3-5")
+    (version "0.3-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mitml" version))
        (sha256
         (base32
-         "1s888r9y2ri39b48h1iypps6lddqkqv3g31l2sjmi2pvyccfpkwb"))))
+         "1pkqv4qazih3byws5z6629pp232n8ra56lip7502727b0b4bsndw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-haven" ,r-haven)
@@ -2459,18 +2477,19 @@ constants, and control debugging of packages via environment variables.")
 (define-public r-processx
   (package
     (name "r-processx")
-    (version "3.1.0")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "processx" version))
        (sha256
         (base32
-         "0wjr3cqwvnjxbvln25szffmkns5w0xysivdjr6chxap4nh515b0i"))))
+         "1pzx4ap4xa07gf9zkd6hacdsnb9sp3kb60a7v7ljl0ywrcpn1fn4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
        ("r-crayon" ,r-crayon)
+       ("r-ps" ,r-ps)
        ("r-r6" ,r-r6)
        ("r-testthat" ,r-testthat)))
     (home-page "https://github.com/r-lib/processx3")
@@ -2610,14 +2629,14 @@ iVAT).")
 (define-public r-xfun
   (package
     (name "r-xfun")
-    (version "0.2")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xfun" version))
        (sha256
         (base32
-         "0zl22fcw90kdvzkjyf6vbmdmn9rz3bl51522fasvmykypffyng4a"))))
+         "1r11dd49ngmjgbjdv28a9c1jp8cg1l50x0acbsamzz576p8i2wl9"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/xfun")
     (synopsis "Miscellaneous functions")
@@ -2693,15 +2712,17 @@ terminals.")
 (define-public r-tinytex
   (package
     (name "r-tinytex")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tinytex" version))
        (sha256
         (base32
-         "1pg4jfyvandjwz3lmr38pbqi9d045iwkk3xklhsfhhxq6aviq9p7"))))
+         "16y9dldaff2kx1fkm92p7zlph0dcrdmlmavpdgf5y9jbhmc8g83f"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-xfun" ,r-xfun)))
     (home-page "https://github.com/yihui/tinytex")
     (synopsis "Helper functions for TeX Live and compiling LaTeX documents")
     (description
@@ -3109,14 +3130,14 @@ interface.")
 (define-public r-trend
   (package
     (name "r-trend")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "trend" version))
        (sha256
         (base32
-         "06yifqbsvxbmk5gld4z2nnyhf59v8ks5xjwacmb25mv9r6bn388b"))))
+         "1bd567n15k2vpmgbx02584k5kglrc58mlb5kgd07wdss3knpa48q"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-extradistr" ,r-extradistr)))
@@ -4766,27 +4787,6 @@ individual SNPs into pre-defined blocks.  A typical application of this new
 approach is the identification of genomic regions, genes, or gene sets
 containing one or more SNPs that evolved under directional selection.")
     (license license:gpl2)))
-
-(define-public r-hash
-  (package
-    (name "r-hash")
-    (version "2.2.6")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "hash" version))
-       (sha256
-        (base32
-         "0mkx59bmni3b283znvbndnkbar85fzavzdfgmwrhskidsqcz34yz"))))
-    (build-system r-build-system)
-    (home-page "https://cran.r-project.org/web/packages/hash/")
-    (synopsis "Implementation of hash/associated arrays/dictionaries")
-    (description
-     "This package implements a data structure similar to hashes in Perl and
-dictionaries in Python but with a purposefully R flavor.  For objects of
-appreciable size, access using hashes outperforms native named lists and
-vectors.")
-    (license license:gpl2+)))
 
 (define-public r-proc
   (package

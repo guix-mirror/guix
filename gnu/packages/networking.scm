@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -2177,3 +2177,25 @@ Convert the cap file to hccapx format and/or to WPA-PMKID-PBKDF2
 hashline (16800) with @command{hcxpcaptool} from the @code{hcxtools} package
 and check if the WLAN key or the master key was transmitted unencrypted.")
       (license license:expat))))
+
+(define-public dante
+  (package
+    (name "dante")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.inet.no/dante/files/dante-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "19rqzj167q73ag20zxpvswhkk0bj56r5maf83v5016sw7vrcz5sc"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.inet.no/dante/")
+    (synopsis "SOCKS server and client")
+    (description "Dante is a SOCKS client and server implementation.  It can
+be installed on a machine with access to an external TCP/IP network and will
+allow all other machines, without direct access to that network, to be relayed
+through the machine the Dante server is running on.  The external network will
+never see any machines other than the one Dante is running on.")
+    (license (license:non-copyleft "file://LICENSE"))))

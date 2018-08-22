@@ -7,19 +7,23 @@ because the store is immutable.  This patch makes Racket ignore
 checksums for files in the store.
 
 See <https://debbugs.gnu.org/30680> for details.
+---
+ collects/compiler/private/cm-minimal.rkt | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff -ruN racket-6.12/collects/compiler/cm.rkt racket-6.12-patched/collects/compiler/cm.rkt
---- racket-6.12/collects/compiler/cm.rkt	1969-12-31 19:00:00.000000000 -0500
-+++ racket-6.12-patched/collects/compiler/cm.rkt	2018-08-12 06:36:46.061142149 -0400
+diff --git a/collects/compiler/private/cm-minimal.rkt b/collects/compiler/private/cm-minimal.rkt
+index a5a5407..15af6b8 100644
+--- a/collects/compiler/private/cm-minimal.rkt
++++ b/collects/compiler/private/cm-minimal.rkt
 @@ -7,6 +7,7 @@
           racket/list
           racket/path
           racket/promise
 +         racket/string
           openssl/sha1
-          racket/place
           setup/collects
-@@ -627,6 +628,10 @@
+          compiler/compilation-path
+@@ -543,6 +544,10 @@
        #f
        (list src-hash recorded-hash)))
  
@@ -30,7 +34,7 @@ diff -ruN racket-6.12/collects/compiler/cm.rkt racket-6.12-patched/collects/comp
  (define (rkt->ss p)
    (if (path-has-extension? p #".rkt")
        (path-replace-extension p #".ss")
-@@ -679,7 +684,8 @@
+@@ -595,7 +600,8 @@
                (trace-printf "newer src... ~a > ~a" path-time path-zo-time)
                ;; If `sha1-only?', then `maybe-compile-zo' returns a #f or thunk:
                (maybe-compile-zo sha1-only? deps path->mode roots path orig-path read-src-syntax up-to-date collection-cache new-seen)]
@@ -40,3 +44,6 @@ diff -ruN racket-6.12/collects/compiler/cm.rkt racket-6.12-patched/collects/comp
                => (lambda (difference)
                     (trace-printf "different src hash... ~a" difference)
                     ;; If `sha1-only?', then `maybe-compile-zo' returns a #f or thunk:
+-- 
+2.18.0
+

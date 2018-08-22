@@ -65,12 +65,12 @@
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
              (with-directory-excursion "src/github.com/syncthing/syncthing"
-               (zero? (system* "go" "run" "build.go" "-no-upgrade")))))
+               (invoke "go" "run" "build.go" "-no-upgrade"))))
 
          (replace 'check
            (lambda _
              (with-directory-excursion "src/github.com/syncthing/syncthing"
-               (zero? (system* "go" "run" "build.go" "test")))))
+               (invoke "go" "run" "build.go" "test"))))
 
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)

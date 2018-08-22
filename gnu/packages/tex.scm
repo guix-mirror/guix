@@ -1005,12 +1005,13 @@ book).")
                          '("dviluatex" "dvilualatex" "luatex" "lualatex"))
                #t))
            (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
+             (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (target (string-append
                                out "/share/texmf-dist/tex/latex/base"))
                       (web2c (string-append
-                              out "/share/texmf-dist/web2c")))
+                              out "/share/texmf-dist/web2c"))
+                      (support-files (assoc-ref inputs "texlive-latex-base-support-files")))
                  (mkdir-p target)
                  (mkdir-p web2c)
                  (for-each delete-file (find-files "." "\\.(log|aux)$"))
@@ -1022,6 +1023,14 @@ book).")
                  ;; doesn't have its own format file, we need to copy it.
                  (copy-file "web2c/pdfetex.fmt"
                             (string-append web2c "/pdftex.fmt"))
+                 ;; "source" is missing the support files as per doc/latex/base/manifest.txt.
+                 ;; FIXME: We are probably not packaging this right.
+                 (for-each (lambda (file)
+                             (install-file
+                              (string-append support-files "/" file)
+                              target))
+                           '("ltxguide.cls" "ltnews.cls" "minimal.cls" "idx.tex"
+                             "lablst.tex" "testpage.tex" "ltxcheck.tex"))
                  #t))))))
       (native-inputs
        `(("texlive-bin" ,texlive-bin)
@@ -1044,6 +1053,18 @@ book).")
          ("texlive-generic-config"
           ,(texlive-dir "tex/generic/config/"
                         "19vj088p4kkp6xll0141m4kl6ssgdzhs3g10i232khb07aqiag8s"))
+         ("texlive-latex-base-support-files"
+          ,(origin
+             (method svn-fetch)
+             (uri (svn-reference
+                   (url (string-append "svn://www.tug.org/texlive/tags/"
+                                       %texlive-tag "/Master/texmf-dist/"
+                                       "/tex/latex/base"))
+                   (revision %texlive-revision)))
+             (file-name (string-append name "-" version "-checkout"))
+             (sha256
+              (base32
+               "16bs9pi3nq407xhg59glklqv43v102cg3yim6k3zcri5d9nkbv3a"))))
          ("texlive-tex-plain" ,texlive-tex-plain)
          ("texlive-fonts-cm" ,texlive-fonts-cm)
          ("texlive-fonts-latex" ,texlive-fonts-latex)
@@ -4386,3 +4407,88 @@ cross-references, bibliographies, indexes, etc.  It is very good for working
 with documents of any length in which the usual processing abilities are
 required: automatic sectioning and pagination, spell checking and so forth.")
     (license license:gpl2+)))
+
+(define-public texlive-latex-media9
+  (package
+    (name "texlive-latex-media9")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/media9"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "01ysky8h8s6q12dxfahkzwhbkc9j5wl50xzcczy0cbjx9f6aj9kv"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/media9")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/media9")
+    (synopsis "Multimedia inclusion package with Adobe Reader-9/X compatibility")
+    (description
+     "The package provides an interface to embed interactive Flash (SWF) and 3D
+objects (Adobe U3D & PRC), as well as video and sound files or streams in the
+popular MP4, FLV and MP3 formats into PDF documents with Acrobat-9/X
+compatibility.  Playback of multimedia files uses the built-in Flash Player of
+Adobe Reader and does, therefore, not depend on external plug-ins.  Flash Player
+supports the efficient H.264 codec for video compression.
+
+The package is based on the RichMedia Annotation, an Adobe addition to the PDF
+specification.  It replaces the now obsolete @code{movie15} package.")
+    (license license:lppl)))
+
+(define-public texlive-latex-ocgx2
+  (package
+    (name "texlive-latex-ocgx2")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url (string-append "svn://www.tug.org/texlive/tags/"
+                                        %texlive-tag "/Master/texmf-dist/"
+                                        "/tex/latex/ocgx2"))
+                    (revision %texlive-revision)))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "12kkl7n534j0p4frwyrlw22dc3ik50kxv97cxp4xpmji13m0hxpf"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((target (string-append (assoc-ref %outputs "out")
+                                      "/share/texmf-dist/tex/latex/ogcx2")))
+           (mkdir-p target)
+           (copy-recursively (assoc-ref %build-inputs "source") target)
+           #t))))
+    (home-page "https://www.ctan.org/pkg/ocgx2")
+    (synopsis "Provide OCG (Optional Content Groups) support within a PDF document")
+    (description
+     "This package provides OCG (Optional Content Groups) support within a PDF
+document.
+
+It re-implements the functionality of the @code{ocg}, @code{ocgx}, and
+@code{ocg-p} packages and adds support for all known engines and back-ends
+including:
+
+@itemize
+@item LaTeX → dvips → @code{ps2pdf}/Distiller
+@item (Xe)LaTeX(x) → @code{dvipdfmx}
+@item pdfLaTeX and LuaLaTeX .
+@end itemize
+
+It also ensures compatibility with the @code{media9} and @code{animate} packages.")
+    (license license:lppl)))

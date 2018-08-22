@@ -434,7 +434,7 @@ integer programming problems and computes Markov bases for statistics.")
 (define-public cddlib
   (package
     (name "cddlib")
-    (version "0.94h")
+    (version "0.94i")
     (source
      (origin
       (method url-fetch)
@@ -442,7 +442,7 @@ integer programming problems and computes Markov bases for statistics.")
                           (string-delete #\. version) ".tar.gz"))
       (sha256
        (base32
-        "1dasasscwfg793q8fwzgwf64xwj7w62yfvszpr8x8g38jka08vgy"))))
+        "00zdgiqb91vx6gd2103h3ijij0llspsxc6zz3iw2bll39fvkl4xq"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
@@ -595,7 +595,7 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "5.2.2")
+    (version "5.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
@@ -603,7 +603,7 @@ singular value problems.")
                                   version ".tar.gz"))
        (sha256
         (base32
-         "18diyy7aib9mn098x07g25c7jij1x7wbfpicz0z8gwxx08px45m4"))))
+         "1jvh8xmd2cvrhlsg88kxwh55wkwx31sg50v1n59slfippl0g058m"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)
@@ -1348,12 +1348,12 @@ can solve two kinds of problems:
 @end enumerate\n")
     (license license:bsd-3)))
 
-;; For a fully featured Octave, users  are strongly recommended also to install
+;; For a fully featured Octave, users are strongly recommended also to install
 ;; the following packages: less, ghostscript, gnuplot.
 (define-public octave
   (package
     (name "octave")
-    (version "4.4.0")
+    (version "4.4.1")
     (source
      (origin
       (method url-fetch)
@@ -1361,7 +1361,7 @@ can solve two kinds of problems:
                           version ".tar.lz"))
       (sha256
        (base32
-        "0nm766737gbkq9wqry54a026k3dg7rb1065kngfpwgjz8b544xbp"))))
+        "0jsdgizlv02an2ppfjwk5qf209zpwi3317yb7jvlsjzxnir3lvhy"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
@@ -1431,10 +1431,7 @@ script files.")
   (package (inherit octave)
     (name "qtoctave")
     (source (origin
-              (inherit (package-source octave))
-              (patches (append (origin-patches (package-source octave))
-                               (search-patches
-                                "qtoctave-qt-5.11-fix.patch")))))
+              (inherit (package-source octave))))
     (inputs
      `(("qscintilla" ,qscintilla)
        ("qt" ,qtbase)
@@ -2767,14 +2764,14 @@ full text searching.")
 (define-public armadillo
   (package
     (name "armadillo")
-    (version "9.100.4")
+    (version "9.100.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1pzvarfj4mf6xmhs6r8dxlgq6h994ajr8hsp09r4w0dw99za2r08"))))
+                "1ka1vd9fcmvp12qkcm4888dkfqwnalvv00x04wy29f3nx3qwczby"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f))          ; no test target
     (inputs

@@ -216,7 +216,9 @@ This package provides a Python interface for BLAKE2.")
      `(;; FIXME: Tests require many unpackaged libraries, see dev-requirements.txt.
        #:tests? #f))
     (propagated-inputs
-     `(("python-pyasn1" ,python-pyasn1)
+     `(("python-bcrypt" ,python-bcrypt)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pynacl" ,python-pynacl)
        ("python-cryptography" ,python-cryptography)))
     (home-page "http://www.paramiko.org/")
     (synopsis "SSHv2 protocol library")

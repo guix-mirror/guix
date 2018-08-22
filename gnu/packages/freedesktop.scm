@@ -393,9 +393,7 @@ manager for the current system.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/pyxdg/pyxdg-"
-             version ".tar.gz"))
+       (uri (pypi-uri "pyxdg" version))
        (sha256
         (base32
          "179767h8m634ydlm4v8lnz01ba42gckfp684id764zaip7h87s41"))))
@@ -775,7 +773,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
 (define-public libmbim
   (package
     (name "libmbim")
-    (version "1.16.0")
+    (version "1.16.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -783,7 +781,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hpsjc7bzmakzvj8z9fffvqknc38fa8ridpmklq46jyxxnz51jn8"))))
+                "0qmjvjbgs9m8qsaiq5arikzglgaas9hh1968bi7sy3905kp4yjgb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums

@@ -399,15 +399,21 @@ matrices, and polynomials over the integers and over finite fields.")
 (define-public singular
   (package
    (name "singular")
-   (version "4.0.3")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "http://www.mathematik.uni-kl.de/ftp/pub/"
-                                "Math/Singular/SOURCES/"
-                                (string-join (string-split version #\.) "-")
-                                "/singular-" version ".tar.gz"))
-            (sha256 (base32
-                     "0viidy2fz62rln9p0s9qfs7fnm55c6fw1agydd1py26gxylp1ksc"))))
+   (version "4.1.1p3")
+   (source
+    (origin
+      (method url-fetch)
+      (uri
+       (string-append "http://www.mathematik.uni-kl.de/ftp/pub/Math/"
+                      "Singular/SOURCES/"
+                      (string-join
+                       (string-split
+                        (string-trim-right version #\p
+                                           0 (1- (string-length version)))
+                        #\.) "-")
+                      "/singular-" version ".tar.gz"))
+             (sha256 (base32
+                      "1qqj9bm9pkzm0iyycpvm8x6s79wws3nq60lz25h8x1q61h3426sm"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("doxygen" ,doxygen)
@@ -697,16 +703,15 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.3.4")
+    (version "3.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "19m4406jvqnwh7kpcvx1lfx2vdc5zwia5q9ayv89bimg1gmln9fx"))
+                "1qh3yrwn78ms5yhwbpl5wvblk4gbz02cacdygxylr7i9xbrvylkk"))
               (file-name (string-append name "-" version ".tar.bz2"))
-	      (patches (search-patches "eigen-arm-neon-fixes.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; There are 3 test failures in the "unsupported" directory,
@@ -716,16 +721,6 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
                   (substitute* "unsupported/CMakeLists.txt"
                     (("add_subdirectory\\(test.*")
                      "# Do not build the tests for unsupported features.\n"))
-		  (substitute* "CMakeLists.txt"
-                    ;; Work around
-                    ;; <http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1114>.
-                    (("\"include/eigen3\"")
-                     "\"${CMAKE_INSTALL_PREFIX}/include/eigen3\""))
-		  (substitute* "test/bdcsvd.cpp"
-                    ;; See
-                    ;; https://bitbucket.org/eigen/eigen/commits/ea8c22ce6920e982d15245ee41d0531a46a28e5d
-                    ((".*svd_preallocate[^\n]*" &)
-                     (string-append "//" & " // Not supported by BDCSVD")))
                   #t))))
     (build-system cmake-build-system)
     (arguments
@@ -740,11 +735,11 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
 			(setenv "EIGEN_SEED" "1") ;for reproducibility
                         ;; First build the tests, in parallel.  See
                         ;; <http://eigen.tuxfamily.org/index.php?title=Tests>.
-                        (and (zero? (system* "make" "buildtests" dash-j))
+                        (invoke "make" "buildtests" dash-j)
 
-                             ;; Then run 'CTest' with -V so we get more
-                             ;; details upon failure.
-                             (zero? (system* "ctest" "-V" dash-j)))))))))
+                        ;; Then run 'CTest' with -V so we get more
+                        ;; details upon failure.
+                        (invoke "ctest" "-V" dash-j)))))))
     (home-page "https://eigen.tuxfamily.org")
     (synopsis "C++ template library for linear algebra")
     (description
@@ -761,16 +756,16 @@ features, and more.")
 (define-public xtensor
   (package
     (name "xtensor")
-    (version "0.15.9")
+    (version "0.17.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/QuantStack/xtensor/archive/"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/QuantStack/xtensor.git")
+                    (commit version)))
               (sha256
                (base32
-                "0mlsw4p1w5mh7pscddfdamz27zq3wml5qla3vbzgvif34vsqc8ra"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0w40v5lp0hp8ihf8nnvak373sb5xx0768pxgiqh3nzn57wf8px4r"))
+              (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
      `(("googletest" ,googletest)

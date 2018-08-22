@@ -2444,7 +2444,7 @@ library.")
      `(("glib"    ,glib)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)))
-    (home-page "http://www.gtk.org/")
+    (home-page "https://www.gtk.org/")
     (synopsis "RESTful web api query library")
     (description
      "This library was designed to make it easier to access web services that
@@ -6708,7 +6708,7 @@ is suitable as a default application in a Desktop environment.")
 (define-public xpad
   (package
     (name "xpad")
-    (version "5.0.0")
+    (version "5.1.0")
     (source
      (origin
        (method url-fetch)
@@ -6717,14 +6717,8 @@ is suitable as a default application in a Desktop environment.")
                            name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "02yikxg6z9bwla09ka001ppjlpbv5kbza3za9asazm5aiz376mkb"))))
+         "0l0g5x8g6dwhf5ksnqqrjjsycy57kcvdslkmsr6bl3vrsjd7qml3"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'run-autogen
-           (lambda _
-             (system* "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -7038,16 +7032,16 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "0.9.306")
+    (version "0.9.521")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://gitlab.gnome.org/gnumdk/lollypop/uploads/"
-                           "b769805b7063ef9807e4e832e7e87ad2/"
+       (uri (string-append "https://gitlab.gnome.org/World/lollypop/uploads/"
+                           "e4df2ed75c5ed71d64afcc668e579b2a/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0c49v6793bywvh295xbii9yq21hh3qpmxwbgp9i71kj6r9grvhan"))))
+         "0knsqh24siyw98vmiq6b1hzq4y4cazs9f1hq1js9c96hqqj9rvdx"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -7090,7 +7084,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ;; the others are required to play streaming.
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-ugly" ,gst-plugins-ugly)))
-    (home-page "https://gnumdk.github.io/lollypop-web")
+    (home-page "https://wiki.gnome.org/Apps/Lollypop")
     (synopsis "GNOME music playing application")
     (description
      "Lollypop is a music player designed to play well with GNOME desktop.

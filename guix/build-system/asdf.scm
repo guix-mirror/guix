@@ -62,7 +62,7 @@
 
 (define (default-lisp implementation)
   "Return the default package for the lisp IMPLEMENTATION."
-  ;; Lazily resolve the binding to avoid a circular dependancy.
+  ;; Lazily resolve the binding to avoid a circular dependency.
   (let ((lisp-module (resolve-interface '(gnu packages lisp))))
     (module-ref lisp-module implementation)))
 
