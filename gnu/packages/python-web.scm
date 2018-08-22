@@ -1286,14 +1286,14 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.18.1")
+    (version "1.23")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "1wb8aqnq53vzh2amrv8kc66f3h6fx217y0q62y6n30a64p2yqmam"))))
+          "1bvbd35q3zdcd7gsv38fwpizy7p06dr0154g5gfybrvnbvhwb2m6"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (native-inputs
