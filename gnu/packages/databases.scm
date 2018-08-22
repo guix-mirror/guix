@@ -779,8 +779,8 @@ Language.")
                 (for-each delete-file-recursively
                           '("data" "mysql-test" "sql-bench"
                             "share/man/man1/mysql-test-run.pl.1"))
-                ;; Delete huge mysqltest executables.
-                (for-each delete-file (find-files "bin" "test"))
+                ;; Delete huge and unnecessary executables.
+                (for-each delete-file (find-files "bin" "(test|embedded)"))
                 ;; And static libraries.
                 (for-each delete-file (find-files "lib" "\\.a$")))
               #t))))))
