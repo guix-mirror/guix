@@ -1018,7 +1018,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-archive-tar-CVE-2018-12015.patch	\
   %D%/packages/patches/perl-file-path-CVE-2017-6512.patch	\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
-  %D%/packages/patches/perl-dbd-mysql-CVE-2017-10788.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
   %D%/packages/patches/perl-io-socket-ssl-openssl-1.0.2f-fix.patch \
