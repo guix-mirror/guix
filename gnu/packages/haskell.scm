@@ -15,6 +15,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3380,7 +3381,7 @@ variety of traversals.")
 (define-public ghc-fgl
   (package
     (name "ghc-fgl")
-    (version "5.5.3.0")
+    (version "5.6.0.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3391,10 +3392,11 @@ variety of traversals.")
              ".tar.gz"))
        (sha256
         (base32
-         "0fbyb6jxy9whgrv6dgnkzz70cmy98arx3q2gnkhgl4a3d7idh36p"))))
+         "1i6cp4b3w7sjk7y1dq3fh6bci2sm5h3lnbbaw9ln19nwncg2wwll"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
+     `(#:configure-flags (list "--allow-newer=QuickCheck"
+                               "--allow-newer=hspec")))
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-hspec" ,ghc-hspec)
