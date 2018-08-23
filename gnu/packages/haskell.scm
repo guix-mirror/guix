@@ -6848,7 +6848,7 @@ this problem.")
 (define-public ghc-sandi
   (package
     (name "ghc-sandi")
-    (version "0.4.0") ; darcs-2.12.4 needs == 0.4.*
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
@@ -6857,7 +6857,7 @@ this problem.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1smf3bq44qni4zbgxpw7cy7b9g95fbrr73j8njjf6139naj9bj20"))))
+         "0dvkpk91n9kz2ha04rvp231ra9sgd1ilyc1qkzf9l03iir7zrh9b"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stringsearch" ,ghc-stringsearch)
