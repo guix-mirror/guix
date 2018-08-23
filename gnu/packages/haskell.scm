@@ -7047,7 +7047,7 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
 (define-public ghc-wl-pprint-text
   (package
     (name "ghc-wl-pprint-text")
-    (version "1.1.0.4")
+    (version "1.2.0.0")
     (source
      (origin
        (method url-fetch)
@@ -7056,10 +7056,11 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1xgizzimfw17mpmw2afvmnvyag976j8ggn7k5r564rkw9f0m6bgz"))))
+         "0g3w92rad6x5appfb22rbzcas2ix2h0hy91sdxhq8a4a5cnlrpa0"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-text" ,ghc-text)))
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-text" ,ghc-text)))
     (home-page "https://hackage.haskell.org/package/wl-pprint-text")
     (synopsis "Wadler/Leijen Pretty Printer for Text values")
     (description
