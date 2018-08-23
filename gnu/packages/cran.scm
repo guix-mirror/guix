@@ -482,13 +482,13 @@ processes.  Most of its code is based on the @code{psutil} Python package.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.17")
+    (version "0.12.18")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "08xg8h3w25sdb3xr18g9pa0x8cirkdgljqapxmw56ss1j9fc89s2"))))
+        (base32 "006kpg2ph109rh1l13lqk26pp4as4fvl5661vrcczjygacgd1v7w"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
