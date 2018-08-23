@@ -10152,4 +10152,29 @@ tools are not needed to actually run Gtk2Hs programs.")
 backends provided by the @code{Cairo} and @code{Diagrams} libraries.")
     (license license:bsd-3)))
 
+(define-public ghc-wcwidth
+  (package
+    (name "ghc-wcwidth")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/wcwidth/wcwidth-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1n1fq7v64b59ajf5g50iqj9sa34wm7s2j3viay0kxpmvlcv8gipz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-setlocale" ,ghc-setlocale)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-attoparsec" ,ghc-attoparsec)))
+    (home-page "https://github.com/solidsnack/wcwidth/")
+    (synopsis "Haskell bindings to wcwidth")
+    (description "This package provides Haskell bindings to your system's
+native wcwidth and a command line tool to examine the widths assigned by it.
+The command line tool can compile a width table to Haskell code that assigns
+widths to the Char type.")
+    (license license:bsd-3)))
+
 ;;; haskell.scm ends here
