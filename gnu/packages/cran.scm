@@ -4921,3 +4921,26 @@ modify the data or the graphical parameters of one or multiple interactive
 charts.  It is useful to quickly explore visually some data or for package
 developers to generate user interfaces easy to maintain.")
     (license license:gpl2+)))
+
+(define-public r-a3
+  (package
+    (name "r-a3")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "A3" version))
+       (sha256
+        (base32 "017hq9pjsv1h9i7cqk5cfx27as54shlhdsdvr6jkhb8jfkpdb6cw"))))
+    (properties `((upstream-name . "A3")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-pbapply" ,r-pbapply)
+       ("r-xtable" ,r-xtable)))
+    (home-page "https://cran.r-project.org/web/packages/A3/")
+    (synopsis "Error metrics for predictive models")
+    (description
+     "This package supplies tools for tabulating and analyzing the results of predictive
+models.  The methods employed are applicable to virtually any predictive model
+and make comparisons between different methodologies straightforward.")
+    (license license:gpl2+)))
