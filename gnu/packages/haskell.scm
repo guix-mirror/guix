@@ -7263,7 +7263,7 @@ which can't be decoded in the current locale encoding.")
 (define-public ghc-shelly
   (package
     (name "ghc-shelly")
-    (version "1.7.0.1")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
@@ -7272,7 +7272,7 @@ which can't be decoded in the current locale encoding.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0a4ngy8jqcscqhimgiyz7f9kqm23is7x7gyjxr0j6iq1dy57ahq3"))))
+         "023fbvbqs5gdwm30j5517gbdcc7fvz0md70dgwgpypkskj3i926y"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
@@ -7288,7 +7288,8 @@ which can't be decoded in the current locale encoding.")
        ("ghc-async" ,ghc-async)
        ("ghc-transformers-base" ,ghc-transformers-base)
        ("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)))
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec-contrib" ,ghc-hspec-contrib)))
     (home-page "https://github.com/yesodweb/Shelly.hs")
     (synopsis "Shell-like (systems) programming in Haskell")
     (description
