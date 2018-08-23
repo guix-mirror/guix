@@ -4890,3 +4890,34 @@ the analyzed items.")
      "This package contains data structures and algorithms for sparse arrays and matrices,
 based on index arrays and simple triplet representations, respectively.")
     (license license:gpl2)))
+
+(define-public r-manipulatewidget
+  (package
+    (name "r-manipulatewidget")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "manipulateWidget" version))
+       (sha256
+        (base32 "1zagrbwkn2d50zzw8i2vyb1hsq4cydmfsqiy1a2qlp6zrv8a6q9x"))))
+    (properties
+     `((upstream-name . "manipulateWidget")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-codetools" ,r-codetools)
+       ("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-knitr" ,r-knitr)
+       ("r-miniui" ,r-miniui)
+       ("r-shiny" ,r-shiny)
+       ("r-webshot" ,r-webshot)))
+    (home-page "https://github.com/rte-antares-rpackage/manipulateWidget/")
+    (synopsis "Add even more interactivity to interactive charts")
+    (description
+     "This package lets you create in just a few lines of R code a nice user interface to
+modify the data or the graphical parameters of one or multiple interactive
+charts.  It is useful to quickly explore visually some data or for package
+developers to generate user interfaces easy to maintain.")
+    (license license:gpl2+)))
