@@ -384,7 +384,7 @@ many input formats and provides a customisable Vi-style user interface.")
            ;; Denemo's documentation says to use this command to run its
            ;; testsuite.
            (lambda _
-             (zero? (system* "make" "-C" "tests" "check"))))
+             (invoke "make" "-C" "tests" "check")))
          (add-before 'build 'set-lilypond
            ;; This phase sets the default path for lilypond to its current
            ;; location in the store.
@@ -411,7 +411,7 @@ many input formats and provides a customisable Vi-style user interface.")
                             "Clarinet in Bb.denemo"))
              #t)))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")   ; for gtester
+     `(("glib:bin" ,glib "bin")         ; for gtester
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
