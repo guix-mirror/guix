@@ -7081,7 +7081,8 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
          "0ln1szgfy8fa78l3issq4fx3aqnnd54w3cb4wssrfi48vd5rkfjm"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
+     `(#:configure-flags (list "--allow-newer=QuickCheck"
+                               "--allow-newer=hspec")))
     (inputs
      `(("ghc-fgl" ,ghc-fgl)
        ("ghc-quickcheck" ,ghc-quickcheck)
