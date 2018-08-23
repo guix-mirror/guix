@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -342,7 +343,7 @@ development.")
 (define-public ghc-quickcheck-instances
   (package
     (name "ghc-quickcheck-instances")
-    (version "0.3.16.1")
+    (version "0.3.18")
     (source
      (origin
        (method url-fetch)
@@ -352,8 +353,10 @@ development.")
              version ".tar.gz"))
        (sha256
         (base32
-         "01v5bs7r9yvhkvb4yc9bqnacy8r6cy2gr9lnmwx40n5apgi0gcbz"))))
+         "1bh1pzz5fdcqvzdcirqxna6fnjms02min5md716299g5niz46w55"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags (list "--allow-newer=base-compat")))
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-base-compat" ,ghc-base-compat)
