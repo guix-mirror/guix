@@ -5239,6 +5239,7 @@ draggable titlebars and borders.")
   (package
     (name "libx11")
     (version "1.6.5")
+    (replacement libx11-1.6.6)
     (source
       (origin
         (method url-fetch)
@@ -5267,6 +5268,20 @@ draggable titlebars and borders.")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
+
+;; Replacement package to fix multiple security bugs:
+;; <http://seclists.org/oss-sec/2018/q3/146>.
+(define-public libx11-1.6.6
+  (package
+    (inherit libx11)
+    (version "1.6.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/lib/libX11-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0ks1mxlda7nxfmffihi15ljsn50q8dknl33i2xag8xzc80fiizk5"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 
