@@ -1243,7 +1243,6 @@ above command-line parameters.")
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
        ("guile" ,guile-2.2)))
-    (home-page "https://savannah.nongnu.org/projects/guile-redis/")
     (synopsis "Redis client library for Guile")
     (description "Guile-redis provides a Scheme interface to the Redis
 key-value cache and store.")
