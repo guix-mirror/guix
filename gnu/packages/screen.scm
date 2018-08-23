@@ -141,7 +141,7 @@ controlling terminal and attach to it later.")
               (wrap-program select
                 `("BYOBU_PYTHON" = (,python)))
               #t))))))
-    (home-page "http://byobu.co/index.html")
+    (home-page "https://byobu.org/")
     (synopsis "Text-based window manager and terminal multiplexer")
     (description
      "Byobu is a Japanese term for decorative, multi-panel screens that serve
