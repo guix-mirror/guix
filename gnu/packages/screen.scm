@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -102,7 +102,7 @@ controlling terminal and attach to it later.")
 (define-public byobu
   (package
     (name "byobu")
-    (version "5.98")
+    (version "5.127")
     (source
      (origin
        (method url-fetch)
@@ -111,11 +111,11 @@ controlling terminal and attach to it later.")
                            version ".orig.tar.gz"))
        (sha256
         (base32
-         "1s8nh4wbds1nh52i0d1hy1b308jjf4siwpq92lna1zh9ll4x71j5"))
+         "0fznlj454vgxgzfw3avmvvjpawggs66da5l8k6v0lnzzd75wgbsb"))
        (patches (search-patches "byobu-writable-status.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("python" ,python-wrapper)       ;for config and session GUIs
+     `(("python" ,python-wrapper)       ; for config and session GUIs
        ("python-newt" ,newt "python")))
     (arguments
      `(#:phases
@@ -123,7 +123,7 @@ controlling terminal and attach to it later.")
          (add-before
           'configure 'provide-locale
           (lambda* (#:key inputs #:allow-other-keys)
-            (let ((libc   (assoc-ref inputs "libc"))) ;implicit input
+            (let ((libc (assoc-ref inputs "libc"))) ; implicit input
               (substitute* "usr/bin/byobu.in"
                 (("locale") (string-append libc "/bin/locale")))
               #t)))
