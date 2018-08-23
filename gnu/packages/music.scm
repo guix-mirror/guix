@@ -2055,14 +2055,14 @@ improves on support for JACK features, such as JACK MIDI.")
 (define-public libgig
   (package
     (name "libgig")
-    (version "4.0.0")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.linuxsampler.org/packages/"
                                   "libgig-" version ".tar.bz2"))
               (sha256
                (base32
-                "1wr8mwjmqpnyz6bx9757lspiii1zzn8zfbqsvn2ipzpgqkxv6kaz"))))
+                "02xx6bqxzgkvrawwnzrnxx1ypk244q4kpwfd58266f9ji8kq18h6"))))
     (build-system gnu-build-system)
     (inputs
      `(("libuuid" ,util-linux)
