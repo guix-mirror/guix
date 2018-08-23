@@ -1313,7 +1313,7 @@ users to select LV2 plugins and run them with jalv.")
        ("qttools" ,qttools)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://synthv1.sourceforge.net")
+    (home-page "https://synthv1.sourceforge.io")
     (synopsis "Polyphonic subtractive synthesizer")
     (description
      "Synthv1 is an old-school subtractive polyphonic synthesizer with four
@@ -1348,7 +1348,7 @@ oscillators and stereo effects.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
-    (home-page "http://drumkv1.sourceforge.net")
+    (home-page "https://drumkv1.sourceforge.io")
     (synopsis "Drum-kit sampler synthesizer with stereo effects")
     (description
      "Drumkv1 is an old-school drum-kit sampler synthesizer with stereo
@@ -1383,7 +1383,7 @@ effects.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
-    (home-page "http://samplv1.sourceforge.net")
+    (home-page "https://samplv1.sourceforge.io")
     (synopsis "Polyphonic sampler synthesizer with stereo effects")
     (description
      "Samplv1 is an old-school polyphonic sampler synthesizer with stereo
@@ -1418,7 +1418,7 @@ effects.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
-    (home-page "http://padthv1.sourceforge.net")
+    (home-page "https://padthv1.sourceforge.io")
     (synopsis "Polyphonic additive synthesizer")
     (description
      "Padthv1 is an old-school polyphonic additive synthesizer with stereo
