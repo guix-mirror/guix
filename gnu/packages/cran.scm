@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Sandeep Subramanian <sandeepsubramanian94@gmail.com>
 ;;; Copyright © 2018 Charlie Ritter <chewzeirta@posteo.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4847,3 +4848,27 @@ differential equations} (ODE).  It includes routines that:
   approach).
 @end enumerate\n")
     (license license:gpl2+)))
+
+(define-public r-abcanalysis
+  (package
+    (name "r-abcanalysis")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABCanalysis" version))
+       (sha256
+        (base32 "0wac1ksmnxa36v99ca4hv8k0rsh3igwpcllmlv9wf7i9kgqviqwi"))))
+    (properties `((upstream-name . "ABCanalysis")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-plotrix" ,r-plotrix)))
+    (home-page "https://www.uni-marburg.de/fb12/arbeitsgruppen/datenbionik/software-en/")
+    (synopsis "Computed ABC Analysis")
+    (description
+     "Multivariate data sets often differ in several factors or derived statistical
+parameters, which have to be selected for a valid interpretation.  Basing this
+selection on traditional statistical limits leads occasionally to the perception
+of losing information from a data set.  This package provides tools to calculate
+these limits on the basis of the mathematical properties of the distribution of
+the analyzed items.")
+    (license license:gpl3)))
