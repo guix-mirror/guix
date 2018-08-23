@@ -1393,7 +1393,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.0")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1401,10 +1401,10 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0c519qk2g0dk8gqf9ywqfp7dnr4b25lsnxxbf2l1spnnvf8nysvh"))))
+                "1alfl0l5qdll0w5lwhrwzj5dina1big1zmjg5imi9h06dzhz51xl"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; There are no tests.
+     `(#:tests? #f                      ; there are no tests
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
