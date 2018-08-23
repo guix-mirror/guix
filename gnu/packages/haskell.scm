@@ -1940,7 +1940,7 @@ literals.")
 (define-public ghc-zlib
   (package
     (name "ghc-zlib")
-    (version "0.6.1.1")
+    (version "0.6.2")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1951,7 +1951,7 @@ literals.")
              ".tar.gz"))
        (sha256
         (base32
-         "0dd79dxf56d8f6ad9if3j87s9gg7yd17ckypjxwplrbkahlb9xf5"))))
+         "1vbzf0awb6zb456xf48za1kl22018646cfzq4frvxgb9ay97vk0d"))))
     (build-system haskell-build-system)
     ;; Tests require older versions of testy.
     (arguments `(#:tests? #f))
