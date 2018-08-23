@@ -41,6 +41,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
   #:use-module (gnu packages haskell-web)
@@ -7100,14 +7101,14 @@ for generating graph-like data structures.")
 (define-public ghc-graphviz
   (package
     (name "ghc-graphviz")
-    (version "2999.18.1.2")
+    (version "2999.20.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "graphviz/graphviz-" version ".tar.gz"))
               (sha256
                (base32
-                "1z453is01v0rnxlv6xx4iyaqv5vrp3bpz829mpv1a341sck2135h"))))
+                "0kj7ap0gnliviq2p8lscw1m06capnsa90vpvcys24nqy5nw2wrp7"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags (list "--allow-newer=QuickCheck")))
@@ -7121,6 +7122,10 @@ for generating graph-like data structures.")
        ("ghc-temporary" ,ghc-temporary)
        ("ghc-text" ,ghc-text)
        ("ghc-wl-pprint-text" ,ghc-wl-pprint-text)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("graphviz" ,graphviz)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://hackage.haskell.org/package/graphviz")
     (synopsis "Bindings to Graphviz for graph visualisation")
     (description
