@@ -4872,3 +4872,21 @@ of losing information from a data set.  This package provides tools to calculate
 these limits on the basis of the mathematical properties of the distribution of
 the analyzed items.")
     (license license:gpl3)))
+
+(define-public r-slam
+  (package
+    (name "r-slam")
+    (version "0.1-43")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "slam" version))
+       (sha256
+        (base32 "0hy4qzngcgafxxr6ld7n9a9wy979ji998gpcc32vidwyab66dj5h"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/slam/")
+    (synopsis "Sparse lightweight arrays and matrices")
+    (description
+     "This package contains data structures and algorithms for sparse arrays and matrices,
+based on index arrays and simple triplet representations, respectively.")
+    (license license:gpl2)))
