@@ -1358,7 +1358,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.0")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1366,10 +1366,10 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0g67vm9ilmq5nlvk0f3abia9pbinr4ck5v4mll6igni1rxz2n7wk"))))
+                "0rfcp4v971qfhw1hb43hw12wlxmg2q13l0m1h93pyfi5l4mfjkds"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; There are no tests.
+     `(#:tests? #f                      ; there are no tests
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
