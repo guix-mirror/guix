@@ -476,7 +476,6 @@ gpgpme starting with version 1.7.")
     (inputs
      `(("guile" ,guile-2.2)
        ("libgcrypt" ,libgcrypt)))
-    (home-page "https://notabug.org/cwebber/guile-gcrypt")
     (synopsis "Cryptography library for Guile using Libgcrypt")
     (description
      "Guile-Gcrypt provides a Guile 2.x interface to a subset of the
