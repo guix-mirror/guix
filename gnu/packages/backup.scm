@@ -67,7 +67,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.7.17")
+    (version "0.7.18")
     (source
      (origin
       (method url-fetch)
@@ -77,10 +77,10 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0jmh3h09680xyf33hzxxxl74bwz66zqhzvjlj7j89r9rz3qwa91p"))))
+        "1qlika4l1k1nx8zr657ihcy0yzr1c1cdnjlbs325l5krvc3zbc5b"))))
     (build-system python-build-system)
     (native-inputs
-     `(("util-linux" ,util-linux)     ;setsid command, for the tests
+     `(("util-linux" ,util-linux)       ; setsid command, for the tests
        ("par2cmdline" ,par2cmdline)
        ("python-pexpect" ,python2-pexpect)
        ("python-fasteners" ,python2-fasteners)
@@ -91,23 +91,23 @@
     (inputs
      `(("librsync" ,librsync)
        ("lftp" ,lftp)
-       ("gnupg" ,gnupg)                 ;gpg executable needed
-       ("util-linux" ,util-linux)       ;for setsid
+       ("gnupg" ,gnupg)                 ; gpg executable needed
+       ("util-linux" ,util-linux)       ; for setsid
        ("tzdata" ,tzdata)))
     (arguments
-     `(#:python ,python-2               ;setup assumes Python 2
+     `(#:python ,python-2               ; setup assumes Python 2
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-source
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; embed gpg store name
+             ;; Embed gpg store name.
              (substitute* "duplicity/gpginterface.py"
                (("self.call = 'gpg'")
                 (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))
 
              ;; This matches up with an unreleased upstream fix, it should be
-             ;; removed when the package is updated
+             ;; removed when the package is updated.
              ;; https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/revision/1308
              (substitute* "duplicity/gpg.py"
                (("--no-secmem-warning'\\)")
@@ -120,8 +120,8 @@
              #t))
          (add-before 'check 'check-setup
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "HOME" (getcwd)) ;gpg needs to write to $HOME
-             (setenv "TZDIR"          ;some timestamp checks need TZDIR
+             (setenv "HOME" (getcwd))   ; gpg needs to write to $HOME
+             (setenv "TZDIR"            ; some timestamp checks need TZDIR
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
              #t)))))
