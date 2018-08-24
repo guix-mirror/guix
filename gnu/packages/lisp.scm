@@ -1856,3 +1856,35 @@ In addition to regular Packrat / Parsing Grammar / TDPL features ESRAP supports:
 
 (define-public ecl-esrap
   (sbcl-package->ecl-package sbcl-esrap))
+
+(define-public sbcl-split-sequence
+  (package
+    (name "sbcl-split-sequence")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sharplispers/split-sequence")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "0c3zp6b7fmmp93sfhq112ind4zkld49ycw68z409xpnz3gc0wpf0"))
+       (file-name (git-file-name "split-sequence" version))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     ;; TODO: Tests seem to be broken.
+     ;; https://github.com/sharplispers/split-sequence/issues/8
+     `(#:tests? #f))
+    (synopsis "Member of the Common Lisp Utilities family of programs")
+    (description
+     "Splits sequence into a list of subsequences delimited by objects
+satisfying the test.")
+    (home-page "https://cliki.net/split-sequence")
+    (license license:expat)))
+
+(define-public cl-split-sequence
+  (sbcl-package->cl-source-package sbcl-split-sequence))
+
+(define-public ecl-split-sequence
+  (sbcl-package->ecl-package sbcl-split-sequence))
