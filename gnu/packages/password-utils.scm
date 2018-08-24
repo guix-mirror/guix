@@ -100,7 +100,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.3.3")
+    (version "2.3.4")
     (source
      (origin
        (method url-fetch)
@@ -109,27 +109,17 @@ human.")
                            version "-src.tar.xz"))
        (sha256
         (base32
-         "1m8alsp39vk21zgcvy5zswk0dc1xmajbwnccg7n0lndsi7pqbzyg"))))
+         "02kq0a7a7hpw824n03apma00yq1c6dds224g15mrnnqqjn4af90c"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_NETWORKING=YES"
                            "-DWITH_XC_BROWSER=YES"
-                           "-DWITH_XC_SSHAGENT=YES")
-       #:phases
-       (modify-phases %standard-phases
-         ;; should be fixed in 2.3.3+, see:
-         ;; https://github.com/keepassxreboot/keepassxc/pull/1964
-         (add-after 'unpack 'patch-sources
-           (lambda _
-             (substitute* "src/gui/entry/EditEntryWidget.cpp"
-               (("#include <QColorDialog>") "#include <QColorDialog>
-#include <QButtonGroup>"))
-             #t)))))
+                           "-DWITH_XC_SSHAGENT=YES")))
     (inputs
      `(("argon2" ,argon2)
-       ("curl" ,curl) ; XC_NETWORKING
+       ("curl" ,curl)                   ; XC_NETWORKING
        ("libgcrypt" ,libgcrypt)
-       ("libsodium" ,libsodium) ; XC_BROWSER
+       ("libsodium" ,libsodium)         ; XC_BROWSER
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)
        ("qtbase" ,qtbase)
@@ -144,7 +134,7 @@ manage your passwords in a secure way.  You can put all your passwords in one
 database, which is locked with one master key or a key-file which can be stored
 on an external storage device.  The databases are encrypted using the
 algorithms AES or Twofish.")
-    ;; Non functional parts use various licences.
+    ;; Non-functional parts use various licences.
     (license license:gpl3)))
 
 (define-public keepassx
