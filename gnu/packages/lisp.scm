@@ -2009,3 +2009,36 @@ with @command{colorize} support."))))
 
 (define-public ecl-3bmd-ext-code-blocks
   (sbcl-package->ecl-package sbcl-3bmd-ext-code-blocks))
+
+(define-public sbcl-cl-fad
+  (package
+    (name "sbcl-cl-fad")
+    (version "0.7.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/edicl/cl-fad/")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "1l1qmk9z57q84bz5r04sxsksggsnd7dgkxlybzh9imz6ma7sm52m"))
+       (file-name (string-append "cl-fad" version "-checkout"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)))
+    (synopsis "Portable pathname library for Common Lisp")
+    (description
+     "CL-FAD (for \"Files and Directories\") is a thin layer atop Common
+Lisp's standard pathname functions.  It is intended to provide some
+unification between current CL implementations on Windows, OS X, Linux, and
+Unix.  Most of the code was written by Peter Seibel for his book Practical
+Common Lisp.")
+    (home-page "https://edicl.github.io/cl-fad/")
+    (license license:bsd-2)))
+
+(define-public cl-fad
+  (sbcl-package->cl-source-package sbcl-cl-fad))
+
+(define-public ecl-cl-fad
+  (sbcl-package->ecl-package sbcl-cl-fad))
