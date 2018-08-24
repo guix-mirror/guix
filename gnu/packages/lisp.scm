@@ -1950,3 +1950,39 @@ C, C++, Java, Python, Erlang, Haskell, Objective-C, Diff, Webkit.")
 
 (define-public ecl-colorize
   (sbcl-package->ecl-package sbcl-colorize))
+
+(define-public sbcl-3bmd
+  (let ((commit "192ea13435b605a96ef607df51317056914cabbd"))
+    (package
+      (name "sbcl-3bmd")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/3b/3bmd")
+               (commit commit)))
+         (sha256
+          (base32
+           "1rgv3gi7wf963ikmmpk132wgn0icddf226gq3bmcnk1fr3v9gf2f"))
+         (file-name (git-file-name "3bmd" version))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; FIXME: We need to specify the name because the build-system thinks
+       ;; "3" is a version marker.
+       `(#:asd-system-name "3bmd"))
+      (inputs
+       `(("esrap" ,sbcl-esrap)
+         ("split-sequence" ,sbcl-split-sequence)))
+      (synopsis "Markdown processor in Command Lisp using esrap parser")
+      (description
+       "Common Lisp Markdown -> HTML converter, using @command{esrap} for
+parsing, and grammar based on @command{peg-markdown}.")
+      (home-page "https://github.com/3b/3bmd")
+      (license license:expat))))
+
+(define-public cl-3bmd
+  (sbcl-package->cl-source-package sbcl-3bmd))
+
+(define-public ecl-3bmd
+  (sbcl-package->ecl-package sbcl-3bmd))
