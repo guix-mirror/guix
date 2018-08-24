@@ -3268,7 +3268,7 @@ This is a better maintained fork of the \"temporary\" package.")
 (define-public ghc-smallcheck
   (package
     (name "ghc-smallcheck")
-    (version "1.1.1")
+    (version "1.1.5")
     (source
      (origin
        (method url-fetch)
@@ -3278,7 +3278,7 @@ This is a better maintained fork of the \"temporary\" package.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ygrabxh40bym3grnzqyfqn96lirnxspb8cmwkkr213239y605sd"))))
+         "195fj7w3v03d1y1nm2ylavzrwxjcdbq0lb6zsw1dwyx5jmwfc84h"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-logict" ,ghc-logict)
