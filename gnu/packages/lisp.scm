@@ -1816,3 +1816,43 @@ that of Eos has not.  Thus, Eos is now deprecated in favor of FiveAM.")
 
 (define-public ecl-eos
   (sbcl-package->ecl-package sbcl-eos))
+
+(define-public sbcl-esrap
+  (let ((commit "133be8b05c2aae48696fe5b739eea2fa573fa48d"))
+    (package
+      (name "sbcl-esrap")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nikodemus/esrap")
+               (commit commit)))
+         (sha256
+          (base32
+           "02d5clihsdryhf7pix8c5di2571fdsffh75d40fkzhws90r5mksl"))
+         (file-name (git-file-name "esrap" version))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("eos" ,sbcl-eos)))            ;For testing only.
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (synopsis "Common Lisp packrat parser")
+      (description
+       "A packrat parser for Common Lisp.
+In addition to regular Packrat / Parsing Grammar / TDPL features ESRAP supports:
+
+@itemize
+@item dynamic redefinition of nonterminals
+@item inline grammars
+@item semantic predicates
+@item introspective facilities (describing grammars, tracing, setting breaks)
+@end itemize\n")
+      (home-page "https://nikodemus.github.io/esrap/")
+      (license license:expat))))
+
+(define-public cl-esrap
+  (sbcl-package->cl-source-package sbcl-esrap))
+
+(define-public ecl-esrap
+  (sbcl-package->ecl-package sbcl-esrap))
