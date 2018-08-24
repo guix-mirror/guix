@@ -1786,3 +1786,33 @@ several blockable channels.)")
 
 (define-public ecl-jpl-queues
   (sbcl-package->ecl-package sbcl-jpl-queues))
+
+(define-public sbcl-eos
+  (let ((commit "b0faca83781ead9a588661e37bd47f90362ccd94"))
+    (package
+      (name "sbcl-eos")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/adlai/Eos")
+               (commit commit)))
+         (sha256
+          (base32
+           "1bq8cfg087iyxmxi1mwgx5cfgy3b8ydrf81xljcis8qbgb2vszph"))
+         (file-name (git-file-name "eos" version))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Unit Testing for Common Lisp")
+      (description
+       "Eos was a unit testing library for Common Lisp.
+It began as a fork of FiveAM; however, FiveAM development has continued, while
+that of Eos has not.  Thus, Eos is now deprecated in favor of FiveAM.")
+      (home-page "https://github.com/adlai/Eos")
+      (license license:expat))))
+
+(define-public cl-eos
+  (sbcl-package->cl-source-package sbcl-eos))
+
+(define-public ecl-eos
+  (sbcl-package->ecl-package sbcl-eos))
