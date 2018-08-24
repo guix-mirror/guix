@@ -1624,7 +1624,7 @@ is subjective.")
 (define-public tuxguitar
   (package
     (name "tuxguitar")
-    (version "1.5")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1632,19 +1632,12 @@ is subjective.")
                     version "/tuxguitar-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1yd5wv17sh6i8pkndxayfd6r2k1ccgnc4w3nda3lpniv8cpjzz3k"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Delete pre-built classes
-                  (delete-file-recursively "TuxGuitar-android-gdrive/bin")
-                  (delete-file-recursively "TuxGuitar-android-gdrive-gdaa/bin")
-                  #t))))
+                "10arfpgm2pw7mn922klklzn05lw5ifqx070shdrar81afmkfbbd9"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"
        #:jdk ,icedtea-8
-       #:tests? #f ; no tests
+       #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-dir
@@ -1663,7 +1656,7 @@ is subjective.")
                                      ((assoc-ref %standard-phases 'build)
                                       #:build-target "build")
                                      (begin
-                                       ;; Generate default build.xml
+                                       ;; Generate default build.xml.
                                        ((@@ (guix build ant-build-system) default-build.xml)
                                         (string-append (string-downcase dir) ".jar")
                                         (string-append (assoc-ref outputs "out")
@@ -1686,15 +1679,15 @@ is subjective.")
                     (lib   (string-append share "/java"))
                     (swt   (assoc-ref inputs "java-swt")))
                (mkdir-p bin)
-               ;; install all jars
+               ;; Install all jars.
                (for-each (lambda (file)
                            (install-file file lib))
                          (find-files ".." "\\.jar$"))
 
-               ;; install all resources
+               ;; Install all resources.
                (copy-recursively "share" share)
 
-               ;; create wrapper
+               ;; Create wrapper.
                (call-with-output-file (string-append bin "/tuxguitar")
                  (lambda (port)
                    (let ((classpath (string-join (append (find-files lib "\\.jar$")
