@@ -5054,7 +5054,7 @@ occurrences of a substring (the first in case of overlaps) with another.")
 (define-public ghc-integer-logarithms
   (package
     (name "ghc-integer-logarithms")
-    (version "1.0.2")
+    (version "1.0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -5063,16 +5063,16 @@ occurrences of a substring (the first in case of overlaps) with another.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0w5mhak181zi6qr5h2zbcs9ymaqacisp9jwk99naz6s8zz5rq1ii"))))
+         "1wj8kgjg5bn2yrs4zh9qfjv85cx6w998j9pi39yrbv305944mb9j"))))
     (build-system haskell-build-system)
-    (inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-smallcheck" ,ghc-smallcheck)
+       ("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-smallcheck" ,ghc-smallcheck)))
-    (home-page "https://github.com/phadej/integer-logarithms")
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)))
+    (home-page "https://github.com/Bodigrim/integer-logarithms")
     (synopsis "Integer logarithms")
     (description
      "This package provides the following modules:
