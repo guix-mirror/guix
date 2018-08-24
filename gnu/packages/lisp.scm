@@ -1710,3 +1710,34 @@ to DeRemer and Pennello, which is used by Bison and lalr.scm (not lalr.cl).")
 
 (define-public ecl-cl-yacc
   (sbcl-package->ecl-package sbcl-cl-yacc))
+
+(define-public sbcl-jpl-util
+  (let ((commit "0311ed374e19a49d43318064d729fe3abd9a3b62"))
+    (package
+      (name "sbcl-jpl-util")
+      (version "20151005")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               ;; Quicklisp uses this fork.
+               (url "https://github.com/hawkir/cl-jpl-util")
+               (commit commit)))
+         (file-name
+          (git-file-name "jpl-util" version))
+         (sha256
+          (base32
+           "0nc0rk9n8grkg3045xsw34whmcmddn2sfrxki4268g7kpgz0d2yz"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Collection of Common Lisp utility functions and macros")
+      (description
+       "@command{cl-jpl-util} is a collection of Common Lisp utility functions
+and macros, primarily for software projects written in CL by the author.")
+      (home-page "https://www.thoughtcrime.us/software/cl-jpl-util/")
+      (license license:isc))))
+
+(define-public cl-jpl-util
+  (sbcl-package->cl-source-package sbcl-jpl-util))
+
+(define-public ecl-jpl-util
+  (sbcl-package->ecl-package sbcl-jpl-util))
