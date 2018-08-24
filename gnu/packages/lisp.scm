@@ -2110,3 +2110,39 @@ also be supported.")
 
 (define-public ecl-nibbles
   (sbcl-package->ecl-package sbcl-nibbles))
+
+(define-public sbcl-ironclad
+  (package
+    (name "sbcl-ironclad")
+    (version "0.42")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sharplispers/ironclad/")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "1wjcb9vpybxjrmch7f7s78a5abxmnknbd4fl49dl5lz8a3fc8vf0"))
+       (file-name (string-append "ironblad" version "-checkout"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     ;; Tests only.
+     `(("rt" ,sbcl-rt)))
+    (inputs
+     `(("flexi-streams" ,sbcl-flexi-streams)
+       ("nibbles" ,sbcl-nibbles)))
+    (synopsis "Cryptographic toolkit written in Common Lisp")
+    (description
+     "Ironclad is a cryptography library written entirely in Common Lisp.
+It includes support for several popular ciphers, digests, MACs and public key
+cryptography algorithms.  For several implementations that support Gray
+streams, support is included for convenient stream wrappers.")
+    (home-page "https://github.com/sharplispers/ironclad")
+    (license license:bsd-3)))
+
+(define-public cl-ironclad
+  (sbcl-package->cl-source-package sbcl-ironclad))
+
+(define-public ecl-ironclad
+  (sbcl-package->ecl-package sbcl-ironclad))
