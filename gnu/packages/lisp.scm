@@ -2177,3 +2177,34 @@ named readtables, which is akin to package namespacing in Common Lisp.")
 
 (define-public ecl-named-readtables
   (sbcl-package->ecl-package sbcl-named-readtables))
+
+(define-public sbcl-pythonic-string-reader
+  (let ((commit "47a70ba1e32362e03dad6ef8e6f36180b560f86a"))
+    (package
+      (name "sbcl-pythonic-string-reader")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/smithzvk/pythonic-string-reader/")
+               (commit commit)))
+         (sha256
+          (base32 "1b5iryqw8xsh36swckmz8rrngmc39k92si33fgy5pml3n9l5rq3j"))
+         (file-name (git-file-name "pythonic-string-reader" version))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("named-readtables" ,sbcl-named-readtables)))
+      (home-page "https://github.com/smithzvk/pythonic-string-reader")
+      (synopsis "Read table modification inspired by Python's three quote strings")
+      (description "This piece of code sets up some reader macros that make it
+simpler to input string literals which contain backslashes and double quotes
+This is very useful for writing complicated docstrings and, as it turns out,
+writing code that contains string literals that contain code themselves.")
+      (license license:bsd-3))))
+
+(define-public cl-pythonic-string-reader
+  (sbcl-package->cl-source-package sbcl-pythonic-string-reader))
+
+(define-public ecl-pythonic-string-reader
+  (sbcl-package->ecl-package sbcl-pythonic-string-reader))
