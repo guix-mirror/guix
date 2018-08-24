@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +27,7 @@
   #:use-module (ice-9 ftw)
   #:export (scheme-files
             scheme-modules
+            scheme-modules*
             fold-modules
             all-modules
             fold-module-public-variables))
@@ -114,6 +115,16 @@ name and the exception key and arguments."
               (scheme-files (if sub-directory
                                 (string-append directory "/" sub-directory)
                                 directory))))
+
+(define* (scheme-modules* directory #:optional sub-directory)
+  "Return the list of module names found under SUB-DIRECTORY in DIRECTORY.
+This is a source-only variant that does not try to load files."
+  (let ((prefix (string-length directory)))
+    (map (lambda (file)
+           (file-name->module-name (string-drop file prefix)))
+         (scheme-files (if sub-directory
+                           (string-append directory "/" sub-directory)
+                           directory)))))
 
 (define* (fold-modules proc init path #:key (warn (const #f)))
   "Fold over all the Scheme modules present in PATH, a list of directories.

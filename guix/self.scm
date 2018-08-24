@@ -206,13 +206,6 @@ list of file-name/file-like objects suitable as inputs to 'imported-files'."
                (local-file file #:recursive? #t)))
        (find-files (string-append directory "/" sub-directory) pred)))
 
-(define (scheme-modules* directory sub-directory)
-  "Return the list of module names found under SUB-DIRECTORY in DIRECTORY."
-  (let ((prefix (string-length directory)))
-    (map (lambda (file)
-           (file-name->module-name (string-drop file prefix)))
-         (scheme-files (string-append directory "/" sub-directory)))))
-
 (define* (sub-directory item sub-directory)
   "Return SUB-DIRECTORY within ITEM, which may be a file name or a file-like
 object."
