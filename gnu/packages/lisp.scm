@@ -1644,3 +1644,34 @@ with a focus on interactive development.")
 
 (define-public ecl-hu.dwim.stefil
   (sbcl-package->ecl-package sbcl-hu.dwim.stefil))
+
+(define-public sbcl-babel
+  (package
+    (name "sbcl-babel")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/cl-babel/babel/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "189kgbmslh36xx0d2i1g6a7mcvjryvjzkdlnhilqy5xs7hkyqirq"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("tests:cl-hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+    (inputs
+     `(("sbcl-alexandria" ,sbcl-alexandria)
+       ("sbcl-trivial-features" ,sbcl-trivial-features)))
+    (home-page "https://common-lisp.net/project/babel/")
+    (synopsis "Charset encoding and decoding library")
+    (description "Babel is a charset encoding and decoding library, not unlike
+GNU libiconv, but completely written in Common Lisp.")
+    (license license:expat)))
+
+(define-public cl-babel
+  (sbcl-package->cl-source-package sbcl-babel))
+
+(define-public ecl-babel
+  (sbcl-package->ecl-package sbcl-babel))
