@@ -1888,3 +1888,30 @@ satisfying the test.")
 
 (define-public ecl-split-sequence
   (sbcl-package->ecl-package sbcl-split-sequence))
+
+(define-public sbcl-html-encode
+  (package
+    (name "sbcl-html-encode")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://beta.quicklisp.org/archive/html-encode/2010-10-06/html-encode-"
+             version ".tgz"))
+       (sha256
+        (base32
+         "06mf8wn95yf5swhmzk4vp0xr4ylfl33dgfknkabbkd8n6jns8gcf"))
+       (file-name (string-append "colorize" version "-checkout"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp library for encoding text in various web-savvy encodings")
+    (description
+     "A library for encoding text in various web-savvy encodings.")
+    (home-page "http://quickdocs.org/html-encode/")
+    (license license:expat)))
+
+(define-public cl-html-encode
+  (sbcl-package->cl-source-package sbcl-html-encode))
+
+(define-public ecl-html-encode
+  (sbcl-package->ecl-package sbcl-html-encode))
