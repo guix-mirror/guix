@@ -13406,3 +13406,55 @@ conversions, region filtering, FASTA sequence extraction and more.")
       ;; gffread is under Expat, but gclib is under Artistic 2.0
       (license (list license:expat
                      license:artistic2.0)))))
+
+(define-public find-circ
+  ;; The last release was in 2015.  The license was clarified in 2017, so we
+  ;; take the latest commit.
+  (let ((commit "8655dca54970fcf7e92e22fbf57e1188724dda7d")
+        (revision "1"))
+    (package
+      (name "find-circ")
+      (version (git-version "1.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/marvin-jens/find_circ.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0p77pbqbclqr4srms34y1b9b4njybfpjiknc11ki84f3p8skb3cg"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are none
+         #:phases
+         ;; There is no actual build system.
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'build)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (path (getenv "PYTHONPATH")))
+                 (for-each (lambda (script)
+                             (install-file script bin)
+                             (wrap-program (string-append bin "/" script)
+                               `("PYTHONPATH" ":" prefix (,path))))
+                           '("cmp_bed.py"
+                             "find_circ.py"
+                             "maxlength.py"
+                             "merge_bed.py"
+                             "unmapped2anchors.py")))
+               #t)))))
+      (inputs
+       `(("python2" ,python-2)
+         ("python2-pysam" ,python2-pysam)
+         ("python2-numpy" ,python2-numpy)))
+      (home-page "https://github.com/marvin-jens/find_circ")
+      (synopsis "circRNA detection from RNA-seq reads")
+      (description "This package provides tools to detect head-to-tail
+spliced (back-spliced) sequencing reads, indicative of circular RNA (circRNA)
+in RNA-seq data.")
+      (license license:gpl3))))
