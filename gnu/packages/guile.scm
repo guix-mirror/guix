@@ -850,27 +850,18 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.6")
+    (version "0.2.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0n1lf5bsr5s9gqi07sdfkl1hpin6dzvkcj1xa63jd1w8aglwv8r1"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; 'pre-inst-env' sets an incorrect load path, missing the
-                  ;; "/src" bit.  Add it.
-                  (substitute* "pre-inst-env.in"
-                    (("abs_top_(builddir|srcdir)=([[:graph:]]+)" _ dir value)
-                     (string-append "abs_top_" dir "=" value "/src")))
-                  #t))))
+                "0aizxdif5dpch9cvs8zz5g8ds5s4xhfnwza2il5ji7fv2h7ks7bd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
-       '("GUILE_AUTO_COMPILE=0")        ;to prevent guild errors
+       '("GUILE_AUTO_COMPILE=0")        ; to prevent guild errors
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-module-dir
