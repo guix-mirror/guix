@@ -1612,3 +1612,35 @@ documentation system, explicit development support, etc.")
 
 (define-public ecl-hu.dwim.asdf
   (sbcl-package->ecl-package sbcl-hu.dwim.asdf))
+
+(define-public sbcl-hu.dwim.stefil
+  (let ((commit "ab6d1aa8995878a1b66d745dfd0ba021090bbcf9"))
+    (package
+      (name "sbcl-hu.dwim.stefil")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://gitlab.common-lisp.net/xcvb/hu.dwim.stefil.git")
+           (commit commit)))
+         (sha256
+          (base32 "1d8yccw65zj3zh46cbi3x6nmn1dwdb76s9d0av035077mvyirqqp"))
+         (file-name (git-file-name "hu.dwim.stefil" version))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("asdf:cl-hu.dwim.asdf" ,sbcl-hu.dwim.asdf)))
+      (inputs
+       `(("sbcl-alexandria" ,sbcl-alexandria)))
+      (home-page "https://hub.darcs.net/hu.dwim/hu.dwim.stefil")
+      (synopsis "Simple test framework")
+      (description "Stefil is a simple test framework for Common Lisp,
+with a focus on interactive development.")
+      (license license:public-domain))))
+
+(define-public cl-hu.dwim.stefil
+  (sbcl-package->cl-source-package sbcl-hu.dwim.stefil))
+
+(define-public ecl-hu.dwim.stefil
+  (sbcl-package->ecl-package sbcl-hu.dwim.stefil))
