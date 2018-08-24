@@ -1741,3 +1741,48 @@ and macros, primarily for software projects written in CL by the author.")
 
 (define-public ecl-jpl-util
   (sbcl-package->ecl-package sbcl-jpl-util))
+
+(define-public sbcl-jpl-queues
+  (package
+    (name "sbcl-jpl-queues")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://www.thoughtcrime.us/software/jpl-queues/jpl-queues-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1wvvv7j117h9a42qaj1g4fh4mji28xqs7s60rn6d11gk9jl76h96"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("jpl-util" ,sbcl-jpl-util)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)))
+    (arguments
+     ;; Tests seem to be broken.
+     `(#:tests? #f))
+    (synopsis "Common Lisp library implementing a few different kinds of queues")
+    (description
+     "A Common Lisp library implementing a few different kinds of queues:
+
+@itemize
+@item Bounded and unbounded FIFO queues.
+@item Lossy bounded FIFO queues that drop elements when full.
+@item Unbounded random-order queues that use less memory than unbounded FIFO queues.
+@end itemize
+
+Additionally, a synchronization wrapper is provided to make any queue
+conforming to the @command{jpl-queues} API thread-safe for lightweight
+multithreading applications.  (See Calispel for a more sophisticated CL
+multithreaded message-passing library with timeouts and alternation among
+several blockable channels.)")
+    (home-page "https://www.thoughtcrime.us/software/jpl-queues/")
+    (license license:isc)))
+
+(define-public cl-jpl-queues
+  (sbcl-package->cl-source-package sbcl-jpl-queues))
+
+(define-public ecl-jpl-queues
+  (sbcl-package->ecl-package sbcl-jpl-queues))
