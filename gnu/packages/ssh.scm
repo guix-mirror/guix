@@ -148,15 +148,14 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "7.7p1")
+   (version "7.8p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
                                  name "-" version ".tar.gz"))
-             (patches (search-patches "openssh-CVE-2018-15473.patch"))
              (sha256
               (base32
-               "13vbbrvj3mmfhj83qyrg5c0ipr6bzw5s65dy4k8gr7p9hkkfffyp"))))
+               "1jj4f586r9lhakp2w0zv7j616d6x62m15q8l4nxq7haja6qlnj0s"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)))
    (inputs `(("openssl" ,openssl)
