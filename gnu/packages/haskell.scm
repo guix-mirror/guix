@@ -5086,7 +5086,7 @@ in migrated modules.")
 (define-public ghc-scientific
   (package
     (name "ghc-scientific")
-    (version "0.3.5.2")
+    (version "0.3.6.2")
     (source
      (origin
        (method url-fetch)
@@ -5096,14 +5096,15 @@ in migrated modules.")
              ".tar.gz"))
        (sha256
         (base32
-         "0msnjz7ml0zycw9bssslxbg0nigziw7vs5km4q3vjbs8jpzpkr2w"))))
+         "03ql2f0ac8bsl524idy9xxa3kxisb2sj3avflzw580j5hzy0m397"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-integer-logarithms" ,ghc-integer-logarithms)
        ("ghc-text" ,ghc-text)
        ("ghc-hashable" ,ghc-hashable)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-primitive" ,ghc-primitive)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-ant-xml" ,ghc-tasty-ant-xml)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
