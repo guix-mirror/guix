@@ -1557,3 +1557,30 @@ utilities that make it even easier to manipulate text in Common Lisp.  It has
 
 (define-public ecl-cl-strings
   (sbcl-package->ecl-package sbcl-cl-strings))
+
+(define-public sbcl-trivial-features
+  (package
+    (name "sbcl-trivial-features")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/trivial-features/trivial-features/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32 "0db1awn6jyhcfhyfvpjvfziprmq85cigf19mwbvaprhblydsag3c"))
+       (file-name (string-append "trivial-features-" version ".tar.gz"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments '(#:tests? #f))
+    (home-page "http://cliki.net/trivial-features")
+    (synopsis "Ensures consistency of @code{*FEATURES*} in Common Lisp")
+    (description "Trivial-features ensures that @code{*FEATURES*} is
+consistent across multiple Common Lisp implementations.")
+    (license license:expat)))
+
+(define-public cl-trivial-features
+  (sbcl-package->cl-source-package sbcl-trivial-features))
+
+(define-public ecl-trivial-features
+  (sbcl-package->ecl-package sbcl-trivial-features))
