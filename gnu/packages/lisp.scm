@@ -2042,3 +2042,28 @@ Common Lisp.")
 
 (define-public ecl-cl-fad
   (sbcl-package->ecl-package sbcl-cl-fad))
+
+(define-public sbcl-rt
+  (package
+    (name "sbcl-rt")
+    (version "1990.12.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://beta.quicklisp.org/archive/rt/2010-10-06/rt-"
+                           "20101006-git" ".tgz"))
+       (sha256
+        (base32
+         "1jncar0xwkqk8yrc2dln389ivvgzs7ijdhhs3zpfyi5d21f0qa1v"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "MIT Regression Tester")
+    (description
+     "RT provides a framework for writing regression test suites.")
+    (home-page "https://github.com/sharplispers/nibbles")
+    (license license:unlicense)))
+
+(define-public cl-rt
+  (sbcl-package->cl-source-package sbcl-rt))
+
+(define-public ecl-rt
+  (sbcl-package->ecl-package sbcl-rt))
