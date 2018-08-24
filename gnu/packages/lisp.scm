@@ -1915,3 +1915,38 @@ satisfying the test.")
 
 (define-public ecl-html-encode
   (sbcl-package->ecl-package sbcl-html-encode))
+
+(define-public sbcl-colorize
+  (let ((commit "ea676b584e0899cec82f21a9e6871172fe3c0eb5"))
+    (package
+      (name "sbcl-colorize")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kingcons/colorize")
+               (commit commit)))
+         (sha256
+          (base32
+           "1pdg4kiaczmr3ivffhirp7m3lbr1q27rn7dhaay0vwghmi31zcw9"))
+         (file-name (git-file-name "colorize" version))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("html-encode" ,sbcl-html-encode)))
+      (synopsis "Common Lisp for syntax highlighting")
+      (description
+       "@command{colorize} is a Lisp library for syntax highlighting
+supporting the following languages: Common Lisp, Emacs Lisp, Scheme, Clojure,
+C, C++, Java, Python, Erlang, Haskell, Objective-C, Diff, Webkit.")
+      (home-page "https://github.com/kingcons/colorize")
+      ;; TODO: Missing license?
+      (license license:expat))))
+
+(define-public cl-colorize
+  (sbcl-package->cl-source-package sbcl-colorize))
+
+(define-public ecl-colorize
+  (sbcl-package->ecl-package sbcl-colorize))
