@@ -1986,3 +1986,26 @@ parsing, and grammar based on @command{peg-markdown}.")
 
 (define-public ecl-3bmd
   (sbcl-package->ecl-package sbcl-3bmd))
+
+(define-public sbcl-3bmd-ext-code-blocks
+  (let ((commit "192ea13435b605a96ef607df51317056914cabbd"))
+    (package
+      (inherit sbcl-3bmd)
+      (name "sbcl-3bmd-ext-code-blocks")
+      (arguments
+       `(#:asd-system-name "3bmd-ext-code-blocks"
+         #:asd-file "3bmd-ext-code-blocks.asd"))
+      (inputs
+       `(("3bmd" ,sbcl-3bmd)
+         ("colorize" ,sbcl-colorize)))
+      (synopsis "3bmd extension which adds support for GitHub-style fenced
+code blocks")
+      (description
+       "3bmd extension which adds support for GitHub-style fenced code blocks,
+with @command{colorize} support."))))
+
+(define-public cl-3bmd-ext-code-blocks
+  (sbcl-package->cl-source-package sbcl-3bmd-ext-code-blocks))
+
+(define-public ecl-3bmd-ext-code-blocks
+  (sbcl-package->ecl-package sbcl-3bmd-ext-code-blocks))
