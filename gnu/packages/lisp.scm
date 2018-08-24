@@ -2294,3 +2294,35 @@ single-byte encoded strings.")
 
 (define-public ecl-ascii-strings
   (sbcl-package->ecl-package sbcl-ascii-strings))
+
+(define-public sbcl-cl-string-match
+  (package
+    (inherit sbcl-ascii-strings)
+    (name "sbcl-cl-string-match")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("ascii-strings" ,sbcl-ascii-strings)
+       ("yacc" ,sbcl-cl-yacc)
+       ("jpl-util" ,sbcl-jpl-util)
+       ("jpl-queues" ,sbcl-jpl-queues)
+       ("mgl-pax" ,sbcl-mgl-pax)
+       ("iterate" ,sbcl-iterate)))
+    ;; TODO: Tests are not evaluated properly.
+    (native-inputs
+     ;; For testing:
+     `(("lisp-unit" ,sbcl-lisp-unit)
+       ("simple-scanf" ,sbcl-simple-scanf)))
+    (arguments
+     `(#:tests? #f
+       #:asd-file "cl-string-match.asd"))
+    (synopsis "Portable, dependency-free set of utilities to manipulate strings in Common Lisp")
+    (description
+     "@command{cl-strings} is a small, portable, dependency-free set of
+utilities that make it even easier to manipulate text in Common Lisp.  It has
+100% test coverage and works at least on sbcl, ecl, ccl, abcl and clisp.")))
+
+(define-public cl-string-match
+  (sbcl-package->cl-source-package sbcl-cl-string-match))
+
+(define-public ecl-cl-string-match
+  (sbcl-package->ecl-package sbcl-cl-string-match))
