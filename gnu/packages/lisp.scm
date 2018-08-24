@@ -2208,3 +2208,53 @@ writing code that contains string literals that contain code themselves.")
 
 (define-public ecl-pythonic-string-reader
   (sbcl-package->ecl-package sbcl-pythonic-string-reader))
+
+(define-public sbcl-mgl-pax
+  (let ((commit "818448418d6b9de74620f606f5b23033c6082769"))
+    (package
+      (name "sbcl-mgl-pax")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/melisgl/mgl-pax")
+               (commit commit)))
+         (sha256
+          (base32
+           "1p97zfkh130bdxqqxwaw2j9psv58751wakx7czbfpq410lg7dd7i"))
+         (file-name (git-file-name "mgl-pax" version))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("3bmd" ,sbcl-3bmd)
+         ("3bmd-ext-code-blocks" ,sbcl-3bmd-ext-code-blocks)
+         ("babel" ,sbcl-babel)
+         ("cl-fad" ,sbcl-cl-fad)
+         ("ironclad" ,sbcl-ironclad)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("pythonic-string-reader" ,sbcl-pythonic-string-reader)
+         ("swank" ,sbcl-slime-swank)))
+      (synopsis "Exploratory programming environment and documentation generator")
+      (description
+       "PAX provides an extremely poor man's Explorable Programming
+environment.  Narrative primarily lives in so called sections that mix markdown
+docstrings with references to functions, variables, etc, all of which should
+probably have their own docstrings.
+
+The primary focus is on making code easily explorable by using SLIME's
+@command{M-.} (@command{slime-edit-definition}).  See how to enable some
+fanciness in Emacs Integration.  Generating documentation from sections and all
+the referenced items in Markdown or HTML format is also implemented.
+
+With the simplistic tools provided, one may accomplish similar effects as with
+Literate Programming, but documentation is generated from code, not vice versa
+and there is no support for chunking yet.  Code is first, code must look
+pretty, documentation is code.")
+      (home-page "http://quotenil.com/")
+      (license license:expat))))
+
+(define-public cl-mgl-pax
+  (sbcl-package->cl-source-package sbcl-mgl-pax))
+
+(define-public ecl-mgl-pax
+  (sbcl-package->ecl-package sbcl-mgl-pax))
