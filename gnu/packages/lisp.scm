@@ -1675,3 +1675,38 @@ GNU libiconv, but completely written in Common Lisp.")
 
 (define-public ecl-babel
   (sbcl-package->ecl-package sbcl-babel))
+
+(define-public sbcl-cl-yacc
+  (package
+    (name "sbcl-cl-yacc")
+    (version "0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jech/cl-yacc")
+             (commit (string-append "cl-yacc-" version))))
+       (sha256
+        (base32
+         "16946pzf8vvadnyfayvj8rbh4zjzw90h0azz2qk1mxrvhh5wklib"))
+       (file-name (string-append "cl-yacc-" version "-checkout"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:asd-file "yacc.asd"
+       #:asd-system-name "yacc"))
+    (synopsis "LALR(1) parser generator for Common Lisp, similar in spirit to Yacc")
+    (description
+     "CL-Yacc is a LALR(1) parser generator for Common Lisp, similar in spirit
+to AT&T Yacc, Berkeley Yacc, GNU Bison, Zebu, lalr.cl or lalr.scm.
+
+CL-Yacc uses the algorithm due to Aho and Ullman, which is the one also used
+by AT&T Yacc, Berkeley Yacc and Zebu.  It does not use the faster algorithm due
+to DeRemer and Pennello, which is used by Bison and lalr.scm (not lalr.cl).")
+    (home-page "https://www.irif.fr/~jch//software/cl-yacc/")
+    (license license:expat)))
+
+(define-public cl-yacc
+  (sbcl-package->cl-source-package sbcl-cl-yacc))
+
+(define-public ecl-cl-yacc
+  (sbcl-package->ecl-package sbcl-cl-yacc))
