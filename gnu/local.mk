@@ -671,7 +671,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/fcgi-2.4.0-poll.patch			\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\
   %D%/packages/patches/fifo-map-remove-catch.hpp.patch		\
+  %D%/packages/patches/findutils-gnulib-libio.patch		\
   %D%/packages/patches/findutils-localstatedir.patch		\
+  %D%/packages/patches/findutils-makedev.patch			\
   %D%/packages/patches/findutils-test-xargs.patch		\
   %D%/packages/patches/flann-cmake-3.11.patch			\
   %D%/packages/patches/flint-ldconfig.patch			\

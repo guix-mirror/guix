@@ -298,7 +298,9 @@ interactive means to merge two files.")
              (base32
               "178nn4dl7wbcw499czikirnkniwnx36argdnqgz4ik9i6zvwkm6y"))
             (patches (search-patches
+                      "findutils-gnulib-libio.patch"
                       "findutils-localstatedir.patch"
+                      "findutils-makedev.patch"
                       "findutils-test-xargs.patch"))
             (modules '((guix build utils)))
             (snippet
