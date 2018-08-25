@@ -11374,8 +11374,8 @@ wiki.")
     (license license:expat)))
 
 (define-public emacs-recent-addresses
-  (let ((commit "d9da58db542089a1ceb5ef29e420dbfbc4a36373")
-        (revision "0"))
+  (let ((commit "afbbfdc43b81e620acf827ca20d297e0c517b6eb")
+        (revision "1"))
     (package
       (name "emacs-recent-addresses")
       (home-page "http://nschum.de/src/emacs/recent-addresses/")
@@ -11383,11 +11383,13 @@ wiki.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/nschum/recent-addresses.el")
+                      ;; Note: Use a branch that works with Helm.  Submitted
+                      ;; at <https://github.com/nschum/recent-addresses.el/pull/1>.
+                      (url "https://github.com/civodul/recent-addresses.el")
                       (commit commit)))
                 (sha256
                  (base32
-                  "175rvcwmkb5z7ss7q2y5178mvdvp5bhn39irz80qinlvaz8fm4nk"))
+                  "0ajrq0galjmdyjdjyxazykjyax3gh6hvfk4s7l657pi11g0q5zax"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (synopsis "Record recently-used email addressed and auto-complete them")
