@@ -11643,3 +11643,30 @@ comments and Org files in the Magit status buffer.  Activating an item jumps
 to it in its file.  By default, it uses keywords from @code{hl-todo}, minus a
 few (like NOTE).")
       (license license:gpl3))))
+
+(define-public emacs-git-annex
+  ;; Unreleased version has a fontification fix.
+  (let ((commit "ebdb44aef1883f1b2b8058e05d30fb9315b03707")
+        (revision "1"))
+    (package
+      (name "emacs-git-annex")
+      (version (string-append "1.1-" revision "." (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jwiegley/git-annex-el")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1mzv40gj7k10h7h5s43my8msgzjpj680qprqa9pp8nbyhl49v3wh"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jwiegley/git-annex-el")
+      (synopsis "Emacs integration for git-annex")
+      (description "Enhances Dired and buffers visiting annex files with
+git-annex functionality.  In Dired, the names of annex files are shortened by
+hiding the symbolic links and fontified based on whether content is present.
+Commands for performing some common operations (e.g., unlocking and adding
+files) are provided.")
+      (license license:gpl2+))))
