@@ -384,7 +384,7 @@ many input formats and provides a customisable Vi-style user interface.")
            ;; Denemo's documentation says to use this command to run its
            ;; testsuite.
            (lambda _
-             (zero? (system* "make" "-C" "tests" "check"))))
+             (invoke "make" "-C" "tests" "check")))
          (add-before 'build 'set-lilypond
            ;; This phase sets the default path for lilypond to its current
            ;; location in the store.
@@ -411,7 +411,7 @@ many input formats and provides a customisable Vi-style user interface.")
                             "Clarinet in Bb.denemo"))
              #t)))))
     (native-inputs
-     `(("glib:bin" ,glib "bin")   ; for gtester
+     `(("glib:bin" ,glib "bin")         ; for gtester
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1289,7 +1289,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.0")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1297,10 +1297,10 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1skynjg6ip0qfbqqkybfjh6xcwxagq89ghl08f7sp7j0sz5qdcwp"))))
+                "1r60l286n8y4a4rrlnbc3h7xk4s2pvqykvskls89prxg0lkpz7kl"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; There are no tests.
+     `(#:tests? #f                      ; there are no tests
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
@@ -1313,7 +1313,7 @@ users to select LV2 plugins and run them with jalv.")
        ("qttools" ,qttools)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://synthv1.sourceforge.net")
+    (home-page "https://synthv1.sourceforge.io")
     (synopsis "Polyphonic subtractive synthesizer")
     (description
      "Synthv1 is an old-school subtractive polyphonic synthesizer with four
@@ -1323,7 +1323,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.0")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1331,10 +1331,10 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1vm8lrk3lykdic6fyfpl12jx1xg6rcaid242s8sij30p1ix4zdab"))))
+                "1z9l43z91d01b9rzam2cj9qmmg6s5y65fjvb83ms4iaa1p0mnwrn"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; There are no tests.
+     `(#:tests? #f                      ; there are no tests
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
@@ -1348,7 +1348,7 @@ oscillators and stereo effects.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
-    (home-page "http://drumkv1.sourceforge.net")
+    (home-page "https://drumkv1.sourceforge.io")
     (synopsis "Drum-kit sampler synthesizer with stereo effects")
     (description
      "Drumkv1 is an old-school drum-kit sampler synthesizer with stereo
@@ -1358,7 +1358,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.0")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1366,10 +1366,10 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0g67vm9ilmq5nlvk0f3abia9pbinr4ck5v4mll6igni1rxz2n7wk"))))
+                "0rfcp4v971qfhw1hb43hw12wlxmg2q13l0m1h93pyfi5l4mfjkds"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; There are no tests.
+     `(#:tests? #f                      ; there are no tests
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
@@ -1383,7 +1383,7 @@ effects.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
-    (home-page "http://samplv1.sourceforge.net")
+    (home-page "https://samplv1.sourceforge.io")
     (synopsis "Polyphonic sampler synthesizer with stereo effects")
     (description
      "Samplv1 is an old-school polyphonic sampler synthesizer with stereo
@@ -1393,7 +1393,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.0")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -1401,10 +1401,10 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0c519qk2g0dk8gqf9ywqfp7dnr4b25lsnxxbf2l1spnnvf8nysvh"))))
+                "1alfl0l5qdll0w5lwhrwzj5dina1big1zmjg5imi9h06dzhz51xl"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; There are no tests.
+     `(#:tests? #f                      ; there are no tests
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
@@ -1418,7 +1418,7 @@ effects.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
-    (home-page "http://padthv1.sourceforge.net")
+    (home-page "https://padthv1.sourceforge.io")
     (synopsis "Polyphonic additive synthesizer")
     (description
      "Padthv1 is an old-school polyphonic additive synthesizer with stereo
@@ -1624,7 +1624,7 @@ is subjective.")
 (define-public tuxguitar
   (package
     (name "tuxguitar")
-    (version "1.5")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1632,19 +1632,12 @@ is subjective.")
                     version "/tuxguitar-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1yd5wv17sh6i8pkndxayfd6r2k1ccgnc4w3nda3lpniv8cpjzz3k"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Delete pre-built classes
-                  (delete-file-recursively "TuxGuitar-android-gdrive/bin")
-                  (delete-file-recursively "TuxGuitar-android-gdrive-gdaa/bin")
-                  #t))))
+                "10arfpgm2pw7mn922klklzn05lw5ifqx070shdrar81afmkfbbd9"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"
        #:jdk ,icedtea-8
-       #:tests? #f ; no tests
+       #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-dir
@@ -1663,7 +1656,7 @@ is subjective.")
                                      ((assoc-ref %standard-phases 'build)
                                       #:build-target "build")
                                      (begin
-                                       ;; Generate default build.xml
+                                       ;; Generate default build.xml.
                                        ((@@ (guix build ant-build-system) default-build.xml)
                                         (string-append (string-downcase dir) ".jar")
                                         (string-append (assoc-ref outputs "out")
@@ -1686,15 +1679,15 @@ is subjective.")
                     (lib   (string-append share "/java"))
                     (swt   (assoc-ref inputs "java-swt")))
                (mkdir-p bin)
-               ;; install all jars
+               ;; Install all jars.
                (for-each (lambda (file)
                            (install-file file lib))
                          (find-files ".." "\\.jar$"))
 
-               ;; install all resources
+               ;; Install all resources.
                (copy-recursively "share" share)
 
-               ;; create wrapper
+               ;; Create wrapper.
                (call-with-output-file (string-append bin "/tuxguitar")
                  (lambda (port)
                    (let ((classpath (string-join (append (find-files lib "\\.jar$")
@@ -2055,14 +2048,14 @@ improves on support for JACK features, such as JACK MIDI.")
 (define-public libgig
   (package
     (name "libgig")
-    (version "4.0.0")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.linuxsampler.org/packages/"
                                   "libgig-" version ".tar.bz2"))
               (sha256
                (base32
-                "1wr8mwjmqpnyz6bx9757lspiii1zzn8zfbqsvn2ipzpgqkxv6kaz"))))
+                "02xx6bqxzgkvrawwnzrnxx1ypk244q4kpwfd58266f9ji8kq18h6"))))
     (build-system gnu-build-system)
     (inputs
      `(("libuuid" ,util-linux)

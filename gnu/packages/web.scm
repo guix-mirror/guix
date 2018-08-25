@@ -27,6 +27,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6780,3 +6781,26 @@ compressed JSON header blocks.
 provided by Guix.  The list of packages is searchable and provides
 instructions on how to use Guix in a shared HPC environment.")
     (license l:agpl3+))))
+
+(define-public r-miniui
+  (package
+    (name "r-miniui")
+    (version "0.1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "miniUI" version))
+       (sha256
+        (base32
+         "1h5h2sc57h95d6bsgs95l26911g38hvjc1v50bc31xl9689l2as5"))))
+    (properties `((upstream-name . "miniUI")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-shiny" ,r-shiny)))
+    (home-page "https://cran.r-project.org/web/packages/miniUI/")
+    (synopsis "Shiny UI widgets for small screens")
+    (description
+     "This package provides UI widget and layout functions for writing Shiny apps that
+work well on small screens.")
+    (license l:gpl3)))

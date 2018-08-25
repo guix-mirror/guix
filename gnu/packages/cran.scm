@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Sandeep Subramanian <sandeepsubramanian94@gmail.com>
 ;;; Copyright © 2018 Charlie Ritter <chewzeirta@posteo.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -482,13 +483,13 @@ processes.  Most of its code is based on the @code{psutil} Python package.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.17")
+    (version "0.12.18")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "08xg8h3w25sdb3xr18g9pa0x8cirkdgljqapxmw56ss1j9fc89s2"))))
+        (base32 "006kpg2ph109rh1l13lqk26pp4as4fvl5661vrcczjygacgd1v7w"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
@@ -4846,4 +4847,100 @@ differential equations} (ODE).  It includes routines that:
   differential equations by numerical differencing (using the method-of-lines
   approach).
 @end enumerate\n")
+    (license license:gpl2+)))
+
+(define-public r-abcanalysis
+  (package
+    (name "r-abcanalysis")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABCanalysis" version))
+       (sha256
+        (base32 "0wac1ksmnxa36v99ca4hv8k0rsh3igwpcllmlv9wf7i9kgqviqwi"))))
+    (properties `((upstream-name . "ABCanalysis")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-plotrix" ,r-plotrix)))
+    (home-page "https://www.uni-marburg.de/fb12/arbeitsgruppen/datenbionik/software-en/")
+    (synopsis "Computed ABC Analysis")
+    (description
+     "Multivariate data sets often differ in several factors or derived statistical
+parameters, which have to be selected for a valid interpretation.  Basing this
+selection on traditional statistical limits leads occasionally to the perception
+of losing information from a data set.  This package provides tools to calculate
+these limits on the basis of the mathematical properties of the distribution of
+the analyzed items.")
+    (license license:gpl3)))
+
+(define-public r-slam
+  (package
+    (name "r-slam")
+    (version "0.1-43")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "slam" version))
+       (sha256
+        (base32 "0hy4qzngcgafxxr6ld7n9a9wy979ji998gpcc32vidwyab66dj5h"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/slam/")
+    (synopsis "Sparse lightweight arrays and matrices")
+    (description
+     "This package contains data structures and algorithms for sparse arrays and matrices,
+based on index arrays and simple triplet representations, respectively.")
+    (license license:gpl2)))
+
+(define-public r-manipulatewidget
+  (package
+    (name "r-manipulatewidget")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "manipulateWidget" version))
+       (sha256
+        (base32 "1zagrbwkn2d50zzw8i2vyb1hsq4cydmfsqiy1a2qlp6zrv8a6q9x"))))
+    (properties
+     `((upstream-name . "manipulateWidget")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-codetools" ,r-codetools)
+       ("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-knitr" ,r-knitr)
+       ("r-miniui" ,r-miniui)
+       ("r-shiny" ,r-shiny)
+       ("r-webshot" ,r-webshot)))
+    (home-page "https://github.com/rte-antares-rpackage/manipulateWidget/")
+    (synopsis "Add even more interactivity to interactive charts")
+    (description
+     "This package lets you create in just a few lines of R code a nice user interface to
+modify the data or the graphical parameters of one or multiple interactive
+charts.  It is useful to quickly explore visually some data or for package
+developers to generate user interfaces easy to maintain.")
+    (license license:gpl2+)))
+
+(define-public r-a3
+  (package
+    (name "r-a3")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "A3" version))
+       (sha256
+        (base32 "017hq9pjsv1h9i7cqk5cfx27as54shlhdsdvr6jkhb8jfkpdb6cw"))))
+    (properties `((upstream-name . "A3")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-pbapply" ,r-pbapply)
+       ("r-xtable" ,r-xtable)))
+    (home-page "https://cran.r-project.org/web/packages/A3/")
+    (synopsis "Error metrics for predictive models")
+    (description
+     "This package supplies tools for tabulating and analyzing the results of predictive
+models.  The methods employed are applicable to virtually any predictive model
+and make comparisons between different methodologies straightforward.")
     (license license:gpl2+)))

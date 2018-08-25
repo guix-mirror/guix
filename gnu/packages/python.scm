@@ -8667,33 +8667,32 @@ CloudFront content delivery network.")
 (define-public python-pkgconfig
   (package
     (name "python-pkgconfig")
-    (version "1.1.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pkgconfig" version))
         (sha256
           (base32
-            "1pw0kmvc57sjmaxi6c54fqsnihqj6hvhc9y1vaz36axafzqam7bh"))))
+            "107x2wmchlch8saixb488cgjz9n6inl38wi7nxkb942rbaapxiqb"))))
     (build-system python-build-system)
     (native-inputs
       `(("python-nose" ,python-nose)))
     (inputs
       `(("pkg-config" ,pkg-config)))
     (arguments
-      `(;; Tests fail with "ValueError: _type_ 'v' not supported" on Python 3,
-        ;; and on Python 2 they need the dl module deprecated since Python 2.6.
-        #:tests? #f
-        ;; Hard-code the path to pkg-config.
-        #:phases
+      `(#:phases
         (modify-phases %standard-phases
-          (add-before
-           'build 'patch
-           (lambda _
-             (substitute* "pkgconfig/pkgconfig.py"
-               (("cmd = 'pkg-config")
-                (string-append "cmd = '" (which "pkg-config"))))
-             #t)))))
+          (add-before 'build 'patch
+            ;; Hard-code the path to pkg-config.
+            (lambda _
+              (substitute* "pkgconfig/pkgconfig.py"
+                (("cmd = 'pkg-config")
+                 (string-append "cmd = '" (which "pkg-config"))))
+              #t))
+          (replace 'check
+            (lambda _
+              (invoke "nosetests" "test.py"))))))
     (home-page "https://github.com/matze/pkgconfig")
     (synopsis "Python interface for pkg-config")
     (description "This module provides a Python interface to pkg-config.  It

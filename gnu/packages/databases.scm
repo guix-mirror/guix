@@ -549,20 +549,6 @@ RDBMS systems (which are deep in functionality).")
                    ;; Some parts are licensed under the Apache License
                    license:asl2.0))))
 
-(define boost-for-mysql
-  (package
-    (inherit boost)
-    (version "1.59.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/boost/boost/" version "/boost_"
-                    (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
-                    ".tar.bz2"))
-              (sha256
-               (base32
-                "1jj1aai5rdmd72g90a3pd8sw9vi32zad46xv5av8fhnr48ir6ykj"))))))
-
 ;; XXX When updating, check whether boost-for-mysql is still needed.
 ;; It might suffice to patch ‘cmake/boost.cmake’ as done in the past.
 (define-public mysql
@@ -1474,16 +1460,15 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.043")
+    (version "4.046")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
+       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPTTOFU/"
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "16bg7l28n65ngi1abjxvwk906a80i2vd5vzjn812dx8phdg8d7v2"))
-       (patches (search-patches "perl-dbd-mysql-CVE-2017-10788.patch"))))
+         "1xziv9w87cl3fbl1mqkdrx28mdqly3gs6gs1ynbmpl2rr4p6arb1"))))
     (build-system perl-build-system)
     ;; Tests require running MySQL server
     (arguments `(#:tests? #f))

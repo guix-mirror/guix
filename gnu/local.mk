@@ -997,7 +997,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openldap-CVE-2017-9287.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/opensmtpd-fix-crash.patch		\
-  %D%/packages/patches/openssh-CVE-2018-15473.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.0.2-CVE-2018-0495.patch	\
   %D%/packages/patches/openssl-1.0.2-CVE-2018-0732.patch	\
@@ -1018,7 +1017,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-archive-tar-CVE-2018-12015.patch	\
   %D%/packages/patches/perl-file-path-CVE-2017-6512.patch	\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
-  %D%/packages/patches/perl-dbd-mysql-CVE-2017-10788.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
   %D%/packages/patches/perl-io-socket-ssl-openssl-1.0.2f-fix.patch \
@@ -1139,6 +1137,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
+  %D%/packages/patches/soundtouch-CVE-2018-14044-14045.patch 	\
+  %D%/packages/patches/soundtouch-CVE-2018-1000223.patch 	\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swish-e-search.patch			\

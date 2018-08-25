@@ -2004,17 +2004,17 @@ and ALSA.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.1")
+    (version "0.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "0jw1s4qh4qjxnysddjv3j2lchwlslj9p4iisv9i89d3m7pf1svs4"))))
+                "0x08af8m5l8qy9av3dlldsg58ny9nc69h1s4i6hqkvj24jwy6fw1"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f)) ; no check target
+     '(#:tests? #f))                    ; no check target
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)
@@ -2582,15 +2582,18 @@ Tracker 3 S3M and Impulse Tracker IT files.")
 (define-public soundtouch
   (package
     (name "soundtouch")
-    (version "1.8.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append
          "http://www.surina.net/soundtouch/soundtouch-" version ".tar.gz"))
+       (patches (search-patches "soundtouch-CVE-2018-14044-14045.patch"
+                                "soundtouch-CVE-2018-1000223.patch"))
        (sha256
-        (base32 "0sqn3wk4qz20vf0vz853l6dl1gnj1yhqxfwxqsc5lp529kbn2h9x"))))
+        (base32
+         "09cxr02mfyj2bg731bj0i9hh565x8l9p91aclxs8wpqv8b8zf96j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

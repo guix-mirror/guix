@@ -274,7 +274,7 @@ authentication, encryption and digital signatures.  OpenSC implements the PKCS
 (define-public yubico-piv-tool
   (package
     (name "yubico-piv-tool")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -282,7 +282,7 @@ authentication, encryption and digital signatures.  OpenSC implements the PKCS
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p0df35qfm2xch64hc1x6k4gpgfl4hiqph5ai30bq8w7yxa3lvfc"))))
+                "10xgdc51xvszkxmsvqnbjs8ixxz7rfnfahh3wn8glllynmszbhwi"))))
     (build-system gnu-build-system)
     (inputs
      `(("gengetopt" ,gengetopt)

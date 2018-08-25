@@ -2191,6 +2191,11 @@ and check if the WLAN key or the master key was transmitted unencrypted.")
         (base32
          "19rqzj167q73ag20zxpvswhkk0bj56r5maf83v5016sw7vrcz5sc"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; XXX: The dynamic socks library doesn't work with 'libc.so' (GNU ld
+     ;; script).  When preloading is enabled, 'sockd' failed with:
+     ;;    … Failed to open library "libc.so": …: invalid ELF header
+     '(#:configure-flags '("--disable-preload")))
     (home-page "https://www.inet.no/dante/")
     (synopsis "SOCKS server and client")
     (description "Dante is a SOCKS client and server implementation.  It can

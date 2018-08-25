@@ -725,13 +725,13 @@ effects of different types of color-blindness.")
 (define-public r-digest
   (package
     (name "r-digest")
-    (version "0.6.15")
+    (version "0.6.16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "digest" version))
        (sha256
-        (base32 "1ia4ak956gnn0f5aqhwgam6g9z6f1y57zz8jv45jc8h79yxp8bl8"))))
+        (base32 "1lhs59pdjhpb63jyy98pi1shk9shw044k6vl0mvw0f40v08326ar"))))
     (build-system r-build-system)
     ;; Vignettes require r-knitr, which requires r-digest, so we have to
     ;; disable them and the tests.
@@ -1619,13 +1619,13 @@ and printing capabilities than traditional data frames.")
 (define-public r-dplyr
   (package
     (name "r-dplyr")
-    (version "0.7.5")
+    (version "0.7.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "dplyr" version))
               (sha256
                (base32
-                "0l6smzdgb8w505gyl8gnwlg988a6cmafh3rssiv00rsrd8qqzg9g"))))
+                "0c43h13s5mr0fklikbbm89gs6z5n66rkjzdv6w3w6kl5af5wr2fl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -2364,13 +2364,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "1.13.5")
+    (version "1.13.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "1x3wsk7dh3yakii61kbfvafx9yz66h40ixiwfkf03dnp2n24hngs"))))
+                "1d9n49djydywfyp9w3njgxs5lag4ac7719wmxy1lkgcmn3l9sx5r"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
@@ -2562,13 +2562,13 @@ vectors.")
 (define-public r-catools
   (package
     (name "r-catools")
-    (version "1.17.1")
+    (version "1.17.1.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "caTools" version))
               (sha256
                (base32
-                "1x4szsn2qmbzpyjfdaiz2q7jwhap2gky9wq0riah74q0pzz76ank"))))
+                "01hccp05gz25vhz9nnxv1c91lrxlr7drcw9xf124gggifxf2qgnm"))))
     (properties `((upstream-name . "caTools")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3323,14 +3323,14 @@ bigmemory and synchronicity packages.")
 (define-public r-synchronicity
   (package
     (name "r-synchronicity")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "synchronicity" version))
        (sha256
         (base32
-         "1km5hx82gy71m5nc6pkcksv0dn32fylhg2axpdsnarrxva14mgdg"))))
+         "1kgsk64aifjm3mfj102y3va7x1abypq2zi0cqbnjhl8fqyzp69hx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -4851,14 +4851,14 @@ multivariate analysis.")
 (define-public r-trimcluster
   (package
     (name "r-trimcluster")
-    (version "0.1-2")
+    (version "0.1-2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "trimcluster" version))
        (sha256
         (base32
-         "0lsgbg93hm0w1rdb813ry0ks2l0jfpyqzqkf3h3bj6fch0avcbv2"))))
+         "0013bpyq6mkvjn38qsmwnsxfiwxgwngnqxycxvgpgmiadhm8fjmn"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/trimcluster")
     (synopsis "Cluster analysis with trimming")
@@ -5172,14 +5172,14 @@ Companion to Applied Regression, Third Edition, Sage.")
 (define-public r-car
   (package
     (name "r-car")
-    (version "3.0-0")
+    (version "3.0-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "car" version))
        (sha256
         (base32
-         "1ks2jaav8lbxhzw56vpbnysjk3pvpmqh6avd574k0bha1226k81h"))))
+         "0rdk7hgahs38j6yv861i31wpmsmyvksxcv8jarvvcjl60whizhb2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)

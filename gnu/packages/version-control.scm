@@ -21,6 +21,7 @@
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1779,7 +1780,7 @@ be served with a HTTP file server of your choice.")
 (define-public darcs
   (package
     (name "darcs")
-    (version "2.12.5")
+    (version "2.14.1")
     (source
      (origin
        (method url-fetch)
@@ -1787,7 +1788,7 @@ be served with a HTTP file server of your choice.")
                            "darcs-" version ".tar.gz"))
        (sha256
         (base32
-         "0lrm0sal5pl453mkqn8b9fc9l7lwinc140iqihya9g17bk408nrm"))
+         "0dfd6bp2wy0aabxx7l93gi3dmq21j970cds424xdy1mgmjcvrpb1"))
        (modules '((guix build utils)))
        ;; Remove time-dependent code for reproducibility.
        (snippet
@@ -1795,18 +1796,19 @@ be served with a HTTP file server of your choice.")
            (substitute* "darcs/darcs.hs"
              (("__DATE__") "\"1970-01-01\"")
              (("__TIME__") "\"00:00:00\""))
-           (substitute* "src/impossible.h"
-             (("__DATE__") "\"\"")
-             (("__TIME__") "\"\""))
            #t))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
                            "-fnetwork-uri" "-fhttp" "--flag=executable"
-                           "--flag=library"
-                           "--allow-newer=shelly")
-       ;; FIXME: darcs is not compatible with the latest QuickCheck
-       #:tests? #f))
+                           "--flag=library")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-sh
+           (lambda _
+             (substitute* "tests/issue538.sh"
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (inputs
      `(("ghc-cmdargs" ,ghc-cmdargs)
        ("ghc-split" ,ghc-split)

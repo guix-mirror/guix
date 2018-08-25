@@ -15,6 +15,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
   #:use-module (gnu packages haskell-web)
@@ -1938,7 +1940,7 @@ literals.")
 (define-public ghc-zlib
   (package
     (name "ghc-zlib")
-    (version "0.6.1.1")
+    (version "0.6.2")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -1949,7 +1951,7 @@ literals.")
              ".tar.gz"))
        (sha256
         (base32
-         "0dd79dxf56d8f6ad9if3j87s9gg7yd17ckypjxwplrbkahlb9xf5"))))
+         "1vbzf0awb6zb456xf48za1kl22018646cfzq4frvxgb9ay97vk0d"))))
     (build-system haskell-build-system)
     ;; Tests require older versions of testy.
     (arguments `(#:tests? #f))
@@ -3380,7 +3382,7 @@ variety of traversals.")
 (define-public ghc-fgl
   (package
     (name "ghc-fgl")
-    (version "5.5.3.0")
+    (version "5.6.0.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3391,10 +3393,11 @@ variety of traversals.")
              ".tar.gz"))
        (sha256
         (base32
-         "0fbyb6jxy9whgrv6dgnkzz70cmy98arx3q2gnkhgl4a3d7idh36p"))))
+         "1i6cp4b3w7sjk7y1dq3fh6bci2sm5h3lnbbaw9ln19nwncg2wwll"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
+     `(#:configure-flags (list "--allow-newer=QuickCheck"
+                               "--allow-newer=hspec")))
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
        ("ghc-hspec" ,ghc-hspec)
@@ -4092,7 +4095,7 @@ system.")
 (define-public ghc-base-compat
   (package
     (name "ghc-base-compat")
-    (version "0.9.3")
+    (version "0.10.4")
     (source
      (origin
        (method url-fetch)
@@ -4102,7 +4105,7 @@ system.")
              ".tar.gz"))
        (sha256
         (base32
-         "0452l6zf6fjhy4kxqwv6i6hhg6yfx4wcg450k3axpyj30l7jnq3x"))))
+         "0ksp990gxs731mq19rzbxrbs43nazfljjc8krlx5bjqblw3kfs8d"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
@@ -6846,7 +6849,7 @@ this problem.")
 (define-public ghc-sandi
   (package
     (name "ghc-sandi")
-    (version "0.4.0") ; darcs-2.12.4 needs == 0.4.*
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
@@ -6855,7 +6858,7 @@ this problem.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1smf3bq44qni4zbgxpw7cy7b9g95fbrr73j8njjf6139naj9bj20"))))
+         "0dvkpk91n9kz2ha04rvp231ra9sgd1ilyc1qkzf9l03iir7zrh9b"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stringsearch" ,ghc-stringsearch)
@@ -7045,7 +7048,7 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
 (define-public ghc-wl-pprint-text
   (package
     (name "ghc-wl-pprint-text")
-    (version "1.1.0.4")
+    (version "1.2.0.0")
     (source
      (origin
        (method url-fetch)
@@ -7054,10 +7057,11 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1xgizzimfw17mpmw2afvmnvyag976j8ggn7k5r564rkw9f0m6bgz"))))
+         "0g3w92rad6x5appfb22rbzcas2ix2h0hy91sdxhq8a4a5cnlrpa0"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-text" ,ghc-text)))
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-text" ,ghc-text)))
     (home-page "https://hackage.haskell.org/package/wl-pprint-text")
     (synopsis "Wadler/Leijen Pretty Printer for Text values")
     (description
@@ -7079,7 +7083,8 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
          "0ln1szgfy8fa78l3issq4fx3aqnnd54w3cb4wssrfi48vd5rkfjm"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
+     `(#:configure-flags (list "--allow-newer=QuickCheck"
+                               "--allow-newer=hspec")))
     (inputs
      `(("ghc-fgl" ,ghc-fgl)
        ("ghc-quickcheck" ,ghc-quickcheck)
@@ -7096,14 +7101,14 @@ for generating graph-like data structures.")
 (define-public ghc-graphviz
   (package
     (name "ghc-graphviz")
-    (version "2999.18.1.2")
+    (version "2999.20.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "graphviz/graphviz-" version ".tar.gz"))
               (sha256
                (base32
-                "1z453is01v0rnxlv6xx4iyaqv5vrp3bpz829mpv1a341sck2135h"))))
+                "0kj7ap0gnliviq2p8lscw1m06capnsa90vpvcys24nqy5nw2wrp7"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags (list "--allow-newer=QuickCheck")))
@@ -7117,6 +7122,10 @@ for generating graph-like data structures.")
        ("ghc-temporary" ,ghc-temporary)
        ("ghc-text" ,ghc-text)
        ("ghc-wl-pprint-text" ,ghc-wl-pprint-text)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("graphviz" ,graphviz)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://hackage.haskell.org/package/graphviz")
     (synopsis "Bindings to Graphviz for graph visualisation")
     (description
@@ -7261,7 +7270,7 @@ which can't be decoded in the current locale encoding.")
 (define-public ghc-shelly
   (package
     (name "ghc-shelly")
-    (version "1.7.0.1")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
@@ -7270,7 +7279,7 @@ which can't be decoded in the current locale encoding.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0a4ngy8jqcscqhimgiyz7f9kqm23is7x7gyjxr0j6iq1dy57ahq3"))))
+         "023fbvbqs5gdwm30j5517gbdcc7fvz0md70dgwgpypkskj3i926y"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
@@ -7286,7 +7295,8 @@ which can't be decoded in the current locale encoding.")
        ("ghc-async" ,ghc-async)
        ("ghc-transformers-base" ,ghc-transformers-base)
        ("ghc-hunit" ,ghc-hunit)
-       ("ghc-hspec" ,ghc-hspec)))
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec-contrib" ,ghc-hspec-contrib)))
     (home-page "https://github.com/yesodweb/Shelly.hs")
     (synopsis "Shell-like (systems) programming in Haskell")
     (description

@@ -185,7 +185,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.27")
+    (version "0.29")
     (source (origin
               (method url-fetch)
               (uri
@@ -194,12 +194,16 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1n8m7syhpgx24hfipixv66h2izn229jkxsmh2q5dzkv9r0znm8pr"))))
-    (build-system gnu-build-system)
+                "04jzv1hfdvgbn391523jb2h3yhq9a40pjrg41sl3wf3jf6vajs7g"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-Dcurses=ncurses")))
     (inputs `(("glib" ,glib)
               ("libmpdclient" ,libmpdclient)
               ("ncurses" ,ncurses)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("gettext" ,gettext-minimal) ; for xgettext
+                     ("pkg-config" ,pkg-config)))
     (synopsis "Curses Music Player Daemon client")
     (description "ncmpc is a fully featured MPD client, which runs in a
 terminal using ncurses.")

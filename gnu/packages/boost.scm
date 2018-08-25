@@ -110,6 +110,22 @@ across a broad spectrum of applications.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
 
+(define-public boost-for-mysql
+  ;; Older version for MySQL 5.7.23.
+  (package
+    (inherit boost)
+    (version "1.59.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/boost/boost/" version "/boost_"
+                    (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "1jj1aai5rdmd72g90a3pd8sw9vi32zad46xv5av8fhnr48ir6ykj"))))
+    (properties '((hidden? . #t)))))
+
 (define-public boost-sync
   (let ((commit "c72891d9b90e2ceb466ec859f640cd012b2d8709")
         (version "1.55")
