@@ -11392,9 +11392,9 @@ wiki.")
       (build-system emacs-build-system)
       (synopsis "Record recently-used email addressed and auto-complete them")
       (description
-       "@code{recent-addresses} is an Emacs allows you to quickly look up
-previously used email addresses.  It can be used alongside the Gnus email
-client.")
+       "@code{recent-addresses} is an Emacs package that allows you to quickly
+look up previously used email addresses.  It can be used alongside the Gnus
+email client.")
       (license license:gpl2+))))
 
 (define-public emacs-fold-dwim
