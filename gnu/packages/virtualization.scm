@@ -94,15 +94,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.12.1")
+    (version "3.0.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
-             (patches (search-patches "qemu-CVE-2018-11806.patch"))
              (sha256
               (base32
-               "0krnp2wvggpchc7fdlmyasqy7j17baz8asr2g05x0v00w003hn1k"))))
+               "04sp3f1gp4bdb913jf7fw761njaqp2l32wgipp1sapmxx17zcyld"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -341,16 +340,15 @@ all common programming languages.  Vala bindings are also provided.")
 (define-public lxc
   (package
     (name "lxc")
-    (version "3.0.1")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://linuxcontainers.org/downloads/lxc/lxc-"
                     version ".tar.gz"))
-              (patches (search-patches "lxc-CVE-2018-6556.patch"))
               (sha256
                (base32
-                "1nyml98k28sc5sda0260cmby4irkpnhpwgmx4yhqy10wpr4nr625"))))
+                "0p1gy553cm4mhwxi85fl6qiwz61rjmvysm8c8pd20qh62xxi3dva"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

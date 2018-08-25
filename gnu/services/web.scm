@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
-;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -602,11 +602,10 @@ of index files."
           (nginx-action
            (lambda args
              #~(lambda _
-                 (zero?
-                  (system* #$nginx-binary "-c"
-                           #$(or file
-                                 (default-nginx-config config))
-                           #$@args))))))
+                 (invoke #$nginx-binary "-c"
+                         #$(or file
+                               (default-nginx-config config))
+                         #$@args)))))
 
      ;; TODO: Add 'reload' action.
      (list (shepherd-service

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +19,7 @@
 (define-module (gnu packages toys)
   #:use-module (gnu packages ncurses)
   #:use-module (guix build-system gnu)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
@@ -29,12 +29,13 @@
     (version "5.02")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mtoyoda/" name
-                           "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mtoyoda/sl.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0fjnnnxxq7zh9bm3yzbj84fgap0rhblxi2m10br83747gxsrcn8y"))))
+        (base32 "1zrfd71zx2px2xpapg45s8xvi81xii63yl0h60q72j71zh4sif8b"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))

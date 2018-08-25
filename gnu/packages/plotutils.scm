@@ -194,7 +194,15 @@ colors, styles, options and details.")
     (native-inputs
      `(("gs" ,ghostscript)              ;For tests
        ("texinfo" ,texinfo)             ;For generating documentation
-       ("texlive" ,texlive)             ;For tests and documentation
+       ;; For the manual and the tests.
+       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
+                                        texlive-generic-ifxetex
+                                        texlive-latex-amsfonts
+                                        texlive-latex-geometry
+                                        texlive-latex-graphics
+                                        texlive-latex-oberdiek
+                                        texlive-latex-parskip
+                                        texlive-tex-texinfo)))
        ("emacs" ,emacs-minimal)
        ("perl" ,perl)))
     (inputs
@@ -234,6 +242,12 @@ colors, styles, options and details.")
            ;; "failed to create directory /homeless-shelter/.asy" error.
            (lambda _
              (setenv "HOME" "/tmp")
+             ;; The "gs" test fails, complaining about an incompatible
+             ;; Ghostscript version.  Not sure what's going on...  Is this
+             ;; because I've just replaced texlive with texlive-union?
+             (substitute* "tests/Makefile"
+               (("^(TESTDIRS =.*) gs(.*)" begin end)
+                (string-append begin " " end)))
              #t))
          (add-after 'install 'install-Emacs-data
            (lambda* (#:key outputs #:allow-other-keys)

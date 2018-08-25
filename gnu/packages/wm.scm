@@ -81,7 +81,7 @@
 (define-public libconfuse
   (package
     (name "libconfuse")
-    (version "3.2.1")
+    (version "3.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinh/libconfuse/"
@@ -89,7 +89,7 @@
                                   "/confuse-" version ".tar.xz"))
               (sha256
                (base32
-                "0pnjmlj9i0alp407qd7c0vq83sz7gpsjrbdgpcn4xvzjp9r35ii3"))))
+                "02r1mmzik2m0iigbc2da3y754vj24i18r3ml5p2wzs027mjhn959"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/martinh/libconfuse")
     (synopsis "Configuration file parser library")
@@ -248,7 +248,7 @@ developers.")
     (propagated-inputs
      `(("perl-anyevent" ,perl-anyevent)
        ("perl-json-xs" ,perl-json-xs)))
-    (home-page "http://search.cpan.org/dist/AnyEvent-I3")
+    (home-page "https://metacpan.org/release/AnyEvent-I3")
     (synopsis
      "Communicate with the i3 window manager through perl")
     (description
@@ -505,14 +505,14 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.26")
+    (version "0.27")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "19g40vqj3cs94i27f66194k7d5cazrv1lx54bz9kc0qy2npxjzgz"))))
+                "0agx490q6sbmv3vfq33ys8dsrgwizj3bmha4i1pkxz5wp5q8cx3l"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
@@ -522,6 +522,7 @@ tiled on several screens.")
        ("ghc-http" ,ghc-http)
        ("ghc-iwlib" ,ghc-iwlib)
        ("ghc-parsec" ,ghc-parsec)
+       ("ghc-parsec-numbers" ,ghc-parsec-numbers)
        ("ghc-regex-compat" ,ghc-regex-compat)
        ("ghc-stm" ,ghc-stm)
        ("ghc-x11-xft" ,ghc-x11-xft)

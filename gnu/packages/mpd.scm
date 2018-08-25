@@ -88,7 +88,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.20.20")
+    (version "0.20.21")
     (source (origin
               (method url-fetch)
               (uri
@@ -97,7 +97,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "111m4z7zaz60xfxvz5xkxs1al4vzb8g2wwp7kmj65pvww335ir59"))))
+                "1p2qrhdb1gzfv3y5dvvbc9s2wwmhg3azvzf8r02hzhk5q96pc8l3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -185,7 +185,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.27")
+    (version "0.29")
     (source (origin
               (method url-fetch)
               (uri
@@ -194,12 +194,16 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1n8m7syhpgx24hfipixv66h2izn229jkxsmh2q5dzkv9r0znm8pr"))))
-    (build-system gnu-build-system)
+                "04jzv1hfdvgbn391523jb2h3yhq9a40pjrg41sl3wf3jf6vajs7g"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-Dcurses=ncurses")))
     (inputs `(("glib" ,glib)
               ("libmpdclient" ,libmpdclient)
               ("ncurses" ,ncurses)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("gettext" ,gettext-minimal) ; for xgettext
+                     ("pkg-config" ,pkg-config)))
     (synopsis "Curses Music Player Daemon client")
     (description "ncmpc is a fully featured MPD client, which runs in a
 terminal using ncurses.")

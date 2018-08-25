@@ -491,7 +491,7 @@ by using the poppler rendering engine.")
 (define-public zathura
   (package
     (name "zathura")
-    (version "0.3.9")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -499,7 +499,7 @@ by using the poppler rendering engine.")
                               version ".tar.xz"))
               (sha256
                (base32
-                "0z09kz92a2n8qqv3cy8bx5j5k612g2f9mmh4szqlc7yvi39aax1g"))
+                "1j0yah09adv3bsjhhbqra5lambal32svk8fxmf89wwmcqrcr4qma"))
               (patches (search-patches
                         "zathura-plugindir-environment-variable.patch"))))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -644,14 +644,14 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "8.1.0")
+   (version "8.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                 "/qpdf-" version ".tar.gz"))
             (sha256
              (base32
-              "1m3hcgip6bzjx4gd7wq1328p8zi3pq5savzncdyln6l0lcklh7vx"))
+              "1jdb0jj72fjdp6xip4m7yz31r5x13zs7h4smnxsycgw3vbmx6igl"))
             (modules '((guix build utils)))
             (snippet
              ;; Replace shebang with the bi-lingual shell/Perl trick to remove

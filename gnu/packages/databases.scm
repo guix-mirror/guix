@@ -27,7 +27,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Kristofer Buffington <kristoferbuffington@gmail.com>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
@@ -84,6 +84,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby)
@@ -398,7 +399,7 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.8")
+    (version "1.5.10")
     (source
      (origin
        (method url-fetch)
@@ -406,14 +407,14 @@ mapping from string keys to string values.")
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
         (base32
-         "1ppnhsqv9047vm0rrmqla56y972f8qqjdb780iz6v922jjcc723k"))))
+         "0jqw3z0408yx0lzc6ykn4d29n02dk31kqnmq9b3ldmcnpl6hck29"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
        ("cyrus-sasl" ,cyrus-sasl)))
     (home-page "https://memcached.org/")
-    (synopsis "In memory caching service")
-    (description "Memcached is a in memory key value store.  It has a small
+    (synopsis "In-memory caching service")
+    (description "Memcached is an in-memory key-value store.  It has a small
 and generic API, and was originally intended for use with dynamic web
 applications.")
     (license license:bsd-3)))
@@ -548,22 +549,24 @@ RDBMS systems (which are deep in functionality).")
                    ;; Some parts are licensed under the Apache License
                    license:asl2.0))))
 
+;; XXX When updating, check whether boost-for-mysql is still needed.
+;; It might suffice to patch ‘cmake/boost.cmake’ as done in the past.
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.21")
+    (version "5.7.23")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
-                          "http://dev.mysql.com/get/Downloads/MySQL-"
+                          "https://dev.mysql.com/get/Downloads/MySQL-"
                           (version-major+minor version) "/"
                           name "-" version ".tar.gz")
                         (string-append
-                          "http://downloads.mysql.com/archives/get/file/"
+                          "https://downloads.mysql.com/archives/get/file/"
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "1dq9bgnajf7cq3mrjkwv6w5nwslhs26lkrw56i7w4fbsq9wm087s"))))
+               "0rbc3xsc11lq2dm0ip6gxa16c06hi74scb97x5cw7yhbabaz4c07"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -589,15 +592,6 @@ RDBMS systems (which are deep in functionality).")
          "-DINSTALL_SQLBENCHDIR=")
        #:phases (modify-phases %standard-phases
                   (add-after
-                   'unpack 'patch-boost-version
-                   (lambda _
-                     ;; Mysql wants boost-1.59.0 specifically
-                     (substitute* "cmake/boost.cmake"
-                       (("59")
-                        ,(match (string-split (package-version boost) #\.)
-                           ((_ minor . _) minor))))
-                     #t))
-                  (add-after
                    'install 'remove-extra-binaries
                    (lambda* (#:key outputs #:allow-other-keys)
                      (let ((out (assoc-ref outputs "out")))
@@ -611,12 +605,12 @@ RDBMS systems (which are deep in functionality).")
      `(("bison" ,bison)
        ("perl" ,perl)))
     (inputs
-     `(("boost" ,boost)
+     `(("boost" ,boost-for-mysql)
        ("libaio" ,libaio)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
-    (home-page "http://www.mysql.com/")
+    (home-page "https://www.mysql.com/")
     (synopsis "Fast, easy to use, and popular database")
     (description
      "MySQL is a fast, reliable, and easy to use relational database
@@ -778,8 +772,8 @@ Language.")
                 (for-each delete-file-recursively
                           '("data" "mysql-test" "sql-bench"
                             "share/man/man1/mysql-test-run.pl.1"))
-                ;; Delete huge mysqltest executables.
-                (for-each delete-file (find-files "bin" "test"))
+                ;; Delete huge and unnecessary executables.
+                (for-each delete-file (find-files "bin" "(test|embedded)"))
                 ;; And static libraries.
                 (for-each delete-file (find-files "lib" "\\.a$")))
               #t))))))
@@ -791,11 +785,13 @@ Language.")
        ("libaio" ,libaio)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
-       ("openssl" ,openssl)
        ("pcre" ,pcre)
        ("snappy" ,snappy)
        ("xz" ,xz)
        ("zlib" ,zlib)))
+    (propagated-inputs
+     ;; mariadb.pc says -lssl -lcrypto, so propagate it.
+     `(("openssl" ,openssl)))
     ;; The test suite is very resource intensive and can take more than three
     ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
     (properties '((timeout . 64800)))        ;18 hours
@@ -863,6 +859,34 @@ pictures, sounds, or video.")
               (sha256
                (base32
                 "0biy8j69dbvdmrag55pdszpc0702agzqhhcwdx21xp02mzim4ydr"))))))
+
+(define-public python-pymysql
+  (package
+    (name "python-pymysql")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyMySQL" version))
+       (sha256
+        (base32
+         "0gvi63f1zq1bbd30x28kqyx351hal1yc323ckp0mihainb5n1iwy"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-unittest2" ,python-unittest2)))
+    (inputs
+     `(("python-cryptography" ,python-cryptography)))
+    (arguments
+     `(#:tests? #f))                    ; tests expect a running MySQL
+    (home-page "https://github.com/PyMySQL/PyMySQL/")
+    (synopsis "Pure-Python MySQL driver")
+    (description
+     "PyMySQL is a pure-Python MySQL client library, based on PEP 249.
+Most public APIs are compatible with @command{mysqlclient} and MySQLdb.")
+    (license license:expat)))
+
+(define-public python2-pymysql
+  (package-with-python2 python-pymysql))
 
 (define-public qdbm
   (package
@@ -1110,6 +1134,37 @@ for example from a shell script.")
     ;; others (like sparql-query.c) contain a GPLv2+ license header.
     (license (list license:gpl3+))))
 
+(define-public sqlcrush
+  ;; Unfortunately, there is no proper upstream release and may never be.
+  (let ((commit "b5f6868f189566a26eecc78d0f0659813c1aa98a")
+        (revision "1"))
+    (package
+      (name "sqlcrush")
+      (version (git-version "0.1.5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/coffeeandscripts/sqlcrush.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0x3wy40r93p0jv3nbwj9a77wa4ff697d13r0wffmm7q9h3mzsww8"))))
+      (build-system python-build-system)
+      (inputs
+       `(("python-cryptography" ,python-cryptography)
+         ("python-psycopg2" ,python-psycopg2)
+         ("python-pymysql" ,python-pymysql)
+         ("python-sqlalchemy" ,python-sqlalchemy)))
+      (home-page "https://github.com/coffeeandscripts/sqlcrush")
+      (synopsis "Text console-based database viewer and editor")
+      (description
+       "SQLcrush lets you view and edit a database directly from the text
+console through an ncurses interface.  You can explore each table's structure,
+browse and edit the contents, add and delete entries, all while tracking your
+changes.")
+      (license license:gpl3+)))) ; no headers, see README.md
+
 (define-public sqlite
   (package
    (name "sqlite")
@@ -1157,20 +1212,6 @@ is in the public domain.")
      (substitute-keyword-arguments (package-arguments sqlite)
        ((#:configure-flags flags)
         `(cons "--enable-fts5" ,flags))))))
-
-;; This is used by Clementine.
-(define-public sqlite-with-fts3
-  (package (inherit sqlite)
-    (name "sqlite-with-fts3")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                              "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                              "-DSQLITE_ENABLE_DBSTAT_VTAB "
-                              "-DSQLITE_ENABLE_FTS3 "
-                              "-DSQLITE_ENABLE_FTS3_PARENTHESIS "
-                              "-DSQLITE_ENABLE_FTS3_TOKENIZER")))))))
 
 (define-public tdb
   (package
@@ -1224,7 +1265,7 @@ extremely small.")
     (build-system perl-build-system)
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
-    (home-page "http://search.cpan.org/dist/DBI")
+    (home-page "https://metacpan.org/release/DBI")
     (license license:perl-license)))
 
 (define-public perl-dbix-class
@@ -1270,7 +1311,7 @@ extremely small.")
        ("perl-sub-name" ,perl-sub-name)
        ("perl-text-balanced" ,perl-text-balanced)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/DBIx-Class")
+    (home-page "https://metacpan.org/release/DBIx-Class")
     (synopsis "Extensible and flexible object <-> relational mapper")
     (description "An SQL to OO mapper with an object API inspired by
 Class::DBI (with a compatibility layer as a springboard for porting) and a
@@ -1302,7 +1343,7 @@ single query, \"JOIN\", \"LEFT JOIN\", \"COUNT\", \"DISTINCT\", \"GROUP BY\",
     (propagated-inputs
      `(("perl-carp-clan" ,perl-carp-clan)
        ("perl-dbix-class" ,perl-dbix-class)))
-    (home-page "http://search.cpan.org/dist/DBIx-Class-Cursor-Cached")
+    (home-page "https://metacpan.org/release/DBIx-Class-Cursor-Cached")
     (synopsis "Cursor with built-in caching support")
     (description "DBIx::Class::Cursor::Cached provides a cursor class with
 built-in caching support.")
@@ -1325,7 +1366,7 @@ built-in caching support.")
      `(("perl-module-install" ,perl-module-install)))
     (propagated-inputs
      `(("perl-dbix-class" ,perl-dbix-class)))
-    (home-page "http://search.cpan.org/dist/DBIx-Class-IntrospectableM2M")
+    (home-page "https://metacpan.org/release/DBIx-Class-IntrospectableM2M")
     (synopsis "Introspect many-to-many relationships")
     (description "Because the many-to-many relationships are not real
 relationships, they can not be introspected with DBIx::Class.  Many-to-many
@@ -1384,7 +1425,7 @@ introspected and examined.")
        ("perl-sub-name" ,perl-sub-name)
        ("perl-try-tiny" ,perl-try-tiny)))
     (arguments `(#:tests? #f))          ;TODO: t/20invocations.t fails
-    (home-page "http://search.cpan.org/dist/DBIx-Class-Schema-Loader")
+    (home-page "https://metacpan.org/release/DBIx-Class-Schema-Loader")
     (synopsis "Create a DBIx::Class::Schema based on a database")
     (description "DBIx::Class::Schema::Loader automates the definition of a
 DBIx::Class::Schema by scanning database table definitions and setting up the
@@ -1409,7 +1450,7 @@ columns, primary keys, unique constraints and relationships.")
     (propagated-inputs
      `(("perl-dbi" ,perl-dbi)
        ("postgresql" ,postgresql)))
-    (home-page "http://search.cpan.org/dist/DBD-Pg")
+    (home-page "https://metacpan.org/release/DBD-Pg")
     (synopsis "DBI PostgreSQL interface")
     (description "This package provides a PostgreSQL driver for the Perl5
 @dfn{Database Interface} (DBI).")
@@ -1418,23 +1459,22 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.043")
+    (version "4.046")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
+       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPTTOFU/"
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "16bg7l28n65ngi1abjxvwk906a80i2vd5vzjn812dx8phdg8d7v2"))
-       (patches (search-patches "perl-dbd-mysql-CVE-2017-10788.patch"))))
+         "1xziv9w87cl3fbl1mqkdrx28mdqly3gs6gs1ynbmpl2rr4p6arb1"))))
     (build-system perl-build-system)
     ;; Tests require running MySQL server
     (arguments `(#:tests? #f))
     (propagated-inputs
      `(("perl-dbi" ,perl-dbi)
        ("mysql" ,mysql)))
-    (home-page "http://search.cpan.org/dist/DBD-mysql")
+    (home-page "https://metacpan.org/release/DBD-mysql")
     (synopsis "DBI MySQL interface")
     (description "This package provides a MySQL driver for the Perl5
 @dfn{Database Interface} (DBI).")
@@ -1443,7 +1483,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
-    (version "1.54")
+    (version "1.58")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1451,7 +1491,7 @@ columns, primary keys, unique constraints and relationships.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0sbj9lx9syzpknvjv8cz9jndg32qz775vy2prgq305npv3dsca9r"))))
+                "0fqx386jgs9mmrknr7smmzapf07izgivza7x08lfm39ks2cxs83i"))))
     (build-system perl-build-system)
     (inputs `(("sqlite" ,sqlite)))
     (propagated-inputs `(("perl-dbi" ,perl-dbi)))
@@ -1461,7 +1501,7 @@ the entire thing in the distribution.  So in order to get a fast transaction
 capable RDBMS working for your Perl project you simply have to install this
 module, and nothing else.")
     (license license:perl-license)
-    (home-page "http://search.cpan.org/~ishigaki/DBD-SQLite/lib/DBD/SQLite.pm")))
+    (home-page "https://metacpan.org/release/DBD-SQLite")))
 
 (define-public perl-sql-abstract
   (package
@@ -1486,7 +1526,7 @@ module, and nothing else.")
        ("perl-moo" ,perl-moo)
        ("perl-mro-compat" ,perl-mro-compat)
        ("perl-text-balanced" ,perl-text-balanced)))
-    (home-page "http://search.cpan.org/dist/SQL-Abstract")
+    (home-page "https://metacpan.org/release/SQL-Abstract")
     (synopsis "Generate SQL from Perl data structures")
     (description "This module was inspired by the excellent DBIx::Abstract.
 While based on the concepts used by DBIx::Abstract, the concepts used have
@@ -1516,7 +1556,7 @@ time your data changes.")
        ("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-regexp-common" ,perl-regexp-common)
        ("perl-sql-tokenizer" ,perl-sql-tokenizer)))
-    (home-page "http://search.cpan.org/dist/SQL-SplitStatement")
+    (home-page "https://metacpan.org/release/SQL-SplitStatement")
     (synopsis "Split SQL code into atomic statements")
     (description "This module tries to split any SQL code, even including
 non-standard extensions, into the atomic statements it is composed of.")
@@ -1535,7 +1575,7 @@ non-standard extensions, into the atomic statements it is composed of.")
         (base32
          "1qa2dfbzdlr5qqdam9yn78z5w3al5r8577x06qan8wv58ay6ka7s"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/SQL-Tokenizer")
+    (home-page "https://metacpan.org/release/SQL-Tokenizer")
     (synopsis "SQL tokenizer")
     (description "SQL::Tokenizer is a tokenizer for SQL queries.  It does not
 claim to be a parser or query verifier.  It just creates sane tokens from a
@@ -1545,7 +1585,7 @@ valid SQL query.")
 (define-public unixodbc
   (package
    (name "unixodbc")
-   (version "2.3.6")
+   (version "2.3.7")
    (source (origin
             (method url-fetch)
             (uri
@@ -1553,7 +1593,7 @@ valid SQL query.")
               "ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-"
               version ".tar.gz"))
             (sha256
-             (base32 "0sads5b8cmmj526gyjba7ccknl1vbhkslfqshv1yqln08zv3gdl8"))))
+             (base32 "0xry3sg497wly8f7715a7gwkn2k36bcap0mvzjw74jj53yx6kwa5"))))
    (build-system gnu-build-system)
    (synopsis "Data source abstraction library")
    (description "Unixodbc is a library providing an API with which to access
@@ -1756,7 +1796,7 @@ database.  Various higher level database abstractions.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.841")
+  (version "1.842")
   (source
     (origin
       (method url-fetch)
@@ -1766,7 +1806,7 @@ database.  Various higher level database abstractions.")
              ".tar.gz"))
       (sha256
         (base32
-          "11fks42kgscpia0mxx4lc9krm7q4gv6w7m5h3m2jr3dl7viv36hn"))))
+          "0w2d99vs9qarng2f9fpg3gchfdzy6an13507jhclcl8wv183h5hg"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
@@ -1778,7 +1818,7 @@ database.  Various higher level database abstractions.")
                      (substitute* "config.in"
                        (("/usr/local/BerkeleyDB") (assoc-ref inputs "bdb")))
                      #t)))))
-  (home-page "http://search.cpan.org/dist/DB_File")
+  (home-page "https://metacpan.org/release/DB_File")
   (synopsis
     "Perl5 access to Berkeley DB version 1.x")
   (description
@@ -1966,14 +2006,14 @@ for ODBC.")
 (define-public python-pyodbc
   (package
     (name "python-pyodbc")
-    (version "4.0.21")
+    (version "4.0.24")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyodbc" version))
        (sha256
         (base32
-         "0a83zwz3h1agshnsc6r7al6q83222w8601gpzzzjvjz5m56ghmcn"))
+         "1m311vi7vpay1j7rkq71fpsk0gb7454k4lldk5b63hyy6yvsn9j3"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
@@ -2133,7 +2173,7 @@ implementation for Python.")
 (define-public virtuoso-ose
   (package
     (name "virtuoso-ose")
-    (version "7.2.4.2")
+    (version "7.2.5")
     (source
      (origin
        (method url-fetch)
@@ -2141,7 +2181,7 @@ implementation for Python.")
              "https://github.com/openlink/virtuoso-opensource/releases/"
              "download/v" version "/virtuoso-opensource-" version ".tar.gz"))
        (sha256
-        (base32 "12dqam1gc1v93l0bj0vlpvjqppki6y1hqrlznywxnw0rrz9pb002"))))
+        (base32 "0r1xakclkfi69pzh8z2k16z3x0m49pxp764icj0ad4w4bb97fr42"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; Tests require a network connection.
@@ -2544,14 +2584,14 @@ database).")
 (define-public python-mysqlclient
   (package
     (name "python-mysqlclient")
-    (version "1.3.10")
+    (version "1.3.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "mysqlclient" version))
        (sha256
         (base32
-         "0qkj570x4rbsblji6frvsvp2v1ap32dqzj1lq62zp9515ffsyaj5"))))
+         "0kv4a1icwdav8jpl7qvnr931lw5h3v22ids6lwq6qpi1hjzf33pz"))))
     (build-system python-build-system)
     (native-inputs
      `(("mariadb" ,mariadb)

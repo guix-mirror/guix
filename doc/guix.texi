@@ -170,7 +170,7 @@ Programming Interface
 
 Defining Packages
 
-* package Reference ::          The package data type.
+* package Reference::           The package data type.
 * origin Reference::            The origin data type.
 
 Utilities
@@ -3522,7 +3522,7 @@ when @var{cut?} returns true for a given package.
 @end deffn
 
 @menu
-* package Reference ::          The package data type.
+* package Reference::           The package data type.
 * origin Reference::            The origin data type.
 @end menu
 
@@ -6661,6 +6661,11 @@ The value associated with a flag has to be either the symbol
 has to conform to the Cabal file format definition.  The default value
 associated with the keys @code{os}, @code{arch} and @code{impl} is
 @samp{linux}, @samp{x86_64} and @samp{ghc}, respectively.
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
 @end table
 
 The command below imports metadata for the latest version of the
@@ -8620,7 +8625,7 @@ more information.
 
 @subsubsection Networking
 
-Run the following command see what your network interfaces are called:
+Run the following command to see what your network interfaces are called:
 
 @example
 ifconfig -a
@@ -8887,8 +8892,8 @@ path is actually mounted.
 @item
 Be sure that your file system labels match the value of their respective
 @code{device} fields in your @code{file-system} configuration, assuming
-your @code{file-system} configuration sets the value of @code{title} to
-@code{'label}.
+your @code{file-system} configuration uses the @code{file-system-label}
+procedure in its @code{device} field.
 
 @item
 If there are encrypted or RAID partitions, make sure to add a
@@ -9266,8 +9271,8 @@ generations available on disk.  It is also possible to roll back the
 system via the commands @command{guix system roll-back} and
 @command{guix system switch-generation}.
 
-Although the command @command{guix system reconfigure} will not modify
-previous generations, must take care when the current generation is not
+Although the @command{guix system reconfigure} command will not modify
+previous generations, you must take care when the current generation is not
 the latest (e.g., after invoking @command{guix system roll-back}), since
 the operation might overwrite a later generation (@pxref{Invoking guix
 system}).
@@ -20056,51 +20061,51 @@ Defaults to @samp{""}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-commit-graph?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-commit-graph?
 A flag which can be used to disable the global setting
 @code{enable-commit-graph?}.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-log-filecount?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-log-filecount?
 A flag which can be used to disable the global setting
 @code{enable-log-filecount?}.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-log-linecount?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-log-linecount?
 A flag which can be used to disable the global setting
 @code{enable-log-linecount?}.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-remote-branches?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-remote-branches?
 Flag which, when set to @code{#t}, will make cgit display remote
 branches in the summary and refs views.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-subject-links?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-subject-links?
 A flag which can be used to override the global setting
 @code{enable-subject-links?}.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
-@deftypevr {@code{repository-cgit-configuration} parameter} repo-boolean enable-html-serving?
+@deftypevr {@code{repository-cgit-configuration} parameter} maybe-repo-boolean enable-html-serving?
 A flag which can be used to override the global setting
 @code{enable-html-serving?}.
 
-Defaults to @samp{#f}.
+Defaults to @samp{disabled}.
 
 @end deftypevr
 
@@ -20323,6 +20328,37 @@ The @command{sysctl} executable to use.
 
 @item @code{settings} (default: @code{'()})
 An association list specifies kernel parameters and their values.
+@end table
+@end deftp
+
+@cindex pcscd
+@subsubheading PC/SC Smart Card Daemon Service
+
+The @code{(gnu services security-token)} module provides the following service
+to run @command{pcscd}, the PC/SC Smart Card Daemon.  @command{pcscd} is the
+daemon program for pcsc-lite and the MuscleCard framework. It is a resource
+manager that coordinates communications with smart card readers, smart cards
+and cryptographic tokens that are connected to the system.
+
+@defvr {Scheme Variable} pcscd-service-type
+Service type for the @command{pcscd} service.  Its value must be a
+@code{pcscd-configuration} object.  To run pcscd in the default
+configuration, instantiate it as:
+
+@example
+(service pcscd-service-type)
+@end example
+@end defvr
+
+@deftp {Data Type} pcscd-configuration
+The data type representing the configuration of @command{pcscd}.
+
+@table @asis
+@item @code{pcsc-lite} (default: @code{pcsc-lite})
+The pcsc-lite package that provides pcscd.
+@item @code{usb-drivers} (default: @code{(list ccid)})
+List of packages that provide USB drivers to pcscd. Drivers are expected to be
+under @file{pcsc/drivers} in the store directory of the package.
 @end table
 @end deftp
 

@@ -37,7 +37,7 @@
 (define-public gdb
   (package
     (name "gdb")
-    (version "8.1")
+    (version "8.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
@@ -45,7 +45,7 @@
              (patches (search-patches "gdb-python-3.7.patch"))
              (sha256
               (base32
-               "0d2bpqk58fqlx21rbnk8mbcjlggzc9kb5sjirrfrrrjq70ka0qdg"))))
+               "0g6hv9xk12aa58w77fydaldqr9a6b0a6bnwsq87jfc6lkcbc7p4p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; FIXME "make check" fails on single-processor systems.

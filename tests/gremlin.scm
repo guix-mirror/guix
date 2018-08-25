@@ -29,8 +29,8 @@
   #:use-module (ice-9 match))
 
 (define %guile-executable
-  (match (command-line)
-    ((program . _)
+  (match (false-if-exception (readlink "/proc/self/exe"))
+    ((? string? program)
      (and (file-exists? program) (elf-file? program)
           program))
     (_

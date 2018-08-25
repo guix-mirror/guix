@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,16 +117,7 @@ are not recursively applied to dependencies of DRV."
                                        (cons (assoc-ref old-outputs name)
                                              file)))
                                     %outputs))))
-         (for-each (lambda (input output)
-                     (format #t "grafting '~a' -> '~a'...~%" input output)
-                     (force-output)
-                     (rewrite-directory input output mapping))
-                   (match old-outputs
-                     (((names . files) ...)
-                      files))
-                   (match %outputs
-                     (((names . files) ...)
-                      files))))))
+         (graft old-outputs %outputs mapping))))
 
   (define add-label
     (cut cons "x" <>))
@@ -139,7 +130,9 @@ are not recursively applied to dependencies of DRV."
                                      #:system system
                                      #:guile-for-build guile
                                      #:modules '((guix build graft)
-                                                 (guix build utils))
+                                                 (guix build utils)
+                                                 (guix build debug-link)
+                                                 (guix elf))
                                      #:inputs `(,@(map (lambda (out)
                                                          `("x" ,drv ,out))
                                                        outputs)

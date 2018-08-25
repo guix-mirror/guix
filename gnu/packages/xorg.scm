@@ -5239,6 +5239,7 @@ draggable titlebars and borders.")
   (package
     (name "libx11")
     (version "1.6.5")
+    (replacement libx11-1.6.6)
     (source
       (origin
         (method url-fetch)
@@ -5267,6 +5268,20 @@ draggable titlebars and borders.")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
+
+;; Replacement package to fix multiple security bugs:
+;; <http://seclists.org/oss-sec/2018/q3/146>.
+(define-public libx11-1.6.6
+  (package
+    (inherit libx11)
+    (version "1.6.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://xorg/individual/lib/libX11-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0ks1mxlda7nxfmffihi15ljsn50q8dknl33i2xag8xzc80fiizk5"))))))
 
 ;; packages of height 5 in the propagated-inputs tree
 
@@ -5725,7 +5740,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "333")
+    (version "335")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -5735,7 +5750,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
                                    name "-" version ".tgz")))
               (sha256
                (base32
-                "0y7gl26mxw6kwqx9j9mi6lx1lp1v3nrlga19ddn07j2m9q0l479g"))))
+                "15nbgys4s2idhx6jzzc24g9bb1s6yps5fyg2bafvs0gkkcm1ggz0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"
@@ -5845,8 +5860,7 @@ interface to its methods (using @code{Mouse}).")
     (description
      "X11::Protocol is a client-side interface to the X11 Protocol, allowing
 perl programs to display windows and graphics on X11 servers.")
-    (home-page
-     (string-append "https://metacpan.org/release/SMCCAM/X11-Protocol-" version))
+    (home-page "https://metacpan.org/release/X11-Protocol")
     ;; From the package README: "you can redistribute and/or modify it under
     ;; the same terms as Perl itself. (As an exception, the file
     ;; Keysyms.pm,which is derived from a file in the standard X11
@@ -5927,7 +5941,7 @@ basic eye-candy effects.")
 (define-public xpra
   (package
     (name "xpra")
-    (version "2.3.2")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
@@ -5935,7 +5949,7 @@ basic eye-candy effects.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "02wpnlx43dwacaahpm8db5kbnjw2msm3ycq71gib0n2zamd71ni6"))))
+         "1azvvddjfq7lb5kmbn0ilgq2nf7pmymsc3b9lhbjld6w156qdv01"))))
     (build-system python-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("flac" ,flac)

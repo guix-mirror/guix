@@ -242,16 +242,17 @@ intutive syntax and trivial integration.")
 (define-public xtl
   (package
     (name "xtl")
-    (version "0.4.8")
+    (version "0.4.14")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/QuantStack/xtl/archive/"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri
+               (git-reference
+                (url "https://github.com/QuantStack/xtl.git")
+                (commit version)))
               (sha256
                (base32
-                "05bcz9y590b77bxcip0k31rgsapmkwqi1smvsvc84zz7m87d4jvy"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0wwnd9adc1wav2299id17k5fbp0ib5gxkbihlk6jlh3v4i5nz11x"))
+              (file-name (git-file-name name version))))
     (native-inputs
      `(("googletest" ,googletest)
        ("json-modern-cxx" ,json-modern-cxx)))

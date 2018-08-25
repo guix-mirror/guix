@@ -1,0 +1,23 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Thu, 16 Aug 2018 21:12:30 +0200
+Subject: extundelete: Fix build with e2fsprogs 1.44.
+
+The ‘inode.i_file_acl’ field was replaced with ‘inode.i_size_high’. I'm
+not sure the field name is still accurate or useful, so don't print it
+at all.
+
+Based on this[0] patch by ‘conikost’[1].
+
+[0]: https://sourceforge.net/p/extundelete/tickets/5/
+[1]: https://sourceforge.net/u/conikost
+
+--- a/src/insertionops.cc	2012-12-30 18:23:32.000000000 +0100
++++ b/src/insertionops.cc	2018-05-07 22:58:13.065868723 +0200
+@@ -33,7 +33,6 @@
+   os << "File flags: " << inode.i_flags << std::endl;
+   os << "File version (for NFS): " << inode.i_generation << std::endl;
+   os << "File ACL: " << inode.i_file_acl << std::endl;
+-  os << "Directory ACL: " << inode.i_dir_acl << std::endl;
+   os << "Fragment address: " << inode.i_faddr << std::endl;
+   os << "Direct blocks: ";
+   for (int n = 0; n < EXT2_NDIR_BLOCKS; n++)

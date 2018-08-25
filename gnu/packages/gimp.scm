@@ -48,13 +48,13 @@
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.52")
+    (version "0.1.56")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
                                         (version-major+minor version)
                                         "/babl-" version ".tar.bz2")
-                         (string-append "http://ftp.gtk.org/pub/babl/"
+                         (string-append "https://ftp.gtk.org/pub/babl/"
                                         (version-major+minor version)
                                         "/babl-" version ".tar.bz2")
                          (string-append "ftp://ftp.gtk.org/pub/babl/"
@@ -62,7 +62,7 @@
                                         "/babl-" version ".tar.bz2")))
               (sha256
                (base32
-                "0v7pkr3qd5jnn0pra88d90ixkl5h9ngg6w660nn1cgh4zjh19xs0"))))
+                "0a2dvihah1j7qi5dp1qzzlwklcqnndmxsm7lc7i78g7c2yknrlla"))))
     (build-system gnu-build-system)
     (home-page "http://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
@@ -79,7 +79,7 @@ provided, as well as a framework to add new color models and data types.")
 (define-public gegl
   (package
     (name "gegl")
-    (version "0.4.4")
+    (version "0.4.8")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/gegl/"
@@ -87,7 +87,7 @@ provided, as well as a framework to add new color models and data types.")
                                         "/" name "-" version ".tar.bz2")))
               (sha256
                (base32
-                "143qwn92xc5wm09p9iwrpw9y0ahha5lcyx1bb0lzwcb1fgd4bjzq"))))
+                "0jdfhf8wikba4h68k505x0br3gisiwivc33aca8v3ibaqpp6i53i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("LDFLAGS=-lm")))
@@ -117,7 +117,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.4")
+    (version "2.10.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.gimp.org/pub/gimp/v"
@@ -125,14 +125,17 @@ buffers.")
                                   "/gimp-" version ".tar.bz2"))
               (sha256
                (base32
-                "14pi0q3wwkapy0inqxk1hjsa2h8lff1z4wgdsyrk29jaw66pdc7z"))))
+                "07qh2ljbza2mph1gh8sicn27qihhj8hx3ivvry2874cfh8ghgj2f"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML
     (arguments
-     '(#:configure-flags (list (string-append "--with-html-dir="
-                                              (assoc-ref %outputs "doc")
-                                              "/share/gtk-doc/html"))
+     '(#:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html")
+             ;; ./configure requests not to annoy upstream with packaging bugs.
+             "--with-bug-report-url=https://bugs.gnu.org/guix")
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-sitecustomize.py

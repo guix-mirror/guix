@@ -122,7 +122,7 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.12")
+    (version "0.23.13")
     (source
      (origin
       (method url-fetch)
@@ -130,7 +130,7 @@ in intelligent transportation networks.")
                           "download/" version "/p11-kit-" version ".tar.gz"))
       (sha256
        (base32
-        "00ylbx2gxrm9bv6w4y3qf8z30vpdkqaa8z1y22hy27fv34py5fjq"))))
+        "1w92k6p4bhg8p24igfb6ifc6vixr2zdjh3x6gjhsphy778z40rda"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -404,7 +404,7 @@ required structures.")
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.0h")
+    (version "1.1.0i")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -414,14 +414,12 @@ required structures.")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
                                        "/" name "-" version ".tar.gz")))
-              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"
-                                       "openssl-1.1.0-CVE-2018-0495.patch"
-                                       "openssl-1.1.0-CVE-2018-0732.patch"))
+              (patches (search-patches "openssl-1.1.0-c-rehash-in.patch"))
               (sha256
                (base32
-                "05x509lccqjscgyi935z809pwfm708islypwhmjnb6cyvrn64daq"))))
+                "16fgaf113p6s5ixw227sycvihh3zx6f6rf0hvjjhxk68m12cigzb"))))
     (outputs '("out"
-               "doc"        ;1.3MiB of man3 pages
+               "doc"        ; 1.3MiB of man3 pages
                "static"))   ; 5.5MiB of .a files
     (arguments
      (substitute-keyword-arguments (package-arguments openssl)
@@ -652,7 +650,7 @@ http servers, too), an sslcat() function for writing your own clients, and
 finally access to the SSL api of the SSLeay/OpenSSL package so you can write
 servers or clients for more complicated applications.")
     (license license:perl-license)
-    (home-page "http://search.cpan.org/~mikem/Net-SSLeay-1.66/")))
+    (home-page "https://metacpan.org/release/Net-SSLeay")))
 
 (define-public perl-crypt-openssl-rsa
  (package
@@ -677,7 +675,7 @@ servers or clients for more complicated applications.")
       ("openssl" ,openssl)))
   (arguments perl-crypt-arguments)
   (home-page
-    "http://search.cpan.org/dist/Crypt-OpenSSL-RSA")
+    "https://metacpan.org/release/Crypt-OpenSSL-RSA")
   (synopsis
     "RSA encoding and decoding, using the openSSL libraries")
   (description "Crypt::OpenSSL::RSA does RSA encoding and decoding (using the
@@ -712,7 +710,7 @@ OpenSSL libraries).")
   (inputs `(("openssl" ,openssl)))
   (arguments perl-crypt-arguments)
   (home-page
-    "http://search.cpan.org/dist/Crypt-OpenSSL-Bignum")
+    "https://metacpan.org/release/Crypt-OpenSSL-Bignum")
   (synopsis
     "OpenSSL's multiprecision integer arithmetic in Perl")
   (description "Crypt::OpenSSL::Bignum provides multiprecision integer
@@ -734,7 +732,7 @@ arithmetic in Perl.")
         (base32
          "0rvi9l4ljcbhwwvspq019nfq2h2v746dk355h2nwnlmqikiihsxa"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Crypt-OpenSSL-Guess/")
+    (home-page "https://metacpan.org/release/Crypt-OpenSSL-Guess")
     (synopsis "Guess the OpenSSL include path")
     (description
      "The Crypt::OpenSSL::Guess Perl module provides helpers to guess the
@@ -763,7 +761,7 @@ correct OpenSSL include path.  It is intended for use in your
    `(("openssl" ,openssl)))
   (arguments perl-crypt-arguments)
   (home-page
-    "http://search.cpan.org/dist/Crypt-OpenSSL-Random")
+    "https://metacpan.org/release/Crypt-OpenSSL-Random")
   (synopsis
     "OpenSSL/LibreSSL pseudo-random number generator access")
   (description "Crypt::OpenSSL::Random is a OpenSSL/LibreSSL pseudo-random

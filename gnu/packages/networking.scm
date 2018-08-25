@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Nils Gillmann <ng0@n0.is>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -25,6 +25,7 @@
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -407,14 +408,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "4.16")
+    (version "4.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "00ss07jc7p276d83f6jpafgwyc9yiribciyqcgx9j86v49kpm5py"))))
+                "11f5503mgcwjn1q4dvhjiqwnw3zmp2gbhirjvgfr71y72ys1wsy4"))))
     (build-system gnu-build-system)
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
@@ -815,24 +816,53 @@ attacking, testing, and cracking.  All tools are command-line driven, which
 allows for heavy scripting.")
     (license (list license:gpl2+ license:bsd-3))))
 
+(define-public perl-data-validate-ip
+  (package
+    (name "perl-data-validate-ip")
+    (version "0.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DR/DROLSKY/Data-Validate-IP-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1mmppyzsh1w2z2h86kvzqxy56wxgs62a3kf8nvcnz76bblir5ap1"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (propagated-inputs
+     `(("perl-netaddr-ip" ,perl-netaddr-ip)))
+    (home-page "https://metacpan.org/release/Data-Validate-IP")
+    (synopsis "IPv4 and IPv6 validation methods")
+    (description
+     "This module provides several IP address validation subroutines that both
+validate and untaint their input.  This includes both basic validation
+(@code{is_ipv4()} and @code{is_ipv6()}) and special cases like checking whether
+an address belongs to a specific network or whether an address is public or
+private (reserved).")
+    (license license:perl-license)))
+
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.15")
+  (version "1.17")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
-             version
-             ".tar.gz"))
+      (uri
+       (list
+        (string-append "https://www.net-dns.org/download/Net-DNS-"
+                       version ".tar.gz")
+        (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
+                       version ".tar.gz")))
       (sha256
         (base32
-          "1l31kqrgjzq8zgpr86z12x550px5zpn563gmnja6m14b8fk6pm0s"))))
+          "1q62w9rf2w8kjzqagzr0rdn20ybl8gj3l6cdq4k8fw0sxa7zsycs"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
-  (home-page "http://search.cpan.org/dist/Net-DNS")
+  (home-page "https://www.net-dns.org/")
   (synopsis
     "Perl Interface to the Domain Name System")
   (description "Net::DNS is the Perl Interface to the Domain Name System.")
@@ -864,7 +894,7 @@ allows for heavy scripting.")
                             "INSTALLDIRS=site")))
                (setenv "CONFIG_SHELL" (which "sh"))
                (zero? (apply system* "perl" args))))))))
-  (home-page "http://search.cpan.org/dist/Socket6")
+  (home-page "https://metacpan.org/release/Socket6")
   (synopsis
     "IPv6 related part of the C socket.h defines and structure manipulators for Perl")
   (description "Socket6 binds the IPv6 related part of the C socket header
@@ -891,7 +921,7 @@ definitions and structure manipulators for Perl.")
     `(("perl-module-build" ,perl-module-build)))
   (inputs `(("perl-net-dns" ,perl-net-dns)))
   (home-page
-    "http://search.cpan.org/dist/Net-DNS-Resolver-Programmable")
+    "https://metacpan.org/release/Net-DNS-Resolver-Programmable")
   (synopsis
     "Programmable DNS resolver class for offline emulation of DNS")
   (description "Net::DNS::Resolver::Programmable is a programmable DNS resolver for
@@ -925,7 +955,7 @@ offline emulation of DNS.")
                (setenv "CONFIG_SHELL" (which "sh"))
                (zero? (apply system* "perl" args))))))))
   (home-page
-    "http://search.cpan.org/dist/NetAddr-IP")
+    "https://metacpan.org/release/NetAddr-IP")
   (synopsis
     "Manages IPv4 and IPv6 addresses and subnets")
   (description "NetAddr::IP manages IPv4 and IPv6 addresses and subsets.")
@@ -950,7 +980,7 @@ offline emulation of DNS.")
     `(("perl-net-cidr-lite" ,perl-net-cidr-lite)
       ("perl-socket6" ,perl-socket6)))
   (home-page
-    "http://search.cpan.org/dist/Net-Patricia")
+    "https://metacpan.org/release/Net-Patricia")
   (synopsis
     "Patricia Trie Perl module for fast IP address lookups")
   (description
@@ -975,7 +1005,7 @@ offline emulation of DNS.")
           "14shj73zbqmfjbp0qz1fs9j4p2dpvz5hfkm4qfdjbydflbl2b8fg"))))
   (build-system perl-build-system)
   (home-page
-    "http://search.cpan.org/dist/Net-CIDR-Lite")
+    "https://metacpan.org/release/Net-CIDR-Lite")
   (synopsis
     "Perl extension for merging IPv4 or IPv6 CIDR addresses")
   (description "Net::CIDR::Lite merges IPv4 or IPv6 CIDR addresses.")
@@ -998,7 +1028,7 @@ offline emulation of DNS.")
         (base32
           "1fka8fr7fw6sh3xa9glhs1zjg3s2gfkhi7n7da1l2m2wblqj0c0n"))))
   (build-system perl-build-system)
-  (home-page "http://search.cpan.org/dist/Geo-IP")
+  (home-page "https://metacpan.org/release/Geo-IP")
   (synopsis
     "Look up location and network information by IP Address in Perl")
   (description "The Perl module 'Geo::IP'.  It looks up location and network
@@ -1028,7 +1058,7 @@ information by IP Address.")
   (arguments `(;; Need network socket API
                #:tests? #f))
   (home-page
-    "http://search.cpan.org/dist/IO-Socket-INET6")
+    "https://metacpan.org/release/IO-Socket-INET6")
   (synopsis
     "Perl object interface for AF_INET/AF_INET6 domain sockets")
   (description "IO::Socket::INET6 is an interface for AF_INET/AF_INET6 domain
@@ -1070,19 +1100,18 @@ libproxy only have to specify which proxy to use.")
 (define-public proxychains-ng
   (package
     (name "proxychains-ng")
-    (version "4.12")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/rofl0r/" name "/releases/"
-                                  "download/v" version "/" name "-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "0kiss3ih6cwayzvqi5cx4kw4vh7r2kfxlbgk56v1f1066ncm8aj8"))))
+    (version "4.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://ftp.barfooze.de/pub/sabotage/tarballs/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0418fv8hgf43rzrxxlybg49jz2h6w8inndhb6v1184k4cwzjnl3p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
-       #:make-flags '("CC=gcc")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-configure-script
@@ -1093,6 +1122,10 @@ libproxy only have to specify which proxy to use.")
                (("\\*\\) break ;;" line)
                 (string-append "[A-Z]*) shift ;;\n"
                                line)))
+             #t))
+         (add-before 'configure 'set-up-environment
+           (lambda _
+             (setenv "CC" "gcc")
              #t)))))
     (synopsis "Redirect any TCP connection through a proxy or proxy chain")
     (description "Proxychains-ng is a preloader which hooks calls to sockets
@@ -1685,14 +1718,14 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.6.2")
+    (version "5.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "14ifqay54brw2b2hbmm517bxw8bs9631d7jm4g139igkxcq0m9p0"))))
+        (base32 "095zg7h7qwsc456sqgwb1lhhk29ac3mk5z9gm6xja1pl061driy3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1895,23 +1928,16 @@ eight bytes) tools
 (define-public asio
   (package
     (name "asio")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/chriskohlhoff/asio.git")
-             (commit (string-join (cons name (string-split version #\.))
-                                  "-"))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/asio/asio/"
+                           version " (Stable)/" name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "04dg8kpgriay7q62mqcq2gl439k5y4mf761zghsd6wfl0farh3mx"))))
+         "0nln45662kg799ykvqx5m9z9qcsmadmgg6r5najryls7x16in2d9"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
     (inputs
      `(("boost" ,boost)
        ("openssl" ,openssl)))
@@ -1919,15 +1945,7 @@ eight bytes) tools
      `(#:configure-flags
        (list
         (string-append "--with-boost=" (assoc-ref %build-inputs "boost"))
-        (string-append "--with-openssl=" (assoc-ref %build-inputs "openssl")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'chdir-to-asio
-           (lambda _
-             (chdir "asio")))
-         (add-before 'configure 'bootstrap
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
+        (string-append "--with-openssl=" (assoc-ref %build-inputs "openssl")))))
     (home-page "https://think-async.com/Asio")
     (synopsis "C++ library for ASynchronous network I/O")
     (description "Asio is a cross-platform C++ library for network and
@@ -2079,3 +2097,110 @@ SNMP v3 using both IPv4 and IPv6.")
 between various technologies.  Currently, bridging between UDP tunnels,
 Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
     (license license:gpl3+)))
+
+(define-public hcxtools
+  (let* ((commit "2ecfc9a06c2028c47522ea566ccd82b2c1f94647"))
+    (package
+      (name "hcxtools")
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/ZerBea/hcxtools")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1hzwrpmxjxl674if0pp5iq06mdi24k7ni7bh1h20isp4s40201n3"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("curl" ,curl)
+         ("libpcap" ,libpcap)
+         ("openssl" ,openssl)
+         ("zlib" ,zlib)))
+      (arguments
+       `(#:make-flags (list "CC=gcc"
+                            (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
+         #:tests? #f                    ;no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'set-environment
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "C_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "curl")
+                                    "/include:"
+                                    (assoc-ref inputs "libpcap")
+                                    "/include:"
+                                    (assoc-ref inputs "openssl")
+                                    "/include:"
+                                    (assoc-ref inputs "zlib")
+                                    "/include:"
+                                    (getenv "C_INCLUDE_PATH")))
+             #t)))))
+      (synopsis "Capture wlan traffic to hashcat and John the Ripper")
+      (description
+       "This package contains a small set of tools to capture and convert
+packets from wireless devices for use with hashcat or John the Ripper.")
+      (license license:expat))))
+
+(define-public hcxdumptool
+  (let* ((commit "f4799b5da82c5b030a6d99b02d1c1b9dc838ad36"))
+    (package
+      (name "hcxdumptool")
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/ZerBea/hcxdumptool")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0qlsin0rws9sshn12faq4spmd0ffzssal36s71vhv6gkhhga7abl"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list "CC=gcc"
+                            (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
+         #:tests? #f                    ;no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (synopsis "Small tool to capture packets from wlan devices")
+      (description
+       "Small tool to capture packets from WLAN devices.  After capturing,
+upload the \"uncleaned\" cap to @url{https://wpa-sec.stanev.org/?submit} to
+see if the access point or the client is vulnerable to a dictionary attack.
+Convert the cap file to hccapx format and/or to WPA-PMKID-PBKDF2
+hashline (16800) with @command{hcxpcaptool} from the @code{hcxtools} package
+and check if the WLAN key or the master key was transmitted unencrypted.")
+      (license license:expat))))
+
+(define-public dante
+  (package
+    (name "dante")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.inet.no/dante/files/dante-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "19rqzj167q73ag20zxpvswhkk0bj56r5maf83v5016sw7vrcz5sc"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX: The dynamic socks library doesn't work with 'libc.so' (GNU ld
+     ;; script).  When preloading is enabled, 'sockd' failed with:
+     ;;    … Failed to open library "libc.so": …: invalid ELF header
+     '(#:configure-flags '("--disable-preload")))
+    (home-page "https://www.inet.no/dante/")
+    (synopsis "SOCKS server and client")
+    (description "Dante is a SOCKS client and server implementation.  It can
+be installed on a machine with access to an external TCP/IP network and will
+allow all other machines, without direct access to that network, to be relayed
+through the machine the Dante server is running on.  The external network will
+never see any machines other than the one Dante is running on.")
+    (license (license:non-copyleft "file://LICENSE"))))

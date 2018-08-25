@@ -2740,6 +2740,24 @@ and is very extensible.")
          (add-before 'check 'set-HOME
            ;; some tests require access to "$HOME/.cython"
            (lambda _ (setenv "HOME" "/tmp") #t))
+
+         ;; FIXME: These tests started failing on armhf after the 0.28 update
+         ;; (commit c69d11c5930), both with an error such as this:
+         ;;  compiling (cpp) and running dictcomp ...
+         ;;  === C/C++ compiler error output: ===
+         ;;  â€˜
+         ;;  dictcomp.cpp:5221: confused by earlier errors, bailing out
+         ;; See <https://hydra.gnu.org/build/2948724> for logs.
+         ,@(if (target-arm32?)
+               `((add-before 'check 'disable-failing-tests
+                  (lambda _
+                    (let ((disabled-tests (open-file "tests/bugs.txt" "a")))
+                      (for-each (lambda (test)
+                                  (format disabled-tests "~a\n" test))
+                                '("memslice" "dictcomp"))
+                      (close-port disabled-tests)))))
+               '())
+
          (replace 'check
            (lambda _
              ;; The "with_outer_raising" test fails with Python 3.7.  See
@@ -3539,14 +3557,14 @@ operators such as union, intersection, and difference.")
 (define-public python-rpy2
   (package
     (name "python-rpy2")
-    (version "2.9.0")
+    (version "2.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rpy2" version))
        (sha256
         (base32
-         "0bqihjrdqwj5r1h86shvfb1p5hfr4a6klv1v54bzfr9r144w3rni"))))
+         "0bl1d2qhavmlrvalir9hmkjh74w21vzkvc2sg3cbb162s10zfmxy"))))
     (build-system python-build-system)
     (arguments
      '(#:modules ((ice-9 ftw)
@@ -3556,14 +3574,6 @@ operators such as union, intersection, and difference.")
                   (guix build python-build-system))
        #:phases
        (modify-phases %standard-phases
-         ;; Without this phase the test loader cannot find the directories, in
-         ;; which it is supposed to look for test files.
-         (add-after 'unpack 'fix-tests
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "rpy/tests.py"
-               (("loader.discover\\(")
-                "loader.discover(rpy_root + '/' +"))
-             #t))
          (replace 'check
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let ((cwd (getcwd)))
@@ -3573,8 +3583,7 @@ operators such as union, intersection, and difference.")
                                             (scandir (string-append cwd "/build")))
                                       ":"
                                       (getenv "PYTHONPATH"))))
-             ;; FIXME: Even when all tests pass, the check phase will fail.
-             (system* "python" "-m" "rpy2.tests" "-v"))))))
+             (invoke "python" "-m" "rpy2.tests" "-v"))))))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-jinja2" ,python-jinja2)
@@ -3592,7 +3601,7 @@ operators such as union, intersection, and difference.")
        ("python-numpy" ,python-numpy)))
     (native-inputs
      `(("zlib" ,zlib)))
-    (home-page "http://rpy.sourceforge.net/")
+    (home-page "https://rpy2.bitbucket.io/")
     (synopsis "Python interface to the R language")
     (description "rpy2 is a redesign and rewrite of rpy.  It is providing a
 low-level interface to R from Python, a proposed high-level interface,
@@ -5461,6 +5470,9 @@ applications.")
   (package-with-python2 python-pyzmq))
 
 (define-public python-pep8
+  ;; This package has been renamed to ‘pycodestyle’ and is no longer updated.
+  ;; Its last release (1.7.1) adds only a scary warning to this effect, breaking
+  ;; some dependents' test suites, and nothing more.
   (package
     (name "python-pep8")
     (version "1.7.0")
@@ -5472,7 +5484,7 @@ applications.")
           (base32
             "002rkl4lsn6x2mxmf8ar00l0m8i3mzrc6pnzz77blyksmpsxa4x1"))))
     (build-system python-build-system)
-    (home-page "http://pep8.readthedocs.org/")
+    (home-page "https://pep8.readthedocs.org/")
     (synopsis "Python style guide checker")
     (description
      "This tools checks Python code against some of the style conventions in
@@ -7108,6 +7120,25 @@ be set via config files and/or environment variables.")
 (define-public python2-configargparse
   (package-with-python2 python-configargparse))
 
+(define-public python-argparse-manpage
+  (package
+    (name "python-argparse-manpage")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "argparse-manpage" version))
+       (sha256
+        (base32
+         "0blh31zns68anina9lba5wh81d1414s97p60zw5l0d0shhh0wj5p"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/praiskup/argparse-manpage")
+    (synopsis "Build manual page from Python's ArgumentParser object")
+    (description
+     "This package provides tools to build manual pages from Python's
+@code{ArgumentParser} object.")
+    (license license:asl2.0)))
+
 (define-public python-contextlib2
   (package
     (name "python-contextlib2")
@@ -7928,14 +7959,14 @@ alternative when librabbitmq is not available.")
 (define-public python-txamqp
   (package
     (name "python-txamqp")
-    (version "0.8.0")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "txAMQP" version))
        (sha256
         (base32
-         "1r43a66dd547mz40ikymm8y3d480cidy560fj81qc0jk4lncgmmr"))))
+         "0jd9864k3csc06kipiwzjlk9mq4054s8kzk5q1cfnxj8572s4iv4"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
@@ -8534,33 +8565,32 @@ CloudFront content delivery network.")
 (define-public python-pkgconfig
   (package
     (name "python-pkgconfig")
-    (version "1.1.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pkgconfig" version))
         (sha256
           (base32
-            "1pw0kmvc57sjmaxi6c54fqsnihqj6hvhc9y1vaz36axafzqam7bh"))))
+            "107x2wmchlch8saixb488cgjz9n6inl38wi7nxkb942rbaapxiqb"))))
     (build-system python-build-system)
     (native-inputs
       `(("python-nose" ,python-nose)))
     (inputs
       `(("pkg-config" ,pkg-config)))
     (arguments
-      `(;; Tests fail with "ValueError: _type_ 'v' not supported" on Python 3,
-        ;; and on Python 2 they need the dl module deprecated since Python 2.6.
-        #:tests? #f
-        ;; Hard-code the path to pkg-config.
-        #:phases
+      `(#:phases
         (modify-phases %standard-phases
-          (add-before
-           'build 'patch
-           (lambda _
-             (substitute* "pkgconfig/pkgconfig.py"
-               (("cmd = 'pkg-config")
-                (string-append "cmd = '" (which "pkg-config"))))
-             #t)))))
+          (add-before 'build 'patch
+            ;; Hard-code the path to pkg-config.
+            (lambda _
+              (substitute* "pkgconfig/pkgconfig.py"
+                (("cmd = 'pkg-config")
+                 (string-append "cmd = '" (which "pkg-config"))))
+              #t))
+          (replace 'check
+            (lambda _
+              (invoke "nosetests" "test.py"))))))
     (home-page "https://github.com/matze/pkgconfig")
     (synopsis "Python interface for pkg-config")
     (description "This module provides a Python interface to pkg-config.  It

@@ -670,7 +670,7 @@ useful for C++.")
 (define-public perl-glib
   (package
     (name "perl-glib")
-    (version "1.326")
+    (version "1.327")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -678,14 +678,14 @@ useful for C++.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0prn9kkdpwjq9qmzqashbhk3pq4gvlrmvm3b10xf1dhc48406382"))))
+                "0n7hjhbh5xhagvb0qjwzg21j22ks0csah0chgk98g4wnfllxjl0k"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)
        ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
     (inputs
      `(("glib" ,glib)))
-    (home-page "http://search.cpan.org/dist/Glib/")
+    (home-page "https://metacpan.org/release/Glib")
     (synopsis "Perl wrappers for the GLib utility and Object libraries")
     (description "This module provides perl access to GLib and GLib's GObject
 libraries.  GLib is a portability and utility library; GObject provides a
@@ -854,7 +854,7 @@ metadata.")
      `(("dbus" ,dbus)))
     (propagated-inputs
      `(("perl-xml-twig" ,perl-xml-twig)))
-    (home-page "http://search.cpan.org/dist/Net-DBus/")
+    (home-page "https://metacpan.org/release/Net-DBus")
     (synopsis "Extension for the DBus bindings")
     (description "@code{Net::DBus} provides a Perl XS API to the DBus
 inter-application messaging system.  The Perl API covers the core base level
@@ -878,7 +878,7 @@ of the DBus APIs, not concerning itself yet with the GLib or QT wrappers.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("dbus-glib" ,dbus-glib)))
-    (home-page "http://search.cpan.org/~danberr/Net-DBus-GLib-0.33.0/")
+    (home-page "https://metacpan.org/release/Net-DBus-GLib")
     (synopsis "Perl extension for the DBus GLib bindings")
     (description "This package provides an extension to the @code{Net::DBus}
 module allowing integration with the GLib mainloop.  To integrate with the

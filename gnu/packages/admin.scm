@@ -611,9 +611,9 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "3")
-         (bind-release-type "")         ; for patch release, use "-P"
-         (bind-release-version "")      ; for patch release, e.g. "6"
+         (bind-patch-version "4")
+         (bind-release-type "-P")         ; for patch release, use "-P"
+         (bind-release-version "1")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -626,7 +626,7 @@ connection alive.")
       (version "4.4.1")
       (source (origin
                 (method url-fetch)
-                (uri (string-append "http://ftp.isc.org/isc/dhcp/"
+                (uri (string-append "https://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
@@ -725,12 +725,12 @@ connection alive.")
                 ("bind-source-tarball"
                  ,(origin
                     (method url-fetch)
-                    (uri (string-append "http://ftp.isc.org/isc/bind9/"
+                    (uri (string-append "https://ftp.isc.org/isc/bind9/"
                                         bind-version
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1xbnb2b11274z9frc9y7nvkyxr52qx09bwb97gf9qzzcn8adx78d"))))
+                      "08zyy13b8ydfbg26b3y6mw299qs89ba90gymraqqjsgjicydrq5h"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -739,7 +739,7 @@ connection alive.")
                         ("sed" ,sed))
                       '())))
 
-      (home-page "http://www.isc.org/products/DHCP/")
+      (home-page "https://www.isc.org/products/DHCP/")
       (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
       (description
        "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
@@ -751,27 +751,30 @@ tools: server, client, and relay agent.")
 (define-public libpcap
   (package
     (name "libpcap")
-    (version "1.8.1")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07jlhc66z76dipj4j5v3dig8x6h3k6cb36kmnmpsixf3zmlvqgb7"))))
+                "06bhydl4vr4z9c3vahl76f2j96z1fbrcl7wwismgs4sris08inrf"))))
     (build-system gnu-build-system)
-    (native-inputs `(("bison" ,bison) ("flex" ,flex)))
-    (arguments '(#:configure-flags '("--with-pcap=linux")
-                 #:tests? #f))                    ; no 'check' target
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (arguments
+     ;; There are some tests in testprogs/, but no automated test suite.
+     '(#:tests? #f))
     (home-page "https://www.tcpdump.org")
     (synopsis "Network packet capture library")
     (description
      "libpcap is an interface for user-level packet capture.  It provides a
 portable framework for low-level network monitoring.  Applications include
 network statistics collection, security monitoring, network debugging, etc.")
-
-    ;; fad-*.c and a couple other files are BSD-4, but the rest is BSD-3.
-    (license license:bsd-3)))
+    (license (list license:bsd-4        ; fad-*.c and several other source files
+                   license:bsd-3        ; pcap/, sockutils.* & others
+                   license:bsd-2))))    ; the rest
 
 (define-public tcpdump
   (package
@@ -960,7 +963,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.23")
+    (version "1.8.24")
     (source (origin
               (method url-fetch)
               (uri
@@ -970,7 +973,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0yg62wq8rcrbr7qvh3wgfg2g4bwanbi50cr2lf2cfyy8dydx4qyq"))
+                "1s2v49n905wf3phmdnaa6v1dwck2lrcin0flg85z7klf35x5b25l"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -980,7 +983,7 @@ system administrator.")
     (arguments
      `(#:configure-flags
        (list "--with-logpath=/var/log/sudo.log"
-             "--with-rundir=/var/run/sudo"    ;must be cleaned up at boot time
+             "--with-rundir=/var/run/sudo" ; must be cleaned up at boot time
              "--with-vardir=/var/db/sudo"
              "--with-iologdir=/var/log/sudo-io"
 
@@ -1263,7 +1266,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20180629")
+    (version "20180810")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1271,7 +1274,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0rsh7ya5brpbsj7y44k1z77cvgv3zahiy8hvwvl61d6fh3db7pdp"))))
+                "01drf32h0v1s8yd414rgc9bavb52yffrwpnbzfxd9sk1lwssr6v7"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1573,34 +1576,31 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.4.2.0")
+    (version "2.5.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "0n3n9py4s3aykiii31xq8g4wmd6693jvby0424pjrg0bna01apri"))
+         "0wbsjjx3xjlm8g50a9j9c6p9rn23jx32yn1234bf5rmj1qgy3p85"))
        (patches (search-patches "ansible-wrap-program-hack.patch"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-bcrypt" ,python2-bcrypt)
-       ("python2-pycrypto" ,python2-pycrypto)
-       ("python2-pynacl" ,python2-pynacl)
-       ("python2-httplib2" ,python2-httplib2)
-       ("python2-passlib" ,python2-passlib)
-       ("python2-nose" ,python2-nose)
-       ("python2-mock" ,python2-mock)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-paramiko" ,python2-paramiko)))
+     `(("python-bcrypt" ,python-bcrypt)
+       ("python-pynacl" ,python-pynacl)
+       ("python-httplib2" ,python-httplib2)
+       ("python-passlib" ,python-passlib)
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-paramiko" ,python-paramiko)))
     (inputs
-     `(("python2-pycrypto" ,python2-pycrypto)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-pyyaml" ,python2-pyyaml)
-       ("python2-paramiko" ,python2-paramiko)))
-    (arguments
-     `(#:python ,python-2)) ; incompatible with Python 3
+     `(("python-cryptography" ,python-cryptography)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-paramiko" ,python-paramiko)))
     (home-page "https://www.ansible.com/")
     (synopsis "Radically simple IT automation")
     (description "Ansible is a radically simple IT automation system.  It
@@ -1968,16 +1968,16 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.46")
+    (version "4.47")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0cskiqywiqkw44zdg4q78bjns6jjp1dz5lzdxrhpnpldc6075irw"))))
+        (base32 "0zlapxlzjizwzwa8xwrwibhcbkh0wx7n74gvjpp6wlwq7cgiq0xm"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; Obscure test failures.
+     `(#:tests? #f                      ; obscure test failures.
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -2267,21 +2267,21 @@ With sedsed you can master any sed script.  No more secrets, no more hidden
 buffers.")
     (license license:expat)))
 
-(define-public intel-gpu-tools
+(define-public igt-gpu-tools
   (package
-    (name "intel-gpu-tools")
-    (version "1.22")
+    (name "igt-gpu-tools")
+    (version "1.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cgit.freedesktop.org/xorg/app/"
                                   "intel-gpu-tools/snapshot/"
-                                  "intel-gpu-tools-" version ".tar.gz"))
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jx5w5fr6jp67rcrlp5v79cn8kp9n0wgd5pbfgzamlah5cx6j3yd"))))
+                "0vzv2i4jfv2pkbqby5k3ap9pzidkmajwqmg3s7wnv8i1h33775iq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; many of the tests try to load kernel modules
+     `(#:tests? #f              ; many of the tests try to load kernel modules
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'autogen
@@ -2290,16 +2290,17 @@ buffers.")
              (setenv "NOCONFIGURE" "1")
              (invoke "sh" "autogen.sh"))))))
     (inputs
-     `(("eudev" ,eudev)
-       ("util-macros" ,util-macros)
+     `(("cairo" ,cairo)
+       ("eudev" ,eudev)
+       ("glib" ,glib)
+       ("kmod" ,kmod)
        ("libdrm" ,libdrm)
        ("libpciaccess" ,libpciaccess)
-       ("kmod" ,kmod)
-       ("procps" ,procps)
-       ("cairo" ,cairo)
        ("libunwind" ,libunwind)
        ("libxrandr" ,libxrandr)
-       ("glib" ,glib)))
+       ("openssl" ,openssl)
+       ("procps" ,procps)
+       ("util-macros" ,util-macros)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -2307,16 +2308,19 @@ buffers.")
        ("pkg-config" ,pkg-config)))
     (home-page "https://cgit.freedesktop.org/xorg/app/intel-gpu-tools/")
     (synopsis "Tools for development and testing of the Intel DRM driver")
-    (description "Intel GPU Tools is a collection of tools for development and
+    (description "IGT GPU Tools is a collection of tools for development and
 testing of the Intel DRM driver.  There are many macro-level test suites that
 get used against the driver, including xtest, rendercheck, piglit, and
 oglconform, but failures from those can be difficult to track down to kernel
 changes, and many require complicated build procedures or specific testing
-environments to get useful results.  Therefore, Intel GPU Tools includes
+environments to get useful results.  Therefore, IGT GPU Tools includes
 low-level tools and tests specifically for development and testing of the
 Intel DRM Driver.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:expat)))
+
+(define-public intel-gpu-tools
+  (deprecated-package "intel-gpu-tools" igt-gpu-tools))
 
 (define-public fabric
   (package
@@ -2396,43 +2400,29 @@ you are running, what theme or icon set you are using, etc.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "1.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jarun/nnn/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0z3lqbfx3y1caxvn7yq90b7whwyq2y32zf8kyd976ilbxpxnxqpv"))))
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
+                           version "/" name "-v" version ".tar.gz"))
+       (sha256
+        (base32 "1d6z12y4rlg4dzhpm30irpq2ak8hjh5zykkp2n7vxnz5m4ki89zp"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)
-              ("readline" ,readline)))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:phases
-       ;; We do not provide `ncurses.h' within an `ncursesw'
-       ;; sub-directory, so patch the source accordingly.  See
-       ;; <http://bugs.gnu.org/19018>.
-       ;; Thanks to gtypist maintainer.
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-curses-lib
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* "Makefile"
-                 (("-lncursesw")
-                  "-lncurses"))
-               (substitute* "nnn.c"
-                 (("ncursesw\\/curses.h")
-                  "ncurses.h")))
-             #t))
-         (delete 'configure))
+         (delete 'configure))           ; no configure script
        #:make-flags
        (list
         (string-append "PREFIX="
                        (assoc-ref %outputs "out"))
-        (string-append "-Wl,-rpath="
-                       %output "/lib")
         "CC=gcc")))
     (home-page "https://github.com/jarun/nnn")
     (synopsis "Terminal file browser")
@@ -2625,7 +2615,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.14-1")
+      (version "3.0.20-1")
       (source
        (origin
          (method git-fetch)
@@ -2634,7 +2624,7 @@ Python loading in HPC environments.")
                (commit version)))
          (sha256
           (base32
-           "1f342basqlp7hl6zw29fb018jd55dx85a6dmm3sap032a3dgds73"))))
+           "1k9148xnfznch1443niaa3w1kmsw4vp0xpwna6npgmi7zqg06ymy"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash)

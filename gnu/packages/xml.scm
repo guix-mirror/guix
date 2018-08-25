@@ -236,7 +236,7 @@ based on libxml for XML parsing, tree manipulation and XPath support.")
        ("perl-parse-yapp" ,perl-parse-yapp)
        ("perl-xml-parser" ,perl-xml-parser)
        ("perl-xml-writer" ,perl-xml-writer)))
-    (home-page "http://search.cpan.org/dist/Graph-ReadWrite")
+    (home-page "https://metacpan.org/release/Graph-ReadWrite")
     (synopsis "Modules for reading and writing directed graphs")
     (description "This is a collection of perl classes for reading and writing
 directed graphs in a variety of file formats.  The graphs are represented in
@@ -283,7 +283,7 @@ the @code{Graph} class and write it out in a specific file format.")
        ("perl-uri" ,perl-uri)
        ("perl-xml-libxml" ,perl-xml-libxml)
        ("perl-xml-xpath" ,perl-xml-xpath)))
-    (home-page "http://search.cpan.org/dist/XML-Atom")
+    (home-page "https://metacpan.org/release/XML-Atom")
     (synopsis "Atom feed and API implementation")
     (description
      "Atom is a syndication, API, and archiving format for weblogs and other data.
@@ -307,7 +307,7 @@ the @code{Graph} class and write it out in a specific file format.")
     (propagated-inputs
      `(("perl-test-differences" ,perl-test-differences)
        ("perl-xml-tokeparser" ,perl-xml-tokeparser)))
-    (home-page "http://search.cpan.org/dist/XML-Descent")
+    (home-page "https://metacpan.org/release/XML-Descent")
     (synopsis "Recursive descent XML parsing")
     (description
      "The conventional models for parsing XML are either @dfn{DOM}
@@ -347,7 +347,7 @@ may be provided when the XML::Parser object is created.  These options are
 then passed on to the Expat object on each parse call.  They can also be given
 as extra arguments to the parse methods, in which case they override options
 given at XML::Parser creation time.")
-    (home-page "http://search.cpan.org/dist/XML-Parser")))
+    (home-page "https://metacpan.org/release/XML-Parser")))
 
 (define-public perl-xml-tokeparser
   (package
@@ -362,7 +362,7 @@ given at XML::Parser creation time.")
                 "1hnpwb3lh6cbgwvjjgqzcp6jm4mp612qn6ili38adc9nhkwv8fc5"))))
     (build-system perl-build-system)
     (propagated-inputs `(("perl-xml-parser" ,perl-xml-parser)))
-    (home-page "http://search.cpan.org/dist/XML-TokeParser")
+    (home-page "https://metacpan.org/release/XML-TokeParser")
     (synopsis "Simplified interface to XML::Parser")
     (description
      "@code{XML::TokeParser} provides a procedural (\"pull mode\") interface
@@ -388,11 +388,13 @@ corresponding to an @code{XML::Parser} event.")
     (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)))
     (license license:perl-license)
-    (synopsis "Perl SAX parser using XML::Parser")
+    (synopsis "Perl modules for working with XML")
     (description
-     "XML::Parser::PerlSAX is a PerlSAX parser using the XML::Parser
-module.")
-    (home-page "http://search.cpan.org/~kmacleod/libxml-perl/lib/XML/Parser/PerlSAX.pm")))
+     "libxml-perl is a collection of smaller Perl modules, scripts, and
+documents for working with XML in Perl.  libxml-perl software works in
+combination with @code{XML::Parser}, PerlSAX, @code{XML::DOM},
+@code{XML::Grove}, and others.")
+    (home-page "https://metacpan.org/release/libxml-perl")))
 
 (define-public perl-xml-libxml
   (package
@@ -412,7 +414,7 @@ module.")
        ("perl-xml-sax" ,perl-xml-sax)))
     (inputs
      `(("libxml2" ,libxml2)))
-    (home-page "http://search.cpan.org/dist/XML-LibXML")
+    (home-page "https://metacpan.org/release/XML-LibXML")
     (synopsis "Perl interface to libxml2")
     (description "This module implements a Perl interface to the libxml2
 library which provides interfaces for parsing and manipulating XML files.  This
@@ -435,7 +437,7 @@ XML parser and the high performance DOM implementation.")
     (propagated-inputs
      `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
        ("perl-xml-libxml" ,perl-xml-libxml)))
-    (home-page "http://search.cpan.org/dist/XML-LibXML-Simple")
+    (home-page "https://metacpan.org/release/XML-LibXML-Simple")
     (synopsis "XML::LibXML based XML::Simple clone")
     (description
      "This package provides the same API as @code{XML::Simple} but is based on
@@ -459,7 +461,7 @@ XML parser and the high performance DOM implementation.")
      `(("libxslt" ,libxslt)))
     (propagated-inputs
      `(("perl-xml-libxml" ,perl-xml-libxml)))
-    (home-page "http://search.cpan.org/dist/XML-LibXSLT")
+    (home-page "https://metacpan.org/release/XML-LibXSLT")
     (synopsis "Perl bindings to GNOME libxslt library")
     (description "This Perl module is an interface to the GNOME project's
 libxslt library.")
@@ -478,7 +480,7 @@ libxslt library.")
         (base32
          "1vz5pbi4lm5fhq2slrs2hlp6bnk29863abgjlcx43l4dky2rbsa7"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/XML-NamespaceSupport")
+    (home-page "https://metacpan.org/release/XML-NamespaceSupport")
     (synopsis "XML namespace support class")
     (description "This module offers a simple to process namespaced XML
 names (unames) from within any application that may need them.  It also helps
@@ -512,7 +514,7 @@ checks.")
        ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
        ("perl-html-parser" ,perl-html-parser)
        ("perl-xml-parser" ,perl-xml-parser)))
-    (home-page "http://search.cpan.org/dist/XML-RSS")
+    (home-page "https://metacpan.org/release/XML-RSS")
     (synopsis "Creates and updates RSS files")
     (description
      "This module provides a basic framework for creating and maintaining
@@ -549,7 +551,7 @@ that allow you to generate HTML from an RSS, convert between 0.9, 0.91, and
                              (string-append (getenv "PERL5LIB") ":"
                                             (assoc-ref outputs "out")
                                             "/lib/perl5/site_perl")))))))
-    (home-page "http://search.cpan.org/dist/XML-SAX")
+    (home-page "https://metacpan.org/release/XML-SAX")
     (synopsis "Perl API for XML")
     (description "XML::SAX consists of several framework classes for using and
 building Perl SAX2 XML parsers, filters, and drivers.")
@@ -568,7 +570,7 @@ building Perl SAX2 XML parsers, filters, and drivers.")
         (base32
          "1l1ai9g1z11ja7mvnfl5mj346r13jyckbg9qlw6c2izglidkbjv6"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/XML-SAX-Base")
+    (home-page "https://metacpan.org/release/XML-SAX-Base")
     (synopsis "Base class for SAX Drivers and Filters")
     (description "This module has a very simple task - to be a base class for
 PerlSAX drivers and filters.  It's default behaviour is to pass the input
@@ -599,7 +601,7 @@ callback.")
      "The XML::Simple module provides a simple API layer on top of an
 underlying XML parsing module (either XML::Parser or one of the SAX2
 parser modules).")
-    (home-page "http://search.cpan.org/dist/XML-Simple")))
+    (home-page "https://metacpan.org/release/XML-Simple")))
 
 (define-public perl-xml-regexp
   (package
@@ -622,7 +624,7 @@ parser modules).")
      "XML::RegExp contains regular expressions for the following XML tokens:
 BaseChar, Ideographic, Letter, Digit, Extender, CombiningChar, NameChar,
 EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
-    (home-page "http://search.cpan.org/~tjmather/XML-RegExp/lib/XML/RegExp.pm")))
+    (home-page "https://metacpan.org/release/XML-RegExp")))
 
 (define-public perl-xml-dom
   (package
@@ -651,7 +653,7 @@ XML::Parser module is built on top of XML::Parser::Expat, which is a lower
 level interface to James Clark's expat library.  XML::DOM::Parser is derived
 from XML::Parser.  It parses XML strings or files and builds a data structure
 that conforms to the API of the Document Object Model.")
-    (home-page "http://search.cpan.org/~tjmather/XML-DOM-1.44/lib/XML/DOM.pm")))
+    (home-page "https://metacpan.org/release/XML-DOM")))
 
 (define-public perl-xml-compile-tester
   (package
@@ -668,7 +670,7 @@ that conforms to the API of the Document Object Model.")
     (propagated-inputs
      `(("perl-log-report" ,perl-log-report)
        ("perl-test-deep" ,perl-test-deep)))
-    (home-page "http://search.cpan.org/dist/XML-Compile-Tester")
+    (home-page "https://metacpan.org/release/XML-Compile-Tester")
     (synopsis "XML::Compile related regression testing")
     (description
      "The @code{XML::Compile} module suite has extensive regression testing.
@@ -693,7 +695,7 @@ This module provide functions which simplify writing tests for
        ("perl-xml-compile-tester" ,perl-xml-compile-tester)
        ("perl-xml-libxml" ,perl-xml-libxml)
        ("perl-test-deep" ,perl-test-deep)))
-    (home-page "http://search.cpan.org/dist/XML-Compile")
+    (home-page "https://metacpan.org/release/XML-Compile")
     (synopsis "Compilation-based XML processing")
     (description
      "@code{XML::Compile} can be used to translate a Perl data-structure into
@@ -718,7 +720,7 @@ a schema.")
        ("perl-xml-compile" ,perl-xml-compile)
        ("perl-xml-compile-tester" ,perl-xml-compile-tester)
        ("perl-xml-libxml-simple" ,perl-xml-libxml-simple)))
-    (home-page "http://search.cpan.org/dist/XML-Compile-Cache")
+    (home-page "https://metacpan.org/release/XML-Compile-Cache")
     (synopsis "Cache compiled XML translators")
     (description
      "This package provides methods to cache compiled XML translators.")
@@ -743,7 +745,7 @@ a schema.")
        ("perl-xml-compile" ,perl-xml-compile)
        ("perl-xml-compile-cache" ,perl-xml-compile-cache)
        ("perl-xml-compile-tester" ,perl-xml-compile-tester)))
-    (home-page "http://search.cpan.org/dist/XML-Compile-SOAP")
+    (home-page "https://metacpan.org/release/XML-Compile-SOAP")
     (synopsis "Base-class for SOAP implementations")
     (description
      "This module provides a class to handle the SOAP protocol.  The first
@@ -769,7 +771,7 @@ used.")
        ("perl-xml-compile" ,perl-xml-compile)
        ("perl-xml-compile-cache" ,perl-xml-compile-cache)
        ("perl-xml-compile-soap" ,perl-xml-compile-soap)))
-    (home-page "http://search.cpan.org/dist/XML-Compile-WSDL11")
+    (home-page "https://metacpan.org/release/XML-Compile-WSDL11")
     (synopsis "Create SOAP messages defined by WSDL 1.1")
     (description
      "This module understands WSDL version 1.1.  A WSDL file defines a set of
@@ -809,7 +811,7 @@ server, collect the answer, and finally decoding the XML to Perl.")
        ("perl-xml-atom" ,perl-xml-atom)
        ("perl-xml-libxml" ,perl-xml-libxml)
        ("perl-xml-rss" ,perl-xml-rss)))
-    (home-page "http://search.cpan.org/dist/XML-Feed")
+    (home-page "https://metacpan.org/release/XML-Feed")
     (synopsis "XML Syndication Feed Support")
     (description "@code{XML::Feed} is a syndication feed parser for both RSS and
 Atom feeds.  It also implements feed auto-discovery for finding feeds, given a URI.
@@ -833,7 +835,7 @@ RSS 0.91, RSS 1.0, RSS 2.0, Atom")
      `(("perl-path-tiny" ,perl-path-tiny)))
     (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)))
-    (home-page "http://search.cpan.org/dist/XML-XPath")
+    (home-page "https://metacpan.org/release/XML-XPath")
     (synopsis "Parse and evaluate XPath statements")
     (description
      "This module aims to comply exactly to the @url{XPath specification,
@@ -1362,7 +1364,7 @@ maintaining each reference encountered.")
                (base32
                 "0r72na14bmsxfd16s9nlza155amqww0k8wsa9x2a3sqbpp5ppznj"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/XML-XPathEngine/")
+    (home-page "https://metacpan.org/release/XML-XPathEngine")
     (synopsis "Re-usable XPath engine for DOM-like trees")
     (description
      "This module provides an XPath engine, that can be re-used by other
@@ -1387,7 +1389,7 @@ should be able to use this module very easily (you might need to add the
                (base32
                 "1vbbw8wxm79r3xbra8narw1dqvm34510q67wbmg2zmj6zd1k06r9"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Tree-XPathEngine/")
+    (home-page "https://metacpan.org/release/Tree-XPathEngine")
     (synopsis "Re-usable XPath engine")
     (description
      "This module provides an XPath engine, that can be re-used by other
@@ -1411,7 +1413,7 @@ by @code{Tree::XPathEngine}.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-sax-base" ,perl-xml-sax-base)))
-    (home-page "http://search.cpan.org/dist/XML-Filter-BufferText/")
+    (home-page "https://metacpan.org/release/XML-Filter-BufferText")
     (synopsis "Filter to put all characters() in one event")
     (description "This is a very simple filter.  One common cause of
 grief (and programmer error) is that XML parsers aren't required to provide
@@ -1438,7 +1440,7 @@ characters into a single event.")
        ("perl-xml-filter-buffertext" ,perl-xml-filter-buffertext)
        ("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
        ("perl-xml-sax-base" ,perl-xml-sax-base)))
-    (home-page "http://search.cpan.org/dist/XML-SAX-Writer/")
+    (home-page "https://metacpan.org/release/XML-SAX-Writer")
     (synopsis "SAX2 XML Writer")
     (description
      "This is an XML writer that understands SAX2.  It is based on
@@ -1460,7 +1462,7 @@ characters into a single event.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-libxml" ,perl-libxml)))
-    (home-page "http://search.cpan.org/dist/XML-Handler-YAWriter/")
+    (home-page "https://metacpan.org/release/XML-Handler-YAWriter")
     (synopsis "Yet another Perl SAX XML Writer")
     (description "YAWriter implements Yet Another @code{XML::Handler::Writer}.
 It provides a flexible escaping technique and pretty printing.")
@@ -1495,7 +1497,7 @@ It provides a flexible escaping technique and pretty printing.")
        ("perl-xml-xpathengine" ,perl-xml-xpathengine)
        ("perl-test-pod" ,perl-test-pod)
        ("perl-tree-xpathengine" ,perl-tree-xpathengine)))
-    (home-page "http://search.cpan.org/dist/XML-Twig/")
+    (home-page "https://metacpan.org/release/XML-Twig")
     (synopsis "Perl module for processing huge XML documents in tree mode")
     (description "@code{XML::Twig} is an XML transformation module.  Its
 strong points: can be used to process huge documents while still being in tree

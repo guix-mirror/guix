@@ -58,11 +58,10 @@
 
 (define (section-contents elf section)
   "Return the contents of SECTION in ELF as a bytevector."
-  (let* ((modinfo  (elf-section-by-name elf ".modinfo"))
-         (contents (make-bytevector (elf-section-size modinfo))))
-    (bytevector-copy! (elf-bytes elf) (elf-section-offset modinfo)
+  (let ((contents (make-bytevector (elf-section-size section))))
+    (bytevector-copy! (elf-bytes elf) (elf-section-offset section)
                       contents 0
-                      (elf-section-size modinfo))
+                      (elf-section-size section))
     contents))
 
 (define %not-nul
@@ -85,7 +84,8 @@ string list."
 key/value pairs.."
   (let* ((bv      (call-with-input-file file get-bytevector-all))
          (elf     (parse-elf bv))
-         (modinfo (section-contents elf ".modinfo")))
+         (section (elf-section-by-name elf ".modinfo"))
+         (modinfo (section-contents elf section)))
     (map key=value->pair
          (nul-separated-string->list (utf8->string modinfo)))))
 

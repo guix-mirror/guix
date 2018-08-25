@@ -116,32 +116,29 @@ Guile-] Scheme interpreter prototype in C and a Nyacc-based C compiler in
 (define-public mescc-tools
   (package
     (name "mescc-tools")
-    (version "0.5.1")
+    (version "0.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://github.com/oriansj/mescc-tools/archive/Release_"
-                    version
+                    "http://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
+                    name "-Release_" version
                     ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rsxbjc3bg0jl3h7ai4hndxx2iyyk8bvwj9nd3xv2vgz3bmypnah"))))
+                "01x7bhmgwyf6mc2g1hcvibhps98nllacqm4f0j5l51b1mbi18pc2"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:test-target "test"
        #:phases (modify-phases %standard-phases
-                  (delete 'configure)
-                  (add-after 'install 'install-2
-                    (lambda _
-                      (let ((out (assoc-ref %outputs "out")))
-                       (copy-file "bin/blood-elf" (string-append out "/bin/blood-elf"))))))))
+                  (delete 'configure))))
     (synopsis "Tools for the full source bootstrapping process")
     (description
      "Mescc-tools is a collection of tools for use in a full source
-bootstrapping process.  Currently consists of the M1 macro assembler and the
-hex2 linker.")
-    (home-page "https://github.com/oriansj/mescc-tools")
+bootstrapping process.  It consists of the M1 macro assembler, the hex2
+linker, the blood-elf symbol table generator, the kaem shell, exec_enable and
+get_machine.")
+    (home-page "https://savannah.nongnu.org/projects/mescc-tools")
     (license gpl3+)))

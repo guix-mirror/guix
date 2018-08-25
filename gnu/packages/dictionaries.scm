@@ -238,7 +238,7 @@ and a Python library.")
 (define-public translate-shell
   (package
     (name "translate-shell")
-    (version "0.9.6.7")
+    (version "0.9.6.8")
     (source
       (origin
         (method url-fetch)
@@ -246,14 +246,13 @@ and a Python library.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "0inv6r3qbihn2ff1sgcly89r04k4vgcbvvyl50ln0mxlapbhpy95"))
-        (patches (search-patches "translate-shell-fix-curl-tests.patch"))
+          "17yc2kwk8957wwxyih0jmsai720ai2yqyvmrqrglcncqg6zdbz9w"))
         (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; no configure phase
+         (delete 'configure)            ; no configure phase
          (add-after 'install 'emacs-install
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out   (assoc-ref outputs "out"))
@@ -275,7 +274,7 @@ and a Python library.")
        ("rlwrap" ,rlwrap)))
     (native-inputs
      `(("emacs" ,emacs-minimal)
-       ("util-linux" ,util-linux))) ; hexdump, for the test
+       ("util-linux" ,util-linux)))     ; hexdump, for the test
     (home-page "https://www.soimort.org/translate-shell/")
     (synopsis "Translations from the command line")
     (description

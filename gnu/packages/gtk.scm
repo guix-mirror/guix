@@ -394,7 +394,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.24.7")
+   (version "3.24.8")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -402,7 +402,7 @@ printing and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1rp8zspwyw3mmdgccsas3pa6v7s0hqjaaglg6n4kcls7ccx0vhm5"))))
+               "1zinqid62zjcsq7vy1y4mq1qh3hzd3zj7p8np7g0bdqd37zvi6qy"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -570,7 +570,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.26.1")
+   (version "2.26.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -578,7 +578,7 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0x9vc99ni46fg5dzlx67vbw0zqffr24gz8jvbdxbmzyvc5xw5w5l"))))
+              "0vkan52ab9vrkknnv8y4f1cspk8x7xd10qx92xk9ys71p851z2b1"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -664,7 +664,7 @@ graphical user interfaces.  Offering a complete set of widgets, GTK+ is
 suitable for projects ranging from small one-off tools to complete
 application suites.")
    (license license:lgpl2.0+)
-   (home-page "http://www.gtk.org/")))
+   (home-page "https://www.gtk.org/")))
 
 (define-public gtk+
   (package (inherit gtk+-2)
@@ -1289,7 +1289,7 @@ write GNOME applications.")
        ("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
     (inputs
      `(("cairo" ,cairo)))
-    (home-page "http://search.cpan.org/dist/Cairo/")
+    (home-page "https://metacpan.org/release/Cairo")
     (synopsis "Perl interface to the cairo 2d vector graphics library")
     (description "Cairo provides Perl bindings for the vector graphics library
 cairo.  It supports multiple output targets, including PNG, PDF and SVG.  Cairo
@@ -1315,7 +1315,7 @@ produces identical output on all those targets.")
      `(("gtk+" ,gtk+-2)))
     (propagated-inputs
      `(("perl-pango" ,perl-pango)))
-    (home-page "http://search.cpan.org/dist/Gtk2/")
+    (home-page "https://metacpan.org/release/Gtk2")
     (synopsis "Perl interface to the 2.x series of the Gimp Toolkit library")
     (description "Perl bindings to the 2.x series of the Gtk+ widget set.
 This module allows you to write graphical user interfaces in a Perlish and
@@ -1343,7 +1343,7 @@ yet remaining very close in spirit to original API.")
     (propagated-inputs
      `(("perl-cairo" ,perl-cairo)
        ("perl-glib" ,perl-glib)))
-    (home-page "http://search.cpan.org/dist/Pango/")
+    (home-page "https://metacpan.org/release/Pango")
     (synopsis "Layout and render international text")
     (description "Pango is a library for laying out and rendering text, with an
 emphasis on internationalization.  Pango can be used anywhere that text layout
@@ -1492,7 +1492,7 @@ information.")
        ("source-highlight" ,source-highlight)
        ("glib" ,glib)
        ("python-six" ,python-six)))
-    (home-page "http://www.gtk.org/gtk-doc/")
+    (home-page "https://www.gtk.org/gtk-doc/")
     (synopsis "Documentation generator from C source code")
     (description
      "GTK-Doc generates API documentation from comments added to C code.  It is

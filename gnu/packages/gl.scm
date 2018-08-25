@@ -252,7 +252,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("xorgproto" ,xorgproto)))
     (inputs
       `(("expat" ,expat)
-        ("libelf" ,libelf)    ;required for r600 when using llvm
+        ("libelf" ,elfutils)  ;required for r600 when using llvm
         ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support

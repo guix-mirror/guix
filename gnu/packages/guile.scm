@@ -821,27 +821,18 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-lib
   (package
     (name "guile-lib")
-    (version "0.2.6")
+    (version "0.2.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0n1lf5bsr5s9gqi07sdfkl1hpin6dzvkcj1xa63jd1w8aglwv8r1"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; 'pre-inst-env' sets an incorrect load path, missing the
-                  ;; "/src" bit.  Add it.
-                  (substitute* "pre-inst-env.in"
-                    (("abs_top_(builddir|srcdir)=([[:graph:]]+)" _ dir value)
-                     (string-append "abs_top_" dir "=" value "/src")))
-                  #t))))
+                "0aizxdif5dpch9cvs8zz5g8ds5s4xhfnwza2il5ji7fv2h7ks7bd"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
-       '("GUILE_AUTO_COMPILE=0")        ;to prevent guild errors
+       '("GUILE_AUTO_COMPILE=0")        ; to prevent guild errors
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-module-dir
@@ -877,7 +868,7 @@ for Guile\".")
 (define-public guile-json
   (package
     (name "guile-json")
-    (version "1.0.1")
+    (version "1.1.1")
     (home-page "https://github.com/aconchillo/guile-json")
     (source (origin
               (method url-fetch)
@@ -886,23 +877,11 @@ for Guile\".")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "16155dv30rhagz6dwv7xc87l386i8v0f1kgydqa2ajr166fi9qhr"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Make sure everything goes under .../site/X.Y, like Guile's
-               ;; search paths expects.
-               '(begin
-                  (substitute* "configure.ac"
-                    (("GUILE_PROGS")
-                     (string-append "GUILE_PROGS\n"
-                                    "AC_SUBST([GUILE_EFFECTIVE_VERSION])\n")))
-                  (substitute* '("Makefile.am" "json/Makefile.am")
-                    (("moddir[[:blank:]]*=.*/share/guile/site" all)
-                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
-                  #t))))
+                "12jqkn9qgwdlxbasy2n25a2a7apf30dww1nnxqfam5735k3jdngv"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
+                     ("pkg-config" ,pkg-config)
                      ("guile" ,guile-2.2)))
     (inputs `(("guile" ,guile-2.2)))
     (synopsis "JSON module for Guile")
@@ -1212,32 +1191,20 @@ above command-line parameters.")
 (define-public guile-redis
   (package
     (name "guile-redis")
-    (version "0.1.0")
+    (version "1.0.0")
+    (home-page "https://github.com/aconchillo/guile-redis")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://savannah/guile-redis/guile-redis-"
-                                  version ".tar.gz"))
+              (uri (string-append home-page "/archive/" version ".tar.gz"))
               (sha256
                (base32
-                "0vx6if6b4r3kwx64vzbs6vpc0cpcr85x11w9vkzq27gw8n7isv56"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; Make sure everything goes under .../site/X.Y, like Guile's
-               ;; search paths expects.
-               '(begin
-                  (substitute* "configure"
-                    (("ac_subst_vars='")
-                     "ac_subst_vars='GUILE_EFFECTIVE_VERSION\n"))
-                  (substitute* '("Makefile.in"
-                                 "redis/Makefile.in"
-                                 "redis/commands/Makefile.in")
-                    (("moddir =.*/share/guile/site" all)
-                     (string-append all "/@GUILE_EFFECTIVE_VERSION@")))
-                  #t))))
+                "1dp5fmqvma59pvp1nfpq6hqgbmjici8sd1y8llahl87fynw1dvr9"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("guile" ,guile-2.2)))
-    (home-page "https://savannah.nongnu.org/projects/guile-redis/")
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("guile" ,guile-2.2)))
     (synopsis "Redis client library for Guile")
     (description "Guile-redis provides a Scheme interface to the Redis
 key-value cache and store.")

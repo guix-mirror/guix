@@ -33,6 +33,7 @@
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018 Madalin Ionel-Patrascu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -199,7 +200,8 @@ settings to tweak as well.")
       (build-system gnu-build-system)
       (arguments
        '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                            "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1")
+                            "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1"
+                            "LOCALIZE=1" "LANGUAGES=all")
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
@@ -1082,7 +1084,7 @@ that beneath its ruins lay buried an ancient evil.")
 (define-public angband
   (package
     (name "angband")
-    (version "4.1.2")
+    (version "4.1.3")
     (source
      (origin
        (method url-fetch)
@@ -1091,7 +1093,7 @@ that beneath its ruins lay buried an ancient evil.")
                            "/angband-" version ".tar.gz"))
        (sha256
         (base32
-         "0ahfzb66ihxvkxcbhcib816x40sdsp26b3ravr1xqp44w1whkg1h"))
+         "0vs0314lbdc6rzxn4jnb7zp6n1p1cdb8r53savadn7k9vbwc80ll"))
        (modules '((guix build utils)))
        (snippet
         ;; So, some of the sounds/graphics/tilesets are under different
@@ -1111,7 +1113,7 @@ that beneath its ruins lay buried an ancient evil.")
            #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                                 ;no check target
+     `(#:tests? #f                      ; no check target
        #:configure-flags (list (string-append "--bindir=" %output "/bin"))
        #:phases
        (modify-phases %standard-phases
@@ -4888,6 +4890,25 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
                     "See Info-Zip section.")
                    license:public-domain)))) ; stb
 
+(define-public nudoku
+  (package
+    (name "nudoku")
+    (version "1.0.0")
+    (source (origin
+	      (method url-fetch)
+	      (uri (string-append "https://github.com/jubalh/nudoku/"
+                                  "releases/download/" version
+                                  "/nudoku-" version ".tar.xz"))
+	      (sha256
+               (base32
+                "0nr2j2z07nxk70s8xnmmpzccxicf7kn5mbwby2kg6aq8paarjm8k"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "https://jubalh.github.io/nudoku/")
+    (synopsis "Sudoku for your terminal")
+    (description "Nudoku is a ncurses-based Sudoku game for your terminal.")
+    (license license:gpl3+)))
+
 (define-public the-butterfly-effect
   (package
     (name "the-butterfly-effect")
@@ -5192,14 +5213,17 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
 (define-public fortune-mod
   (package
     (name "fortune-mod")
-    (version "2.4.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/shlomif/fortune-mod/"
-                                  "archive/" name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1hnqpkassh7fwg2jgvybr8mw7vzfikbrhb5r22367ilfwxnl9yd2"))))
+    (version "2.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/shlomif/fortune-mod")
+             (commit (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "17183z8ls6hrngh8a3374csagqa2acs8jl21dqm7gwj4lk0ghkba"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "check"
@@ -5212,13 +5236,19 @@ Strife, Chex Quest, and fan-created games like Harmony, Hacx and Freedoom.")
                (copy-file cmake-rules
                           (string-append "fortune-mod/cmake/"
                                          (strip-store-file-name cmake-rules)))
-               (chdir "fortune-mod"))))
+               (chdir "fortune-mod")
+               #t)))
          (add-after 'install 'fix-install-directory
-           ;; Move binary from "games/" to "bin/".
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (rename-file (string-append out "/games/fortune")
-                            (string-append out "/bin/fortune"))
+             ;; Move binary from "games/" to "bin/" and remove the latter.  This
+             ;; is easier than patching CMakeLists.txt since the tests hard-code
+             ;; the location as well.
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (games (string-append out "/games")))
+               (rename-file (string-append games "/fortune")
+                            (string-append bin "/fortune"))
+               (rmdir games)
                #t))))))
     (inputs `(("recode" ,recode)))
     (native-inputs

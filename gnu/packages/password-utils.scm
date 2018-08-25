@@ -19,6 +19,8 @@
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +63,8 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages opencl)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
@@ -96,7 +100,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.3.3")
+    (version "2.3.4")
     (source
      (origin
        (method url-fetch)
@@ -105,27 +109,17 @@ human.")
                            version "-src.tar.xz"))
        (sha256
         (base32
-         "1m8alsp39vk21zgcvy5zswk0dc1xmajbwnccg7n0lndsi7pqbzyg"))))
+         "02kq0a7a7hpw824n03apma00yq1c6dds224g15mrnnqqjn4af90c"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_XC_NETWORKING=YES"
                            "-DWITH_XC_BROWSER=YES"
-                           "-DWITH_XC_SSHAGENT=YES")
-       #:phases
-       (modify-phases %standard-phases
-         ;; should be fixed in 2.3.3+, see:
-         ;; https://github.com/keepassxreboot/keepassxc/pull/1964
-         (add-after 'unpack 'patch-sources
-           (lambda _
-             (substitute* "src/gui/entry/EditEntryWidget.cpp"
-               (("#include <QColorDialog>") "#include <QColorDialog>
-#include <QButtonGroup>"))
-             #t)))))
+                           "-DWITH_XC_SSHAGENT=YES")))
     (inputs
      `(("argon2" ,argon2)
-       ("curl" ,curl) ; XC_NETWORKING
+       ("curl" ,curl)                   ; XC_NETWORKING
        ("libgcrypt" ,libgcrypt)
-       ("libsodium" ,libsodium) ; XC_BROWSER
+       ("libsodium" ,libsodium)         ; XC_BROWSER
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)
        ("qtbase" ,qtbase)
@@ -140,7 +134,7 @@ manage your passwords in a secure way.  You can put all your passwords in one
 database, which is locked with one master key or a key-file which can be stored
 on an external storage device.  The databases are encrypted using the
 algorithms AES or Twofish.")
-    ;; Non functional parts use various licences.
+    ;; Non-functional parts use various licences.
     (license license:gpl3)))
 
 (define-public keepassx
@@ -358,7 +352,7 @@ any X11 window.")
 (define-public password-store
   (package
     (name "password-store")
-    (version "1.7.2")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -366,7 +360,7 @@ any X11 window.")
                               name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1sl0d7nc85c6c2bmmmyb8rpmn47vhkj831l153mjlkawjvhwas27"))))
+                "1x53k5dn3cdmvy8m4fqdld4hji5n676ksl0ql4armkmsds26av1b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -383,9 +377,9 @@ any X11 window.")
              #t))
          (add-after 'install 'install-passmenu
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (copy-file "contrib/dmenu/passmenu"
-                          (string-append out "/bin/passmenu"))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "contrib/dmenu/passmenu" bin)
                #t)))
          (add-after 'install 'wrap-path
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -422,7 +416,7 @@ any X11 window.")
        ("which" ,which)
        ("xclip" ,xclip)
        ("xdotool" ,xdotool)))
-    (home-page "http://www.passwordstore.org/")
+    (home-page "https://www.passwordstore.org/")
     (synopsis "Encrypted password manager")
     (description "Password-store is a password manager which uses GnuPG to
 store and retrieve passwords.  The tool stores each password in its own
@@ -458,8 +452,18 @@ through the pass command.")
              (let ((out (assoc-ref outputs "out")))
                (substitute* "Makefile"
                  (("PREFIX = /usr") (string-append "PREFIX = " out)))
+               (substitute* "libargon2.pc"
+                 (("prefix=/usr") (string-append "prefix=" out))
+                 (("@HOST_MULTIARCH@") "")
+                 (("@UPSTREAM_VER@") ,version))
                #t)))
-         (delete 'configure))))
+         (delete 'configure)
+         (add-after 'install 'install-argon2.pc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "libargon2.pc"
+                             (string-append out "/lib/pkgconfig"))
+               #t))))))
     (home-page "https://www.argon2.com/")
     (synopsis "Password hashing library")
     (description "Argon2 provides a key derivation function that was declared
@@ -696,4 +700,85 @@ to use a different password manager.")
 rotating passwords on various web services.  It makes it easier to rotate your
 passwords, one at a time or in bulk, when security events or routine upkeep of
 your online accounts makes it necessary.")
+    (license license:expat)))
+
+(define-public hashcat
+  (package
+    (name "hashcat")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hashcat.net/files/hashcat-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "170i2y32ykgzb1qf1wz3klwn31c09bviz4x3bnrwia65adqrj8xx"))))
+    (native-inputs
+     `(("opencl-headers" ,opencl-headers)))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ;no tests
+       #:make-flags (list (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://hashcat.net/hashcat/")
+    (synopsis "Advanced password recovery utility")
+    (description "Hashcat is an password recovery utility, supporting five
+unique modes of attack for over 200 highly-optimized hashing algorithms.
+Hashcat currently supports CPUs, GPUs, and other hardware accelerators on
+Linux, Windows, and macOS, and has facilities to help enable distributed
+password cracking.")
+    (license license:expat)))
+
+(define-public hashcat-utils
+  (package
+    (name "hashcat-utils")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/hashcat/hashcat-utils/releases/download/v"
+                           version "/hashcat-utils-1.8.7z"))
+       (sha256
+        (base32
+         "1x80rngjz7gkhwplhw1iqr0wzb6hjkrjfld2kz9kmgp5dr9nys1p"))))
+    (native-inputs
+     `(("p7zip" ,p7zip)))
+    (inputs
+     `(("perl" ,perl)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:make-flags (list "CC=gcc"
+                          ;; Upstream bug(?): "make all" seems to remove the
+                          ;; Perl scripts from the source.
+                          "native")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "7z" "x" source)
+             (chdir (string-append "hashcat-utils-" ,version "/src"))
+             #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p out)
+               (for-each (lambda (file)
+                           (copy-file file (string-append out "/" (basename file ".bin"))))
+                         (find-files "." "\\.bin$"))
+               (for-each (lambda (file)
+                           (copy-file file (string-append out "/" (basename file ".pl"))))
+                         (find-files "../bin" "\\.pl$"))
+               #t))))))
+    (home-page "https://github.com/hashcat/hashcat-utils/")
+    (synopsis "Small utilities that are useful in advanced password cracking")
+    (description "Hashcat-utils are a set of small utilities that are useful
+in advanced password cracking.  They all are packed into multiple stand-alone
+binaries.  All of these utils are designed to execute only one specific
+function.  Since they all work with @code{STDIN} and @code{STDOUT} you can
+group them into chains.")
     (license license:expat)))

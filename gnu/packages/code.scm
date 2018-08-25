@@ -266,15 +266,15 @@ cloc can handle a greater variety of programming languages.")
 (define-public the-silver-searcher
   (package
     (name "the-silver-searcher")
-    (version "2.1.0")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://geoff.greer.fm/ag/releases/the_silver_searcher-"
+                    "https://geoff.greer.fm/ag/releases/the_silver_searcher-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "1m0mih1x4jpswc8ganhqh0gmwbmd2hzmz7402mxfh19s3kcjnrfl"))))
+                "0w1icjqd8hd45rn1y6nbfznk1a6ip54whwbfbhxp7ws2hn3ilqnr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -282,7 +282,7 @@ cloc can handle a greater variety of programming languages.")
      `(("pcre" ,pcre)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (home-page "http://geoff.greer.fm/ag/")
+    (home-page "https://geoff.greer.fm/ag/")
     (synopsis "Fast code searching tool")
     (description
      "The Silver Searcher (@command{ag}) is a tool for quickly searching large

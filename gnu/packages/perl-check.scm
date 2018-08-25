@@ -66,7 +66,7 @@
      `(("perl-importer" ,perl-importer)
        ("perl-term-table" ,perl-term-table)
        ("perl-sub-info" ,perl-sub-info)))
-    (home-page "http://search.cpan.org/~exodist/Test2-Suite/lib/Test2/Bundle/Extended.pm")
+    (home-page "https://metacpan.org/pod/Test2::Bundle::Extended")
     (synopsis "Full set of tools for Test2::Suite")
     (description "This package provides a rich set of tools, plugins, bundles,
 etc built upon the Test2 testing library.")
@@ -87,7 +87,7 @@ etc built upon the Test2 testing library.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test2-bundle-extended" ,perl-test2-bundle-extended)))
-    (home-page "http://search.cpan.org/dist/Test2-Plugin-NoWarnings//")
+    (home-page "https://metacpan.org/release/Test2-Plugin-NoWarnings")
     (synopsis "Fail if tests warn")
     (description "Loading this plugin causes your tests to fail if there any
 warnings while they run.  Each warning generates a new failing test and the
@@ -113,7 +113,7 @@ warning content is outputted via diag.")
     (propagated-inputs
      `(("perl-spiffy" ,perl-spiffy)
        ("perl-test-deep" ,perl-test-deep)))
-    (home-page "http://search.cpan.org/dist/Test-Base/")
+    (home-page "https://metacpan.org/release/Test-Base")
     (synopsis "Data-driven testing framework for Perl")
     (description "Test::Base gives a way to trivially write your own test
 framework base class.  It concentrates on offering reusable data driven
@@ -141,7 +141,7 @@ patterns, so that you can write tests with a minimum of code.")
      `(("perl-module-runtime" ,perl-module-runtime)
        ("perl-mro-compat" ,perl-mro-compat)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/Test-Class/")
+    (home-page "https://metacpan.org/release/Test-Class")
     (synopsis "Easily create test classes in an xUnit/JUnit style")
     (description "@code{Test::Class} provides a simple way of creating classes
 and objects to test your code in an xUnit style.
@@ -174,7 +174,7 @@ Built using @code{Test::Builder}, it was designed to work with other
        ("perl-module-runtime" ,perl-module-runtime)
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-mro-compat" ,perl-mro-compat)))
-    (home-page "http://search.cpan.org/dist/Test-Class-Most/")
+    (home-page "https://metacpan.org/release/Test-Class-Most")
     (synopsis "Test classes the easy way")
     (description "@code{Test::Class::Most} provides some more convenience when
 using @code{Test::Class}.")
@@ -207,7 +207,7 @@ using @code{Test::Class}.")
        ("perl-sub-exporter" ,perl-sub-exporter)
        ("perl-file-find-rule" ,perl-file-find-rule)
        ("perl-file-find-rule-perl" ,perl-file-find-rule-perl)))
-    (home-page "http://search.cpan.org/dist/Test-CleanNamespaces/")
+    (home-page "https://metacpan.org/release/Test-CleanNamespaces")
     (synopsis "Check for uncleaned imports")
     (description "This module lets you check your module's namespaces for
 imported functions you might have forgotten to remove with
@@ -257,7 +257,7 @@ output and standard error of external commands.")
        ("perl-test-pod" ,perl-test-pod)
        ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
     (home-page
-     "http://search.cpan.org/dist/Test-CPAN-Meta/")
+     "https://metacpan.org/release/Test-CPAN-Meta")
     (synopsis "Validate your CPAN META.yml files")
     (description
      "This module was written to ensure that a META.yml file meets the
@@ -285,7 +285,7 @@ specification.")
     (inputs
      `(("perl-json" ,perl-json)))
     (home-page
-     "http://search.cpan.org/dist/Test-CPAN-Meta-JSON/")
+     "https://metacpan.org/release/Test-CPAN-Meta-JSON")
     (synopsis "Validate your CPAN META.json files")
     (description
      "This module was written to ensure that a META.json file meets the
@@ -312,7 +312,7 @@ specification.")
 that the values match, that arrays and hashes have the same elements and that
 references are blessed into the correct class.  It also handles circular data
 structures without getting caught in an infinite loop.")
-    (home-page "http://search.cpan.org/dist/Test-Deep/")
+    (home-page "https://metacpan.org/release/Test-Deep")
     (license gpl1+)))  ; or "Artistic License"
 
 (define-public perl-test-differences
@@ -333,7 +333,7 @@ structures without getting caught in an infinite loop.")
     (propagated-inputs
      `(("perl-text-diff" ,perl-text-diff)
        ("perl-capture-tiny" ,perl-capture-tiny)))
-    (home-page "http://search.cpan.org/dist/Test-Differences/")
+    (home-page "https://metacpan.org/release/Test-Differences")
     (synopsis "Test strings and data structures and show differences")
     (description "This module exports three test functions and four diff-style
 functions.")
@@ -355,7 +355,7 @@ functions.")
          "1ncql08cizhicbxwd753b4czns8nlcnlw0zfjcfrbdd41x4j6hqr"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-test-exception" ,perl-test-exception)))
-    (home-page "http://search.cpan.org/dist/Test-Directory/")
+    (home-page "https://metacpan.org/release/Test-Directory")
     (synopsis "Perl extension for maintaining test directories")
     (description "Testing code can involve making sure that files are created
 and deleted as expected.  Doing this manually can be error prone, as it's easy
@@ -405,7 +405,7 @@ files, as well as to verify that there are no missing or unknown files.")
          "0l3bxpsw0x7j9nclizcp53mnf9wny25dmg2iglfhzgnk0xfpwzwf"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/Test-EOL/")
+     "https://metacpan.org/release/Test-EOL")
     (synopsis
      "Check the correct line endings in your project")
     (description
@@ -430,7 +430,7 @@ and/or windows line endings in your perl code.")
      `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-sub-uplevel" ,perl-sub-uplevel)))
-    (home-page "http://search.cpan.org/dist/Test-Exception/")
+    (home-page "https://metacpan.org/release/Test-Exception")
     (synopsis "Test exception based code")
     (description "This module provides a few convenience methods for testing
 exception based code.  It is built with Test::Builder and plays happily with
@@ -453,7 +453,7 @@ Test::More and friends.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
-    (home-page "http://search.cpan.org/dist/Test-FailWarnings/")
+    (home-page "https://metacpan.org/release/Test-FailWarnings")
     (synopsis "Add test failures if warnings are caught")
     (description
      "Test::FailWarnings adds test failures if warnings are caught.")
@@ -473,7 +473,7 @@ Test::More and friends.")
          "1c6bs68mss4q7cyapkv2c0jn66i21050p0faxf3s3417gdffzp5w"))))
     (build-system perl-build-system)
     (propagated-inputs `(("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/Test-Fatal/")
+    (home-page "https://metacpan.org/release/Test-Fatal")
     (synopsis "Simple helpers for testing code with exceptions")
     (description "Test::Fatal is an alternative to the popular
 Test::Exception.  It does much less, but should allow greater flexibility in
@@ -522,7 +522,7 @@ for testing.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-path-tiny" ,perl-path-tiny)))
-    (home-page "http://search.cpan.org/dist/Test-Filename/")
+    (home-page "https://metacpan.org/release/Test-Filename")
     (synopsis "Portable filename comparison")
     (description "Test::Filename provides functions to convert all path
 separators automatically.")
@@ -546,7 +546,7 @@ separators automatically.")
     (propagated-inputs
      `(("perl-algorithm-diff" ,perl-algorithm-diff)
        ("perl-text-diff" ,perl-text-diff)))
-    (home-page "http://search.cpan.org/dist/Test-Files/")
+    (home-page "https://metacpan.org/release/Test-Files")
     (synopsis "Ease software testing with files and directories")
     (description "This library provides functions to enable testing of files
 and directories.  For instance, the @code{file_ok} helper can test whether the
@@ -578,7 +578,7 @@ contents of a file is equal to a particular string.")
                 (string-append "#!" (assoc-ref inputs "perl")
                                "/bin/perl")))
              #t)))))
-    (home-page "http://search.cpan.org/dist/Test-Harness/")
+    (home-page "https://metacpan.org/release/Test-Harness")
     (synopsis "Run Perl standard test scripts with statistics")
     (description "Simple test harness which allows tests to be run and results
 automatically aggregated and output to STDOUT.")
@@ -597,7 +597,7 @@ automatically aggregated and output to STDOUT.")
         (base32
          "00z4hcjra5nk700f3fgpy8fs036d7ry7glpn8g3wh7jzj7nrw22z"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-LeakTrace/")
+    (home-page "https://metacpan.org/release/Test-LeakTrace")
     (synopsis "Traces memory leaks in Perl")
     (description "Test::LeakTrace provides several functions that trace memory
 leaks.  This module scans arenas, the memory allocation system, so it can
@@ -617,7 +617,7 @@ detect any leaked SVs in given blocks.")
         (base32
          "0kwp7rfr1i2amz4ckigkv13ah7jr30q6l5k4wk0vxl84myg39i5b"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-LongString/")
+    (home-page "https://metacpan.org/release/Test-LongString")
     (synopsis "Tests strings for equality, with more helpful failures")
     (description "This module provides some drop-in replacements for the
 string comparison functions of Test::More, but which are more suitable when
@@ -639,7 +639,7 @@ you test against long strings.")
     (native-inputs
      `(("perl-test-pod" ,perl-test-pod)
        ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
-    (home-page "http://search.cpan.org/dist/Test-Manifest/")
+    (home-page "https://metacpan.org/release/Test-Manifest")
     (synopsis "Interact with a t/test_manifest file")
     (description "@code{Test::Manifest} overrides the default test file order.  Instead of
 running all of the t/*.t files in ASCII-betical order, it looks in the t/test_manifest
@@ -667,7 +667,7 @@ It constructs the right value for the build system to do the right thing.")
     (propagated-inputs
      `(("perl-devel-cycle" ,perl-devel-cycle)))
     (home-page
-     "http://search.cpan.org/dist/Test-Memory-Cycle/")
+     "https://metacpan.org/release/Test-Memory-Cycle")
     (synopsis
      "Verifies code hasn't left circular references")
     (description
@@ -702,7 +702,7 @@ memory_cycle_ok( $object );
        ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
     (propagated-inputs
      `(("perl-super" ,perl-super)))
-    (home-page "http://search.cpan.org/dist/Test-MockModule/")
+    (home-page "https://metacpan.org/release/Test-MockModule")
     (synopsis "Override subroutines in a module for unit testing")
     (description
      "@code{Test::MockModule} lets you temporarily redefine subroutines in other
@@ -735,7 +735,7 @@ you @code{unmock()} the subroutine.")
        ("perl-universal-can" ,perl-universal-can)
        ("perl-universal-isa" ,perl-universal-isa)))
     (arguments `(#:tests? #f))          ;TODO: tests require perl-cgi
-    (home-page "http://search.cpan.org/dist/Test-MockObject/")
+    (home-page "https://metacpan.org/release/Test-MockObject")
     (synopsis "Emulate troublesome interfaces in Perl")
     (description "Test::MockObject allows you to create objects that conform
 to particular interfaces with very little code.  You don't have to reimplement
@@ -757,7 +757,7 @@ the behavior, just the input and the output.")
     (propagated-inputs
      `(("perl-time-piece" ,perl-time-piece)))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-MockTime/")
+    (home-page "https://metacpan.org/release/Test-MockTime")
     (synopsis "Replaces actual time with simulated time")
     (description "This module was created to enable test suites to test code
 at specific points in time.  Specifically it overrides localtime, gmtime and
@@ -785,7 +785,7 @@ to gmtime,time or localtime.")
        ("perl-exception-class" ,perl-exception-class)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-exception" ,perl-test-exception)))
-    (home-page "http://search.cpan.org/dist/Test-Most/")
+    (home-page "https://metacpan.org/release/Test-Most")
     (synopsis "Most commonly needed test functions and features")
     (description "This module provides the most commonly used testing
 functions, along with automatically turning on strict and warning and gives a
@@ -808,7 +808,7 @@ bit more fine-grained control over test suites.")
          "16gkgpmr9hvkz382iaqd3500269lk2d44fqaw3dsrvc66nc36kss"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/Test-Needs/")
+     "https://metacpan.org/release/Test-Needs")
     (synopsis
      "Skip tests when modules not available")
     (description "@code{Test::Needs} allows you to skip test scripts if
@@ -836,7 +836,7 @@ If used in a subtest, the remainder of the subtest will be skipped.")
          "0c306p9qdpa2ycii3c50hml23mwy6bjxpry126g1dw11hyiwcxgv"))))
     (build-system perl-build-system)
     (home-page
-     "http://search.cpan.org/dist/Test-NoTabs/")
+     "https://metacpan.org/release/Test-NoTabs")
     (synopsis
      "Check the presence of tabs in your project")
     (description
@@ -864,8 +864,7 @@ stored.  It automatically adds an extra test that will run when your script
 ends to check that there were no warnings.  If there were any warnings, the
 test will fail and output diagnostics of where, when and what the warning was,
 including a stack trace of what was going on when it occurred.")
-    (home-page (string-append "http://search.cpan.org/~adamk//"
-                              "Test-NoWarnings-" version))
+    (home-page "https://metacpan.org/release/Test-NoWarnings")
     (license lgpl2.1)))
 
 (define-public perl-test-number-delta
@@ -880,7 +879,7 @@ including a stack trace of what was going on when it occurred.")
                (base32
                 "0jfhzhpzkc23mkrlbnv085ykpfncmy99hvppbzjnrpvgks8k0m2k"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-Number-Delta/")
+    (home-page "https://metacpan.org/release/Test-Number-Delta")
     (synopsis
      "Compare the difference between numbers against a given tolerance")
     (description
@@ -912,8 +911,7 @@ usually called epsilon.  This module provides such a function for use with
      "Test::Output provides a simple interface for testing output sent to
 STDOUT or STDERR.  A number of different utilities are included to try and be
 as flexible as possible to the tester.")
-    (home-page (string-append "http://search.cpan.org/~bdfoy//"
-                              "Test-Output-" version))
+    (home-page "https://metacpan.org/release/Test-Output")
     (license perl-license)))
 
 (define-public perl-test-pod
@@ -930,7 +928,7 @@ as flexible as possible to the tester.")
          "1z75x1pxwp8ajwq9iazlg2c3wd7rdlim08yclpdg32qnc36dpa30"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
-    (home-page "http://search.cpan.org/dist/Test-Pod/")
+    (home-page "https://metacpan.org/release/Test-Pod")
     (synopsis "Check for POD errors in files")
     (description "Check POD files for errors or warnings in a test file, using
 Pod::Simple to do the heavy lifting.")
@@ -951,7 +949,7 @@ Pod::Simple to do the heavy lifting.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-pod-coverage" ,perl-pod-coverage)))
-    (home-page "http://search.cpan.org/dist/Test-Pod-Coverage/")
+    (home-page "https://metacpan.org/release/Test-Pod-Coverage")
     (synopsis "Check for pod coverage")
     (description "This module adds a test to your Perl distribution which
 checks for pod coverage of all appropriate files.")
@@ -970,7 +968,7 @@ checks for pod coverage of all appropriate files.")
         (base32
          "1d9f481lj12cw1ciil46xq9nq16p6a90nm7yrsalpf8asn8s6s17"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-Requires/")
+    (home-page "https://metacpan.org/release/Test-Requires")
     (synopsis "Checks to see if the module can be loaded")
     (description "Test::Requires checks to see if the module can be loaded.
 If this fails, then rather than failing tests this skips all tests.")
@@ -991,7 +989,7 @@ If this fails, then rather than failing tests this skips all tests.")
         (base32
          "0gl33vpj9bb78pzyijp884b66sbw6jkh1ci0xki8rmf03hmb79xv"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-RequiresInternet/")
+    (home-page "https://metacpan.org/release/Test-RequiresInternet")
     (synopsis "Easily test network connectivity when running tests")
     (description
      "This Perl module is intended to easily test network connectivity to
@@ -1023,7 +1021,7 @@ reported, and the tests skipped.")
        ("perl-multidimensional" ,perl-multidimensional)
        ("perl-strictures" ,perl-strictures)
        ("perl-sub-install" ,perl-sub-install)))
-    (home-page "http://search.cpan.org/dist/Test-Roo/")
+    (home-page "https://metacpan.org/release/Test-Roo")
     (synopsis "Composable, reusable tests with roles and Moo")
     (description "Test::Roo provides composable, reusable tests with roles.")
     (license asl2.0)))
@@ -1049,7 +1047,7 @@ reported, and the tests skipped.")
      `(("perl-path-tiny" ,perl-path-tiny)
        ("perl-test-trap" ,perl-test-trap)
        ("valgrind" ,valgrind)))
-    (home-page "http://search.cpan.org/dist/Test-RunValgrind/")
+    (home-page "https://metacpan.org/release/Test-RunValgrind")
     (synopsis "Tests that an external program is valgrind-clean")
     (description "Test::RunValgind checks weather Valgrind does not detect
 errors (such as memory leaks) in an arbitrary binary executable.")
@@ -1075,7 +1073,7 @@ errors (such as memory leaks) in an arbitrary binary executable.")
      "The intent of the Test::Script module is to provide a series of basic
 tests for 80% of the testing you will need to do for scripts in the script (or
 bin as is also commonly used) paths of your Perl distribution.")
-    (home-page "http://search.cpan.org/dist/Test-Script/")
+    (home-page "https://metacpan.org/release/Test-Script")
     (license perl-license)))
 
 (define-public perl-test-sharedfork
@@ -1093,7 +1091,7 @@ bin as is also commonly used) paths of your Perl distribution.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-requires" ,perl-test-requires)))
-    (home-page "http://search.cpan.org/dist/Test-SharedFork/")
+    (home-page "https://metacpan.org/release/Test-SharedFork")
     (synopsis "Fork test in Perl")
     (description "Test::SharedFork is a utility module for Test::Builder.  It
 makes fork(2) safe to use in test cases.")
@@ -1114,8 +1112,7 @@ makes fork(2) safe to use in test cases.")
     (synopsis "Basic utilities for writing tests")
     (description
      "Test::Simple contains basic utilities for writing tests.")
-    (home-page (string-append "http://search.cpan.org/~exodist//"
-                              "Test-Simple-" version))
+    (home-page "https://metacpan.org/release/Test-Simple")
     (license perl-license)))
 
 (define-public perl-test-taint
@@ -1131,7 +1128,7 @@ makes fork(2) safe to use in test cases.")
         (base32
          "01rip5d7gdr1c7lq6yczzkqfd0500nfa977ryigylj6jj75526vj"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-Taint/")
+    (home-page "https://metacpan.org/release/Test-Taint")
     (synopsis "Checks for taintedness of variables")
     (description "Tainted data is data that comes from an unsafe source, such
 as the command line, or, in the case of web apps, any @code{GET} or
@@ -1160,9 +1157,7 @@ easy ways to check and report on the taintedness of your data, in standard
     (description
      "Test::Tester allows testing of test modules based on Test::Builder with
 a minimum of effort.")
-    (home-page (string-append "http://search.cpan.org/~fdaly//"
-                              "Test-Tester-" version))
-    ;; "Under the same license as Perl itself"
+    (home-page "https://metacpan.org/release/FDALY/Test-Tester-0.109")
     (license perl-license)))
 
 (define-public perl-test-perltidy
@@ -1184,7 +1179,7 @@ a minimum of effort.")
        ("perl-file-slurp" ,perl-file-slurp)
        ("perltidy" ,perltidy)
        ("perl-text-diff" ,perl-text-diff)))
-    (home-page "http://search.cpan.org/dist/Test-PerlTidy/")
+    (home-page "https://metacpan.org/release/Test-PerlTidy")
     (synopsis "Check that all your Perl files are tidy")
     (description
      "Using @code{Test::PerlTidy}, any file ending in .pl, .pm, .t or .PL will
@@ -1210,7 +1205,7 @@ cause a test fail unless it is exactly as @code{perltidy} would like it to be.")
     (propagated-inputs
      `(("perl-test-tester" ,perl-test-tester)
        ("perl-data-dump" ,perl-data-dump)))
-    (home-page "http://search.cpan.org/dist/Test-Trap/")
+    (home-page "https://metacpan.org/release/Test-Trap")
     (synopsis "Trap exit codes, exceptions, output, and so on")
     (description "This module is primarily (but not exclusively) for use in
 test scripts: A block eval configurable and extensible but by default trapping
@@ -1233,7 +1228,7 @@ from boxed blocks of test code.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/Test-utf8/")
+    (home-page "https://metacpan.org/release/Test-utf8")
     (synopsis "UTF-8 testing in Perl")
     (description "This module is a collection of tests useful for dealing with
 UTF-8 strings in Perl.  This module has two types of tests: The validity tests
@@ -1256,7 +1251,7 @@ will check that string has a given set of characteristics.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-sub-uplevel" ,perl-sub-uplevel)))
-    (home-page "http://search.cpan.org/dist/Test-Warn/")
+    (home-page "https://metacpan.org/release/Test-Warn")
     (synopsis "Perl extension to test methods for warnings")
     (description "This module provides a few convenience methods for testing
 warning based code.")
@@ -1275,7 +1270,7 @@ warning based code.")
         (base32
          "024srkwjckp15dxkni9lb1hc8bg4xwc52zz0iich8rv1nnqnhaxf"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-Warnings/")
+    (home-page "https://metacpan.org/release/Test-Warnings")
     (synopsis "Test for warnings and the lack of them")
     (description "This module is intended to be used as a drop-in replacement
 for Test::NoWarnings.  It also adds an extra test, but runs this test before
@@ -1297,7 +1292,7 @@ plan, or not, and things will still Just Work.")
         (base32
          "0955ib9cz1naz7a2v6lx78kj29q7ihmdn51im6wd1im669yfp6lf"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Test-Without-Module/")
+    (home-page "https://metacpan.org/release/Test-Without-Module")
     (synopsis "Test fallback behaviour in absence of modules")
     (description "This module allows you to deliberately hide modules from a
 program even though they are installed.  This is mostly useful for testing
@@ -1325,7 +1320,7 @@ installed.")
      `(("perl-data-tumbler" ,perl-data-tumbler)
        ("perl-file-homedir" ,perl-file-homedir)
        ("perl-module-pluggable" ,perl-module-pluggable)))
-    (home-page "http://search.cpan.org/dist/Test-WriteVariants/")
+    (home-page "https://metacpan.org/release/Test-WriteVariants")
     (synopsis "Dynamic generation of tests")
     (description "The Test::WriteVariants module provides for the dynamic
 generation of tests in nested combinations of contexts.")
@@ -1346,7 +1341,7 @@ generation of tests in nested combinations of contexts.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-base" ,perl-test-base)))
-    (home-page "http://search.cpan.org/dist/Test-YAML/")
+    (home-page "https://metacpan.org/release/Test-YAML")
     (synopsis "Testing module for YAML implementations")
     (description "Test::YAML is a subclass of Test::Base with YAML specific
 support.")
@@ -1376,7 +1371,7 @@ support.")
       ("perl-text-glob" ,perl-text-glob)
       ("perl-number-compare" ,perl-number-compare)))
   (home-page
-    "http://search.cpan.org/dist/Test-TrailingSpace/")
+    "https://metacpan.org/release/Test-TrailingSpace")
   (synopsis
     "Test for trailing space in Perl source files")
   (description "Test::TrailingSpace tests for trailing spaces

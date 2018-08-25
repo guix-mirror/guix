@@ -145,24 +145,26 @@ Filter) modules follow the convention of 1V / Octave.")
 (define-public aubio
   (package
     (name "aubio")
-    (version "0.4.1")
+    (version "0.4.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://aubio.org/pub/aubio-" version ".tar.bz2"))
+                   "https://aubio.org/pub/aubio-" version ".tar.bz2"))
              (sha256
               (base32
-               "15f6nf76y7iyl2kl4ny7ky0zpxfxr8j3902afvd6ydnnkh5dzmr5"))))
+               "1yvwskahx1bf3x2fvi6cwah1ay11iarh79fjlqz8s887y3hkpixx"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
        #:configure-flags
-       '("--enable-fftw3f"
-         "--enable-jack"
-         "--enable-sndfile"
-         "--enable-samplerate"
-         ;; enable compilation with avcodec once available
-         "--disable-avcodec")
+       (list
+        (string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out") "/lib")
+        "--enable-fftw3f"
+        "--enable-jack"
+        "--enable-sndfile"
+        "--enable-samplerate"
+        ;; TODO: enable compilation with avcodec once available.
+        "--disable-avcodec")
        #:python ,python-2))
     (inputs
      `(("jack" ,jack-1)
@@ -171,7 +173,7 @@ Filter) modules follow the convention of 1V / Octave.")
        ("fftwf" ,fftwf)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://aubio.org/")
+    (home-page "https://aubio.org/")
     (synopsis "Library for audio labelling")
     (description
      "aubio is a tool designed for the extraction of annotations from audio
@@ -463,14 +465,14 @@ plugins are provided.")
 (define-public calf
   (package
     (name "calf")
-    (version "0.90.0")
+    (version "0.90.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://calf-studio-gear.org/files/calf-"
+              (uri (string-append "https://calf-studio-gear.org/files/calf-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dijv2j7vlp76l10s4v8gbav26ibaqk8s24ci74vrc398xy00cib"))))
+                "0znwx5gidr5n503gya9n8gagr8cfym6cwlbiv2r6iksji7jc4fpb"))))
     (build-system gnu-build-system)
     (inputs
      `(("fluidsynth" ,fluidsynth)
@@ -1716,17 +1718,17 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.2")
+    (version "0.24.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "08m5a372pr1l7aii9s3pic5nm68gynx1n1bc7bnlswziq6qnbv7p"))))
+               "0f24cd7wkk5l969857g2ydz2kjjrkvvddg1g87xzzs78lsvq8fy3"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-before
@@ -1736,7 +1738,7 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
                     (string-append "-Wl,-rpath="
                                    (assoc-ref outputs "out") "/lib"))
             #t)))))
-    ;; required by lilv-0.pc
+    ;; Required by lilv-0.pc.
     (propagated-inputs
      `(("serd" ,serd)
        ("sord" ,sord)
@@ -2002,17 +2004,17 @@ and ALSA.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.1")
+    (version "0.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "0jw1s4qh4qjxnysddjv3j2lchwlslj9p4iisv9i89d3m7pf1svs4"))))
+                "0x08af8m5l8qy9av3dlldsg58ny9nc69h1s4i6hqkvj24jwy6fw1"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f)) ; no check target
+     '(#:tests? #f))                    ; no check target
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)
@@ -2292,14 +2294,14 @@ input/output.")
 (define-public sratom
   (package
     (name "sratom")
-    (version "0.6.0")
+    (version "0.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/sratom-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0hrxd9i66s06bpn6i3s9ka95134g3sm8yscmif7qgdzhyjqw42j4"))))
+               "0lz883ravxjf7r9wwbx2gx9m8vhyiavxrl9jdxfppjxnsralll8a"))))
     (build-system waf-build-system)
     (arguments `(#:tests? #f)) ; no check target
     (inputs
@@ -2580,15 +2582,18 @@ Tracker 3 S3M and Impulse Tracker IT files.")
 (define-public soundtouch
   (package
     (name "soundtouch")
-    (version "1.8.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri
         (string-append
          "http://www.surina.net/soundtouch/soundtouch-" version ".tar.gz"))
+       (patches (search-patches "soundtouch-CVE-2018-14044-14045.patch"
+                                "soundtouch-CVE-2018-1000223.patch"))
        (sha256
-        (base32 "0sqn3wk4qz20vf0vz853l6dl1gnj1yhqxfwxqsc5lp529kbn2h9x"))))
+        (base32
+         "09cxr02mfyj2bg731bj0i9hh565x8l9p91aclxs8wpqv8b8zf96j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2744,7 +2749,7 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -2752,10 +2757,10 @@ interface.")
                            "/qsynth-" version ".tar.gz"))
        (sha256
         (base32
-         "0kpk1rnhbifbvm4xvw8i0d4ksk78pf505qvg08k89kqkg32494ap"))))
+         "1rfkaxq1pyc4hv3l0i6wicianbcbm1wp53kh9i5d4jsljgisd1dv"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" phase
+     `(#:tests? #f                      ; no "check" phase
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (native-inputs

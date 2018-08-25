@@ -40,6 +40,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
@@ -56,6 +57,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages security-token)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages tor)
   #:use-module (gnu packages web)
@@ -424,6 +426,38 @@ QGpgME was originally developed as part of libkleo and incorporated into
 gpgpme starting with version 1.7.")
     (license license:gpl2+))) ;; Note: this differs from gpgme
 
+(define-public guile-gcrypt
+  (package
+    (name "guile-gcrypt")
+    (version "0.1.0")
+    (home-page "https://notabug.org/cwebber/guile-gcrypt")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append home-page ".git"))
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1lhgh3105yi0ggrjsjibv4wp1ipz8s17pa820hk2wln3rc04wpvf"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("libgcrypt" ,libgcrypt)))
+    (synopsis "Cryptography library for Guile using Libgcrypt")
+    (description
+     "Guile-Gcrypt provides a Guile 2.x interface to a subset of the
+GNU Libgcrypt crytographic library.  It provides modules for cryptographic
+hash functions, message authentication codes (MAC), public-key cryptography,
+strong randomness, and more.  It is implemented using the foreign function
+interface (FFI) of Guile.")
+    (license license:gpl3+)))
+
 (define-public python-gpg
   (package
     (name "python-gpg")
@@ -558,7 +592,7 @@ and signature functionality from Python programs.")
     (native-inputs
      `(("which" ,which)
        ("perl-module-install" ,perl-module-install)))
-    (home-page "http://search.cpan.org/dist/GnuPG-Interface/")
+    (home-page "https://metacpan.org/release/GnuPG-Interface")
     (synopsis "Perl interface to GnuPG")
     (description "@code{GnuPG::Interface} and its associated modules are
 designed to provide an object-oriented method for interacting with GnuPG,

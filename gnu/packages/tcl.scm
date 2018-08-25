@@ -222,7 +222,7 @@ interfaces (GUIs) in the Tcl language.")
     (synopsis "Graphical user interface toolkit for Perl")
     (description
      "Tk is a Graphical User Interface ToolKit.")
-    (home-page (string-append "http://search.cpan.org/~srezic/Tk-" version))
+    (home-page "https://metacpan.org/release/Tk")
     ;; From the package README: "... you can redistribute it and/or modify it
     ;; under the same terms as Perl itself, with the exception of all the
     ;; files in the pTk sub-directory which have separate terms derived from

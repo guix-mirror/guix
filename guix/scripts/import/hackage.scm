@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-41)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-hackage))
@@ -56,6 +58,8 @@ version.\n"))
                                specify environment for Cabal evaluation"))
   (display (G_ "
   -h, --help                   display this help and exit"))
+  (display (G_ "
+  -r, --recursive              import packages recursively"))
   (display (G_ "
   -s, --stdin                  read from standard input"))
   (display (G_ "
@@ -89,6 +93,9 @@ version.\n"))
                    (alist-cons 'cabal-environment (read/eval arg)
                                (alist-delete 'cabal-environment
                                              result))))
+         (option '(#\r "recursive") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'recursive #t result)))
          %standard-import-options))
 
 
@@ -107,15 +114,27 @@ version.\n"))
                 %default-options))
 
   (define (run-importer package-name opts error-fn)
-    (let ((sexp (hackage->guix-package
-                 package-name
-                 #:include-test-dependencies?
-                 (assoc-ref opts 'include-test-dependencies?)
-                 #:port (if (assoc-ref opts 'read-from-stdin?)
-                            (current-input-port)
-                            #f)
-                 #:cabal-environment
-                 (assoc-ref opts 'cabal-environment))))
+    (let* ((arguments (list
+                       package-name
+                       #:include-test-dependencies?
+                       (assoc-ref opts 'include-test-dependencies?)
+                       #:port (if (assoc-ref opts 'read-from-stdin?)
+                                  (current-input-port)
+                                  #f)
+                       #:cabal-environment
+                       (assoc-ref opts 'cabal-environment)))
+           (sexp (if (assoc-ref opts 'recursive)
+                     ;; Recursive import
+                     (map (match-lambda
+                            ((and ('package ('name name) . rest) pkg)
+                             `(define-public ,(string->symbol name)
+                                ,pkg))
+                            (_ #f))
+                          (reverse
+                           (stream->list
+                            (apply hackage-recursive-import arguments))))
+                     ;; Single import
+                     (apply hackage->guix-package arguments))))
       (unless sexp (error-fn))
       sexp))
 

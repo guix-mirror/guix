@@ -221,13 +221,20 @@ host	all	all	::1/128 	trust"))
                        (setuid (passwd:uid user))
                        (execl pg_ctl pg_ctl "-D" #$data-directory "-o" options
                               mode)))))))
+            (pid-file (in-vicinity data-directory "postmaster.pid"))
             (action (lambda args
                       #~(lambda _
-                          (invoke #$pg_ctl-wrapper #$@args)))))
+                          (invoke #$pg_ctl-wrapper #$@args)
+                          (match '#$args
+                            (("start")
+                             (call-with-input-file #$pid-file read))
+                            (_ #t))))))
        (list (shepherd-service
               (provision '(postgres))
               (documentation "Run the PostgreSQL daemon.")
               (requirement '(user-processes loopback syslogd))
+              (modules `((ice-9 match)
+                         ,@%default-modules))
               (start (action "start"))
               (stop (action "stop"))))))))
 

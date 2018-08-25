@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -223,41 +225,41 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
    (name "wine-staging-patchset-data")
-   (version "3.13")
+   (version "3.14")
    (source
     (origin
-     (method url-fetch)
-     (uri (string-append "https://github.com/wine-staging/wine-staging/archive/v"
-                         version ".zip"))
-     (file-name (string-append name "-" version ".zip"))
-     (sha256
-      (base32
-       "0h27h4z4m2m77chp3alkv6fagppjhh9ys39d3n21j0yfjknyhdd8"))))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/wine-staging/wine-staging")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "0h6gck0p92hin0m13q1hnlfnqs4vy474w66ppinvqms2zn3vibgi"))))
    (build-system trivial-build-system)
    (native-inputs
     `(("bash" ,bash)
-      ("coreutils" ,coreutils)
-      ("unzip" ,unzip)))
+      ("coreutils" ,coreutils)))
    (arguments
     `(#:modules ((guix build utils))
       #:builder
       (begin
         (use-modules (guix build utils))
-        (let* ((out (assoc-ref %outputs "out"))
-               (wine-staging (string-append out "/share/wine-staging"))
+        (let* ((build-directory ,(string-append name "-" version))
                (source (assoc-ref %build-inputs "source"))
-               (sh (string-append (assoc-ref %build-inputs "bash") "/bin/bash"))
-               (env (string-append (assoc-ref %build-inputs "coreutils") "/bin/env"))
-               (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
-          (copy-file source (string-append ,name "-" ,version ".zip"))
-          (invoke unzip (string-append ,name "-" ,version ".zip"))
-          (substitute* (string-append "wine-staging-" ,version
-                                      "/patches/patchinstall.sh") (("/bin/sh") sh))
-          (substitute* (string-append "wine-staging-" ,version
-                                      "/patches/gitapply.sh") (("/usr/bin/env") env))
-          (mkdir-p wine-staging)
-          (copy-recursively (string-append "wine-staging-" ,version)
-                            wine-staging)
+               (bash (assoc-ref %build-inputs "bash"))
+               (coreutils (assoc-ref %build-inputs "coreutils"))
+               (out (assoc-ref %outputs "out"))
+               (wine-staging (string-append out "/share/wine-staging")))
+          (copy-recursively source build-directory)
+          (with-directory-excursion build-directory
+            (substitute* "patches/patchinstall.sh"
+              (("/bin/sh")
+               (string-append bash "/bin/sh")))
+            (substitute* "patches/gitapply.sh"
+              (("/usr/bin/env")
+               (string-append coreutils "/bin/env"))))
+          (copy-recursively build-directory wine-staging)
           #t))))
    (home-page "https://github.com/wine-staging")
    (synopsis "Patchset for Wine")
@@ -279,7 +281,7 @@ integrate Windows applications into your desktop.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1m5v854r5wgw68b97j6wim1a8692x5sih25c0xp1yb13a94dg187"))))
+                "01dhn3a6k3dwnrbz4bxvszhh5sxwy6s89y459g805hjmq8s6d2a7"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
               ("gtk+" ,gtk+)
               ("libva" ,libva)

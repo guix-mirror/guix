@@ -392,7 +392,7 @@ when typing parentheses directly or commenting out code line by line.")
 (define-public git-modes
   (package
     (name "emacs-git-modes")
-    (version "1.2.7")
+    (version "1.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -401,7 +401,7 @@ when typing parentheses directly or commenting out code line by line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1mzl70s0xyysnjq1j10mc5vn9i022n5vd82kxsgp4xxqq7gc4qnx"))))
+                "0h49f68yn0q4lg054adqii4qja1z2pzybm7nf4kvpq7fzjrzgv1q"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/magit/git-modes")
     (synopsis "Emacs major modes for Git configuration files")
@@ -1876,16 +1876,16 @@ Stack Overflow, Super User, and other StackExchange sites.")
 (define-public emacs-f
   (package
     (name "emacs-f")
-    (version "0.19.0")
+    (version "0.20.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rejeep/f.el/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rejeep/f.el.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "05195n80ywa68qykxn7dza6qd59rhakvlzhaa9l6mcpmjf9l9grs"))))
+                "1a47xk3yp1rp17fqg7ldl3d3fb888h0fz3sysqfdz1bfdgs8a9bk"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
@@ -10025,8 +10025,8 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-racket-mode
-  (let ((commit "48f0cb99d3b2ca6066249546d2063d85437251c1")
-        (revision "1"))
+  (let ((commit "1b78827d310b6d655782b7bba0f2360c9ef34ff6")
+        (revision "2"))
     (package
       (name "emacs-racket-mode")
       (version (string-append "0.0.2" "-" revision "."
@@ -10040,7 +10040,7 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "0fxky8xj639bjhiab9way9daqda22301b7w85vm4b4ydgjgnc59x"))))
+           "04mzxcg32av8p6v0pqb0si6qk5qxbrbllx6m3j16fp32bdz71sps"))))
       (build-system emacs-build-system)
       (arguments
        `(#:include '("\\.el$" "\\.rkt$")))
@@ -10197,10 +10197,10 @@ keep Parens and Indentation inline with one another.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-eww
-  (let ((commit "1a09f11b2376dec8237df40140f056be8a256ef0"))
+  (let ((commit "9d36acc433bcf689598b1b4d7d47c9aeb84d6b44"))
     (package
       (name "emacs-helm-eww")
-      (version (git-version "0.1" "2" commit))
+      (version (git-version "0.1" "3" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -10209,7 +10209,7 @@ keep Parens and Indentation inline with one another.")
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1kqdjhz2xiqw3bxjhfl9namhqrkbc2x70gcv6ljljya5hbkm62sm"))))
+                  "06gnf84gx6qbhcw1h5jhjnvcdxkdpv0npm53x3pgqybbll5rn5dy"))))
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)))
       (build-system emacs-build-system)

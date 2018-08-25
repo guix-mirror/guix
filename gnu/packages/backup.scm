@@ -67,7 +67,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.7.17")
+    (version "0.7.18")
     (source
      (origin
       (method url-fetch)
@@ -77,10 +77,10 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0jmh3h09680xyf33hzxxxl74bwz66zqhzvjlj7j89r9rz3qwa91p"))))
+        "1qlika4l1k1nx8zr657ihcy0yzr1c1cdnjlbs325l5krvc3zbc5b"))))
     (build-system python-build-system)
     (native-inputs
-     `(("util-linux" ,util-linux)     ;setsid command, for the tests
+     `(("util-linux" ,util-linux)       ; setsid command, for the tests
        ("par2cmdline" ,par2cmdline)
        ("python-pexpect" ,python2-pexpect)
        ("python-fasteners" ,python2-fasteners)
@@ -91,23 +91,23 @@
     (inputs
      `(("librsync" ,librsync)
        ("lftp" ,lftp)
-       ("gnupg" ,gnupg)                 ;gpg executable needed
-       ("util-linux" ,util-linux)       ;for setsid
+       ("gnupg" ,gnupg)                 ; gpg executable needed
+       ("util-linux" ,util-linux)       ; for setsid
        ("tzdata" ,tzdata)))
     (arguments
-     `(#:python ,python-2               ;setup assumes Python 2
+     `(#:python ,python-2               ; setup assumes Python 2
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-source
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; embed gpg store name
+             ;; Embed gpg store name.
              (substitute* "duplicity/gpginterface.py"
                (("self.call = 'gpg'")
                 (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))
 
              ;; This matches up with an unreleased upstream fix, it should be
-             ;; removed when the package is updated
+             ;; removed when the package is updated.
              ;; https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/revision/1308
              (substitute* "duplicity/gpg.py"
                (("--no-secmem-warning'\\)")
@@ -120,8 +120,8 @@
              #t))
          (add-before 'check 'check-setup
            (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "HOME" (getcwd)) ;gpg needs to write to $HOME
-             (setenv "TZDIR"          ;some timestamp checks need TZDIR
+             (setenv "HOME" (getcwd))   ; gpg needs to write to $HOME
+             (setenv "TZDIR"            ; some timestamp checks need TZDIR
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
              #t)))))
@@ -454,9 +454,27 @@ rsnapshot uses hard links to deduplicate identical files.")
                 "0fpdyxww41ba52d98blvnf543xvirq1v9xz1i3x1gm9lzlzpmc2g"))
               (patches (search-patches "diffutils-gets-undeclared.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'adjust-configure-script
+                    (lambda _
+                      ;; Mimic upstream commit
+                      ;; 25750ab5ef82fd3cfce5205d5f1ef07b47098091.
+                      (substitute* "configure"
+                        (("GUILE=(.*)--variable bindir`" _ middle)
+                         (string-append "GUILE=" middle
+                                        "--variable bindir`/guile")))
+                      #t))
+                  (add-before 'check 'skip-test
+                    (lambda _
+                      ;; XXX: This test fails (1) because current GnuTLS no
+                      ;; longer supports OpenPGP authentication, and (2) for
+                      ;; some obscure reason.  Better skip it.
+                      (setenv "XFAIL_TESTS" "utils/block-server")
+                      #t)))))
     (native-inputs
      `(("guile" ,guile-2.0)
-       ("gperf" ,gperf)
+       ("gperf" ,gperf-3.0)                  ;see <https://bugs.gnu.org/32382>
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.0)
@@ -484,13 +502,14 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.1.6")
+    (version "1.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "borgbackup" version))
        (sha256
-        (base32 "0c09j46fi8i7klas0bh82a4whlwnajshk0izkgax6fjxr1sf9lm1"))
+        (base32
+         "1p3zia62vyg9vadkdjzzkzbj4dmgijr7ix5lmhfbxpwy5q9imdgp"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -848,7 +867,7 @@ is like a time machine for your data. ")
 (define-public restic
   (package
     (name "restic")
-    (version "0.9.1")
+    (version "0.9.2")
     ;; TODO Try packaging the bundled / vendored dependencies in the 'vendor/'
     ;; directory.
     (source (origin
@@ -859,7 +878,7 @@ is like a time machine for your data. ")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15f0rsm2lxk4lmn4773q28g49p68pqyyx0ccp7r556asan73p79m"))))
+                "15bwkydxcg4xhrnqxvxji8wacrsndb1a6frj98wggfaijqzfx3lg"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/restic/restic"
@@ -880,8 +899,8 @@ is like a time machine for your data. ")
              (with-directory-excursion (string-append
                                         "src/github.com/restic/restic-"
                                         ,version)
-               ;; unexpected error: fusermount: exit status 1
-               (delete-file "cmd/restic/integration_fuse_test.go")
+               ;; Disable FUSE tests.
+               (setenv "RESTIC_TEST_FUSE" "0")
                (invoke "go" "run" "build.go" "--test"))))
 
          (replace 'install

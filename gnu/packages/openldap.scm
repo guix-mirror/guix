@@ -22,21 +22,35 @@
 
 (define-module (gnu packages openldap)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages databases)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages networking)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages rsync)
+  #:use-module (gnu packages selinux)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages)
-  #:use-module ((guix licenses) #:select (openldap2.8 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (openldap2.8 lgpl2.1+ gpl3+ psfl))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public openldap
   (package
@@ -136,3 +150,183 @@ get from @file{/etc} flat files or NIS.  It also provides a @dfn{Pluggable
 Authentication Module} (PAM) to do identity and authentication management with
 an LDAP server.")
     (license lgpl2.1+)))
+
+(define-public python-ldap
+  (package
+    (name "python-ldap")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-ldap" version))
+       (sha256
+        (base32
+         "1i97nwfnraylyn0myxlf3vciicrf5h6fymrcff9c00k581wmx5s1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure-openldap-locations
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((openldap (assoc-ref inputs "openldap")))
+               (setenv "SLAPD"
+                       (string-append openldap
+                                      "/libexec/slapd"))
+               (setenv "SCHEMA"
+                       (string-append openldap
+                                      "/etc/openldap/schema/")))
+             #t)))))
+    (inputs
+     `(("openldap" ,openldap)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("mit-krb5" ,mit-krb5)))
+    (propagated-inputs
+     `(("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)))
+    (home-page "https://www.python-ldap.org/")
+    (synopsis "Python modules for implementing LDAP clients")
+    (description
+     "This package provides an object-oriented API to access LDAP directory
+servers from Python programs.")
+    (license psfl)))
+
+(define-public 389-ds-base
+  (package
+    (name "389-ds-base")
+    (version "1.4.0.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://releases.pagure.org/389-ds-base/"
+                                  "389-ds-base-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "01dm3zq3w5ami9pwcjbjz8wfbx9krjxybjrgc4wyhrxlzd90ylzj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:configure-flags
+       (list (string-append "--with-db="
+                            (assoc-ref %build-inputs "bdb"))
+             (string-append "--with-sasl="
+                            (assoc-ref %build-inputs "cyrus-sasl"))
+             (string-append "--with-netsnmp="
+                            (assoc-ref %build-inputs "net-snmp"))
+             (string-append "--with-pcre="
+                            (assoc-ref %build-inputs "pcre"))
+             (string-append "--with-selinux="
+                            (assoc-ref %build-inputs "libselinux"))
+             ;; The Perl scripts are being removed in the 1.4.0 release.
+             ;; Building them would require packaging of the outdated Mozilla
+             ;; LDAP SDK (instead of OpenLDAP) and PerLDAP.
+             "--disable-perl")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-install-location-of-python-tools
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (get-python-version
+                     ;; FIXME: copied from python-build-system
+                     (lambda (python)
+                       (let* ((version     (last (string-split python #\-)))
+                              (components  (string-split version #\.))
+                              (major+minor (take components 2)))
+                         (string-join major+minor "."))))
+                    (pythondir (string-append
+                                out "/lib/python"
+                                (get-python-version (assoc-ref inputs "python"))
+                                "/site-packages/")))
+               ;; Install directory must be on PYTHONPATH.
+               (setenv "PYTHONPATH"
+                       (string-append (getenv "PYTHONPATH")
+                                      ":" pythondir))
+               ;; Install directory must exist.
+               (mkdir-p pythondir)
+               (substitute* "src/lib389/setup.py"
+                 (("/usr") out))
+               (substitute* "Makefile.am"
+                 (("setup.py install --skip-build" m)
+                  (string-append m " --prefix=" out
+                                 " --root=/ --single-version-externally-managed"))))
+             #t))
+         (add-after 'build 'build-python-tools
+           (lambda* (#:key make-flags #:allow-other-keys)
+             ;; Set DETERMINISTIC_BUILD to override the embedded mtime in pyc
+             ;; files.
+             (setenv "DETERMINISTIC_BUILD" "1")
+             ;; Use deterministic hashes for strings, bytes, and datetime
+             ;; objects.
+             (setenv "PYTHONHASHSEED" "0")
+             (apply invoke "make" "lib389" make-flags)
+             #t))
+         (add-after 'install 'install-python-tools
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "lib389-install" make-flags)
+             #t))
+         (add-after 'install-python-tools 'wrap-python-tools
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (path (getenv "PYTHONPATH")))
+               (for-each (lambda (file)
+                           (wrap-program (string-append out file)
+                             `("PYTHONPATH" ":" prefix (,path))))
+                         '("/sbin/dsconf"
+                           "/sbin/dscreate"
+                           "/sbin/dsctl"
+                           "/sbin/dsidm"
+                           "/bin/ds-logpipe.py"
+                           "/bin/ds-replcheck"
+                           "/bin/readnsstate")))
+             #t)))))
+    (inputs
+     `(("bdb" ,bdb)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("gnutls" ,gnutls)
+       ("httpd" ,httpd)
+       ("icu4c" ,icu4c)
+       ("libevent" ,libevent)
+       ("libselinux" ,libselinux)
+       ("linux-pam" ,linux-pam)
+       ("mit-krb5" ,mit-krb5)
+       ("net-snmp" ,net-snmp)
+       ("nspr" ,nspr)
+       ("nss" ,nss)
+       ("openldap" ,openldap)
+       ("pcre" ,pcre)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)
+       ("python-pytest" ,python-pytest)
+       ("python-dateutil" ,python-dateutil)
+       ("python-six" ,python-six)
+       ("python-argcomplete" ,python-argcomplete)
+       ("python-argparse-manpage" ,python-argparse-manpage)
+       ("python-ldap" ,python-ldap)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("doxygen" ,doxygen)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)
+       ("rsync" ,rsync)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://directory.fedoraproject.org")
+    (synopsis "Enterprise-class LDAP server")
+    (description "389ds is an enterprise-class LDAP server.  It is hardened by
+real-world use, is full-featured, and supports multi-master replication.
+
+Other features include:
+
+@enumerate
+@item Online, zero downtime, LDAP-based update of schema, configuration, and
+  management including @dfn{Access Control Information} (ACIs);
+@item Asynchronous Multi-Master Replication, to provide fault tolerance and
+  high write performance;
+@item Extensive documentation;
+@item Secure authentication and transport (TLS, and SASL);
+@item LDAPv3 compliant server.
+@end enumerate\n")
+    ;; GPLv3+ with OpenSSL linking exception.
+    (license gpl3+)))

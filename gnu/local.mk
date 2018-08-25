@@ -68,6 +68,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/attr.scm				\
   %D%/packages/audio.scm			\
   %D%/packages/augeas.scm			\
+  %D%/packages/authentication.scm		\
   %D%/packages/autogen.scm			\
   %D%/packages/autotools.scm			\
   %D%/packages/avahi.scm			\
@@ -485,6 +486,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/monitoring.scm			\
   %D%/services/networking.scm			\
   %D%/services/nfs.scm			\
+  %D%/services/security-token.scm		\
   %D%/services/shepherd.scm			\
   %D%/services/sound.scm			\
   %D%/services/herd.scm				\
@@ -539,6 +541,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/messaging.scm			\
   %D%/tests/networking.scm			\
   %D%/tests/rsync.scm				\
+  %D%/tests/security-token.scm			\
   %D%/tests/ssh.scm				\
   %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
@@ -565,6 +568,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegis-perl-tempdir2.patch           	\
   %D%/packages/patches/aegis-test-fixup-1.patch            	\
   %D%/packages/patches/aegis-test-fixup-2.patch            	\
+  %D%/packages/patches/aegisub-icu59-include-unistr.patch	\
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/amule-crypto-6.patch			\
   %D%/packages/patches/ansible-wrap-program-hack.patch		\
@@ -589,7 +593,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blast+-fix-makefile.patch		\
   %D%/packages/patches/boost-fix-icu-build.patch		\
-  %D%/packages/patches/btrfs-progs-e-value-block.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/cairo-CVE-2016-9082.patch			\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
@@ -608,6 +611,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clang-runtime-asan-build-fixes.patch	\
   %D%/packages/patches/clang-runtime-esan-build-fixes.patch	\
   %D%/packages/patches/classpath-aarch64-support.patch		\
+  %D%/packages/patches/clementine-fix-sqlite.patch		\
   %D%/packages/patches/clementine-remove-crypto++-dependency.patch	\
   %D%/packages/patches/clementine-use-openssl.patch		\
   %D%/packages/patches/clisp-glibc-2.26.patch			\
@@ -643,7 +647,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
-  %D%/packages/patches/eigen-arm-neon-fixes.patch		\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elogind-glibc-2.27.patch			\
   %D%/packages/patches/einstein-build.patch			\
@@ -660,6 +663,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/exiv2-CVE-2017-14860.patch		\
   %D%/packages/patches/exiv2-CVE-2017-14859-14862-14864.patch	\
+  %D%/packages/patches/extundelete-e2fsprogs-1.44.patch		\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
   %D%/packages/patches/fasthenry-spAllocate.patch		\
@@ -690,6 +694,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-asan-missing-include.patch		\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-fix-texi2pod.patch			\
+  %D%/packages/patches/gcc-4.8-libsanitizer-fix.patch		\
   %D%/packages/patches/gcc-4.9-libsanitizer-fix.patch		\
   %D%/packages/patches/gcc-libsanitizer-fix.patch		\
   %D%/packages/patches/gcc-libsanitizer-ustat.patch		\
@@ -712,6 +717,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-freetype-test-failure.patch		\
   %D%/packages/patches/gdb-python-3.7.patch			\
+  %D%/packages/patches/gdm-CVE-2018-14424.patch			\
   %D%/packages/patches/gemma-intel-compat.patch			\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch \
@@ -924,7 +930,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/luit-posix.patch				\
   %D%/packages/patches/luminance-hdr-qt-printer.patch		\
   %D%/packages/patches/lvm2-static-link.patch			\
-  %D%/packages/patches/lxc-CVE-2018-6556.patch         		\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
   %D%/packages/patches/lyx-2.2.3-fix-test.patch			\
   %D%/packages/patches/mailutils-uninitialized-memory.patch	\
@@ -996,8 +1001,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.0.2-CVE-2018-0495.patch	\
   %D%/packages/patches/openssl-1.0.2-CVE-2018-0732.patch	\
-  %D%/packages/patches/openssl-1.1.0-CVE-2018-0495.patch	\
-  %D%/packages/patches/openssl-1.1.0-CVE-2018-0732.patch	\
   %D%/packages/patches/openssl-1.1.0-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
@@ -1012,7 +1015,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
-  %D%/packages/patches/perl-dbd-mysql-CVE-2017-10788.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
   %D%/packages/patches/perl-io-socket-ssl-openssl-1.0.2f-fix.patch \
@@ -1089,10 +1091,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
-  %D%/packages/patches/qemu-CVE-2018-11806.patch 		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
-  %D%/packages/patches/qtoctave-qt-5.11-fix.patch		\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\
@@ -1111,7 +1111,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
   %D%/packages/patches/rsem-makefile.patch			\
   %D%/packages/patches/rtags-separate-rct.patch			\
-  %D%/packages/patches/racket-fix-xform-issue.patch		\
+  %D%/packages/patches/racket-store-checksum-override.patch	\
   %D%/packages/patches/ruby-rubygems-276-for-ruby24.patch	\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-concurrent-test-arm.patch		\
@@ -1135,6 +1135,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
+  %D%/packages/patches/soundtouch-CVE-2018-14044-14045.patch 	\
+  %D%/packages/patches/soundtouch-CVE-2018-1000223.patch 	\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/swish-e-search.patch			\
@@ -1159,7 +1161,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/tipp10-fix-compiling.patch		\
   %D%/packages/patches/tipp10-remove-license-code.patch		\
   %D%/packages/patches/tk-find-library.patch			\
-  %D%/packages/patches/translate-shell-fix-curl-tests.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tophat-build-with-later-seqan.patch	\

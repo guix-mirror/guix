@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -167,7 +167,6 @@ This package provides the core library and elements.")
        ("orc" ,orc)))              ;required by gstreamer-audio-1.0.pc
     (inputs
      `(("cdparanoia" ,cdparanoia)
-       ("opus" ,opus)
        ("pango" ,pango)
        ("libogg" ,libogg)
        ("libtheora" ,libtheora)
@@ -176,7 +175,12 @@ This package provides the core library and elements.")
        ("zlib" ,zlib)
        ("libXext" ,libxext)
        ("libxv" ,libxv)
-       ("alsa-lib" ,alsa-lib)))
+       ("alsa-lib" ,alsa-lib)
+       ;; XXX Don't build with opus on 32-bit systems:
+       ;; <https://bugs.gnu.org/32360>
+       ,@(if (target-64bit?)
+             `(("opus" ,opus))
+             '())))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("glib:bin" ,glib "bin")

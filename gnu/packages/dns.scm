@@ -45,6 +45,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
@@ -107,7 +108,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "ftp://ftp.isc.org/isc/bind9/" version "/" name "-"
+                    "https://ftp.isc.org/isc/bind9/" version "/" name "-"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -497,14 +498,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.6.7")
+    (version "2.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0hr2m664ckjicv3pq2lk16m61pscknywxv2ydnrzfqf10m5h0ahw"))
+                "108k6x3hjsnyf06pv5rlxqhynjbbz13pzwax1mqff3hgv85f4skx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -525,40 +526,29 @@ Extensions} (DNSSEC).")
        ("liburcu" ,liburcu)
        ("lmdb" ,lmdb)
        ("ncurses" ,ncurses)
-       ("nettle" ,nettle)
-       ("protobuf-c" ,protobuf-c)
-
-       ;; For ‘pykeymgr’, needed to migrate keys from versions <= 2.4.
-       ("python" ,python-2)
-       ("python-lmdb" ,python2-lmdb)))
+       ("protobuf-c" ,protobuf-c)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-directory-pre-creation
            (lambda _
              ;; Don't install empty directories like ‘/etc’ outside the store.
+             ;; This is needed even when using ‘make config_dir=... install’.
              (substitute* "src/Makefile.in" (("\\$\\(INSTALL\\) -d") "true"))
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/knot"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
                     (etc (string-append doc "/examples/etc")))
                (invoke "make"
                        (string-append "config_dir=" etc)
-                       "install"))))
-         (add-after 'install 'wrap-python-scripts
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (path (getenv "PYTHONPATH")))
-               (wrap-program (string-append out "/sbin/pykeymgr")
-                 `("PYTHONPATH" ":" prefix (,path))))
-             #t)))
+                       "install")))))
        #:configure-flags
        (list "--sysconfdir=/etc"
              "--localstatedir=/var"
-             "--with-module-rosedb=yes" ; serve static records from a database
-             "--with-module-dnstap=yes" ; allow detailed query logging
+             "--enable-dnstap"          ; let tools read/write capture files
+             "--with-module-dnstap=yes" ; detailed query capturing & logging
              (string-append "--with-bash-completions="
                             (assoc-ref %outputs "out")
                             "/etc/bash_completion.d"))))
@@ -583,14 +573,14 @@ synthesis, and on-the-fly re-configuration.")
 (define-public ddclient
   (package
     (name "ddclient")
-    (version "3.8.3")
+    (version "3.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/ddclient/ddclient/ddclient-"
                                   version "/ddclient-" version ".tar.gz"))
               (sha256
                (base32
-                "1j8zdn7fy7i0bjk3jf0hxnbnshc2yf054vxq64imxdpfd7n5zgfy"))))
+                "0fwyhab8yga2yi1kdfkbqxa83wxhwpagmj1w1mwkg2iffh1fjjlw"))))
     (build-system trivial-build-system) ; no Makefile.PL
     (native-inputs
      `(("bash" ,bash)
@@ -598,10 +588,11 @@ synthesis, and on-the-fly re-configuration.")
        ("perl" ,perl)
        ("tar" ,tar)))
     (inputs
-     `(("net-tools" ,net-tools)
-       ("inetutils" ,inetutils) ;logger
-       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
-       ("perl-digest-sha1" ,perl-digest-sha1)))
+     `(("inetutils" ,inetutils)         ; logger
+       ("net-tools" ,net-tools)
+       ("perl-data-validate-ip" ,perl-data-validate-ip)
+       ("perl-digest-sha1" ,perl-digest-sha1)
+       ("perl-io-socket-ssl" ,perl-io-socket-ssl)))
     (arguments
      `(#:modules ((guix build utils)
                   (ice-9 match)

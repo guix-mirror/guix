@@ -1008,7 +1008,7 @@ language, ADMS transforms Verilog-AMS code into other target languages.")
 (define-public capstone
   (package
     (name "capstone")
-    (version "3.0.5-rc2")
+    (version "3.0.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/aquynh/capstone/archive/"
@@ -1016,22 +1016,20 @@ language, ADMS transforms Verilog-AMS code into other target languages.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1cqms9r2p43aiwp5spd84zaccp16ih03r7sjhrv16nddahj0jz2q"))))
+                "1wbd1g3r32ni6zd9vwrq3kn7fdp9y8qwn9zllrrbk8n5wyaxcgci"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
-       #:make-flags (list (string-append "PREFIX=" %output)
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "CC=gcc")
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         ;; cstool's Makefile overrides LDFLAGS, so we cannot pass it as a make flag.
+         (delete 'configure)            ; no configure script
+         ;; cstool's Makefile ‘+=’s LDFLAGS, so we cannot pass it as a make flag.
          (add-before 'build 'fix-cstool-ldflags
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "cstool/Makefile"
-               (("LDFLAGS =")
-                (string-append "LDFLAGS = -Wl,-rpath=" (assoc-ref outputs "out")
-                               "/lib")))
+             (setenv "LDFLAGS"  (string-append "-Wl,-rpath="
+                                               (assoc-ref outputs "out") "/lib"))
              #t)))))
     (home-page "http://www.capstone-engine.org")
     (synopsis "Lightweight multi-platform, multi-architecture disassembly framework")

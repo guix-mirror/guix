@@ -1177,7 +1177,7 @@ XML/CSS rendering engine.")
 (define-public libgsf
   (package
     (name "libgsf")
-    (version "1.14.43")
+    (version "1.14.44")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1185,7 +1185,7 @@ XML/CSS rendering engine.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "05pf3h0dha3s20ddsrljbx7m94qyiqs5igwxx1ql0vlsdlylx50j"))))
+                "1ppzfk3zmmgrg9jh8vc4dacddbfngjslq2wpj94pcr3i0c8dxgk8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -2450,7 +2450,7 @@ library.")
      `(("glib"    ,glib)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)))
-    (home-page "http://www.gtk.org/")
+    (home-page "https://www.gtk.org/")
     (synopsis "RESTful web api query library")
     (description
      "This library was designed to make it easier to access web services that
@@ -2461,7 +2461,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.62.2")
+    (version "2.62.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2469,7 +2469,7 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1dkrz1iwsswscayfmjxqv2q00b87snlq9nxdccn5vck0vbinylwy"))))
+                "0whi8p03kpbp68kg6fg3vb7rhykjp7wn3nlbzy9j0p298zjss4nk"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -5315,6 +5315,7 @@ libxml2.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "gdm-CVE-2018-14424.patch"))
               (sha256
                (base32
                 "0mxdal6hh345xk2xqmw5192jgpprkbcv1d4bwmnl4arcc00cpp8p"))))
@@ -6713,7 +6714,7 @@ is suitable as a default application in a Desktop environment.")
 (define-public xpad
   (package
     (name "xpad")
-    (version "5.0.0")
+    (version "5.1.0")
     (source
      (origin
        (method url-fetch)
@@ -6722,14 +6723,8 @@ is suitable as a default application in a Desktop environment.")
                            name "-" version ".tar.bz2"))
        (sha256
         (base32
-         "02yikxg6z9bwla09ka001ppjlpbv5kbza3za9asazm5aiz376mkb"))))
+         "0l0g5x8g6dwhf5ksnqqrjjsycy57kcvdslkmsr6bl3vrsjd7qml3"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'run-autogen
-           (lambda _
-             (system* "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -7043,16 +7038,16 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "0.9.306")
+    (version "0.9.521")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://gitlab.gnome.org/gnumdk/lollypop/uploads/"
-                           "b769805b7063ef9807e4e832e7e87ad2/"
+       (uri (string-append "https://gitlab.gnome.org/World/lollypop/uploads/"
+                           "e4df2ed75c5ed71d64afcc668e579b2a/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0c49v6793bywvh295xbii9yq21hh3qpmxwbgp9i71kj6r9grvhan"))))
+         "0knsqh24siyw98vmiq6b1hzq4y4cazs9f1hq1js9c96hqqj9rvdx"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -7095,7 +7090,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ;; the others are required to play streaming.
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-ugly" ,gst-plugins-ugly)))
-    (home-page "https://gnumdk.github.io/lollypop-web")
+    (home-page "https://wiki.gnome.org/Apps/Lollypop")
     (synopsis "GNOME music playing application")
     (description
      "Lollypop is a music player designed to play well with GNOME desktop.

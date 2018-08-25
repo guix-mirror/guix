@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages tex)
@@ -75,11 +77,11 @@
                (("/bin/echo") (which "echo")))
              #t)))))
     (native-inputs
-     `(("perl" ,perl)
+     `(("pcsc-lite" ,pcsc-lite) ; only required for headers
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libusb" ,libusb)
-       ("pcsc-lite" ,pcsc-lite)))
+     `(("libusb" ,libusb)))
     (home-page "https://ccid.apdu.fr/")
     (synopsis "PC/SC driver for USB smart card devices")
     (description
@@ -218,7 +220,7 @@ website for more information about Yubico and the YubiKey.")
 (define-public opensc
   (package
     (name "opensc")
-    (version "0.17.0")
+    (version "0.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -226,7 +228,7 @@ website for more information about Yubico and the YubiKey.")
                     version "/opensc-" version ".tar.gz"))
               (sha256
                (base32
-                "0043jh5g7q2lyd5vnb0akwb5y349isx7vbm9wqhlgav7d20wcwxy"))))
+                "0mrpik6ifzh27ws7h0viv8nwgcdj3fp5whaldmj0zhfi1l1zzh4v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -243,7 +245,13 @@ website for more information about Yubico and the YubiKey.")
                  (("DEFAULT_PCSC_PROVIDER=\"libpcsclite\\.so\\.1\"")
                   (string-append
                    "DEFAULT_PCSC_PROVIDER=\"" libpcsclite "\"")))
-               #t))))))
+               #t)))
+         (add-before 'check 'disable-broken-test
+           (lambda _
+             ;; XXX: This test is fixed in git, remove this phase for >= 0.19.
+             (substitute* "doc/tools/Makefile"
+               (("TESTS = test-manpage.sh") "TESTS = "))
+             #t)))))
     (inputs
      `(("readline" ,readline)
        ("openssl" ,openssl)
@@ -266,7 +274,7 @@ authentication, encryption and digital signatures.  OpenSC implements the PKCS
 (define-public yubico-piv-tool
   (package
     (name "yubico-piv-tool")
-    (version "1.5.0")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -274,15 +282,17 @@ authentication, encryption and digital signatures.  OpenSC implements the PKCS
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1axa0lnky5gsc8yack6mpfbjh49z0czr1cv52gbgjnx2kcbpb0y1"))))
+                "10xgdc51xvszkxmsvqnbjs8ixxz7rfnfahh3wn8glllynmszbhwi"))))
     (build-system gnu-build-system)
     (inputs
-     `(("perl" ,perl)
+     `(("gengetopt" ,gengetopt)
+       ("perl" ,perl)
        ("pcsc-lite" ,pcsc-lite)
        ("openssl" ,openssl)))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
+       ("help2man" ,help2man)
        ("check" ,check)
        ("texlive-bin" ,texlive-bin)
        ("pkg-config" ,pkg-config)))

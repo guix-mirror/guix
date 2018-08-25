@@ -546,7 +546,7 @@ repository and Maildir/IMAP as LOCAL repository.")
     (version "6.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://mew.org/Release/mew-"
+              (uri (string-append "https://mew.org/Release/mew-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -584,7 +584,7 @@ repository and Maildir/IMAP as LOCAL repository.")
                 "mew" (string-append (assoc-ref outputs "out") ,elisp-dir))
                #t)))
          #:tests? #f)))
-    (home-page "http://www.mew.org")
+    (home-page "https://mew.org")
     (synopsis "Emacs e-mail client")
     (description "Mew (Messaging in the Emacs World) is a user interface
 for text messages, multimedia messages (MIME), news articles and
@@ -1011,15 +1011,15 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.16.0")
+    (version "3.17.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.claws-mail.org/releases/" name "-" version
+                    "https://www.claws-mail.org/releases/" name "-" version
                     ".tar.xz"))
               (sha256
                (base32
-                "1awpr3s7n8bq8p3w10a4j6lg5bizjxyiqp4rqzc2j8cn7lyi64n2"))))
+                "119y6q9p8zwm2xqlbkgqd119a529kjqlyldmb4h940z6c2qyjhqm"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -1065,7 +1065,7 @@ appearance and interface are designed to be familiar to new users coming from
 other popular email clients, as well as experienced users.  Almost all commands
 are accessible with the keyboard.  Plus, Claws-Mail is extensible via addons
 which can add many functionalities to the base client.")
-    (home-page "http://www.claws-mail.org/")
+    (home-page "https://www.claws-mail.org/")
     (license gpl3+))) ; most files are actually public domain or x11
 
 (define-public msmtp
@@ -1399,7 +1399,7 @@ mailboxes.  Currently Maildir and IMAP are supported types.")
      `(("perl-email-simple" ,perl-email-simple)
        ("perl-module-pluggable" ,perl-module-pluggable)
        ("perl-mro-compat" ,perl-mro-compat)))
-    (home-page "http://search.cpan.org/dist/Email-Abstract")
+    (home-page "https://metacpan.org/release/Email-Abstract")
     (synopsis "Interface to mail representations")
     (description "Email::Abstract provides module writers with the ability to
 write simple, representation-independent mail handling code.")
@@ -1418,7 +1418,7 @@ write simple, representation-independent mail handling code.")
         (base32
          "0l7x6sl06j9ffgfz5f9vgms2b5axd4cgp5fj03ivb3kia4km6b3g"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Email-Address")
+    (home-page "https://metacpan.org/release/Email-Address")
     (synopsis "Email address parsing and creation")
     (description "Email::Address implements a regex-based RFC 2822 parser that
 locates email addresses in strings and returns a list of Email::Address
@@ -1438,7 +1438,7 @@ objects found.  Alternatively you may construct objects manually.")
         (base32
          "012ivfwpnbl3wr50f9c6f4azhdlxnm31pdn72528g79v61z6372p"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Email-Date-Format")
+    (home-page "https://metacpan.org/release/Email-Date-Format")
     (synopsis "Produce RFC 2822 date strings")
     (description "Email::Date::Format provides a means for generating an RFC
 2822 compliant datetime string.")
@@ -1457,7 +1457,7 @@ objects found.  Alternatively you may construct objects manually.")
         (base32
          "1f22sdnfq169qw1l0lg7y74pmiam7j9v95bggjnf3q4mygdmshpc"))))
     (build-system perl-build-system)
-    (home-page "http://search.cpan.org/dist/Email-MessageID")
+    (home-page "https://metacpan.org/release/Email-MessageID")
     (synopsis "Generate world unique message-ids")
     (description "Email::MessageID generates recommended message-ids to
 identify a message uniquely.")
@@ -1484,7 +1484,7 @@ identify a message uniquely.")
        ("perl-email-simple" ,perl-email-simple)
        ("perl-mime-types" ,perl-mime-types)
        ("perl-module-runtime" ,perl-module-runtime)))
-    (home-page "http://search.cpan.org/dist/Email-MIME")
+    (home-page "https://metacpan.org/release/Email-MIME")
     (synopsis "MIME message handling")
     (description "Email::MIME is an extension of the Email::Simple module, to
 handle MIME encoded messages.  It takes a message as a string, splits it up
@@ -1507,7 +1507,7 @@ message.  Headers are decoded from MIME encoding.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
-    (home-page "http://search.cpan.org/dist/Email-MIME-ContentType")
+    (home-page "https://metacpan.org/release/Email-MIME-ContentType")
     (synopsis "Parse MIME Content-Type headers")
     (description "Email::MIME::ContentType parses a MIME Content-Type
 header.")
@@ -1528,7 +1528,7 @@ header.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)))
-    (home-page "http://search.cpan.org/dist/Email-MIME-Encodings")
+    (home-page "https://metacpan.org/release/Email-MIME-Encodings")
     (synopsis "Unified interface to MIME encoding and decoding")
     (description "This module wraps MIME::Base64 and MIME::QuotedPrint.")
     (license perl-license)))
@@ -1559,7 +1559,7 @@ header.")
        ("perl-sub-exporter" ,perl-sub-exporter)
        ("perl-throwable" ,perl-throwable)
        ("perl-try-tiny" ,perl-try-tiny)))
-    (home-page "http://search.cpan.org/dist/Email-Sender")
+    (home-page "https://metacpan.org/release/Email-Sender")
     (synopsis "Perl library for sending email")
     (description "Email::Sender replaces the old and sometimes problematic
 Email::Send library.")
@@ -1568,7 +1568,7 @@ Email::Send library.")
 (define-public perl-email-simple
   (package
     (name "perl-email-simple")
-    (version "2.214")
+    (version "2.216")
     (source
      (origin
        (method url-fetch)
@@ -1576,11 +1576,11 @@ Email::Send library.")
                            "Email-Simple-" version ".tar.gz"))
        (sha256
         (base32
-         "14kb86hi0m0bqc7kxpm4x5kvfsyj2x86gggbvpxhx9hy8hvjpw5j"))))
+         "1m4brbjvalyp5kjqslqv4155dzwg977shxin208i7lc8236n6pyq"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-date-format" ,perl-email-date-format)))
-    (home-page "http://search.cpan.org/dist/Email-Simple")
+    (home-page "https://metacpan.org/release/Email-Simple")
     (synopsis "Parsing of RFC 2822 messages")
     (description "Email::Simple provides simple parsing of RFC 2822 message
 format and headers.")
@@ -1802,7 +1802,7 @@ Khard can also be used from within the email client @command{mutt}.")
       ("perl-netaddr-ip" ,perl-netaddr-ip)
       ("perl-uri" ,perl-uri)))
   (home-page
-    "http://search.cpan.org/dist/Mail-SPF")
+    "https://metacpan.org/release/Mail-SPF")
   (synopsis
     "Perl implementation of Sender Policy Framework")
   (description "Mail::SPF is the Sender Policy Framework implemented
@@ -1857,24 +1857,22 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.2.6")
+    (version "1.2.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/mpop/mpop/" version
-                           "/mpop-" version ".tar.xz"))
+       (uri (string-append "https://marlam.de/mpop/releases/"
+                           name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0p1ix63jh64dibrlccch8q7gxl9nn18wd2qpyr5z1h4gs2fpmv4z"))))
+         "1skrda7lbks5h0v03ab8bhpg6ma1b63if8x9x3kb2fv70x2pkhqn"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
        ("libidn" ,libidn)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (arguments
-     `(#:configure-flags (list "--with-tls=gnutls")))
-    (home-page "http://mpop.sourceforge.net/")
+    (home-page "https://marlam.de/mpop/")
     (synopsis "POP3 mail client")
     (description "mpop is a small and fast POP3 client suitable as a
 fetchmail replacement.

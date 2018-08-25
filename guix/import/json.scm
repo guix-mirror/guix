@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,17 +26,20 @@
   #:export (json-fetch
             json-fetch-alist))
 
-(define (json-fetch url)
+(define* (json-fetch url
+                     ;; Note: many websites returns 403 if we omit a
+                     ;; 'User-Agent' header.
+                     #:key (headers `((user-agent . "GNU Guile")
+                                      (Accept . "application/json"))))
   "Return a representation of the JSON resource URL (a list or hash table), or
-#f if URL returns 403 or 404."
+#f if URL returns 403 or 404.  HEADERS is a list of HTTP headers to pass in
+the query."
   (guard (c ((and (http-get-error? c)
                   (let ((error (http-get-error-code c)))
                     (or (= 403 error)
                         (= 404 error))))
              #f))
-    ;; Note: many websites returns 403 if we omit a 'User-Agent' header.
-    (let* ((port   (http-fetch url #:headers '((user-agent . "GNU Guile")
-                                               (Accept . "application/json"))))
+    (let* ((port   (http-fetch url #:headers headers))
            (result (json->scm port)))
       (close-port port)
       result)))

@@ -135,14 +135,14 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "7.7p1")
+   (version "7.8p1")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://openbsd/OpenSSH/portable/"
                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "13vbbrvj3mmfhj83qyrg5c0ipr6bzw5s65dy4k8gr7p9hkkfffyp"))))
+               "1jj4f586r9lhakp2w0zv7j616d6x62m15q8l4nxq7haja6qlnj0s"))))
    (build-system gnu-build-system)
    (native-inputs `(("groff" ,groff)))
    (inputs `(("openssl" ,openssl)
@@ -224,7 +224,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.11.2")
+    (version "0.11.3")
     (home-page "https://github.com/artyom-poptsov/guile-ssh")
     (source (origin
               ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
@@ -236,11 +236,14 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1w0k5s09xj5xycb7lbp5b7rm0xncclms3jwl98lwj8fxwngi1s90"))))
+                "1g2jzcg1p25zrkx06j160qb8bgcwa3001ys4q02496xs61pvywqk"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     '(;; It makes no sense to build libguile-ssh.a.
+       #:configure-flags '("--disable-static")
+
+       #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'autoreconf
                     (lambda* (#:key inputs #:allow-other-keys)
                       (invoke "autoreconf" "-vfi")))

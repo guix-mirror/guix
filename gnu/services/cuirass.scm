@@ -61,7 +61,7 @@
   (interval         cuirass-configuration-interval ;integer (seconds)
                     (default 60))
   (database         cuirass-configuration-database ;string (file-name)
-                    (default "/var/run/cuirass/cuirass.db"))
+                    (default "/var/lib/cuirass/cuirass.db"))
   (port             cuirass-configuration-port ;integer (port)
                     (default 8081))
   (host             cuirass-configuration-host ;string
@@ -131,7 +131,7 @@
            (group cuirass-group)
            (system? #t)
            (comment "Cuirass privilege separation user")
-           (home-directory (string-append "/var/run/" cuirass-user))
+           (home-directory (string-append "/var/lib/" cuirass-user))
            (shell #~(string-append #$shadow "/sbin/nologin"))))))
 
 (define (cuirass-activation config)

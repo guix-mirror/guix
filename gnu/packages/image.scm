@@ -340,18 +340,17 @@ official designation is ISO/IEC 29199-2). This library is an implementation of t
 (define-public jpegoptim
   (package
    (name "jpegoptim")
-   (version "1.4.5")
+   (version "1.4.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.kokkonen.net/tjko/src/jpegoptim-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "1mngi8c4mhzwa7i4wqrqq6i80cqj4adbacblfvk6dy573wywyxmi"))))
+                     "1dss7907fclfl8zsw0bl4qcw0hhz6fqgi3867w0jyfm3q9jfpcc8"))))
    (build-system gnu-build-system)
    (inputs `(("libjpeg" ,libjpeg)))
    (arguments
-    ;; no tests
-    '(#:tests? #f))
+    '(#:tests? #f))                     ; no tests
    (synopsis "Optimize JPEG images")
    (description
     "jpegoptim provides lossless optimization (based on optimizing

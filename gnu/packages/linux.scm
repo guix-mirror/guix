@@ -398,17 +398,39 @@ It has been modified to remove all non-free binary blobs.")
 ;; supports qemu "virt" machine and possibly a large number of ARM boards.
 ;; See : https://wiki.debian.org/DebianKernel/ARMMP.
 
-(define %linux-libre-version "4.17.13")
-(define %linux-libre-hash "07z4yisl4krz1ja6123xp32g00nx6ajsc9x1lywmmpvvjilsz4ax")
+(define %linux-libre-version "4.18.4")
+(define %linux-libre-hash "1q3bndhwxwcrlyi0qcgxjsp5fl92wkfgk4y41qwrrywfv9xj3sl7")
+
+(define %linux-libre-4.18-patches
+  (list %boot-logo-patch
+        (origin
+          (method url-fetch)
+          (uri (string-append
+                "https://salsa.debian.org/kernel-team/linux"
+                "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
+                "/debian/patches/bugfix/arm/"
+                "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
+          (file-name "linux-libre-4.18-arm-export-__sync_icache_dcache.patch")
+          (sha256
+           (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f")))
+        (origin
+          (method url-fetch)
+          (uri (string-append
+                "https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git"
+                "/patch/?id=c5157101e7793b42a56e07368c7f4cb73fb58008"))
+          (file-name "linux-libre-4.18-arm64-export-__sync_icache_dcache.patch")
+          (sha256
+           (base32 "0q13arsi8al3l3yq6d76z4h8n45wlpkjyxlrgn1sqbx5xjksycyz")))))
 
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     %linux-compatible-systems
+                    #:patches %linux-libre-4.18-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.61")
-(define %linux-libre-4.14-hash "0jr0qi3473fn32cyisp3baf68sfr6vir5ydaphmqmz379ymxxm0z")
+(define %linux-libre-4.14-version "4.14.66")
+(define %linux-libre-4.14-hash "1sf18m6xjyg535yviz3yjbislf57s180y67z7mzbcl5pq9352bg9")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -417,14 +439,14 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.118"
-                    "0zh9l0r828jjbmmqp0hwkjm34ly8kqhfddlyigmliz0j39dg0137"
+  (make-linux-libre "4.9.123"
+                    "1rljdp3vzhmdc6qha6b9dq0d1a3xz06rn51pb4ad3a2y61mph9sv"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.146"
-                    "1gpshdkn2rfg8kkf2qb2z30yk1lgzndk0fn1bvnrmfmx7swc45w8"
+  (make-linux-libre "4.4.151"
+                    "0irzdq4p8a6dxyx5basgrc7af7w48hmyjwbk5hff8wn8jy71p9zm"
                     %intel-compatible-systems
                     #:configuration-file kernel-config))
 
@@ -432,6 +454,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
+                    #:patches %linux-libre-4.18-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -446,6 +469,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
+                    #:patches %linux-libre-4.18-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
@@ -533,15 +557,15 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public psmisc
   (package
     (name "psmisc")
-    (version "23.1")
+    (version "23.2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
+      (uri (string-append "mirror://sourceforge/psmisc/psmisc devel/psmisc-"
                           version ".tar.xz"))
       (sha256
        (base32
-        "0c5s94hqpwfmyswx2f96gifa6wdbpxxpkyxcrlzbxpvmrxsd911f"))))
+        "0s1kjhrik0wzqbm7hv4gkhywhjrwhp9ajw0ad05fwharikk6ah49"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/psmisc/psmisc")
@@ -855,14 +879,16 @@ from the e2fsprogs package.  It is meant to be used in initrds.")
   (package
     (name "extundelete")
     (version "0.2.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/extundelete/"
-                                  "extundelete/" version "/extundelete-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "1x0r7ylxlp9lbj3d7sqf6j2a222dwy2nfpff05jd6mkh4ihxvyd1"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/extundelete/"
+                           "extundelete/" version "/extundelete-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "1x0r7ylxlp9lbj3d7sqf6j2a222dwy2nfpff05jd6mkh4ihxvyd1"))
+       (patches (search-patches "extundelete-e2fsprogs-1.44.patch"))))
     (build-system gnu-build-system)
     (inputs `(("e2fsprogs" ,e2fsprogs)))
     (home-page "http://extundelete.sourceforge.net/")
@@ -910,7 +936,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "4.23")
+    (version "4.24")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -918,7 +944,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "1bcsq2gbpcb81ayryvn56a6kjx42fc21la6qgds35n0xbybacq3q"))))
+               "0d061cdzk6a1822ds4wpqxg10ny27mi4i9zjmnsbz8nz3vy5jkhz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -927,7 +953,9 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
            (lambda _
              (substitute* "strace.c"
                (("/bin/sh") (which "sh")))
-             #t)))))
+             #t)))
+       ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.
+       #:parallel-tests? #f))           ; undeterministic failures
     (native-inputs `(("perl" ,perl)))
     (synopsis "System call tracer for Linux")
     (description
@@ -1192,7 +1220,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "4.17.0")
+    (version "4.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1200,7 +1228,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0vmynikcamfhakvwyk5dsffy0ymgi5mdqiwybdvqfn1ijaq93abg"))))
+                "0ida5njr9nacg6ym3rjvl3cc9czw0hn4akhzbqf8f4zmjl6cgrm9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -2716,14 +2744,14 @@ about ACPI devices.")
 (define-public acpid
   (package
     (name "acpid")
-    (version "2.0.28")
+    (version "2.0.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/acpid2/acpid-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "043igasvp1l6nv5rzh4sksmymay2qn20anl4zm4zvwnkn1a3l34q"))))
+                "1jzl7hiaspr5xkmsrbl69bib8cs3dp6bq5ix58fbskpnsdi7pdr8"))))
     (build-system gnu-build-system)
     (home-page "https://sourceforge.net/projects/acpid2/")
     (synopsis "Daemon for delivering ACPI events to user-space programs")
@@ -2966,7 +2994,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.7.6")
+    (version "0.7.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
@@ -2974,7 +3002,7 @@ arrays when needed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0zkcayi3mmp43ji2zid1gprgsvqhjjapsw7jjd60sf75prf50h2r"))
+                "1lirhjjv37jnf42r1ylrhi8kbzx9j9xnyfzvxpp6bzcp0fawigig"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2987,8 +3015,9 @@ arrays when needed.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; No tests.
-       #:make-flags (list (string-append "DESTDIR="
+     '(#:tests? #f                      ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
                           "SYSTEMDPATH=lib"
                           (string-append "LDFLAGS=-Wl,-rpath="
@@ -3011,11 +3040,7 @@ arrays when needed.")
                  (("/usr/include/libudev.h")
                   (string-append udev "/include/libudev.h")))
                #t)))
-         (delete 'configure)
-         (add-before 'build 'set-CC
-           (lambda _
-             (setenv "CC" "gcc")
-             #t)))))
+         (delete 'configure))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -3233,7 +3258,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.15.1")
+    (version "4.17.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3241,8 +3266,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "15izak6jg6pqr6ha9447cdrdj9k6kfiarvwlrj53cpvrsv02l437"))
-              (patches (search-patches "btrfs-progs-e-value-block.patch"))))
+                "0x6d53fbrcmzvhv461575fzsv3373427p4srz646w2wcagqk82xz"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -3279,6 +3303,7 @@ and copy/paste text in the console and in xterm.")
               ("zstd" ,zstd)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("asciidoc" ,asciidoc)
+                     ("python" ,python)
                      ("xmlto" ,xmlto)
                      ;; For building documentation.
                      ("libxml2" ,libxml2)
@@ -3770,25 +3795,25 @@ native Linux file system, and has been part of the Linux kernel since version
 (define-public libnfsidmap
   (package
     (name "libnfsidmap")
-    (version "0.25")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://www.citi.umich.edu/projects/nfsv4/linux/"
-                   name "/" name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1kzgwxzh83qi97rblcm9qj80cdvnv8kml2plz0q103j0hifj8vb5"))))
+    (version "0.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://fedorapeople.org/~steved/"
+                           name "/" version "/" name "-" version ".tar.bz2"))
+       (sha256
+        (base32 "0bg2bcii424mf1bnp3fssr8jszbvhdxl7wvifm1yf6g596v8b8i5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
                           (string-append "--with-pluginpath="
                                          (assoc-ref %outputs "out")
                                          "/lib/libnfsidmap"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)))         ; 0.27 still needs autoheader
     (home-page
      "http://www.citi.umich.edu/projects/nfsv4/crossrealm/libnfsidmap_config.html")
-    (synopsis
-     "NFSv4 support library for name/ID mapping")
+    (synopsis "NFSv4 support library for name/ID mapping")
     (description "Libnfsidmap is a library holding mulitiple methods of
 mapping names to ids and visa versa, mainly for NFSv4.  It provides an
 extensible array of mapping functions, currently consisting of two choices:
@@ -3975,7 +4000,7 @@ under OpenGL graphics workloads.")
     (version "35")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/rhinstaller/" name
+              (uri (string-append "https://github.com/rhboot/" name
                                   "/releases/download/" version "/" name
                                   "-" version ".tar.bz2"))
               (sha256
@@ -3996,7 +4021,7 @@ under OpenGL graphics workloads.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("popt" ,popt)))
-    (home-page "https://github.com/rhinstaller/efivar")
+    (home-page "https://github.com/rhboot/efivar")
     (synopsis "Tool and library to manipulate EFI variables")
     (description "This package provides a library and a command line
 interface to the variable facility of UEFI boot firmware.")
@@ -4084,7 +4109,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.1")
+    (version "1.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4092,7 +4117,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
                     (commit version)))
               (sha256
                (base32
-                "1qra8yzsga29bxlvq63v1db071a1xdji7i60p4kzrciidm1206js"))))
+                "0c934gxav9cgdf94li6dp0rfqmpday9d33vdn9xb2mfp4war9n4w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests

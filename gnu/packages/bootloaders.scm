@@ -52,6 +52,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web)
   #:use-module (guix build-system gnu)
@@ -322,7 +323,7 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.4.6")
+    (version "1.4.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -330,12 +331,13 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "0zkvih0fpwvk31aqyyfy9kn13nbi76c21ihax15p6h1wrjzh48rq"))))
+                "1rydi5jvhlhsr110h6n0pavv3daqa0cb4m5vcps50qzq1zqfhhv6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
-       ("swig" ,swig)))
+       ("swig" ,swig)
+       ("valgrind" ,valgrind)))
     (inputs
      `(("python-2" ,python-2)))
     (arguments

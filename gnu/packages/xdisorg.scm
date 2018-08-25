@@ -157,14 +157,14 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "0.8.0")
+    (version "0.8.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://xkbcommon.org/download/" name "-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0vgy84vfbig5bqznr137h5arjidnfwrxrdli0pxyn2jfn1fjcag8"))))
+               "136mdq11lrwg6rjmm44lmysxxgb9c35p4sq6k0cd129x82rw9f3s"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -316,7 +316,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.92")
+    (version "2.4.93")
     (source
       (origin
         (method url-fetch)
@@ -326,7 +326,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "1yirzx8hmlvv6r0l7lb3zxmgy5la2mri9al0k16xqfg19pdqzr79"))
+          "0g6d9wsnb7lx8r1m4kq8js0wsc5jl20cz1csnlh6z9s8jpfd313f"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -883,7 +883,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "0.30")
+    (version "0.31")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -891,7 +891,7 @@ Escape key when Left Control is pressed and released on its own.")
                     name "-" version "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0n9294f2534qcgfry4n7vmr6vy49iqym0y74a88g1h0l0ml0hd2j"))))
+                "00xzkxhm0s9bvhbf27hscjbh17wa8lcgvxjqbmzm527f9cjqrm8q"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -987,7 +987,7 @@ color temperature should be set to match the lamps in your room.")
 (define-public xscreensaver
   (package
     (name "xscreensaver")
-    (version "5.39")
+    (version "5.40")
     (source
      (origin
        (method url-fetch)
@@ -996,7 +996,7 @@ color temperature should be set to match the lamps in your room.")
                        version ".tar.gz"))
        (sha256
         (base32
-         "09i47h4hdgwxyqgrsnshl4l5dv5mrsp37h705cc22lwby601ikj8"))))
+         "1q2sr7h6ps6d3hk8895g12rrcqiihjl7py1ly077ikv4866r181h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; no check target

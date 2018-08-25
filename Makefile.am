@@ -171,6 +171,7 @@ MODULES =					\
   guix/build/svn.scm				\
   guix/build/syscalls.scm                       \
   guix/build/gremlin.scm			\
+  guix/build/debug-link.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/java-utils.scm			\
   guix/build/lisp-utils.scm			\
@@ -277,10 +278,10 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/4.17-arm.conf	\
-  gnu/packages/aux-files/linux-libre/4.17-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/4.17-i686.conf	\
-  gnu/packages/aux-files/linux-libre/4.17-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/4.18-arm.conf	\
+  gnu/packages/aux-files/linux-libre/4.18-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/4.18-i686.conf	\
+  gnu/packages/aux-files/linux-libre/4.18-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.14-arm.conf	\
   gnu/packages/aux-files/linux-libre/4.14-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.14-x86_64.conf	\
@@ -363,6 +364,7 @@ SCM_TESTS =					\
   tests/syscalls.scm				\
   tests/inferior.scm				\
   tests/gremlin.scm				\
+  tests/debug-link.scm				\
   tests/bournish.scm				\
   tests/lint.scm				\
   tests/publish.scm				\

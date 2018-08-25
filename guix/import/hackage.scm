@@ -30,15 +30,17 @@
   #:use-module ((guix utils) #:select (package-name->name+version
                                        canonical-newline-port))
   #:use-module (guix http-client)
-  #:use-module ((guix import utils) #:select (factorize-uri))
+  #:use-module ((guix import utils) #:select (factorize-uri recursive-import))
   #:use-module (guix import cabal)
   #:use-module (guix store)
   #:use-module (guix hash)
   #:use-module (guix base32)
+  #:use-module (guix memoization)
   #:use-module (guix upstream)
   #:use-module (guix packages)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:export (hackage->guix-package
+            hackage-recursive-import
             %hackage-updater
 
             guix-package->hackage-name
@@ -205,32 +207,34 @@ representation of a Cabal file as produced by 'read-cabal'."
   (define source-url
     (hackage-source-url name version))
 
+  (define hackage-dependencies
+    ((compose (cut filter-dependencies <>
+                   (cabal-package-name cabal))
+              (cut cabal-dependencies->names <>))
+     cabal))
+
+  (define hackage-native-dependencies
+    ((compose (cut filter-dependencies <>
+                   (cabal-package-name cabal))
+              ;; FIXME: Check include-test-dependencies?
+              (lambda (cabal)
+                (append (if include-test-dependencies?
+                            (cabal-test-dependencies->names cabal)
+                            '())
+                        (cabal-custom-setup-dependencies->names cabal))))
+     cabal))
+
   (define dependencies
-    (let ((names
-           (map hackage-name->package-name
-                ((compose (cut filter-dependencies <>
-                               (cabal-package-name cabal))
-                          (cut cabal-dependencies->names <>))
-                 cabal))))
-      (map (lambda (name)
-             (list name (list 'unquote (string->symbol name))))
-           names)))
+    (map (lambda (name)
+           (list name (list 'unquote (string->symbol name))))
+         (map hackage-name->package-name
+              hackage-dependencies)))
 
   (define native-dependencies
-    (let ((names
-           (map hackage-name->package-name
-                ((compose (cut filter-dependencies <>
-                               (cabal-package-name cabal))
-                          ;; FIXME: Check include-test-dependencies?
-                          (lambda (cabal)
-                            (append (if include-test-dependencies?
-                                        (cabal-test-dependencies->names cabal)
-                                        '())
-                                    (cabal-custom-setup-dependencies->names cabal))))
-                 cabal))))
-      (map (lambda (name)
-             (list name (list 'unquote (string->symbol name))))
-           names)))
+    (map (lambda (name)
+           (list name (list 'unquote (string->symbol name))))
+         (map hackage-name->package-name
+              hackage-native-dependencies)))
   
   (define (maybe-inputs input-type inputs)
     (match inputs
@@ -247,31 +251,35 @@ representation of a Cabal file as produced by 'read-cabal'."
 
   (let ((tarball (with-store store
                    (download-to-store store source-url))))
-    `(package
-       (name ,(hackage-name->package-name name))
-       (version ,version)
-       (source (origin
-                 (method url-fetch)
-                 (uri (string-append ,@(factorize-uri source-url version)))
-                 (sha256
-                  (base32
-                   ,(if tarball
-                        (bytevector->nix-base32-string (file-sha256 tarball))
-                        "failed to download tar archive")))))
-       (build-system haskell-build-system)
-       ,@(maybe-inputs 'inputs dependencies)
-       ,@(maybe-inputs 'native-inputs native-dependencies)
-       ,@(maybe-arguments)
-       (home-page ,(cabal-package-home-page cabal))
-       (synopsis ,(cabal-package-synopsis cabal))
-       (description ,(cabal-package-description cabal))
-       (license ,(string->license (cabal-package-license cabal))))))
+    (values
+     `(package
+        (name ,(hackage-name->package-name name))
+        (version ,version)
+        (source (origin
+                  (method url-fetch)
+                  (uri (string-append ,@(factorize-uri source-url version)))
+                  (sha256
+                   (base32
+                    ,(if tarball
+                         (bytevector->nix-base32-string (file-sha256 tarball))
+                         "failed to download tar archive")))))
+        (build-system haskell-build-system)
+        ,@(maybe-inputs 'inputs dependencies)
+        ,@(maybe-inputs 'native-inputs native-dependencies)
+        ,@(maybe-arguments)
+        (home-page ,(cabal-package-home-page cabal))
+        (synopsis ,(cabal-package-synopsis cabal))
+        (description ,(cabal-package-description cabal))
+        (license ,(string->license (cabal-package-license cabal))))
+     (append hackage-dependencies hackage-native-dependencies))))
 
-(define* (hackage->guix-package package-name #:key
-                                (include-test-dependencies? #t)
-                                (port #f)
-                                (cabal-environment '()))
-  "Fetch the Cabal file for PACKAGE-NAME from hackage.haskell.org, or, if the
+(define hackage->guix-package
+  (memoize
+   (lambda* (package-name #:key
+                          (include-test-dependencies? #t)
+                          (port #f)
+                          (cabal-environment '()))
+     "Fetch the Cabal file for PACKAGE-NAME from hackage.haskell.org, or, if the
 called with keyword parameter PORT, from PORT.  Return the `package'
 S-expression corresponding to that package, or #f on failure.
 CABAL-ENVIRONMENT is an alist defining the environment in which the Cabal
@@ -281,13 +289,19 @@ symbol 'true' or 'false'.  The value associated with other keys has to conform
 to the Cabal file format definition.  The default value associated with the
 keys \"os\", \"arch\" and \"impl\" is \"linux\", \"x86_64\" and \"ghc\"
 respectively."
-  (let ((cabal-meta (if port
-                        (read-cabal (canonical-newline-port port))
-                        (hackage-fetch package-name))))
-    (and=> cabal-meta (compose (cut hackage-module->sexp <>
-                                    #:include-test-dependencies? 
-                                    include-test-dependencies?)
-                               (cut eval-cabal <> cabal-environment)))))
+     (let ((cabal-meta (if port
+                           (read-cabal (canonical-newline-port port))
+                           (hackage-fetch package-name))))
+       (and=> cabal-meta (compose (cut hackage-module->sexp <>
+                                       #:include-test-dependencies?
+                                       include-test-dependencies?)
+                                  (cut eval-cabal <> cabal-environment)))))))
+
+(define* (hackage-recursive-import package-name . args)
+  (recursive-import package-name #f
+                    #:repo->guix-package (lambda (name repo)
+                                           (apply hackage->guix-package (cons name args)))
+                    #:guix-name hackage-name->package-name))
 
 (define (hackage-package? package)
   "Return #t if PACKAGE is a Haskell package from Hackage."
