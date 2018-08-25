@@ -42,7 +42,6 @@
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.xz"))
-             (patches (search-patches "gdb-python-3.7.patch"))
              (sha256
               (base32
                "0g6hv9xk12aa58w77fydaldqr9a6b0a6bnwsq87jfc6lkcbc7p4p"))))
