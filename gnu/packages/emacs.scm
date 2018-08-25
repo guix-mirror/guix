@@ -1179,16 +1179,18 @@ rather than the contents of files.")
 (define-public emacs-async
   (package
     (name "emacs-async")
+    (home-page "https://github.com/jwiegley/emacs-async")
     (version "1.9.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://stable.melpa.org/packages/async-"
-                                  version ".tar"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xvi50y96y2qh81qkhj8p6ar1xnfasg58qvlsvgvvmdf4g8srlij"))))
+                "1zsnb6dy8p6y68xgidv3dfxaga4biramfw8fq7wac0sc50vc98vq"))))
     (build-system emacs-build-system)
-    (home-page "https://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
     (description
      "This package provides the ability to call asynchronous functions and
