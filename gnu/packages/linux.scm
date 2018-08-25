@@ -163,13 +163,13 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 (define-public linux-libre-headers
   (package
     (name "linux-libre-headers")
-    (version "4.14.26")
+    (version "4.14.67")
     (source (origin
              (method url-fetch)
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1m2zr17wpasg5riysbaa4g5i492jzr93py2jm088ki818s4a9cm3"))))
+               "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (arguments
