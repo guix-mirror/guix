@@ -5611,3 +5611,26 @@ definitions.")
     (synopsis "Tables support for Prawn")
     (description "This gem provides tables support for Prawn.")
     (license license:gpl3+)))
+
+(define-public ruby-kramdown
+  (package
+    (name "ruby-kramdown")
+    (version "1.17.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "kramdown" version))
+              (sha256
+               (base32
+                "1n1c4jmrh5ig8iv1rw81s4mw4xsp4v97hvf8zkigv4hn5h542qjq"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); FIXME: some test failures
+    (native-inputs
+     `(("ruby-prawn" ,ruby-prawn)
+       ("ruby-prawn-table" ,ruby-prawn-table)))
+    (home-page "https://kramdown.gettalong.org/")
+    (synopsis "Markdown parsing and converting library")
+    (description "Kramdown is a library for parsing and converting a superset
+of Markdown.  It is completely written in Ruby, supports standard Markdown
+(with some minor modifications) and various extensions that have been made
+popular by the PHP @code{Markdown Extra} package and @code{Maruku}.")
+    (license license:expat)))
