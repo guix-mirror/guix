@@ -5303,3 +5303,29 @@ about the changes.")
     (description "Diffy provides a convenient way to generate a diff from two
 strings or files.")
     (license license:expat)))
+
+(define-public ruby-sass-spec
+  (package
+    (name "ruby-sass-spec")
+    (version "3.5.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sass/sass-spec/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nx8lp7c9qa58w489crgqa3c489xsyarn1a8h4np9mwwfqm1h3rr"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-command-line-reporter-3" ,ruby-command-line-reporter-3)
+       ("ruby-diffy" ,ruby-diffy)
+       ("ruby-terminfo" ,ruby-terminfo)))
+    (arguments
+     ;; No Rakefile
+     `(#:tests? #f))
+    (home-page "https://github.com/sass/sass-spec")
+    (synopsis "Test suite for Sass")
+    (description "Sass Spec is a test suite for Sass.  Test cases are all in
+the @file{spec} directory.")
+    (license license:expat)))
