@@ -5465,3 +5465,33 @@ checks over your ruby project as part of continuous integration build.  It
 comes with a few checks out of the box, but also provides an API for loading
 custom checks.  This gem provides a set of additional checks.")
     (license license:expat)))
+
+(define-public ruby-pdf-reader
+  (package
+    (name "ruby-pdf-reader")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pdf-reader" version))
+              (sha256
+               (base32
+                "1b3ig4wpcgdbqa7yw0ahwbmikkkywn2a22bfmrknl5ls7g066x45"))))
+    (build-system ruby-build-system)
+    (arguments `(#:test-target "spec"))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-cane" ,ruby-cane)
+       ("ruby-morecane" ,ruby-morecane)))
+    (propagated-inputs
+     `(("ruby-afm" ,ruby-afm)
+       ("ruby-ascii85" ,ruby-ascii85)
+       ("ruby-hashery" ,ruby-hashery)
+       ("ruby-rc4" ,ruby-rc4)
+       ("ruby-ttfunk" ,ruby-ttfunk)))
+    (home-page "https://github.com/yob/pdf-reader")
+    (synopsis "PDF parser in Ruby")
+    (description "The PDF::Reader library implements a PDF parser conforming as
+much as possible to the PDF specification from Adobe.  It provides programmatic
+access to the contents of a PDF file with a high degree of flexibility.")
+    (license license:gpl3+)))
