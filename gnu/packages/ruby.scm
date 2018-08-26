@@ -5788,3 +5788,23 @@ indentation will probably be an issue and hence this gem.")
     (description "The SafeYAML gem provides an alternative implementation of
 YAML.load suitable for accepting user input in Ruby applications.")
     (license license:expat)))
+
+(define-public ruby-mercenary
+  (package
+    (name "ruby-mercenary")
+    (version "0.3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "mercenary" version))
+              (sha256
+               (base32
+                "10la0xw82dh5mqab8bl0dk21zld63cqxb1g16fk8cb39ylc4n21a"))))
+    (build-system ruby-build-system)
+    (arguments `(#:test-target "spec"))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (home-page "https://github.com/jekyll/mercenary")
+    (synopsis "Command-line apps library in Ruby")
+    (description "Mercenary is a lightweight and flexible library for writing
+command-line apps in Ruby.")
+    (license license:expat)))
