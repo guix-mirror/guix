@@ -5719,3 +5719,23 @@ is compatible with stylesheets designed for pygments.")
               (sha256
                (base32
                 "02kpahk5nkc33yxnn75649kzxaz073wvazr2zyg491nndykgnvcs"))))))
+
+(define-public ruby-hashie
+  (package
+    (name "ruby-hashie")
+    (version "3.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "hashie" version))
+              (sha256
+               (base32
+                "13bdzfp25c8k51ayzxqkbzag3wj5gc1jd8h7d985nsq6pn57g5xh"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (arguments `(#:tests? #f)); FIXME: Could not locate Gemfile or .bundle/ directory
+    (home-page "https://github.com/intridea/hashie")
+    (synopsis "Extensions to Ruby Hashes")
+    (description "Hashie is a collection of classes and mixins that make Ruby
+hashes more powerful.")
+    (license license:expat)))
