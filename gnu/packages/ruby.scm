@@ -5557,3 +5557,38 @@ documentation that can be exported to a number of formats very easily, and
 also supports extending for custom Ruby constructs such as custom class level
 definitions.")
     (license license:expat)))
+
+(define-public ruby-prawn
+  (package
+    (name "ruby-prawn")
+    (version "2.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "prawn" version))
+              (sha256
+               (base32
+                "1qdjf1v6sfl44g3rqxlg8k4jrzkwaxgvh2l4xws97a8f3xv4na4m"))))
+    (build-system ruby-build-system)
+    (arguments
+     ; No tests
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-dependencies
+           (lambda _
+             (substitute* "prawn.gemspec"
+               (("~> 0.7.0") "~> 0.7"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-pdf-core" ,ruby-pdf-core)
+       ("ruby-ttfunk" ,ruby-ttfunk)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-pdf-inspector" ,ruby-pdf-inspector)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-yard" ,ruby-yard)))
+    (home-page "http://prawnpdf.org/api-docs/2.0/")
+    (synopsis "PDF generation for Ruby")
+    (description "Prawn is a pure Ruby PDF generation library.")
+    (license license:gpl3+)))
