@@ -5383,3 +5383,25 @@ features that don't exist yet like variables, nesting, mixins and inheritance.")
     (description "This gem provide built-in support for the Sass converter
 in Jekyll.")
     (license license:expat)))
+
+(define-public ruby-jekyll-watch
+  (package
+    (name "ruby-jekyll-watch")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "jekyll-watch" version))
+              (sha256
+               (base32
+                "0m7scvj3ki8bmyx5v8pzibpg6my10nycnc28lip98dskf8iakprp"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-listen-3.0" ,ruby-listen-3.0)))
+    (arguments
+     ;; No rakefile
+     `(#:tests? #f))
+    (home-page "https://github.com/jekyll/jekyll-watch")
+    (synopsis "Jekyll auto-rebuild support")
+    (description "This gems add the @code{--watch} switch to the jekyll CLI
+interface.  It allows Jekyll to rebuild your site when a file changes.")
+    (license license:expat)))
