@@ -5443,3 +5443,25 @@ suited for map-reduce or e.g. parallel downloads/uploads.")
     (synopsis "Code quality threshold checking")
     (description "Cane fails your build if code quality thresholds are not met.")
     (license license:asl2.0)))
+
+(define-public ruby-morecane
+  (package
+    (name "ruby-morecane")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "morecane" version))
+              (sha256
+               (base32
+                "0w70vb8z5bdhvr21h660aa43m5948pv0bd27z7ngai2iwdvqd771"))))
+    (build-system ruby-build-system)
+    (home-page "https://github.com/yob/morecane")
+    (arguments `(#:tests? #f)); No rakefile
+    (propagated-inputs
+     `(("ruby-parallel" ,ruby-parallel)))
+    (synopsis "Extra checks for cane")
+    (description "The cane gem provides a great framework for running quality
+checks over your ruby project as part of continuous integration build.  It
+comes with a few checks out of the box, but also provides an API for loading
+custom checks.  This gem provides a set of additional checks.")
+    (license license:expat)))
