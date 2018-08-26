@@ -5144,3 +5144,23 @@ all known public suffixes.")
 is part of Ruby's standard library.  It more closely conforms to RFC 3986,
 RFC 3987, and RFC 6570 (level 4), providing support for IRIs and URI templates.")
     (license license:asl2.0)))
+
+(define-public ruby-colorator
+  (package
+    (name "ruby-colorator")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "colorator" version))
+              (sha256
+               (base32
+                "0f7wvpam948cglrciyqd798gdc6z3cfijciavd0dfixgaypmvy72"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No test target
+     `(#:tests? #f))
+    (home-page "http://octopress.org/colorator/")
+    (synopsis "Terminal color library")
+    (description "Colorator is a Ruby gem that helps you colorize your text
+for the terminal.")
+    (license license:expat)))
