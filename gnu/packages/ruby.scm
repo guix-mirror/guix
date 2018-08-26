@@ -5658,3 +5658,30 @@ popular by the PHP @code{Markdown Extra} package and @code{Maruku}.")
     (description "This gem is a simple callback-based HTTP request/response
 parser for writing http servers, clients and proxies.")
     (license license:expat)))
+
+(define-public ruby-em-websocket
+  (package
+    (name "ruby-em-websocket")
+    (version "0.5.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "em-websocket" version))
+        (sha256
+          (base32
+            "1bsw8vjz0z267j40nhbmrvfz7dvacq4p0pagvyp17jif6mj6v7n3"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (propagated-inputs
+      `(("ruby-eventmachine" ,ruby-eventmachine)
+        ("ruby-http-parser.rb" ,ruby-http-parser.rb)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (home-page "https://github.com/igrigorik/em-websocket")
+    (synopsis "EventMachine based WebSocket server")
+    (description "Em-websocket is an EventMachine based WebSocket server
+implementation.")
+    (license license:expat)))
