@@ -5685,3 +5685,26 @@ parser for writing http servers, clients and proxies.")
     (description "Em-websocket is an EventMachine based WebSocket server
 implementation.")
     (license license:expat)))
+
+(define-public ruby-rouge
+  (package
+    (name "ruby-rouge")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rouge" version))
+              (sha256
+               (base32
+                "0h79gn2wmn1wix2d27lgiaimccyj8gvizrllyym500pir408x62f"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); No rakefile
+    (home-page "http://rouge.jneen.net/")
+    (synopsis "Code highlighter")
+    (description "Rouge is a code highlighter written in Ruby.  It supports more
+than 100 languages and outputs HTML or ANSI 256-color text.  Its HTML output
+is compatible with stylesheets designed for pygments.")
+    (license (list
+               ;; rouge is licensed under expat
+               license:expat
+               ;; pygments is licensed under bsd-2
+               license:bsd-2))))
