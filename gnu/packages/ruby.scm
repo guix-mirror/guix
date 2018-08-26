@@ -5280,3 +5280,26 @@ about the changes.")
     (synopsis "Terminfo binding for Ruby")
     (description "Ruby-terminfo provides terminfo binding for Ruby.")
     (license license:bsd-3)))
+
+(define-public ruby-diffy
+  (package
+    (name "ruby-diffy")
+    (version "3.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "diffy" version))
+        (sha256
+          (base32
+            "119imrkn01agwhx5raxhknsi331y5i4yda7r0ws0an6905ximzjg"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (home-page "https://github.com/samg/diffy")
+    (synopsis "Convenient diffing in ruby")
+    (description "Diffy provides a convenient way to generate a diff from two
+strings or files.")
+    (license license:expat)))
