@@ -281,16 +281,17 @@ packaging native C and Java extensions in Ruby.")
 (define-public ruby-i18n
   (package
     (name "ruby-i18n")
-    (version "0.7.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "i18n" version))
               (sha256
                (base32
-                "1i5z1ykl8zhszsxcs8mzl8d0dxgs3ylz8qlzrw74jb0gplkx6758"))))
+                "0ppvmla21hssvrfm8g1n2fnb4lxn4yhy9qmmba0imanflgldrjmr"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
+    (propagated-inputs `(("concurrent-ruby" ,ruby-concurrent)))
     (synopsis "Internationalization library for Ruby")
     (description "Ruby i18n is an internationalization and localization
 solution for Ruby programs.  It features translation and localization,
