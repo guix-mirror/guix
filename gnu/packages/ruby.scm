@@ -5329,3 +5329,24 @@ strings or files.")
     (description "Sass Spec is a test suite for Sass.  Test cases are all in
 the @file{spec} directory.")
     (license license:expat)))
+
+(define-public ruby-sass
+  (package
+    (name "ruby-sass")
+    (version "3.5.7")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "sass" version))
+              (sha256
+               (base32
+                "1sy7xsbgpcy90j5ynbq967yplffp74pvph3r8ivn2sv2b44q6i61"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-sass-listen" ,ruby-sass-listen)))
+    (native-inputs
+     `(("ruby-sass-spec" ,ruby-sass-spec)))
+    (home-page "http://sass-lang.com/")
+    (synopsis "CSS extension language")
+    (description "Sass is a CSS extension language.  It extends CSS with
+features that don't exist yet like variables, nesting, mixins and inheritance.")
+    (license license:expat)))
