@@ -5229,3 +5229,26 @@ your application.")
 projects.  RDoc includes the +rdoc+ and +ri+ tools for generating and displaying
 documentation from the command-line.")
     (license license:gpl2+)))
+
+(define-public ruby-sass-listen
+  (package
+    (name "ruby-sass-listen")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "sass-listen" version))
+              (sha256
+               (base32
+                "0xw3q46cmahkgyldid5hwyiwacp590zj2vmswlll68ryvmvcp7df"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No test target
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-rb-fsevent" ,ruby-rb-fsevent)
+       ("ruby-rb-inotify" ,ruby-rb-inotify)))
+    (home-page "https://github.com/sass/listen")
+    (synopsis "File modification notification library")
+    (description "The Listen gem listens to file modifications and notifies you
+about the changes.")
+    (license license:expat)))
