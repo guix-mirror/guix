@@ -5516,3 +5516,23 @@ access to the contents of a PDF file with a high degree of flexibility.")
 use in testing PDF output.  Presently, the primary purpose of this tool is to
 support the tests found in Prawn, a pure Ruby PDF generation library.")
     (license license:gpl3+)))
+
+(define-public ruby-pdf-core
+  (package
+    (name "ruby-pdf-core")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pdf-core" version))
+              (sha256
+               (base32
+                "15d6m99bc8bbzlkcg13qfpjjzphfg5x905pjbfygvpcxsm8gnsvg"))))
+    (build-system ruby-build-system)
+    (arguments
+     ; No test target
+     `(#:tests? #f))
+    (home-page "https://github.com/prawnpdf/pdf-core")
+    (synopsis "Low level PDF features for Prawn")
+    (description "This is an experimental gem that extracts low-level PDF
+functionality from Prawn.")
+    (license license:gpl3+)))
