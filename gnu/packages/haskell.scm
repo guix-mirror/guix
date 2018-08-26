@@ -4256,7 +4256,7 @@ simple general-purpose data structure\".")
 (define-public ghc-optparse-applicative
   (package
     (name "ghc-optparse-applicative")
-    (version "0.13.0.0")
+    (version "0.14.2.0")
     (source
      (origin
        (method url-fetch)
@@ -4265,15 +4265,8 @@ simple general-purpose data structure\".")
              "/optparse-applicative-" version ".tar.gz"))
        (sha256
         (base32
-         "1b0c5fdq8bd070g24vrjrwlq979r8dk8mys6aji9hy1l9pcv3inf"))))
+         "0c3z1mvynlyv1garjbdmdd3npm40dabgm75js4r07cf766c1wd71"))))
     (build-system haskell-build-system)
-    ;; These tests fail because the package doesn't come with all needed test
-    ;; files:
-    ;; - prop_drops_back_contexts
-    ;; - prop_context_carry
-    ;; - prop_help_on_empty
-    ;; - prop_help_on_empty_sub
-    (arguments `(#:tests? #f))
     (inputs
      `(("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)))
