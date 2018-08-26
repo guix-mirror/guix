@@ -5097,3 +5097,27 @@ programs running in the background, in Ruby.")
        (sha256
         (base32
          "0a61922kmvcxyj5l70fycapr87gz1dzzlkfpq85rfqk5vdh3d28p"))))))
+
+(define-public ruby-public-suffix
+  (package
+    (name "ruby-public-suffix")
+    (version "3.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "public_suffix" version))
+              (sha256
+               (base32
+                "08q64b5br692dd3v0a9wq9q5dvycc6kmiqmjbdxkxbfizggsvx6l"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Tests require network
+     `(#:tests? #f))
+    (home-page "https://simonecarletti.com/code/publicsuffix-ruby/")
+    (synopsis "Domain name parser")
+    (description "The gem @code{public_suffix} is a domain name parser,
+written in Ruby, and based on the @dfn{Public Suffix List}.  A public suffix
+is one under which Internet users can (or historically could) directly
+register names.  Some examples of public suffixes are @code{.com},
+@code{.co.uk} and @code{pvt.k12.ma.us}.  The Public Suffix List is a list of
+all known public suffixes.")
+    (license license:expat)))
