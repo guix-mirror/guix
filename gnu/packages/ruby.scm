@@ -5592,3 +5592,22 @@ definitions.")
     (synopsis "PDF generation for Ruby")
     (description "Prawn is a pure Ruby PDF generation library.")
     (license license:gpl3+)))
+
+(define-public ruby-prawn-table
+  (package
+    (name "ruby-prawn-table")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "prawn-table" version))
+              (sha256
+               (base32
+                "1nxd6qmxqwl850icp18wjh5k0s3amxcajdrkjyzpfgq0kvilcv9k"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); No rakefile
+    (propagated-inputs
+     `(("ruby-prawn" ,ruby-prawn)))
+    (home-page "https://github.com/prawnpdf/prawn-table")
+    (synopsis "Tables support for Prawn")
+    (description "This gem provides tables support for Prawn.")
+    (license license:gpl3+)))
