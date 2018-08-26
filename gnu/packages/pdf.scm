@@ -511,7 +511,7 @@ by using the poppler rendering engine.")
 
                      ;; For tests.
                      ("check" ,check)
-                     ("xorg-server" ,xorg-server-1.19.3)))
+                     ("xorg-server" ,xorg-server-for-tests)))
     (inputs `(("sqlite" ,sqlite)))
     ;; Listed in 'Requires.private' of 'zathura.pc'.
     (propagated-inputs `(("cairo" ,cairo)

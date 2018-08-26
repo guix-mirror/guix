@@ -715,9 +715,9 @@ application suites.")
       ("python-wrapper" ,python-wrapper)
       ;; By using a special xorg-server for GTK+'s tests, we reduce the impact
       ;; of updating xorg-server directly on the master branch.
-      ("xorg-server" ,xorg-server-1.19.3)))
+      ("xorg-server" ,xorg-server-for-tests)))
    (arguments
-    `(#:disallowed-references (,xorg-server-1.19.3)
+    `(#:disallowed-references (,xorg-server-for-tests)
       ;; 47 MiB goes to "out" (24 of which is locale data!), and 26 MiB goes
       ;; to "doc".
       #:configure-flags (list (string-append "--with-html-dir="
@@ -1081,7 +1081,7 @@ toolkit.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
-                     ("xorg-server" ,xorg-server-1.19.3)))
+                     ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
@@ -1092,7 +1092,7 @@ toolkit.")
      `(;; XXX: Tests require C++14 or later.  Remove this when the default
        ;; compiler is >= GCC6.
        #:configure-flags '("CXXFLAGS=-std=gnu++14")
-       #:disallowed-references (,xorg-server-1.19.3)
+       #:disallowed-references (,xorg-server-for-tests)
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'run-xvfb
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -1376,7 +1376,7 @@ and routines to assist in editing internationalized text.")
                      ("check" ,check)
                      ("gettext" ,gettext-minimal)
                      ("glib:bin" ,glib "bin")
-                     ("xorg-server" ,xorg-server-1.19.3)))
+                     ("xorg-server" ,xorg-server-for-tests)))
     ;; Listed in 'Requires.private' of 'girara.pc'.
     (propagated-inputs `(("gtk+" ,gtk+)))
     (arguments
