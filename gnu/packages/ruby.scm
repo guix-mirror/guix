@@ -5197,3 +5197,14 @@ of various types in ruby.  It eliminates the need to litter your source with
 puts statements, instead providing a more readable, expressive interface to
 your application.")
     (license license:asl2.0)))
+
+(define-public ruby-command-line-reporter-3
+  (package
+    (inherit ruby-command-line-reporter)
+    (version "3.3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "command_line_reporter" version))
+              (sha256
+               (base32
+                "1h39zqqxp3k4qk49ajpx0jps1vmvxgkh43mqkb6znk583bl0fv71"))))))
