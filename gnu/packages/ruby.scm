@@ -5844,3 +5844,28 @@ to load dynamic content on storefronts.")
     (description "Forwardable Extended provides more @code{Forwardable}
 methods for your source as @code{Forwardable::Extended}.")
     (license license:expat)))
+
+(define-public ruby-pathutil
+  (package
+    (name "ruby-pathutil")
+    (version "0.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pathutil" version))
+              (sha256
+               (base32
+                "0wc18ms1rzi44lpjychyw2a96jcmgxqdvy2949r4vvb5f4p0lgvz"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-forwardable-extended" ,ruby-forwardable-extended)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    ;; Fails with: cannot load such file --
+    ;; /tmp/guix-build-ruby-pathutil-0.16.0.drv-0/gem/benchmark/support/task
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/envygeeks/pathutil")
+    (synopsis "Extended implementation of Pathname")
+    (description "Pathutil tries to be a faster pure Ruby implementation of
+Pathname.")
+    (license license:expat)))
