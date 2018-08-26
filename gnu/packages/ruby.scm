@@ -5908,3 +5908,22 @@ Pathname.")
     (synopsis "Static site generator")
     (description "Jekyll is a simple, blog aware, static site generator.")
     (license license:expat)))
+
+(define-public ruby-jekyll-paginate-v2
+  (package
+    (name "ruby-jekyll-paginate-v2")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "jekyll-paginate-v2" version))
+              (sha256
+               (base32
+                "154bfpyml6abxww9868hhyfvxasl8qhsc5zy2q30c7dxaj0igdib"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("jekyll" ,jekyll)))
+    (home-page "https://github.com/sverrirs/jekyll-paginate-v2")
+    (synopsis "Pagination Generator for Jekyll 3")
+    (description "The Pagination Generator forms the core of the pagination
+logic in Jekyll.  It calculates and generates the pagination pages.")
+    (license license:expat)))
