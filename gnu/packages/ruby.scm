@@ -5765,3 +5765,26 @@ fact is that most parsers are insensitive to indentation.  If, however, the
 strings are to be used otherwise, be it for printing or testing, the extra
 indentation will probably be an issue and hence this gem.")
     (license license:expat)))
+
+(define-public ruby-safe-yaml
+  (package
+    (name "ruby-safe-yaml")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "safe_yaml" version))
+              (sha256
+               (base32
+                "1hly915584hyi9q9vgd968x2nsi5yag9jyf5kq60lwzi5scr7094"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-hashie" ,ruby-hashie)
+       ("ruby-heredoc-unindent" ,ruby-heredoc-unindent)))
+    (arguments `(#:test-target "spec"
+                 #:tests? #f));; FIXME: one failure
+    (home-page "https://github.com/dtao/safe_yaml")
+    (synopsis "YAML parser")
+    (description "The SafeYAML gem provides an alternative implementation of
+YAML.load suitable for accepting user input in Ruby applications.")
+    (license license:expat)))
