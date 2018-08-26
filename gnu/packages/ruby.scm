@@ -4678,7 +4678,7 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
 (define-public ruby-ttfunk
   (package
     (name "ruby-ttfunk")
-    (version "1.4.0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
@@ -4689,12 +4689,18 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1izq84pnm9niyvkzp8k0vl232q9zj41hwmp9na9fzycfh1pbnsl6"))))
+         "1ymcn12n5iws401yz03zsj8rr653fdqq13czsrciq09phgh9jzc5"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'remove-ssh
+           (lambda _
+             ;; remove dependency on an ssh key pair that doesn't exist
+             (substitute* "ttfunk.gemspec"
+               (("spec.signing_key.*") ""))
+             #t))
          (add-before 'check 'remove-rubocop
            (lambda _
              ;; remove rubocop as a dependency as not needed for testing
@@ -4702,10 +4708,11 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
                (("spec.add_development_dependency\\('rubocop'.*") ""))
              (substitute* "Rakefile"
                (("require 'rubocop/rake_task'") "")
-               (("Rubocop::RakeTask.new") ""))
+               (("RuboCop::RakeTask.new") ""))
              #t)))))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-yard" ,ruby-yard)
        ("bundler" ,bundler)))
     (synopsis "Font metrics parser for the Prawn PDF generator")
     (description
