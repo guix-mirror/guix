@@ -5808,3 +5808,21 @@ YAML.load suitable for accepting user input in Ruby applications.")
     (description "Mercenary is a lightweight and flexible library for writing
 command-line apps in Ruby.")
     (license license:expat)))
+
+(define-public ruby-liquid
+  (package
+    (name "ruby-liquid")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "liquid" version))
+              (sha256
+               (base32
+                "17fa0jgwm9a935fyvzy8bysz7j5n1vf1x2wzqkdfd5k08dbw3x2y"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); No rakefile
+    (home-page "https://shopify.github.io/liquid/")
+    (synopsis "Template language")
+    (description "Liquid is a template language written in Ruby.  It is used
+to load dynamic content on storefronts.")
+    (license license:expat)))
