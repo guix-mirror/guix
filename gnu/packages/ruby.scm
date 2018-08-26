@@ -5826,3 +5826,21 @@ command-line apps in Ruby.")
     (description "Liquid is a template language written in Ruby.  It is used
 to load dynamic content on storefronts.")
     (license license:expat)))
+
+(define-public ruby-forwardable-extended
+  (package
+    (name "ruby-forwardable-extended")
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "forwardable-extended" version))
+              (sha256
+               (base32
+                "15zcqfxfvsnprwm8agia85x64vjzr2w0xn9vxfnxzgcv8s699v0v"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); Cyclic dependency on luna-rspec-formatters
+    (home-page "https://github.com/envygeeks/forwardable-extended")
+    (synopsis "Delegation to hashes and instance variables in Forwardable")
+    (description "Forwardable Extended provides more @code{Forwardable}
+methods for your source as @code{Forwardable::Extended}.")
+    (license license:expat)))
