@@ -5121,3 +5121,26 @@ register names.  Some examples of public suffixes are @code{.com},
 @code{.co.uk} and @code{pvt.k12.ma.us}.  The Public Suffix List is a list of
 all known public suffixes.")
     (license license:expat)))
+
+(define-public ruby-addressable
+  (package
+    (name "ruby-addressable")
+    (version "2.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "addressable" version))
+              (sha256
+               (base32
+                "0viqszpkggqi8hq87pqp0xykhvz60g99nwmkwsb0v45kc2liwxvk"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-public-suffix" ,ruby-public-suffix)))
+    (arguments
+     ;; No test target
+     `(#:tests? #f))
+    (home-page "https://github.com/sporkmonger/addressable")
+    (synopsis "Alternative URI implementation")
+    (description "Addressable is a replacement for the URI implementation that
+is part of Ruby's standard library.  It more closely conforms to RFC 3986,
+RFC 3987, and RFC 6570 (level 4), providing support for IRIs and URI templates.")
+    (license license:asl2.0)))
