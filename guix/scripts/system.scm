@@ -310,9 +310,9 @@ names of services to load (upgrade), and the list of names of services to
 unload."
   (match (current-services)
     ((services ...)
-     (let-values (((to-unload to-load)
+     (let-values (((to-unload to-restart)
                    (shepherd-service-upgrade services new-services)))
-       (mproc to-load
+       (mproc to-restart
               (map (compose first live-service-provision)
                    to-unload))))
     (#f
@@ -335,25 +335,32 @@ bring the system down."
   ;; Arrange to simply emit a warning if the service upgrade fails.
   (with-shepherd-error-handling
    (call-with-service-upgrade-info new-services
-     (lambda (to-load to-unload)
+     (lambda (to-restart to-unload)
         (for-each (lambda (unload)
                     (info (G_ "unloading service '~a'...~%") unload)
                     (unload-service unload))
                   to-unload)
 
         (with-monad %store-monad
-          (munless (null? to-load)
-            (let ((to-load-names  (map shepherd-service-canonical-name to-load))
-                  (to-start       (filter shepherd-service-auto-start? to-load)))
-              (info (G_ "loading new services:~{ ~a~}...~%") to-load-names)
+          (munless (null? new-services)
+            (let ((new-service-names  (map shepherd-service-canonical-name new-services))
+                  (to-restart-names   (map shepherd-service-canonical-name to-restart))
+                  (to-start           (filter shepherd-service-auto-start? new-services)))
+              (info (G_ "loading new services:~{ ~a~}...~%") new-service-names)
+              (unless (null? to-restart-names)
+                ;; Listing TO-RESTART-NAMES in the message below wouldn't help
+                ;; because many essential services cannot be meaningfully
+                ;; restarted.  See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=22039#30>.
+                (format #t (G_ "To complete the upgrade, run 'herd restart SERVICE' to stop,
+upgrade, and restart each service that was not automatically restarted.\n")))
               (mlet %store-monad ((files (mapm %store-monad
                                                (compose lower-object
                                                         shepherd-service-file)
-                                               to-load)))
+                                               new-services)))
                 ;; Here we assume that FILES are exactly those that were computed
                 ;; as part of the derivation that built OS, which is normally the
                 ;; case.
-                (load-services (map derivation->output-path files))
+                (load-services/safe (map derivation->output-path files))
 
                 (for-each start-service
                           (map shepherd-service-canonical-name to-start))

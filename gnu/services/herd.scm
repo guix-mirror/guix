@@ -50,6 +50,7 @@
             unload-services
             unload-service
             load-services
+            load-services/safe
             start-service
             stop-service))
 
@@ -231,6 +232,25 @@ returns a shepherd <service> object."
                 ,@(map (lambda (file)
                          `(primitive-load ,file))
                        files))))
+
+(define (load-services/safe files)
+  "This is like 'load-services', but make sure only the subset of FILES that
+can be safely reloaded is actually reloaded.
+
+This is done to accommodate the Shepherd < 0.15.0 where services lacked the
+'replacement' slot, and where 'register-services' would throw an exception
+when passed a service with an already-registered name."
+  (eval-there `(let* ((services     (map primitive-load ',files))
+                      (slots        (map slot-definition-name
+                                         (class-slots <service>)))
+                      (can-replace? (memq 'replacement slots)))
+                 (define (registered? service)
+                   (not (null? (lookup-services (canonical-name service)))))
+
+                 (apply register-services
+                        (if can-replace?
+                            services
+                            (remove registered? services))))))
 
 (define (start-service name)
   (with-shepherd-action name ('start) result

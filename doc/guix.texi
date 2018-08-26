@@ -33,7 +33,7 @@ Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2017, 2018 Clément Lassieur@*
 Copyright @copyright{} 2017 Mathieu Othacehe@*
 Copyright @copyright{} 2017 Federico Beffa@*
-Copyright @copyright{} 2017 Carlo Zancanaro@*
+Copyright @copyright{} 2017, 2018 Carlo Zancanaro@*
 Copyright @copyright{} 2017 Thomas Danckaert@*
 Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
@@ -21920,9 +21920,9 @@ systems already running GuixSD.}.
 This effects all the configuration specified in @var{file}: user
 accounts, system services, global package list, setuid programs, etc.
 The command starts system services specified in @var{file} that are not
-currently running; if a service is currently running, it does not
-attempt to upgrade it since this would not be possible without stopping it
-first.
+currently running; if a service is currently running this command will
+arrange for it to be upgraded the next time it is stopped (eg. by
+@code{herd stop X} or @code{herd restart X}).
 
 This command creates a new generation whose number is one greater than
 the current generation (as reported by @command{guix system
