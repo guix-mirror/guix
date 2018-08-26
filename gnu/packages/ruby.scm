@@ -5208,3 +5208,24 @@ your application.")
               (sha256
                (base32
                 "1h39zqqxp3k4qk49ajpx0jps1vmvxgkh43mqkb6znk583bl0fv71"))))))
+
+(define-public ruby-rdoc
+  (package
+    (name "ruby-rdoc")
+    (version "6.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "rdoc" version))
+        (sha256
+          (base32
+            "0anv42cqcdc6g4n386mrva7mgav5i0c2ry3yzvzzc6z6hymkmcr7"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (home-page "https://ruby.github.io/rdoc/")
+    (synopsis "HTML and command-line documentation utility")
+    (description "RDoc produces HTML and command-line documentation for Ruby
+projects.  RDoc includes the +rdoc+ and +ri+ tools for generating and displaying
+documentation from the command-line.")
+    (license license:gpl2+)))
