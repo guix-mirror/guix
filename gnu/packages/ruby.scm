@@ -5634,3 +5634,27 @@ of Markdown.  It is completely written in Ruby, supports standard Markdown
 (with some minor modifications) and various extensions that have been made
 popular by the PHP @code{Markdown Extra} package and @code{Maruku}.")
     (license license:expat)))
+
+(define-public ruby-http-parser.rb
+  (package
+    (name "ruby-http-parser.rb")
+    (version "0.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "http_parser.rb" version))
+        (sha256
+          (base32
+            "15nidriy0v5yqfjsgsra51wmknxci2n2grliz78sf9pga3n0l7gi"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No tests
+     `(#:tests? #f))
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (home-page "https://github.com/tmm1/http_parser.rb")
+    (synopsis "HTTP parser un Ruby")
+    (description "This gem is a simple callback-based HTTP request/response
+parser for writing http servers, clients and proxies.")
+    (license license:expat)))
