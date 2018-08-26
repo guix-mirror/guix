@@ -5405,3 +5405,22 @@ in Jekyll.")
     (description "This gems add the @code{--watch} switch to the jekyll CLI
 interface.  It allows Jekyll to rebuild your site when a file changes.")
     (license license:expat)))
+
+(define-public ruby-parallel
+  (package
+    (name "ruby-parallel")
+    (version "1.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "parallel" version))
+              (sha256
+               (base32
+                "01hj8v1qnyl5ndrs33g8ld8ibk0rbcqdpkpznr04gkbxd11pqn67"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); No rakefile
+    (home-page "https://github.com/grosser/parallel")
+    (synopsis "Parallel processing in Ruby")
+    (description "Parallel allows you to run any code in parallel Processes
+(to use all CPUs) or Threads(to speedup blocking operations).  It is best
+suited for map-reduce or e.g. parallel downloads/uploads.")
+    (license license:expat)))
