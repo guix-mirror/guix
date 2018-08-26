@@ -9655,8 +9655,9 @@ characters, mouse support, and auto suggestions.")
                            (invoke "py.test" "-vv"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-parso" ,python-parso)
        ("python-docopt" ,python-docopt)))
+    (propagated-inputs
+     `(("python-parso" ,python-parso)))
     (home-page "https://github.com/davidhalter/jedi")
     (synopsis "Autocompletion and static analysis library for Python")
     (description
