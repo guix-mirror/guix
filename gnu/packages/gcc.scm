@@ -469,6 +469,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "1m0lr7938lw5d773dkvwld90hjlcq2282517d1gwvrfzmwgg42w5"))
               (patches (search-patches "gcc-libsanitizer-fix.patch"
+                                       "gcc-libsanitizer-ustat.patch"
                                        "gcc-strmov-store-file-names.patch"
                                        "gcc-6-source-date-epoch-1.patch"
                                        "gcc-6-source-date-epoch-2.patch"
@@ -513,6 +514,7 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "0p71bij6bfhzyrs8676a8jmpjsfz392s2rg862sdnsk30jpacb43"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
+                                       "gcc-libsanitizer-ustat.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))
     (description
      "GCC is the GNU Compiler Collection.  It provides compiler front-ends
