@@ -3034,6 +3034,17 @@ you about the changes.")
     (home-page "https://github.com/guard/listen")
     (license license:expat)))
 
+(define-public ruby-listen-3.0
+  (package
+    (inherit ruby-listen)
+    (version "3.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "listen" version))
+              (sha256
+               (base32
+                "1l0y7hbyfiwpvk172r28hsdqsifq1ls39hsfmzi1vy4ll0smd14i"))))))
+
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
