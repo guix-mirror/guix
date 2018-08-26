@@ -5869,3 +5869,42 @@ methods for your source as @code{Forwardable::Extended}.")
     (description "Pathutil tries to be a faster pure Ruby implementation of
 Pathname.")
     (license license:expat)))
+
+(define-public jekyll
+  (package
+    (name "jekyll")
+    (version "3.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "jekyll" version))
+              (sha256
+               (base32
+                "1iw90wihk9dscgmppf5v6lysg3kjmnx50mjyl4gghkdb4spw97xk"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No rakefile, but a test subdirectory
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-i18n
+           (lambda _
+             (substitute* ".gemspec"
+               (("~> 0.7") ">= 0.7"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-addressable" ,ruby-addressable)
+       ("ruby-colorator" ,ruby-colorator)
+       ("ruby-em-websocket" ,ruby-em-websocket)
+       ("ruby-i18n" ,ruby-i18n)
+       ("ruby-jekyll-sass-converter" ,ruby-jekyll-sass-converter)
+       ("ruby-jekyll-watch" ,ruby-jekyll-watch)
+       ("ruby-kramdown" ,ruby-kramdown)
+       ("ruby-liquid" ,ruby-liquid)
+       ("ruby-mercenary" ,ruby-mercenary)
+       ("ruby-pathutil" ,ruby-pathutil)
+       ("ruby-rouge" ,ruby-rouge-2)
+       ("ruby-safe-yaml" ,ruby-safe-yaml)))
+    (home-page "https://jekyllrb.com/")
+    (synopsis "Static site generator")
+    (description "Jekyll is a simple, blog aware, static site generator.")
+    (license license:expat)))
