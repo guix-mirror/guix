@@ -5424,3 +5424,22 @@ interface.  It allows Jekyll to rebuild your site when a file changes.")
 (to use all CPUs) or Threads(to speedup blocking operations).  It is best
 suited for map-reduce or e.g. parallel downloads/uploads.")
     (license license:expat)))
+
+(define-public ruby-cane
+  (package
+    (name "ruby-cane")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "cane" version))
+              (sha256
+               (base32
+                "0yf5za3l7lhrqa3g56sah73wh33lbxy5y3cb7ij0a2bp1b4kwhih"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)); No rakefile
+    (home-page "https://github.com/square/cane")
+    (propagated-inputs
+     `(("ruby-parallel" ,ruby-parallel)))
+    (synopsis "Code quality threshold checking")
+    (description "Cane fails your build if code quality thresholds are not met.")
+    (license license:asl2.0)))
