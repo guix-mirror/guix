@@ -5019,12 +5019,14 @@ deployments.")
                                "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-/bin/sh
+         (add-after 'unpack 'use-absolute-file-names
            (lambda _
              (substitute* '("bin/varnishtest/vtc_varnish.c"
                             "bin/varnishtest/vtc_process.c"
                             "bin/varnishd/mgt/mgt_vcc.c")
                (("/bin/sh") (which "sh")))
+             (substitute* "bin/varnishd/mgt/mgt_shmem.c"
+               (("rm -rf") (string-append (which "rm") " -rf")))
              #t))
          (add-before 'install 'patch-Makefile
            (lambda _
