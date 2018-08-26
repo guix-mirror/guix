@@ -5164,3 +5164,36 @@ RFC 3987, and RFC 6570 (level 4), providing support for IRIs and URI templates."
     (description "Colorator is a Ruby gem that helps you colorize your text
 for the terminal.")
     (license license:expat)))
+
+(define-public ruby-command-line-reporter
+  (package
+    (name "ruby-command-line-reporter")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "command_line_reporter" version))
+              (sha256
+               (base32
+                "1qma35xrb772whxwy1rs9bicb9d6lvz0s2dd2dnn4fr6zcbcxc0a"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; No Rakefile
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-dependencies
+           (lambda _
+             (substitute* ".gemspec"
+               ;; colored is unmaintained
+               (("colored") "colorator")
+               ;; colorator version
+               (("= 1.2") "= 1.1"))
+             #t)))))
+    (propagated-inputs `(("ruby-colorator" ,ruby-colorator)))
+    (home-page "https://github.com/wbailey/command_line_reporter")
+    (synopsis "Report production while executing Ruby scripts")
+    (description "This gem provides a DSL that makes it easy to write reports
+of various types in ruby.  It eliminates the need to litter your source with
+puts statements, instead providing a more readable, expressive interface to
+your application.")
+    (license license:asl2.0)))
