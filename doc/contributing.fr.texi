@@ -110,14 +110,14 @@ changement localement sans les installer pour de vrai.  Pour pouvoir
 distinguer votre rôle « d'utilisateur final » de celui parfois haut en
 couleur de « développeur ».
 
-Pour cela, tous les outils en ligne de commande sont utilisables même sans
-avoir lancé @code{make install}.  Vous devez pour cela préfixer chaque
-commande par @command{./pre-inst-env} (le script @file{pre-inst-env} se
-trouve dans le répertoire de plus haut niveau de l'arborescence des sources
-de Guix) comme cela@footnote{L'option @option{-E} de @command{sudo} garantie
-que @code{GUILE_LOAD_PATH} est bien paramétré pour @command{guix-daemon} et
-les outils qu'il utilise puissent trouver les modules Guile dont ils ont
-besoin.} :
+To that end, all the command-line tools can be used even if you have not run
+@code{make install}.  To do that, you first need to have an environment with
+all the dependencies available (@pxref{Construire depuis Git}), and then simply
+prefix each command with @command{./pre-inst-env} (the @file{pre-inst-env}
+script lives in the top build tree of Guix), as in@footnote{The @option{-E}
+flag to @command{sudo} guarantees that @code{GUILE_LOAD_PATH} is correctly
+set such that @command{guix-daemon} and the tools it uses can find the Guile
+modules they need.}:
 
 @example
 $ sudo -E ./pre-inst-env guix-daemon --build-users-group=guixbuild
@@ -213,11 +213,12 @@ variables @var{yas-snippet-dirs} d'Emacs.
   (add-to-list 'yas-snippet-dirs "~/src/guix/etc/snippets"))
 @end lisp
 
-Les extraits de messages de commit dépendent de @url{https://magit.vc/,
-Magit} pour afficher les fichiers sélectionnés.  Lors de la modification
-d'un message de commit, tapez @code{add} suivi de @kbd{TAB} pour insérer un
-modèle de message de commit pour ajouter un paquet ; tapez @code{update}
-suivi de @kbd{TAB} pour insérer un modèle pour la mise à jour d'un paquet.
+The commit message snippets depend on @url{https://magit.vc/, Magit} to
+display staged files.  When editing a commit message type @code{add}
+followed by @kbd{TAB} to insert a commit message template for adding a
+package; type @code{update} followed by @kbd{TAB} to insert a template for
+updating a package; type @code{https} followed by @kbd{TAB} to insert a
+template for changing the home page URI of a package to HTTPS.
 
 L'extrait principal pour @code{scheme-mode} est lancé en tapant
 @code{package…} suivi par @kbd{TAB}.  Cet extrait insère aussi la chaîne de
