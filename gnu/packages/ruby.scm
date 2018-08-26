@@ -37,6 +37,7 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ragel)
@@ -5252,3 +5253,30 @@ documentation from the command-line.")
     (description "The Listen gem listens to file modifications and notifies you
 about the changes.")
     (license license:expat)))
+
+(define-public ruby-terminfo
+  (package
+    (name "ruby-terminfo")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "ruby-terminfo" version))
+        (sha256
+          (base32
+            "0rl4ic5pzvrpgd42z0c1s2n3j39c9znksblxxvmhkzrc0ckyg2cm"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "test"
+       ;; Rakefile requires old packages and would need modification to
+       ;; work with current software.
+       #:tests? #f))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (native-inputs
+     `(("ruby-rubygems-tasks" ,ruby-rubygems-tasks)
+       ("ruby-rdoc" ,ruby-rdoc)))
+    (home-page "http://www.a-k-r.org/ruby-terminfo/")
+    (synopsis "Terminfo binding for Ruby")
+    (description "Ruby-terminfo provides terminfo binding for Ruby.")
+    (license license:bsd-3)))
