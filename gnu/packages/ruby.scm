@@ -5708,3 +5708,14 @@ is compatible with stylesheets designed for pygments.")
                license:expat
                ;; pygments is licensed under bsd-2
                license:bsd-2))))
+
+(define-public ruby-rouge-2
+  (package
+    (inherit ruby-rouge)
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rouge" version))
+              (sha256
+               (base32
+                "02kpahk5nkc33yxnn75649kzxaz073wvazr2zyg491nndykgnvcs"))))))
