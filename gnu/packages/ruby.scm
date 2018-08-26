@@ -5350,3 +5350,25 @@ the @file{spec} directory.")
     (description "Sass is a CSS extension language.  It extends CSS with
 features that don't exist yet like variables, nesting, mixins and inheritance.")
     (license license:expat)))
+
+(define-public ruby-jekyll-sass-converter
+  (package
+    (name "ruby-jekyll-sass-converter")
+    (version "1.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "jekyll-sass-converter" version))
+              (sha256
+               (base32
+                "008ikh5fk0n6ri54mylcl8jn0mq8p2nfyfqif2q3pp0lwilkcxsk"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-sass" ,ruby-sass)))
+    (arguments
+     ;; No rakefile
+     `(#:tests? #f))
+    (home-page "https://github.com/jekyll/jekyll-sass-converter")
+    (synopsis "Sass converter for Jekyll")
+    (description "This gem provide built-in support for the Sass converter
+in Jekyll.")
+    (license license:expat)))
