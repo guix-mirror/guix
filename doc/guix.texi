@@ -16888,6 +16888,86 @@ body of a named location block cannot contain location blocks.
 @end table
 @end deftp
 
+@subsubheading Varnish Cache
+@cindex Varnish
+Varnish is a fast cache server that sits in between web applications
+and end users.  It proxies requests from clients and caches the
+accessed URLs such that multiple requests for the same resource only
+creates one request to the back-end.
+
+@defvr {Scheme Variable} varnish-service-type
+Service type for the Varnish daemon.
+@end defvr
+
+@deftp {Data Type} varnish-configuration
+Data type representing the @code{varnish} service configuration.
+This type has the following parameters:
+
+@table @asis
+@item @code{package} (default: @code{varnish})
+The Varnish package to use.
+
+@item @code{name} (default: @code{"default"})
+A name for this Varnish instance.  Varnish will create a directory in
+@file{/var/varnish/} with this name and keep temporary files there.  If
+the name starts with a forward slash, it is interpreted as an absolute
+directory name.
+
+Pass the @code{-n} argument to other Varnish programs to connect to the
+named instance, e.g. @command{varnishncsa -n default}.
+
+@item @code{backend} (default: @code{"localhost:8080"})
+The backend to use.  This option has no effect if @code{vcl} is set.
+
+@item @code{vcl} (default: #f)
+The @dfn{VCL} (Varnish Configuration Language) program to run.  If this
+is @code{#f}, Varnish will proxy @code{backend} using the default
+configuration.  Otherwise this must be a file-like object with valid
+VCL syntax.
+
+@c Varnish does not support HTTPS, so keep this URL to avoid confusion.
+For example, to mirror @url{http://www.gnu.org,www.gnu.org} with VCL you
+can do something along these lines:
+
+@example
+(define %gnu-mirror
+  (plain-file
+   "gnu.vcl"
+   "vcl 4.1;
+backend gnu @{ .host = "www.gnu.org"; @}"))
+
+(operating-system
+  ...
+  (services (cons (service varnish-service-type
+                           (varnish-configuration
+                            (listen '(":80"))
+                            (vcl %gnu-mirror)))
+                  %base-services)))
+@end example
+
+The configuration of an already running Varnish instance can be inspected
+and changed using the @command{varnishadm} program.
+
+Consult the @url{https://varnish-cache.org/docs/,Varnish User Guide} and
+@url{https://book.varnish-software.com/4.0/,Varnish Book} for
+comprehensive documentation on Varnish and its configuration language.
+
+@item @code{listen} (default: @code{'("localhost:80")})
+List of addresses Varnish will listen on.
+
+@item @code{storage} (default: @code{'("malloc,128m")})
+List of storage backends that will be available in VCL.
+
+@item @code{parameters} (default: @code{'()})
+List of run-time parameters in the form @code{'(("parameter" . "value"))}.
+
+@item @code{extra-options} (default: @code{'()})
+Additional arguments to pass to the @command{varnishd} process.
+
+@end table
+@end deftp
+
+@subsubheading FastCGI
 @cindex fastcgi
 @cindex fcgiwrap
 FastCGI is an interface between the front-end and the back-end of a web
