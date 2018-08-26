@@ -5495,3 +5495,24 @@ custom checks.  This gem provides a set of additional checks.")
 much as possible to the PDF specification from Adobe.  It provides programmatic
 access to the contents of a PDF file with a high degree of flexibility.")
     (license license:gpl3+)))
+
+(define-public ruby-pdf-inspector
+  (package
+    (name "ruby-pdf-inspector")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pdf-inspector" version))
+              (sha256
+               (base32
+                "1g853az4xzgqxr5xiwhb76g4sqmjg4s79mm35mp676zjsrwpa47w"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-pdf-reader" ,ruby-pdf-reader)))
+    (arguments `(#:tests? #f)); No rakefile
+    (home-page "https://github.com/prawnpdf/pdf-inspector")
+    (synopsis "Analysis classes for inspecting PDF output")
+    (description "This library provides a number of PDF::Reader based tools for
+use in testing PDF output.  Presently, the primary purpose of this tool is to
+support the tests found in Prawn, a pure Ruby PDF generation library.")
+    (license license:gpl3+)))
