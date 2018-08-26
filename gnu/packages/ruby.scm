@@ -5739,3 +5739,29 @@ is compatible with stylesheets designed for pygments.")
     (description "Hashie is a collection of classes and mixins that make Ruby
 hashes more powerful.")
     (license license:expat)))
+
+(define-public ruby-heredoc-unindent
+  (package
+    (name "ruby-heredoc-unindent")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "heredoc_unindent" version))
+              (sha256
+               (base32
+                "14ijr2fsjwhrkjkcaz81d5xnfa4vvgvcflrff83avqw9klm011yw"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (home-page "https://github.com/adrianomitre/heredoc_unindent")
+    (synopsis "Heredoc indentation cleaner")
+    (description "This gem removes common margin from indented strings, such
+as the ones produced by indented heredocs.  In other words, it strips out
+leading whitespace chars at the beggining of each line, but only as much as
+the line with the smallest margin.
+
+It is acknowledged that many strings defined by heredocs are just code and
+fact is that most parsers are insensitive to indentation.  If, however, the
+strings are to be used otherwise, be it for printing or testing, the extra
+indentation will probably be an issue and hence this gem.")
+    (license license:expat)))
