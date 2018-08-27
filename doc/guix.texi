@@ -18165,23 +18165,43 @@ The type of the Cuirass service.  Its value must be a
 @code{cuirass-configuration} object, as described below.
 @end defvr
 
-To add build jobs, you have to set the @code{specifications} field of
-the configuration.  Here is an example of a service defining a build job
-based on a specification that can be found in Cuirass source tree.  This
-service polls the Guix repository and builds a subset of the Guix
-packages, as prescribed in the @file{gnu-system.scm} example spec:
+To add build jobs, you have to set the @code{specifications} field of the
+configuration.  Here is an example of a service that polls the Guix repository
+and builds the packages from a manifest.  Some of the packages are defined in
+the @code{"custom-packages"} input, which is the equivalent of
+@code{GUIX_PACKAGE_PATH}.
 
 @example
-(let ((spec #~((#:name . "guix")
-               (#:url . "git://git.savannah.gnu.org/guix.git")
-               (#:load-path . ".")
-               (#:file . "build-aux/cuirass/gnu-system.scm")
-               (#:proc . cuirass-jobs)
-               (#:arguments (subset . "hello"))
-               (#:branch . "master"))))
-  (service cuirass-service-type
-           (cuirass-configuration
-            (specifications #~(list '#$spec)))))
+(define %cuirass-specs
+  #~(list
+     '((#:name . "my-manifest")
+       (#:load-path-inputs . ("guix"))
+       (#:package-path-inputs . ("custom-packages"))
+       (#:proc-input . "guix")
+       (#:proc-file . "build-aux/cuirass/gnu-system.scm")
+       (#:proc . cuirass-jobs)
+       (#:proc-args . ((subset . "manifests")
+                       (systems . ("x86_64-linux"))
+                       (manifests . (("config" . "guix/manifest.scm")))))
+       (#:inputs . (((#:name . "guix")
+                     (#:url . "git://git.savannah.gnu.org/guix.git")
+                     (#:load-path . ".")
+                     (#:branch . "master")
+                     (#:no-compile? . #t))
+                    ((#:name . "config")
+                     (#:url . "git://git.example.org/config.git")
+                     (#:load-path . ".")
+                     (#:branch . "master")
+                     (#:no-compile? . #t))
+                    ((#:name . "custom-packages")
+                     (#:url . "git://git.example.org/custom-packages.git")
+                     (#:load-path . ".")
+                     (#:branch . "master")
+                     (#:no-compile? . #t)))))))
+
+(service cuirass-service-type
+         (cuirass-configuration
+          (specifications %cuirass-specs)))
 @end example
 
 While information related to build jobs is located directly in the
@@ -18208,7 +18228,7 @@ Owner's group of the @code{cuirass} process.
 Number of seconds between the poll of the repositories followed by the
 Cuirass jobs.
 
-@item @code{database} (default: @code{"/var/run/cuirass/cuirass.db"})
+@item @code{database} (default: @code{"/var/lib/cuirass/cuirass.db"})
 Location of sqlite database which contains the build results and previously
 added specifications.
 
