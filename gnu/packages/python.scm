@@ -2807,7 +2807,7 @@ between language specification and implementation aspects.")
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.14.5")
+    (version "1.15.1")
     (source
      (origin
        (method url-fetch)
@@ -2816,14 +2816,14 @@ between language specification and implementation aspects.")
              version "/numpy-" version ".tar.gz"))
        (sha256
         (base32
-         "0admjpkih63lm19zbbilq8ck4f6ny5kqi03dk3m6b2mnixsh4jhv"))))
+         "1yp75fkqk7abq3mrbqdf0pdmr2phkr2mnng0dbqqvvrmv7jwq71w"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)
        ("lapack" ,lapack)))
     (native-inputs
      `(("python-cython" ,python-cython)
-       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)
        ("gfortran" ,gfortran)))
     (arguments
      `(#:phases
@@ -2868,9 +2868,12 @@ include_dirs = ~a/include
            (lambda* (#:key outputs inputs #:allow-other-keys)
              ;; Make installed package available for running the tests
              (add-installed-pythonpath inputs outputs)
+             ;; Make sure "f2py" etc is found.
+             (setenv "PATH" (string-append (assoc-ref outputs "out") "/bin"
+                                           ":" (getenv "PATH")))
              (with-directory-excursion "/tmp"
-               (zero? (system* "python" "-c"
-                               "import numpy; numpy.test(verbose=2)"))))))))
+               (invoke "python" "-c"
+                       "import numpy; numpy.test(verbose=2)")))))))
     (home-page "http://www.numpy.org/")
     (synopsis "Fundamental package for scientific computing with Python")
     (description "NumPy is the fundamental package for scientific computing
