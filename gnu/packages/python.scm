@@ -2743,6 +2743,41 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 Language (TOML) configuration files.")
     (license license:expat)))
 
+(define-public python-black
+  (package
+    (name "python-black")
+    (version "18.6b4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "black" version))
+       (sha256
+        (base32
+         "0i4sfqgz6w15vd50kbhi7g7rifgqlf8yfr8y78rypd56q64qn592"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-extra-shebangs
+           (lambda _
+             (let ((python3 (which "python3")))
+               (substitute* '("tests/data/fmtonoff.py"
+                              "tests/data/string_prefixes.py"
+                              "tests/data/function.py")
+                 (("#!/usr/bin/env python3(\\.[0-9]+)?" _ minor-version)
+                  (string-append "#!" python3 (if (string? minor-version)
+                                                  minor-version
+                                                  ""))))))))))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-attrs" ,python-attrs)
+       ("python-appdirs" ,python-appdirs)
+       ("python-toml" ,python-toml)))
+    (home-page "https://github.com/ambv/black")
+    (synopsis "The uncompromising code formatter")
+    (description "Black is the uncompromising Python code formatter.")
+    (license license:expat)))
+
 (define-public python-blinker
   (package
     (name "python-blinker")
