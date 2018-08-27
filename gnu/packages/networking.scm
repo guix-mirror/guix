@@ -2013,7 +2013,9 @@ Features:
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out")
                             "/lib")
-             "--with-logfile=/var/log/snmpd.log")
+             "--with-logfile=/var/log/snmpd.log"
+             (string-append "--with-openssl="
+                            (assoc-ref %build-inputs "openssl")))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-tests
