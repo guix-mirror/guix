@@ -495,7 +495,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public weston
   (package
     (name "weston")
-    (version "4.0.0")
+    (version "5.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -503,7 +503,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "weston-" version ".tar.xz"))
               (sha256
                (base32
-                "0n2big8xw6g6n46zm1jyf00dv9r4d84visdz5b8vxpw3xzkhmz50"))))
+                "1bsc9ry566mpk6fdwkqpvwq2j7m79d9cvh7d3lgf6igsphik98hm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
