@@ -1153,13 +1153,13 @@ human-friendly syntax.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.23.1")
+    (version "0.23.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "142nvwb01r2wv42y2cz40bx33hd8ffh6s6gynapg859fmzr2mdah"))))
+        (base32 "1x54pd7hr3y7qahx6b5bf2wzj54xvl8r3s1h4pl254pnmi3wl92v"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -1174,18 +1174,23 @@ human-friendly syntax.")
                               (getcwd) "/build/"
                               (car (scandir "build"
                                             (cut string-prefix? "lib." <>))))))
+                        ;; Disable the "strict data files" option which causes
+                        ;; the build to error out if required data files are not
+                        ;; available (as is the case with PyPI archives).
+                        (substitute* "setup.cfg"
+                          (("addopts = --strict-data-files") "addopts = "))
                         (with-directory-excursion build-directory
                           ;; Delete tests that require "moto" which is not yet in Guix.
                           (for-each delete-file
                                     '("pandas/tests/io/conftest.py"
                                       "pandas/tests/io/json/test_compression.py"
+                                      "pandas/tests/io/parser/test_network.py"
                                       "pandas/tests/io/test_excel.py"
                                       "pandas/tests/io/test_parquet.py"))
-                          (invoke "pytest" "-v" "pandas" "-k"
-                                  (string-append
-                                   "not network and not disabled"
-                                   ;; XXX: Due to the deleted tests above.
-                                   " and not test_read_s3_jsonl")))))))))
+                          (invoke "pytest" "-vv" "pandas" "--skip-slow"
+                                  "--skip-network" "-k"
+                                  ;; XXX: Due to the deleted tests above.
+                                  "not test_read_s3_jsonl"))))))))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-pytz" ,python-pytz)
