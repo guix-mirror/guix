@@ -1173,7 +1173,7 @@ printing and other features typical of a source code editor.")
 (define-public python-pycairo
   (package
     (name "python-pycairo")
-    (version "1.16.3")
+    (version "1.17.1")
     (source
      (origin
       (method url-fetch)
@@ -1181,7 +1181,7 @@ printing and other features typical of a source code editor.")
                           version "/pycairo-" version ".tar.gz"))
       (sha256
        (base32
-        "1xq1bwhyi5imca5kvd28szh2rdzi8g0kaspwaqgsbczqskjj3csv"))))
+        "165n0g7gp2a0qi8558snvfans17x83jv2lv7bx4vr1rxjbn3a2hg"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
