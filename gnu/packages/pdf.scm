@@ -80,20 +80,20 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.67.0")
+   (version "0.68.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1yb6agmcxf0ixqm65d4aknl0hgmswf94x0k59ic0qqav1wd4yjm3"))))
+              "0n0f7mv24lzv9p3dlzakpdhqg7ygcvl6l40grcz95xldzgq083gr"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
    (inputs `(("fontconfig" ,fontconfig)
              ("freetype" ,freetype)
-             ("libjpeg" ,libjpeg)
+             ("libjpeg" ,libjpeg-turbo)
              ("libpng" ,libpng)
              ("libtiff" ,libtiff)
              ("lcms" ,lcms)
