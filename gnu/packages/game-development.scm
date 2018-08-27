@@ -1037,23 +1037,18 @@ of use.")
     (license license:expat)))
 
 (define-public openmw
-  ;; XXX The current version does not support qt 5.11, but the upcoming
-  ;; version (0.44) will do.
-  (let ((commit "5bc073603e8c7887e015a0ef41b4cefd6e688aaf")
-        (revision "1"))
   (package
     (name "openmw")
-    (version (git-version "0.43" revision commit))
+    (version "0.44.0")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://gitlab.com/OpenMW/openmw.git")
-             (commit commit)))
-       (file-name (string-append name "-" version "-checkout"))
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/OpenMW/openmw/archive/"
+                       name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1sp4n3f1syvv0iz7n72wh226fyc0jh98cg8bvs574jvvqx6qn851"))))
+         "03fgm2f2r7y0aqlgp038pdlnllgvm3jimrp968p4nhz1sffvjzcy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -1080,7 +1075,7 @@ the 2002 open-world RPG Morrowind.  The engine comes with its own editor,
 called OpenMW-CS which allows the user to edit or create their own original
 games.")
     (home-page "https://openmw.org")
-    (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public godot
   (package
