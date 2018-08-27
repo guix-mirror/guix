@@ -651,6 +651,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/dovecot-trees-support-dovecot-2.3.patch	\
   %D%/packages/patches/doxygen-gcc-ice.patch			\
   %D%/packages/patches/doxygen-test.patch			\
+  %D%/packages/patches/dropbear-CVE-2018-15599.patch		\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elogind-glibc-2.27.patch			\

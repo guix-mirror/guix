@@ -440,6 +440,7 @@ TCP, not the SSH protocol.")
               (uri (string-append
                     "https://matt.ucc.asn.au/" name "/releases/"
                     name "-" version ".tar.bz2"))
+              (patches (search-patches "dropbear-CVE-2018-15599.patch"))
               (sha256
                (base32
                 "0rgavbzw7jrs5wslxm0dnwx2m409yzxd9hazd92r7kx8xikr3yzj"))))
