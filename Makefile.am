@@ -86,6 +86,7 @@ MODULES =					\
   guix/derivations.scm				\
   guix/grafts.scm				\
   guix/inferior.scm				\
+  guix/describe.scm				\
   guix/gnu-maintenance.scm			\
   guix/self.scm					\
   guix/upstream.scm				\
