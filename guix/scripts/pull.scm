@@ -33,6 +33,8 @@
   #:autoload   (guix inferior) (open-inferior)
   #:use-module (guix scripts build)
   #:autoload   (guix self) (whole-package)
+  #:use-module (guix git)
+  #:use-module (git)
   #:use-module (gnu packages)
   #:autoload   (gnu packages ssh) (guile-ssh)
   #:autoload   (gnu packages tls) (gnutls)
@@ -54,37 +56,6 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:export (guix-pull))
-
-(module-autoload! (resolve-module '(guix scripts pull))
-                  '(git) '(git-error? set-tls-certificate-locations!)
-                  '(guix git) '(latest-repository-commit))
-
-(define (ensure-guile-git!)
-  ;; Previously Guile-Git was not a prerequisite.  Thus, someone running 'guix
-  ;; pull' on an old installation may be lacking Guile-Git.  To address this,
-  ;; we autoload things that depend on Guile-Git and check in the entry point
-  ;; whether Guile-Git is available.
-  ;;
-  ;; TODO: Remove this hack when Guile-Git is widespread or enforced.
-
-  (unless (false-if-exception (resolve-interface '(git)))
-    (leave (G_ "Guile-Git is missing but it is now required by 'guix pull'.
-Install it by running:
-
-  guix package -i ~a
-  export GUILE_LOAD_PATH=$HOME/.guix-profile/share/guile/site/~a:$GUILE_LOAD_PATH
-  export GUILE_LOAD_COMPILED_PATH=$HOME/.guix-profile/lib/guile/~a/site-ccache:$GUILE_LOAD_COMPILED_PATH
-\n")
-           (match (effective-version)
-             ("2.0" "guile2.0-git")
-             (_     "guile-git"))
-           (effective-version)
-           (effective-version)))
-
-  ;; XXX: For unclear reasons this is needed for
-  ;; 'set-tls-certificate-locations!'.
-  (module-use! (resolve-module '(guix scripts pull))
-               (resolve-interface '(git))))
 
 (define %repository-url
   (or (getenv "GUIX_PULL_URL") "https://git.savannah.gnu.org/git/guix.git"))
@@ -467,8 +438,6 @@ and ALIST2 differ, display HEADING upfront."
             (url   (assoc-ref opts 'repository-url))
             (ref   (assoc-ref opts 'ref))
             (cache (string-append (cache-directory) "/pull")))
-       (ensure-guile-git!)
-
        (cond ((assoc-ref opts 'query)
               (process-query opts))
              ((assoc-ref opts 'dry-run?)
