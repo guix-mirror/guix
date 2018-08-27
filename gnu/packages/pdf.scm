@@ -104,8 +104,12 @@
              ;; GLib.  But of course, that Cairo must not depend on Poppler.
              ("cairo" ,(package (inherit cairo)
                          (inputs (alist-delete "poppler"
-                                               (package-inputs cairo)))))
-             ("glib" ,glib)))
+                                               (package-inputs cairo)))))))
+   (propagated-inputs
+    ;; As per poppler-cairo and poppler-glib.pc.
+    ;; XXX: Ideally we'd propagate Cairo too, but that would require a
+    ;; different solution to the circular dependency mentioned above.
+    `(("glib" ,glib)))
    (native-inputs
       `(("pkg-config" ,pkg-config)
         ("glib" ,glib "bin")                      ; glib-mkenums, etc.
