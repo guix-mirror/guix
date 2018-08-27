@@ -120,7 +120,8 @@ tools have full access to view and control running applications.")
             (sha256
              (base32
               "05mzyxkvsfc1annjw2dja8vka01ampp9pp93lg09j8hba06g144c"))
-            (patches (search-patches "cairo-CVE-2016-9082.patch"))))
+            (patches (search-patches "cairo-CVE-2016-9082.patch"
+                                     "cairo-setjmp-wrapper.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
