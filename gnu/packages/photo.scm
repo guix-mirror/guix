@@ -109,7 +109,7 @@ cameras (CRW/CR2, NEF, RAF, DNG, and others).")
                (base32
                 "06nlsibr3ylfwp28w8f5466l6drgrnydgxrm4jmxzrmk5svaxk8n"))))
     (build-system gnu-build-system)
-    (home-page "http://libexif.sourceforge.net/")
+    (home-page "https://libexif.github.io/")
     (synopsis "Read and manipulate EXIF data in digital photographs")
     (description
      "The libexif C library allows applications to read, edit, and save EXIF
