@@ -38,4 +38,5 @@ guix/upstream.scm
 guix/ui.scm
 guix/http-client.scm
 guix/nar.scm
+guix/channels.scm
 nix/nix-daemon/guix-daemon.cc
