@@ -3930,19 +3930,17 @@ the OleFileIO module from PIL, the Python Image Library.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "4.3.0")
+    (version "5.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
        (sha256
         (base32
-         "09xmn7rl6840sli2iz1k3fgxfgmri2nqz6vkinmb9mgg8ifp2z59"))
-       (patch-flags '("-p1" "--binary"))
-       (patches (search-patches "python-pillow-fix-failing-tests.patch"))))
+         "1ary9mj2ddllq3lkxgn6aac7qxqiwbcg2pacrl94py58ql9x9czq"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-nose"       ,python-nose)))
+     `(("python-pytest"       ,python-pytest)))
     (inputs
      `(("freetype" ,freetype)
        ("lcms"     ,lcms)
@@ -3963,9 +3961,8 @@ the OleFileIO module from PIL, the Python Image Library.")
                        ;; Make installed package available for running the
                        ;; tests
                        (add-installed-pythonpath inputs outputs)
-                       (and (zero? (system* "python" "selftest.py"
-                                            "--installed"))
-                            (zero? (system* "python" "test-installed.py"))))))
+                       (invoke "python" "selftest.py" "--installed")
+                       (invoke "python" "-m" "pytest" "-vv"))))
                  (delete 'check))))
     (home-page "https://pypi.python.org/pypi/Pillow")
     (synopsis "Fork of the Python Imaging Library")
