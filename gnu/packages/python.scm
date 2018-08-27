@@ -4078,17 +4078,14 @@ support for Python 3 and PyPy.  It is based on cffi.")
 (define-public python-cairocffi
   (package
     (name "python-cairocffi")
-    (version "0.8.0")
+    (version "0.9.0")
     (source
      (origin
       (method url-fetch)
-      ;; The archive on pypi is missing the 'utils' directory!
-      (uri (string-append "https://github.com/Kozea/cairocffi/archive/v"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (uri (pypi-uri "cairocffi" version))
       (sha256
        (base32
-        "1rk2dvy3fxrga6bvvxc2fi5lbaynm5h4a0w0aaxyn3bc77rszjg9"))
+        "0dq3k4zhqd8cwsf3nyjqvjqm8wkvrjn1wjf44rl3v0h8kqx6qf0m"))
       (patches (search-patches "python-cairocffi-dlopen-path.patch"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
@@ -4101,14 +4098,14 @@ support for Python 3 and PyPy.  It is based on cffi.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)
        ("python-sphinx" ,python-sphinx)
        ("python-docutils" ,python-docutils)))
     (propagated-inputs
      `(("python-xcffib" ,python-xcffib))) ; used at run time
     (arguments
-     `(;; FIXME: Tests cannot find 'libcairo.so.2'.
-       #:tests? #t
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
