@@ -584,6 +584,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/audacity-build-with-system-portaudio.patch \
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
   %D%/packages/patches/avahi-localstatedir.patch		\
+  %D%/packages/patches/avogadro-boost148.patch			\
+  %D%/packages/patches/avogadro-eigen3-update.patch		\
+  %D%/packages/patches/avogadro-python-eigen-lib.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/azr3.patch				\
@@ -768,6 +771,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groff-source-date-epoch.patch		\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
+  %D%/packages/patches/grub-check-error-efibootmgr.patch	\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/gspell-dash-test.patch			\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
@@ -1082,7 +1086,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
-  %D%/packages/patches/python-pygit2-disable-network-tests.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\

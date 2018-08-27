@@ -74,12 +74,14 @@
      '(#:phases (modify-phases %standard-phases (delete 'configure))
        #:test-target "test"
        #:make-flags
-       (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+       (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "exif=1")))
     (native-inputs
      `(("perl" ,perl)
        ("perl-test-command" ,perl-test-command)))
     (inputs `(("imlib2" ,imlib2)
               ("curl" ,curl)
+              ("libexif" ,libexif)
               ("libpng" ,libpng)
               ("libxt" ,libxt)
               ("libx11" ,libx11)

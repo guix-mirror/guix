@@ -12,7 +12,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.

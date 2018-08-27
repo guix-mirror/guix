@@ -1984,6 +1984,30 @@ Vicare Scheme and IronScheme.  Right now it contains:
 @end itemize\n")
     (license license:bsd-3)))
 
+(define-public guile-aa-tree
+  (package
+    (name "guile-aa-tree")
+    (version "3.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/guile-aa-tree/guile-aa-tree-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0044c105r3q9vpl17pv3phl1b79kjm1llhkakqgiasixyav01blh"))))
+    (build-system guile-build-system)
+    (native-inputs `(("guile" ,guile-2.2)))
+    ;; https://savannah.nongnu.org/projects/guile-aa-tree
+    (home-page "https://qlfiles.net/guile-aa-tree/")
+    (synopsis "AA tree data structure for Guile")
+    (description
+     "This package provides an implementation of @dfn{AA trees}, a
+self-balancing binary tree data structure, for Guile.  It ensure @math{O(log
+n)} worst case performance for core operations.  The module provides
+non-mutating insert, delete, and search operations, with support for
+convenient nested tree operations.")
+    (license license:gpl3+)))
+
 (define-public guile-simple-zmq
   (let ((commit "1f3b7c0b9b249c6fde8e8a632b252d8a1b794424")
         (revision "1"))

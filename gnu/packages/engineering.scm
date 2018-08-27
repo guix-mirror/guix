@@ -59,6 +59,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
@@ -76,6 +77,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages wxwidgets)
@@ -223,6 +225,74 @@ a schematic; libgeda, libraries for gschem gnetlist and gsymcheck; gsch2pcb, a
 tool to forward annotation from your schematic to layout using PCB; some minor
 utilities.")
     (license license:gpl2+)))
+
+(define-public lepton-eda
+  ;; This is a fork of gEDA/gaf started in late 2016.  One of its goal is to
+  ;; keep and to extend Guile support.
+  (package
+    (inherit geda-gaf)
+    (name "lepton-eda")
+    (version "1.9.5-20180820")
+    (home-page "https://github.com/lepton-eda/lepton-eda")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (sha256
+               (base32
+                "1ayaccvw18zh4g7a4x5jf6yxkphi5xafb0hpc732g59qkgwfcmlr"))
+              (file-name (git-file-name name version))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("gettext" ,gnu-gettext)
+       ("texinfo" ,texinfo)
+       ("groff" ,groff)
+       ("which" ,which)
+       ,@(package-native-inputs geda-gaf)))
+    ;; For now it's Guile 2.0, not 2.2.
+    (arguments
+     (substitute-keyword-arguments (package-arguments geda-gaf)
+       ((#:configure-flags flags ''())
+        ;; When running "make", the POT files are built with the build time as
+        ;; their "POT-Creation-Date".  Later on, "make" notices that .pot
+        ;; files were updated and goes on to run "msgmerge"; as a result, the
+        ;; non-deterministic POT-Creation-Date finds its way into .po files,
+        ;; and then in .gmo files.  To avoid that, simply make sure 'msgmerge'
+        ;; never runs.  See <https://bugs.debian.org/792687>.
+        `(cons "ac_cv_path_MSGMERGE=true" ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'bootstrap 'prepare
+             (lambda _
+               ;; Some of the scripts there are invoked by autogen.sh.
+               (for-each patch-shebang (find-files "build-tools"))
+
+               ;; Make sure 'msgmerge' can modify the PO files.
+               (for-each (lambda (po)
+                           (chmod po #o666))
+                         (find-files "." "\\.po$"))
+
+               ;; This would normally be created by invoking 'git', but it
+               ;; doesn't work here.
+               (call-with-output-file "version.h"
+                 (lambda (port)
+                   (format port "#define PACKAGE_DATE_VERSION \"~a\"~%"
+                           ,(string-drop version
+                                         (+ 1 (string-index version #\-))))
+                   (format port "#define PACKAGE_DOTTED_VERSION \"~a\"~%"
+                           ,(string-take version
+                                         (string-index version #\-)))
+                   (format port "#define PACKAGE_GIT_COMMIT \"cabbag3\"~%")))
+               #t))))))
+    (description
+     "Lepton EDA ia an @dfn{electronic design automation} (EDA) tool set
+forked from gEDA/gaf in late 2016.  EDA tools are used for electrical circuit
+design, schematic capture, simulation, prototyping, and production.  Lepton
+EDA includes tools for schematic capture, attribute management, bill of
+materials (BOM) generation, netlisting into over 20 netlist formats, analog
+and digital simulation, and printed circuit board (PCB) layout, and many other
+features.")))
 
 (define-public pcb
   (package

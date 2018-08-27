@@ -12,7 +12,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;

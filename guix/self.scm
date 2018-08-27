@@ -367,22 +367,26 @@ DOMAIN, a gettext domain."
                        guile (guile-version (effective-version)))
   "Return the 'guix' command such that it adds MODULES and DEPENDENCIES in its
 load path."
+  (define source-directories
+    (map (lambda (package)
+           (file-append package "/share/guile/site/"
+                        guile-version))
+         dependencies))
+
+  (define object-directories
+    (map (lambda (package)
+           (file-append package "/lib/guile/"
+                        guile-version "/site-ccache"))
+         dependencies))
+
   (program-file "guix-command"
                 #~(begin
                     (set! %load-path
-                      (append '#$(map (lambda (package)
-                                        (file-append package
-                                                     "/share/guile/site/"
-                                                     guile-version))
-                                      dependencies)
+                      (append (filter file-exists? '#$source-directories)
                               %load-path))
 
                     (set! %load-compiled-path
-                      (append '#$(map (lambda (package)
-                                        (file-append package "/lib/guile/"
-                                                     guile-version
-                                                     "/site-ccache"))
-                                      dependencies)
+                      (append (filter file-exists? '#$object-directories)
                               %load-compiled-path))
 
                     (set! %load-path (cons #$modules %load-path))

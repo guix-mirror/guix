@@ -24,7 +24,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <brendan.tildesley@openmailbox.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>

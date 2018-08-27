@@ -3268,7 +3268,7 @@ This is a better maintained fork of the \"temporary\" package.")
 (define-public ghc-smallcheck
   (package
     (name "ghc-smallcheck")
-    (version "1.1.1")
+    (version "1.1.5")
     (source
      (origin
        (method url-fetch)
@@ -3278,7 +3278,7 @@ This is a better maintained fork of the \"temporary\" package.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ygrabxh40bym3grnzqyfqn96lirnxspb8cmwkkr213239y605sd"))))
+         "195fj7w3v03d1y1nm2ylavzrwxjcdbq0lb6zsw1dwyx5jmwfc84h"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-logict" ,ghc-logict)
@@ -4256,7 +4256,7 @@ simple general-purpose data structure\".")
 (define-public ghc-optparse-applicative
   (package
     (name "ghc-optparse-applicative")
-    (version "0.13.0.0")
+    (version "0.14.2.0")
     (source
      (origin
        (method url-fetch)
@@ -4265,15 +4265,8 @@ simple general-purpose data structure\".")
              "/optparse-applicative-" version ".tar.gz"))
        (sha256
         (base32
-         "1b0c5fdq8bd070g24vrjrwlq979r8dk8mys6aji9hy1l9pcv3inf"))))
+         "0c3z1mvynlyv1garjbdmdd3npm40dabgm75js4r07cf766c1wd71"))))
     (build-system haskell-build-system)
-    ;; These tests fail because the package doesn't come with all needed test
-    ;; files:
-    ;; - prop_drops_back_contexts
-    ;; - prop_context_carry
-    ;; - prop_help_on_empty
-    ;; - prop_help_on_empty_sub
-    (arguments `(#:tests? #f))
     (inputs
      `(("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)))
@@ -5061,7 +5054,7 @@ occurrences of a substring (the first in case of overlaps) with another.")
 (define-public ghc-integer-logarithms
   (package
     (name "ghc-integer-logarithms")
-    (version "1.0.2")
+    (version "1.0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -5070,16 +5063,16 @@ occurrences of a substring (the first in case of overlaps) with another.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0w5mhak181zi6qr5h2zbcs9ymaqacisp9jwk99naz6s8zz5rq1ii"))))
+         "1wj8kgjg5bn2yrs4zh9qfjv85cx6w998j9pi39yrbv305944mb9j"))))
     (build-system haskell-build-system)
-    (inputs
-     `(("ghc-tasty" ,ghc-tasty)
-       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
-       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-smallcheck" ,ghc-smallcheck)
+       ("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-smallcheck" ,ghc-smallcheck)))
-    (home-page "https://github.com/phadej/integer-logarithms")
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)))
+    (home-page "https://github.com/Bodigrim/integer-logarithms")
     (synopsis "Integer logarithms")
     (description
      "This package provides the following modules:
@@ -5093,7 +5086,7 @@ in migrated modules.")
 (define-public ghc-scientific
   (package
     (name "ghc-scientific")
-    (version "0.3.5.2")
+    (version "0.3.6.2")
     (source
      (origin
        (method url-fetch)
@@ -5103,14 +5096,15 @@ in migrated modules.")
              ".tar.gz"))
        (sha256
         (base32
-         "0msnjz7ml0zycw9bssslxbg0nigziw7vs5km4q3vjbs8jpzpkr2w"))))
+         "03ql2f0ac8bsl524idy9xxa3kxisb2sj3avflzw580j5hzy0m397"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-integer-logarithms" ,ghc-integer-logarithms)
        ("ghc-text" ,ghc-text)
        ("ghc-hashable" ,ghc-hashable)
-       ("ghc-primitive" ,ghc-primitive)
-       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-primitive" ,ghc-primitive)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-ant-xml" ,ghc-tasty-ant-xml)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)

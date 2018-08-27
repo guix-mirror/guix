@@ -34,7 +34,7 @@
 ;;; Copyright © 2017, 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -1179,16 +1179,18 @@ rather than the contents of files.")
 (define-public emacs-async
   (package
     (name "emacs-async")
+    (home-page "https://github.com/jwiegley/emacs-async")
     (version "1.9.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://stable.melpa.org/packages/async-"
-                                  version ".tar"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xvi50y96y2qh81qkhj8p6ar1xnfasg58qvlsvgvvmdf4g8srlij"))))
+                "1zsnb6dy8p6y68xgidv3dfxaga4biramfw8fq7wac0sc50vc98vq"))))
     (build-system emacs-build-system)
-    (home-page "https://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
     (description
      "This package provides the ability to call asynchronous functions and
@@ -10025,8 +10027,8 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-racket-mode
-  (let ((commit "1b78827d310b6d655782b7bba0f2360c9ef34ff6")
-        (revision "2"))
+  (let ((commit "add0190d3c9bdad25fee57f8efd0460c9a45c2ec")
+        (revision "1"))
     (package
       (name "emacs-racket-mode")
       (version (string-append "0.0.2" "-" revision "."
@@ -10040,7 +10042,7 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (string-append name "-" version "-checkout"))
          (sha256
           (base32
-           "04mzxcg32av8p6v0pqb0si6qk5qxbrbllx6m3j16fp32bdz71sps"))))
+           "0bf6s4nqjfacij20x9vppdnq8fq1bf53cch6p4g8xqcqri3ms4jw"))))
       (build-system emacs-build-system)
       (arguments
        `(#:include '("\\.el$" "\\.rkt$")))
@@ -11374,8 +11376,8 @@ wiki.")
     (license license:expat)))
 
 (define-public emacs-recent-addresses
-  (let ((commit "d9da58db542089a1ceb5ef29e420dbfbc4a36373")
-        (revision "0"))
+  (let ((commit "afbbfdc43b81e620acf827ca20d297e0c517b6eb")
+        (revision "1"))
     (package
       (name "emacs-recent-addresses")
       (home-page "http://nschum.de/src/emacs/recent-addresses/")
@@ -11383,18 +11385,20 @@ wiki.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/nschum/recent-addresses.el")
+                      ;; Note: Use a branch that works with Helm.  Submitted
+                      ;; at <https://github.com/nschum/recent-addresses.el/pull/1>.
+                      (url "https://github.com/civodul/recent-addresses.el")
                       (commit commit)))
                 (sha256
                  (base32
-                  "175rvcwmkb5z7ss7q2y5178mvdvp5bhn39irz80qinlvaz8fm4nk"))
+                  "0ajrq0galjmdyjdjyxazykjyax3gh6hvfk4s7l657pi11g0q5zax"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (synopsis "Record recently-used email addressed and auto-complete them")
       (description
-       "@code{recent-addresses} is an Emacs allows you to quickly look up
-previously used email addresses.  It can be used alongside the Gnus email
-client.")
+       "@code{recent-addresses} is an Emacs package that allows you to quickly
+look up previously used email addresses.  It can be used alongside the Gnus
+email client.")
       (license license:gpl2+))))
 
 (define-public emacs-fold-dwim
@@ -11643,3 +11647,30 @@ comments and Org files in the Magit status buffer.  Activating an item jumps
 to it in its file.  By default, it uses keywords from @code{hl-todo}, minus a
 few (like NOTE).")
       (license license:gpl3))))
+
+(define-public emacs-git-annex
+  ;; Unreleased version has a fontification fix.
+  (let ((commit "ebdb44aef1883f1b2b8058e05d30fb9315b03707")
+        (revision "1"))
+    (package
+      (name "emacs-git-annex")
+      (version (string-append "1.1-" revision "." (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jwiegley/git-annex-el")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1mzv40gj7k10h7h5s43my8msgzjpj680qprqa9pp8nbyhl49v3wh"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jwiegley/git-annex-el")
+      (synopsis "Emacs integration for git-annex")
+      (description "Enhances Dired and buffers visiting annex files with
+git-annex functionality.  In Dired, the names of annex files are shortened by
+hiding the symbolic links and fontified based on whether content is present.
+Commands for performing some common operations (e.g., unlocking and adding
+files) are provided.")
+      (license license:gpl2+))))

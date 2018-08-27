@@ -19,7 +19,7 @@
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Thomas Sigurdsen <tonton@riseup.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;;
 ;;; This file is part of GNU Guix.

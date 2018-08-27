@@ -25,7 +25,7 @@
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <ambrevar@gmail.com>
+;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
