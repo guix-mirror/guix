@@ -141,15 +141,17 @@ Pendulum instances.")
 (define-public python-dateutil
   (package
     (name "python-dateutil")
-    (version "2.6.1")
+    (version "2.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-dateutil" version))
        (sha256
         (base32
-         "1jkahssf0ir5ssxc3ydbp8cpv77limn8d4s77szb2nrgl2r3h749"))))
+         "1f7h54lg0w2ckch7592xpjkh8dg87k2br256h0iw49zn6bg02w72"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (home-page "https://dateutil.readthedocs.io/en/stable/")
@@ -157,7 +159,10 @@ Pendulum instances.")
     (description
      "The dateutil module provides powerful extensions to the standard
 datetime module, available in Python 2.3+.")
-    (license bsd-3)))
+    ;; The license was changed from the three-clause BSD license to a dual
+    ;; Apache 2.0/BSD-3 variant at 2017-12-01.  Some code is only available as
+    ;; BSD-3 still; but all new code is dual licensed (the user can choose).
+    (license (list bsd-3 asl2.0))))
 
 (define-public python2-dateutil
   (package-with-python2 python-dateutil))
