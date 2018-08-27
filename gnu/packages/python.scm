@@ -54,6 +54,7 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2720,6 +2721,27 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 
 (define-public python2-feedgenerator
   (package-with-python2 python-feedgenerator))
+
+(define-public python-toml
+  (package
+    (name "python-toml")
+    (version "0.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "toml" version))
+       (sha256
+        (base32
+         "0bdbpbip67wdm6c7xwc6mmbmskyradj4cdxn1iibj4fcx1nbv1lf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                     ;no tests suite in release
+    (home-page "https://github.com/uiri/toml")
+    (synopsis "Library for TOML")
+    (description
+     "@code{toml} is a library for parsing and creating Tom's Obvious, Minimal
+Language (TOML) configuration files.")
+    (license license:expat)))
 
 (define-public python-blinker
   (package
