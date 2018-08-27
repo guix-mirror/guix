@@ -188,7 +188,7 @@ by the b43-open driver of Linux-libre.")
     (version "1.11.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://code.coreboot.org/p/seabios/downloads/get/"
+              (uri (string-append "https://www.seabios.org/downloads/"
                                   "seabios-" version ".tar.gz"))
               (sha256
                (base32
