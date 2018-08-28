@@ -40,6 +40,8 @@
           (base32 "0zq9yw1xzk8k9s6x83n1f9srzcwdavzazn3haln4nhp9wxxrxb1g"))))
 
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
       `(("aspell" ,aspell)    ;; Currently, the only supported backend in Guix
         ("glib" ,glib)))      ;; is aspell. (This information might be old)
