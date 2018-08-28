@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -37,14 +37,14 @@
 (define-public dico
   (package
     (name "dico")
-    (version "2.5")
+    (version "2.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/dico/dico-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0szm3z4xvq0pjj8kxl4paq63byamf281kzn1la0cdm5ngavypxxq"))))
+               "0zmi041gv5nd5fmyzgdrgrsy2pvjaq9p8dvvhxwi842hiyng5b7i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guile-site-dir=" %output
@@ -62,7 +62,7 @@
      `(("m4" ,m4)                                 ;used at run time
        ("pcre" ,pcre)
        ("python" ,python-2)
-       ("guile" ,guile-2.0)
+       ("guile" ,guile-2.2)
        ("gsasl" ,gsasl)
        ("groff" ,groff)
        ("readline" ,readline)
