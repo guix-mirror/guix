@@ -43,8 +43,10 @@
     (arguments
      '(#:configure-flags '("--disable-static")))
     (inputs
-      `(("aspell" ,aspell)    ;; Currently, the only supported backend in Guix
-        ("glib" ,glib)))      ;; is aspell. (This information might be old)
+     `(("aspell" ,aspell)))   ;; Currently, the only supported backend in Guix
+    (propagated-inputs        ;; is aspell. (This information might be old)
+     ;; Required by enchant.pc.
+     `(("glib" ,glib)))
     (native-inputs
      `(("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
