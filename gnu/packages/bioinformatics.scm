@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13494,3 +13495,66 @@ pseudotime and trajectory inference and differential expression testing.  The
 Python-based implementation efficiently deals with datasets of more than one
 million cells.")
     (license license:bsd-3)))
+
+(define-public gffcompare
+  (let ((commit "be56ef4349ea3966c12c6397f85e49e047361c41")
+        (revision "1"))
+    (package
+      (name "gffcompare")
+      (version (git-version "0.10.15" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gpertea/gffcompare/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0cp5qpxdhw4mxpya5dld8wi3jk00zyklm6rcri426wydinrnfmkg"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ; no check target
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'copy-gclib-source
+             (lambda* (#:key inputs #:allow-other-keys)
+               (mkdir "../gclib")
+               (copy-recursively
+                (assoc-ref inputs "gclib-source") "../gclib")
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "gffcompare" bin)
+                 #t))))))
+      (native-inputs
+       `(("gclib-source" ; see 'README.md' of gffcompare
+          ,(let ((commit "54917d0849c1e83cfb057b5f712e5cb6a35d948f")
+                 (revision "1")
+                 (name "gclib")
+                 (version (git-version "0.10.3" revision commit)))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/gpertea/gclib/")
+                     (commit commit)))
+               (file-name (git-file-name name version))
+               (sha256
+                (base32 "0b51lc0b8syrv7186fd7n8f15rwnf264qgfmm2palrwks1px24mr")))))))
+      (home-page "https://github.com/gpertea/gffcompare/")
+      (synopsis "Tool for comparing or classifing transcripts of RNA-Seq")
+      (description
+       "@code{gffcompare} is a tool that can:
+@enumerate
+@item compare and evaluate the accuracy of RNA-Seq transcript assemblers
+(Cufflinks, Stringtie);
+@item collapse (merge) duplicate transcripts from multiple GTF/GFF3 files (e.g.
+resulted from assembly of different samples);
+@item classify transcripts from one or multiple GTF/GFF3 files as they relate to
+reference transcripts provided in a annotation file (also in GTF/GFF3 format).
+@end enumerate")
+      (license
+       (list
+        license:expat                   ;license for gffcompare
+        license:artistic2.0)))))        ;license for gclib
