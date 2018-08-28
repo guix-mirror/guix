@@ -6969,7 +6969,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
        ("aspell-dict-en" ,aspell-dict-en)
        ("xorg-server" ,xorg-server)))
     (propagated-inputs
-     `(("enchant" ,enchant)))           ; enchant.pc is required by gspell-1.pc
+     `(("enchant" ,enchant-1.6)))       ; enchant.pc is required by gspell-1.pc
     (home-page "https://wiki.gnome.org/Projects/gspell")
     (synopsis "GNOME's alternative spell checker")
     (description

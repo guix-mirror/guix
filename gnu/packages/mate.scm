@@ -1411,7 +1411,7 @@ can be used as backgrounds in the MATE Desktop environment.")
     (inputs
      `(("atk" ,atk)
        ("cairo" ,cairo)
-       ("enchant" ,enchant)
+       ("enchant" ,enchant-1.6)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("gtksourceview" ,gtksourceview)
