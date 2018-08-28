@@ -11782,6 +11782,12 @@ Additional authorized keys can be specified @i{via}
 
 Note that this does @emph{not} interfere with the use of
 @file{~/.ssh/authorized_keys}.
+
+@item @code{log-level} (default: @code{'info})
+This is a symbol specifying the logging level: @code{quiet}, @code{fatal},
+@code{error}, @code{info}, @code{verbose}, @code{debug}, etc.  See the man
+page for @file{sshd_config} for the full list of level names.
+
 @end table
 @end deftp
 
