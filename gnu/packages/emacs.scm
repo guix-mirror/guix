@@ -9660,7 +9660,7 @@ downloading manager for Emacs.")
 (define-public emacs-helpful
   (package
     (name "emacs-helpful")
-    (version "0.1")
+    (version "0.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -9669,7 +9669,7 @@ downloading manager for Emacs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "16dx566qzrjj0bf43lnw7h1qlvgs94brqplamw8kppp2ylr72qs9"))))
+                "11kj04y1fa3vnw2991cyqf6adz6bb3hlrdkvypjnmpb0s64q64b6"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-elisp-refs" ,emacs-elisp-refs)))
