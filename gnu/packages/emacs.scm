@@ -9003,7 +9003,7 @@ continue.")
 (define-public emacs-elisp-refs
   (package
     (name "emacs-elisp-refs")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -9012,14 +9012,15 @@ continue.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0fj6wphwrvbslw46w7wgdk3b4bfr312ygj3lbgr9qw63lpqw26nl"))))
+         "02nzcn3v14n7mp7q32j5r4wdlpsw3zixzh6cf0cdyarfir6dly3p"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-f" ,emacs-f)
        ("emacs-list-utils" ,emacs-list-utils)
        ("emacs-loop" ,emacs-loop)
-       ("emacs-s" ,emacs-s)))
+       ("emacs-s" ,emacs-s)
+       ("emacs-shut-up" ,emacs-shut-up)))
     (home-page "https://github.com/Wilfred/elisp-refs")
     (synopsis "Find callers of elisp functions or macros")
     (description "Find references to functions, macros or variables.  Unlike a
