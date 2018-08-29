@@ -2235,7 +2235,7 @@ IO operations.")
 (define-public ghc-hashable
   (package
     (name "ghc-hashable")
-    (version "1.2.6.1")
+    (version "1.2.7.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -2246,7 +2246,7 @@ IO operations.")
              ".tar.gz"))
        (sha256
         (base32
-         "0ymv2mcrrgbdc2w39rib171fwnhg7fgp0sy4h8amrh1vw64qgjll"))))
+         "1gra8gq3kb7b2sd845h55yxlrfqx3ii004c6vjhga8v0b30fzdgc"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-text" ,ghc-text)
