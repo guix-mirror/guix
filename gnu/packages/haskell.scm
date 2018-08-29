@@ -5046,7 +5046,7 @@ semigroup.")
 (define-public ghc-free
   (package
     (name "ghc-free")
-    (version "4.12.4")
+    (version "5.0.2")
     (source
      (origin
        (method url-fetch)
@@ -5056,7 +5056,7 @@ semigroup.")
              ".tar.gz"))
        (sha256
         (base32
-         "1147s393442xf4gkpbq0rd1p286vmykgx85mxhk5d1c7wfm4bzn9"))))
+         "15m3n9vhz7z3kzv1w3wlfa3x8jp4cbrkwmrcjr7jlx39iqffn1gg"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-prelude-extras" ,ghc-prelude-extras)
@@ -5066,7 +5066,9 @@ semigroup.")
        ("ghc-comonad" ,ghc-comonad)
        ("ghc-distributive" ,ghc-distributive)
        ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-semigroups" ,ghc-semigroups)))
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
     (home-page "https://github.com/ekmett/free/")
     (synopsis "Unrestricted monads for Haskell")
     (description "This library provides free monads, which are useful for many
