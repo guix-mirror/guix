@@ -7862,7 +7862,7 @@ specific Windows, Mac, and Linux file system event notification.")
 (define-public ghc-ieee754
   (package
     (name "ghc-ieee754")
-    (version "0.7.8")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7870,7 +7870,7 @@ specific Windows, Mac, and Linux file system event notification.")
                     "ieee754-" version ".tar.gz"))
               (sha256
                (base32
-                "1zvfnnd5nm5kgr60214cdyks0kqdqyzpwk5sdh0s60yr8b7fyjny"))))
+                "1lcs521g9lzy9d7337vg4w7q7s8500rfqy7rcifcz6pm6yfgyb8f"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/patperry/hs-ieee754")
     (synopsis "Utilities for dealing with IEEE floating point numbers")
