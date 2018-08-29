@@ -3043,7 +3043,7 @@ parser isolation, and labeled blocks for better error messages.")
 (define-public ghc-comonad
   (package
     (name "ghc-comonad")
-    (version "5")
+    (version "5.0.4")
     (source
      (origin
        (method url-fetch)
@@ -3053,10 +3053,11 @@ parser isolation, and labeled blocks for better error messages.")
              ".tar.gz"))
        (sha256
         (base32
-         "0anb36m9z52y9xsipxzj9w1b41b2rj8r389cxd6d20dplnfv3rbq"))))
+         "09g870c4flp4k3fgbibsd0mmfjani1qcpbcl685v8x89kxzrva3q"))))
     (build-system haskell-build-system)
     (native-inputs
-     `(("ghc-doctest" ,ghc-doctest)))
+     `(("cabal-doctest" ,cabal-doctest)
+       ("ghc-doctest" ,ghc-doctest)))
     (inputs
      `(("ghc-contravariant" ,ghc-contravariant)
        ("ghc-distributive" ,ghc-distributive)
