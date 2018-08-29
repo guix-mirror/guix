@@ -4620,7 +4620,7 @@ C.  It is developed as part of the NetSurf project.")
 (define-public libnsutils
   (package
     (name "libnsutils")
-    (version "0.0.3")
+    (version "0.0.5")
     (source
      (origin
        (method url-fetch)
@@ -4628,7 +4628,7 @@ C.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0wrxn4rcn7xrfnkmf60jafqn3n1kicgsdpnakd821q56bmqvzf0m"))))
+         "09w1rixps1iiq6wirjwxmd6h87llvjzvw565rahjb3rlyhcplfqf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
