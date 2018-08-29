@@ -6203,14 +6203,14 @@ TIFF and GIF formats.")
 (define-public ghc-hslua
   (package
     (name "ghc-hslua")
-    (version "0.9.5")
+    (version "0.9.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "hslua/hslua-" version ".tar.gz"))
               (sha256
                (base32
-                "1j2zk7f7nyywg2b0n6kb2yf6ljc7cn2sk9jz0h76g3ag2b70l12n"))))
+                "1rdvv01p214zfjh6fcqjjgqwi8y42wad6cqzhlcv5gvclzw2ck8f"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags '("-fsystem-lua")))
