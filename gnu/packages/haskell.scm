@@ -1138,7 +1138,7 @@ Happy works in a similar way to the yacc tool for C.")
 (define-public ghc-pretty-show
   (package
     (name "ghc-pretty-show")
-    (version "1.6.12")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
@@ -1146,7 +1146,7 @@ Happy works in a similar way to the yacc tool for C.")
                            "pretty-show-" version ".tar.gz"))
        (sha256
         (base32
-         "1fblcxw4z4ry14brin1mvwccs6hqqlhi7xhwv1f23szjq25cjacn"))))
+         "0br7pkxqqqhby2j2v1g847lgqsrasx56g1jw3dhmjh4flzs6warq"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-haskell-lexer" ,ghc-haskell-lexer)
