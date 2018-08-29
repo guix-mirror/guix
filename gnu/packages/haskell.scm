@@ -3634,7 +3634,7 @@ a variety of ways.")
 (define-public ghc-wl-pprint
   (package
     (name "ghc-wl-pprint")
-    (version "1.2")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3642,7 +3642,7 @@ a variety of ways.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "166zvk4zwn2zaa9kx66m1av38m34qp6h4i65bri2sfnxgvx0700r"))))
+                "0kn7y8pdrv8f87zhd5mifcl8fy3b2zvnzmzwhdqhxxlyzwiq6z0c"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/wl-pprint")
     (synopsis "Wadler/Leijen pretty printer")
