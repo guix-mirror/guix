@@ -5006,6 +5006,31 @@ toolkit.  Use it to build trees of widgets.")
 (define-public python2-urwidtrees
   (package-with-python2 python-urwidtrees))
 
+(define-public python-ua-parser
+  (package
+    (name "python-ua-parser")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ua-parser" version))
+       (sha256
+        (base32
+         "1jwdf58rhchjzzrad405pviv0iq24xa2xmmmdgcm2c8s6b4wzfwp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no test suite in release
+    (native-inputs
+     `(("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/ua-parser/uap-python")
+    (synopsis "User agent parser")
+    (description
+     "@code{ua-parser} is a Python port of Browserscope's user agent parser.")
+    (license license:asl2.0)))
+
+(define-public python2-ua-parser
+  (package-with-python2 python-ua-parser))
+
 (define-public python-dbus
   (package
     (name "python-dbus")
