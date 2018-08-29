@@ -5564,3 +5564,22 @@ gf_density(), and so on, bring the formula interface to ggplot().  This captures
 and extends the excellent simplicity of the lattice-graphics formula interface,
 while providing the intuitive capabilities of @code{r-ggplot2}.")
     (license license:expat)))
+
+(define-public r-mosaicdata
+  (package
+    (name "r-mosaicdata")
+    (version "0.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mosaicData" version))
+       (sha256
+        (base32 "04z0mdm52mykqsxsinhmsihn181zf6cw321gayk2rjp7lj7mwdq9"))))
+    (properties `((upstream-name . "mosaicData")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/mosaicData/")
+    (synopsis "Data sets for project Mosaic")
+    (description
+     "This package provides data sets from project Mosaic @url{http://mosaic-web.org}
+used to teach mathematics, statistics, computation and modeling.")
+    (license license:gpl2+)))
