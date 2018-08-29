@@ -324,7 +324,7 @@ engineers, musicians, soundtrack editors and composers.")
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
-       ("gtk" ,gtk+)
+       ("gtk+" ,gtk+)
        ("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
        ("expat" ,expat)
@@ -410,6 +410,15 @@ engineers, musicians, soundtrack editors and composers.")
                (("../lib-src/portmidi/porttime/porttime.h") "porttime.h"))
              (substitute* "src/prefs/MidiIOPrefs.cpp"
                (("../../lib-src/portmidi/pm_common/portmidi.h") "portmidi.h"))
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/audacity")
+               ;; For GtkFileChooserDialog.
+               `("GSETTINGS_SCHEMA_DIR" =
+                 (,(string-append (assoc-ref inputs "gtk+")
+                                  "/share/glib-2.0/schemas"))))
              #t)))
        ;; The test suite is not "well exercised" according to the developers,
        ;; and fails with various errors.  See
