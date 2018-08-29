@@ -5584,7 +5584,7 @@ asynchronous exceptions.")
 (define-public ghc-th-abstraction
   (package
     (name "ghc-th-abstraction")
-    (version "0.2.6.0")
+    (version "0.2.8.0")
     (source
      (origin
        (method url-fetch)
@@ -5593,7 +5593,7 @@ asynchronous exceptions.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0g42h6wnj2awc5ryhbvx009wd8w75pn66bjzsq1z4s3xajd2hbp5"))))
+         "0n17w4q2ykd0nica4sck2wng6md56rfad8x0icl0l8vnzb9nn4ya"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/glguy/th-abstraction")
     (synopsis "Nicer interface for reified information about data types")
