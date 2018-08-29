@@ -10526,7 +10526,7 @@ tools are not needed to actually run Gtk2Hs programs.")
 (define-public ghc-chart
   (package
     (name "ghc-chart")
-    (version "1.8.3")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
@@ -10534,7 +10534,7 @@ tools are not needed to actually run Gtk2Hs programs.")
                            "Chart-" version ".tar.gz"))
        (sha256
         (base32
-         "13s64fhb2pmkdmx5bkgbgcn25qjihs364fvr47a1dw25f804kiy1"))))
+         "1f5azj17y8xsb3gjhf7gg1gnnlq12rxkmfjmgcly314d7vghs05z"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-old-locale" ,ghc-old-locale)
