@@ -4004,7 +4004,7 @@ interface.")
 (define-public ghc-network
   (package
     (name "ghc-network")
-    (version "2.6.3.1")
+    (version "2.6.3.6")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -4015,7 +4015,7 @@ interface.")
              ".tar.gz"))
        (sha256
         (base32
-         "1rl2gl37cf4k0ddsq93q15fwdz1l25nhl4w205krbh7d5dg5y12p"))))
+         "198mam7ahny48p9fajznbqq16a8ya2gw0xm3gnm1si1rmc4hdplv"))))
     (build-system haskell-build-system)
     ;; The regression tests depend on an unpublished module.
     (arguments `(#:tests? #f))
