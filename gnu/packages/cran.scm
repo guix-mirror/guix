@@ -5411,3 +5411,24 @@ maximum cycle number.  The @code{r-abcoptim} implements the Artificial bee
 colony optimization algorithm @url{http://mf.erciyes.edu.tr/abc/pub/tr06_2005.pdf}.
   This version is a work-in-progress and is written in R code.")
     (license license:expat)))
+
+(define-public r-abcp2
+  (package
+    (name "r-abcp2")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ABCp2" version))
+       (sha256
+        (base32 "1s2skkxpzss7c29i8600psgrp0hl46jcrxqrmy2b4db8hc0kcnbx"))))
+    (properties `((upstream-name . "ABCp2")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/ABCp2/")
+    (synopsis "Approximate Bayesian Computational Model for Estimating P2")
+    (description
+     "This package tests the goodness of fit of a distribution of offspring to the Normal,
+Poisson, and Gamma distribution and estimates the proportional paternity of the
+second male (P2) based on the best fit distribution.")
+    (license license:gpl2)))
