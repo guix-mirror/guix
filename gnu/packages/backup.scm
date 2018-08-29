@@ -67,7 +67,7 @@
 (define-public duplicity
   (package
     (name "duplicity")
-    (version "0.7.18")
+    (version "0.7.18.1")
     (source
      (origin
       (method url-fetch)
@@ -77,7 +77,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1qlika4l1k1nx8zr657ihcy0yzr1c1cdnjlbs325l5krvc3zbc5b"))))
+        "17c0203y5qz9w8iyhs26l44qf6a1vp26b5ykz1ypdr2kv6g02df9"))))
     (build-system python-build-system)
     (native-inputs
      `(("util-linux" ,util-linux)       ; setsid command, for the tests
@@ -99,20 +99,11 @@
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'patch-source
+         (add-before 'build 'use-store-file-names
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; Embed gpg store name.
              (substitute* "duplicity/gpginterface.py"
                (("self.call = 'gpg'")
                 (string-append "self.call = '" (assoc-ref inputs "gnupg") "/bin/gpg'")))
-
-             ;; This matches up with an unreleased upstream fix, it should be
-             ;; removed when the package is updated.
-             ;; https://bazaar.launchpad.net/~duplicity-team/duplicity/0.8-series/revision/1308
-             (substitute* "duplicity/gpg.py"
-               (("--no-secmem-warning'\\)")
-                "--no-secmem-warning')
-        gnupg.options.extra_args.append('--ignore-mdc-error')"))
 
              (substitute* '("testing/functional/__init__.py"
                             "testing/overrides/bin/lftp")
