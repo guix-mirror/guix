@@ -8165,7 +8165,7 @@ and a large set of GNU extensions.")
 (define-public ghc-markdown-unlit
   (package
     (name "ghc-markdown-unlit")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8173,7 +8173,7 @@ and a large set of GNU extensions.")
                     "markdown-unlit-" version ".tar.gz"))
               (sha256
                (base32
-                "1kj2bffl7ndd8ygwwa3r1mbpwbxbfhyfgnbla8k8g9i6ffp0qrbw"))))
+                "1gy79vr85vcp13rdjh0hz7zv6daqqffww4j0cqn2lpjjh9xhsbg7"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-base-compat" ,ghc-base-compat)
