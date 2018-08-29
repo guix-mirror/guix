@@ -3465,7 +3465,7 @@ online}.")
 (define-public ghc-feed
   (package
     (name "ghc-feed")
-    (version "0.3.12.0")
+    (version "1.0.0.0")
     (source
      (origin
        (method url-fetch)
@@ -3473,14 +3473,21 @@ online}.")
                            "feed/feed-" version ".tar.gz"))
        (sha256
         (base32
-         "0hkrsinspg70bbm3hwqdrvivws6zya1hyk0a3awpaz82j4xnlbfc"))))
+         "05rgg7x1984mgfhkmz792xj8lhwjgznixhygzr8blf517lns2nck"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("4" "0baavcavm3ywykcr9cm07aqr7sna98jba2n68lyn3kany8ri214d")))
     (inputs
-     `(("ghc-old-locale" ,ghc-old-locale)
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-old-time" ,ghc-old-time)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-text" ,ghc-text)
        ("ghc-time-locale-compat" ,ghc-time-locale-compat)
        ("ghc-utf8-string" ,ghc-utf8-string)
-       ("ghc-xml" ,ghc-xml)))
+       ("ghc-xml-conduit" ,ghc-xml-conduit)
+       ("ghc-xml-types" ,ghc-xml-types)))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
