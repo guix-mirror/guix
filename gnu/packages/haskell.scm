@@ -9284,7 +9284,7 @@ parsing and printing @dfn{Universally Unique Identifiers} or UUIDs.")
 (define-public ghc-rebase
   (package
     (name "ghc-rebase")
-    (version "1.1")
+    (version "1.2.4")
     (source
      (origin
        (method url-fetch)
@@ -9293,7 +9293,7 @@ parsing and printing @dfn{Universally Unique Identifiers} or UUIDs.")
                            "rebase-" version ".tar.gz"))
        (sha256
         (base32
-         "1qkhnpcc4g2vd6jmbf3b6psqkan6hyawqzrwzqdd931hsb02l6ia"))))
+         "1gah2qwfpzwamnikbc5h4nv6dgvv9h16di9ka7946za3nibyasya"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-stm" ,ghc-stm)
               ("ghc-hashable" ,ghc-hashable)
