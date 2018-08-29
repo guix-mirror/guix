@@ -1599,7 +1599,7 @@ programs.")
 (define-public ghc-gluraw
   (package
     (name "ghc-gluraw")
-    (version "2.0.0.2")
+    (version "2.0.0.4")
     (source
      (origin
        (method url-fetch)
@@ -1609,7 +1609,7 @@ programs.")
              ".tar.gz"))
        (sha256
         (base32
-         "1phmvxr0kkxq89ykmr8rj77inj8dvcxd6h72z1ncdgdazfz3sjw8"))))
+         "1i2xi35n5z0d372px9mh6cyhgg1m0cfaiy3fnspkf6kbn9fgsqxq"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-openglraw" ,ghc-openglraw)))
