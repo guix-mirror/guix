@@ -4886,7 +4886,7 @@ cross-site scripting (@dfn{XSS}) attacks.")
 (define-public ghc-bifunctors
   (package
     (name "ghc-bifunctors")
-    (version "5.5.2")
+    (version "5.5.3")
     (source
      (origin
        (method url-fetch)
@@ -4896,7 +4896,7 @@ cross-site scripting (@dfn{XSS}) attacks.")
              ".tar.gz"))
        (sha256
         (base32
-         "04fbsysm6zl8kmvqgffmrqa9bxl9dl2gibrd51asqzg737mb4ark"))))
+         "1jn9rxg643xnlhrknmjz88nblcpsr45xwjkwwnn5nxpasa7m4d6l"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
