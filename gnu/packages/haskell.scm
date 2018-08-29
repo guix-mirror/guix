@@ -10092,7 +10092,7 @@ address string against RFC 5322.")
 (define-public ghc-bytes
   (package
    (name "ghc-bytes")
-   (version "0.15.4")
+   (version "0.15.5")
    (source
     (origin
      (method url-fetch)
@@ -10103,11 +10103,11 @@ address string against RFC 5322.")
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "121x3iqlm8pghw8cd9g30cnqbl7jrdpfjxdanmqdqllajw6xivrm"))))
+       "063il2vrn0p88r9gzndh4ijs0mxj37khkc9ym9bqdsv7ngk3b683"))))
    (build-system haskell-build-system)
    (inputs `(("ghc-cereal" ,ghc-cereal)
              ("cabal-doctest" ,cabal-doctest)
-             ("ghc-doctest" ,ghc-doctest-0.13)
+             ("ghc-doctest" ,ghc-doctest)
              ("ghc-scientific" ,ghc-scientific)
              ("ghc-text" ,ghc-text)
              ("ghc-transformers-compat" ,ghc-transformers-compat)
