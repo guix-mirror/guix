@@ -9197,7 +9197,7 @@ Web Services.")
 (define-public ghc-basement
   (package
     (name "ghc-basement")
-    (version "0.0.7")
+    (version "0.0.8")
     (source
      (origin
        (method url-fetch)
@@ -9205,7 +9205,7 @@ Web Services.")
                            "basement/basement-" version ".tar.gz"))
        (sha256
         (base32
-         "0w2g4k9bs2ph00p0fgrmcrng8ypdz6xis0r10g380nzkg2rvj0dm"))))
+         "194jw567di4q2758943q9rrwkbf9gl261my7qc21i9xhyabipx67"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/haskell-foundation/foundation")
     (synopsis "Basic primitives for Foundation starter pack")
