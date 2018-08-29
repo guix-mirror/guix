@@ -4032,14 +4032,14 @@ finite maps and priority queues where the priority and element are distinct.")
 (define-public ghc-edisoncore
   (package
     (name "ghc-edisoncore")
-    (version "1.3.1.1")
+    (version "1.3.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/EdisonCore"
                            "/EdisonCore-" version ".tar.gz"))
        (sha256
-        (base32 "06shxmcqxcahcn6zgl64vlqix4fnq53d97drcgsh94qp7gp201ry"))))
+        (base32 "0fgj5iwiv3v2gdgx7kjcr15dcs4x1kvmjspp3p99wyhh0x6h3ikk"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
