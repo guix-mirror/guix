@@ -8309,7 +8309,7 @@ bytestrings and their hexademical representation.")
 (define-public ghc-psqueues
   (package
     (name "ghc-psqueues")
-    (version "0.2.6.0")
+    (version "0.2.7.0")
     (source
      (origin
        (method url-fetch)
@@ -8318,10 +8318,8 @@ bytestrings and their hexademical representation.")
                            "psqueues-" version ".tar.gz"))
        (sha256
         (base32
-         "0n39s1i88j6s7vvsdhpbhcr3gpbwlzabwcc3nbd7nqb4kb4i0sls"))))
+         "1sjgc9bxh63kkdp59nbirx3xazr02ia5yhp4f4a0jnq1hj465wsc"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (inputs
      `(("ghc-hashable" ,ghc-hashable)))
     (native-inputs
