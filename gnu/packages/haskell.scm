@@ -9771,7 +9771,7 @@ parser that uses ByteStrings for parsing and representing the URI data.")
 (define-public ghc-http-api-data
   (package
     (name "ghc-http-api-data")
-    (version "0.3.7.1")
+    (version "0.3.8.1")
     (source
      (origin
        (method url-fetch)
@@ -9780,7 +9780,7 @@ parser that uses ByteStrings for parsing and representing the URI data.")
                            "http-api-data-" version ".tar.gz"))
        (sha256
         (base32
-         "1zbmf0kkfsw7pfznisi205gh7jd284gfarxsyiavd2iw26akwqwc"))))
+         "1cq6459b8wz6nvkvpi89dg189n5q2xdq4rdq435hf150555vmskf"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))  ;  FIXME: Tests require QuickCheck >= 2.9
     (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
