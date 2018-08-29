@@ -8701,7 +8701,7 @@ classy-prelude.")
 (define-public ghc-base-prelude
   (package
     (name "ghc-base-prelude")
-    (version "1.2.0.1")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -8710,7 +8710,7 @@ classy-prelude.")
                            "base-prelude-" version ".tar.gz"))
        (sha256
         (base32
-         "17hivs7lmsglagdlzxd9q9zsddmgqin2788mpq911zwnb57lj6l1"))))
+         "1zk728sd09hh2r4xwz4lazsrrgg5cshydn64932sm0vckplndk73"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/nikita-volkov/base-prelude")
     (synopsis "The most complete prelude formed solely from the Haskell's base
