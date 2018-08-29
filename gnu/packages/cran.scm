@@ -5432,3 +5432,31 @@ colony optimization algorithm @url{http://mf.erciyes.edu.tr/abc/pub/tr06_2005.pd
 Poisson, and Gamma distribution and estimates the proportional paternity of the
 second male (P2) based on the best fit distribution.")
     (license license:gpl2)))
+
+(define-public r-abcrf
+  (package
+    (name "r-abcrf")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abcrf" version))
+       (sha256
+        (base32 "06vy3inikrr9hv36q4djhrgzi9zizdfnhz17wpra8kadmr7qj441"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-ranger" ,r-ranger)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-readr" ,r-readr)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://cran.r-project.org/web/packages/abcrf/")
+    (synopsis "Approximate bayesian computation via random forests")
+    (description
+     "This package performs approximate bayesian computation (ABC) model choice and
+parameter inference via random forests.  This machine learning tool named random
+forests (RF) can conduct selection among the highly complex models covered by
+ABC algorithms.")
+    (license license:gpl2+)))
