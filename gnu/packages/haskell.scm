@@ -938,7 +938,7 @@ documentation-generation tool for Haskell libraries.")
 (define-public ghc-simple-reflect
   (package
     (name "ghc-simple-reflect")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -948,7 +948,7 @@ documentation-generation tool for Haskell libraries.")
              ".tar.gz"))
        (sha256
         (base32
-         "1dpcf6w3cf1sfl9bnlsx04x7aghw029glj5d05qzrsnms2rlw8iq"))))
+         "0ayvrx5cm8n6db21jiyjmk5h93pw7cz1707hih09hlhk9jh5x0h7"))))
     (build-system haskell-build-system)
     (home-page
      "https://twanvl.nl/blog/haskell/simple-reflection-of-expressions")
