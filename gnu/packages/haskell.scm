@@ -6383,14 +6383,14 @@ set, memory copy, ..) and more")
 (define-public ghc-socks
   (package
     (name "ghc-socks")
-    (version "0.5.5")
+    (version "0.5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "socks/socks-" version ".tar.gz"))
               (sha256
                (base32
-                "0s689w1hh9g8ifl75xhzbv96ir07hwn04b4lgvbxzl8swa9ylir6"))))
+                "0f44qy74i0n6ll3jym0a2ipafkpw1h67amcpqmj8iq95h21wsqzs"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cereal" ,ghc-cereal)
