@@ -3062,7 +3062,7 @@ Strings.")
 (define-public ghc-extra
   (package
     (name "ghc-extra")
-    (version "1.6.3")
+    (version "1.6.9")
     (source
      (origin
        (method url-fetch)
@@ -3072,7 +3072,7 @@ Strings.")
              ".tar.gz"))
        (sha256
         (base32
-         "06ds0jlx6sljwdf63l154qbzia9mnsri79i9qm3xikky3nj9ia1m"))))
+         "0xxcpb00pgwi9cmy6a7ghh6rblxry42p8pz5ssfgj20fs1xwzj1b"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-clock" ,ghc-clock)
