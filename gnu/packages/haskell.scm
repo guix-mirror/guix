@@ -5074,7 +5074,7 @@ It is modeled after doctest for Python, see
 (define-public ghc-lifted-base
   (package
     (name "ghc-lifted-base")
-    (version "0.2.3.8")
+    (version "0.2.3.12")
     (source
      (origin
        (method url-fetch)
@@ -5084,7 +5084,7 @@ It is modeled after doctest for Python, see
              ".tar.gz"))
        (sha256
         (base32
-         "17yz4n7q96x4cp8vxai8csn2vmpigxvipkfh48arahf91f0xy18n"))))
+         "1i8p8d3rkdh21bhgjjh32vd7qqjr7jq7p59qds0aw2kmargsjd61"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Missing testing libraries.
     (inputs
