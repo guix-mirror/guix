@@ -4348,7 +4348,7 @@ will eventually deliver a value of type @code{a}.")
 (define-public ghc-fingertree
   (package
     (name "ghc-fingertree")
-    (version "0.1.3.0")
+    (version "0.1.4.1")
     (source
      (origin
        (method url-fetch)
@@ -4357,7 +4357,7 @@ will eventually deliver a value of type @code{a}.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1ryjj7qrx70ckcjlr02x9zh86kfp76azbxq05r7hawqkaqg44sfs"))))
+         "192fyzv0pn1437wdpqg1l80rswkk4rw3w61r4bq7dhv354bdqy4p"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
