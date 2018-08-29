@@ -512,7 +512,7 @@ list validation.")
 (define-public ghc-x509-system
   (package
     (name "ghc-x509-system")
-    (version "1.6.4")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -520,7 +520,7 @@ list validation.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0k7zc0xp7r6kqmi39rpiicvq78xb0pr2cq6q5s3kmmsshllg13nr"))))
+                "06a4m9c7vlr9nhp9gmqbb46arf0yj1dkdm4nip03hzy67spdmp20"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-pem" ,ghc-pem)
