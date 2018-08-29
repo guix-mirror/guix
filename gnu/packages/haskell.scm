@@ -1649,7 +1649,7 @@ unlit literate code files; and an option to turn off macro-expansion.")
 (define-public ghc-reflection
   (package
     (name "ghc-reflection")
-    (version "2.1.2")
+    (version "2.1.4")
     (source
      (origin
        (method url-fetch)
@@ -1659,7 +1659,7 @@ unlit literate code files; and an option to turn off macro-expansion.")
              ".tar.gz"))
        (sha256
         (base32
-         "0f9w0akbm6p8h7kzgcd2f6nnpw1wy84pqn45vfz1ch5j0hn8h2d9"))))
+         "0kf4a5ijw6jfnfibjcrpdy9vzh1n6v2pxia8dhyyqdissiwc8bzj"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-tagged" ,ghc-tagged)))
     (home-page "https://github.com/ekmett/reflection")
