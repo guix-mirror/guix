@@ -1069,7 +1069,7 @@ avoid any issues with characters.")
 (define-public ghc-yesod-core
   (package
     (name "ghc-yesod-core")
-    (version "1.4.37")
+    (version "1.6.6")
     (source
      (origin
        (method url-fetch)
@@ -1078,7 +1078,7 @@ avoid any issues with characters.")
                            "yesod-core-" version ".tar.gz"))
        (sha256
         (base32
-         "0ww8hl0cx2g58zrdx3j6d5m2xwhssbajdqws1xk6rzl7rpfm1b9j"))))
+         "0xahf6m5c7mkl74p0gimy4wb5w4s3lh92wwxmk517fbq666c92kb"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-wai" ,ghc-wai)
               ("ghc-extra" ,ghc-extra)
@@ -1089,6 +1089,7 @@ avoid any issues with characters.")
               ("ghc-random" ,ghc-random)
               ("ghc-cereal" ,ghc-cereal)
               ("ghc-old-locale" ,ghc-old-locale)
+              ("ghc-unliftio" ,ghc-unliftio)
               ("ghc-unordered-containers" ,ghc-unordered-containers)
               ("ghc-monad-control" ,ghc-monad-control)
               ("ghc-transformers-base" ,ghc-transformers-base)
@@ -1103,6 +1104,7 @@ avoid any issues with characters.")
               ("ghc-monad-logger" ,ghc-monad-logger)
               ("ghc-conduit" ,ghc-conduit)
               ("ghc-resourcet" ,ghc-resourcet)
+              ("ghc-rio" ,ghc-rio)
               ("ghc-lifted-base" ,ghc-lifted-base)
               ("ghc-blaze-html" ,ghc-blaze-html)
               ("ghc-blaze-markup" ,ghc-blaze-markup)
