@@ -5511,3 +5511,27 @@ and coverage methods to tune the choice of threshold.")
 @item vertical versions of @code{r-ggplot2} positions.
 @end enumerate")
     (license license:gpl3)))
+
+(define-public r-mosaiccore
+  (package
+    (name "r-mosaiccore")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mosaicCore" version))
+       (sha256
+        (base32 "1klw97h6lchw1cpcl8s637ikcl428cckmjq0czi7mibh9q9mw72z"))))
+    (properties `((upstream-name . "mosaicCore")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-mass" ,r-mass)
+       ("r-rlang" ,r-rlang)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/ProjectMOSAIC/mosaicCore/")
+    (synopsis "Common utilities for mosaic family packages")
+    (description
+     "Common utilities used in other Mosaic family packages are collected here.")
+    (license license:gpl2+)))
