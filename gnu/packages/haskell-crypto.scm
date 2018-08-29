@@ -391,14 +391,14 @@ interface.")
 (define-public ghc-sha
   (package
     (name "ghc-sha")
-    (version "1.6.4.2")
+    (version "1.6.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "SHA/SHA-" version ".tar.gz"))
               (sha256
                (base32
-                "134ajm87fm4lpsw86m9q8apv20dw4bpk46raa389zr6bcdpifw64"))))
+                "0i4b2wjisivdy72synal711ywhx05mfqfba5n65rk8qidggm1nbb"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
