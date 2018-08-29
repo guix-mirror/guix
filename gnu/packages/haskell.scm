@@ -9673,7 +9673,7 @@ operators for looping.")
 (define-public ghc-monad-logger
   (package
     (name "ghc-monad-logger")
-    (version "0.3.25.1")
+    (version "0.3.29")
     (source
      (origin
        (method url-fetch)
@@ -9682,7 +9682,7 @@ operators for looping.")
                            "monad-logger-" version ".tar.gz"))
        (sha256
         (base32
-         "0yv4fsi566zrn30j2g5l901lyqgmflhvzy4hji7ikcbh5d45m920"))))
+         "1z516s4pa9n94zf0l45mylssg07xr1d1m6zrz900p0iv3vfd07mv"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-transformers-compat" ,ghc-transformers-compat)
               ("ghc-text" ,ghc-text)
