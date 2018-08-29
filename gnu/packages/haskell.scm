@@ -3561,7 +3561,7 @@ Partial and Infinite Values\"}.")
 (define-public ghc-unordered-containers
   (package
     (name "ghc-unordered-containers")
-    (version "0.2.7.1")
+    (version "0.2.9.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3571,7 +3571,7 @@ Partial and Infinite Values\"}.")
              "/unordered-containers-" version ".tar.gz"))
        (sha256
         (base32
-         "00npqiphivjp2d7ryqsdavfn4m5v3w1lq2azhdsrfh0wsvqpg4ig"))))
+         "0l4264p0av12cc6i8gls13q8y27x12z2ar4x34n3x59y99fcnc37"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-chasingbottoms" ,ghc-chasingbottoms)
