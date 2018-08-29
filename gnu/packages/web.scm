@@ -4314,7 +4314,7 @@ libraries.")
 (define-public libparserutils
   (package
     (name "libparserutils")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
@@ -4322,7 +4322,7 @@ libraries.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "01gzlsabgl6x0icd8758d9jqs8rrf9574bdkjainn04w3fs3znf5"))))
+         "1n2794y2l0c8nv8z2pxwfnbn882987ifmxjv60zdxkhcndhswarj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
