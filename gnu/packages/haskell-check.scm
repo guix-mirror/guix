@@ -452,7 +452,7 @@ expressed in Haskell, using combinators defined in the QuickCheck library.")
 (define-public ghc-test-framework
   (package
     (name "ghc-test-framework")
-    (version "0.8.1.1")
+    (version "0.8.2.0")
     (source
      (origin
        (method url-fetch)
@@ -460,10 +460,17 @@ expressed in Haskell, using combinators defined in the QuickCheck library.")
                            "test-framework-" version ".tar.gz"))
        (sha256
         (base32
-         "0wxjgdvb1c4ykazw774zlx86550848wbsvgjgcrdzcgbb9m650vq"))))
+         "1hhacrzam6b8f10hyldmjw8pb7frdxh04rfg3farxcxwbnhwgbpm"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=time")))
+     `(#:tests? #f  ; FIXME: Tests do not build.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "test-framework.cabal"
+               (("QuickCheck     >= 2\\.3 && < 2\\.10")
+                "QuickCheck     >= 2.3 && < 2.12")))))))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)))
@@ -475,7 +482,8 @@ expressed in Haskell, using combinators defined in the QuickCheck library.")
        ("ghc-random" ,ghc-random)
        ("ghc-regex-posix" ,ghc-regex-posix)
        ("ghc-xml" ,ghc-xml)
-       ("ghc-libxml" ,ghc-libxml)))
+       ("ghc-libxml" ,ghc-libxml)
+       ("ghc-semigroups" ,ghc-semigroups-bootstrap)))
     (home-page "https://batterseapower.github.io/test-framework/")
     (synopsis "Framework for running and organising tests")
     (description

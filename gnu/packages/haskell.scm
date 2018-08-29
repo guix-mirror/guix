@@ -2266,6 +2266,14 @@ data structures.  The package provides instances for basic types and a way to
 combine hash values.")
     (license license:bsd-3)))
 
+(define-public ghc-hashable-bootstrap
+  (package
+    (inherit ghc-hashable)
+    (name "ghc-hashable-bootstrap")
+    (arguments `(#:tests? #f))
+    (native-inputs '())
+    (properties '((hidden? #t)))))
+
 (define-public ghc-hashable-time
   (package
     (name "ghc-hashable-time")
@@ -3580,6 +3588,15 @@ optimized for performance critical use, both in terms of large data quantities
 and high speed.")
     (license license:bsd-3)))
 
+(define-public ghc-unordered-containers-bootstrap
+  (package
+    (inherit ghc-unordered-containers)
+    (name "ghc-unordered-containers-bootstrap")
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable-bootstrap)))
+    (properties '(hidden? #t))))
+
 (define-public ghc-uniplate
   (package
     (name "ghc-uniplate")
@@ -4569,6 +4586,14 @@ Compatibility package for older packages.")
     (description "This library provides the natural numbers for Haskell.")
     (license license:bsd-3)))
 
+(define-public ghc-nats-bootstrap
+  (package
+    (inherit ghc-nats)
+    (name "ghc-nats-bootstrap")
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable-bootstrap)))
+    (properties '((hidden? #t)))))
+
 (define-public ghc-void
   (package
     (name "ghc-void")
@@ -4888,6 +4913,18 @@ also (originally) generalized a group (a monoid with all inverses) to a type
 where every element did not have to have an inverse, thus the name
 semigroup.")
     (license license:bsd-3)))
+
+(define-public ghc-semigroups-bootstrap
+  (package
+    (inherit ghc-semigroups)
+    (name "ghc-semigroups-bootstrap")
+    (inputs
+     `(("ghc-nats" ,ghc-nats-bootstrap)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-unordered-containers" ,ghc-unordered-containers-bootstrap)
+       ("ghc-text" ,ghc-text)
+       ("ghc-hashable" ,ghc-hashable-bootstrap)))
+    (properties '(hidden? #t))))
 
 (define-public ghc-free
   (package
