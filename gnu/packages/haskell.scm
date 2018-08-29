@@ -1223,23 +1223,10 @@ complex generic values into an interactive Html page, for easier
 examination.")
     (license license:expat)))
 
-(define-public ghc-pretty-show-for-haskell-src-exts
-  (package (inherit ghc-pretty-show)
-    (name "ghc-pretty-show")
-    (version "1.6.10")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/pretty-show/"
-                           "pretty-show-" version ".tar.gz"))
-       (sha256
-        (base32
-         "133s4l1gk46saf6ycm785rswycy8g3j0qqrv93b5wp8cp50kd0ww"))))))
-
 (define-public ghc-haskell-src-exts
   (package
     (name "ghc-haskell-src-exts")
-    (version "1.20.1")
+    (version "1.20.2")
     (source
      (origin
        (method url-fetch)
@@ -1249,12 +1236,12 @@ examination.")
              ".tar.gz"))
        (sha256
         (base32
-         "1jsjl9hja2dpcfq4mzlfpwyr6axwnwgacfb7aa070kz4lbygzaa8"))))
+         "1sm3z4v1p5yffg01ldgavz71s3bvfhjfa13k428rk14bpkl8crlz"))))
     (build-system haskell-build-system)
     (inputs
      `(("cpphs" ,cpphs)
        ("ghc-happy" ,ghc-happy)
-       ("ghc-pretty-show" ,ghc-pretty-show-for-haskell-src-exts)))
+       ("ghc-pretty-show" ,ghc-pretty-show)))
     (native-inputs
      `(("ghc-smallcheck" ,ghc-smallcheck)
        ("ghc-tasty" ,ghc-tasty)
