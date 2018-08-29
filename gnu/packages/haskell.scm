@@ -5226,14 +5226,14 @@ notation}.")
 (define-public ghc-boxes
   (package
     (name "ghc-boxes")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/boxes/boxes-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1n7xiplzd3s1a39nizwjcgsh3wi2348mp21c3fk19v98ialfjgjf"))))
+        (base32 "1hsnmw95i58d4bkpxby3ddsj1cawypw4mdyb18m393s5i8p7iq9q"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-split" ,ghc-split)
