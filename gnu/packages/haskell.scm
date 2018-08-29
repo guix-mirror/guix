@@ -965,7 +965,7 @@ them.")
 (define-public ghc-haskell-src
   (package
     (name "ghc-haskell-src")
-    (version "1.0.2.0")
+    (version "1.0.3.0")
     (source
      (origin
        (method url-fetch)
@@ -975,7 +975,7 @@ them.")
              ".tar.gz"))
        (sha256
         (base32
-         "19lilhpwnjb7cks9fq1ipnc8f7dwxy0ri3dgjkdxs3i355byw99a"))))
+         "1g4dj1f0j68bhn4ixfac63wjzy6gsp6kwgxryb1k5nl3i0g99d5l"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-happy" ,ghc-happy)
