@@ -5893,14 +5893,14 @@ function which generates instances.")
 (define-public ghc-th-orphans
   (package
     (name "ghc-th-orphans")
-    (version "0.13.2")
+    (version "0.13.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "th-orphans/th-orphans-" version ".tar.gz"))
               (sha256
                (base32
-                "0102vkyzpgnp2fys8pvw4khrhrh2y1b8dp1slgvn020vg4s351mc"))))
+                "0sfl3pn9kq9da3ji3lsgzgzy82vz6yvsg80dmakc1jvk7awycibp"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-th-lift" ,ghc-th-lift)
