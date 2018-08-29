@@ -4694,7 +4694,7 @@ w3c webidl files and a binding configuration file.")
 (define-public netsurf
   (package
     (name "netsurf")
-    (version "3.7")
+    (version "3.8")
     (source
      (origin
        (method url-fetch)
@@ -4702,10 +4702,11 @@ w3c webidl files and a binding configuration file.")
                            "releases/source/netsurf-" version "-src.tar.gz"))
        (sha256
         (base32
-         "05kynfzzwd4fc03vbqdjpghh5xnk2yrh43w7vikak89vla30mhpg"))
+         "0hjm1h4m1i913y4mhkl7yqdifn8k70fwi58zdh6faypawzryc3m0"))
        (patches (search-patches "netsurf-system-utf8proc.patch"
                                 "netsurf-y2038-tests.patch"
-                                "netsurf-longer-test-timeout.patch"))))
+                                "netsurf-longer-test-timeout.patch"
+                                "netsurf-message-timestamp.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
