@@ -7706,7 +7706,7 @@ numerical computations based on BLAS and LAPACK.")
 (define-public ghc-hmatrix-gsl
   (package
     (name "ghc-hmatrix-gsl")
-    (version "0.18.0.1")
+    (version "0.19.0.1")
     (source
      (origin
        (method url-fetch)
@@ -7714,7 +7714,7 @@ numerical computations based on BLAS and LAPACK.")
              "https://hackage.haskell.org/package/hmatrix-gsl/hmatrix-gsl-"
              version ".tar.gz"))
        (sha256
-        (base32 "0mflm7zg6c6a5vy092pa429rzpyv5drc1589r3x4fbmvcyqc79gx"))))
+        (base32 "0v6dla426x4ywaq59jm89ql1i42n39iw6z0j378xwb676v9kfxhm"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hmatrix" ,ghc-hmatrix)
