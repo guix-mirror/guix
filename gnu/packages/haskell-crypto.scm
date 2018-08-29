@@ -107,7 +107,7 @@ when ASN1 pattern matching is not convenient.")
 (define-public ghc-crypto-api
   (package
     (name "ghc-crypto-api")
-    (version "0.13.2")
+    (version "0.13.3")
     (source
      (origin
        (method url-fetch)
@@ -116,7 +116,7 @@ when ASN1 pattern matching is not convenient.")
                            "crypto-api-" version ".tar.gz"))
        (sha256
         (base32
-         "1vc27qcgbg7hf50rkqhlrs58zn1888ilh4b6wrrm07bnm48xacak"))))
+         "19bsmkqkpnvh01b77pmyarx00fic15j4hvg4pzscrj4prskrx2i9"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-cereal" ,ghc-cereal)
               ("ghc-tagged" ,ghc-tagged)
