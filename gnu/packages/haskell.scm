@@ -2943,7 +2943,7 @@ complicated text/binary file formats.")
 (define-public ghc-zip-archive
   (package
     (name "ghc-zip-archive")
-    (version "0.3.0.5")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -2953,17 +2953,16 @@ complicated text/binary file formats.")
              ".tar.gz"))
        (sha256
         (base32
-         "1iwpzjck4jg9bz1yqky051i2wljsqc14q5zbi10dydfp8ip3d0yw"))))
+         "0kf8xyac168bng8a0za2jwrbss7a4ralvci9g54hnvl0gkkxx2lq"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-old-time" ,ghc-old-time)
-       ("ghc-digest" ,ghc-digest)
-       ("zip" ,zip)
+     `(("ghc-digest" ,ghc-digest)
        ("ghc-temporary" ,ghc-temporary)
        ("ghc-text" ,ghc-text)
        ("ghc-zlib" ,ghc-zlib)))
     (native-inputs
-     `(("ghc-hunit" ,ghc-hunit)))
+     `(("ghc-hunit" ,ghc-hunit)
+       ("unzip" ,unzip)))
     (home-page "https://hackage.haskell.org/package/zip-archive")
     (synopsis "Zip archive library for Haskell")
     (description "The zip-archive library provides functions for creating,
