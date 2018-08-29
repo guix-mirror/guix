@@ -13458,3 +13458,39 @@ conversions, region filtering, FASTA sequence extraction and more.")
 spliced (back-spliced) sequencing reads, indicative of circular RNA (circRNA)
 in RNA-seq data.")
       (license license:gpl3))))
+
+(define-public python-scanpy
+  (package
+    (name "python-scanpy")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "scanpy" version))
+       (sha256
+        (base32
+         "1ak7bxms5a0yvf65prppq2g38clkv7c7jnjbnfpkh3xxv7q512jz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-anndata" ,python-anndata)
+       ("python-igraph" ,python-igraph)
+       ("python-numba" ,python-numba)
+       ("python-joblib" ,python-joblib)
+       ("python-natsort" ,python-natsort)
+       ("python-networkx" ,python-networkx)
+       ("python-statsmodels" ,python-statsmodels)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pandas" ,python-pandas)
+       ("python-scipy" ,python-scipy)
+       ("python-seaborn" ,python-seaborn)
+       ("python-h5py" ,python-h5py)
+       ("python-tables" ,python-tables)))
+    (home-page "http://github.com/theislab/scanpy")
+    (synopsis "Single-Cell Analysis in Python.")
+    (description "Scanpy is a scalable toolkit for analyzing single-cell gene
+expression data.  It includes preprocessing, visualization, clustering,
+pseudotime and trajectory inference and differential expression testing.  The
+Python-based implementation efficiently deals with datasets of more than one
+million cells.")
+    (license license:bsd-3)))
