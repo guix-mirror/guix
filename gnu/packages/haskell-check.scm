@@ -96,7 +96,7 @@ Haskell test framework.")
 (define-public ghc-tasty-quickcheck
   (package
     (name "ghc-tasty-quickcheck")
-    (version "0.8.4")
+    (version "0.10")
     (source
      (origin
        (method url-fetch)
@@ -105,7 +105,7 @@ Haskell test framework.")
              "tasty-quickcheck-" version ".tar.gz"))
        (sha256
         (base32
-         "15rjxib5jmjq0hzj47x15kgp3awc73va4cy1pmpf7k3hvfv4qprn"))))
+         "0vr6szbbz3s5461i0zr8zpq347zfvidfzv5gf3xwxhm0yk731z8h"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
