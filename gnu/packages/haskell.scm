@@ -989,8 +989,7 @@ the ‘haddock’ package.")
 (define-public ghc-haddock-api
   (package
     (name "ghc-haddock-api")
-    ;; This is the last version to be supported by Cabal < 2.0
-    (version "2.17.4")
+    (version "2.19.0.1")
     (source
      (origin
        (method url-fetch)
@@ -1000,8 +999,18 @@ the ‘haddock’ package.")
              ".tar.gz"))
        (sha256
         (base32
-         "00fn6pzgg8xjbaw12d76jdqh2dbc5xy7miyz0x6kidvvar7i35ss"))))
+         "0c6i7sljp7myz25d90gyw68a90i5jcrkajkxcciikp2hjirfaas3"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "haddock-api.cabal"
+               (("Cabal           \\^>= 2\\.0\\.0")
+                "Cabal           ^>= 2.2.0")
+               (("hspec           \\^>= 2\\.4\\.4")
+                "hspec            >= 2.4.4 && < 2.6")))))))
     (inputs
      `(("ghc-paths" ,ghc-paths)
        ("ghc-haddock-library" ,ghc-haddock-library)))
