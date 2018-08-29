@@ -1349,7 +1349,7 @@ OpenAL.")
 (define-public ghc-sdl
   (package
     (name "ghc-sdl")
-    (version "0.6.5.1")
+    (version "0.6.7.0")
     (source
      (origin
        (method url-fetch)
@@ -1359,7 +1359,7 @@ OpenAL.")
              ".tar.gz"))
        (sha256
         (base32
-         "1sa3zx3vrs1gbinxx33zwq0x2bsf3i964bff7419p7vzidn36k46"))))
+         "00y67v80a8l09i3k76z09lg25kw72ivl09nag8ckdlk4a0cfnzfq"))))
     (build-system haskell-build-system)
     (inputs
      `(("sdl" ,sdl)))
