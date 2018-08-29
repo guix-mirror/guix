@@ -1406,7 +1406,7 @@ MIDI, Ogg Vorbis, and SMPEG MP3 libraries.")
 (define-public ghc-sdl-image
   (package
     (name "ghc-sdl-image")
-    (version "0.6.1.2")
+    (version "0.6.2.0")
     (source
      (origin
        (method url-fetch)
@@ -1416,7 +1416,7 @@ MIDI, Ogg Vorbis, and SMPEG MP3 libraries.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ybdwlqi5nqzpsbh2md5mxhwmjn910iqysf6nykwjxlmvhcjk281"))))
+         "1gxwrvswgwjw6g7ym52gik22l9l3ljy592phv97jdmcf3gi6qcg1"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
