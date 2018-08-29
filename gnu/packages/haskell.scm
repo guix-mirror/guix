@@ -1571,7 +1571,7 @@ found at runtime, a userError is thrown.")
 (define-public ghc-glut
   (package
     (name "ghc-glut")
-    (version "2.7.0.10")
+    (version "2.7.0.14")
     (source
      (origin
        (method url-fetch)
@@ -1581,7 +1581,7 @@ found at runtime, a userError is thrown.")
              ".tar.gz"))
        (sha256
         (base32
-         "0sbm943bg896nf3qjmlnsg3zzrr3pl330rzh9g0hwv47nzwwn4ab"))))
+         "01i162fly4q1751fp60lgkzlb8kr0qqbvmxj74zc6skb19qggy2w"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-statevar" ,ghc-statevar)
