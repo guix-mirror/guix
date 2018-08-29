@@ -4971,7 +4971,7 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
 (define-public ghc-lens
   (package
     (name "ghc-lens")
-    (version "4.15.4")
+    (version "4.16.1")
     (source
      (origin
        (method url-fetch)
@@ -4979,12 +4979,14 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1lkwlnhgpgnsz046mw4qs0fa7h4l012gilrr3nf3spllsy3pnbkl"))))
+         "1im4drhbydbawd6i0jsrzpqihnmx4ywpkg7yg94ddwsw3mxwkgpm"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("2" "11h83lj5mba4grhz1qx3irz10ysm9c3k7k6i6xv2cr60q8xin3ri")))
     (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-bifunctors" ,ghc-bifunctors)
-       ("ghc-doctest" ,ghc-doctest-0.13)
        ("ghc-distributive" ,ghc-distributive)
        ("ghc-exceptions" ,ghc-exceptions)
        ("ghc-free" ,ghc-free)
@@ -5010,6 +5012,7 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
        ("hlint" ,hlint)))
     (native-inputs
      `(("cabal-doctest" ,cabal-doctest)
+       ("ghc-doctest" ,ghc-doctest)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
