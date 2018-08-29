@@ -1096,7 +1096,7 @@ postfix notation.  For more information on stack based languages, see
 (define-public ghc-happy
   (package
     (name "ghc-happy")
-    (version "1.19.8")
+    (version "1.19.9")
     (source
      (origin
        (method url-fetch)
@@ -1106,7 +1106,7 @@ postfix notation.  For more information on stack based languages, see
              ".tar.gz"))
        (sha256
         (base32
-         "186ky3bly0i3cc56qk3r7j7pxh2108aackq4n2lli7jmbnb3kxsd"))))
+         "138xpxdb7x62lpmgmb6b3v3vgdqqvqn4273jaap3mjmc2gla709y"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/happy")
     (synopsis "Parser generator for Haskell")
