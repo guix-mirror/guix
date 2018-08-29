@@ -8376,7 +8376,7 @@ Typical applications of Priority Search Queues include:
 (define-public ghc-glob
   (package
     (name "ghc-glob")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
@@ -8385,7 +8385,7 @@ Typical applications of Priority Search Queues include:
                            "Glob-" version ".tar.gz"))
        (sha256
         (base32
-         "0rzmsknl02p332dxmm36fyrz3dpma7bchn0ymyjipxvqil20pjw0"))))
+         "1rbwcq9w9951qsnp13vqcm9r01yax2yh1wk8s4zxa3ckk9717iwg"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-dlist" ,ghc-dlist)
