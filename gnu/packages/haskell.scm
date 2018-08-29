@@ -4043,7 +4043,7 @@ with various performance characteristics.")
 (define-public ghc-mmorph
   (package
     (name "ghc-mmorph")
-    (version "1.0.6")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
@@ -4053,7 +4053,7 @@ with various performance characteristics.")
              ".tar.gz"))
        (sha256
         (base32
-         "1i8dzrc5qi3ryc9vrrmpn3sihmramsbhhd592w4w2k5g26qr3hql"))))
+         "1gjz1ib968lqybma7my1n19qq6cdj6a7nskrlnwy4jy9jrwzs2n9"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-transformers-compat" ,ghc-transformers-compat)))
