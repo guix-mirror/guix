@@ -754,7 +754,7 @@ Strict, Transitional and Frameset variants.")
 (define-public ghc-blaze-html
   (package
     (name "ghc-blaze-html")
-    (version "0.9.0.1")
+    (version "0.9.1.1")
     (source
      (origin
        (method url-fetch)
@@ -763,11 +763,8 @@ Strict, Transitional and Frameset variants.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0r0acv47nh75bmf7kjyfvhcwz8f02rn9x0a1l80pzgyczfrsmkmf"))))
+         "06xv8fqhclfjj61z74cgggn4lmx1s7diakxg84mnkgfvk11983pa"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck"
-                               "--allow-newer=HUnit")))
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)
