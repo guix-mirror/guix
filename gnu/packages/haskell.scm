@@ -9614,7 +9614,7 @@ code locations of messages.")
 (define-public ghc-shakespeare
   (package
     (name "ghc-shakespeare")
-    (version "2.0.14")
+    (version "2.0.15")
     (source
      (origin
        (method url-fetch)
@@ -9623,7 +9623,7 @@ code locations of messages.")
                            "shakespeare-" version ".tar.gz"))
        (sha256
         (base32
-         "0j5zx8ka7d7scvb9shm7k3376qzl3k4kpim9aqqfs6n86901zpl4"))))
+         "1vk4b19zvwy4mpwaq9z3l3kfmz75gfyf7alhh0y112gspgpccm23"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-parsec" ,ghc-parsec)
               ("ghc-text" ,ghc-text)
