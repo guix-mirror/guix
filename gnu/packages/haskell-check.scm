@@ -312,7 +312,7 @@ been added since previous test run.")
 (define-public ghc-tasty-expected-failure
   (package
     (name "ghc-tasty-expected-failure")
-    (version "0.11.0.4")
+    (version "0.11.1.1")
     (source
      (origin
        (method url-fetch)
@@ -321,7 +321,7 @@ been added since previous test run.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0r555f18d2gj96pjyc13chn1nxaxl81am4xgip3mvvjhw8s5mva1"))))
+         "1i2s809m644b7hgiblqay9j364r3fjj1rwbrahsn1pgr5q6mr6ji"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tagged" ,ghc-tagged)
