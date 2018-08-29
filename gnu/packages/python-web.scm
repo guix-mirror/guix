@@ -181,6 +181,32 @@ classes
 (define-public python2-falcon
   (package-with-python2 python-falcon))
 
+(define-public python-falcon-cors
+  (package
+    (name "python-falcon-cors")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "falcon-cors" version))
+       (sha256
+        (base32
+         "12pym7hwsbd8b0c1azn95nas8gm3f1qpr6lpyx0958xm65ffr20p"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-falcon" ,python-falcon)))
+    (home-page
+     "https://github.com/lwcolton/falcon-cors")
+    (synopsis "Falcon @dfn{cross-origin resource sharing} (CORS) library")
+    (description "This middleware provides @dfn{cross-origin resource
+sharing} (CORS) support for Falcon.  It allows applying a specially crafted
+CORS object to the incoming requests, enabling the ability to serve resources
+over a different origin than that of the web application.")
+    (license license:asl2.0)))
+
+(define-public python2-falcon-cors
+  (package-with-python2 python-falcon-cors))
+
 (define-public python-furl
   (package
     (name "python-furl")
