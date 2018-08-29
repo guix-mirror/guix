@@ -9665,7 +9665,7 @@ functions.")
 (define-public ghc-microlens
   (package
     (name "ghc-microlens")
-    (version "0.4.8.3")
+    (version "0.4.9.1")
     (source
      (origin
        (method url-fetch)
@@ -9674,7 +9674,7 @@ functions.")
                            "microlens-" version ".tar.gz"))
        (sha256
         (base32
-         "17qx2mbqdrlnkc3gxq8njbp7qw8nh51drmz6fc8khgj9bls5ni2k"))))
+         "0j2nzf0vpx2anvsrg2w0vy2z4jn3kkcs2n6glkzblhn1j9piqh51"))))
     (build-system haskell-build-system)
     (home-page
      "https://github.com/aelve/microlens")
