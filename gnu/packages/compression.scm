@@ -1154,15 +1154,14 @@ algorithm within the Numpy framework.")
   (package
     (name "snappy")
     (version "1.1.7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/google/snappy/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append "snappy-" version ".tar.gz"))
-       (sha256
-        (base32 "1m7rcdqzkys5lspj8jcsaah8w33zh28s771bw0ga2lgzfgl05yix"))
-       (patches (search-patches "snappy-add-O2-flag-in-CmakeLists.txt.patch"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/snappy/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append "snappy-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1m7rcdqzkys5lspj8jcsaah8w33zh28s771bw0ga2lgzfgl05yix"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))

@@ -1140,7 +1140,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-sigusr1.patch			\
   %D%/packages/patches/slim-reset.patch				\
   %D%/packages/patches/slim-login.patch				\
-  %D%/packages/patches/snappy-add-O2-flag-in-CmakeLists.txt.patch	\
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
   %D%/packages/patches/soundtouch-CVE-2018-14044-14045.patch 	\
   %D%/packages/patches/soundtouch-CVE-2018-1000223.patch 	\
