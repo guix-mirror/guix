@@ -261,7 +261,7 @@ libraries, such as http-conduit.")
 (define-public ghc-http-date
   (package
     (name "ghc-http-date")
-    (version "0.0.6.1")
+    (version "0.0.8")
     (source
      (origin
        (method url-fetch)
@@ -270,7 +270,7 @@ libraries, such as http-conduit.")
                            "http-date-" version ".tar.gz"))
        (sha256
         (base32
-         "0dknh28kyarnzqrsc80ssalxjrq0qbv7ir49247p2grb7rh0dqgj"))))
+         "09slbzqayjnqqz9zybk7slgzvizgplikqgg4b2flzgks91466k0g"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)))
