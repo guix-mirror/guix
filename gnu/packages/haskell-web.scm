@@ -1173,7 +1173,7 @@ from Yesod.")
 (define-public ghc-yesod-form
     (package
     (name "ghc-yesod-form")
-    (version "1.4.16")
+    (version "1.6.2")
     (source
       (origin
         (method url-fetch)
@@ -1183,7 +1183,7 @@ from Yesod.")
                ".tar.gz"))
         (sha256
           (base32
-            "0lij3m5vn8nvh6y88r1dhk03xmmjwmjzazm307nc2wvc5fmx9p2j"))))
+            "1p1x1hffvarplc82ykdk7rm6p5isqgqf78bvxzpfhncxs4kwx057"))))
     (build-system haskell-build-system)
     (inputs
       `(("ghc-yesod-core" ,ghc-yesod-core)
