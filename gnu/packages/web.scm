@@ -4574,7 +4574,7 @@ project.")
 (define-public libnsbmp
   (package
     (name "libnsbmp")
-    (version "0.1.4")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
@@ -4582,7 +4582,7 @@ project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0y4a0gn4l6lq4z9183wix0mdsgalqyw24k19k8jr8sz4h3lb7jrb"))))
+         "0lib2m07d1i0k80m4blkwnj0g7rha4jbm5vrgd0wwbkyfa0hvk35"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
