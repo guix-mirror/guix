@@ -7073,7 +7073,7 @@ the @code{mtl-tf} package.")
 (define-public ghc-colour
 (package
   (name "ghc-colour")
-  (version "2.3.3")
+  (version "2.3.4")
   (source
    (origin
      (method url-fetch)
@@ -7082,7 +7082,11 @@ the @code{mtl-tf} package.")
            version ".tar.gz"))
      (sha256
       (base32
-       "1qmn1778xzg07jg9nx4k1spdz2llivpblf6wwrps1qpqjhsac5cd"))))
+       "1sy51nz096sv91nxqk6yk7b92b5a40axv9183xakvki2nc09yhqg"))))
+  (arguments
+   ;; The tests for this package have the following dependency cycle:
+   ;; ghc-test-framework -> ghc-ansi-terminal -> ghc-colour.
+   `(#:tests? #f))
   (build-system haskell-build-system)
   (home-page "https://www.haskell.org/haskellwiki/Colour")
   (synopsis "Model for human colour perception")
