@@ -7399,7 +7399,7 @@ easily work with command-line options.")
 (define-public ghc-chell
   (package
     (name "ghc-chell")
-    (version "0.4.0.1")
+    (version "0.4.0.2")
     (source
      (origin
        (method url-fetch)
@@ -7408,7 +7408,7 @@ easily work with command-line options.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0lb95abzxl4a87nfqxsxpb3a39pd52cci43hcvj8615hyhqvs2jz"))))
+         "10ingy9qnbmc8cqh4i9pskcw43l0mzk8f3d76b3qz3fig5ary3j9"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-options-bootstrap" ,ghc-options-bootstrap)
