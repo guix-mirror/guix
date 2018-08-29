@@ -2122,7 +2122,7 @@ on the screen and keyboard to display letters.")
 (define-public raincat
   (package
     (name "raincat")
-    (version "1.1.1.3")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
@@ -2132,7 +2132,7 @@ on the screen and keyboard to display letters.")
              ".tar.gz"))
        (sha256
         (base32
-         "1aalh68h6799mv4vyg30zpskl5jkn6x2j1jza7p4lrflyifxzar8"))))
+         "1zyxkvjxkadwakg03xnjii1hx0gs45ap9rfkpi4kxipzxppq1klk"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
