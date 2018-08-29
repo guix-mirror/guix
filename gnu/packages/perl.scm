@@ -7631,7 +7631,7 @@ renaming exports, if they try to use them.")
 (define-public perl-sub-identify
   (package
     (name "perl-sub-identify")
-    (version "0.10")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
@@ -7639,7 +7639,7 @@ renaming exports, if they try to use them.")
                            "Sub-Identify-" version ".tar.gz"))
        (sha256
         (base32
-         "087fjcg6w576w47i1slj6mjfd3gl1b0airgddmn3prn0nff6nn2m"))))
+         "0vxdxyfh6037xy88ic7500wydzmsxldhp95n8bld2kaihqh2g386"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Sub-Identify")
     (synopsis "Retrieve names of code references")
