@@ -260,7 +260,7 @@ tasty.")
 (define-public ghc-tasty-th
   (package
     (name "ghc-tasty-th")
-    (version "0.1.4")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
@@ -269,10 +269,12 @@ tasty.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0dff9si8i1qp0s7p4hlk0l29vq7wxfglw6mvlgmld43h7rllv88q"))))
+         "0b2ivrw2257m4cy4rjnkwqlarh83j1y3zywnmaqqqbvy667sqnj3"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tasty" ,ghc-tasty)))
+     `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
     (home-page "https://github.com/bennofs/tasty-th")
     (synopsis "Automatically generate tasty TestTrees")
     (description
