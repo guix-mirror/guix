@@ -4426,7 +4426,7 @@ having to unsafely pass dummy arguments.")
 (define-public ghc-unbounded-delays
   (package
     (name "ghc-unbounded-delays")
-    (version "0.1.0.9")
+    (version "0.1.1.0")
     (source
      (origin
        (method url-fetch)
@@ -4436,7 +4436,7 @@ having to unsafely pass dummy arguments.")
              ".tar.gz"))
        (sha256
         (base32
-         "1f4h87503m3smhip432q027wj3zih18pmz2rnafh60589ifcl420"))))
+         "1ir9fghbrc214c97bwafk5ck6cacxz1pdnq4i18p604d1b8zg9wa"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/basvandijk/unbounded-delays")
     (synopsis "Unbounded thread delays and timeouts")
