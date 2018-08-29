@@ -7091,7 +7091,7 @@ this problem.")
 (define-public ghc-tar
   (package
     (name "ghc-tar")
-    (version "0.5.0.3")
+    (version "0.5.1.0")
     (source
      (origin
        (method url-fetch)
@@ -7100,7 +7100,7 @@ this problem.")
              version ".tar.gz"))
        (sha256
         (base32
-         "18qq94j9bm91iswnxq2dm5dws5c7wm4k01q2rpf8py35cf3svnfq"))))
+         "0s2brvaxg5fki2jdkccmnpssiy6a3wjh24p6a3dkkdvjcixnk7f8"))))
     (build-system haskell-build-system)
     ;; FIXME: 2/24 tests fail.
     (arguments `(#:tests? #f))
