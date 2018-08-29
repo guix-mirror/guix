@@ -9464,7 +9464,7 @@ from aeson.")
 (define-public ghc-generics-sop
   (package
     (name "ghc-generics-sop")
-    (version "0.3.1.0")
+    (version "0.3.2.0")
     (source
      (origin
        (method url-fetch)
@@ -9473,7 +9473,7 @@ from aeson.")
                            "generics-sop-" version ".tar.gz"))
        (sha256
         (base32
-         "1bazlhgmxcwv7vd44jhdx74cnhmaz6yy47jxfycapjj4mjrnp0x7"))))
+         "168v62i845jh9jbfaz3ldz8svz4wmzq9mf2vhb7pxlnbkk8fqq1h"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-transformers-compat" ,ghc-transformers-compat)))
     (home-page "https://github.com/well-typed/generics-sop")
