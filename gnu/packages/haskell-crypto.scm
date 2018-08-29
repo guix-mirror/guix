@@ -481,7 +481,7 @@ collections, certificates, revocation lists, and exception lists.")
 (define-public ghc-x509-validation
   (package
     (name "ghc-x509-validation")
-    (version "1.6.5")
+    (version "1.6.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -489,7 +489,7 @@ collections, certificates, revocation lists, and exception lists.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "190w1sr3w6w49v3yvqz4grb0v09ym4gll3n8bxwijvbvcybk3xyi"))))
+                "1ms51scawldgyfcim5a2qlgyn3rnrclyh205d6djaa1569vrs73n"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-memory" ,ghc-memory)
@@ -502,6 +502,9 @@ collections, certificates, revocation lists, and exception lists.")
        ("ghc-x509" ,ghc-x509)
        ("ghc-x509-store" ,ghc-x509-store)
        ("ghc-cryptonite" ,ghc-cryptonite)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
     (home-page "https://github.com/vincenthz/hs-certificate")
     (synopsis "X.509 certificate and revocation list validation")
     (description
