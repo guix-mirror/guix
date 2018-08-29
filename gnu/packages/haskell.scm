@@ -6540,7 +6540,7 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
 (define-public ghc-doctemplates
   (package
     (name "ghc-doctemplates")
-    (version "0.2.1")
+    (version "0.2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -6549,7 +6549,7 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1bfs2kl5j5al2w2y4qpbn68p0xsnb65r7h51l356kpkzc326646p"))))
+         "1gyckfg3kgvzhxw14i7iwrw0crygvsp86sy53bbr1yn7bxbgn33b"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
