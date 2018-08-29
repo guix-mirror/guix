@@ -4320,7 +4320,7 @@ library for Haskell.")
 (define-public ghc-async
   (package
     (name "ghc-async")
-    (version "2.1.1.1")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -4330,10 +4330,11 @@ library for Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "1qj4fp1ynwg0l453gmm27vgkzb5k5m2hzdlg5rdqi9kf8rqy90yd"))))
+         "09whscli1q5z7lzyq9rfk0bq1ydplh6pjmc6qv0x668k5818c2wg"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm" ,ghc-stm)
+       ("ghc-hashable" ,ghc-hashable)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
