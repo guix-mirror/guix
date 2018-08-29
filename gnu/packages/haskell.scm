@@ -10027,7 +10027,7 @@ Haskell data types to and from HTTP API data.")
 (define-public ghc-persistent
   (package
     (name "ghc-persistent")
-    (version "2.7.3.1")
+    (version "2.8.2")
     (source
      (origin
        (method url-fetch)
@@ -10036,7 +10036,7 @@ Haskell data types to and from HTTP API data.")
                            "persistent-" version ".tar.gz"))
        (sha256
         (base32
-         "1jbvavdvr9qz5ld7vf6l1jgiadhmxx6zc4vqsdk9ivfq6d5wlg1p"))))
+         "1h0yijbf1yiwl50klyafy4ln99j8bib4kgbzviw7fc4y4mwv4sv9"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-old-locale" ,ghc-old-locale)
               ("ghc-text" ,ghc-text)
@@ -10061,7 +10061,8 @@ Haskell data types to and from HTTP API data.")
               ("ghc-silently" ,ghc-silently)
               ("ghc-fast-logger" ,ghc-fast-logger)
               ("ghc-scientific" ,ghc-scientific)
-              ("ghc-tagged" ,ghc-tagged)))
+              ("ghc-tagged" ,ghc-tagged)
+              ("ghc-void" ,ghc-void)))
     (native-inputs `(("ghc-hspec" ,ghc-hspec)))
     (home-page "https://www.yesodweb.com/book/persistent")
     (synopsis "Type-safe, multi-backend data serialization for Haskell")
