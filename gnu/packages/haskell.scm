@@ -7808,14 +7808,14 @@ Accessor to access state in transformers State monad.")
 (define-public ghc-utility-ht
   (package
     (name "ghc-utility-ht")
-    (version "0.0.12")
+    (version "0.0.14")
     (home-page "https://hackage.haskell.org/package/utility-ht")
     (source
      (origin
        (method url-fetch)
        (uri (string-append home-page "/utility-ht-" version ".tar.gz"))
        (sha256
-        (base32 "1vq5bd51rl9l5lgfmaqxgiggddk38hzgngcj7qgrqnalcd1myi54"))))
+        (base32 "1a7bgk7wv7sqbxbiv7kankiimr3wij7zdm7s83zwsf886ghyxhk9"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
     (synopsis "Haskell helper functions for Lists, Maybes, Tuples, Functions")
