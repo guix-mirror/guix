@@ -9119,7 +9119,7 @@ which consume random values.")
 (define-public ghc-either
   (package
     (name "ghc-either")
-    (version "4.4.1.1")
+    (version "5.0.1")
     (source
      (origin
        (method url-fetch)
@@ -9128,7 +9128,7 @@ which consume random values.")
                            "either-" version ".tar.gz"))
        (sha256
         (base32
-         "1lrlwqqnm6ibfcydlv5qvvssw7bm0c6yypy0rayjzv1znq7wp1xh"))))
+         "064hjfld7dkzs78sy30k5qkiva3hx24rax6dvzz5ygr2c0zypdkc"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-bifunctors" ,ghc-bifunctors)
               ("ghc-exceptions" ,ghc-exceptions)
@@ -9140,6 +9140,10 @@ which consume random values.")
               ("ghc-semigroups" ,ghc-semigroups)
               ("ghc-semigroupoids" ,ghc-semigroupoids)
               ("ghc-transformers-base" ,ghc-transformers-base)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     (home-page "https://github.com/ekmett/either")
     (synopsis "Provides an either monad transformer for Haskell")
     (description "This Haskell package provides an either monad transformer.")
