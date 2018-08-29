@@ -1216,7 +1216,7 @@ providing richtext field using Nic editor. ")
 (define-public ghc-yesod
   (package
     (name "ghc-yesod")
-    (version "1.4.5")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
@@ -1225,7 +1225,7 @@ providing richtext field using Nic editor. ")
              version ".tar.gz"))
        (sha256
         (base32
-         "1sg66nq8yaas2m5nqsdrxricvcizd1ik02zqk60sxh3wna08fz16"))))
+         "0wx77nbpzdh40p1bm527kimfj48vs9d2avpvvz2w42zi3pz2y94a"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-yesod-core" ,ghc-yesod-core)
