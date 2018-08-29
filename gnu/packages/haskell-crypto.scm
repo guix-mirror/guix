@@ -338,17 +338,18 @@ to obtain cryptographically strong entropy.")
 (define-public ghc-pem
   (package
     (name "ghc-pem")
-    (version "0.2.2")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "pem/pem-" version ".tar.gz"))
               (sha256
                (base32
-                "162sk5sg22w21wqz5qv8kx6ibxp99v5p20g3nknhm1kddk3hha1p"))))
+                "1m7qjsxrd8m88cvkqmr8kscril500j2a9y0iynvksjyjkhdlq33p"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)))
+     `(("ghc-basement" ,ghc-basement)
+       ("ghc-memory" ,ghc-memory)))
     (native-inputs
      `(("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
