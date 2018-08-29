@@ -8888,7 +8888,7 @@ statically known size.")
 (define-public ghc-contravariant-extras
   (package
     (name "ghc-contravariant-extras")
-    (version "0.3.3.1")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
@@ -8897,11 +8897,13 @@ statically known size.")
                            "contravariant-extras-" version ".tar.gz"))
        (sha256
         (base32
-         "1mbrgjybdx8fjdck4ldwi8955w4qnmm0ql56zix7dyn0s7s9spgk"))))
+         "0gg62ccl94kvh7mnvdq09pifqxjx2kgs189si90nmg44bafj7a9n"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-tuple-th" ,ghc-tuple-th)
-              ("ghc-contravariant" ,ghc-contravariant)
-              ("ghc-base-prelude" ,ghc-base-prelude)))
+    (inputs
+     `(("ghc-tuple-th" ,ghc-tuple-th)
+       ("ghc-contravariant" ,ghc-contravariant)
+       ("ghc-base-prelude" ,ghc-base-prelude)
+       ("ghc-semigroups" ,ghc-semigroups)))
     (home-page "https://github.com/nikita-volkov/contravariant-extras")
     (synopsis "Extras for the @code{ghc-contravariant} Haskell package")
     (description "This Haskell package provides extras for the
