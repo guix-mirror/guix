@@ -10053,7 +10053,7 @@ system dependencies.")
 (define-public ghc-email-validate
   (package
     (name "ghc-email-validate")
-    (version "2.3.2.1")
+    (version "2.3.2.6")
     (source
      (origin
        (method url-fetch)
@@ -10064,7 +10064,7 @@ system dependencies.")
              ".tar.gz"))
        (sha256
         (base32
-         "0qvxysiap3r4mi3xff5nsk9qv6diqxfgwj186bypbamzvzlz0lav"))))
+         "0chgylvc8xmhp933rdbmpg5sv4y7yg2h6kbf0ip1dzmbd5p55pa5"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
