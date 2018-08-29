@@ -3873,7 +3873,7 @@ combinators.")
 (define-public ghc-megaparsec
   (package
     (name "ghc-megaparsec")
-    (version "6.4.0")
+    (version "6.5.0")
     (source
      (origin
        (method url-fetch)
@@ -3882,8 +3882,11 @@ combinators.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0h9azhs0dfrc359vrbd1jljrg3yfdbwd4p62cxqkn7mnh8913jpd"))))
+         "12iggy7qpf8x93jm64zf0g215xwy779bqyfyjk2bhmxqqr1yzgdy"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("4" "0ij3asi5vwlhbgwsy6nhli9a0qb7926mg809fsgyl1rnhs9fvpx1")))
     (inputs
      `(("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-parser-combinators" ,ghc-parser-combinators)
