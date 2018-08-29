@@ -8158,7 +8158,7 @@ accessed or modified.")
 (define-public ghc-fsnotify
   (package
     (name "ghc-fsnotify")
-    (version "0.2.1")
+    (version "0.3.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -8166,7 +8166,7 @@ accessed or modified.")
                     "fsnotify-" version ".tar.gz"))
               (sha256
                (base32
-                "0asl313a52qx2w6dw25g845683xsl840bwjh118nkwi5v1xipkzb"))))
+                "19bdbz9wb9jvln6yg6qm0hz0w84bypvkxf0wjhgrgd52f9gidlny"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-text" ,ghc-text)
@@ -8175,7 +8175,9 @@ accessed or modified.")
        ("ghc-hinotify" ,ghc-hinotify)
        ("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-       ("ghc-temporary-rc" ,ghc-temporary-rc)))
+       ("ghc-random" ,ghc-random)
+       ("ghc-shelly" ,ghc-shelly)
+       ("ghc-temporary" ,ghc-temporary)))
     (home-page "https://github.com/haskell-fswatch/hfsnotify")
     (synopsis "Cross platform library for file change notification.")
     (description "Cross platform library for file creation, modification, and
