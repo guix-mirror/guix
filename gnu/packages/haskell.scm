@@ -3302,7 +3302,7 @@ consuming feeds in both RSS (Really Simple Syndication) and Atom format.")
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
-    (version "0.8.3")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
@@ -3312,12 +3312,12 @@ consuming feeds in both RSS (Really Simple Syndication) and Atom format.")
              ".tar.gz"))
        (sha256
         (base32
-         "1gl7xzffsqmigam6zg0jsglncgzxqafld2p6kb7ccp9xirzdjsjd"))))
+         "1ms9zansv0pwzwdjncvx4kf18lnkjy2p61hvjhvxmjx5bqp93p8y"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck")))
     (native-inputs
-     `(("ghc-test-framework" ,ghc-test-framework)
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     (inputs
      `(("ghc-stm" ,ghc-stm)
