@@ -6764,7 +6764,7 @@ better for some purposes.")
 (define-public ghc-typed-process
   (package
     (name "ghc-typed-process")
-    (version "0.2.2.0")
+    (version "0.2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -6773,7 +6773,7 @@ better for some purposes.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0c6gvgvjyncbni9a5bvpbglknd4yclr3d3hfg9bhgahmkj40dva2"))))
+         "0j36vrc9w841m5qbwqra1lwiznx31xfnhin1sm8x2c2739csbpn0"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)
