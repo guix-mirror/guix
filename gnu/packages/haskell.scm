@@ -9715,7 +9715,7 @@ stripped.  As the result, this package has no dependencies.")
 (define-public ghc-microlens-th
   (package
     (name "ghc-microlens-th")
-    (version "0.4.1.3")
+    (version "0.4.2.2")
     (source
      (origin
        (method url-fetch)
@@ -9724,9 +9724,10 @@ stripped.  As the result, this package has no dependencies.")
                            "microlens-th-" version ".tar.gz"))
        (sha256
         (base32
-         "15a12cqxlgbcn1n73zwrxnp2vfm8b0ma0a0sdd8zmjbs8zy3np4f"))))
+         "02nj7lnl61yffi3c6wn341arxhld5r0vj6nzcb5zmqjhnqsv8c05"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-microlens" ,ghc-microlens)))
+    (inputs `(("ghc-microlens" ,ghc-microlens)
+              ("ghc-th-abstraction" ,ghc-th-abstraction)))
     (home-page
      "https://github.com/aelve/microlens")
     (synopsis "Automatic generation of record lenses for
