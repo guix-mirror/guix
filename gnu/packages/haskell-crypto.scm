@@ -423,14 +423,14 @@ libraries, like OpenSSL.")
 (define-public ghc-x509
   (package
     (name "ghc-x509")
-    (version "1.6.4")
+    (version "1.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "x509/x509-" version ".tar.gz"))
               (sha256
                (base32
-                "0hixx76wpb4qxida017ka5zr6lrsycahrqyw8z90q9mxvndpy3my"))))
+                "0mkk29g32fs70bqkikg83v45h9jig9c8aail3mrdqwxpkfa0yx21"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-memory" ,ghc-memory)
