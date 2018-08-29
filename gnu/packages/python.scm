@@ -5031,6 +5031,32 @@ toolkit.  Use it to build trees of widgets.")
 (define-public python2-ua-parser
   (package-with-python2 python-ua-parser))
 
+(define-public python-user-agents
+  (package
+    (name "python-user-agents")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "user-agents" version))
+       (sha256
+        (base32
+         "0fc00cd3j8dahq1zzn8pkgfgd7lq37bp2scmdma2n1c049vicgb4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                  ;missing devices.json test file in release
+    (propagated-inputs
+     `(("python-ua-parser" ,python-ua-parser)))
+    (home-page "https://github.com/selwin/python-user-agents")
+    (synopsis "User Agent strings parsing library")
+  (description
+   "A library to identify devices (phones, tablets) and their capabilities by
+parsing (browser/HTTP) user agent strings.")
+  (license license:expat)))
+
+(define-public python2-user-agents
+  (package-with-python2 python-user-agents))
+
 (define-public python-dbus
   (package
     (name "python-dbus")
