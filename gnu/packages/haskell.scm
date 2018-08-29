@@ -4771,7 +4771,7 @@ functors).  For more information, see Edward Kmett's article
 (define-public ghc-kan-extensions
   (package
     (name "ghc-kan-extensions")
-    (version "5.0.1")
+    (version "5.2")
     (source
      (origin
        (method url-fetch)
@@ -4781,7 +4781,7 @@ functors).  For more information, see Edward Kmett's article
              ".tar.gz"))
        (sha256
         (base32
-         "1qm0kf4krmyjbjynn96ab0h3q117vwcia5nin7n2b8b4f3jrzph1"))))
+         "1lyvyiwwh962j2nnnsqzlvp5zq6z8p3spvhmji99cjvldxc7wwkb"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-adjunctions" ,ghc-adjunctions)
@@ -4789,8 +4789,10 @@ functors).  For more information, see Edward Kmett's article
        ("ghc-contravariant" ,ghc-contravariant)
        ("ghc-distributive" ,ghc-distributive)
        ("ghc-free" ,ghc-free)
+       ("ghc-invariant" ,ghc-invariant)
        ("ghc-semigroupoids" ,ghc-semigroupoids)
-       ("ghc-tagged" ,ghc-tagged)))
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
     (home-page "https://github.com/ekmett/kan-extensions/")
     (synopsis "Kan extensions library")
     (description "This library provides Kan extensions, Kan lifts, various
