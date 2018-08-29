@@ -5115,7 +5115,7 @@ monad transformer (instead of the IO monad).")
 (define-public ghc-doctest
   (package
     (name "ghc-doctest")
-    (version "0.11.0")
+    (version "0.16.0")
     (source
      (origin
        (method url-fetch)
@@ -5125,13 +5125,14 @@ monad transformer (instead of the IO monad).")
              ".tar.gz"))
        (sha256
         (base32
-         "0xv4vx1r3mk7cmiwywzrq25545cx3i7imhcx33mk47r88j5c49fj"))))
+         "0hkccch65s3kp0b36h7bqhilnpi4bx8kngncm7ma9vbd3dwacjdv"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))          ; FIXME: missing test framework
     (inputs
      `(("ghc-syb" ,ghc-syb)
        ("ghc-paths" ,ghc-paths)
        ("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-code-page" ,ghc-code-page)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)
