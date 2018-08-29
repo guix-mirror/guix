@@ -7921,7 +7921,7 @@ helper functions for Lists, Maybes, Tuples, Functions.")
 (define-public ghc-hinotify
   (package
     (name "ghc-hinotify")
-    (version "0.3.8.1")
+    (version "0.3.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7929,8 +7929,10 @@ helper functions for Lists, Maybes, Tuples, Functions.")
                     "hinotify-" version ".tar.gz"))
               (sha256
                (base32
-                "03c1f4d7x805zdiq2w26kl09xrfjw19saycdkhnixzv2qcr6xm1p"))))
+                "17ax3n68a5c2ddazp86aciliskrh6znd3bnry0wcllmb6dbpsaxg"))))
     (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)))
     (home-page "https://github.com/kolmodin/hinotify.git")
     (synopsis "Haskell binding to inotify")
     (description "This library provides a wrapper to the Linux kernel's inotify
