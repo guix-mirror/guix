@@ -8040,14 +8040,14 @@ handler built in.")
 (define-public ghc-unexceptionalio
   (package
     (name "ghc-unexceptionalio")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "unexceptionalio-" version "/" "unexceptionalio-"
                            version ".tar.gz"))
-       (sha256 (base32 "1f7h7zwky4scdcyjspg4ksfh7x6yra0wjybxq70p7vcwpgk2nzlj"))))
+       (sha256 (base32 "09gynk472l7nn5l2w320n4dwigwp0wh0shfp6dyw6r5h2jdxz18p"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/singpolyma/unexceptionalio")
     (synopsis "IO without any non-error, synchronous exceptions")
