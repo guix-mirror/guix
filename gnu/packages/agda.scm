@@ -30,7 +30,7 @@
 (define-public agda
   (package
     (name "agda")
-    (version "2.5.3")
+    (version "2.5.4.1")
     (source
      (origin
        (method url-fetch)
@@ -39,7 +39,7 @@
              version ".tar.gz"))
        (sha256
         (base32
-         "0r80vw7vnvbgq47y50v050malv7zvv2p2kg6f47i04r0b2ix855a"))))
+         "0bxpibsk98n9xp42d92ma5vj2fam8rsnl61fbhr3askfjdvalnbp"))))
     (build-system haskell-build-system)
     (inputs
      `(("cpphs" ,cpphs)
