@@ -7675,7 +7675,7 @@ and Fortran complex data types.")
 (define-public ghc-hmatrix
   (package
     (name "ghc-hmatrix")
-    (version "0.18.1.0")
+    (version "0.19.0.0")
     (source
      (origin
        (method url-fetch)
@@ -7683,12 +7683,13 @@ and Fortran complex data types.")
              "https://hackage.haskell.org/package/hmatrix/hmatrix-"
              version ".tar.gz"))
        (sha256
-        (base32 "07zkwvg872hfk6jyn4s54ws8mvclynazaxf7fsbqi16dmf9dn61c"))))
+        (base32 "10jd69nby29dggghcyjk6ykyr5wrn97nrv1dkpyrp0y5xm12xssj"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-random" ,ghc-random)
        ("ghc-split" ,ghc-split)
        ("ghc-storable-complex" ,ghc-storable-complex)
+       ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-vector" ,ghc-vector)
        ;;("openblas" ,openblas)
        ("lapack" ,lapack)))
