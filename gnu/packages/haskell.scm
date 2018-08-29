@@ -4601,7 +4601,7 @@ Compatibility package for older packages.")
 (define-public ghc-void
   (package
     (name "ghc-void")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
@@ -4611,7 +4611,7 @@ Compatibility package for older packages.")
              ".tar.gz"))
        (sha256
         (base32
-         "1x15x2axz84ndw2bf60vjqljhrb0w95lddaljsxrl0hcd29zvw69"))))
+         "0aygw0yb1h3yhmfl3bkwh5d3h0l4mmsxz7j53vdm6jryl1kgxzyk"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-semigroups" ,ghc-semigroups)
