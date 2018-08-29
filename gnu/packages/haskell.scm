@@ -1319,7 +1319,7 @@ specify refactorings without depending on GHC.")
 (define-public hlint
   (package
     (name "hlint")
-    (version "2.1.1")
+    (version "2.1.10")
     (source
      (origin
        (method url-fetch)
@@ -1328,7 +1328,7 @@ specify refactorings without depending on GHC.")
              "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0mmfavd158l5ig5wb1b1zbhbraj8hhqvbk4mg85n6c8ndpr4grd4"))))
+         "19as2m9g75cr6n1agzvsij0cvqhb0wbjlk31w4y5d5mns87dki0w"))))
     (build-system haskell-build-system)
     (inputs
      `(("cpphs" ,cpphs)
