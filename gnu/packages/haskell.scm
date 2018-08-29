@@ -5978,7 +5978,7 @@ info for more informative bug reports.")
 (define-public ghc-haskell-src-meta
   (package
     (name "ghc-haskell-src-meta")
-    (version "0.8.0.2")
+    (version "0.8.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5986,7 +5986,7 @@ info for more informative bug reports.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "12rc4v5dbbbcwdp7j8isvnm9vqpazv124j5kdfwlgwgwjhxi8ysb"))))
+                "08jq156zv4m0fjq6712n99c1jwxnpa6kj6sq8ch0r1l0a1ay6ww4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
