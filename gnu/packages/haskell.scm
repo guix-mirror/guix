@@ -5707,7 +5707,7 @@ instances.  This package provides orphan instances for @code{containers},
 (define-public ghc-th-reify-many
   (package
     (name "ghc-th-reify-many")
-    (version "0.1.6")
+    (version "0.1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5715,7 +5715,7 @@ instances.  This package provides orphan instances for @code{containers},
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1b76zjxkj0v0n8zj9l0nwav2irm0c43rx6qjihfw8klmmxvx59df"))))
+                "0hzy6hvhvcd6i60vx5cp2b7ggmnnjh9rx4h8bm8xw4grglcaxjnf"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-safe" ,ghc-safe)
