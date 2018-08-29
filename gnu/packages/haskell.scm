@@ -5726,7 +5726,7 @@ package, and that's where the version number started.")
 (define-public ghc-geniplate-mirror
   (package
     (name "ghc-geniplate-mirror")
-    (version "0.7.5")
+    (version "0.7.6")
     (source
      (origin
        (method url-fetch)
@@ -5734,7 +5734,7 @@ package, and that's where the version number started.")
                            "/geniplate-mirror"
                            "/geniplate-mirror-" version ".tar.gz"))
        (sha256
-        (base32 "17vjps2118s5z3k39ij00lkmkxv3mqf8h59wv6qdamlgmhyr36si"))))
+        (base32 "1y0m0bw5zpm1y1y6d9qmxj3swl8j8hlw1shxbr5awycf6k884ssb"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/danr/geniplate")
     (synopsis "Use Template Haskell to generate Uniplate-like functions")
