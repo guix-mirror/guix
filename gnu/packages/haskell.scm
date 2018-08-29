@@ -7950,7 +7950,7 @@ dependency.")
 (define-public ghc-language-c
   (package
     (name "ghc-language-c")
-    (version "0.5.0")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -7958,7 +7958,7 @@ dependency.")
                            "language-c/language-c-" version ".tar.gz"))
        (sha256
         (base32
-         "08i2bl7jmmymn2sldzlbz6ig7lx3wfwhlpadzibs3fx72z08pmc6"))))
+         "0sdkjj0hq8p69fcdm6ljbjkjvrsrb8a6rl5dq6dj6byj32ajrm3d"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-syb" ,ghc-syb)))
     (native-inputs
