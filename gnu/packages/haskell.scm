@@ -8019,7 +8019,7 @@ helper functions for Lists, Maybes, Tuples, Functions.")
 (define-public ghc-gnuplot
   (package
     (name "ghc-gnuplot")
-    (version "0.5.4.1")
+    (version "0.5.5.2")
     (source
      (origin
        (method url-fetch)
@@ -8027,7 +8027,7 @@ helper functions for Lists, Maybes, Tuples, Functions.")
              "mirror://hackage/package/gnuplot/gnuplot-"
              version ".tar.gz"))
        (sha256
-        (base32 "1xz8prw9xjk0rsyrkp9bsmxykzrbhpv9qhhkdapy75mdbmgwjm7s"))))
+        (base32 "1mlppnc13ygjzmf6ldydys4wvy35yb3xjwwfgf9rbi7nfcqjr6mn"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-temporary" ,ghc-temporary)
