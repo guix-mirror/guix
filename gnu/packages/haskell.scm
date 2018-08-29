@@ -9535,7 +9535,7 @@ interpolates variables according to the type being inserted.")
 (define-public ghc-securemem
   (package
     (name "ghc-securemem")
-    (version "0.1.9")
+    (version "0.1.10")
     (source
      (origin
        (method url-fetch)
@@ -9544,7 +9544,7 @@ interpolates variables according to the type being inserted.")
                            "securemem-" version ".tar.gz"))
        (sha256
         (base32
-         "0dkhhjxa7njc3qbgvd5a23rkvr39vj2kn2a9nk6yjg7a8b2hvdpy"))))
+         "19hnw2cfbsfjynxq1bq9f6djbxhsc1k751ml0y1ab3ah913mm29j"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-byteable" ,ghc-byteable)
               ("ghc-memory" ,ghc-memory)))
