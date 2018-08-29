@@ -4102,7 +4102,7 @@ cursor, and changing the title.")
 (define-public ghc-vault
   (package
     (name "ghc-vault")
-    (version "0.3.0.6")
+    (version "0.3.1.2")
     (source
      (origin
        (method url-fetch)
@@ -4112,11 +4112,12 @@ cursor, and changing the title.")
              ".tar.gz"))
        (sha256
         (base32
-         "0j7gcs440q7qlgzi2hn36crgp2c0w69k40g6vj9hxlm31zk3shqb"))))
+         "072mbrihsdsb8c6xvg6lvk0rqjgvxvi8qkg4n6wwym5hq0pfa04y"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-unordered-containers" ,ghc-unordered-containers)
-       ("ghc-hashable" ,ghc-hashable)))
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)))
     (home-page
      "https://github.com/HeinrichApfelmus/vault")
     (synopsis "Persistent store for arbitrary values")
