@@ -1049,7 +1049,7 @@ documentation-generation tool for Haskell libraries.")
 (define-public ghc-haddock
   (package
     (name "ghc-haddock")
-    (version "2.17.4")
+    (version "2.19.0.1")
     (source
      (origin
        (method url-fetch)
@@ -1059,16 +1059,37 @@ documentation-generation tool for Haskell libraries.")
              ".tar.gz"))
        (sha256
         (base32
-         "1z3h3v7w84dzsm47iavdppc2w899mr4c1agq9fzghgz902i0a655"))))
+         "1g1j9j0hf2yhyyh0gwz6bzbvfvliqz9x8a8hnkmwghm7w3xa6sb7"))))
     (build-system haskell-build-system)
-    ;; FIXME: Tests fail with this error:
-    ;; driver-test/Main.hs:4:1: error:
-    ;; Failed to load interface for ‘ResponseFileSpec’
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; There are four test suites that require the ghc-haddock-test
+         ;; package, which no longer builds with GHC 8.4.3.  This phase
+         ;; removes these four test suites from the Cabal file, so that we
+         ;; do not need ghc-haddock-test as an input.
+         (add-before 'configure 'remove-haddock-test-test-suites
+           (lambda _
+             (use-modules (ice-9 rdelim))
+             (with-atomic-file-replacement "haddock.cabal"
+               (lambda (in out)
+                 (let loop ((line (read-line in 'concat)) (deleting? #f))
+                   (cond
+                    ((eof-object? line) #t)
+                    ((string-every char-set:whitespace line)
+                     (unless deleting? (display line out))
+                     (loop (read-line in 'concat) #f))
+                    ((member line '("test-suite html-test\n"
+                                    "test-suite hypsrc-test\n"
+                                    "test-suite latex-test\n"
+                                    "test-suite hoogle-test\n"))
+                     (loop (read-line in 'concat) #t))
+                    (else
+                     (unless deleting? (display line out))
+                     (loop (read-line in 'concat) deleting?)))))))))))
     (inputs `(("ghc-haddock-api" ,ghc-haddock-api)))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)
-       ("ghc-haddock-test" ,ghc-haddock-test)))
+     `(("ghc-hspec" ,ghc-hspec)))
     (home-page "https://www.haskell.org/haddock/")
     (synopsis
      "Documentation-generation tool for Haskell libraries")
