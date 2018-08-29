@@ -3144,7 +3144,7 @@ style.")
 (define-public ghc-safe
   (package
     (name "ghc-safe")
-    (version "0.3.9")
+    (version "0.3.17")
     (source
      (origin
        (method url-fetch)
@@ -3154,8 +3154,10 @@ style.")
              ".tar.gz"))
        (sha256
         (base32
-         "1jdnp5zhvalf1xy8i872n29nljfjz6lnl9ghj80ffisrnnkrwcfh"))))
+         "0p3yaf5slvyz1cyy51jq64c5rlp8yzwim8iy2dlnk42if4gc9ibr"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/ndmitchell/safe#readme")
     (synopsis "Library of safe (exception free) functions")
     (description "This library provides wrappers around @code{Prelude} and
