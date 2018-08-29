@@ -708,7 +708,7 @@ documents.")
 (define-public ghc-xhtml
   (package
     (name "ghc-xhtml")
-    (version "3000.2.1")
+    (version "3000.2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -718,7 +718,7 @@ documents.")
              ".tar.gz"))
        (sha256
         (base32
-         "1n6wgzxbj8xf0wf1il827qidphnffb5vzhwzqlxhh70c2y10f0ik"))))
+         "0939kwpinq6l4n3nyvd1gzyl7f83gymw0wzqndlgy1yc7q0nkj2w"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/haskell/xhtml")
     (synopsis "XHTML combinator library")
