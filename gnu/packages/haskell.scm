@@ -7462,7 +7462,7 @@ a vocabulary for working with them.")
 (define-public ghc-lifted-async
   (package
     (name "ghc-lifted-async")
-    (version "0.9.0")
+    (version "0.10.0.2")
     (source
      (origin
        (method url-fetch)
@@ -7471,7 +7471,7 @@ a vocabulary for working with them.")
              version ".tar.gz"))
        (sha256
         (base32
-         "00fnwfcnc6niq9jbbb9rap9rkdgv5qhcglwanzc5fi8834j94c1r"))))
+         "1073r512c1x2m1v0jar9bwqg656slg7jd1jhsyj6m8awgx1l1mwf"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)
@@ -7481,6 +7481,7 @@ a vocabulary for working with them.")
        ("ghc-constraints" ,ghc-constraints)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
        ("ghc-tasty-th" ,ghc-tasty-th)))
     (home-page "https://github.com/maoe/lifted-async")
