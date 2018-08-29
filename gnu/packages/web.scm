@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -4275,7 +4275,7 @@ tools they trust (e.g. wget).")
 (define netsurf-buildsystem
   (package
     (name "netsurf-buildsystem")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
@@ -4283,7 +4283,7 @@ tools they trust (e.g. wget).")
                            "buildsystem-" version ".tar.gz"))
        (sha256
         (base32
-         "0p5k708lcq8dip9xxck6hml32bjrbyipprm22bbsvdnsc0pqm71x"))))
+         "1q23aaycv35ma5471l1gxib8lfq2s9kprrkaqgfc926d04rlbmhw"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
