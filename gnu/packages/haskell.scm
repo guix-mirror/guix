@@ -6214,14 +6214,14 @@ wrapping a bytestring with stronger and more meaniful name.")
 (define-public ghc-hourglass
   (package
     (name "ghc-hourglass")
-    (version "0.2.10")
+    (version "0.2.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "hourglass/hourglass-" version ".tar.gz"))
               (sha256
                (base32
-                "104d1yd84hclprg740nkz60vx589mnm094zriw6zczbgg8nkclym"))))
+                "0jnay5j13vpz6i1rkaj3j0d9v8jfpri499xn3l7wd01f81f5ncs4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-old-locale" ,ghc-old-locale)))
