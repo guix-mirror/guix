@@ -911,7 +911,7 @@ of a JSON value into a @code{Data.Aeson.Value}.")
 (define-public ghc-multipart
   (package
     (name "ghc-multipart")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
@@ -921,9 +921,11 @@ of a JSON value into a @code{Data.Aeson.Value}.")
              ".tar.gz"))
        (sha256
         (base32
-         "0g04jhyw1ib1s7c9bcldyyn4n90qd9x7dmvic4vgq57bgcqgnhz5"))))
+         "1x4n4yyva22dhfr1pg5ki112qvvzb4hyd7bwpm189iq4gcp52q4z"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-parsec" ,ghc-parsec)))
+    (inputs
+     `(("ghc-parsec" ,ghc-parsec)
+       ("ghc-stringsearch" ,ghc-stringsearch)))
     (home-page
      "http://www.github.com/silkapp/multipart")
     (synopsis
