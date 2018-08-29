@@ -1956,7 +1956,7 @@ Unix systems.")
 (define-public cabal-install
  (package
   (name "cabal-install")
-   (version "1.22.6.0")
+   (version "2.2.0.0")
    (source
     (origin
      (method url-fetch)
@@ -1965,15 +1965,24 @@ Unix systems.")
             version
             ".tar.gz"))
       (sha256
-       (base32 "1d5h7h2wjwc2s3dvsvzjgmmfrfl2312ym2h6kyjgm9wnaqw9w8wx"))))
+       (base32 "1nd3ch7qr4dpfxhgkcq2lnhvszx2kjgnn1kwb44vk9y5jgfs4mn8"))))
    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
    (build-system haskell-build-system)
    (inputs
-    `(("ghc-http" ,ghc-http)
+    `(("ghc-async" ,ghc-async)
+      ("ghc-base16-bytestring" ,ghc-base16-bytestring)
+      ("ghc-cryptohash-sha256" ,ghc-cryptohash-sha256)
+      ("ghc-echo" ,ghc-echo)
+      ("ghc-edit-distance" ,ghc-edit-distance)
+      ("ghc-hackage-security" ,ghc-hackage-security)
+      ("ghc-hashable" ,ghc-hashable)
+      ("ghc-http" ,ghc-http)
       ("ghc-network-uri" ,ghc-network-uri)
       ("ghc-network" ,ghc-network)
       ("ghc-random" ,ghc-random)
+      ("ghc-resolv" ,ghc-resolv)
       ("ghc-stm" ,ghc-stm)
+      ("ghc-tar" ,ghc-tar)
       ("ghc-zlib" ,ghc-zlib)))
    (home-page "https://www.haskell.org/cabal/")
    (synopsis "Command-line interface for Cabal and Hackage")
