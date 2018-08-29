@@ -3399,7 +3399,7 @@ for Haskell.")
 (define-public ghc-temporary
   (package
     (name "ghc-temporary")
-    (version "1.2.0.4")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -3409,9 +3409,15 @@ for Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "0qk741yqnpd69sksgks2vb7zi50rglp9m498lzw4sh268a017rsi"))))
+         "144qhwfwg37l3k313raf4ssiz16jbgwlm1nf4flgqpsbd69jji4c"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-exceptions" ,ghc-exceptions)))
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-random" ,ghc-random)))
+    (native-inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
     (home-page "https://www.github.com/batterseapower/temporary")
     (synopsis "Temporary file and directory support")
     (description "The functions for creating temporary files and directories
