@@ -5535,3 +5535,32 @@ and coverage methods to tune the choice of threshold.")
     (description
      "Common utilities used in other Mosaic family packages are collected here.")
     (license license:gpl2+)))
+
+(define-public r-ggformula
+  (package
+    (name "r-ggformula")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggformula" version))
+       (sha256
+        (base32 "1pmpdfjfbrc6kcpq70cr1kbj2qy711hw940g2aiis6l443z706kh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-ggstance" ,r-ggstance)
+       ("r-magrittr" ,r-magrittr)
+       ("r-mosaiccore" ,r-mosaiccore)
+       ("r-rlang" ,r-rlang)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/ProjectMOSAIC/ggformula/")
+    (synopsis "Formula interface for the @code{r-ggplot2}")
+    (description
+     "The @code{r-ggformula} introduces a family of graphics functions, gf_point(),
+gf_density(), and so on, bring the formula interface to ggplot().  This captures
+and extends the excellent simplicity of the lattice-graphics formula interface,
+while providing the intuitive capabilities of @code{r-ggplot2}.")
+    (license license:expat)))
