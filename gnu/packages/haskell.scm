@@ -4570,7 +4570,7 @@ Compatibility package for older packages.")
 (define-public ghc-nats
   (package
     (name "ghc-nats")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
@@ -4580,7 +4580,7 @@ Compatibility package for older packages.")
              ".tar.gz"))
        (sha256
         (base32
-         "1kfl2yy97nb7q0j17v96rl73xvi3z4db9bk0xychc76dax41n78k"))))
+         "1v40drmhixck3pz3mdfghamh73l4rp71mzcviipv1y8jhrfxilmr"))))
     (build-system haskell-build-system)
     (arguments `(#:haddock? #f))
     (inputs
