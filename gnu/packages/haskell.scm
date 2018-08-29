@@ -5121,7 +5121,7 @@ definition of @code{Monad}.")
 (define-public ghc-adjunctions
   (package
     (name "ghc-adjunctions")
-    (version "4.3")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
@@ -5131,7 +5131,7 @@ definition of @code{Monad}.")
              ".tar.gz"))
        (sha256
         (base32
-         "1k1ykisf96i4g2zm47c45md7p42c4vsp9r73392pz1g8mx7s2j5r"))))
+         "1sbal7cbhm12crfnfhkk322jnzgx7lhw3jzq0p463bipagsjwz2h"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-profunctors" ,ghc-profunctors)
@@ -5142,7 +5142,12 @@ definition of @code{Monad}.")
        ("ghc-tagged" ,ghc-tagged)
        ("ghc-semigroupoids" ,ghc-semigroupoids)
        ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-void" ,ghc-void)))
+    (native-inputs
+     `(("ghc-generic-deriving" ,ghc-generic-deriving)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://github.com/ekmett/adjunctions/")
     (synopsis "Adjunctions and representable functors")
     (description "This library provides adjunctions and representable functors
