@@ -31,56 +31,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
-(define ghc-aeson-1.1.2.0
-  (package (inherit ghc-aeson)
-    (version "1.1.2.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/aeson/aeson-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "1zy5z8pzvh53qkjm0nm3f4rwqfqg3867ck8ncd6mrxpcyvxqqj1p"))))))
-
-(define ghc-trifecta-1.6.2.1
-  (package (inherit ghc-trifecta)
-    (version "1.6.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/trifecta/"
-             "trifecta-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1rgv62dlmm4vkdymx5rw5jg3w8ifpzg1745rvs1m4kzdx16p5cxs"))))))
-
-;; ghc-cheapskate appeared too new. This follows LTS Haskell.
-(define ghc-cheapskate-0.1.0.5
-  (package
-    (inherit ghc-cheapskate)
-    (version "0.1.0.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/cheapskate/cheapskate-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0cpsmfx5z2xykg71sv8j7pl8ga6pzyjnjdb9bxn00vcpqkzvfqvs"))))
-    (arguments
-     ;; LTS Haskell says data-default >=0.5 && <0.8
-     `(#:configure-flags (list "--allow-newer=data-default")))))
-
 (define-public idris
   (package
     (name "idris")
-    (version "1.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -88,12 +42,12 @@
                     "idris-" version "/idris-" version ".tar.gz"))
               (sha256
                (base32
-                "1srbz0cyvd0k1yqgbrwnfj94yg5y3z533q1kzac96z1h7v454s5h"))))
+                "1w5i2z88li4niykwc6yrgxgfp25ll6ih95cip0ri7d8i7ik03c48"))))
     (build-system haskell-build-system)
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
-       ("ghc-aeson" ,ghc-aeson-1.1.2.0)
+       ("ghc-aeson" ,ghc-aeson)
        ("ghc-annotated-wl-pprint" ,ghc-annotated-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
@@ -101,11 +55,12 @@
        ("ghc-base64-bytestring" ,ghc-base64-bytestring)
        ("ghc-blaze-html" ,ghc-blaze-html)
        ("ghc-blaze-markup" ,ghc-blaze-markup)
-       ("ghc-cheapskate" ,ghc-cheapskate-0.1.0.5)
+       ("ghc-cheapskate" ,ghc-cheapskate)
        ("ghc-code-page" ,ghc-code-page)
        ("ghc-fingertree" ,ghc-fingertree)
        ("ghc-fsnotify" ,ghc-fsnotify)
        ("ghc-ieee754" ,ghc-ieee754)
+       ("ghc-megaparsec" ,ghc-megaparsec)
        ("ghc-network" ,ghc-network)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
@@ -113,7 +68,6 @@
        ("ghc-split" ,ghc-split)
        ("ghc-terminal-size" ,ghc-terminal-size)
        ("ghc-text" ,ghc-text)
-       ("ghc-trifecta" ,ghc-trifecta-1.6.2.1)
        ("ghc-uniplate" ,ghc-uniplate)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)
@@ -131,6 +85,11 @@
            (lambda _
              (setenv "CC" "gcc")
              #t))
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "idris.cabal"
+               (("aeson >= 0\\.6 && < 1\\.3")
+                "aeson >= 0.6 && < 1.4"))))
          (add-after 'install 'fix-libs-install-location
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
