@@ -4427,6 +4427,9 @@ periodic, on-demand actions in Haskell.")
         (base32
          "16cdzh0bw16nvjnyyy5j9s60malhz4nnazw96vxb0xzdap4m2z74"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("2" "0r2knfcq0b4s652vlvlnfwxlc2mkc2ra9kl8bp4zdn1awmfy0ia5")))
     (inputs
      `(("ghc-transformers-compat" ,ghc-transformers-compat)))
     (home-page "https://hackage.haskell.org/package/tagged")
