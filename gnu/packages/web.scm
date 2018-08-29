@@ -4666,7 +4666,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
 (define-public nsgenbind
   (package
     (name "nsgenbind")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
@@ -4674,7 +4674,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1iwjpdaan0njlhb9ir6a2q5vpxfmkqfldkvnqszqdz50b44vd1jv"))))
+         "0v1cb1rz5fix9ql31nzmglj7sybya6d12b2fkaypm1avcca59xwj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
