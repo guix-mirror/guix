@@ -1686,7 +1686,8 @@ configurations to coexist without resorting to mutable global variables or
         (base32 "0l3viphiszvz5wqzg7a45zp40grwlab941q5ay29iyw8p3v8pbyv"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=base")))
+     `(#:cabal-revision
+       ("2" "04b9vn007hlvsrx4ksd3r8r3kbyaj2kvwxchdrmd4370qzi8p6gs")))
     (home-page "https://hackage.haskell.org/package/old-locale")
     (synopsis "Adapt to locale conventions")
     (description
