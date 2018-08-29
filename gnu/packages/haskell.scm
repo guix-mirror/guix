@@ -5622,15 +5622,17 @@ Template Haskell.")
 (define-public ghc-th-lift
   (package
     (name "ghc-th-lift")
-    (version "0.7.8")
+    (version "0.7.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "th-lift/th-lift-" version ".tar.gz"))
               (sha256
                (base32
-                "0ay10b78x3969rpqqrgzy8srkl6iby2cljbf3mm17na8x22k7y1c"))))
+                "131360zxb0hazbqwbkk6ab2p77jkxr79bwwm618mrwrwkm3x2g6m"))))
     (build-system haskell-build-system)
+    (inputs
+     `(("ghc-th-abstraction" ,ghc-th-abstraction)))
     (home-page "https://github.com/mboes/th-lift")
     (synopsis "Derive Template Haskell's Lift class for datatypes")
     (description
