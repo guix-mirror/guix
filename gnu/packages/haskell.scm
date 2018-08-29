@@ -8776,7 +8776,7 @@ and regression and autocorrelation analysis.
 (define-public ghc-chunked-data
   (package
     (name "ghc-chunked-data")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
@@ -8785,7 +8785,7 @@ and regression and autocorrelation analysis.
                            "chunked-data-" version ".tar.gz"))
        (sha256
         (base32
-         "0bszq6fijnr4pmadzz89smj7kfmzx0ca3wd9ga8gv0in9jk9vgp1"))))
+         "16m7y7fwrirbjbqqcsfmr4yxa9qvfax6r7pw0zl9ky71ms0wa47p"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-vector" ,ghc-vector)
               ("ghc-semigroups" ,ghc-semigroups)
