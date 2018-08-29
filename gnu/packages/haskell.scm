@@ -6416,7 +6416,7 @@ set, memory copy, ..) and more")
 (define-public ghc-connection
   (package
     (name "ghc-connection")
-    (version "0.2.6")
+    (version "0.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -6424,7 +6424,7 @@ set, memory copy, ..) and more")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1c1prsgad669cmf6qrqlb5hmh0dnam2imijqzpwcr4ja14l6rh83"))))
+                "1swkb9w5vx9ph7x55y51dc0srj2z27nd9ibgn8c0qcl6hx7g9cbh"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-byteable" ,ghc-byteable)
