@@ -5485,3 +5485,29 @@ including summary statistic selection and assessing coverage.  This includes
 recent dimension reduction algorithms to tune the choice of summary statistics,
 and coverage methods to tune the choice of threshold.")
     (license license:gpl2+)))
+
+(define-public r-ggstance
+  (package
+    (name "r-ggstance")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ggstance" version))
+       (sha256
+        (base32 "0v7f3xdaaridw6d4jvnsfwxmpjrasvx5vl555wsrn50aah17fkvh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-plyr" ,r-plyr)
+       ("r-rlang" ,r-rlang)
+       ("r-withr" ,r-withr)))
+    (home-page "https://cran.r-project.org/web/packages/ggstance/")
+    (synopsis "Horizontal and vertical versions of @code{r-ggplot2}")
+    (description
+     "This package is a @code{r-ggplot2} extension that provides flipped components:
+@enumerate
+@item horizontal versions of @code{r-ggplot2} stats and @code{r-ggplot2} geoms;
+@item vertical versions of @code{r-ggplot2} positions.
+@end enumerate")
+    (license license:gpl3)))
