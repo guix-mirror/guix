@@ -5623,3 +5623,25 @@ educators working to tie together aspects of quantitative work that students
 in science, technology, engineering and mathematics will need in their
 professional lives, but which are usually taught in isolation, if at all.")
    (license license:gpl2+)))
+
+(define-public r-abd
+  (package
+    (name "r-abd")
+    (version "0.2-8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abd" version))
+       (sha256
+        (base32 "191gspqzdv573vaw624ri0f5cm6v4j524bjs74d4a1hn3kn6r9b7"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-mosaic" ,r-mosaic)
+       ("r-nlme" ,r-nlme)))
+    (home-page "https://cran.r-project.org/web/packages/abd/")
+    (synopsis "Analysis of biological data")
+    (description
+     "The @code{r-abd} package contains data sets and sample code for the Analysis of
+biological data by Michael Whitlock and Dolph Schluter.")
+    (license license:gpl2)))
