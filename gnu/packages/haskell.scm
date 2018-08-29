@@ -994,7 +994,7 @@ package are to parse or generate Haskell 98 code.")
 (define-public ghc-alex
   (package
     (name "ghc-alex")
-    (version "3.2.3")
+    (version "3.2.4")
     (source
      (origin
        (method url-fetch)
@@ -1004,9 +1004,20 @@ package are to parse or generate Haskell 98 code.")
              ".tar.gz"))
        (sha256
         (base32
-         "0bi1cs9b8ir33h1fl6x2xw4ymygapqbr713ridpf7rmk2wa7jqqs"))))
+         "0cpjixgsr0b2x4s6hz4aa6gnmjw9i7xd9nlfi8m37zqlidq4v3nm"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-check-variables
+           (lambda _
+             (setenv "PATH" (string-append (getcwd) "/dist/build/alex:"
+                                           (getenv "PATH")))
+             (setenv "alex_datadir" (string-append (getcwd) "/data"))
+             #t)))))
     (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (native-inputs
+     `(("which" ,which)))
     (home-page "https://www.haskell.org/alex/")
     (synopsis
      "Tool for generating lexical analysers in Haskell")
