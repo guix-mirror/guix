@@ -1447,7 +1447,7 @@ PNG, PNM, TGA, TIFF, XCF, XPM, XV.")
 (define-public ghc-half
   (package
     (name "ghc-half")
-    (version "0.2.2.3")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
@@ -1456,8 +1456,11 @@ PNG, PNM, TGA, TIFF, XCF, XPM, XV.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0p4sb7vv9cljv48wlx65wgdnkryrk5d6yfh7g4yrm20w1p449hl5"))))
+         "14r0nx8hm5fic9gz0ybjjw4kyc758zfgvhhwvzsshpx5caq6zch6"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/ekmett/half")
     (synopsis "Half-precision floating-point computations")
     (description "This library provides a half-precision floating-point
