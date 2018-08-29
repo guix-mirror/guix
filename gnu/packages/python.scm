@@ -1699,7 +1699,7 @@ software.")
 (define-public python-mimeparse
   (package
     (name "python-mimeparse")
-    (version "0.1.4")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
@@ -1708,10 +1708,14 @@ software.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1hyxg09kaj02ri0rmwjqi86wk4nd1akvv7n0dx77azz76wga4s9w"))))
+         "0y2g6cl660bpz11srgqyvvm8gmywpgyx8g0xfvbiyr0af0yv1r3n"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; no setup.py test command
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./mimeparse_test.py"))))))
     (home-page
      "https://github.com/dbtsai/python-mimeparse")
     (synopsis "Python library for parsing MIME types")
