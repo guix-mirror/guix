@@ -3732,7 +3732,7 @@ is also parametric in the input stream type.")
 (define-public ghc-parser-combinators
   (package
     (name "ghc-parser-combinators")
-    (version "0.4.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
@@ -3741,7 +3741,7 @@ is also parametric in the input stream type.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1azkz0a6ikym02s8wydjcklp7rz8k512bs4s9lp9g1g03m0yj95i"))))
+         "1pwfdsklqwvaynwpdzmx1bs35mp6dpsyaqdnzxnqcrxwf5h8sk75"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/mrkkrp/parser-combinators")
     (synopsis "Commonly useful parser combinators")
