@@ -4253,7 +4253,7 @@ library for Haskell.")
 (define-public ghc-easy-file
   (package
     (name "ghc-easy-file")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
@@ -4263,7 +4263,7 @@ library for Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "0v75081bx4qzlqy29hh639nzlr7dncwza3qxbzm9njc4jarf31pz"))))
+         "0zmlcz723051qpn8l8vi51c5rx1blwrw4094jcshkmj8p9r2xxaj"))))
     (build-system haskell-build-system)
     (home-page
      "https://github.com/kazu-yamamoto/easy-file")
