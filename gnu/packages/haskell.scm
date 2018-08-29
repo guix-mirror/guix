@@ -8856,7 +8856,7 @@ ByteStrings in the style of other common *nix hex dump tools.")
 (define-public ghc-network-info
   (package
     (name "ghc-network-info")
-    (version "0.2.0.8")
+    (version "0.2.0.10")
     (source
      (origin
        (method url-fetch)
@@ -8865,7 +8865,7 @@ ByteStrings in the style of other common *nix hex dump tools.")
                            "network-info-" version ".tar.gz"))
        (sha256
         (base32
-         "0xndvg776241fgjmynxfpy81f1csjmh8dg33yf0c8m71ychz3pzc"))))
+         "0anmgzcpnz7nw3n6vq0r25m1s9l2svpwi83wza0lzkrlbnbzd02n"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/jystic/network-info")
     (synopsis "Access the local computer's basic network configuration")
