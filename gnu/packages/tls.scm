@@ -871,14 +871,14 @@ coding footprint.")
 (define-public ghc-tls
   (package
     (name "ghc-tls")
-    (version "1.3.8")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "tls/tls-" version ".tar.gz"))
               (sha256
                (base32
-                "1rdidf18i781c0vdvy9yn79yh08hmcacf6fp3sgghyiy3h0wyh5l"))))
+                "1y083724mym28n6xfaz7pcc7zqxdhjpaxpbvzxfbs25qq2px3smv"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cereal" ,ghc-cereal)
