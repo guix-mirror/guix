@@ -2007,7 +2007,7 @@ parts.")
 (define-public ghc-stringbuilder
   (package
     (name "ghc-stringbuilder")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -2017,7 +2017,7 @@ parts.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ap95xphqnrhv64c2a137wqslkdmb2jjd9ldb17gs1pw48k8hrl9"))))
+         "1fh3csx1wcssn8xyvl4ip4aprh9l4qyz2kk8mgjvqvc0vb2bsy6q"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: circular dependencies with tests
                                ; enabled
