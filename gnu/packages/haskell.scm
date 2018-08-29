@@ -2939,7 +2939,7 @@ Dual to @code{Traversable}.")
 (define-public ghc-cereal
   (package
     (name "ghc-cereal")
-    (version "0.5.3.0")
+    (version "0.5.7.0")
     (source
      (origin
        (method url-fetch)
@@ -2949,7 +2949,7 @@ Dual to @code{Traversable}.")
              ".tar.gz"))
        (sha256
         (base32
-         "1x4aib7nnaf4x2b9zlndq5n5zsqniw78jifkf55nhnbmvryf05n3"))))
+         "1j7imh2mzqcljld7sx0av69699955rpy3hzivi5723i6a9nszgbs"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
