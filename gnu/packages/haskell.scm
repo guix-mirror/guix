@@ -8223,7 +8223,7 @@ Rust syntax.  It is intended to be useful for two different purposes:
 (define-public ghc-wave
   (package
     (name "ghc-wave")
-    (version "0.1.4")
+    (version "0.1.5")
     (source (origin
       (method url-fetch)
       (uri (string-append
@@ -8232,7 +8232,7 @@ Rust syntax.  It is intended to be useful for two different purposes:
              ".tar.gz"))
       (sha256
         (base32
-          "1g5nmqfk6p25v9ismwz4i66ay91bd1qh39xwj0hm4z6a5mw8frk8"))))
+          "03zycmwrchhqvi37fdvlzz2d1vl4hy0i8xyys1zznw38qfq0h2i5"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cereal" ,ghc-cereal)
