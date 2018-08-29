@@ -5539,7 +5539,7 @@ and utilities for pretty printing.")
 (define-public ghc-highlighting-kate
   (package
     (name "ghc-highlighting-kate")
-    (version "0.6.3")
+    (version "0.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5547,7 +5547,7 @@ and utilities for pretty printing.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03c4flh4h1jd48bx0qmplax3q8w6wj1dhbh6j0xhaf5h95fbinki"))))
+                "1bqv00gfmrsf0jjr4qf3lhshvfkyzmhbi3pjb6mafbnsyn2k7f6q"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-diff" ,ghc-diff)
