@@ -2802,7 +2802,7 @@ with slicing and Clang-style colored diagnostics.")
 (define-public ghc-time-locale-compat
   (package
     (name "ghc-time-locale-compat")
-    (version "0.1.1.3")
+    (version "0.1.1.5")
     (source
      (origin
        (method url-fetch)
@@ -2811,7 +2811,7 @@ with slicing and Clang-style colored diagnostics.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1vdcfr2hp9qh3ag90x6ikbdf42wiqpdylnplffna54bpnilbyi4i"))))
+         "0b2hmj8wwrfkndwzgm11qr496ca2ahwdxcj3m0ii91bxvrk1bzq7"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-old-locale" ,ghc-old-locale)))
     (home-page "https://github.com/khibino/haskell-time-locale-compat")
