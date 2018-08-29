@@ -2415,7 +2415,7 @@ compatibility to run on old versions of the platform.")
 (define-public ghc-transformers-compat
   (package
     (name "ghc-transformers-compat")
-    (version "0.5.1.4")
+    (version "0.6.2")
     (source
      (origin
        (method url-fetch)
@@ -2424,7 +2424,7 @@ compatibility to run on old versions of the platform.")
              "/transformers-compat-" version ".tar.gz"))
        (sha256
         (base32
-         "17yam0199fh9ndsn9n69jx9nvbsmymzzwbi23dck3dk4q57fz0fq"))))
+         "1gp4a8kvniwgm8947ghb4iwv4b7wd6ry4kvv4nfnym4agf5j41nw"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/ekmett/transformers-compat/")
     (synopsis "Small compatibility shim between transformers 0.3 and 0.4")
