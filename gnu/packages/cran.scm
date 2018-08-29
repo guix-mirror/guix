@@ -5583,3 +5583,43 @@ while providing the intuitive capabilities of @code{r-ggplot2}.")
      "This package provides data sets from project Mosaic @url{http://mosaic-web.org}
 used to teach mathematics, statistics, computation and modeling.")
     (license license:gpl2+)))
+
+(define-public r-mosaic
+  (package
+   (name "r-mosaic")
+   (version "1.4.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (cran-uri "mosaic" version))
+     (sha256
+      (base32 "10jbrg8kli00kfgbh2f67bymm5cnlancc9dplb1j7fl552yjddn2"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-broom" ,r-broom)
+      ("r-dplyr" ,r-dplyr)
+      ("r-ggdendro" ,r-ggdendro)
+      ("r-ggformula" ,r-ggformula)
+      ("r-ggplot2" ,r-ggplot2)
+      ("r-ggrepel" ,r-ggrepel)
+      ("r-glue" ,r-glue)
+      ("r-gridextra" ,r-gridextra)
+      ("r-lattice" ,r-lattice)
+      ("r-latticeextra" ,r-latticeextra)
+      ("r-lazyeval" ,r-lazyeval)
+      ("r-mass" ,r-mass)
+      ("r-matrix" ,r-matrix)
+      ("r-mosaiccore" ,r-mosaiccore)
+      ("r-mosaicdata" ,r-mosaicdata)
+      ("r-readr" ,r-readr)
+      ("r-tidyr" ,r-tidyr)))
+   (home-page "https://github.com/ProjectMOSAIC/mosaic/")
+   (synopsis "Mathematics, statistics, and computation teaching utilities")
+   (description
+    "This package contain data sets and utilities from
+@url{http://mosaic-web.org, Project MOSAIC} used to teach mathematics,
+statistics, computation and modeling.  Project MOSAIC is a community of
+educators working to tie together aspects of quantitative work that students
+in science, technology, engineering and mathematics will need in their
+professional lives, but which are usually taught in isolation, if at all.")
+   (license license:gpl2+)))
