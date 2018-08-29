@@ -3943,7 +3943,7 @@ package into this package.")
 (define-public ghc-ansi-terminal
   (package
     (name "ghc-ansi-terminal")
-    (version "0.6.2.3")
+    (version "0.8.0.4")
     (source
      (origin
        (method url-fetch)
@@ -3953,8 +3953,10 @@ package into this package.")
              ".tar.gz"))
        (sha256
         (base32
-         "0hpfw0k025y681m9ml1c712skrb1p4vh7z5x1f0ci9ww7ssjrh2d"))))
+         "0428gq8m3fdnb7ldcsyk97qcch76hcxbgh2666p6f76fs2qbhg7b"))))
     (build-system haskell-build-system)
+    (inputs
+     `(("ghc-colour" ,ghc-colour)))
     (home-page "https://github.com/feuerbach/ansi-terminal")
     (synopsis "ANSI terminal support for Haskell")
     (description "This package provides ANSI terminal support for Haskell.  It
