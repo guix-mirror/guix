@@ -4284,7 +4284,7 @@ interoperate with code that uses the new implementation.")
 (define-public ghc-blaze-markup
   (package
     (name "ghc-blaze-markup")
-    (version "0.8.2.0")
+    (version "0.8.2.1")
     (source
      (origin
        (method url-fetch)
@@ -4293,8 +4293,16 @@ interoperate with code that uses the new implementation.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0m3h3ryxj5r74mv5g5dnfq5jbbwmvkl7ray18vi20d5vd93sydj4"))))
+         "0ih1c3qahkdgzbqihdhny5s313l2m66fbb88w8jbx7yz56y7rawh"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "blaze-markup.cabal"
+               (("tasty            >= 1\\.0  && < 1\\.1")
+                "tasty            >= 1.0  && < 1.2")))))))
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)))
