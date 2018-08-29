@@ -3447,7 +3447,7 @@ to cases.")
 (define-public ghc-syb
   (package
     (name "ghc-syb")
-    (version "0.6")
+    (version "0.7")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3458,7 +3458,7 @@ to cases.")
              ".tar.gz"))
        (sha256
         (base32
-         "1p3cnqjm13677r4a966zffzhi9b3a321aln8zs8ckqj0d9z1z3d3"))))
+         "1da2zz7gqm4xbkx5vpd74dayx1svaxyl145fl14mq15lbb77sxdq"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hunit" ,ghc-hunit)))
