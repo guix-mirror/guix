@@ -502,7 +502,7 @@ functionality.")
 (define-public ghc-wai-conduit
   (package
     (name "ghc-wai-conduit")
-    (version "3.0.0.3")
+    (version "3.0.0.4")
     (source
      (origin
        (method url-fetch)
@@ -511,7 +511,7 @@ functionality.")
                            "wai-conduit-" version ".tar.gz"))
        (sha256
         (base32
-         "1zvsiwjq2mvkb9sjgp3ly9m968m7a2jjzr4id6jpi3mmqykj15z4"))))
+         "07yn41rn2skd5p3wqqa09wa761vj7ibl8l19gh4bi4i8slxhk417"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
