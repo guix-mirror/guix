@@ -4637,7 +4637,7 @@ call stacks with different versions of the compiler.")
 (define-public ghc-statevar
   (package
     (name "ghc-statevar")
-    (version "1.1.0.4")
+    (version "1.1.1.1")
     (source
      (origin
        (method url-fetch)
@@ -4647,7 +4647,7 @@ call stacks with different versions of the compiler.")
              ".tar.gz"))
        (sha256
         (base32
-         "1dzz9l0haswgag9x56q7n57kw18v7nhmzkjyr61nz9y9npn8vmks"))))
+         "08r2iw0gdmfs4f6wraaq19vfmkjdbics3dbhw39y7mdjd98kcr7b"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm" ,ghc-stm)))
