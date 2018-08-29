@@ -9656,14 +9656,14 @@ as well as a convenient Conduit module.")
 (define-public ghc-aws
   (package
     (name "ghc-aws")
-    (version "0.18")
+    (version "0.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "aws-" version "/aws-" version ".tar.gz"))
        (sha256 (base32
-                "0h7473wkvc5xjzx5fd5k5fp70rjq5gqmn1cpy95mswvvfsq3irxj"))))
+                "0pwpabmypi1w8rni9qfwabgn95jks4h8dyw6889mn8xzsrhdhyf0"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; Tests require AWS credentials.
     (inputs
