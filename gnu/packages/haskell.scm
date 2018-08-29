@@ -2509,7 +2509,7 @@ isn't available, portable implementations are used.")
 (define-public ghc-indents
   (package
     (name "ghc-indents")
-    (version "0.3.3")
+    (version "0.5.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2517,7 +2517,7 @@ isn't available, portable implementations are used.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "16lz21bp9j14xilnq8yym22p3saxvc9fsgfcf5awn2a6i6n527xn"))))
+                "1ly3v41jacc6lrsvg4j3m5a6zs90gr8dyif5m6bf34hj1k5cgg0n"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-parsec" ,ghc-parsec)
