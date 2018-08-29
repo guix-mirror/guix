@@ -2447,7 +2447,7 @@ but also need those types.")
 (define-public ghc-unix-time
   (package
     (name "ghc-unix-time")
-    (version "0.3.7")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -2457,7 +2457,7 @@ but also need those types.")
              ".tar.gz"))
        (sha256
         (base32
-         "1qdlc9raih8s0m3x8x3n7q3ngh4faw2alv9l78sp6gnx648k0c8i"))))
+         "051slgpid5cxiaw203ky0ql3823h28fcjs08axkzd4265wrvv8fw"))))
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f)) ; FIXME: Test fails with "System.Time not found".  This
