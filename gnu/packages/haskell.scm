@@ -3190,7 +3190,7 @@ exceptions.")
 (define-public ghc-generic-deriving
   (package
     (name "ghc-generic-deriving")
-    (version "1.11.1")
+    (version "1.12.2")
     (source
      (origin
        (method url-fetch)
@@ -3200,8 +3200,10 @@ exceptions.")
              ".tar.gz"))
        (sha256
         (base32
-         "1sdh5hpcwvh3b6zvgfk3pr3hla8p88l82njnih880c0gk5zl53dk"))))
+         "1i7d6cpj9yhaqb79zays3nqchhaacacjz9bkc0zlwj73y5gvi22n"))))
     (build-system haskell-build-system)
+    (inputs
+     `(("ghc-th-abstraction" ,ghc-th-abstraction)))
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("hspec-discover" ,hspec-discover)))
