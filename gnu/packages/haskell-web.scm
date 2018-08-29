@@ -23,6 +23,7 @@
 
 (define-module (gnu packages haskell-web)
   #:use-module (gnu packages)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
@@ -551,7 +552,7 @@ transfers.")
 (define-public ghc-warp
   (package
     (name "ghc-warp")
-    (version "3.2.11.1")
+    (version "3.2.23")
     (source
      (origin
        (method url-fetch)
@@ -560,15 +561,12 @@ transfers.")
                            ".tar.gz"))
        (sha256
         (base32
-         "1zp5cy0bbj508vdvms1n5z80z37m253kwsqc5a83cfc990n6fgw5"))))
+         "12v9qhi4hyp0sb90yddsax16jj7x47nmqwn53sv7b5nszcxgzam0"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:tests? #f)) ; FIXME: Test-Suite `spec` fails.
     (inputs
      `(("ghc-async" ,ghc-async)
        ("ghc-auto-update" ,ghc-auto-update)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
-       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-bsb-http-chunked" ,ghc-bsb-http-chunked)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-http-types" ,ghc-http-types)
@@ -581,18 +579,18 @@ transfers.")
        ("ghc-vault" ,ghc-vault)
        ("ghc-wai" ,ghc-wai)
        ("ghc-word8" ,ghc-word8)
-       ("ghc-lifted-base" ,ghc-lifted-base)
        ("ghc-http-date" ,ghc-http-date)
        ("ghc-simple-sendfile" ,ghc-simple-sendfile)
        ("ghc-http2" ,ghc-http2)))
     (native-inputs
-     `(("ghc-silently" ,ghc-silently)
+     `(("curl" ,curl)
+       ("ghc-silently" ,ghc-silently)
        ("ghc-hspec" ,ghc-hspec)
-       ("ghc-auto-update" ,ghc-auto-update)
        ("ghc-doctest" ,ghc-doctest)
+       ("ghc-lifted-base" ,ghc-lifted-base)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hunit" ,ghc-hunit)
-       ("ghc-http" ,ghc-http)
+       ("ghc-http-client" ,ghc-http-client)
        ("hspec-discover" ,hspec-discover)))
     (home-page "http://github.com/yesodweb/wai")
     (synopsis "HTTP server library for Haskell's WAI")
