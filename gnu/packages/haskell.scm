@@ -8795,7 +8795,7 @@ statically known size.")
 (define-public ghc-monadrandom
   (package
     (name "ghc-monadrandom")
-    (version "0.4.2.3")
+    (version "0.5.1.1")
     (source
      (origin
        (method url-fetch)
@@ -8804,7 +8804,7 @@ statically known size.")
                            "MonadRandom-" version ".tar.gz"))
        (sha256
         (base32
-         "1h1nhswrcmhy3mq6vd530p0df51fcnnf4csbwnljar7cf0mb2h6y"))))
+         "0w44jl1n3kqvqaflh82l1wj3xxbhzfs3kf4m8rk7w6fgg8llmnmb"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-transformers-compat" ,ghc-transformers-compat)
               ("ghc-primitive" ,ghc-primitive)
