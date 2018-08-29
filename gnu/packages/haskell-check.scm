@@ -421,7 +421,7 @@ use HUnit assertions as QuickCheck properties.")
 (define-public ghc-quickcheck
   (package
     (name "ghc-quickcheck")
-    (version "2.10.1")
+    (version "2.11.3")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -432,11 +432,10 @@ use HUnit assertions as QuickCheck properties.")
              ".tar.gz"))
        (sha256
         (base32
-         "1rfmns3lj3hl93k1jws85ajkkw7z9ll8cw292n9m7zald1w5dfqx"))))
+         "0xhqk35fkzlbjcqbabg6962jkv8d688nzmz7ng4bm84x2d95d328"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
-       #:configure-flags '("-f base4")))
+     `(#:tests? #f))  ; FIXME: currently missing libraries used for tests.
     (inputs
      `(("ghc-random" ,ghc-random)
        ("ghc-tf-random" ,ghc-tf-random)))
@@ -449,33 +448,6 @@ which functions should satisfy, and QuickCheck then tests that the properties
 hold in a large number of randomly generated cases.  Specifications are
 expressed in Haskell, using combinators defined in the QuickCheck library.")
     (license license:bsd-3)))
-
-(define-public ghc-quickcheck-2.9
-  (package
-    (inherit ghc-quickcheck)
-    (name "ghc-quickcheck")
-    (version "2.9.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://hackage.haskell.org/package/QuickCheck-2.9.2/QuickCheck-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "119np67qvx8hyp9vkg4gr2wv3lj3j6ay2vl4hxspkg43ymb1cp0m"))))))
-
-(define-public ghc-quickcheck-latest
-  (package (inherit ghc-quickcheck)
-    (version "2.11.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/QuickCheck/QuickCheck-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0xhqk35fkzlbjcqbabg6962jkv8d688nzmz7ng4bm84x2d95d328"))))))
 
 (define-public ghc-test-framework
   (package
