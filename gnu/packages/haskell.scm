@@ -3518,7 +3518,7 @@ encourages inductive, recursive definitions of graph algorithms.")
 (define-public ghc-chasingbottoms
   (package
     (name "ghc-chasingbottoms")
-    (version "1.3.1.3")
+    (version "1.3.1.4")
     (source
      (origin
        (method url-fetch)
@@ -3526,7 +3526,7 @@ encourages inductive, recursive definitions of graph algorithms.")
                            "ChasingBottoms-" version ".tar.gz"))
        (sha256
         (base32
-         "04jwwjs22mqc4hvpp4c3gpb79inrrq5sapks5khknspv2hslm61q"))))
+         "06cynx6hcbfpky7qq3b3mjjgwbnaxkwin3znbwq4b9ikiw0ng633"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
