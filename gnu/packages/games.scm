@@ -2136,7 +2136,6 @@ on the screen and keyboard to display letters.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-random" ,ghc-random)
        ("ghc-glut" ,ghc-glut)
        ("freeglut" ,freeglut)

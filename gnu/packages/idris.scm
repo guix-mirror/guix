@@ -106,7 +106,6 @@
        ("ghc-fingertree" ,ghc-fingertree)
        ("ghc-fsnotify" ,ghc-fsnotify)
        ("ghc-ieee754" ,ghc-ieee754)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-network" ,ghc-network)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)

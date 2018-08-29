@@ -58,7 +58,6 @@
        ("ghc-hashtables" ,ghc-hashtables)
        ("ghc-ieee754" ,ghc-ieee754)
        ("ghc-monadplus" ,ghc-monadplus)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-murmur-hash" ,ghc-murmur-hash)
        ("ghc-uri-encode" ,ghc-uri-encode)
        ("ghc-parallel" ,ghc-parallel)

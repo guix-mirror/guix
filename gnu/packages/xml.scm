@@ -2078,7 +2078,6 @@ derivations of regular expressions.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-parsec" ,ghc-parsec)
-       ("ghc-mtl" ,ghc-mtl)
        ("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
        ("ghc-hxt-unicode" ,ghc-hxt-unicode)
        ("ghc-hxt-regex-xmlschema" ,ghc-hxt-regex-xmlschema)
