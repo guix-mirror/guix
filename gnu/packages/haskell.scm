@@ -4889,7 +4889,7 @@ just a @code{Semigroup} are added.")
 (define-public ghc-semigroups
   (package
     (name "ghc-semigroups")
-    (version "0.18.2")
+    (version "0.18.5")
     (source
      (origin
        (method url-fetch)
@@ -4899,7 +4899,7 @@ just a @code{Semigroup} are added.")
              ".tar.gz"))
        (sha256
         (base32
-         "1r6hsn3am3dpf4rprrj4m04d9318v9iq02bin0pl29dg4a3gzjax"))))
+         "17g29h62g1k51ghhvzkw72zksjgi6vs6bfipkj81pqw1dsprcamb"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-nats" ,ghc-nats)
