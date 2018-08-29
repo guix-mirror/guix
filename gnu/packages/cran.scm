@@ -5460,3 +5460,28 @@ parameter inference via random forests.  This machine learning tool named random
 forests (RF) can conduct selection among the highly complex models covered by
 ABC algorithms.")
     (license license:gpl2+)))
+
+(define-public r-abctools
+  (package
+    (name "r-abctools")
+    (version "1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "abctools" version))
+       (sha256
+        (base32 "07s9dg10i8lsxl73b4n2hynca2fjgb0ykb0dz8c3zv6cgw3cyx97"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abc" ,r-abc)
+       ("r-abind" ,r-abind)
+       ("r-hmisc" ,r-hmisc)
+       ("r-plyr" ,r-plyr)))
+    (home-page "https://github.com/dennisprangle/abctools/")
+    (synopsis "Tools for ABC analyses")
+    (description
+     "This @code{r-abctools} package provides tools for approximate Bayesian computation
+including summary statistic selection and assessing coverage.  This includes
+recent dimension reduction algorithms to tune the choice of summary statistics,
+and coverage methods to tune the choice of threshold.")
+    (license license:gpl2+)))
