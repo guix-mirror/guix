@@ -9734,7 +9734,7 @@ each constructor are represented using an n-ary product.")
 (define-public ghc-uri-bytestring
   (package
     (name "ghc-uri-bytestring")
-    (version "0.3.1.0")
+    (version "0.3.2.0")
     (source
      (origin
        (method url-fetch)
@@ -9743,7 +9743,7 @@ each constructor are represented using an n-ary product.")
                            "uri-bytestring-" version ".tar.gz"))
        (sha256
         (base32
-         "04qjv1sgyrdg538290p9hqnvyxnahvr5cjwl8vm1rn9j0fv3ymq9"))))
+         "1q04j5ybvk37zk2m0bkjwyhblz0ymdj0cn4rvsvdca1ikn5xdv5c"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
               ("ghc-fail" ,ghc-fail)
