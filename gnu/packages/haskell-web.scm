@@ -657,7 +657,7 @@ a WAI handler, via the native Haskell TLS implementation.")
 (define-public ghc-xss-sanitize
   (package
     (name "ghc-xss-sanitize")
-    (version "0.3.5.7")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
@@ -666,7 +666,7 @@ a WAI handler, via the native Haskell TLS implementation.")
              version ".tar.gz"))
        (sha256
         (base32
-         "005cmhaw9xbzkcn42jmhvcvk63bzmg4lml368xwmqdvh7r0mcn4m"))))
+         "1d72s3a6520iwwc1wbn9v2znqgbw6a5wwzb23iq8ny9ccnjyx1dk"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tagsoup" ,ghc-tagsoup)
