@@ -9233,7 +9233,7 @@ packages.")
 (define-public ghc-foundation
   (package
     (name "ghc-foundation")
-    (version "0.0.20")
+    (version "0.0.21")
     (source
      (origin
        (method url-fetch)
@@ -9241,8 +9241,18 @@ packages.")
                            "foundation/foundation-" version ".tar.gz"))
        (sha256
         (base32
-         "0bg4g0xf4pb2vmahnfp8c4f0a3v0av73lb5g8bwnp170khxfcsms"))))
+         "1q43y8wfj0wf9gdq2kzphwjwq6m5pvryy1lqgk954aq5z3ks1lsf"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-setup-script
+           (lambda _
+             ;; The usual "Setup.hs" script is missing from the source.
+             (with-output-to-file "Setup.hs"
+               (lambda ()
+                 (format #t "import Distribution.Simple~%")
+                 (format #t "main = defaultMain~%"))))))))
     (inputs `(("ghc-basement" ,ghc-basement)))
     (home-page "https://github.com/haskell-foundation/foundation")
     (synopsis "Alternative prelude with batteries and no dependencies")
