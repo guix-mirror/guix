@@ -9936,7 +9936,7 @@ used both from lens and microlens).")
 (define-public ghc-unliftio
   (package
     (name "ghc-unliftio")
-    (version "0.2.4.0")
+    (version "0.2.7.0")
     (source
      (origin
        (method url-fetch)
@@ -9946,7 +9946,7 @@ used both from lens and microlens).")
              ".tar.gz"))
        (sha256
         (base32
-         "0vpncmwaq5zb6bziqfns4qdgxmq8ky0rlxna2yngxp170s5zxx9z"))))
+         "0qql93lq5w7qghl454cc3s1i8v1jb4h08n82fqkw0kli4g3g9njs"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: hspec-discover not in PATH
     (inputs
