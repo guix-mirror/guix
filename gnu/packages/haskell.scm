@@ -7343,7 +7343,7 @@ and edge labels with positional information, etc.
 (define-public ghc-constraints
   (package
     (name "ghc-constraints")
-    (version "0.8")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
@@ -7352,11 +7352,15 @@ and edge labels with positional information, etc.
              version ".tar.gz"))
        (sha256
         (base32
-         "120mmv9rwbahslisc1z8zx9lw7v6hl5fzid4l0hiy5as6ijqgl2c"))))
+         "1xy3vv78jxc17hm0z7qqspxjwv7l2jbcbj670yrl2f053qkfr02q"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://github.com/ekmett/constraints/")
     (synopsis "Constraint manipulation")
     (description
