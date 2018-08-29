@@ -4507,7 +4507,7 @@ written in C.  It is developed as part of the NetSurf project.")
 (define-public libdom
   (package
     (name "libdom")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
@@ -4515,7 +4515,7 @@ written in C.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1zb7x2qwm6p11lph6j2vcyp4a0a8i1klkqilnk5vb4qmlzzpcv7i"))))
+         "1919757mdl3gii2pl6kzm8b1cal0h06r5nqd2y0kny6hc5yrhsp0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
