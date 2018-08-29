@@ -8405,7 +8405,7 @@ matching patterns against file paths.")
 (define-public ghc-errors
   (package
     (name "ghc-errors")
-    (version "2.2.2")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -8414,7 +8414,7 @@ matching patterns against file paths.")
                            "errors-" version ".tar.gz"))
        (sha256
         (base32
-         "13sflhglcm5skwrxb48fw96skdcx7ydiy4zg22200733pxhjncpn"))))
+         "0x8znwn31qcx6kqx99wp7bc86kckfb39ncz3zxvj1s07kxlfawk7"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-exceptions" ,ghc-exceptions)
