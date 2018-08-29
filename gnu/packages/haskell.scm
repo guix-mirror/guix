@@ -6876,7 +6876,7 @@ regular expressions.  Parsers can be built using Applicative interface.")
 (define-public ghc-regex-tdfa
   (package
     (name "ghc-regex-tdfa")
-    (version "1.2.2")
+    (version "1.2.3.1")
     (source
      (origin
        (method url-fetch)
@@ -6885,7 +6885,7 @@ regular expressions.  Parsers can be built using Applicative interface.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0f8x8wyr6m21g8dnxvnvalz5bsq37l125l6qhs0fscbvprsxc4nb"))))
+         "0l7ajnh4hpgggf2a1r9dg0hx2fy679vd2kada5y7r02hy3nfxala"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-parsec" ,ghc-parsec)
