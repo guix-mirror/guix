@@ -1749,11 +1749,10 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
             #t)))))
     ;; Required by lilv-0.pc.
     (propagated-inputs
-     `(("serd" ,serd)
+     `(("lv2" ,lv2)
+       ("serd" ,serd)
        ("sord" ,sord)
        ("sratom" ,sratom)))
-    (inputs
-     `(("lv2" ,lv2)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://drobilla.net/software/lilv/")
