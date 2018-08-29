@@ -2397,7 +2397,7 @@ Hashing\" by Claessen, Pałka for details and the rationale of the design.")
 (define-public ghc-transformers-base
   (package
     (name "ghc-transformers-base")
-    (version "0.4.4")
+    (version "0.4.5.2")
     (source
      (origin
        (method url-fetch)
@@ -2407,7 +2407,7 @@ Hashing\" by Claessen, Pałka for details and the rationale of the design.")
              ".tar.gz"))
        (sha256
         (base32
-         "11r3slgpgpra6zi2kjg3g60gvv17b1fh6qxipcpk8n86qx7lk8va"))))
+         "1s256bi0yh0x2hp2gwd30f3mg1cv53zz397dv1yhfsnfzmihrj6h"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm" ,ghc-stm)
