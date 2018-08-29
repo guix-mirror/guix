@@ -2149,7 +2149,7 @@ are not exception safe and can be broken by @code{killThread}.")
 (define-public ghc-text
   (package
     (name "ghc-text")
-    (version "1.2.2.2")
+    (version "1.2.3.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -2160,7 +2160,7 @@ are not exception safe and can be broken by @code{killThread}.")
              ".tar.gz"))
        (sha256
         (base32
-         "1y9d0zjs2ls0c574mr5xw7y3y49s62sd3wcn9lhpwz8a6q352iii"))))
+         "06iir7q99rnffzxi8gagn8w1k9m49368sbidgz634fv1gxib3q10"))))
     (build-system haskell-build-system)
     ;; The test dependencies depend on ghc-text: ghc-test-framework -> ghc-xml -> ghc-text
     (arguments `(#:tests? #f))
