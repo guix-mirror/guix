@@ -9399,7 +9399,7 @@ vector. ")
 (define-public ghc-foldl
   (package
     (name "ghc-foldl")
-    (version "1.3.5")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
@@ -9408,7 +9408,7 @@ vector. ")
                            "foldl-" version ".tar.gz"))
        (sha256
         (base32
-         "10qsp7dj2xsq4q2xm6x6b12y5pq32qf7my41hnkmdwwbccvhdxb2"))))
+         "13n0ca3hw5jzqf6rxsdbhbwkn61a9zlm13f0f205s60j3sc72jzk"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-mwc-randam" ,ghc-mwc-random)
               ("ghc-primitive" ,ghc-primitive)
@@ -9417,7 +9417,9 @@ vector. ")
               ("ghc-unordered-containers" ,ghc-unordered-containers)
               ("ghc-hashable" ,ghc-hashable)
               ("ghc-contravariant" ,ghc-contravariant)
+              ("ghc-semigroups" ,ghc-semigroups)
               ("ghc-profunctors" ,ghc-profunctors)
+              ("ghc-semigroupoids" ,ghc-semigroupoids)
               ("ghc-comonad" ,ghc-comonad)
               ("ghc-vector-builder" ,ghc-vector-builder)))
     (home-page "https://github.com/Gabriel439/Haskell-Foldl-Library")
