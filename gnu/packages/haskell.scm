@@ -6057,14 +6057,14 @@ back-ends.")
 (define-public ghc-mockery
   (package
     (name "ghc-mockery")
-    (version "0.3.3")
+    (version "0.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "mockery/mockery-" version ".tar.gz"))
               (sha256
                (base32
-                "1m7sq2vclgir3qbpngzl3g87ks4034blwwf7p3h02c0jlcwpl5b1"))))
+                "09ypgm3z69gq8mj6y66ss58kbjnk15r8frwcwbqcfbfksfnfv8dp"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-temporary" ,ghc-temporary)
