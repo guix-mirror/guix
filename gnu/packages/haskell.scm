@@ -8490,7 +8490,7 @@ between 2 and 3 times faster than the Mersenne Twister.")
 (define-public ghc-vector-algorithms
   (package
     (name "ghc-vector-algorithms")
-    (version "0.7.0.1")
+    (version "0.7.0.4")
     (source
      (origin
        (method url-fetch)
@@ -8499,22 +8499,10 @@ between 2 and 3 times faster than the Mersenne Twister.")
                            "vector-algorithms-" version ".tar.gz"))
        (sha256
         (base32
-         "0w4hf598lpxfg58rnimcqxrbnpqq2jmpjx82qa5md3q6r90hlipd"))))
+         "0mfa8ig9v69l41p2vb5jl4qmaln5y1rlzarr2mlgm8g1nvq8qqdg"))))
     (build-system haskell-build-system)
-    ;; The limits have been adjusted in a revision of the cabal file.
-    (arguments
-     '(#:configure-flags (list "--allow-newer=vector")
-       #:phases
-       (modify-phases %standard-phases
-         ;; The tests cannot be built due to type errors.
-         (add-after 'unpack 'do-not-build-quickcheck-tests
-           (lambda _
-             (substitute* "vector-algorithms.cabal"
-               (("\\!flag\\(properties\\)") "True"))
-             #t)))))
     (inputs
-     `(("ghc-vector" ,ghc-vector)
-       ("ghc-mwc-random" ,ghc-mwc-random)))
+     `(("ghc-vector" ,ghc-vector)))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/bos/math-functions")
