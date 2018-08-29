@@ -4088,7 +4088,7 @@ monads with anaphoric variants on @code{if} and @code{when} and a C-like
 (define-public ghc-monad-control
   (package
     (name "ghc-monad-control")
-    (version "1.0.1.0")
+    (version "1.0.2.3")
     (source
      (origin
        (method url-fetch)
@@ -4097,7 +4097,7 @@ monads with anaphoric variants on @code{if} and @code{when} and a C-like
              "/monad-control-" version ".tar.gz"))
        (sha256
         (base32
-         "1x018gi5irznx5rgzmkr2nrgh26r8cvqwkcfc6n6y05pdjf21c6l"))))
+         "1c92833gr6cadidjdp8mlznkpp8lyxl0w3y7d19y8yi3klc3843c"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm" ,ghc-stm)
