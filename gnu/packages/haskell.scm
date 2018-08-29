@@ -4863,7 +4863,7 @@ just a @code{Semigroup} are added.")
 (define-public ghc-contravariant
   (package
     (name "ghc-contravariant")
-    (version "1.4")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
@@ -4873,7 +4873,7 @@ just a @code{Semigroup} are added.")
              ".tar.gz"))
        (sha256
         (base32
-         "117fff8kkrvlmr8cb2jpj71z7lf2pdiyks6ilyx89mry6zqnsrp1"))))
+         "1vfhk8c5cxmmakx7rflap1ipkx5q0j5vnlrcz7yz6y53kxhksgf9"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-void" ,ghc-void)
