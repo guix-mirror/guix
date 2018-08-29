@@ -9364,7 +9364,7 @@ the project's home page}.")
 (define-public ghc-vector-builder
   (package
     (name "ghc-vector-builder")
-    (version "0.3.1")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
@@ -9373,17 +9373,18 @@ the project's home page}.")
                            "vector-builder-" version ".tar.gz"))
        (sha256
         (base32
-         "1l6sfgd2s107zkp1qd1w6jdjcbznp31769qf99pxar087f697wvp"))))
+         "06d2pa1fb3ydrl7l6rjazqyxv5i73v65x2f5fp0ypjxfbm6jsmn8"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-vector" ,ghc-vector)
               ("ghc-semigroups" ,ghc-semigroups)
               ("ghc-base-prelude" ,ghc-base-prelude)))
-    (native-inputs `(("ghc-tasty" ,ghc-tasty)
+    (native-inputs `(("ghc-attoparsec" ,ghc-attoparsec)
+                     ("ghc-tasty" ,ghc-tasty)
                      ("ghc-tasty-hunit" ,ghc-tasty-hunit)
                      ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
                      ("ghc-hunit" ,ghc-hunit)
                      ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
-                     ("ghc-rebase" ,ghc-rebase)))
+                     ("ghc-rerebase" ,ghc-rerebase)))
     (home-page "https://github.com/nikita-volkov/vector-builder")
     (synopsis "Vector builder for Haskell")
     (description "This Haskell package provides an API for constructing vectors.
