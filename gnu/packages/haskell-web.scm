@@ -783,7 +783,7 @@ Strict, Transitional and Frameset variants.")
 (define-public ghc-aeson
   (package
     (name "ghc-aeson")
-    (version "1.2.4.0")
+    (version "1.3.1.1")
     (source
      (origin
        (method url-fetch)
@@ -793,7 +793,7 @@ Strict, Transitional and Frameset variants.")
              ".tar.gz"))
        (sha256
         (base32
-         "16zwpd07cmhs58wwsqbhxy3b58gqw8w5nr7nf6lwi4nvznjdn09l"))))
+         "1i1ig840fvsb1lnklcv32zsc0zscirc301lw1mpfxhc6h4pk0gw4"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (inputs
