@@ -3700,7 +3700,7 @@ colored output using the ansi-terminal package.")
 (define-public ghc-split
   (package
     (name "ghc-split")
-    (version "0.2.3.1")
+    (version "0.2.3.3")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3711,7 +3711,7 @@ colored output using the ansi-terminal package.")
              ".tar.gz"))
        (sha256
         (base32
-         "12660m16c6sib3laaxn6w9s453pyx1b49myrmzfij372vq5bc5bn"))))
+         "04qlmkcyklznl03gsjg95b4nzb6i96gdapqg60rny9szgi7ngk8x"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
