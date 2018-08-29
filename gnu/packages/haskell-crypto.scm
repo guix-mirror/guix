@@ -452,7 +452,7 @@ libraries, like OpenSSL.")
 (define-public ghc-x509-store
   (package
     (name "ghc-x509-store")
-    (version "1.6.2")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -460,7 +460,7 @@ libraries, like OpenSSL.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0yw09nwkvr324qz4sc27c0p28bz2h6gns6lkaz9mz92mgqf2dza9"))))
+                "0dbndqmnmyixxc7308nyq3zlkhz9dff4rbcw2a49c77rbicny9va"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-pem" ,ghc-pem)
@@ -468,6 +468,9 @@ libraries, like OpenSSL.")
        ("ghc-asn1-encoding" ,ghc-asn1-encoding)
        ("ghc-cryptonite" ,ghc-cryptonite)
        ("ghc-x509" ,ghc-x509)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
     (home-page "https://github.com/vincenthz/hs-certificate")
     (synopsis "X.509 collection accessing and storing methods")
     (description
