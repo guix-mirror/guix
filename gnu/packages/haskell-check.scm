@@ -213,7 +213,7 @@ and any other types of tests into a single test suite.")
 (define-public ghc-tasty-hunit
   (package
     (name "ghc-tasty-hunit")
-    (version "0.9.2")
+    (version "0.10.0.1")
     (source
      (origin
        (method url-fetch)
@@ -223,10 +223,11 @@ and any other types of tests into a single test suite.")
              ".tar.gz"))
        (sha256
         (base32
-         "08qnxaw34wfnzi9irs1jd4d0zczqm3k5ffkd4zwhkz0dflmgq7mf"))))
+         "0j3hgga6c3s8h5snzivb8a75h96207ia2rlbxzj07xbf4zpkp44g"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-tasty" ,ghc-tasty)))
+     `(("ghc-call-stack" ,ghc-call-stack-boot)
+       ("ghc-tasty" ,ghc-tasty)))
     (home-page "http://documentup.com/feuerbach/tasty")
     (synopsis "HUnit support for the Tasty test framework")
     (description "This package provides HUnit support for the Tasty Haskell
