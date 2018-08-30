@@ -81,6 +81,20 @@
   "Replace invalid characters in STR with a hyphen."
   (string-join (string-tokenize str valid-char-set) "-"))
 
+(define (normalize-dependency dependency)
+  "Normalize the name of DEPENDENCY.  Handles dependency definitions of the
+dependency-def form described by
+<https://common-lisp.net/project/asdf/asdf.html#The-defsystem-grammar>."
+  (match dependency
+    ((':version name rest ...)
+     `(:version ,(normalize-string name) ,@rest))
+    ((':feature feature-specification dependency-specification)
+     `(:feature
+       ,feature-specification
+       ,(normalize-dependency dependency-specification)))
+    ((? string? name) (normalize-string name))
+    (require-specification require-specification)))
+
 (define (inputs->asd-file-map inputs)
   "Produce a hash table of the form (system . asd-file), where system is the
 name of an ASD system, and asd-file is the full path to its definition."
@@ -273,16 +287,24 @@ system to find its dependencies, as described by GENERATE-DEPENDENCY-LINKS."
            (system-dependencies system system-asd-file)))
       (if (eq? 'NIL deps)
           '()
-          (map normalize-string deps))))
+          (map normalize-dependency deps))))
 
   (define lisp-input-map
     (inputs->asd-file-map inputs))
+
+  (define dependency-name
+    (match-lambda
+      ((':version name _ ...) name)
+      ((':feature _ dependency-specification)
+       (dependency-name dependency-specification))
+      ((? string? name) name)
+      (_ #f)))
 
   (define registry
     (filter-map hash-get-handle
                 (make-list (length dependencies)
                            lisp-input-map)
-                dependencies))
+                (map dependency-name dependencies)))
 
   (call-with-output-file asd-file
     (lambda (port)
