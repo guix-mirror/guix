@@ -64,6 +64,7 @@
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system trivial)
@@ -85,6 +86,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages lesstif)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages version-control)
@@ -2729,6 +2731,49 @@ completion candidates are called back-ends, modules for displaying them are
 front-ends.  Company comes with many back-ends, e.g. @code{company-elisp}.
 These are distributed in separate files and can be used individually.")
     (license license:gpl3+)))
+
+(define-public emacs-irony-mode
+  (package
+    (name "emacs-irony-mode")
+    (version "1.2.0")
+    (home-page "https://github.com/Sarcasm/irony-mode")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "1f68zi0glkg2aly66s07rx3w0b0hdi1znxan02h6dbabaadylk99"))
+              (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system emacs-build-system)
+    (arguments '())
+    (propagated-inputs
+     `(("emacs-irony-mode-server" ,emacs-irony-mode-server)))
+    (synopsis "C/C++/ObjC Code completion and syntax checks for Emacs")
+    (description "Irony-mode provides Clang-assisted syntax checking and
+completion for C, C++, and ObjC in GNU Emacs.  Using @code{libclang} it can
+provide syntax checking and autocompletion on compiler level which is very
+resistent against false positives.  It also integrates well with other
+packages like @code{eldoc-mode} and especially @code{company-mode} as
+described on the homepage.")
+    (license license:gpl3+)))
+
+(define-public emacs-irony-mode-server
+  (package (inherit emacs-irony-mode)
+    (name "emacs-irony-mode-server")
+    (inputs
+     `(("clang" ,clang)))
+    (propagated-inputs '())
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "cmake"
+                       "server"
+                       (string-append "-DCMAKE_INSTALL_PREFIX=" out)) #t))))))
+    (build-system cmake-build-system)
+    (synopsis "Server for the Emacs @dfn{irony mode}")))
 
 (define-public emacs-company-quickhelp
   (package
