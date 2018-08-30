@@ -73,3 +73,52 @@ ddcutil allows colour-related settings to be saved at the time a monitor is
 calibrated, and restored when the calibration is applied.")
     (license (list license:bsd-3        ; FindDDCUtil.cmake
                    license:gpl2+))))    ; everything else
+
+(define-public msr-tools
+  (package
+    (name "msr-tools")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://01.org/sites/default/files/downloads/"
+                           name "/" name "-" version ".zip"))
+       (sha256
+        (base32 "07hxmddg0l31kjfmaq84ni142lbbvgq6391r8bd79wpm819pnigr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "sbindir=" (assoc-ref %outputs "out") "/sbin"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'install 'create-output-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; 'make install' assumes that sbindir exists.
+             (let* ((out  (assoc-ref outputs "out"))
+                    (sbin (string-append out "/sbin")))
+               (mkdir-p sbin)
+               #t))))
+       #:tests? #f))                    ; no test suite
+    (native-inputs
+     `(("unzip" ,unzip)))
+    ;; These registers and the CPUID instruction only exist on (most) x86 chips.
+    (supported-systems (list "i686-linux" "x86_64-linux"))
+    (home-page "https://01.org/msr-tools/")
+    (synopsis "Read and write Model-Specific Registers (@dfn{MSR})")
+    (description
+     "The MSR Tools project provides console utilities to directly access the
+Model-Specific Registers (@dfn{MSR}s) and CPU ID of Intel-compatible processors:
+
+@itemize
+@item @command{cpuid}: show identification and feature information of any CPU
+@item @command{rdmsr}: read MSRs from any CPU or all CPUs
+@item @command{wrmsr}: write to MSRs on any CPU or all CPUs
+@end itemize
+
+These tools can be used to query and modify certain low-level CPU parameters,
+such as the Turbo Boost ratio and Thermal Design Power (@dfn{TDP}) limits.
+
+MSR addresses differ (greatly) between processors, and any such modification can
+be dangerous and may void your CPU or system board's warranty.")
+    (license license:gpl2)))     ; cpuid.c is gpl2, {rd,wr}msr.c are gpl2+
