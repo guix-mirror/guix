@@ -218,6 +218,7 @@ affine transformation (scale, rotation, shear, etc.).")
   (package
    (name "pango")
    (version "1.42.0")
+   (replacement pango-1.42.4)
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -252,6 +253,19 @@ applications.  It has extensive support for the different writing systems
 used throughout the world.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/pango/")))
+
+(define-public pango-1.42.4
+  (package
+    (inherit pango)
+    (version "1.42.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/pango/"
+                                  (version-major+minor version) "/"
+                                  "pango-" version ".tar.xz"))
+              (sha256
+               (base32
+                "17bwb7dgbncrfsmchlib03k9n3xaalirb39g3yb43gg8cg6p8aqx"))))))
 
 (define-public pangox-compat
   (package
