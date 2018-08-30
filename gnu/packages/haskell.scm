@@ -3823,7 +3823,10 @@ speed, flexibility, and quality of parse errors.")
     (build-system haskell-build-system)
     ;; FIXME: To simplify upgrading all Haskell packages, we leave the tests
     ;; disabled for now.
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:cabal-revision
+       ("3" "0y5rh8k710i2a3p1h2rghvr5cfg78p5h0kbfi7ifxqqf6pzlyr1x")
+       #:tests? #f))
     (inputs
      `(("ghc-primitive" ,ghc-primitive)
        ("ghc-random" ,ghc-random)
