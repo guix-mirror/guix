@@ -535,6 +535,9 @@ reporting and test statistics output.")
         (base32
          "0vj834337r6jzr3258cv68ly2sv5999mklpsrfngyk51kywsyqyp"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "147ngmfdkskyg7mwsp5w73a4dbx3rp5s38bci3z03kn1m093lxff")))
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-quickcheck" ,ghc-quickcheck)
