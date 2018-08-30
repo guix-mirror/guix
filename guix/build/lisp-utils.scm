@@ -119,9 +119,10 @@ name of an ASD system, and asd-file is the full path to its definition."
 
 (define (lisp-eval-program program)
   "Evaluate PROGRAM with a given LISP implementation."
-  (unless (zero? (apply system*
-                        (lisp-invocation program)))
-    (error "lisp-eval-program failed!" (%lisp) program)))
+  (define invocation (lisp-invocation program))
+  (format #t "Invoking ~a: ~{~s ~}~%" (%lisp-type) invocation)
+  (unless (zero? (apply system* invocation))
+    (error "lisp-eval-program failed!" invocation)))
 
 (define (spread-statements program argument-name)
   "Return a list with the statements from PROGRAM spread between
