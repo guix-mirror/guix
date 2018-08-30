@@ -508,9 +508,9 @@ reporting and test statistics output.")
         (base32
          "1y0b6vg8nfm43v90lxxcydhi6qlxhfy4vpxbzm5ic2w55bh8xjwm"))))
     (build-system haskell-build-system)
-    ;; The official revision of the cabal file allows for HUnit lower than 1.7
     (arguments
-     `(#:configure-flags (list "--allow-newer=HUnit")))
+     `(#:cabal-revision
+       ("3" "0i9mlalv7cl1iq43ld5myrnpszq5rxmd79hk495dcb08rglhgl3z")))
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-hunit" ,ghc-hunit)
