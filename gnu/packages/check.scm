@@ -269,7 +269,7 @@ problem, and shows the differences.")
 (define-public cmocka
   (package
     (name "cmocka")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://cmocka.org/files/"
@@ -277,10 +277,10 @@ problem, and shows the differences.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1283zi9qf5613g8iadm1fxmjh4rzxqd5np2j3lcpgairf25g8bph"))))
+                "1p9b6ccv939wjsgapn7wx24xw278awsw9h81lm0g4zw257hx276i"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f)) ; No test target
+     `(#:tests? #f))                    ; no test target
     (home-page "https://cmocka.org/")
     (synopsis "Unit testing framework for C")
     (description "Cmocka is a unit testing framework for C with support for
