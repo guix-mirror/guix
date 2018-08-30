@@ -2909,10 +2909,19 @@ with slicing and Clang-style colored diagnostics.")
         (base32
          "0j6qcwd146yzlkc9mcvzvnixsyl65n2a68l28322q5v9p4g4g4yx"))))
     (build-system haskell-build-system)
-    ;; FIXME: at least on test fails with QuickCheck > 2.9.2.  Once upstream
-    ;; has updated the tests to work with a later version of QuickCheck we can
-    ;; re-enable them.
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-for-newer-quickcheck
+           (lambda _
+             (substitute* "attoparsec.cabal"
+               (("QuickCheck >= 2\\.7 && < 2\\.10")
+                "QuickCheck >= 2.7 && < 2.12"))
+             ;; This test fails because of the newer QuickCheck:
+             ;; <https://github.com/bos/attoparsec/issues/134>.
+             (substitute* "tests/QC/ByteString.hs"
+               ((", testProperty \"satisfyWith\" satisfyWith")
+                "")))))))
     (inputs
      `(("ghc-scientific" ,ghc-scientific)
        ("ghc-text" ,ghc-text)))
