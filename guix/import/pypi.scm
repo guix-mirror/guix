@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,8 @@
   #:use-module (guix utils)
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
-                           . hyphen-package-name->name+version)))
+                           . hyphen-package-name->name+version)
+                          find-files))
   #:use-module (guix import utils)
   #:use-module ((guix download) #:prefix download:)
   #:use-module (guix import json)
@@ -114,9 +116,9 @@ package definition."
      `((propagated-inputs (,'quasiquote ,package-inputs))))))
 
 (define (guess-requirements source-url wheel-url tarball)
-  "Given SOURCE-URL, WHEEL-URL and a TARBALL of the package, return a list of
-the required packages specified in the requirements.txt file. TARBALL will be
-extracted in the current directory, and will be deleted."
+  "Given SOURCE-URL, WHEEL-URL and a TARBALL of the package, return a list
+of the required packages specified in the requirements.txt file.  TARBALL will
+be extracted in a temporary directory."
 
   (define (tarball-directory url)
     ;; Given the URL of the package's tarball, return the name of the directory
@@ -140,8 +142,8 @@ cannot determine package dependencies"))
     ;; file, remove everything other than the actual name of the required
     ;; package, and return it.
     (string-take s
-     (or (string-index s #\space)
-         (string-length s))))
+      (or (string-index s (lambda (chr) (member chr '(#\space #\> #\= #\<))))
+          (string-length s))))
 
   (define (comment? line)
     ;; Return #t if the given LINE is a comment, #f otherwise.
@@ -197,31 +199,37 @@ cannot determine package dependencies"))
               (read-wheel-metadata temp))
          #f))))
 
-
   (define (guess-requirements-from-source)
     ;; Return the package's requirements by guessing them from the source.
     (let ((dirname (tarball-directory source-url)))
       (if (string? dirname)
-          (let* ((req-file (string-append dirname "/requirements.txt"))
-                 (exit-code (system* "tar" "xf" tarball req-file)))
-            ;; TODO: support more formats.
-            (if (zero? exit-code)
-                (dynamic-wind
-                  (const #t)
-                  (lambda ()
-                    (read-requirements req-file))
-                  (lambda ()
-                    (delete-file req-file)
-                    (rmdir dirname)))
-                (begin
-                  (warning (G_ "'tar xf' failed with exit code ~a\n")
-                           exit-code)
-                  '())))
+          (call-with-temporary-directory
+           (lambda (dir)
+             (let* ((pypi-name (string-take dirname (string-rindex dirname #\-)))
+                    (req-files (list (string-append dirname "/requirements.txt")
+                                     (string-append dirname "/" pypi-name ".egg-info"
+                                                    "/requires.txt")))
+                    (exit-codes (map (lambda (file-name)
+                                       (parameterize ((current-error-port (%make-void-port "rw+"))
+                                                      (current-output-port (%make-void-port "rw+")))
+                                         (system* "tar" "xf" tarball "-C" dir file-name)))
+                                     req-files)))
+               ;; Only one of these files needs to exist.
+               (if (any zero? exit-codes)
+                   (match (find-files dir)
+                     ((file . _)
+                      (read-requirements file))
+                     (()
+                      (warning (G_ "No requirements file found.\n"))))
+                   (begin
+                     (warning (G_ "Failed to extract requirements files\n"))
+                     '())))))
           '())))
 
   ;; First, try to compute the requirements using the wheel, since that is the
   ;; most reliable option. If a wheel is not provided for this package, try
-  ;; getting them by reading the "requirements.txt" file from the source. Note
+  ;; getting them by reading either the "requirements.txt" file or the
+  ;; "requires.txt" from the egg-info directory from the source tarball. Note
   ;; that "requirements.txt" is not mandatory, so this is likely to fail.
   (or (guess-requirements-from-wheel)
       (guess-requirements-from-source)))
