@@ -6442,6 +6442,14 @@ package:
 guix import pypi itsdangerous
 @end example
 
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
+
 @item gem
 @cindex gem
 Import metadata from @uref{https://rubygems.org/,
