@@ -152,8 +152,7 @@ with PROGRAM."
 first."
   (lisp-eval-program
    `((require :asdf)
-     (let ((*package* (find-package :asdf)))
-       (load ,asd-file))
+     (asdf:load-asd (truename ,asd-file) :name ,(normalize-string system))
      (asdf:operate 'asdf:compile-bundle-op ,system))))
 
 (define (system-dependencies system asd-file)
@@ -162,8 +161,7 @@ asdf:system-depends-on.  First load the system's ASD-FILE."
   (define deps-file ".deps.sexp")
   (define program
     `((require :asdf)
-      (let ((*package* (find-package :asdf)))
-        (load ,asd-file))
+      (asdf:load-asd (truename ,asd-file) :name ,(normalize-string system))
       (with-open-file
        (stream ,deps-file :direction :output)
        (format stream
@@ -203,19 +201,18 @@ asdf:system-depends-on.  First load the system's ASD-FILE."
 Also load TEST-ASD-FILE if necessary."
   (lisp-eval-program
    `((require :asdf)
-     (let ((*package* (find-package :asdf)))
-       (load ,asd-file)
-       ,@(if test-asd-file
-             `((load ,test-asd-file))
-             ;; Try some likely files.
-             (map (lambda (file)
-                    `(when (uiop:file-exists-p ,file)
-                       (load ,file)))
-                  (list
-                   (string-append system "-tests.asd")
-                   (string-append system "-test.asd")
-                   "tests.asd"
-                   "test.asd"))))
+     (asdf:load-asd (truename ,asd-file) :name ,(normalize-string system))
+     ,@(if test-asd-file
+           `((asdf:load-asd (truename ,test-asd-file)))
+           ;; Try some likely files.
+           (map (lambda (file)
+                  `(when (uiop:file-exists-p ,file)
+                     (asdf:load-asd (truename ,file))))
+                (list
+                 (string-append system "-tests.asd")
+                 (string-append system "-test.asd")
+                 "tests.asd"
+                 "test.asd")))
      (asdf:test-system ,system))))
 
 (define (string->lisp-keyword . strings)
