@@ -1011,8 +1011,8 @@ productive, customizable lisp based systems.")
 ;; we expose the union of these as `sbcl-slynk'.  The following variable
 ;; describes the base module.
 (define sbcl-slynk-boot0
-  (let ((revision "1")
-        (commit "5706cd45d484a4f25795abe8e643509d31968aa2"))
+  (let ((revision "2")
+        (commit "cbf84c36c4eca8b032e3fd16177a7bc02df3ec4c"))
     (package
       (name "sbcl-slynk-boot0")
       (version (string-append "1.0.0-beta-" revision "." (string-take commit 7)))
@@ -1024,7 +1024,7 @@ productive, customizable lisp based systems.")
            (url "https://github.com/joaotavora/sly.git")
            (commit commit)))
          (sha256
-          (base32 "0h4gg3sndl2bf6jdnx9nrf14p9hhi43hagrl0f4v4l11hczl8w81"))
+          (base32 "13dyhsravn591p7g6is01mp2ynzjnnj7pwgi57r6xqmd4611y9vh"))
          (file-name (string-append "slynk-" version "-checkout"))
          (modules '((guix build utils)
                     (ice-9 ftw)))
@@ -1035,14 +1035,19 @@ productive, customizable lisp based systems.")
              (substitute* "slynk/slynk.asd"
                (("\\.\\./contrib")
                 "contrib")
-               (("\\(defsystem :slynk-util")
-                "(defsystem :slynk-util :depends-on (:slynk)"))
+               (("\\(defsystem :slynk/util")
+                "(defsystem :slynk/util :depends-on (:slynk)")
+               ((":depends-on \\(:slynk :slynk/util\\)")
+                ":depends-on (:slynk :slynk-util)"))
              (substitute* "contrib/slynk-trace-dialog.lisp"
                (("\\(slynk::reset-inspector\\)") ; Causes problems on load
                 "nil"))
              (substitute* "contrib/slynk-profiler.lisp"
                (("slynk:to-line")
                 "slynk-pprint-to-line"))
+             (substitute* "contrib/slynk-fancy-inspector.lisp"
+               (("slynk/util") "slynk-util")
+               ((":compile-toplevel :load-toplevel") ""))
              (rename-file "contrib" "slynk/contrib")
              ;; Move slynk's contents into the base directory for easier
              ;; access
@@ -1082,15 +1087,20 @@ multiple inspectors with independent history.")
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-slynk-boot0)
        ((#:asd-file _ "") "slynk.asd")
-       ((#:asd-system-name _ #f) #f)))))
+       ((#:asd-system-name _ #f) "slynk/arglists")))))
 
 (define ecl-slynk-arglists
   (sbcl-package->ecl-package sbcl-slynk-arglists))
 
 (define sbcl-slynk-util
   (package
-    (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-util")))
+    (inherit sbcl-slynk-boot0)
+    (name "sbcl-slynk-util")
+    (inputs `(("slynk" ,sbcl-slynk-boot0)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-boot0)
+       ((#:asd-file _ "") "slynk.asd")
+       ((#:asd-system-name _ #f) "slynk/util")))))
 
 (define ecl-slynk-util
   (sbcl-package->ecl-package sbcl-slynk-util))
@@ -1100,7 +1110,10 @@ multiple inspectors with independent history.")
     (inherit sbcl-slynk-arglists)
     (name "sbcl-slynk-fancy-inspector")
     (inputs `(("slynk-util" ,sbcl-slynk-util)
-              ,@(package-inputs sbcl-slynk-arglists)))))
+              ,@(package-inputs sbcl-slynk-arglists)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
+       ((#:asd-system-name _ #f) "slynk/fancy-inspector")))))
 
 (define ecl-slynk-fancy-inspector
   (sbcl-package->ecl-package sbcl-slynk-fancy-inspector))
@@ -1108,15 +1121,21 @@ multiple inspectors with independent history.")
 (define sbcl-slynk-package-fu
   (package
     (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-package-fu")))
+    (name "sbcl-slynk-package-fu")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
+       ((#:asd-system-name _ #f) "slynk/package-fu")))))
 
 (define ecl-slynk-package-fu
   (sbcl-package->ecl-package sbcl-slynk-package-fu))
 
 (define sbcl-slynk-mrepl
   (package
-    (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-mrepl")))
+    (inherit sbcl-slynk-fancy-inspector)
+    (name "sbcl-slynk-mrepl")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
+       ((#:asd-system-name _ #f) "slynk/mrepl")))))
 
 (define ecl-slynk-mrepl
   (sbcl-package->ecl-package sbcl-slynk-mrepl))
@@ -1124,7 +1143,10 @@ multiple inspectors with independent history.")
 (define sbcl-slynk-trace-dialog
   (package
     (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-trace-dialog")))
+    (name "sbcl-slynk-trace-dialog")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
+       ((#:asd-system-name _ #f) "slynk/trace-dialog")))))
 
 (define ecl-slynk-trace-dialog
   (sbcl-package->ecl-package sbcl-slynk-trace-dialog))
@@ -1132,7 +1154,10 @@ multiple inspectors with independent history.")
 (define sbcl-slynk-profiler
   (package
     (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-profiler")))
+    (name "sbcl-slynk-profiler")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
+       ((#:asd-system-name _ #f) "slynk/profiler")))))
 
 (define ecl-slynk-profiler
   (sbcl-package->ecl-package sbcl-slynk-profiler))
@@ -1140,7 +1165,10 @@ multiple inspectors with independent history.")
 (define sbcl-slynk-stickers
   (package
     (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-stickers")))
+    (name "sbcl-slynk-stickers")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
+       ((#:asd-system-name _ #f) "slynk/stickers")))))
 
 (define ecl-slynk-stickers
   (sbcl-package->ecl-package sbcl-slynk-stickers))
@@ -1148,7 +1176,10 @@ multiple inspectors with independent history.")
 (define sbcl-slynk-indentation
   (package
     (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-indentation")))
+    (name "sbcl-slynk-indentation")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
+       ((#:asd-system-name _ #f) "slynk/indentation")))))
 
 (define ecl-slynk-indentation
   (sbcl-package->ecl-package sbcl-slynk-indentation))
@@ -1156,7 +1187,10 @@ multiple inspectors with independent history.")
 (define sbcl-slynk-retro
   (package
     (inherit sbcl-slynk-arglists)
-    (name "sbcl-slynk-retro")))
+    (name "sbcl-slynk-retro")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-slynk-arglists)
+       ((#:asd-system-name _ #f) "slynk/retro")))))
 
 (define ecl-slynk-retro
   (sbcl-package->ecl-package sbcl-slynk-retro))
