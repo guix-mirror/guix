@@ -1565,7 +1565,7 @@ using ncurses and libmesode, inspired by Irssi.")
 (define-public libircclient
   (package
     (name "libircclient")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -1573,7 +1573,7 @@ using ncurses and libmesode, inspired by Irssi.")
                            version "/libircclient-" version ".tar.gz"))
        (sha256
         (base32
-         "0r60i76jh4drjh2jgp5sx71chagqllmkaq49zv67nrhqwvp9ghw1"))))
+         "0b9wa0h3xc31wpqlvgxgnvqp5wgx3kwsf5s9432m5cj8ycx6zcmv"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -1584,8 +1584,7 @@ using ncurses and libmesode, inspired by Irssi.")
              "--enable-shared"
              "--enable-ipv6"
              "--enable-openssl")
-       ;; no test suite
-       #:tests? #f))
+       #:tests? #f))                    ; no test suite
     (home-page "https://www.ulduzsoft.com/libircclient/")
     (synopsis "Library implementing the client IRC protocol")
     (description "Libircclient is a library which implements the client IRC
