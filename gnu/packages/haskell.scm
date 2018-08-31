@@ -2289,6 +2289,9 @@ combine hash values.")
         (base32
          "0k932nyd08l3xxbh2g3n76py2f4kd9yw4s5a065vjz0xp6wjnxdm"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "0rv40xkg3gj8jnqsry1gq3f5s5la6d5arg8fzkirnwdpcgha1as6")))
     (inputs `(("ghc-hashable" ,ghc-hashable)))
     (home-page "http://hackage.haskell.org/package/hashable-time")
     (synopsis "Hashable instances for Data.Time")
