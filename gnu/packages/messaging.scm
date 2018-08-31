@@ -548,14 +548,14 @@ simultaneously and therefore appear under the same nickname on IRC.")
 (define-public python-nbxmpp
   (package
     (name "python-nbxmpp")
-    (version "0.6.6")
+    (version "0.6.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "nbxmpp" version))
        (sha256
         (base32
-         "0bp60syqc3qp2i28phvadxlpwizjbr6bxw4m363p9yn5fl687qnh"))))
+         "0fas4iawjfdmkz8vr042wpq6b2qispi6fy35g4a62jw50jb1saav"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
