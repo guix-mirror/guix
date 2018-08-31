@@ -706,9 +706,9 @@ attachments, create new maildirs, and so on.")
        ("python2-pygpgme" ,python2-pygpgme)
        ("python2-notmuch" ,python2-notmuch)))
     (home-page "https://github.com/pazz/alot")
-    (synopsis "Commandline MUA using notmuch")
+    (synopsis "Command-line MUA using @code{notmuch}")
     (description
-     "Alot is an experimental terminal mail user agent (MUA) based on
+     "Alot is an experimental terminal mail user agent (@dfn{MUA}) based on
 @code{notmuch} mail.  It is written in Python using the @code{urwid} toolkit.")
     (license gpl3+)))
 

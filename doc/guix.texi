@@ -13539,7 +13539,7 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 
 The @code{(gnu services sound)} module provides a service to configure the
 Advanced Linux Sound Architecture (ALSA) system, which making PulseAudio the
-prefered ALSA output driver.
+preferred ALSA output driver.
 
 @deffn {Scheme Variable} alsa-service-type
 This is the type for the @uref{https://alsa-project.org/, Advanced Linux Sound
@@ -17425,7 +17425,7 @@ When true, don't read the hostnames in /etc/hosts.
 
 @item @code{port} (default: @code{53})
 The port to listen on.  Setting this to zero completely disables DNS
-funtion, leaving only DHCP and/or TFTP.
+responses, leaving only DHCP and/or TFTP functions.
 
 @item @code{local-service?} (default: @code{#t})
 Accept DNS queries only from hosts whose address is on a local subnet,
