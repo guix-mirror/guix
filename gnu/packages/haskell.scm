@@ -5295,6 +5295,9 @@ using a simple box model.")
                (base32
                 "17bwghc15mc9pchfd1w46jh2p3wzc86aj6a537wqwxn08rayzcxh"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("2" "1pnidf8w8x0w5fsqgv8hhrw07slmhxwy5x4fikgk0bd6k76aqicb")))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
