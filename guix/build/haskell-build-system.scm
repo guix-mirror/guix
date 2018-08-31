@@ -27,6 +27,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
+  #:use-module (ice-9 ftw)
   #:export (%standard-phases
             haskell-build))
 
@@ -265,8 +266,19 @@ given Haskell package."
       (run-setuphs "haddock" haddock-flags)
       #t))
 
+(define* (patch-cabal-file #:key cabal-revision #:allow-other-keys)
+  (when cabal-revision
+    ;; Cabal requires there to be a single file with the suffix ".cabal".
+    (match (scandir "." (cut string-suffix? ".cabal" <>))
+      ((original)
+       (format #t "replacing ~s with ~s~%" original cabal-revision)
+       (copy-file cabal-revision original))
+      (_ (error "Could not find a Cabal file to patch."))))
+  #t)
+
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (add-after 'unpack 'patch-cabal-file patch-cabal-file)
     (delete 'bootstrap)
     (add-before 'configure 'setup-compiler setup-compiler)
     (add-before 'install 'haddock haddock)
