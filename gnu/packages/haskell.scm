@@ -9078,8 +9078,18 @@ functions.")
          "09xhk42yhxvqmka0iqrv3338asncz8cap3j0ic0ps896f2581b6z"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck"
-                               "--allow-newer=HUnit")))
+     `(#:cabal-revision
+       ("2" "0m185q62jkfb5jsv358nxbnrkv8y8hd0qqvgvh22wvc5g9ipz0r9")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'strip-test-framework-constraints
+           (lambda _
+             (substitute* "uuid.cabal"
+               (("HUnit            >= 1\\.2   && < 1\\.4") "HUnit")
+               (("QuickCheck       >= 2\\.4   && < 2\\.10") "QuickCheck")
+               (("tasty            >= 0\\.10  && < 0\\.12") "tasty")
+               (("tasty-hunit      == 0\\.9\\.\\*") "tasty-hunit")
+               (("tasty-quickcheck == 0\\.8\\.\\*") "tasty-quickcheck")))))))
     (inputs `(("ghc-cryptohash-sha1" ,ghc-cryptohash-sha1)
               ("ghc-cryptohash-md5" ,ghc-cryptohash-md5)
               ("ghc-entropy" ,ghc-entropy)
