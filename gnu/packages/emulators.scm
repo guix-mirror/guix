@@ -1055,7 +1055,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.3")
+    (version "1.7.4")
     (source
      (origin
        (method url-fetch)
@@ -1063,7 +1063,7 @@ emulation community.  It provides highly accurate emulation.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1si78dbwbsq4i0r42q94nmlpaxdyqch113nxavdprf4vc1224356"))))
+        (base32 "0h6y2hpjg4b470jvn9ghwp0k3a527sbb6xhia17frlm9w9v5028w"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
