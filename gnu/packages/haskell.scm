@@ -9034,8 +9034,16 @@ IPv4, IPv6 and MAC addresses.")
          "1zdka5jnm1h6k36w3nr647yf3b5lqb336g3fkprhd6san9x52xlj"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags (list "--allow-newer=QuickCheck"
-                               "--allow-newer=HUnit")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'strip-test-framework-constraints
+           (lambda _
+             (substitute* "uuid-types.cabal"
+               (("HUnit >=1\\.2 && < 1\\.4") "HUnit")
+               (("QuickCheck >=2\\.4 && < 2\\.9") "QuickCheck")
+               (("tasty >= 0\\.10 && < 0\\.12") "tasty")
+               (("tasty-hunit == 0\\.9\\.\\*") "tasty-hunit")
+               (("tasty-quickcheck == 0\\.8\\.\\*") "tasty-quickcheck")))))))
     (inputs `(("ghc-hashable" ,ghc-hashable)
               ("ghc-random" ,ghc-random)
               ("ghc-text" ,ghc-text)))
